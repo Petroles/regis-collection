@@ -1,0 +1,6121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.21871</field>
+		<field name="filename">5671_273973.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+UNIVERSIDADE FEDERAL DE SANTA CATARINA
+
+PROGRAMA DE PÓS GRADUAÇÃO EM ENGENHARIA MECÂNICA
+
+VOLUMES FINITOS UTILIZANDO
+
+APROXIMAÇÕES DE MÚLTIPLOS PONTOS
+
+APLICADOS À SIMULAÇÃO NUMÉRICA DE
+
+RESERVATÓRIOS DE PETRÓLEO
+
+Dissertação submetida à
+
+UNIVERSIDADE FEDERAL DE SANTA CATARINA
+
+para a obtenção do grau de
+
+MESTRE EM ENGENHARIA MECÂNICA
+
+JAIME AMBRUS
+
+Florianópolis, maio de 2009.
+
+
+
+Ambrus, Jaime, 1983-
+
+Volumes Finitos Utilizando Aproximações de Múltiplos Pontos Aplicados
+
+ã Simulação Numérica de Reservatórios de Petróleo / Jaime Ambrus. – 2009.
+
+50 f. : il. color. ; 30 cm
+
+Orientador: Prof. Clovis R. Maliska, PhD.
+
+Dissertação de Mestrado – Universidade Federal de Santa Catarina, Pro-
+
+grama de Pós-Graduação em Engenharia Mecânica, 2009. 1. Simulação de
+
+Reservatórios. 2. MPFA. 3. EbFVM. 4. Aproximação por Múltiplos Pontos.
+
+I. Maliska, Clovis R.,. II. Universidade Federal de Santa Catarina. Programa
+
+de Pós-Graduação em Enganharia Mecânica. III. Título.
+
+
+
+UNIVERSIDADE FEDERAL DE SANTA CATARINA
+
+PROGRAMA DE PÓS GRADUAÇÃO EM ENGENHARIA MECÂNICA
+
+VOLUMES FINITOS UTILIZANDO
+
+APROXIMAÇÕES DE MÚLTIPLOS PONTOS
+
+APLICADOS À SIMULAÇÃO NUMÉRICA DE
+
+RESERVATÓRIOS DE PETRÓLEO
+
+JAIME AMBRUS
+
+Esta dissertação foi julgada adequada para a obtenção do título de
+
+MESTRE EM ENGENHARIA
+
+Especialidade Engenharia Mecânica, sendo aprovada em sua forma final.
+
+Prof. Clovis R. Maliska, Ph.D. - Orientador
+
+Prof. Eduardo Alberto Fancello, D.Sc. - Coordenador do Curso
+
+Banca Examinadora
+
+Prof. António Fabio Carvalho da Silva, Dr. Eng. - EMC/UFSC
+
+Prof. Celso Peres Fernandes, Dr. Eng. - EMC/UFSC
+
+Prof. José Antonio Bellini da Cunha Neto, Dr. - EMC/UFSC
+
+Dr. Regis Kruel Romeu, Dr. Ing. - CENPES/PETROBRAS
+
+
+
+iv
+
+
+
+If you want to be creative, then you will have to get
+
+used to spending most of your time not being creative,
+
+to being becalmed on the ocean of scientific knowledge.
+
+Steven Weinberg
+
+
+
+vi
+
+
+
+AGRADECIMENTOS
+
+Primeiramente agradeço ao Prof. Maliska pela orientação e por todo o tempo dedicado a
+
+orientar e revisar este trabalho e tantos outros que têm sido desenvolvidos no SINMEC, fazendo
+
+o Laboratório expandir suas atividades. Ao Prof. António Fabio, agradeço pelas frutíferas
+
+discussões acerca dos trabalhos desenvolvidos.
+
+Agradeço especialmente ao Engenheiro Fernando S. V. Hurtado com quem estive em con-
+
+tato desde o início de minha iniciação científica, recebendo ajuda e aprendendo os mais variados
+
+assuntos dentro e fora dos ramos da Engenharia. Aos Engenheiros Carlos N. Donatti e Karime
+
+L. Z. Glitz, agradeço pelo companheirismo tanto dentro como fora de nossas atividades profis-
+
+sionais. Não poderia deixar de estender meus agradecimentos ao pesquisador visitante Axel
+
+Dihlmann e nossa secretária Tatiane, que incansavelmente trabalham para que toda a infra-
+
+estrutura do SINMEC esteja sempre em ordem e que seus membros possam realizar suas ativi-
+
+dades da melhor forma.
+
+A todos os membros do SINMEC manifesto minha gratidão por terem colaborado em
+
+fornecer um ambiente de trabalho saudável às nossas atividades e pelos momentos de descontra-
+
+ção. Em especial aos bolsistas de iniciação científica Elisa N. Formentin e Leonardo Karpinski,
+
+por seus trabalhos na área de petróleo, e ao Daniel M. Plucênio, por ter me incentivado a utilizar
+
+LATEX na escrita deste documento.
+
+Aos professores do Programa de Pós-Graduação pelos valiosos conhecimentos adquiridos
+
+ao longo deste curso de Mestrado, também fico imensamente grato.
+
+Agradeço à CAPES pela concessão de uma bolsa durante a maior parte da realização deste
+
+trabalho e à PETROBRAS pelos diversos incentivos à pesquisa ao longo dos anos.
+
+Ainda, manifesto minha gratidão a meus amigos e minha família, principalmente meus pais
+
+e irmão, que sempre acreditaram em meu potencial e sempre me incentivaram a aprender con-
+
+tinuamente.
+
+
+
+viii
+
+
+
+Sumário
+
+1 Introdução 1
+
+1.1 Preliminares . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+
+1.2 Objetivos . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+
+1.3 Revisão bibliográfica . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+
+1.4 Organização do trabalho . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+
+2 Modelo Matemático 9
+
+2.1 Modelo do escoamento . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+
+2.2 Equações do modelo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+
+2.3 Condições de contorno . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+
+3 Modelo Discreto 17
+
+3.1 Integração das equações diferenciais . . . . . . . . . . . . . . . . . . . . . . . 17
+
+3.2 Método de volumes finitos baseado em elementos . . . . . . . . . . . . . . . . 27
+
+3.3 Aproximação dos fluxos por múltiplos pontos . . . . . . . . . . . . . . . . . . 30
+
+3.4 Implementação computacional . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+
+4 Comparações entre os Métodos 37
+
+4.1 Interpolação no elemento e o cálculo do gradiente . . . . . . . . . . . . . . . . 37
+
+4.2 Armazenamento das propriedades . . . . . . . . . . . . . . . . . . . . . . . . 38
+
+4.3 Fluxo em um meio homogêneo . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+
+4.3.1 EbFVM . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 40
+
+4.3.2 MPFA . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+
+ix
+
+
+
+4.3.3 Comentários . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 42
+
+4.4 Monotonicidade da solução . . . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+
+5 Exemplos de Aplicação 51
+
+5.1 Validação e análise do erro . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+
+5.1.1 Meio anisotrópico homogêneo . . . . . . . . . . . . . . . . . . . . . . 51
+
+5.1.2 Meio anisotrópico heterogêneo . . . . . . . . . . . . . . . . . . . . . . 53
+
+5.1.3 Meio homogêneo anisotrópico particular . . . . . . . . . . . . . . . . 56
+
+5.2 Análise de monotonicidade . . . . . . . . . . . . . . . . . . . . . . . . . . . . 57
+
+5.2.1 Meio isotrópico com razão de aspecto unitária . . . . . . . . . . . . . . 58
+
+5.2.2 Meio anisotrópico com razão de aspecto unitária . . . . . . . . . . . . 59
+
+5.2.3 Meio isotrópico com razão de aspecto não-unitária . . . . . . . . . . . 60
+
+5.3 Problemas bifásicos . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 61
+
+5.3.1 Problema dos três poços . . . . . . . . . . . . . . . . . . . . . . . . . 61
+
+5.3.2 Reservatório heterogêneo . . . . . . . . . . . . . . . . . . . . . . . . . 63
+
+6 Conclusões 71
+
+x
+
+
+
+Lista de Figuras
+
+1.1 Exemplo de possíveis discretizações de um modelo areal de reservatório. . . . . 2
+
+1.2 Pontos envolvidos no cálculo de um fluxo para um volume de controle: (a) com
+
+esquemas tradicionais de 2 pontos e (b) com esquemas de múltiplos pontos. . . 4
+
+2.1 Diferentes escalas de um mesmo fenômeno em um meio poroso. . . . . . . . . 10
+
+2.2 Curvas típicas de permeabilidade relativa. . . . . . . . . . . . . . . . . . . . . 13
+
+3.1 Malha de elementos com volume de controle superposto e entidades de um
+
+elemento da malha. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+
+3.2 Orientação dos vetores área de face. . . . . . . . . . . . . . . . . . . . . . . . 19
+
+3.3 Elementos quadrangular e triangular com numeração local dos nós. . . . . . . . 20
+
+3.4 Método IMPES de avanço no tempo. . . . . . . . . . . . . . . . . . . . . . . . 23
+
+3.5 Método IMPES modificado de avanço no tempo. . . . . . . . . . . . . . . . . 24
+
+3.6 Demonstração da avaliação da saturação na face em um problema unidimensional. 26
+
+3.7 Demonstração de uma possível forma de avaliação da saturação na face i de um
+
+elemento em um problema bidimensional. . . . . . . . . . . . . . . . . . . . . 26
+
+3.8 Tranformação de coordenadas para um elemento quadrangular e um triangular. 27
+
+3.9 Coordenadas locais dos pontos médios das faces (pontos de integração) nos
+
+elementos. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+
+3.10 Demonstração da associação do tensor permeabilidade aos volumes de controle:
+
+(a) malha estruturada, cell-centered; (b) malha não-estruturada cell-vertex. . . . 30
+
+3.11 Numeração dos elementos da malha e numeração local empregada em cada
+
+sub-volume . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+
+xi
+
+
+
+4.1 Elemento demonstrando para cada sub-volume os triângulos formados pelos
+
+pontos envolvidos na aproximação do gradiente no MPFA (linha tracejada). . . 38
+
+4.2 (a) Exemplo de uma malha com seis volumes de controle demonstrando os
+
+elementos necessários para o cálculo do fluxo em uma face e (b) a numeração
+
+local dos elementos. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+
+4.3 Vetores necessários para o cálculo das vazões no MPFA. . . . . . . . . . . . . 42
+
+4.4 (a)Exemplo de uma função monotônica e (b) de uma função não-monotônica. . 44
+
+4.5 Nomenclatura empregada para as condições de monotonicidade. . . . . . . . . 45
+
+4.6 Elemento paralelogrâmico e vetores normais à arestas. . . . . . . . . . . . . . 46
+
+4.7 Representação do mapeamento utilizado na avaliação utilizando os critérios de
+
+monotonicidade. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+
+4.8 Mapeamento de monotonicidade para o MPFA. . . . . . . . . . . . . . . . . . 47
+
+4.9 Mapeamento de monotonicidade para o EbFVM. . . . . . . . . . . . . . . . . 48
+
+4.10 Mapeamento de moontonicidade para o EbFVM modificado. . . . . . . . . . . 49
+
+5.1 Solução analítica em um meio anisotrópico homogêneo. . . . . . . . . . . . . 52
+
+5.2 Malhas empregadas para a solução em um meio homogêneo anisotrópico. . . . 53
+
+5.3 Norma do erro em função do número de nós da malha para um meio anisotrópico
+
+homogêneo. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+
+5.4 Domínio de solução e regiões com diferentes tensores permeabilidade. . . . . . 54
+
+5.5 Solução analítica para o problema com uma descontinuidade do tensor perme-
+
+abilidade. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 55
+
+5.6 Diferença na construção das malhas empregadas para o (a)MPFA e para o
+
+(b)EbFVM. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 55
+
+5.7 Norma do erro em função do número de nós da malha para o problema het-
+
+erogêneo. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 56
+
+5.8 Norma do erro em função do número de nós da malha para um meio anisotrópico
+
+homogêneo. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 57
+
+5.9 Solução do problema com termo fonte pontual e condições de contorno ho-
+
+mogêneas para um meio isotrópico com malha uniforme de quadriláteros para
+
+o (a)EbFVM e (b)MPFA. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+
+xii
+
+
+
+5.10 (a)Solução do problema com termo fonte pontual e condições de contorno ho-
+
+mogêneas para um meio anisotrópico com malha uniforme de quadriláteros para
+
+o MPFA; (b)Elementos onde ao menos um nó possui solução negativa. . . . . . 59
+
+5.11 (a)Solução do problema com termo fonte pontual e condições de contorno ho-
+
+mogêneas para um meio anisotrópico com malha uniforme de quadriláteros para
+
+o EbFVM; (b)Elementos onde ao menos um nó possui solução negativa. . . . . 60
+
+5.12 Solução do problema com termo fonte pontual e condições de contorno ho-
+
+mogêneas para um meio isotrópico para malha com razão de aspecto 0,25 (a)MPFA
+
+e (b)EbFVM. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 60
+
+5.13 Detalhe do campo de pressão para o EbFVM em uma malha de razão de aspecto
+
+0,25. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 61
+
+5.14 Configuração do problema dos três poços. . . . . . . . . . . . . . . . . . . . . 62
+
+5.15 Curvas de permeabilidade relativa. . . . . . . . . . . . . . . . . . . . . . . . . 63
+
+5.16 Campo de pressão utilizando MPFA. . . . . . . . . . . . . . . . . . . . . . . . 64
+
+5.17 Campo de pressão utilizando EbFVM. . . . . . . . . . . . . . . . . . . . . . . 65
+
+5.18 Evolução da frente de água utilizando MPFA. . . . . . . . . . . . . . . . . . . 66
+
+5.19 Evolução da frente de água utilizando EbFVM. . . . . . . . . . . . . . . . . . 67
+
+5.20 Curvas de corte d’água para os poços produtores utilizando EbFVM e MPFA. . 68
+
+5.21 Construção dos elementos da malha do EbFVM e do MPFA para um dado meio
+
+poroso. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 68
+
+5.22 Mapa de permeabilidade utilizado para representar um reservatório heterogêneo. 68
+
+5.23 Curvas de permeabilidade relativa. . . . . . . . . . . . . . . . . . . . . . . . . 69
+
+5.24 Campos de saturação para diferentes tempos utilizando MPFA e EbFVM. . . . 70
+
+xiii
+
+
+
+xiv
+
+
+
+NOTAÇÃO
+
+Símbolos latinos
+a Somatório das vazões saindo do volume de controle m3/s
+
+A Coeficientes do sistema linear da pressão m3/Pa
+
+[A] Matriz de coeficientes do MPFA
+[AP] Matriz do sistema linear da pressão
+[B] Matriz de coeficientes do MPFA
+[C] Matriz de coeficientes do MPFA
+[D] Matriz de coeficientes do MPFA
+[BP] Vetor do sistema linear da pressão
+f Vazão volumétrica m3/s
+
+F Função fluxo fracionário -
+
+[G] Matriz aproximação do gradiente
+[J] Matriz jacobiana
+k Componentes do tensor permeabilidade absoluta m2
+
+K, [K] Tensor permeabilidade absoluta
+kr Permeabilidade relativa -
+
+` Razão de aspecto m/m
+
+L2 Norma do vetor de erros
+
+n? Vetor normal unitário
+
+[N] Funções de forma
+p Pressão Pa
+
+q Termo fonte m3/s
+
+r Vetor posição
+
+R Matriz rotação
+
+s Saturação m3/m3
+
+t Tempo s
+
+[T ] Matriz de transmissibilidades
+~v Vetor velocidade
+
+V Volume m3
+
+x Direção coordenada no plano físico
+
+y Direção coordenada no plano físico
+
+
+
+Símbolos gregos
+? Porosidade m3/m3
+
+? Mobilidade 1/(Pa·s)
+µ Viscosidade Pa·s
+[?] Vetor de erros
+[?] Vetor normal
+? Coeficiente das vazões no MPFA m3
+
+~?S, [?S] Vetor área de face
+? Direção coordenada no plano transformado
+
+? Direção coordenada no plano transformado
+
+Subindices
+e Relativo a um elemento
+
+f Fase fluida
+
+f p Fundo de poço
+
+i Relativo a uma face do volume de controle
+
+min Mínimo
+
+max Máximo
+
+o Óleo
+
+P Relativo a um nó ou volume de controle
+
+T Total
+
+w Água
+
+Superíndices
+? Nível de tempo
+
+Acrônimos
+CFL Número de Courant-Friedrichs-Levy
+
+CVFEM Control Volume Finite Element Method
+
+EbFVM Element based Finite Volume Method
+
+IMPES Implicit Pressure Explicit Saturation
+
+GMRes Generalized Minimal Residual Solver
+
+MPFA Multipoint Flux Approximation
+
+WI Well Index
+
+
+
+RESUMO
+
+Hoje a simulação de reservatórios tem sido empregada freqüentemente na indústria petrolí-
+
+fera como uma ferramenta de análise de campos exploratórios. Este tipo de análise pode ocorrer
+
+antes do processo de recuperação, como uma forma de planejamento e predição de produção, ou
+
+mesmo durante o processo de exploração, auxiliando no planejamento estratégico de uma em-
+
+presa. Para que isto seja possível os simuladores têm sido sensivelmente aprimorados ao longo
+
+dos anos, possuindo a capacidade de empregar cada vez mais os dados geológicos que repre-
+
+sentam os reservatórios. Ainda, a forma pela qual as equações empregadas são discretizadas
+
+também foi modificada devido à necessidade de maior acurácia nos cálculos. Atualmente méto-
+
+dos de volumes finitos são empregados e diversos tipos de malhas são utilizados. A tendência
+
+quanto às malhas utilizadas nas simulações de reservatórios é a substituição das tradicionais
+
+malhas corner-point pelas malhas não-estruturadas que podem facilmente se adaptar a falhas e
+
+fraturas, assim reproduzindo fielmente a geometria do problema a ser descrito.
+
+Neste contexto dois métodos numéricos são explorados neste trabalho, o Método de Apro-
+
+ximação do Fluxo por Múltiplos Pontos (MPFA) e o Método de Volumes Finitos baseado em
+
+Elementos (EbFVM). O intuito essencial é obter uma comparação das metodologias, onde um
+
+modelo simplificado de escoamento no interior da matriz porosa é utilizado. Para obtenção das
+
+equações discretas as equações diferenciais que regem o problema físico são obtidas a partir da
+
+integração das mesmas em volumes de controle discretos sem nenhuma correlação direta com
+
+os métodos, deixando claro que ambos são métodos de volumes finitos, apesar das diferentes
+
+nomenclaturas.
+
+As principais diferenças entre os dois métodos são obtidas durante a derivação dos termos
+
+de fluxo presentes na equação da pressão. Uma análise dos coeficientes presentes nas equações
+
+discretas é empregada para demonstrar a monotonicidade da solução obtida pelos dois méto-
+
+dos. Exemplos de aplicação com reservatórios anisotrópico e heterogêneo demonstram típicas
+
+soluções a serem obtidas quando estas metodologias são empregadas.
+
+
+
+
+
+ABSTRACT
+
+Today reservoir numerical simulation has been frequently used in oil industry as an analysis
+
+tool for exploratory fields. This kind of analysis can be employed before of the recovery process
+
+as a way of planning and predicting production, or even during the operation, assisting the
+
+strategic planning of the company. To make this possible, simulators have been developed over
+
+the years, holding the ability to employ the geological data that represents the reservoirs. Even
+
+the way in which the discretized equations are obtained also changed because of the need of
+
+greater calculations accuracy. Currently finite volume methods are employed and various types
+
+of grids are used. The new trend related to grids used in simulations is to replace the traditional
+
+corner-point grids by non-structured grids that can easily be matched to faults and fractures,
+
+faithfully reproducing the geometry of the problem being described.
+
+In this context two numerical methods are explored in this work, the Multipoint Flux Ap-
+
+proximation Method (MPFA) and the Element based Finite Volume Method (EbFVM). The
+
+essential aim is to get a comparison of both methodologies. A simplified flow model is con-
+
+sidered inside the porous medium. The discrete equations are obtained through the integration
+
+of the differential equations over control volumes. This operation is performed without any
+
+specific property of the methods, so it will be clear that both are finite volume methods despite
+
+of the different nomenclatures.
+
+The main differences between the two methods appear during the derivation of the flow
+
+equations. Although, an analysis of the coefficients present in discrete equations is used to
+
+demonstrate the solution monotonicity. Application examples for heterogeneous and anisotropic
+
+reservoirs are solved and the main findings are pointed out.
+
+
+
+
+
+Capítulo 1
+
+Introdução
+
+1.1 Preliminares
+
+A história da indústria petrolífera moderna teve seu início no ano de 1859 quando Edwin
+
+Drake perfurou com sucesso o primeiro poço em território americano. Esta data é considerada
+
+como um marco na produção de óleo e derivados 1. Desde esta época até meados de 1930 quase
+
+nenhum desenvolvimento científico apreciável foi realizado, uma vez que apenas eram explo-
+
+radas jazidas a céu aberto ou então eram utilizados pequenos campos exploratórios em locais de
+
+fácil perfuração. A partir da década de 30 maiores estudos sobre a produção de petróleo foram
+
+iniciados devido ao aumento na demanda de combustíveis e derivados. Inicialmente experi-
+
+mentos utilizando caixas de vidro com areia, óleo e água tentavam dar maior entendimento aos
+
+escoamentos em meios porosos através da visualização do fenômeno 2. Também foi o início das
+
+primeiras análises utilizando modelos analíticos para a solução dos problemas de escoamentos
+
+em meios porosos em escala industrial.
+
+Somente com o advento e a evolução dos computadores digitais é que os modelos discretos
+
+tiveram sucesso no desenvolvimento de tecnologias e no suporte ao entendimento do problema
+
+físico. Desta forma a simulação ganhou importante papel na indústria petrolífera, como uma
+
+ferramenta a ser utilizada e que prometia um grande futuro nos desenvolvimentos tecnológi-
+
+cos. Com o avanço da velocidade de processamento dos computadores muito se modificou
+
+nos problemas que envolviam a simulação numérica. Apesar das equações a serem resolvi-
+
+das não terem se modificado em princípio, muitos outros fatores tornaram-se mais complexos,
+
+dentre eles a caracterização geológica do reservatório. No início os domínios de solução eram
+
+simples e malhas cartesianas eram facilmente empregadas. Mais tarde, na tentativa de intro-
+
+duzir maior flexibilidade, malhas cartesianas não-ortogonais e também malhas corner-point
+
+1
+
+
+
+2 1. Introdução
+
+começaram a ser utilizadas, sendo ainda hoje muito empregadas nas etapas de processamento
+
+dos dados geológicos provenientes da sísmica, como no upscaling por exemplo. Mais recente-
+
+mente a utilização de malhas não-estruturadas tem tido maior ênfase devido a sua capacidade
+
+de conformidade às diversas irregularidades presentes nos reservatórios, bem como podendo ser
+
+refinadas em regiões específicas com maior praticidade, pois o refino fica restrito às regiões de
+
+interesse e não afetando outras partes do domínio, como aconteceria pela utilização de malhas
+
+estruturadas. Um exemplo de diferentes malhas pode ser observado na Fig. 1.1.
+
+Poço
+
+Poço
+
+Falha geológica
+
+Poço
+
+Malha cartesiana
+
+Malha estruturada não-ortogonal
+
+Malha estruturadanão-
+
+Modelo de reservatório
+
+Figura 1.1: Exemplo de possíveis discretizações de um modelo areal de reservatório.
+
+Intimamente ligado às malhas empregadas, o método numérico utilizado na discretização
+
+das equações diferenciais é alvo dos mais variados estudos, uma vez que se buscam maior grau
+
+de acurácia e eficiência nas simulações. Lipnikov 3 agrupou diversas características importantes
+
+que os métodos numéricos deveriam idealmente respeitar, entre elas o de ser localmente con-
+
+servativo; apresentar solução monotônica; ser aplicável a malhas não-estruturadas que podem
+
+ser severamente distorcidas; permitir heterogeneidades e meios anisotrópicos; resultar em um
+
+sistema esparso com o menor número de não-nulos possível. Um método numérico que siga
+
+todos estes requisitos rigorosamente ainda não é conhecido 3, entretanto, diferentes metodolo-
+
+gias foram propostas ao longo dos anos e continuam a ser utilizadas, bem como variantes e
+
+
+
+1. Introdução 3
+
+combinações destas ainda podem ser empregadas. Dentre os métodos clássicos pode-se citar o
+
+Método de Diferenças Finitas (Finite Diference Method), Método de Volumes Finitos (Finite
+
+Volume Method) e o Método de Elementos Finitos (Finite Element Method).
+
+Tradicionalmente o Método de Diferenças Finitas tem sido utilizado nos modelos discretos
+
+de programas comerciais 4, entretanto com uma maior utilização de malhas não-estruturadas o
+
+uso de métodos baseados em volumes de controle tem crescido devido à facilidade de emprego
+
+de malhas irregulares 5,6. Além disso, a solução de equações de conservação da massa dos
+
+componentes presentes na rocha reservatório torna também o Método de Volumes Finitos muito
+
+conveniente. Este método será objeto de análise neste trabalho, recebendo ainda o enfoque da
+
+utilização de malhas não-estruturadas.
+
+O princípio básico do Método de Volumes Finitos é obter as equações discretas aplicando
+
+os princípios de conservação das propriedades, como massa, quantidade de movimento, energia
+
+etc., em volumes de controle. A etapa principal do método é, portanto, calcular os fluxos
+
+destas propriedades nas interfaces dos volumes de controle. Diferentes maneiras de avaliar
+
+estes fluxos são possíveis e nestas avaliações muitas vezes características da malha e do meio
+
+não são levadas em consideração. É o caso de alguns programas comerciais para simulação de
+
+reservatórios de petróleo, onde o fluxo numa face do volume de controle é avaliado utilizando-
+
+se dois pontos nodais (Fig. 1.2(a)) quando, rigorosamente, seria necessário utilizar um maior
+
+número de pontos para representar o gradiente do potencial que promove o escoamento. Estes
+
+casos, conforme mostrado na Fig. 1.2(b), onde seis pontos nodais são empregados, ocorrem
+
+quando o fluxo é resultado da existência de um meio anisotrópico ou devido à utilização de
+
+malhas não-ortogonais. A anisotropia física e a anisotropia da malha (malha não-ortogonal)
+
+são situações que requerem a necessidade de múltiplos pontos para o cálculo do fluxo de forma
+
+correta. Portanto, a denominação MPFA (Multipoint Flux Approximation), atribuída a uma
+
+família de métodos disponíveis na literatura não traz nenhuma novidade intrínseca, mas apenas
+
+o fato de usar mais do que 2 pontos no cálculo do fluxo. A utilização de mais de 2 pontos no
+
+cálculo dos fluxos com o método dos volumes finitos é uma prática antiga, especialmente com
+
+malhas curvilíneas generalizadas, onde o stencil de 9 pontos é comum para o cálculo do fluxo
+
+nas interfaces dos volumes de controle 7–9.
+
+Na classe dos métodos MPFA existem muitas variantes, com as diferenças entre eles funda-
+
+mentadas na forma de calcular os fluxos com múltiplos pontos, e não no fato de usar múltiplos
+
+pontos. Atribuiu-se ao método o nome por usar múltiplos pontos porque nos desenvolvimentos
+
+na área de petróleo é comum, ou poderia se chamar de tradicional, empregar apenas dois pon-
+
+tos nodais para o cálculo do fluxo. É preciso ficar claro, entretanto, que empregar apenas dois
+
+pontos não é uma opção numérica e que os fluxos estejam sendo calculados corretamente. Na
+
+
+
+4 1. Introdução
+
+Figura 1.2: Pontos envolvidos no cálculo de um fluxo para um volume de controle: (a) com
+esquemas tradicionais de 2 pontos e (b) com esquemas de múltiplos pontos.
+
+verdade é um cálculo errado, se a malha não for localmente ortogonal e o meio anistrópico, com
+
+exceção apenas de quando se usam malhas especialmente contruídas em meios anistrópicos que
+
+resulta em um fluxo correto com apenas dois pontos.
+
+A questão do emprego de dois pontos ou múltiplos pontos pode ser facilmente percebida nas
+
+simulações de problemas de reservatórios, como no conhecido arranjo dos três poços (demons-
+
+trado em detalhes no capítulo de resultados). Para este problema seria esperada uma solução
+
+simétrica, entretanto nem sempre esta solução é obtida dependendo do tipo de malha empregada
+
+na simulação e do esquema utilizado no cálculo dos fluxos.
+
+Para este problema especificamente é sabido que a não-ortogonalidade da malha é a fonte
+
+de anisotropia, logo, o emprego de dois pontos no cálculo dos fluxos não é uma boa alternativa.
+
+As soluções empregando múltiplos pontos tendem a fornecer resultados muito melhores devido
+
+à correta representação da expressão dos fluxos assim como será elucidado no decorrer deste
+
+trabalho.
+
+Das diferentes possibilidades existentes dentre os métodos numéricos, duas serão revistas
+
+desde suas essências devido a sua utilização e freqüente recorrência na literatura atual sobre
+
+métodos de discretização aplicados a reservatórios de petróleo.
+
+Um deles, o Método de Volumes Finitos baseado em Elementos (Element based Finite Vo-
+
+lume Method - EbFVM) constitui uma linha de pesquisa já bastante sólida no Laboratório de
+
+Simulação Numérica em Mecânica dos Fluidos e Transferência de Calor (SINMEC). Outra
+
+alternativa, o Método de Aproximação do Fluxo por Múltiplos Pontos (Multipoint Flux Ap-
+
+proximation Method - MPFA) tem adquirido grande notoriedade na área de simulação de reser-
+
+vatórios devido à forma pela qual este método trata a anisotropia do problema.
+
+
+
+1. Introdução 5
+
+1.2 Objetivos
+
+Apesar das diferentes nomenclaturas, será possível compreender que ambos os métodos
+
+a serem estudados neste trabalho são métodos de volumes finitos que envolvem as equações
+
+diferenciais do problema em questão e que tratam os fluxos discretos de maneira coerente com
+
+a física de um problema anisotrópico. Algumas características são peculiares a cada um deles
+
+e fazem com que possuam determinado comportamento em situações diversas. Este enfoque
+
+investigativo entre os métodos foi o principal motivador deste trabalho, pois assim será possível
+
+avaliar as melhores qualidades de cada metodologia. Uma comparação detalhada é muito útil
+
+na tomada de decisões, tanto no sentido da escolha do uso de um software comercial, quanto na
+
+escolha de uma metodologia a ser empregada em um simulador próprio.
+
+O principal objetivo deste trabalho é avaliar as diferenças entre o EbFVM e o MPFA, lem-
+
+brando que o EbFVM também pertence à família dos MPFA, mas mantendo esta denominação
+
+já conhecida na literatura.
+
+Neste ponto é importante verificar a forma das expressões para os fluxos de massa dos flui-
+
+dos em cada um dos esquemas numéricos. Características como o armazenamento de variáveis
+
+e a associação de propriedades que descrevem o meio físico também serão comparadas. As
+
+funções de interpolação espacial das variáveis utilizadas na obtenção de gradientes discretos
+
+também serão analisadas, bem como as características das soluções obtidas.
+
+1.3 Revisão bibliográfica
+
+Os modelos matemáticos que descrevem o escoamento em meios porosos são consolidados
+
+e foram testados desde o início das pesquisas sobre simulação numérica de reservatórios, sendo
+
+conhecidas suas capacidades e restrições, não cabendo reformular os modelos das equações
+
+diferenciais que regem a física envolvida no escoamento 4,10,11.
+
+A necessidade de utilização de malhas não-estruturadas na simulação de reservatórios é
+
+reconhecida por vários autores como uma solução para melhor representação do domínio em
+
+questão 12–14. No âmbito das malhas não-estruturadas, onde malhas com elementos triangu-
+
+lares e quadrangulares são utilizados em domínios bidimensionais, os volumes de controle são
+
+construídos ao redor dos nós da malha unindo-se com segmentos de reta o centróide de cada
+
+elemento ao ponto médio das arestas dos elementos. Nestes volumes de controle é que serão
+
+realizados os balanços das propriedades.
+
+Um método que emprega este tipo de malha é o tradicionalmente denominado CVFEM
+
+
+
+6 1. Introdução
+
+(Control Volume Finite Element Method). Esta é uma denominação bastante empregada, origi-
+
+nada na década de 80, mas que induz a uma interpretação errônea da característica do método,
+
+indicando ser o CVFEM um método de elementos finitos baseado no volume de controle, por-
+
+tanto um método de elementos finitos conservativo. Na verdade a formulação é de um método
+
+de volumes finitos que emprega os elementos, tradicionais no Método de Elementos Finitos,
+
+como entes geométricos para a construção do volume de controle 7, podendo ser denominado de
+
+um Método de Volumes Finitos baseado em Elementos (Element based Finite Volume Method -
+
+EbFVM). O EbFVM também é um método que usa múltiplos pontos para determinar os fluxos.
+
+O EbFVM teve sua origem na solução de problemas de mecânica dos fluidos para a solução
+
+das equações de Navier-Stokes. Posteriormente este método foi também utilizado a proble-
+
+mas de petróleo, sendo Rozón o primeiro a fazê-lo empregando uma discretização com malhas
+
+de quadriláteros 15. Mais tarde outras propostas foram utilizadas 16,17, mas nelas algumas sim-
+
+plificações eram assumidas sem base física quando aplicadas a um escoamento multifásico.
+
+Neste trabalho uma formulação consistente será empregada, assim como descrito por Cordazzo
+
+et al. 18, onde as equações para escoamentos multifásicos são discretizadas gerando os coefi-
+
+cientes adequados a serem empregados no sistema de equações discretas. Modelos físicos de
+
+diversos níveis de complexidade já foram estudados utilizando o EbFVM, como formulações
+
+mais simples onde somente água e óleo estavam presentes 19 e modelos onde efeitos de com-
+
+pressibilidade dos fluidos, pressão capilar e gravidade foram empregados 20.
+
+Outro método de interesse, o MPFA (Multipoint Flux Approximation) teve sua origem em
+
+duas diferentes escolas em anos muito próximos 21,22. Nestes casos a aplicação a reservatórios
+
+já era intenção primordial e, seguindo a tendência da indústria, métodos primeiramente plane-
+
+jados para malhas corner-point foram desenvolvidos. Nestas malhas as células representam os
+
+volumes de controle e as incógnitas do problema estão armazenadas no centro destes volumes
+
+(métodos cell-centered) como mostrado na Fig. 1.2. Posteriormente ficou claro que a mesma
+
+metodologia poderia ser empregada para malhas não-estruturadas 23,24, ou seja, com os volumes
+
+de controle construídos ao redor dos nós da malha de elementos (métodos cell-vertex). O nome
+
+dado ao método deixa evidente a intenção em avaliar o fluxo utilizando múltiplos pontos quando
+
+esse tipo de análise se faz necessário.
+
+Investigações sobre o MPFA e análises de convergência foram utilizadas para demonstrar
+
+a viabilidade do método 25–27. Outras investigações acerca da qualidade das soluções obtidas e
+
+sobre a monotonicidade das mesmas também foram exploradas 28–32. Estes aspectos decorrentes
+
+da monotonicidade da solução deram origem a diferentes esquemas MPFA que correlacionam o
+
+estêncil com a orientação do tensor permeabilidade 29,33. Estas vertentes foram produzidas para
+
+malhas corner-point e sua extensão para malhas não-estruturadas não é evidente.
+
+
+
+1. Introdução 7
+
+Os estudos sobre a monotonicidade dos métodos numéricos empregados nas simulações de
+
+reservatórios também levou a esquemas de decomposição da expressão do fluxo em duas parce-
+
+las (flux splitting), uma correspondente a um problema isotrópico e outra parcela que carrega os
+
+termos relativos à anisotropia 34–36. Primeiramente o problema isotrópico é resolvido, gerando
+
+uma solução monotônica e, em um processo iterativo, as anisotropias são incluídas de forma
+
+gradativa, alterando a solução encontrada no nível iterativo anterior. É dada continuidade ao
+
+processo até que um certo grau de anisotropia seja adicionado ao problema sem que a solução
+
+esteja demasiada contaminada por oscilações indesejáveis. Críticas podem ser feitas a este
+
+tipo de abordagem por ele não eliminar efetivamente o problema das oscilações presentes na
+
+solução numérica, e sim, apenas contornar o efeito da não-monotonicidade relaxando os efeitos
+
+da anisotropia que realmente deveriam representar o problema.
+
+Trabalhos envolvendo o MPFA de forma mista com os esquemas tradicionais de avaliação
+
+de fluxos utilizando dois pontos também foram propostos com o intuito de reduzir o esforço
+
+computacional. Nestes casos, uma direção onde o escoamento não é tão importante ou onde
+
+as variações de propriedades são menores é aplicado o esquema de cálculo de fluxos por dois
+
+pontos enquanto que nas outras direções o MPFA é empregado 37. Outra alternativa é, através de
+
+um indicador, estabelecer a relevância de uma avaliação dos fluxos por múltiplos pontos e por
+
+dois pontos em cada face do volume de controle, gerando um esquema misto em cada volume
+
+de controle e por conseqüência em toda a malha 38.
+
+Outras modificações de natureza mais profunda nos métodos podem ser implementadas para
+
+alcançar determinadas características. Eigestad 39 propôs modificações na construção dos volu-
+
+mes de controle para o MPFA de forma a tentar obter uma matriz-M de coeficientes simétrica.
+
+Uma matriz-M simétrica é sempre positiva definida e possui inversa com valores não negativos,
+
+sendo especialmente aplicável a problemas que apresentariam soluções não-monotônicas.
+
+Comparações entre o método MPFA proposto por Aavatsmark 40 e os métodos de Elemen-
+
+tos Finitos e Elementos Finitos Misto, além de outros, foram apresentadas na tentativa de com-
+
+preender as características e vantagens de cada um destes 41–44. Ainda, outros métodos foram
+
+propostos para a solução de equações que representam escoamentos em meios anisotrópicos
+
+heterogêneos, como o Método de Volumes Finitos Não-Linear cell-centered 3. Neste método as
+
+incógnitas não estão armazenadas nos centróides dos triângulos da malha que representam os
+
+volumes de controle, mas em outro ponto do interior. Este ponto é determinado por uma ex-
+
+pressão dependente das características do meio e do valor da própria solução procurada, porém
+
+a regra utilizada na determinação deste ponto não é apresentada de forma muito compreensiva
+
+e a extensão para quadriláteros nem sempre fornece soluções com as mesmas vantagens das
+
+malhas de triângulos. Outra metodologia combina duas soluções sobre a mesma malha, uma
+
+
+
+8 1. Introdução
+
+cell-centered e outra cell-vertex, para dar maior flexibilidade na discretização das equações 6.
+
+Similar a este método, porém sem resolver efetivamente as incógnitas para os centróides dos
+
+elementos da malha, o Enriched Multipoint Flux Approximation (EMPFA) nasceu como uma
+
+possível alternativa aos problemas de monotonicidade, porém apenas uma pequena introdução
+
+às modificações propostas foi apresentada recentemente 45. Apesar de atraentes, uma análise
+
+pormenorizada de cada um destes métodos seria demasiadamente longa.
+
+1.4 Organização do trabalho
+
+O restante do trabalho está distribuído de forma que o Capítulo 2 traz a modelagem do pro-
+
+blema de escoamentos em reservatórios a ser empregado com as equações que regem o mesmo.
+
+Uma forma alternativa das equações diferenciais é utilizada para explicitar as características
+
+de cada uma destas. No Capítulo 3 as equações discretas são obtidas através da integração
+
+das mesmas em volumes de controle da malha computacional. Uma representação genérica
+
+é empregada na escrita destas equações podendo ser utilizada independente da metodologia
+
+empregada. A seguir, tanto para o EbFVM quanto pra o MPFA, os coeficientes das equações
+
+discretas são obtidos de acordo com a característica de cada um dos métodos.
+
+O Capítulo 4 traz uma síntese das diferenças encontradas entre as formulações, além de
+
+uma análise de monotonicidade das soluções a serem obtidas por estes métodos numéricos. O
+
+Capítulo 5 traz exemplos empregados de forma a validar os códigos computacionais e também
+
+de forma a mostrar soluções em diferentes configurações de problemas. O Capítulo 6 delineia
+
+as principais conclusões obtidas acerca deste trabalho.
+
+
+
+Capítulo 2
+
+Modelo Matemático
+
+2.1 Modelo do escoamento
+
+Um reservatório de petróleo consiste em uma rocha porosa formada ao longo das eras ge-
+
+ológicas devido à ação de deposição de sedimentos. O petróleo tipicamente não é gerado nessas
+
+rochas, mas sim em outras camadas sedimentares ricas em matéria orgânica. Depois de gera-
+
+do, o petróleo pode migrar desde o local de formação até a chamada rocha reservatório, onde
+
+ficará armazenado. Nesta rocha ele fica alojado nos poros, tipicamente dividindo espaço com
+
+a água que estava ali presente anteriormente à sua migração. A extração deste óleo é realizada
+
+perfurando-se diversos poços que retiram o fluido desejado da rocha. Com a pressão própria do
+
+reservatório o óleo flui nos poços produtores. Para aumentar a eficiência da extração é possível
+
+realizar processos tais como injeção de fluidos (água do mar ou água com solventes), combustão
+
+in situ para produção de gases que deslocam o óleo, forçando o escoamento do mesmo pelo in-
+
+terior da rocha porosa. Em todos os estágios de extração o fenômeno físico a ser estudado é o
+
+mesmo, ou seja, um escoamento multifásico numa matriz sólida porosa.
+
+Neste ponto é possível distinguir entre dois possíveis enfoques disponíveis na engenharia
+
+para a análise do escoamento em meios porosos: o enfoque microscópico e o enfoque macros-
+
+cópico.
+
+Numa análise microscópica as escalas do problema são as mesmas escalas dos poros pre-
+
+sentes na rocha. Este meio pode ser considerado então como um conjunto de diminutos canais
+
+de formas tortuosas, por onde os fluidos escoam e interagem com o sólido ao seu redor. Nestes
+
+canais o escoamento teria grandezas (velocidade e pressão, por exemplo) que variam grande-
+
+mente devido à forma irregular que os poros possuem. De fato, as equações tradicionais da
+
+Mecânica dos Fluidos podem ser aplicadas para cada uma das fases presentes, apenas sendo
+
+9
+
+
+
+10 2. Modelo Matemático
+
+necessário que sejam conhecidas a geometria e a forma como os canais por onde o fluido es-
+
+coa estão conectados 46. Esta necessidade, juntamente com a grande quantidade de poros numa
+
+rocha, são os maiores impecilhos à aplicação de uma análise microscópica.
+
+Utilizada na simulação de reservatórios de petróleo, a modelagem macroscópica tem as
+
+escalas envolvidas maiores que as dimensões dos poros da rocha, porém menores do que o
+
+domínio de solução do problema em questão. Sendo assim, o meio é representado por um
+
+conjunto de propriedades que descrevem suas características e suas interações com os fluidos
+
+que escoam, como porosidade e permeabilidade. As grandezas físicas do escoamento demons-
+
+tram um comportamento macroscópico, sem dar importância às diversas e pequenas variações
+
+presentes em cada poro. A Fig. 2.1 demonstra como a velocidade do fluido é encarada nas
+
+diferentes situações.
+
+v
+v
+
+Figura 2.1: Diferentes escalas de um mesmo fenômeno em um meio poroso.
+
+O modelo macroscópico tem sido utilizado pois não necessita de uma descrição tão deta-
+
+lhada do meio poroso quanto seria necessário em um modelo microscópico. Em contrapartida
+
+existe a necessidade da obtenção de propriedades que descrevem o meio composto pela matriz
+
+porosa e os fluidos que escoam nos poros. Estas grandezas envolvidas na escala macroscópica
+
+são mais facilmente mensuráveis que as envolvidas na escala microscópica.
+
+Neste trabalho serão utilizadas as equações macroscópicas que descrevem a dinâmica dos
+
+fluidos. Ainda, diversas considerações devem ser feitas sobre o modelo físico. Será assumida
+
+uma perspectiva bidimensional, assim a solução se dá pela representação de um reservatório
+
+plano, uma representação areal. Este plano de solução é considerado completamente horizontal
+
+e, desta forma, os efeitos de gravidade são nulos.
+
+Para contemplar os objetivos deste trabalho um modelo bifásico imiscível do escoamento é
+
+suficiente para poder aplicar os métodos de discretização previstos. Mais ainda, quanto aos flui-
+
+dos envolvidos, suas propriedades físicas serão consideradas constantes. Tipicamente viscosi-
+
+dades e densidades são consideradas como funções da temperatura e da pressão a que o fluido
+
+está submetido. Os efeitos de temperatura serão desconsiderados devido ao modelo isotérmico
+
+
+
+2. Modelo Matemático 11
+
+adotado. Os efeitos de pressão sobre as propriedades físicas introduziriam uma não-linearidade
+
+no problema que em nada contribuiria para os objetivos do trabalho, que é a a comparação de
+
+como os dois métodos de discretização calculam os fluxos nas fronteiras do volume de controle.
+
+Ainda com relação aos fluidos presentes na matriz porosa, durante o escoamento das fases é
+
+inevitável que haja interação entre eles e o meio sólido. Esta interação pode ser exemplificada
+
+pelo conceito de molhabilidade. A fase dita molhante possui alto grau de interação com o meio
+
+sólido circundante, escoando com facilidade pelos poros. Correlato ao conceito de molhabi-
+
+lidade, o ângulo de contato fornece uma indicação quantitativa do fenômeno de interação na
+
+interface das fases. Nesta interface dos fluidos existe uma descontinuidade da pressão, e esta
+
+diferença de pressão é definida como a pressão capilar. Em muitos casos a pressão capilar é des-
+
+considerada quando modelos de reservatórios de petróleo são empregados, principalmente pela
+
+dimensão do reservatório e pelas baixas velocidades das frentes de movimentação dos fluidos.
+
+A pressão capilar é tipicamente assumida como uma função da saturação e assim representaria
+
+mais uma não-linearidade presente nas equações e, no caso do presente trabalho, desconsiderá-
+
+la não ocasionaria maiores perdas para os objetivos.
+
+2.2 Equações do modelo
+
+A equação de conservação da massa de um fluido incompressível que flui no interior de um
+
+meio poroso consolidado é dada por 4
+
+?
+?s f
+?t
+
++~?·~v f = 0 f = o, w (2.1)
+
+onde os sub-índices w e o correspondem aos fluidos água e óleo respectivamente. ? é a porosi-
+
+dade do meio e s f a saturação ou fração volumétrica da fase f ; ~v f é a velocidade da fase f que
+
+cruza as fronteiras do volume de controle. A velocidade ~v f pode ser obtida através da lei de
+
+Darcy generalizada para escoamentos bifásicos, onde
+
+~v f = ?? f K ·~?p f f = o, w (2.2)
+
+K é uma propriedade do meio poroso chamada de permeabilidade absoluta ou simplesmente
+
+permeabilidade e ? f é a mobilidade da fase, uma característica tanto do fluido quanto do meio
+
+a que se está estudando; ~?P é o gradiente de pressão que promove o escoamento.
+
+A permeabilidade é uma medida da facilidade com que um fluido pode fluir no meio poroso.
+
+
+
+12 2. Modelo Matemático
+
+A representação tensorial da permeabilidade é utilizada para reproduzir o comportamento do
+
+fluido escoando de diferentes formas em diferentes direções no meio, devido às características
+
+de formação deste meio e do estado de tensões a que ele está submetido 47. A representação
+
+tensorial da permeabilidade para um meio em duas dimensões pode ser feita da seguinte forma,
+
+K =
+
+?
+? kxx kxy
+
+kyx kyy
+
+?
+? (2.3)
+
+e na maioria dos casos de representação de reservatórios o tensor permeabilidade é tomado
+
+como simétrico, logo kxy = kyx e ainda k2xy 6 kxxkyy
+21.
+
+No Sistema Internacional (SI) a unidade de permeabilidade corresponde a [m2], porém na
+
+indústria petrolífera tipicamente é empregado o Darcy [D]?. Num reservatório a distribuição
+
+e a amplitude de variação da permeabilidade tornam esta propriedade muito influente nos re-
+
+sultados desejados. A permeabilidade é mais variável no domínio de solução do que a porosi-
+
+dade, além de seus valores serem mais difíceis de mensurar 47. Permeabilidade e porosidade
+
+podem ser correlacionadas utilizando expressões que levam em conta a composição do mate-
+
+rial 48, entretanto para o método numérico aqui apresentado, bem como em muitos simuladores,
+
+a permeabilidade e a porosidade serão consideradas como propriedades constantes ao longo do
+
+decorrer da simulação. A mobilidade de uma fase fluida é definida como ? f = kr f /µ f , onde
+
+µ f é a viscosidade do fluido e kr f a permeabilidade relativa da fase. A permeabilidade relativa
+
+é uma propriedade introduzida em escoamentos multifásicos para representar a interferência
+
+que uma fase fluida exerce sobre a outra durante o escoamento, usualmente representada por
+
+um conjunto de curvas (Fig. 2.2). Estas curvas estão definidas em determinado intervalo de
+
+saturação s, tal que smin &amp;lt;s &amp;lt;smax. smin corresponde à mínima quantidade de água presente
+
+em um reservatório, enquanto que smax fornece a informação da máxima quantidade de água
+
+que pode penetrar no meio poroso deslocando o óleo ali existente. Os valores de smin e smax
+
+dependem muito do tipo de rocha e dos fluidos envolvidos. Valores muito pequenos de smax
+
+indicam que parcela significativa do óleo contido no meio poroso não será retirado, chamado
+
+de óleo residual.
+
+A permeabilidade relativa é assumida como uma função da própria saturação do fluido.
+
+Neste caso a não-linearidade presente na mobilidade é o que torna o escoamento bifásico num
+
+meio poroso um problema não-linear na ausência de compressibilidade dos fluidos e na ausência
+
+de pressão capilar.
+
+O modelo de Darcy para a velocidade tem sido amplamente utilizado tanto em simulação
+
+?1 D = 9,86923·10?13m2
+
+
+
+2. Modelo Matemático 13
+
+kro
+
+krw
+
+s Saturação da
+água
+
+P
+e
+rm
+
+e
+a
+b
+
+il
+id
+
+a
+d
+
+e
+ r
+
+e
+la
+
+ti
+v
+
+a
+
+10
+
+0
+
+1
+
+inf
+w s
+
+sup
+w
+
+Figura 2.2: Curvas típicas de permeabilidade relativa.
+
+de reservatórios quanto em outras áreas da engenharia onde meios porosos estão presentes,
+
+entretanto em alguns casos é necessário introduzir modificações no equacionamento para que
+
+este seja mais fiel ao fenômeno físico a que se deseja reproduzir. O modelo de Forchheimer
+
+é bastante aceito para aplicações com números de Reynolds mais elevados 46. A equação de
+
+Brinkman apresenta um termo difusivo adicional análogo ao termo laplaciano que aparece nas
+
+equações de Navier-Stokes 46. Apesar das diferentes propostas, o modelo de Darcy atende as
+
+necessidades para a reprodução do escoamento aqui pretendida.
+
+Como a pressão capilar foi desconsiderada, logo a pressão das fases é a mesma, e para cada
+
+fase deve-se determinar a sua saturação, existem três incógnitas e duas equações de conservação
+
+da massa. Logo uma equação adicional é requerida para o fechamento do problema. Esta
+
+equação é a equação de restrição volumétrica,
+
+sw + so = 1 (2.4)
+
+Outra forma de escrever as equações governantes é possível e, para tal, pode-se somar as
+
+equações de conservação da massa das fases e obter uma equação de conservação da massa
+
+global, da forma
+
+~?· ~vT = 0 (2.5)
+
+onde ~vT = ~vw + ~vo e logo
+
+~vT = ??T K ·~? p (2.6)
+
+tal que ?T = ?o + ?w.
+
+
+
+14 2. Modelo Matemático
+
+Note-se que a equação 2.5 é fundamentalmente uma equação elíptica 7 para a variável p,
+
+que se comporta exatamente como uma equação de difusão pura num meio anisotrópico se
+
+o escoamento for monofásico. Tipicamente a saturação da água é calculada em simuladores
+
+de reservatório e, portanto, o subscrito da fase água será suprimido e sempre que mencionada a
+
+saturação estar-se-á tratando da fase água a menos que expressamente anunciado. Para explicitar
+
+a característica hiperbólica que a equação da saturação apresenta na ausência de pressão capilar,
+
+esta pode ser escrita em termos da velocidade total como
+
+?
+?s
+?t
+
++~? ·(F ~vT ) = 0 (2.7)
+
+onde F é a chamada função fluxo fracionário, definida como F = ?w/?T .
+
+Esta forma de escrever as equações é possível pois os fluidos são incompressíveis, sem
+
+presença de gravidade e pressão capilar. Este tipo de escoamento é conhecido como escoa-
+
+mento de Buckley-Leverett 4,10 e representa um protótipo simplificado de escoamentos mais
+
+complexos. No caso da análise proposta, o escoamento de Buckley-Leverett inclui todos os
+
+fatores necessários para a representação do fenômeno a ser estudado, não sendo necessário um
+
+modelo mais geral que contemple mais efeitos.
+
+2.3 Condições de contorno
+
+Para o fechamento do problema matemático, condições de contorno devem ser especificadas
+
+para as equações diferenciais aplicadas ao modelo. Em simulação de reservatórios as fronteiras
+
+do domínio de solução são tipicamente consideradas como impermeáveis. Matematicamente, o
+
+fluxo de massa que atravessa estas fronteiras é nulo.
+
+Outro tipo de condição de contorno utilizada em reservatório decorre da presença de poços,
+
+produtores ou injetores, em determinadas posições do domínio. A forma mais simples de uti-
+
+lizar este tipo de condição é prescrever a vazão do poço em questão. Neste caso para um volume
+
+de controle onde existe um poço, tem-se,
+
+?
+?s f
+?t
+
++~? ·~v f = q f = o, w (2.8)
+
+onde q representa a vazão volumétrica sendo injetada ou produzida.
+
+Outra alternativa é expressar a vazão do poço como uma relação entre a pressão de fundo de
+
+poço p f p conhecida e a pressão do volume de controle onde o poço está localizado, da forma
+
+
+
+2. Modelo Matemático 15
+
+q = ? f W I(p f p ? p) f = o, w (2.9)
+
+onde W I é o índice de poço (well index), que relaciona propriedades físicas e geométricas do
+
+poço e p a pressão a ser determinada. Diferentes formas de calcular o índice de poço podem ser
+
+empregadas 4,12.
+
+
+
+16 2. Modelo Matemático
+
+
+
+Capítulo 3
+
+Modelo Discreto
+
+3.1 Integração das equações diferenciais
+
+A solução numérica utilizando o Método de Volumes Finitos é obtida através da integração
+
+das equações diferenciais nos volumes de controle da malha computacional 7,49. Estes volu-
+
+mes de controle podem ser construídos através de uma malha primária formada por entes ge-
+
+ométricos chamados de elementos. É recorrente na literatura o emprego das expressões malha
+
+primária, referente à malha de elementos, e malha secundária ou dual, referente aos volumes de
+
+controle 6,23,29,40.
+
+Para o caso de geometrias arbitrárias a alternativa de construção dos volumes de controle a
+
+partir da malha de elementos é mais aplicável, uma vez que o domínio será coberto por elemen-
+
+tos geométricos sem sobreposição, como triângulos e quadriláteros, em uma geometria de duas
+
+dimensões. As variáveis do problema estarão associadas aos vértices destes elementos, também
+
+chamados de nós da malha. As superfícies dos volumes de controle, aqui denominadas de faces,
+
+serão obtidas através da união por segmentos de reta entre o centróide do elemento e o ponto
+
+médio das arestas deste elemento. Um exemplo de malha empregada pode ser visto na Fig.
+
+3.1, bem como cada um dos entes da malha de elementos. Este procedimento de construção
+
+leva os volumes de controle a assumir formas irregulares nos casos mais gerais. Esta irregulari-
+
+dade de formas faz com que cada volume de controle possua um diferente número de vizinhos.
+
+Cada volume de controle possui contribuições dos diferentes elementos que compartilham o
+
+nó. Cada uma destas porções é chamada de sub-volume de controle, sendo delimitado pelas
+
+arestas e pelas faces de um determinado elemento. Cada elemento possui tantos sub-volumes
+
+quantos nós, sendo o número de faces igual ao número de nós. A ilustração destas entidades
+
+geométricas está mostrada na Figura 3.1.
+
+17
+
+
+
+18 3. Modelo Discreto
+
+volume de
+
+controle
+
+nó
+
+aresta
+
+vetor área
+
+de face
+
+elemento
+
+sub-volume
+
+de controle
+
+face
+
+S
+
+Figura 3.1: Malha de elementos com volume de controle superposto e entidades de um elemento
+da malha.
+
+Definidos os volumes de controle a serem utilizados a partir dos elementos, um próxi-
+
+mo passo é tomar a equação de conservação da massa global na forma de Buckley-Leverett
+
+(equação 2.5) e integrar esta equação no volume V do volume de controle e no tempo t 7,49,50,
+
+?
+t
+
+?
+V
+~?· ~vT dV dt = 0 (3.1)
+
+Utilizando o teorema da divergência 51, a integral no volume pode ser transformada em uma
+
+integral sobre a superfície do volume de controle,
+
+?
+t
+
+?
+?V
+
+~vT · n? dSdt = 0 (3.2)
+
+onde n? é o vetor unitário normal à superfície ?V do volume de controle. Substituindo a ex-
+
+pressão para a velocidade total e tomando o análogo discreto da integral sobre todas as i super-
+
+fícies planas (ou faces) que delimitam o volume de controle (Fig. 3.1), chega-se a
+
+?
+t
+
+(
+?
+i?P
+
+(
+?T K ·~?p
+
+)
+i
+· ~?Si
+
+)
+dt = 0 (3.3)
+
+onde ~?Si é o vetor área de cada uma das faces que delimitam o volume de controle; ~?Si é normal
+
+à face que este representa e de magnitude igual ao comprimento da mesma face, tomado como
+
+positivo quando apontando para fora do volume de controle. Apesar desta convenção de sinal,
+
+é mais conveniente na implementação computacional obter os vetores área de forma cíclica,
+
+conforme a Fig. 3.2, e durante o cálculo dos termos que envolvam os vetores ~?Si considerar o
+
+sinal adequado. Isto é facilmente efetuado levando-se em consideração que existem dois vetores
+
+
+
+3. Modelo Discreto 19
+
+área para cada sub-volume de controle, onde sempre um destes aponta para fora do volume de
+
+controle, com sinal positivo portanto, enquanto que outro aponta para dentro do sub-volume,
+
+sendo considerado com sinal negativo.
+
+Figura 3.2: Orientação dos vetores área de face.
+
+A integral no tempo é resolvida avaliando como os termos ?T e ~?p variam de um intervalo
+
+de tempo para o outro 50, ou seja, se seus valores serão tomados no intervalo de tempo onde
+
+as incógnitas são conhecidas (? = t), se no intervalo de tempo onde a solução é procurada
+
+(? = t + ?t) ou se entre estes extremos (t &amp;lt;? &amp;lt;t + ?t). A escolha definitiva dependerá do
+
+acoplamento advindo da equação da saturação. É possível escrever,
+
+?
+i?P
+
+(
+?T K ·~?p
+
+)
+?
+
+i
+· ~?Si = 0 (3.4)
+
+Note que o termo dentro do somatório representa a vazão volumétrica? que atravessa cada
+
+uma das faces. Uma vez que o fluido foi modelado como incompressível, o somatório das
+
+vazões que atravessam as fronteiras do volume de controle deve ser nulo na ausência de termos
+
+adicionais de fluxo, como um poço injetor ou produtor.
+
+Para dar continuidade ao processo de discretização, o operador gradiente deve ser expresso
+
+de forma discreta. Como uma malha não-estruturada está sendo empregada, o número de vizi-
+
+nhos de um volume de controle pode ser diferente para cada volume. Desta forma, a possibili-
+
+dade mais plausível é empregar os nós de um elemento como constituintes da aproximação da
+
+função gradiente para cada uma das faces no interior deste elemento. Esta aproximação é de-
+
+pendente da escolha entre os métodos EbFVM e MPFA, entretanto pode ser resumida utilizando
+
+a seguinte expressão,
+
+?Como um escoamento incompressível foi considerado a densidade dos fluidos foi suprimida das equações,
+assim o termo dentro do somatório possui unidades [m3/s]. Para o caso mais geral de um escoamento compressível
+cada termo dentro do somatório seria equivalente ao fluxo de massa que atravessa a fronteira do volume de controle
+em [kg/s].
+
+
+
+20 3. Modelo Discreto
+
+~? p|i ? [G]i [p]e (3.5)
+
+onde [G] é uma matriz que representa a aproximação do gradiente em cada face; [p]e correspon-
+
+de a um conjunto dos valores da variável, neste caso a pressão, nos nós do elemento ao qual a
+
+face i está contida, ordenados em sentido anti-horário, conforme a Fig. 3.3. A matriz [G] possui
+
+dimensão (2x4) ou (2x3) dependendo do elemento considerado.
+
+1
+2
+
+34
+
+[p]
+e
+= [    ]
+
+p
+
+p
+
+p
+p
+
+1
+
+2
+
+3
+
+4
+
+1
+2
+
+3
+
+[p]
+e
+= [    ]
+
+p
+
+p
+
+p
+
+1
+
+2
+
+3
+
+x
+
+y
+
+Figura 3.3: Elementos quadrangular e triangular com numeração local dos nós.
+
+Reescrevendo a equação 3.4 e utilizando notação matricial, encontramos
+
+?
+i?P
+
+(
+[?S]T ?T [K] [G] [p]e
+
+)
+?
+
+i
+= 0 (3.6)
+
+É importante ressaltar que nas equações de balanço as propriedades de interesse requeridas
+
+no cômputo dos fluxos estão sempre sobre as faces do volume de controle, enquanto que as
+
+incógnitas do problema estão associadas aos vértices dos elementos. Como um elemento con-
+
+tribui para diferentes volumes de controle por meio de seus sub-volumes, é na aproximação do
+
+gradiente que as equações de balanço dos diferentes volumes estarão correlacionadas, fazendo
+
+com que as variáveis de um volume de controle afetem o valor das variáveis dos volumes vizi-
+
+nhos. Desta forma, se as equações de todos os volumes de controle possuem dependência com
+
+os respectivos volumes vizinhos, é possível montar um sistema de equações (equação 3.7), onde
+
+a solução de todas estas equações fornece os valores das incógnitas procuradas.
+
+[Ap] [p] = [Bp] (3.7)
+
+Apesar de cada volume de controle possuir uma equação para pressão, a montagem do
+
+sistema linear não é realizada percorrendo os nós da malha, mas sim os elementos. Este proce-
+
+
+
+3. Modelo Discreto 21
+
+dimento, similar ao presente no Método de Elementos Finitos, faz com que seja muito mais sim-
+
+ples o algoritmo de montagem da matriz de coeficientes para malhas não-estruturadas, baseado
+
+na informação das conectividades da malha 19,20. A cada elemento está associado um deter-
+
+minado número de faces e cada fluxo (ou vazão) cruzando esta face está expresso em termos
+
+dos nós do elemento em questão. Assim, após percorrer todos os elementos da malha, todas as
+
+equações estarão completas com os coeficientes necessários.
+
+O mesmo procedimento de integração pode ser adotado para a equação da saturação da água
+
+(equação 2.7),
+
+?
+V
+
+?
+t
+?
+
+?s
+?t
+
+dtdV +
+?
+
+t
+
+?
+V
+~? ·(F ~vT ) dV dt = 0 (3.8)
+
+Realizando as integrações, tem-se
+
+?P?VP
+(
+
+st+?tP ?s
+t
+P
+
+)
++ ?t ?
+
+i?P
+Ki ·
+(
+
+F ?T~? p
+)
+
+?
+
+i
+· ~?Si = 0 (3.9)
+
+onde o sub-índice P indica que a grandeza está avaliada com relação ao volume de controle.
+
+?VP é o volume do volume de controle e ?t o passo de tempo. Reorganizando os termos,
+
+st+?tP = s
+t
+P +
+
+?t
+?P?VP
+
+?
+i?P
+
+Ki ·
+(
+
+F ?T~?p
+)
+
+?
+
+i
+· ~?Si (3.10)
+
+e adotando a notação matricial, encontra-se
+
+st+?tP = s
+t
+P +
+
+?t
+?P?VP
+
+?
+i?P
+
+(
+[?S]T F ?T [K] [G] [p]e
+
+)
+?
+
+i
+(3.11)
+
+Como um procedimento de montagem por elementos está sendo empregada na construção
+
+do sistema de equações lineares, é conveniente reescrever o somatório ao longo das i faces do
+
+volume de controle como um somatório ao longo dos elementos que contribuem para o volume
+
+P e nestes elementos utilizar as faces que contribuem para este volume de controle (EP).
+
+?
+i?P
+? ?
+
+e?P
+?
+
+i?EP
+(3.12)
+
+Os termos [?S]T [K] [G] podem ser agrupados em uma única variável associada ao elemento
+
+da forma
+
+
+
+22 3. Modelo Discreto
+
+[T ] =
+
+?
+??????
+
+[?S]T1 [K] [G]1
+[?S]T2 [K] [G]2
+
+...
+
+[?S]Tne [K] [G]ne
+
+?
+?????? (3.13)
+
+onde ne corresponde ao número de nós de cada tipo de elemento. Reescrevendo as equações da
+
+pressão e da saturação,
+
+?
+e?P
+
+?
+i?EP
+
+((?T )i [T ]i [p]e)
+? = 0 (3.14)
+
+st+?tP = s
+t
+P +
+
+?t ?
+
+?P?VP
+?
+e?P
+
+?
+i?EP
+
+(F ?T [T ] [p]e)
+?
+
+i (3.15)
+
+A matriz [T ] é função de propriedades do meio e da malha, podendo ser considerada uma
+
+generalização do conceito de transmissibilidade, freqüentemente utilizado em simulação de
+
+reservatórios 4,16,18,40. Como toda informação geométrica e também relativa ao meio físico
+
+está agrupada, é possível afirmar que [T ] contém toda a anisotropia do problema, seja ela de-
+
+vida ao tensor permeabilidade ou à não-ortogonalidade da malha empregada 40. Como neste
+
+tipo de problema a malha tipicamente é fixa e as propriedades do meio também não possuem
+
+variação no tempo, a matriz [T ] pode ser obtida no início de uma simulação para cada um dos
+
+elementos e, para representar um fluxo, apenas as mobilidades e pressões precisam ser recalcu-
+
+ladas. Ainda, a dimensão da matriz [T ] é dependente do tipo de elemento, pois cada linha [T ]i
+
+da matriz agrupa os coeficientes relativos a uma face i que multiplicados pelas pressões nos nós
+
+do elemento e e pela mobilidade na face i fornece a vazão desejada, assim,
+
+fi = (?T )i [T ]i[p]e (3.16)
+
+As equações 3.14 e 3.15 são as equações básicas do problema em questão. Cabe lembrar que
+
+apesar da saturação não aparecer explicitamente na equação 3.14, a mobilidade é uma função
+
+tipicamente não-linear da saturação, revelando que esta equação está acoplada à equação 3.15
+
+de uma maneira particular. Desta forma cada volume de controle, associado a um nó da malha,
+
+possui uma equação para cada uma das incógnitas procuradas, tendo o sistema de equações o
+
+mesmo número de equações e de incógnitas. Ainda é necessário especificar ? nas equações
+
+discretas e diferentes escolhas levam a diferentes arranjos das variáveis em questão.
+
+Para ? = t as mobilidades presentes na equação 3.14 são calculadas com os valores de
+
+
+
+3. Modelo Discreto 23
+
+saturação do nível de tempo atual t. Neste caso, dado um campo inicial de saturação é possível
+
+obter as mobilidades e assim calcular o campo de pressão neste tempo. Observando a equação
+
+3.15, se ? = t, é possível obter a saturação no próximo nível de tempo t + ?t, pois o lado direito
+
+da equação é completamente conhecido. Neste caso não é necessária a solução de um sistema
+
+linear para saturação, uma vez que cada volume possui uma equação algébrica para evoluir a
+
+saturação no tempo. Procede-se à avaliação das mobilidades e ao cálculo do sistema linear da
+
+pressão. A saturação é obtida novamente com os últimos valores de pressão e mobilidades. A
+
+Fig. 3.4 ilustra o processo de avanço no tempo. Este procedimento de solução das equações
+
+com relação ao tempo é conhecido como IMPES (Implicit Pressure Explicit Saturation), pelo
+
+fato da pressão ser obtida através da solução de um sistema linear e a saturação ser obtida
+
+explicitamente através de um conjunto de expressões algébricas.
+
+Figura 3.4: Método IMPES de avanço no tempo.
+
+Note que o fato de avaliar as mobilidades no intervalo de tempo anterior para o cálculo da
+
+saturação acaba por impor grandes restrições quanto ao passo de tempo que pode ser empregado
+
+na obtenção da saturação sem que haja oscilações na solução 52. A estabilidade da solução
+
+explícita é governada pelo número de Courant-Friederichs-Levy (CFL), que pode ser escrito
+
+para cada volume de controle como
+
+CF L|P =
+?P?t
+
+?P?VP
+&amp;lt;1 (3.17)
+
+onde ?P é uma função dos fluidos e do meio, ?t o passo de tempo e ?P?VP o volume poroso
+
+do volume de controle P. Diferentes funções ?P podem ser utilizadas tal que o passo de tempo
+
+seja estável 20. Para a modelagem adotada ao problema,
+
+?P = aP
+
+(
+?F
+?s
+
+)
+max
+
+(3.18)
+
+onde aP representa o somatório das vazões que saem do volume de controle P e
+(
+
+?F
+?s
+
+)
+max
+
+é
+
+o máximo valor da derivada da função fluxo fracionário com relação à saturação. O máximo
+
+passo de tempo admissível será dado pelo menor passo de tempo dentre todos os volumes da
+
+
+
+24 3. Modelo Discreto
+
+malha.
+
+Uma das atratividades do método IMPES é o fato de ser requerida a solução de somente
+
+um sistema linear para a pressão, sendo o restante do procedimento realizado via equações al-
+
+gébricas. Pode-se considerar que o algoritmo IMPES é o menos custoso computacionalmente
+
+por intervalo de tempo comparado a outras alternativas, entretanto, a restrição do CFL pode ser
+
+muito severa em alguns casos e, no cômputo global do tempo de processamento, este ser grande
+
+quando comparado com outros métodos. Em determinados problemas o campo de pressão
+
+varia mais lentamente do que o campo de saturação e desta forma é possível uma aceleração do
+
+algoritmo calculando-se um menor número de vezes a pressão e com este mesmo campo atu-
+
+alizar a saturação diversas vezes 53. Estas estratégias devem sempre ser buscadas em soluções
+
+numéricas de sistemas de equações diferenciais parciais, já que cada equação tem seu próprio
+
+transiente. Esta alternativa, demonstrada esquematicamente na Fig. 3.5, utiliza um mesmo
+
+campo de pressão e de mobilidades para evoluir o campo de saturação. Este método é simi-
+
+lar ao IMPES tradicional, entretanto como o sistema linear da pressão deixa de ser resolvido
+
+para alguns tempos e tipicamente a solução de sistemas demanda grande parte do tempo de
+
+computação, grandes vantagens podem ser obtidas 53.
+
+Figura 3.5: Método IMPES modificado de avanço no tempo.
+
+Em situações onde o método IMPES é computacionalmente custoso, o método Totalmente
+
+Implícito (Fully Implicit) tem sido uma alternativa para a obtenção da solução. Neste caso,
+
+também partindo das mesmas equações (3.14 e 3.15), mas considerando ? = t + ?t, obtém-se
+
+uma equação para a saturação da água e outra para a pressão, sendo nestas equações a saturação
+
+e a pressão incógnitas no mesmo nível de tempo. Como os coeficientes que acompanham as
+
+variáveis também estão sendo avaliados no mesmo nível de tempo, um problema não-linear
+
+acoplado deve ser resolvido. Tradicionalmente o Método de Newton tem sido a alternativa mais
+
+viável para o tratamento deste tipo de problema 19,48,54. Neste método as equações são escritas
+
+em sua forma residual, este resíduo é então igualado a zero e a solução do problema resultante
+
+é a variação da propriedade em questão durante o intervalo de tempo, que quando acrescida ao
+
+valor anterior fornece a propriedade desejada.
+
+
+
+3. Modelo Discreto 25
+
+Como se trata de um problema não-linear, um ciclo de atualização das não-linearidades deve
+
+estar presente, constituindo uma das diferenças básicas entre a formulação Totalmente Implícita
+
+e o método IMPES. Este tratamento torna o método Totalmente Implícito muito mais estável
+
+com relação à magnitude do passo de tempo que pode ser empregado durante uma simulação.
+
+A vantagem da estabilidade, permitindo avanços de tempos maiores, compensa a necessidade
+
+de iterações no sistema linear e o fato do sistema linear no método totalmente implícito ter o
+
+dobro do número de incógnitas. Apesar da aparente grande flexibilidade da escolha do passo
+
+de tempo, a solução implícita introduz maior difusão numérica na solução quando comparada
+
+com a solução explícita 48.
+
+Embora a possibilidade de outros esquemas de avaliação das incógnitas no tempo ainda
+
+sejam possíveis 55–57, as formulações IMPES e Totalmente Implícita são as mais utilizadas tanto
+
+em programas comerciais quanto em simuladores acadêmicos. Destas alternativas, o método
+
+IMPES foi escolhido devido à sua facilidade de implementação, levando em consideração que
+
+a evolução temporal do problema não está relacionada aos métodos de discretização espacial a
+
+que este trabalho propôs estudar.
+
+Repetindo as equações discretas do modelo utilizando um algoritmo IMPES para o avanço
+
+no tempo e suprimindo o super-índice t, relativo ao nível de tempo anterior, tem-se
+
+?
+e?P
+
+?
+i?EP
+
+(?T )i [T ]i [p]e = 0 (3.19)
+
+st+?tP = sP +
+?t
+
+?P?VP
+?
+e?P
+
+?
+i?EP
+
+(F ?T [T ])i [p]e (3.20)
+
+Mais uma vez é importante salientar que as equações 3.19 e 3.20 estão acopladas através da
+
+mobilidade presente na definição das vazões. Como a mobilidade é uma função da saturação
+
+e a equação da saturação possui características hiperbólicas, gradientes elevados e mesmo des-
+
+continuidades podem estar presentes na solução. Este fator torna importante a avaliação das
+
+mobilidades nas faces dos volumes de controle através de adequadas funções de interpolação.
+
+A fim de evitar oscilações e possíveis valores não-físicos no campo de saturação, funções de
+
+interpolação de segunda ordem† devem ser evitadas 7,10,50. Como a saturação e a mobilidade
+
+são propriedades advectadas pelo escoamento, a melhor alternativa é o emprego de esquemas
+
+upwind, representando de melhor maneira o escoamento em questão. Os esquemas upwind
+
+†A ordem da função de interpolação fornece a relação entre o erro de truncamento e o tamanho médio do
+elemento utilizado na discretização. Para uma função de interpolação de segunda ordem o erro de truncamento
+decai proporcionalmente ao quadrado do tamanho médio do elemento quando a malha é refinada.
+
+
+
+26 3. Modelo Discreto
+
+são considerados como esquemas de primeira ordem que possuem a característica de não gerar
+
+oscilações indesejáveis, entretanto introduzem difusão numérica, suavizando os gradientes da
+
+solução 7,10.
+
+Em problemas unidimensionais a escolha é trivial baseada na direção do escoamento, ou
+
+mais simplesmente na diferença de potencial que promove o escoamento (Fig. 3.6). Em proble-
+
+mas bidimensionais anisotrópicos a diferença de potencial não é suficiente para a avaliação da
+
+direção do escoamento, sendo necessário avaliar o sentido do fluxo nas faces do volume de con-
+
+trole. A Fig. 3.7 demonstra uma possível forma de avaliar a saturação na face de um elemento,
+
+levando em consideração o nó mais próximo contrário ao sentido do escoamento. Esta é a forma
+
+mais simples de um esquema upwind a ser utilizada em um problema bidimensional. Outros
+
+esquemas de interpolação ainda são possíveis para a avaliação das mobilidades com efeito de
+
+melhor representar os valores interpolados 7,20,58.
+
+Figura 3.6: Demonstração da avaliação da saturação na face em um problema unidimensional.
+
+Figura 3.7: Demonstração de uma possível forma de avaliação da saturação na face i de um
+elemento em um problema bidimensional.
+
+Nas equações 3.19 e 3.20 resta ainda explicitar a matriz [T ] que teve origem na aproximação
+
+do gradiente [G]. Esta é a principal diferença entre os métodos MPFA e EbFVM a ser explorada
+
+nas seções seguintes.
+
+
+
+3. Modelo Discreto 27
+
+3.2 Método de volumes finitos baseado em elementos
+
+O Método de Volumes Finitos baseado em Elementos (Element based Finite Volume Method
+
+- EbFVM) tem como característica principal o emprego dos elementos e de suas funções de
+
+forma, assim como no Método de Elementos Finitos 7. Como no Método de Elementos Finitos
+
+o emprego de malhas não-estruturadas sempre foi freqüente, uma transformação de coordenadas
+
+é utilizada para mapear cada um dos elementos da malha em um elemento padrão pertencente a
+
+um sistema de coordenadas local (?, ?), também chamado de plano transformado. As equações
+
+3.21 e 3.22 demonstram esta transformação de coordenadas.
+
+x (?, ?) = ?
+j
+
+N jx j (3.21)
+
+y (?, ?) = ?
+j
+
+N jy j (3.22)
+
+onde o índice j do somatório se extende a todos os nós de um determinado elemento. A Fig.
+
+3.8 ilustra a transformação de coordenadas.
+
+=0
+
+1
+
+2
+
+3
+
+x
+
+y 1
+2
+
+3
+
+x
+
+y
+
+Transformação
+
+de coordenadas
+
+1
+
+2
+
+34 1
+
+43
+
+2
+
+=-1 =1
+
+=-1
+
+=1
+
+=1
+
+=0
+
+=1
+
+Figura 3.8: Tranformação de coordenadas para um elemento quadrangular e um triangular.
+
+As funções N são as chamadas funções de forma e dependem do tipo de elemento empre-
+
+
+
+28 3. Modelo Discreto
+
+gado. Para triângulos e quadriláteros estas funções assumem a forma
+
+[N] =
+
+?
+???
+
+1????
+?
+
+?
+
+?
+??? (3.23)
+
+[N] =
+1
+4
+
+?
+??????
+
+(1 + ?)(1 + ?)
+
+(1??)(1 + ?)
+(1??)(1??)
+(1 + ?)(1??)
+
+?
+?????? (3.24)
+
+Da mesma maneira qualquer variável armazenada nos nós de um elemento pode ser aproxi-
+
+mada no interior deste elemento utilizando estas funções. Para o caso da pressão,
+
+p (?, ?) = ?
+j
+
+N j p j = [N]
+T [p]e (3.25)
+
+onde [p]e corresponde aos valores nodais da variável no elemento e. A obtenção do gradiente de
+
+uma propriedade pode se dar de maneira simples através da derivação da equação 3.25, assim,
+
+~?p|?,? ?
+
+?
+? ?x p
+
+?y p
+
+?
+? = ?
+
+j
+
+?
+? ?xN j
+
+?yN j
+
+?
+? p j (3.26)
+
+As funções de forma são funções contínuas no interior do elemento e podem ser diferenci-
+
+adas com relação a ? e ?, assim, aplicando a regra da cadeia e escrevendo em forma matricial 20
+
+?
+? ??N j
+
+??N j
+
+?
+? =
+
+?
+? ??x ??y
+
+??x ??y
+
+?
+?
+?
+? ?xN j
+
+?yN j
+
+?
+? (3.27)
+
+Desta expressão é possível reconhecer que a matriz de dimensão (2x2) à direita da equação
+
+3.27 representa a matriz jacobiana da transformação de coordenadas 7. Esta matriz pode ser
+
+obtida através da diferenciação das expressões 3.21 e 3.22, assim,
+
+[J] = ?
+j
+
+?
+? ??N j
+
+??N j
+
+?
+?[ x j y j ] (3.28)
+
+onde x j e y j são as coordenadas dos nós do elemento. A equação 3.28 ainda pode ser escrita
+
+como
+
+
+
+3. Modelo Discreto 29
+
+[J] = [D] [[x] [y]]e (3.29)
+
+onde a matriz [D] contém a derivada das funções de forma com relação às coordenadas locais.
+
+[D] =
+
+?
+? ??N1 ??N2 . . . ??Nne
+
+??N1 ??N2 . . . ??Nne
+
+?
+? (3.30)
+
+É possível obter 3.30 facilmente e assim calcular 3.28. Com 3.30 e 3.28 e retornando a 3.27
+
+obtém-se o termo necessário para avaliar o gradiente em 3.26, logo
+
+~?p = [J]?1 [D] [p]e (3.31)
+
+É possível concluir que no EbFVM o operador gradiente definido na seção anterior corres-
+
+ponde a [G]i =
+(
+[J]?1 [D]
+
+)
+i
+. Com este operador é possível calcular um fluxo no interior de
+
+qualquer elemento. Resgatando uma vazão dada pela equação 3.16,
+
+fi = (?T )i [T ]i [p]e =
+(
+(?T )i [?S]
+
+T
+i [K]i [J]
+
+?1
+i [D]i
+
+)
+[p]e (3.32)
+
+É preciso reconhecer que para o cálculo do fluxo sobre uma face é necessário especificar um
+
+par coordenado (?, ?) representativo da face que o fluido atravessa. Tomando a regra do ponto
+
+médio 49, as coordenadas (?, ?) do ponto médio de uma face são facilmente obtidas no plano
+
+transformado, como pode ser visto na Fig. 3.9. Este ponto é conhecido na literatura como ponto
+
+de integração, pois o valor da função neste ponto multiplicado pela área e pelas propriedades
+
+físicas determina o valor do fluxo da propriedade através da área.
+
+=1/6
+
+1
+2
+
+31
+
+43
+
+2
+
+=0,5
+
+=0
+
+=-0,5
+
+=0 =0,5=-0,5
+=5/12
+
+=1/6
+
+=5/12
+
+Figura 3.9: Coordenadas locais dos pontos médios das faces (pontos de integração) nos elemen-
+tos.
+
+Outra necessidade para o cálculo dos fluxos de massa advém do termo [K]i, que representa
+
+
+
+30 3. Modelo Discreto
+
+o tensor permeabilidade sobre a face i. Em um meio homogêneo não resta dúvida de que [K]i
+
+é o próprio tensor permeabilidade do meio em questão, entretanto em um meio heterogêneo,
+
+diferentes porções do espaço possuem valores diferenciados. Neste caso, a representação do
+
+tensor permeabilidade, e também das porosidades, se faz através de um conjunto discreto de
+
+valores, onde cada elemento possui um valor para a propriedade. A associação principalmente
+
+da permeabilidade aos elementos faz com que não exista uma descontinuidade do tensor per-
+
+meabilidade nas faces que separam os volumes de controle e desta forma nenhum tipo de média
+
+das propriedades é necessário 19, assim [K]i pode ser escrito como [K]e.
+
+3.3 Aproximação dos fluxos por múltiplos pontos
+
+O Método de Aproximação dos Fluxos por Múltiplos Pontos (Multipoint Flux Approxima-
+
+tion Method - MPFA) teve sua origem com os tradicionais métodos de simulação de reser-
+
+vatórios em malhas corner-point e esquemas cell-centered 21,25. Nesse tipo de malhas cada vo-
+
+lume de controle possui um determinado tensor permeabilidade quando o meio é considerado
+
+heterogêneo, como demonstrado na Fig. 3.10. Esta característica foi herdada em formulações
+
+que empregam malhas não-estruturadas e, de fato, a associação do tensor permeabilidade aos
+
+volumes de controle é um fator importante na derivação das equações do MPFA. Podemos dizer
+
+que esta é a questão central dos métodos MPFA, pois a definição das propriedades físicas no
+
+volume de controle requer estratégias para tratar com o cálculo do fluxo em interfaces de per-
+
+meabilidade descontínua.
+
+volume de
+controle
+
+região de
+interação
+
+região de
+interação
+
+volume de
+controle
+
+(a) (b)
+
+Figura 3.10: Demonstração da associação do tensor permeabilidade aos volumes de controle:
+(a) malha estruturada, cell-centered; (b) malha não-estruturada cell-vertex.
+
+Apesar das malhas utilizadas originalmente no MPFA serem malhas estruturadas, este método
+
+também emprega uma malha de elementos para o cálculo envolvido na obtenção da matriz de
+
+transmissibilidades [T ]. De fato a literatura não utiliza o termo elemento, como no EbFVM,
+
+
+
+3. Modelo Discreto 31
+
+e sim o termo região de interação 40. Para os casos de malhas estruturadas não-ortogonais
+
+esta região de interação pode não coincidir geometricamente com os elementos quadrangu-
+
+lares tradicionalmente empregados e obtidos através de programas de geração de malhas, como
+
+no caso demonstrado na Fig. 3.10(a). Isto é devido ao fato da malha de volumes de controle ser
+
+formada por quadriláteros e a malha de regiões de interação ser obtida com base na primeira,
+
+fazendo com que estas regiões de interação assumam formas poligonais. Se um enfoque não-
+
+estruturado for utilizado, ou seja, se a malha primária for considerada como sendo formada pelas
+
+regiões de interação e os volumes de controle forem obtidos a partir desta malha, estes volumes
+
+estarão sendo obtidos da mesma maneira e na mesma posição espacial que no EbFVM, e assim,
+
+os elementos serão coincidentes com as regiões de interação. Esta alternativa é aqui preferida
+
+pois as mesmas malhas podem ser utilizadas para comparação das metodologias. Sendo assim,
+
+por uniformidade, será empregado o termo elemento tanto quando referido ao EbFVM quanto
+
+para o MPFA.
+
+Para um elemento qualquer é necessário obter os fluxos sobre as faces. Para tal, no MPFA,
+
+perfis lineares das variáveis são utilizados em cada sub-volume de controle. A Fig. 3.11
+
+demonstra os vértices 1, 2, . . . , ne de um elemento e os pontos médios das arestas 1, 2, . . . , ne.
+
+Ainda, a numeração local empregada em cada sub-volume de controle também é demonstrada.
+
+Figura 3.11: Numeração dos elementos da malha e numeração local empregada em cada sub-
+volume
+
+Utilizando a numeração local de cada subvolume, indicada na Fig. 3.11, e supondo a vari-
+
+ação de uma propriedade, como a pressão, na forma de uma série de Taylor truncada, as pressões
+
+nos pontos médios das arestas podem ser escritas como a pressão no vértice do elemento mais
+
+uma variação,
+
+p1 = p0 + [r1]· ~? p (3.33)
+
+
+
+32 3. Modelo Discreto
+
+p2 = p0 + [r2]· ~?p (3.34)
+
+onde os vetores [r1] e [r2] são dados por
+
+[r1] =
+
+?
+? x1 ?x0
+
+y1 ?y0
+
+?
+? (3.35)
+
+[r2] =
+
+?
+? x2 ?x0
+
+y2 ?y0
+
+?
+? (3.36)
+
+Como o gradiente de um perfil linear é constante, é possível combinar as expressões 3.33 e
+
+3.34.
+
+?
+? p1 ? p0
+
+p2 ? p0
+
+?
+? =
+
+?
+? [r1]T
+
+[r2]
+T
+
+?
+? ~? p (3.37)
+
+Introduzindo a matriz de rotação [R],
+
+[R] =
+
+?
+? 0 1
+?1 0
+
+?
+? (3.38)
+
+É possível calcular
+
+V = det
+
+?
+?
+?
+? [r1]T
+
+[r2]
+T
+
+?
+?
+?
+? = [r1]T [R] [r2] (3.39)
+
+onde V é equivalente ao dobro da área do triângulo formado pelos pontos 0, 1, 2. Também é
+
+possível definir
+
+[?1] = [R] [r2]
+
+[?2] = ?[R] [r1]
+(3.40)
+
+e assim obter a matriz inversa necessária para isolar ~? p em 3.37. Realizando estas operações,
+
+~?p =
+1
+V
+
+2
+
+?
+k=1
+
+[?]k (pk ? p0) (3.41)
+
+
+
+3. Modelo Discreto 33
+
+onde o somatório em k se estende pelos dois pontos médios das arestas que formam o sub-
+
+volume na numeração local. Com a expressão do gradiente é possível escrever uma vazão
+
+como
+
+fi = ?(?T )i [?S]
+T
+i [K] j
+
+1
+Vj
+
+2
+
+?
+k=1
+
+[?]k
+(
+
+p jk ? p j
+)
+
+(3.42)
+
+para uma face i e numeração local dos k pontos médios das arestas no sub-volume j. Ainda é
+
+conveniente definir
+
+?i jk = ?
+[?S]Ti [K] j [?] jk
+
+Vj
+(3.43)
+
+e assim,
+
+fi = (?T )i
+2
+
+?
+k=1
+
+?i jk
+(
+
+p jk ? p j
+)
+
+(3.44)
+
+Utilizando a expressão 3.44 para um elemento com três ou quatro faces é possível calcu-
+
+lar duas vazões para cada face, utilizando as informações geométricas e as propriedades de
+
+cada sub-volume de controle. Como uma descontinuidade do campo de permeabilidade pode
+
+estar presente a alternativa mais coerente é igualar as vazões ao longo das faces expressando-
+
+as como uma função dos valores nodais de pressão e de uma combinação de propriedades do
+
+meio. Para problemas unidimensionais esta combinação pode levar a arranjos como a média
+
+harmônica 50, entretanto para casos bidimensionais e meios anisotrópicos uma simples combi-
+
+nação não garante uma adequada representação das propriedades.
+
+Assumindo a continuidade das vazões ao longo das faces é possível igualar os pares de
+
+expressões obtidas utilizando 3.44. Ainda, para o fechamento das equações, também será as-
+
+sumida a igualdade das pressões nos pontos médios das arestas de cada elemento, assim, para
+
+o caso de um elemento quadrangular as oito equações para a vazão ao longo das quatro faces
+
+ficam reunidas como,
+
+(?T )1 (?111 (p1 ? p1) + ?112 (p4 ? p1)) = (?T )1 (?121 (p2 ? p2) + ?122 (p1 ? p2))
+(?T )2 (?221 (p2 ? p2) + ?222 (p1 ? p2)) = (?T )2 (?231 (p3 ? p3) + ?232 (p2 ? p3))
+(?T )3 (?331 (p3 ? p3) + ?332 (p2 ? p3)) = (?T )3 (?341 (p4 ? p4) + ?342 (p3 ? p4))
+(?T )4 (?441 (p4 ? p4) + ?442 (p3 ? p4)) = (?T )4 (?411 (p1 ? p1) + ?412 (p4 ? p1))
+
+(3.45)
+
+
+
+34 3. Modelo Discreto
+
+Para o caso de uma malha envolvendo triângulos o sistema de equações 3.45 é escrito com
+
+três equações uma vez que existem três faces. Observe que a estratégia empregada para eliminar
+
+as variáveis auxiliares é exatamente aquela usada em problemas unidimensionais, onde os fluxos
+
+são igualados, eliminando o potencial intermediário (variável auxiliar), e obtendo o fluxo, onde
+
+a propriedade utilizada é a média harmônica entre as duas propriedades descontínuas. Aqui, em
+
+duas dimensões, a estratégia é a mesma.
+
+A primeira equação em 3.45 representa a vazão total ao longo da primeira face, a segunda
+
+equação corresponde à segunda face e assim sucessivamente. Nestas equações os valores p j são
+
+as incógnitas a serem determinadas, porém os valores p j não são conhecidos. Como existem
+
+mais incógnitas do que equações, as pressões nos pontos médios das faces devem ser eliminadas
+
+da formulação através da manipulação das equações, seguindo a estratégia comentada acima.
+
+O lado esquerdo das equações 3.45 representa a vazão que atravessa cada uma das faces do
+
+elemento dividida pela respectiva mobilidade. Agrupando cada uma das vazões dividida pelas
+
+mobilidades em um vetor,
+
+?
+??????
+
+f1
+(?T )1
+
+f2
+(?T )2
+
+f3
+(?T )3
+
+f4
+(?T )4
+
+?
+?????? =
+
+?
+??????
+
+?111 0 0 ?112
+
+?222 ?221 0 0
+
+0 ?332 ?331 0
+
+0 0 ?442 ?441
+
+?
+??????
+
+?
+??????
+
+p1
+
+p2
+
+p3
+
+p4
+
+?
+??????+ (3.46)
+
+?
+
+?
+??????
+
+?111 + ?112 0 0 0
+
+0 ?221 + ?222 0 0
+
+0 0 ?331 + ?332 0
+
+0 0 0 ?441 + ?442
+
+?
+??????
+
+?
+??????
+
+p1
+
+p2
+
+p3
+
+p4
+
+?
+??????
+
+ou de forma resumida,
+
+[
+f
+
+?T
+
+]
+= [C] [v]?[D] [p]e (3.47)
+
+onde [C] e [D] são matrizes de dimensão (nexne); [p]e reúne os valores de pressão nos nós do
+
+elemento e [v] os valores de pressão nos pontos médios das arestas. O sistema 3.45 como um
+
+todo pode ser escrito também como
+
+
+
+3. Modelo Discreto 35
+
+?
+??????
+
+?111 ??122 ??121 0 ?112
+?222 ?221 ??232 ??231 0
+
+0 ?332 ?331 ??342 ??341
+??411 0 ?442 ?441 ??412
+
+?
+??????
+
+?
+??????
+
+p1
+
+p2
+
+p3
+
+p4
+
+?
+?????? = (3.48)
+
+=
+
+?
+??????
+
+?111 + ?112 ??121 ??122 0 0
+0 ?221 + ?222 ??231 ??232 0
+0 0 ?331 + ?332 ??341 ??342
+
+??411 ??412 0 0 ?441 + ?442
+
+?
+??????
+
+?
+??????
+
+p1
+
+p2
+
+p3
+
+p4
+
+?
+??????
+
+ou de forma compacta,
+
+[A] [v] = [B] [p]e (3.49)
+
+com [A] e [B] também de dimensão (nexne). Combinando as expressões 3.47 e 3.49 e desejando
+
+obter
+
+[
+f
+
+?T
+
+]
+= [T ] [p]e (3.50)
+
+conclui-se que
+
+[T ] = [C] [A]?1 [B]?[D] (3.51)
+
+onde [T ] é uma matriz que reúne em cada uma das linhas os coeficientes necessários ao cálculo
+
+do fluxo sobre uma face de um elemento, assim,
+
+fi = (?T )i [T ]i [p]e (3.52)
+
+A obtenção da matriz de transmissibilidades [T ] de cada elemento foi condicionada à condi-
+
+ção de continuidade das vazões ao longo das faces dos sub-volumes de controle e das pressões
+
+nos pontos médios das arestas. Este esquema é chamado de método "O" uma vez que todos
+
+os pontos médios das arestas foram utilizados na definição das equações que originam o sis-
+
+tema 3.45. Outro esquema possível de ser aplicado em malhas não-estruturadas é chamado
+
+de método "U". Neste caso a continuidade da pressão é assumida em alguns pontos. Para o
+
+quadrilátero da Fig. 3.11 o ponto 4 não possuiria os mesmos valores de pressão para cada sub-
+
+
+
+36 3. Modelo Discreto
+
+volume considerado. Nesta abordagem as equações da face que passa pelo ponto 4 incluiriam
+
+continuidade de pressão em outro ponto, como o centróide do elemento, por exemplo 22. De
+
+fato, para malhas triangulares, o método "U" se degenera no método "O" e mesmo em malhas
+
+de quadriláteros não existe diferença significativa entre os resultados das diferentes metodolo-
+
+gias, salvo em casos especialmente contruídos para tal 22. Desta forma será utilizado o método
+
+"O" devido à sua maior generalidade quanto aos pontos médios das arestas e quanto à maior
+
+presença na literatura 32,40,41,43,59
+
+3.4 Implementação computacional
+
+Para a implementação computacional dos métodos apresentados, duas versões básicas foram
+
+criadas. Os programas foram implementados separadamente utilizando linguagem C++ 60,61,
+
+seguindo conceitos básicos de orientação-objeto, ou seja, o código fonte é dividido em módulos
+
+(classes) que armazenam características comuns entre eles. Com diferentes classes é preciso
+
+definir o relacionamento entre estas classes e sua comunicação. Este tipo de abordagem faz
+
+com que o código fonte seja mais facilmente reaproveitado e mantido no que se refere tanto a
+
+modificações quanto à busca de erros de implementação.
+
+Para a solução do sistema linear da pressão foi empregado o método GMRes(Generalized
+
+Minimal Residual Solver) 62. O sistema linear foi pré-condicionado utilizando SSOR (Symmet-
+
+ric Successive Overrelaxation Method) e tolerâncias relativa e absoluta de 0.0 e 10?9 foram
+
+empregadas. Estas rotinas fazem parte de um pacotede armazenamento de matrizes (MTL -
+
+Matrix Template Library) e solução de sistemas lineares (ITL - Iterative Template Library) dis-
+
+tribuídos gratuitamente.
+
+Neste ponto mais uma vez o conceito de orientação objeto foi pertinente, uma vez que
+
+utilizando um código fonte externo é pertinente testá-lo previamente e esta tarefa é facilmente
+
+feita através de pequenos testes utilizando cada uma das classes disponíveis no pacote obtido.
+
+
+
+Capítulo 4
+
+Comparações entre os Métodos
+
+Este capítulo tem por objetivo demonstrar em detalhes as principais diferenças entre o
+
+EbFVM e o MPFA. Algumas características já se tornaram evidentes na derivação das equações
+
+apresentadas no capítulo anterior, como o armazenamento das propriedades físicas e os pontos
+
+da malha utilizados na aproximação do gradiente. Estas diferenças serão reforçadas nas próxi-
+
+mas seções bem como outras características serão elucidadas.
+
+4.1 Interpolação no elemento e o cálculo do gradiente
+
+No EbFVM é possível obter o valor de uma variável em qualquer ponto interior a um ele-
+
+mento como uma função dos valores nodais deste elemento, utilizando para tal as funções de
+
+forma. Para cada tipo de elemento é utilizada uma função diferente. O gradiente de qualquer
+
+propriedade também pode ser obtido e é expresso utilizando as derivadas das funções de forma e
+
+a inversa da matiz jacobiana da transformação conforme a equação 3.31. A matriz de derivadas
+
+fornece a variação das funções ao longo das coordenadas do elemento enquanto que a matriz
+
+jacobiana traz a informação da transformação de coordenadas, ou seja, do mapeamento entre
+
+o plano físico x?y e o plano transformado ???. Este procedimento leva em consideração o
+fato das funções de forma serem funções contínuas e válidas em todo o elemento. Para o MPFA
+
+não são utilizadas funções contínuas em todo o elemento na interpolação das propriedades, mas
+
+sim funções lineares para cada sub-volume. Na definição do perfil linear em cada sub-volume
+
+três pontos são empregados. Estes pontos são demonstrados na Fig. 4.1 bem como o triângulo
+
+formado pelos mesmos.
+
+Como para cada sub-volume é adotado um perfil linear, o gradiente é uma função constante
+
+em cada triângulo da Fig. 4.1. Ainda cabe ressaltar que o cálculo do gradiente no MPFA leva
+
+37
+
+
+
+38 4. Comparações entre os Métodos
+
+1
+
+2 3
+
+4
+
+1
+
+2
+
+3
+
+4 1
+
+2 3
+
+1
+
+2
+
+3
+
+Figura 4.1: Elemento demonstrando para cada sub-volume os triângulos formados pelos pontos
+envolvidos na aproximação do gradiente no MPFA (linha tracejada).
+
+em consideração as coordenadas dos pontos citados anteriormente, mas as faces onde serão
+
+avaliados os fluxos não se encontram no interior do triângulo formado por estes pontos, ou
+
+seja, o gradiente é obtido com informações geométricas de alguns pontos e extrapolado para as
+
+faces do sub-volume. Outra característica importante é o fato de empregar-se sempre funções
+
+lineares independentemente do elemento. Como para o cálculo são necessárias informações de
+
+cada sub-volume e cada sub-volume é sempre definido por duas arestas e duas faces, a forma
+
+do elemento deixa de ser importante neste ponto. De fato a derivação das equações utilizando
+
+perfis lineares não está restrita a elementos triangulares e quadrangulares, podendo ser utilizada
+
+em malhas de polígonos com maior número de arestas 23,24.
+
+4.2 Armazenamento das propriedades
+
+No capítulo anterior a derivação das matrizes de transmissibilidades evidenciou a diferença
+
+no armazenamento das propriedades atribuídas ao meio físico. No EbFVM estas propriedades
+
+estão relacionadas aos elementos da malha. De fato a porosidade poderia estar associada tanto
+
+aos volumes de controle quanto aos elementos, uma vez que na formulação apresentada ela
+
+apenas é utilizada para o cálculo do volume poroso. A permeabilidade absoluta é mais im-
+
+portante devido ao cálculo das vazões ao longo das faces dos volumes de controle. Como as
+
+funções de forma e por conseqüência o gradiente são contínuos no interior do elemento, uma
+
+descontinuidade do tensor permeabilidade ocasionaria uma descontinuidade dos fluxos sobre
+
+uma mesma face dos volumes de controle. Médias poderiam ser empregadas para contornar
+
+este problema, entretanto para evitar um passo adicional que pode não representar a física do
+
+problema 19, associar um único valor de permeabilidade ao elemento faz com que o fluxo através
+
+de uma face seja contínuo.
+
+Para o MPFA tradicionalmente as propriedades do meio estão associadas aos volumes de
+
+
+
+4. Comparações entre os Métodos 39
+
+controle, entretanto seria possível associar aos elementos as propriedades do meio uma vez
+
+que em cada face dos volumes de controle é realizada uma igualdade de fluxos que determina
+
+o potencial que respeite esta condição. Naturalmente associar aos elementos as propriedades
+
+torna a igualdade de fluxos em uma igualdade de diferenças de pressão nas faces já que o tensor
+
+permeabilidade seria o mesmo nos sub-volumes adjacentes à face. Esta alternativa apesar de
+
+atraente em relação a tornar os métodos ainda mais similares faz com que se perca a intenção
+
+inicial da igualdade dos fluxos ao longo das faces em um meio heterogêneo.
+
+4.3 Fluxo em um meio homogêneo
+
+Nesta seção expressões para o fluxo serão derivadas de forma a apresentar algumas diferen-
+
+ças entre o EbFVM e o MPFA. Para tal análise uma malha cartesiana como na Fig. 4.2 pode
+
+ser empregada para tornar os cálculos mais simples. O objetivo principal é obter o fluxo que
+
+atravessa a face entre dois volumes de controle como uma função das propriedades do meio e
+
+das pressões nos nós dos elementos que contém faces onde o fluxo está sendo calculado.
+
+Figura 4.2: (a) Exemplo de uma malha com seis volumes de controle demonstrando os elemen-
+tos necessários para o cálculo do fluxo em uma face e (b) a numeração local dos elementos.
+
+O fluxo total entre os volumes de controle 3 e 4 da Fig. 4.2 possui duas parcelas referentes
+
+ao elementos que contribuem com seus sub-volumes para os volumes em análise. Este fluxo
+
+pode ser escrito como
+
+
+
+40 4. Comparações entre os Métodos
+
+f = f3 ? f1
+
+= (?T )3 (t31 p6 + t32 p5 + t33 p3 + t34 p4)?(?T )1 (t11 p4 + t12 p3 + t13 p1 + t14 p2) (4.1)
+
+onde o sinal negativo no fluxo f1 advém do vetor área ser calculado conforme a Fig. 4.2(b) e o
+
+fluxo desejado ter sentido contrário.
+
+Para a malha em questão as áreas de passagem do fluxo nas faces de interesse são escritas
+
+como
+
+[?S]T1 = [ h 0 ] (4.2)
+
+[?S]T3 = [ ?h 0 ] (4.3)
+
+Definindo a razão de aspecto dos elementos como ` = dh , e considerando um tensor perme-
+
+abilidade anisotrópico na obtenção das expressões é possível obter o fluxo entre os volumes 3 e
+
+4.
+
+4.3.1 EbFVM
+
+Para a obtenção da matriz de derivadas e da matriz jacobiana, as coordenadas ?, ? do ponto
+
+médio das faces por onde o fluxo atravessa são necessárias. A Fig. 4.2 fornece a numeração
+
+local das faces, sendo requeridas as faces 1 e 3. Da Fig. 3.9,
+
+??
+? (?, ?)1 = (0; 0, 5)(?, ?)3 = (0;?0, 5) (4.4)
+
+Com as coordenadas locais é possível calcular todos os termos da equação 3.32, e assim os
+
+fluxos necessários na equação 4.1, chegando a
+
+
+
+4. Comparações entre os Métodos 41
+
+f =
+?3
+
+4
+
+(
+kxx
+2`
+
++ kxy
+
+)
+p6 ?
+
+?3
+
+4
+
+(
+kxx
+2`
+?kxy
+
+)
+p5+
+
++
+?1
+
+4
+
+(
+kxx
+2`
+?kxy
+
+)
+p2 ?
+
+?1
+
+4
+
+(
+kxx
+2`
+
++ kxy
+
+)
+p1+
+
++ (?1 + ?3)
+3kxx
+8`
+
+(p4 ? p3)?(?3 ??1)
+kxy
+4
+
+(p4 + p3) (4.5)
+
+Esta equação demonstra a dependência do fluxo em uma face com todos os pontos nodais
+
+de pressão dos elementos que contribuem para os volumes de controle. Naturalmente a de-
+
+pendência do fluxo com os seis pontos de pressão é esperada devido à anisotropia do tensor
+
+permeabilidade. Este tipo de avaliação do fluxo difere dos tradicionais esquemas de avaliação
+
+por dois pontos que desprezam os termos relativos à anisotropia do problema, sendo inconsis-
+
+tentes, ou seja, produzindo erros que não diminuem com o refino de malha 7,21. Outra avaliação
+
+interessante é verificar o comportamento da expressão para o fluxo em situações onde as di-
+
+reções principais do tensor permeabilidade estão alinhadas com a malha. Para o caso descrito,
+
+é facilmente observável que tal tensor seria um tensor diagonal (kxy = 0) 51 e assim a expressão
+
+4.5 se reduz a
+
+f = ?3
+kxx
+8`
+
+(p6 ? p5) + ?1
+kxx
+8`
+
+(p2 ? p1) + (?1 + ?3)
+3kxx
+8`
+
+(p4 ? p3) (4.6)
+
+Nesta expressão é importante notar que mesmo sem parcelas relativas à anisotropia, seja
+
+do meio ou da malha, a expressão para o fluxo mantém relação com as pressões que não estão
+
+diretamente ligadas à face por onde se está calculando o fluxo.
+
+4.3.2 MPFA
+
+Para obter a expressão para o fluxo no MPFA é preciso, da mesma maneira que no EbFVM,
+
+definir algumas propriedades geométricas da malha em questão. A Fig. 4.3 demonstra os vetores
+
+necessários, enquanto que a equação 4.7 define os mesmos.
+
+????????
+???????
+
+[?S]T1 = [?]
+T
+11 = [?]
+
+T
+42 = [ ?h 0 ]
+
+[?S]T2 = [?]
+T
+21 = [?]
+
+T
+12 = [ 0 ?d ]
+
+[?S]T3 = [?]
+T
+31 = [?]
+
+T
+22 = [ h 0 ]
+
+[?S]T4 = [?]
+T
+41 = [?]
+
+T
+32 = [ 0 d ]
+
+(4.7)
+
+Com estes vetores é possível calcular todos os termos da equação 3.44, e assim os fluxos
+
+
+
+42 4. Comparações entre os Métodos
+
+Figura 4.3: Vetores necessários para o cálculo das vazões no MPFA.
+
+necessários para a montagem do sistema 3.45 que dará origem à matriz de transmissibilidades
+
+3.51. Uma vez que os elementos são geometricamente iguais e o meio homogêneo todos os
+
+coeficientes da equação 4.1 são conhecidos, assim,
+
+f =
+?3
+
+4
+
+(
+1
+`
+
+k2xy
+kyy
+
++ kxy
+
+)
+p6 ?
+
+?3
+
+4
+
+(
+1
+`
+
+k2xy
+kyy
+?kxy
+
+)
+p5 +
+
++
+?1
+
+4
+
+(
+1
+`
+
+k2xy
+kyy
+?kxy
+
+)
+p2 ?
+
+?1
+
+4
+
+(
+1
+`
+
+k2xy
+kyy
+
++ kxy
+
+)
+p1 +
+
++
+(?1 + ?3)
+
+4`
+
+(
+2kxx ?
+
+k2xy
+kyy
+
+)
+(p4 ? p3)?(?3 ??1)
+
+kxy
+4
+
+(p4 + p3) (4.8)
+
+A partir desta equação é possível verificar a semelhança dos métodos com respeito ao em-
+
+prego de múltiplos pontos na avaliação do fluxo dado pela equação 4.1. Mais uma vez para o
+
+caso de um tensor onde as direções principais estão alinhadas com a malha,
+
+f =
+kxx
+2`
+
+(?1 + ?3) (p4 ? p3) . (4.9)
+
+É possível notar a diferença entre as equações 4.6 e 4.9 no que concerne aos nós utilizados
+
+no cálculo do fluxo, restando para o MPFA apenas os nós mais próximos às faces dos volumes
+
+de controle onde o fluxo é avaliado, lembrando os tradicionais esquemas cell-centered.
+
+4.3.3 Comentários
+
+Através das equações para o fluxo no EbFVM e no MPFA para o caso apresentado, fica
+
+evidente a nomenclatura de avaliação por múltiplos pontos, uma vez que estes métodos diferem
+
+de outras alternativas que aproximam o fluxo nas faces dos volumes de controle por apenas dois
+
+
+
+4. Comparações entre os Métodos 43
+
+pontos, mesmo se tratando de problemas anisotrópicos. Para as expressões 4.5 e 4.8 é fácil
+
+perceber grande semelhança quando os coeficientes são comparados. É possível escolher um
+
+tensor K tal que os coeficientes das equações sejam exatamente os mesmos. Realizando igual-
+
+dades entre cada um dos coeficientes conclui-se que para que os métodos resultem no mesmo
+
+sistema linear, para a malha empregada, o tensor permeabilidade deve obedecer a relação
+
+k2xy =
+1
+2
+
+kxxkyy (4.10)
+
+Esta relação obedece ao critério imposto juntamente à representação do tensor permeabili-
+
+dade (equação 2.3), ou seja, existe um tensor fisicamente consistente tal que os métodos serão
+
+equivalentes para a malha empregada.
+
+Esta conclusão entretanto não é válida para um caso aparentemente mais simples onde o
+
+tensor permeabilidade está alinhado com a malha. Comparando as equações 4.6 e 4.9 não
+
+é possível escolher um tensor onde os métodos sejam equivalentes, mesmo para uma malha
+
+cartesiana. Isto se deve ao fato do EbFVM sempre utilizar uma aproximação por múltiplos pon-
+
+tos mesmo na ausência de anisotropias da malha e do meio. Independentemente do problema
+
+a ser resolvido o sistema linear sempre terá o mesmo número de não-nulos na matriz de coefi-
+
+cientes do sistema 3.7. Em contrapartida o MPFA tem por característica a variação do número
+
+de não-nulos, gerando um sistema mais, ou menos, esparso dependendo da orientação do tensor
+
+permeabilidade com relação à malha empregada.
+
+Outra diferença entre as duas metodologias está na necessidade de informações geométricas
+
+para caracterizar os fluxos. Para o EbFVM foram necessárias as coordenadas locais do cen-
+
+tróide das faces de cada elemento utilizado no cômputo da equação 4.2. Cada par coordenado
+
+foi utilizado na determinação das transmissibilidades da respectiva face, não sendo necessárias
+
+outras informações. Para o MPFA todo o elemento teve de ser descrito de forma a obter toda a
+
+matriz de transmissibilidades [T ] do elemento. Como subproduto da operação, todas as trans-
+
+missibilidades das faces do elemento foram obtidas mesmo não sendo necessárias ao cômputo
+
+dos fluxos desejados.
+
+4.4 Monotonicidade da solução
+
+Outro aspecto interessante dos diferentes métodos corresponde à análise de monotonicidade
+
+da solução de uma equação elíptica em um meio anisotrópico. Este tipo de equação é exata-
+
+mente a equação da pressão para um escoamento monofásico incompressível,
+
+
+
+44 4. Comparações entre os Métodos
+
+~? ·
+(
+
+K ·~?p
+)
+
+= q (4.11)
+
+A solução da equação 4.11 é dita monotônica se esta é uma função ou totalmente não-
+
+crescente ou totalmente não-descrescente, ou seja, se a primeira derivada (que não precisa ser
+
+contínua) não muda de sinal 63. Um problema que apresenta solução monotônica pode ser
+
+observado quando um termo fonte positivo é utilizado em uma posição do domínio de solução
+
+e condições de contorno homogêneas de Dirichlet são empregadas. A Fig. 4.4(a) exemplifica
+
+uma solução monotônica do problema em questão com termo fonte não-nulo positivo somente
+
+no centro da malha. A Fig. 4.4(b) demonstra uma solução não-monotônica de um problema
+
+anisotrópico, revelando oscilações indesejadas.
+
+Figura 4.4: (a)Exemplo de uma função monotônica e (b) de uma função não-monotônica.
+
+O análogo discreto da equação 4.11 é dado por um sistema de equações semelhante à
+
+equação 3.7, aqui repetida por clareza,
+
+[Ap] [p] = [Bp] (4.12)
+
+Para [Bp] &gt; 0 o problema terá solução monotônica se [Ap] [p] &gt; 0 e como somente uma
+
+solução positiva é esperada, isto implica que
+
+[Ap]?1 &gt; 0 (4.13)
+
+A importância da condição apresentada em 4.13 vem do fato de que se [Ap]?1 contiver e-
+
+lementos negativos, o termo fonte [Bp] pode ser tal que a solução do problema adquira valores
+
+negativos, violando o que seria esperado. Naturalmente a forma da matriz de coeficientes [Ap]
+
+e por conseqüência sua inversa dependem do método de discretização empregado. Os méto-
+
+dos de Volumes Finitos clássico e Elementos Finitos violam as condições de monotonicidade
+
+
+
+4. Comparações entre os Métodos 45
+
+para malhas arbitrariamente distorcidas e tensores permeabilidade não-diagonais 30, gerando
+
+soluções com valores negativos para o problema apresentado anteriormente.
+
+Para malhas de paralelogramos em um meio homogêneo é possível obter critérios segundo
+
+os quais é possível avaliar se a matriz [Ap] fornecerá solução monotônica 30. Nordbotten et
+
+al. 32 demonstraram que é impossível construir um método linear de 9 pontos que satisfaça
+
+incondicionalmente os critérios de monotonicidade quando este método satisfaz conservação
+
+local. Desta forma é importante verificar quais as razões e a extensão das restrições impostas
+
+aos métodos numéricos tal que a solução apresentada seja sempre monotônica. Tais critérios
+
+são construídos com base em soluções analíticas de problemas uni e bidimensionais, onde o
+
+análogo discreto do operator diferencial é interpretado com base nos coeficientes do sistema de
+
+equações tal que a solução esperada seja monotônica 30,32. Utilizando a malha da Fig. 4.5 estes
+
+critérios podem ser resumidos como,
+
+Figura 4.5: Nomenclatura empregada para as condições de monotonicidade.
+
+?AE = ?AW&amp;lt;
+AP
+2
+
+(4.14)
+
+AE = AW &amp;lt;0 (4.15)
+
+AE ·AN ?ANE ·AP &gt; 0 (4.16)
+
+AE ·AN ?ANW ·AP &gt; 0 (4.17)
+
+onde AE é o coeficiente da equação do volume de controle P com relação ao volume E, AW é o
+
+coeficiente de P com relação ao vizinho W , e assim sucessivamente, conforme a Fig. 4.5. Para
+
+o tipo de malha empregada em um meio homogêneo as maiores restrições são causadas pelas
+
+condições 4.16 e 4.17, quando os volumes não diretamente conectados com o volume de análise
+
+estão presentes, ou seja, quando uma discretização que utiliza múltiplos pontos é empregada.
+
+Uma forma interessante de testar os critérios de monotonicidade apresentados é, para diversas
+
+malhas, mapear em quais malhas os critérios são satisfeitos ou falham 30. Como os coeficientes
+
+
+
+46 4. Comparações entre os Métodos
+
+da matriz dependem basicamente do meio e da geometria do elemento (das transmissibilidades)
+
+é possível fixar um tensor permeabilidade e alterar a geometria dos elementos de forma a con-
+
+templar a maioria dos casos possíveis. Um elemento da malha de paralelogramos é demonstrado
+
+na Fig. 4.6, onde também são demonstrados os vetores ~a1 e ~a2 normais às arestas do elemento
+
+e de magnitude igual ao comprimento das mesmas.
+
+Figura 4.6: Elemento paralelogrâmico e vetores normais à arestas.
+
+Para controlar a forma do elemento os vetores da Fig. 4.6 podem ser escritos como 30
+
+??
+? ~a1
+
+T = [1; 0]
+
+~a2
+T = [a2,1; a2,2]
+
+(4.18)
+
+de tal forma que a22,1 + a
+2
+2,2 6 1. Desta maneira o elemento terá sua forma determinada pelas
+
+componentes do vetor ~a2 cujo módulo será sempre inferior à unidade. Com este procedimento
+
+diferentes formas para os elementos podem ser obtidas, como elementos quadrangulares com
+
+razão de aspecto variável (0 &amp;lt;` 6 1) e também elementos distorcidos. Isto pode ser demons-
+
+trado graficamente através da Fig. 4.7, onde cada ponto dentro da região em vermelho fornece
+
+um possível valor para as componentes do vetor ~a2. Também são demonstradas algumas formas
+
+que o elemento assume em diferentes posições deste mapeamento.
+
+Utilizando um tensor isotrópico, sem perda de generalidade, é possível avaliar os coefi-
+
+cientes necessários nas condições de monotonicidade e obter um mapeamento das regiões onde
+
+todos os critérios são satisfeitos ou algum deles não é respeitado. A Fig. 4.8 fornece a avaliação
+
+do método MPFA enquanto que a Fig. 4.9 é relativa ao EbFVM. Fica evidente a partir das
+
+Fig. 4.8 e 4.9 que o MPFA honra as condições 4.14-4.17 para uma maior variedade de malhas.
+
+Ao percorrer o quarto de círculo de raio unitário todos os elementos que possuem razão de as-
+
+pecto unitária obedecem as condições de monotonicidade, assim a falha dos critérios decorre
+
+da não-ortogonalidade dos elementos. Para elementos retangulares quanto menor a razão de
+
+aspecto menor a não-ortogonalidade aceita pelos métodos tal que os coeficientes gerem uma
+
+
+
+4. Comparações entre os Métodos 47
+
+Figura 4.7: Representação do mapeamento utilizado na avaliação utilizando os critérios de
+monotonicidade.
+
+solução monotônica. A questão acerca do EbFVM é o fato deste não obedecer as condições de
+
+monotonicidade para malhas ortogonais com razão de aspecto menores que 1?
+3
+. Este valor é
+
+obtido através do cômputo de todos os fluxos ao redor de um volume de controle por expressões
+
+similares à equação 4.6 quando um meio isotrópico é considerado.
+
+Figura 4.8: Mapeamento de monotonicidade para o MPFA.
+
+Assim, assumindo kxx = kyy = 1, os quatro fluxos para o EbFVM nas direções vertical e
+
+horizontal são escritos como
+
+
+
+48 4. Comparações entre os Métodos
+
+Figura 4.9: Mapeamento de monotonicidade para o EbFVM.
+
+fE =
+1
+8`
+
+(pN ? pNE ) +
+1
+8`
+
+(pS ? pSE ) +
+6
+8`
+
+(pP ? pE ) (4.19)
+
+fW =
+1
+8`
+
+(pN ? pNW ) +
+1
+8`
+
+(pS ? pSW ) +
+6
+8`
+
+(pP ? pW ) (4.20)
+
+fN =
+`
+
+8
+(pN ? pNW ) +
+
+`
+
+8
+(pN ? pNE ) +
+
+6`
+8
+
+(pP ? pN ) (4.21)
+
+fS =
+`
+
+8
+(pW ? pSW ) +
+
+`
+
+8
+(pE ? pSE ) +
+
+6`
+8
+
+(pP ? pS) (4.22)
+
+Reunindo os fluxos na expressão para o volume de controle P, onde ?i fi = 0 é possível
+
+obter os coeficientes utilizados nas equações 4.14-4.17, assim,
+
+ANE = ANW = ASE = ASW = ?
+(
+
+1
+8`
+
++
+`
+
+8
+
+)
+AE = AW = AN = AS =
+
+1
+4`
+?
+
+3`
+4
+
+(4.23)
+
+AP =
+3`
+2
+
++
+3
+2`
+
+É importante notar que dos coeficientes apresentados em 4.23, AE , AW , AN , AS não são in-
+
+condicionalmente negativos, podendo ocorrer a inversão do sinal para ` &amp;lt;1?
+3
+
+o que viola
+
+a condição 4.15. Este comportamento, mesmo para malhas ortogonais e meios isotrópicos,
+
+decorre da utilização das coordenadas do ponto médio das faces na avaliação da matriz de
+
+derivadas. Pelo mesmo motivo o EbFVM sempre utiliza um esquema de múltiplos pontos inde-
+
+pendentemente do problema a ser resolvido. Uma forma de alterar este comportamento é alterar
+
+
+
+4. Comparações entre os Métodos 49
+
+as coordenadas utilizadas no cálculo da matriz de derivadas, utilizando, por exemplo, o ponto
+
+médio das arestas assim como no MPFA 64. Esta alteração na quadratura do método tem reflexo
+
+no estêncil apresentado pelas equações, fazendo com que o EbFVM tenha um número reduzido
+
+de não-nulos na matriz de coeficientes assim como o MPFA. Esta alternativa faz com que o
+
+mapeamento anteriormente apresentado na Fig. 4.9 fique alterado segundo a Fig. 4.10. Esta
+
+alternativa fornece bons resultados para os elementos retangulares, porém influi negativamente
+
+no quanto um elemento de razão de aspecto próxima da unidade poderia ser distorcido. Para o
+
+MPFA uma derivação mais completa com quadratura variável pode ser obtida 32, entretanto não
+
+existe uma quadratura ótima para todos os tipos de malhas e tensores.
+
+Figura 4.10: Mapeamento de moontonicidade para o EbFVM modificado.
+
+Este tipo de análise de mapeamento é uma função direta das condições de monotonicidade.
+
+Estas condições operam sobre os coeficientes da matriz
+[
+AP
+]
+, advinda da discretização do pro-
+
+blema e não levam em conta sua inversa nem as condições de contorno do problema. Devido
+
+a isto estas condições são mais restritivas e excluem alguns exemplos de malhas que, a pesar
+
+de possuírem coeficientes que violam as condições apresentadas, possuem inversa totalmente
+
+positiva.
+
+
+
+50 4. Comparações entre os Métodos
+
+
+
+Capítulo 5
+
+Exemplos de Aplicação
+
+Este capítulo tem por objetivo apresentar a solução de problemas utilizando os métodos
+
+de volumes finitos demonstrados anteriormente. Para tal, duas implementações básicas são
+
+utilizadas, onde a principal diferença está no cálculo dos coeficientes da equação da pressão.
+
+5.1 Validação e análise do erro
+
+De forma a validar os códigos implementados, problemas com solução analítica podem ser
+
+utilizados. A equação da pressão pode ser resolvida em alguns casos para meios anisotrópicos e
+
+geometrias simples, entretanto, devido ao caráter hiperbólico da equação da saturação, soluções
+
+analíticas para esta equação são mais difíceis de obter. Como interesse especial está sendo
+
+dado à discretização da equação pressão e uma vez que o acoplamento temporal das equações
+
+faz com que a obtenção da saturação seja feita por um procedimento algébrico dependente dos
+
+coeficientes da equação da pressão, uma validação da equação da pressão já se faz bastante útil.
+
+Dois casos serão explorados 65,66 para comparação das soluções com as soluções analíticas, o
+
+primeiro onde o meio é homogêneo e anisotrópico e o seguinte onde uma descontinuidade do
+
+campo de permeabilidade se faz presente. Um terceiro problema com solução analítica também
+
+é apresentado, mas nesse caso o mais interessante é a comparação entre os dois métodos.
+
+5.1.1 Meio anisotrópico homogêneo
+
+Neste problema o objetivo é obter a solução numérica da equação
+
+~? ·
+(
+?K ·~? p
+
+)
+= q (5.1)
+
+51
+
+
+
+52 5. Exemplos de Aplicação
+
+em um domínio quadrado de arestas unitárias ([0;0],[1;1]) cuja permeabilidade é dada pelo
+
+tensor
+
+K =
+
+?
+? 2 1
+
+1 2
+
+?
+? (5.2)
+
+Para este problema a distribuição de pressão é dada pela equação a seguir como uma função
+
+das coordenadas espaciais x e y. A solução é demonstrada também na Fig. 5.1.
+
+p(x, y) = exy (5.3)
+
+Figura 5.1: Solução analítica em um meio anisotrópico homogêneo.
+
+Como a solução é conhecida, o termo fonte q é escrito como
+
+q = ?2(1 + x2 + xy + y2)exy (5.4)
+
+Condições de contorno de Dirichlet com valor dado pela própria solução analítica do pro-
+
+blema são consideradas para a solução numérica. Como o meio é considerado homogêneo as
+
+mesmas malhas podem ser empregadas tanto para o EbFVM quanto para o MPFA. A Fig. 5.2
+
+mostra duas de uma série de malhas empregadas nos testes, uma com 8x8 elementos em cada
+
+lado do quadrado e outra com 16x16 elementos. Outras malhas mais refinadas foram geradas
+
+sempre dobrando o número de elementos em cada lateral e mantendo a mesma distribuição de
+
+quadriláteros e triângulos até malhas com 256x256 elementos.
+
+Como a solução analítica do problema é conhecida, é possível determinar a diferença entre
+
+a solução numérica e a solução analítica para cada nó da malha e assim definir um vetor de
+
+
+
+5. Exemplos de Aplicação 53
+
+Figura 5.2: Malhas empregadas para a solução em um meio homogêneo anisotrópico.
+
+erros, tal que cada componente deste vetor está associada ao desvio entre a solução analítica e
+
+a solução numérica de um nó da malha, da forma
+
+?P =
+1
+?
+
+nP
+(pP ? pAP) (5.5)
+
+onde nP é o número de nós da malha, pP a solução numérica no nó P e pAP a solução analítica.
+
+Utilizando a norma L2 do vetor de erros,
+
+L2 =
+
+???? nP?
+j=1
+
+?
+2
+j (5.6)
+
+Efetuando o cômputo para as malhas empregadas e traçando um gráfico da norma do erro em
+
+função do número de nós da malha obtém-se a Fig. 5.3, onde é possível visualizar o decaimento
+
+do erro com o devido refino da malha tanto para o EbFVM quanto para o MPFA.
+
+A Fig. 5.3 também demonstra uma linha de inclinação de referência de segunda ordem,
+
+ou seja, um método numérico onde o quadrado do erro decai conforme o tamanho médio dos
+
+elementos da malha é reduzido pela metade apresentaria a mesma inclinação. Para este caso os
+
+dois métodos apresentam o mesmo comportamento conforme a malha é refinada, entretanto o
+
+MPFA possui a magnitude dos erros menores que os apresentados pelo EbFVM.
+
+5.1.2 Meio anisotrópico heterogêneo
+
+O segundo caso é utilizado para demonstrar a capacidade dos métodos em tratar meios
+
+com uma descontinuidade de propriedade no domínio. A Fig. 5.4 demonstra as dimensões do
+
+domínio onde dois materiais com permeabilidades diferentes estão representados.
+
+Mais uma vez o problema a ser resolvido é dado pela equação 5.1, onde o tensor permeabi-
+
+lidade agora é dado pela equação 5.7.
+
+
+
+54 5. Exemplos de Aplicação
+
+10 100 1000 10000 100000
+1E-8
+
+1E-7
+
+1E-6
+
+1E-5
+
+1E-4
+
+1E-3
+
+0.01
+
+ 
+
+ 
+
+N
+or
+
+m
+a 
+
+do
+ e
+
+rr
+o
+
+Número de volumes
+
+ EbFVM
+ MPFA
+ inclinação de
+
+            referência
+
+Figura 5.3: Norma do erro em função do número de nós da malha para um meio anisotrópico
+homogêneo.
+
+Figura 5.4: Domínio de solução e regiões com diferentes tensores permeabilidade.
+
+K =
+
+?????????
+????????
+
+?
+? 1 0
+
+0 1
+
+?
+? x &amp;lt;0
+
+?
+? 20 10
+
+10 20
+
+?
+? x &gt; 0
+
+(5.7)
+
+O campo de pressão é dado pela equação 5.8 e demonstrado na Fig. 5.5.
+
+p(x, y) =
+
+??
+? 10x[2sen(y) + cos(y)] + sen(y) x &amp;lt;0exsen(y) x &gt; 0 (5.8)
+
+
+
+5. Exemplos de Aplicação 55
+
+Figura 5.5: Solução analítica para o problema com uma descontinuidade do tensor permeabili-
+dade.
+
+O termo fonte é escrito como
+
+q =
+
+??
+? 10x[2sen(y) + cos(y)] + sen(y) x &amp;lt;0?20excos(y) x &gt; 0 (5.9)
+
+Neste exemplo as mesmas malhas não podem ser utilizadas devido à diferente associação
+
+das propriedades nos entes geométricos. Desta forma, malhas ligeiramente diferentes serão
+
+empregadas assim como na Fig. 5.6, onde a região central possui número ímpar de elementos
+
+para o MPFA (Fig. 5.6(a)) e um número par de elementos para o EbFVM (Fig. 5.6(b)). Desta
+
+maneira assegura-se que para o EbFVM a permeabilidade esteja relacionada aos elementos
+
+enquanto que para o MPFA aos volumes de controle.
+
+Figura 5.6: Diferença na construção das malhas empregadas para o (a)MPFA e para o
+(b)EbFVM.
+
+Mais uma vez, uma seqüência de malhas é utilizada e para cada um dos métodos até refinos
+
+
+
+56 5. Exemplos de Aplicação
+
+de 256x256 elementos para o EbFVM e 255x255 para o MPFA. Um vetor de erros e sua norma
+
+L2 são calculados com base na solução analítica assim como no teste anterior. A Fig. 5.7
+
+demonstra o comportamento da norma do erro para as diferentes malhas.
+
+100 1000 10000 100000
+1E-7
+
+1E-6
+
+1E-5
+
+1E-4
+
+1E-3
+
+0.01
+
+0.1
+ 
+
+ 
+
+N
+or
+
+m
+a 
+
+do
+ e
+
+rr
+o
+
+Número de volumes
+
+ EbFVM
+ MPFA
+ inclinação de
+
+           referência
+
+Figura 5.7: Norma do erro em função do número de nós da malha para o problema heterogêneo.
+
+Para este caso o MPFA possui erros de magnitude menor que os apresentados pelo EbFVM.
+
+Também é possível verificar que neste caso os dois métodos possuem a mesma inclinação da
+
+referência de segunda ordem.
+
+Os resultados dos dois casos apresentados demonstram a correta implementação dos méto-
+
+dos numéricos e adequada convergência do método de solução do sistema linear da pressão.
+
+5.1.3 Meio homogêneo anisotrópico particular
+
+Outro problema interessante decore da utilização de um tensor que obedeça a relação k2xy =
+1
+2 kxxkyy e uma malha cartesiana ortogonal, assim como descrito na Seção 4.3. Para este tensor
+
+é esperado que as expressões do fluxo do MPFA e do EbFVM sejam iguais, levando ao mesmo
+
+sistema linear de equações. Um tensor que obedeça esta relação pode ser escrito como
+
+K =
+
+?
+? 1 2
+
+2 8
+
+?
+? (5.10)
+
+
+
+5. Exemplos de Aplicação 57
+
+onde neste caso, o termo fonte da equação 5.1 para a solução 5.3 fica escrito como
+
+q = ?(4 + 8x2 + 4xy + y2)exy (5.11)
+
+Como sistemas lineares iguais para equação da pressão são esperados, a norma do erro tam-
+
+bém deve ser a mesma quando o mesmo método de solução de sistemas lineares é empregado.
+
+Obtendo mais uma vez o vetor de erros e a norma L2 do mesmo, para uma sequência de malhas
+
+obtém-se a Fig. 5.8, onde fica clara a igualdade dos fluxos descrita anteriormente.
+
+Figura 5.8: Norma do erro em função do número de nós da malha para um meio anisotrópico
+homogêneo.
+
+5.2 Análise de monotonicidade
+
+Nesta seção serão analisados resultados sobre a monotonicidade das soluções apresentadas
+
+pelos métodos EbFVM e MPFA em meios homogêneos. Para tal os critérios citados na Seção
+
+4.4 serão utilizados juntamente com o problema definido na mesma seção, que corresponde a
+
+resolver a equação de um escoamento monofásico (equação 5.1) em um domínio quadrado com
+
+condições de contorno homogêneas e um termo fonte positivo pontual localizado no centro da
+
+malha. Para todos os métodos, independentemente da malha e das propriedades do meio, seria
+
+esperada uma solução monotônica similar à demonstrada na Fig. 4.4, onde nenhum valor do
+
+campo de pressão seria maior que a pressão no volume de controle onde o termo fonte está
+
+presente e também nunca negativo. Para os casos apresentados malhas de quadriláteros serão
+
+utilizadas e o termo fonte será escrito como
+
+
+
+58 5. Exemplos de Aplicação
+
+q = 10
+k??
+k??
+
+(5.12)
+
+onde k?? e k?? são os autovalores do tensor permeabilidade.
+
+5.2.1 Meio isotrópico com razão de aspecto unitária
+
+Como caso mais simples, um meio isotrópico com tensor permeabilidade dado por
+
+K =
+
+?
+? 1 0
+
+0 1
+
+?
+? (5.13)
+
+será empregado com uma malha de quadriláteros uniformes com 20x20 elementos. A Fig. 5.9
+
+demonstra as soluções para os dois métodos e o máximo valor da pressão em cada um deles.
+
+Figura 5.9: Solução do problema com termo fonte pontual e condições de contorno homogêneas
+para um meio isotrópico com malha uniforme de quadriláteros para o (a)EbFVM e (b)MPFA.
+
+Fica evidente pela Fig. 5.9 que os dois métodos apresentam soluções monotônicas assim
+
+como o indicado pelas Fig. 4.8 e 4.9. As diferentes pressões máximas são facilmente explicadas
+
+pelos diferentes coeficientes que formam o sistema linear na discretização das equações. Para
+
+este caso a equação do volume de controle central, onde está localizado o termo fonte, possuirá
+
+nove valores não-nulos para o EbFVM e cinco não-nulos para o MPFA. Esta diferença é devida
+
+ao alinhamento do tensor permeabilidade com a malha e assim cada fluxo no MPFA é calculado
+
+utilizando apenas dois pontos, assim como apresentado na equação 4.9.
+
+
+
+5. Exemplos de Aplicação 59
+
+5.2.2 Meio anisotrópico com razão de aspecto unitária
+
+Utilizando o mesmo problema definido anteriormente e a mesma malha, mas alterando o
+
+tensor permeabilidade para um tensor anisotrópico é possível verificar o comportamento das
+
+soluções. Para este caso k?? = 1, k?? = 1000 e o ângulo entre as direções principais do tensor e
+
+as linhas da malha é ?/6. No sistema coordenado x?y, onde o problema está sendo descrito,
+este tensor assume a forma
+
+K =
+
+?
+? 250, 75 432, 58
+
+432, 58 750, 25
+
+?
+?. (5.14)
+
+A Fig. 5.10(a) mostra o campo de pressão para o problema em questão utilizando MPFA.
+
+A solução, evidentemente não-monotônica, apresenta oscilações devido à forte anisotropia do
+
+meio 30. A Fig. 5.10(b) exibe os elementos onde ao menos um nó assume valor negativo para o
+
+campo de pressão.
+
+Figura 5.10: (a)Solução do problema com termo fonte pontual e condições de contorno ho-
+mogêneas para um meio anisotrópico com malha uniforme de quadriláteros para o MPFA;
+(b)Elementos onde ao menos um nó possui solução negativa.
+
+A Fig. 5.11 traz os mesmos resultados para o EbFVM. Apesar de rigorosamente não-mono-
+
+tônica a solução obtida pelo EbFVM é suave e com magnitude das oscilações de ordem menor
+
+que a apresentada no MPFA. Em contrapartida o máximo valor da pressão no EbFVM é subs-
+
+tancialmente diferente do valor calculado empregando MPFA. Apesar de malhas relativamente
+
+grosseiras terem sido empregadas é importante ressaltar que o refino e malha não evita este tipo
+
+de comportamento 30, apenas minimizando-o, uma vez que a maneira como os coeficientes que
+
+originam o sistema linear não fica modificada pelo refino.
+
+
+
+60 5. Exemplos de Aplicação
+
+Figura 5.11: (a)Solução do problema com termo fonte pontual e condições de contorno ho-
+mogêneas para um meio anisotrópico com malha uniforme de quadriláteros para o EbFVM;
+(b)Elementos onde ao menos um nó possui solução negativa.
+
+5.2.3 Meio isotrópico com razão de aspecto não-unitária
+
+Neste exemplo o mesmo problema será resolvido uma vez mais para o tensor permeabili-
+
+dade dado por 5.13, entretanto uma malha com razão de aspecto ` = 0, 25 é empregada com
+
+o intuito de verificar a falha nos critérios de monotonicidade no EbFVM assim como previsto
+
+pela dedução dos coeficientes em 4.23. A Fig. 5.12 demonstra a pressão para uma malha com
+
+20x80 elementos utilizando tanto o EbFVM quanto o MPFA.
+
+X
+
+0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1
+
+Y
+
+0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1
+
+P
+r
+e
+
+s
+s
+ã
+
+o
+
+0
+
+0.001
+
+0.002
+
+0.003
+
+0.004
+
+0.005
+
+0.0005 0.001 0.0015 0.002 0.0025 0.003 0.0035 0.004 0.0045
+
+p = 4 .2 8 8 e -3
+max
+
+X
+
+0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1
+
+Y
+
+0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1
+
+P
+r
+e
+
+s
+s
+ã
+
+o
+
+0
+
+0.001
+
+0.002
+
+0.003
+
+0.004
+
+0.005
+
+0.0005 0.001 0.0015 0.002 0.0025 0.003 0.0035 0.004 0.0045
+
+p = 4 .6 3 4 e -3
+max
+
+(a) (b)
+
+Figura 5.12: Solução do problema com termo fonte pontual e condições de contorno ho-
+mogêneas para um meio isotrópico para malha com razão de aspecto 0,25 (a)MPFA e
+(b)EbFVM.
+
+A solução para este caso utilizando MPFA é monotônica, assim como esperado pela uti-
+
+lização dos critérios de monotonicidade. O campo de pressão advindo da solução com EbFVM
+
+apresenta pontos de inversão do sinal da derivada, demonstrado em detalhe na Fig. 5.13. Ape-
+
+sar de estritamente não-monotônica, a magnitude das oscilações da solução no EbFVM é muito
+
+pequena.
+
+
+
+5. Exemplos de Aplicação 61
+
+X
+
+0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1
+
+Y
+
+0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1
+
+P
+r
+e
+
+s
+s
+ã
+
+o
+
+0
+
+0.001
+
+0.002
+
+0.003
+
+0.004
+
+0.005
+
+0.0005 0.001 0.0015 0.002 0.0025 0.003 0.0035 0.004 0.0045
+
+Figura 5.13: Detalhe do campo de pressão para o EbFVM em uma malha de razão de aspecto
+0,25.
+
+Os resultados dos testes de monotonicidade deixam claro que nenhum dos métodos, objetos
+
+deste estudo, são incondicionalmente monotônicos. A principal diferença observada reside na
+
+amplitude das oscilações geradas pelos dois métodos. Apesar do MPFA possuir uma maior
+
+gama de opções de soluções monotônicas, quando ocorrem soluções não-monotônicas estas
+
+apresentam oscilações fortes. Ao contrário o EbFVM apresenta, para os casos teste estudados,
+
+soluções suaves.
+
+5.3 Problemas bifásicos
+
+Nesta seção o interesse está em resolver problemas de reservatórios onde a solução da
+
+equação da pressão e da saturação são buscadas para situações mais gerais onde é necessária a
+
+avaliação da mobilidade sobre as faces dos volumes de controle.
+
+5.3.1 Problema dos três poços
+
+Num primeiro caso o reservatório é composto por um domínio onde todas as fronteiras são
+
+isoladas e três poços, um injetor e dois produtores, são posicionados de tal forma que os produ-
+
+tores estejam à mesma distância do poço injetor, conforme a Fig. 5.14. Uma das dimensões do
+
+reservatório é suficientemente maior que a outra, tal que os efeitos das extremidades não afetem
+
+os resultados.
+
+
+
+62 5. Exemplos de Aplicação
+
+10m10m
+
+10m
+
+poço injetor
+
+poços produtores
+
+100m
+
+Figura 5.14: Configuração do problema dos três poços.
+
+Este problema é tipicamente empregado para verificar os efeitos que a malha introduz so-
+
+bre a solução. Para um meio homogêneo e isotrópico, como aqui considerado, a solução é
+
+idealmente simétrica, entretanto dependendo da forma como o fluxo é avaliado, podem ocor-
+
+rer alterações na solução numérica para malhas distorcidas. Para este problema uma malha de
+
+paralelogramos com inclinação de 45?, com 20x200 elementos foi empregada. O poço inje-
+
+tor opera com vazão de água prescrita enquanto que os produtores possuem pressão de fundo
+
+de poço fixa e constante durante o decorrer da simulação. Os valores de viscosidade foram
+
+escolhidos de forma a minimizar os efeitos de orientação de malha 20. A Tabela 5.1 lista as
+
+propriedades do reservatório e as condições operacionais do problema. A Fig. 5.15 demonstra
+
+a forma das curvas de permeabilidade relativa utilizadas.
+
+Tabela 5.1: Propriedades físicas e condições operacionais para o problema dos três poços.
+
+porosidade 0, 15
+permeabilidade absoluta 10?15m2
+
+viscosidade do óleo 0, 001Pa·s
+viscosidade da água 0, 01Pa·s
+
+saturação mínima de água 0
+saturação residual de óleo 0
+
+saturação inicial 0
+vazão de injeção 1, 2·10?6 m
+
+3
+
+s
+pressão de fundo de poço 105Pa
+
+índice de poço 6, 28m3
+
+As figuras 5.16 e 5.17 mostram a evolução do campo de pressão para diferentes volumes
+
+porosos injetados (VPI). Fica evidente a similaridade entre os resultados dos dois métodos, prin-
+
+cipalmente no que diz respeito à simetria das soluções para a malha empregada. Esta simetria
+
+advém da correta representação do fluxo por múltiplos pontos em ambos os métodos. Neste
+
+caso toda a anisotropia do problema está concentrada na malha e mesmo assim para uma malha
+
+severamente distorcida os métodos apresentaram resultados consistentes.
+
+
+
+5. Exemplos de Aplicação 63
+
+0.0 0.2 0.4 0.6 0.8 1.0
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+P
+er
+
+m
+ea
+
+bi
+lid
+
+ad
+e 
+
+re
+la
+
+tiv
+a
+
+saturação da água
+
+ água
+ óleo
+
+Figura 5.15: Curvas de permeabilidade relativa.
+
+As Fig. 5.18 e 5.19 mostram para o mesmo problema a evolução do campo de saturação
+
+para alguns tempos. Também é possível verificar certo grau de simetria nestas soluções, apesar
+
+da frente de movimentação dos fluidos ficar afetada pelo simples esquema de avaliação das
+
+mobilidades nas faces do volume de controle empregado.
+
+Outra forma de verificar a simetria das soluções é através das curvas de corte d’água de
+
+cada um dos poços produtores. Nestas curvas a razão entre a vazão de água e a vazão total é
+
+monitorada ao longo do tempo. Idealmente para o arranjo de poços utilizado, se a frente de água
+
+atingir os dois poços produtores ao mesmo tempo, as curvas seriam coincidentes, entretanto
+
+não é o que acontece pela Fig. 5.20. Este resultado é altamente influenciado pela avaliação
+
+das mobilidades nas faces dos volumes de controle e pelo refino de malha, porém é importante
+
+notar que apesar de não coincidentes as curvas dos poços produtores, a discordância foi a mesma
+
+tanto para o EbFVM quanto para o MPFA, demonstrando a similaridade dos resultados dos dois
+
+métodos.
+
+5.3.2 Reservatório heterogêneo
+
+Neste exemplo o intuito é verificar o comportamento dos métodos quando um reservatório
+
+isotrópico heterogêneo é empregado. Devido às diferentes associações dos valores de perme-
+
+abilidade aos elementos ou aos volumes de controle, malhas desiguais serão empregadas. A
+
+Fig. 5.21 demonstra uma parte do reservatório onde as cores representam a permeabilidade e
+
+na seqüência é demonstrada como são construídas as malhas. Neste caso a alternativa é em-
+
+pregar malhas de quadriláteros, pois assim os volumes de controle do MPFA coincidem exata-
+
+mente com os elementos utilizados no EbFVM, gerando uma malha desencontrada no interior
+
+do domínio e ligeiramente diferente nos contornos para um domínio quadrado.
+
+
+
+64 5. Exemplos de Aplicação
+
+Figura 5.16: Campo de pressão utilizando MPFA.
+
+
+
+5. Exemplos de Aplicação 65
+
+Figura 5.17: Campo de pressão utilizando EbFVM.
+
+
+
+66 5. Exemplos de Aplicação
+
+MPFA
+0
+,0
+
+5
+V
+
+P
+I
+
+0
+,1
+
+0
+V
+
+P
+I
+
+0
+,1
+
+5
+V
+
+P
+I
+
+0
+,2
+
+0
+V
+
+P
+I
+
+0
+,2
+
+5
+V
+
+P
+I
+
+Saturação
+
+0.9
+
+0.8
+
+0.7
+
+0.6
+
+0.5
+
+0.4
+
+0.3
+
+0.2
+
+0.1
+
+40 50 60 70
+
+0
+
+10
+
+40 50 60 70
+
+0
+
+10
+
+40 50 60 70
+
+0
+
+10
+
+40 50 60 70
+
+0
+
+10
+
+40 50 60 70
+
+0
+
+10
+
+Figura 5.18: Evolução da frente de água utilizando MPFA.
+
+
+
+5. Exemplos de Aplicação 67
+
+0
+,0
+
+5
+V
+
+P
+I
+
+0
+,1
+
+0
+V
+
+P
+I
+
+0
+,1
+
+5
+V
+
+P
+I
+
+0
+,2
+
+0
+V
+
+P
+I
+
+0
+,2
+
+5
+V
+
+P
+I
+
+Saturação
+
+0.9
+
+0.8
+
+0.7
+
+0.6
+
+0.5
+
+0.4
+
+0.3
+
+0.2
+
+0.1
+
+40 50 60 70
+
+0
+
+10
+
+40 50 60 70
+
+0
+
+10
+
+40 50 60 70
+
+0
+
+10
+
+40 50 60 70
+
+0
+
+10
+
+40 50 60 70
+
+0
+
+10
+
+EbFVM
+
+Figura 5.19: Evolução da frente de água utilizando EbFVM.
+
+
+
+68 5. Exemplos de Aplicação
+
+0.00 0.05 0.10 0.15 0.20 0.25 0.30
+
+0.0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+  poço 1 EbFVM
+  poço 2 EbFVM
+  poço 1 MPFA
+  poço 2 MPFA
+
+C
+or
+
+te
+ d
+
+'á
+gu
+
+a
+
+Volume poroso injetado
+
+Figura 5.20: Curvas de corte d’água para os poços produtores utilizando EbFVM e MPFA.
+
+Figura 5.21: Construção dos elementos da malha do EbFVM e do MPFA para um dado meio
+poroso.
+
+A Fig. 5.22 demonstra os valores de permeabilidade empregados neste teste. Os valores
+
+possuem variação no domínio de forma quase contínua, sem grandes descontinuidades.
+
+Figura 5.22: Mapa de permeabilidade utilizado para representar um reservatório heterogêneo.
+
+Para este problema dois poços serão considerados, um injetor na posição de coordenadas
+
+(0; 0) e um produtor em (100; 100). Os dados requeridos para a simulação são listados na
+
+Tabela 5.2 e as curvas de permeabilidade relativa empregadas são demonstradas nas Fig. 5.23.
+
+A Figura 5.24 demonstra os campos de saturação para diversos tempos tanto para o EbFVM
+
+quanto para o MPFA. Existe boa concordância entre os resultados, apenas ficando a frente de
+
+
+
+5. Exemplos de Aplicação 69
+
+Tabela 5.2: Propriedades físicas e condições operacionais para o problema heterogêneo.
+
+porosidade 0, 27
+viscosidade do óleo 0, 01Pa·s
+viscosidade da água 0, 001Pa ·s
+
+saturação mínima de água 0, 23
+saturação residual de óleo 0, 26
+
+saturação inicial 0, 25
+vazão de injeção 1, 15 ·10?6 m
+
+3
+
+s
+
+0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+P
+er
+
+m
+ea
+
+bi
+lid
+
+ad
+e 
+
+re
+la
+
+tiv
+a
+
+saturação da água
+
+ água
+ óleo
+
+Figura 5.23: Curvas de permeabilidade relativa.
+
+água com pequenas diferenças devido à associação da permeabilidade a diferentes entidades
+
+da malha. Para o MPFA se em um volume de controle a permeabilidade é menor que nas
+
+regiões vizinhas, a saturação muda mais lentamente, forçando o fluido a circundar este volume
+
+de controle. Para o EbFVM, como em um volume de controle diferentes valores de permeabi-
+
+lidade estão presentes, a saturação obtida é um valor representativo das diferentes porções que
+
+contribuem ao volume de controle.
+
+
+
+70 5. Exemplos de Aplicação
+
+MPFA
+
+0
+,0
+
+5
+ V
+
+P
+I
+
+0
+,1
+
+0
+ V
+
+P
+I
+
+0
+,2
+
+0
+ V
+
+P
+I
+
+0
+,5
+
+0
+ V
+
+P
+I
+
+0
+,6
+
+5
+ V
+
+P
+I
+
+EbFVM
+
+X
+
+Y
+
+0 20 40 60 80 100
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+Saturação
+
+0.7
+0.65
+0.6
+0.55
+0.5
+0.45
+0.4
+0.35
+0.3
+
+X
+
+Y
+
+0 20 40 60 80 100
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+X
+
+Y
+
+0 20 40 60 80 100
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+X
+
+Y
+
+0 20 40 60 80 100
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+X
+
+Y
+
+0 20 40 60 80 100
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+X
+
+Y
+
+0 20 40 60 80 100
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+X
+
+Y
+
+0 20 40 60 80 100
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+X
+
+Y
+
+0 20 40 60 80 100
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+X
+
+Y
+
+0 20 40 60 80 100
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+X
+
+Y
+
+0 20 40 60 80 100
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+Figura 5.24: Campos de saturação para diferentes tempos utilizando MPFA e EbFVM.
+
+
+
+Capítulo 6
+
+Conclusões
+
+Nesta dissertação foram apresentados dois métodos numéricos utilizados para simulação
+
+de reservatórios de petróleo a fim de obter-se uma comparação dos mesmos. A formulação
+
+empregada demonstra que os dois métodos são métodos de volumes finitos, ou seja, as equações
+
+de balanço são escritas como somatórios de fluxos discretos ao redor dos volumes de controle
+
+da malha.
+
+A questão principal foi avaliar quais as diferenças entre os métodos de discretização para
+
+o cálculo de tais fluxos discretos. Neste caso foi suficiente o emprego de um modelo de es-
+
+coamento simplificado, onde somente água e óleo estavam presentes no meio poroso, sendo
+
+tratados como fluidos incompressíveis e isotérmicos, na ausência de gravidade e pressão capi-
+
+lar. As equações diferenciais que regem este tipo de problema foram apresentadas de forma a
+
+explicitar as características das grandezas que estavam sendo calculadas chegando-se à equação
+
+da pressão e à equação da saturação na forma de Buckley-Leverret.
+
+Através da forma pela qual as equações de balanço foram escritas, os coeficientes, tradi-
+
+cionalmente chamados de transmissibilidades na literatura de reservatórios, agrupam as diferen-
+
+ças mais importantes durante o procedimento de discretização das equações. Como a equação
+
+da saturação foi escrita também como uma função destes coeficientes, foi de certa forma sufi-
+
+ciente uma validação da equação da pressão para qual soluções analíticas podem ser calculadas.
+
+Resultados foram obtidos para diversos refinos de malha, demonstrando a convergência dos
+
+métodos independentemente da malha empregada e também demonstrando a correta imple-
+
+mentação dos códigos computacionais utilizados.
+
+Análises de monotonicidade foram muito empregadas na literatura para prever o compor-
+
+tamento do MPFA em situações simples, verificando a falha da metodologia em determinadas
+
+circunstâncias, como quando meios fortemente anisotrópicos e/ou malhas severamente distor-
+
+71
+
+
+
+72 6. Conclusões
+
+cidas são empregadas. Este tipo de análise foi utilizado aqui para o EbFVM, concluindo-se que
+
+este, como outros métodos, não produz soluções estritamente monotônicas.
+
+Contudo as soluções obtidas utilizando EbFVM mostraram um comportamento muito mais
+
+suave quando comparado com as oscilações apresentadas pelo MPFA. Para problemas isotrópi-
+
+cos e malhas ortogonais com razão de aspecto diferente da unidade os critérios de monotonici-
+
+dade demonstravam uma solução não-monotônica para o EbFVM e verdadeiramente a solução
+
+apresentava intensidade das oscilações indesejadas muito reduzida, próximas às regiões onde
+
+a solução apresenta gradientes elevados. Este comportamento não-monotônico da solução não
+
+é apresentado pelo MPFA devido a uma característica da formulação empregada. Apesar de o
+
+método utilizar, inclusive em sua nomenclatura, múltiplos pontos para avaliação dos fluxos, em
+
+determinadas situações onde as direções principais do tensor permeabilidade estão alinhadas
+
+com a malha apenas dois pontos são empregados na aproximação do fluxo. Este tipo de carac-
+
+terística faz com que a equação discreta de cada volume de controle possua um determinado
+
+número de não-nulos na matriz de coeficientes diferente para cada orientação do tensor perme-
+
+abilidade. No EbFVM tradicionalmente empregado, onde o pontos utilizados na avaliação do
+
+fluxo estão localizados sobre o centróide das faces dos volumes de controle, as equações de
+
+todos os volumes sempre possuirão o mesmo número de não-nulos na matriz de coeficientes
+
+independentemente do tensor permeabilidade. O número de vizinhos de um volume de controle
+
+é determinado pelos elementos que contribuem para o volume de controle em questão.
+
+Os resultados aplicados aos problemas de reservatórios deixaram clara a capacidade de am-
+
+bos os métodos em produzir soluções consistentes com a física do problema a que se está
+
+estudando. Mesmo para malhas distorcidas soluções simétricas podem ser obtidas, a menos dos
+
+efeitos de interpolação das mobilidades nas faces dos volumes de controle. Outra característica
+
+importante é a capacidade de utilização para simulação em meios heterogêneos como os encon-
+
+trados em casos reais de simulação de reservatórios. Neste caso apenas não é possível empregar
+
+as mesmas malhas devido à associação a diferentes entes geométricos das propriedades de um
+
+meio previamente determinado.
+
+
+
+Bibliografia
+
+[1] CLEVELAND, C.; BLACK, B. Edwin Laurentine Drake. Encyclopedia of Earth, 2008.
+
+[2] BEAR, J. Some Experiments in Dispersion. Journal of Geophysical Research, v. 66, n. 8,
+
+p. 2455–2467, 1961.
+
+[3] LIPNIKOV, K.; SHASHKOV, M.; SVYATSKIY, D.; VASSILEVSKI, Yu. Monotone Finite
+
+Volume Schemes for Diffusion Equations on Unstructured Triangular and Shape-regular
+
+Polygonal Meshes. Journal of Computational Physics, Academic Press Professional, Inc.,
+
+San Diego, USA, v. 227, n. 1, p. 492–512, 2007. ISSN 0021-9991.
+
+[4] AZIZ, K.; SETTARI, A. Petroleum Reservoir Simulation. London: Applied Science Pub-
+
+lishers, 1979.
+
+[5] CAO, H. Development of Techniques for General Purpose Simulators. Tese (Ph.D. Thesis)
+
+— Stanford University, Stanford, 2002.
+
+[6] NJIFENJOU, A.; NGUENA, I. M. A Finite Volume Approximation for Second Order Ellip-
+
+tic Problems with a Full Matrix on Quadrilateral Grids: derivation of the scheme and a the-
+
+oretical analysis. International Journal on Finite Volumes, Université de Provence, França,
+
+v. 3, n. 2, p. 30, 2006.
+
+[7] MALISKA, C. R. Transferência de Calor e Mecânica dos Fluidos Computacional. 2?. ed.
+
+Rio de Janeiro: LTC Editora, 2004.
+
+[8] SEIXLACK, A. L.; MALISKA, C. R. Condução Anisotrópica Bidimensional em Geome-
+
+trias Irregulares. In: IX Congresso Brasileiro de Engenharia Mecânica. Florianópolis: [s.n.],
+
+1987. p. 05–08.
+
+[9] MALISKA, C. R.; CUNHA, A. R.; SILVA, M. A. L. A. F. C. Tridimensional Petroleum
+
+Reservoir Simulation Using Generalized Curvilinear Grids. In: V ENCIT. São Paulo: [s.n.],
+
+1994. p. 355–358.
+
+73
+
+
+
+74 Bibliografia
+
+[10] PEACEMAN, D. W. Fundamentals of Numerical Reservoir Simulation. Lecture Notes in
+
+Engineering 34: Elsevier, 1977.
+
+[11] ALLENIII, M. B.; BEHIE, G. A.; TRANGENSTEIN, J. Multiphase Flow in Porous Me-
+
+dia. [S.l.]: Springer Verlag, 1988.
+
+[12] FUNG, L.-K.; HIEBERT, A. D.; NGHIEM, L. X. Reservoir Simulation with a Control-
+
+Volume Finite-Element Method. SPE Reservoir Engineering, Society of Petroleum Engi-
+
+neers, v. 7, n. 3, p. 349–357, 1992.
+
+[13] VERMA, S.; AZIZ, K. A Control Volume Scheme for Flexible Grids in Reservoir Simu-
+
+lation. In: SPE Reservoir Simulation Symposium. Dallas, Texas: Society of Petroleum Engi-
+
+neers, 1997. p. 13.
+
+[14] HEINEMANN, G. F.; HEINEMANN, Z. E. Gridding Concept for the Third Generation
+
+of Reservoir Simulators. In: Sixth International Forum on Reservoir Simulation. Salzburg,
+
+Austria: Society of Petroleum Engineers, 2001. p. 159.
+
+[15] ROZóN, B. J. A Generalized Finite Volume Discretization Method for Reservoir Simula-
+
+tion. In: Reservoir Simulation Symposium. Houston, Texas: Society of Petroleum Engineers,
+
+1989. p. 14.
+
+[16] FUNG, L.-K.; HIEBERT, A. D.; NGHIEM, L. X. Reservoir Simulation with a Control-
+
+Volume Finite-Element Method. In: 11? SPE Symposium on Reservoir Simulation. Ana-
+
+heim, California: Society of Petroleum Engineers, 1991. p. 9.
+
+[17] FORSYTH, P. A Control-Volume, Finite Element Method for Local Mesh Refinement in
+
+Thermal Reservoir Simulation. SPE Rerservoir Engineering, USA, v. 5, n. 4, p. 561–566,
+
+1990.
+
+[18] CORDAZZO, J.; HURTADO, F. S. V.; MALISKA, C. R.; SILVA, A. F. C. The Negative
+
+Transmissibility Issue when using CVFEM in Petroleum Reservoir Simulation - 1.Theory.
+
+In: Proceedings of the 10? Brazilian Congress of Thermal Sciences and Engineering. Rio de
+
+Janeiro: ABCM, 2004. p. 12.
+
+[19] CORDAZZO, J. Simulação de Reservatórios de Petróleo Utilizando o Método EbFVM e
+
+Multigrid Algébrico. Tese (Doutorado em Engenharia Mecânica) — Universidade Federal
+
+de Santa Catarina, Florianópolis, 2006.
+
+
+
+Bibliografia 75
+
+[20] HURTADO, F. S. V. Uma Formulação de Volumes Finitos Baseada em Elementos para
+
+a Simulação do Deslocamento Bifásico Imiscível em Meios Porosos. Dissertação (Mestrado
+
+em Engenharia Mecânica) — Universidade Federal de Santa Catarina, Florianópolis, 2005.
+
+[21] EDWARDS, M. G.; ROGERS, C. F. Finite Volume Discretization with Imposed Flux
+
+Continuity for the General Tensor Pressure Equation. Computational Geosciences, v. 2, n. 4,
+
+p. 259–290, 1998.
+
+[22] AAVATSMARK, I.; BARKVE, T.; BØE, Ø.; MANNSETH, T. Discretization on Non-
+
+Orthogonal, Quadrilateral Grids for Inhomogeneous, Anisotropic Media. Journal of Compu-
+
+tational Physics, Academic Press Professional, Inc., San Diego, USA, v. 127, n. 1, p. 2–14,
+
+1996. ISSN 0021-9991.
+
+[23] AAVATSMARK, I.; BARKVE, T.; BØE, Ø. Discretization on Unstructured Grids for
+
+Inhomogeneous, Anisotropic Media. Part I: Derivation of the Methods. SIAM-Journal on
+
+Scientific Computing, Society for Industrial and Applied Mathematics, Philadelphia, USA,
+
+v. 19, n. 5, p. 1700–1716, 1998. ISSN 1064-8275.
+
+[24] AAVATSMARK, I.; BARKVE, T.; BØE, Ø. Discretization on Unstructured Grids for In-
+
+homogeneous, Anisotropic Media. Part II: Discussion and Numerical Results. SIAM-Journal
+
+on Scientific Computing, Society for Industrial and Applied Mathematics, Philadelphia,
+
+USA, v. 19, n. 5, p. 1717–1736, 1998. ISSN 1064-8275.
+
+[25] AAVATSMARK, I.; BARKVE, T.; MANNSETH, T. Control-Volume Discretization
+
+Methods for 3D Quadrilateral Grids in Inhomogeneous, Anisotropic Reservoirs. In: SPE
+
+Reservoir Simulation Simposium. Dallas: Society of Petroleum Engineers, 1997. p. 9.
+
+[26] KLAUSEN, R. A.; WINTHER, R. Robust Convergence of Multi Point Flux Approxima-
+
+tion on Rough Grids. Numerische Mathematik, Springer-Verlag New York, Inc., Secaucus,
+
+USA, v. 104, n. 3, p. 317–337, 2006. ISSN 0029-599X.
+
+[27] PAL, M.; EDWARDS, M. G. Quasimonotonic Continuous Darcy-Flux Approximation for
+
+General 3D Grids of Any Element Type. In: SPE Reservoir Simulation Simposium. Houston,
+
+Texas: Society of Petroleum Engineers, 2007. p. 14.
+
+[28] NORDBOTTEN, J. M.; EIGESTAD, G. T. Monotonicity Conditions for Control Volume
+
+Methods on General Quadrilateral Grids; Application to MPFA. In: Proceedings of the 16?
+
+Nordic Seminar on Computational Mechanics. Trondheim, Noruega: Nordic Association on
+
+Computational Mechanics, 2003. p. 4.
+
+
+
+76 Bibliografia
+
+[29] NORDBOTTEN, J. M.; EIGESTAD, G. T. Discretization on Quadrilateral Grids with
+
+Improved Monotonicity Properties. Journal of Computational Physics, Academic Press Pro-
+
+fessional, Inc., San Diego, USA, v. 203, n. 2, p. 744–760, 2005. ISSN 0021-9991.
+
+[30] NORDBOTTEN, J. M.; AAVATSMARK, I. Monotonicity Conditions for Control Volume
+
+Methods on Uniform Parallelogram Grids in Homogeneous Media. Computational Geo-
+
+sciences, v. 9, p. 61–72, 2005.
+
+[31] AAVATSMARK, I.; EIGESTAD, G. T.; KLAUSEN, R. A., WHEELER, M. F.; YOTOV,
+
+I. Convergence of a Symmetric MPFA Method on Quadrilateral Grids. Computational Geo-
+
+sciences, v. 11, n. 4, p. 333–345, 2007.
+
+[32] NORDBOTTEN, J. M.; AAVATSMARK, I.; EIGESTAD, G. T. Monotonicity of Con-
+
+trol Volume Methods. Numerische Mathematik, Springer-Verlag New York, Inc., Secaucus,
+
+USA, v. 106, n. 2, p. 255–288, 2007. ISSN 0029-599X.
+
+[33] ØIAN, E.; HEIMSUND, B. O.; EIGESTAD, G. T.; AAVATSMARK, I. Control Volume
+
+Discretisations on Non-matching 3D Meshes. In: 10? European Conference on the Mathe-
+
+matics of Oil Recovery. Amsterdam, Holanda: International Association for Computational
+
+Mechanics, 2006. p. 8.
+
+[34] EDWARDS, M. G. M-Matrix Flux Splitting for General Full Tensor Discretization Op-
+
+erators on Structured and Unstructured Grids. Journal of Computational Physics, Academic
+
+Press Professional, Inc., San Diego, USA, v. 160, n. 1, p. 1–28, 2000. ISSN 0021-9991.
+
+[35] PAL, M.; EDWARDS, M. G. Flux-Splitting Schemes for Improved Monotonicity of Dis-
+
+crete Solutions of Elliptic Equations with Highly Anisotropic Coefficients. In: European
+
+Conference on Computational Fluid Dynamics. Egmond aan Zee, Holanda: International
+
+Association for Computational Mechanics, 2006. p. 18.
+
+[36] AADLAND, T.; AAVATSMARK, I.; DAHLE, H. Performance of a Flux Splitting Scheme
+
+When Solving the Single-Phase Pressure Equation Discretized by MPFA. Computational
+
+Geosciences, Springer, Holanda, v. 8, p. 325–340, 2004.
+
+[37] JUANES, R.; KIM, J.; MATRINGE, S. F.; THOMAS, L. K. Implementation and Applica-
+
+tion of a Hybrid Multipoint Flux Approxiamtion for Reservoir Simulation on Corner-Point
+
+Grids. In: SPE Technical Conference and Exhibition. Dallas, Texas: Society of Petroleum
+
+Engineers, 2005. p. 12.
+
+
+
+Bibliografia 77
+
+[38] GUNASEKERA, D.; CHILDS,P.; HERRING, J.; COX, J. A Multi-Point Flux Discretiza-
+
+tion Scheme for General Polyhedral Grids. In: 6? International Oil &amp;amp; Gas Conference and
+
+Exhibition. Beijing, China: Society of Petroleum Engineers, 1998. p. 9.
+
+[39] EIGESTAD, G.; AAVATSMARK, I.; ESPEDAL, M. Symmetry and M-Matrix Issues for
+
+the O-Method on an Unstructured Grid. Computational Geosciences, v. 6, n. 3-4, p. 381–404,
+
+2002.
+
+[40] AAVATSMARK, I. An Introduction to Multipoint Flux Approximations for Quadrilateral
+
+Grids. Computational Geosciences, Kluwer Academic Publishers, Holanda, v. 6, n. 3-4, p.
+
+405–432, 2002.
+
+[41] MANNSETH, T. Analysis and Comparison of Mixed Finite Element and Multipoint Flux
+
+Approximation Methods for Homogeneous Media. Computational Geosciences, v. 11, n. 1,
+
+p. 59–72, 2007.
+
+[42] BERNARD-MICHEL, G.; LE POTIER, C.; BECCANTINI, A.; GOUNAND, S.;
+
+CHRAIBI, M. The andra couplex 1 test case: Comparisons between finite-element, mixed
+
+hybrid finite element and finite volume element discretizations. Computational Geosciences,
+
+Springer Netherlands, v. 8, n. 2, p. 333–345, 2004. ISSN 1573-1499.
+
+[43] KLAUSEN, R.; RUSSELL, T. Relationships Among Some Locally Conservative Dis-
+
+cretization Methods Which Handle Discontinuous Coefficients. Computational Geosciences,
+
+v. 8, p. 341–377, 2004.
+
+[44] KLAUSEN, R. A.; EIGESTAD, G. T. Multi Point Flux Approximations and Finite Ele-
+
+ment methods; Practical Aspects of Discontinuous Media. In: 9? European Conference on
+
+the Mathematics of Oil Recovery. Cannes, França: International Association for Computa-
+
+tional Mechanics, 2004. p. 7.
+
+[45] CHEN, Q.-Y.; WAN, J.; YANG, Y.; MIFFLIN, R. T. Enriched Multi-Point Flux Approxi-
+
+mation for General Grids. Journal of Computational Physics, Academic Press Professional,
+
+Inc., San Diego, USA, v. 227, n. 3, p. 1701–1721, 2008. ISSN 0021-9991.
+
+[46] NIELD, D. A.; BEJAN, A. Convection in Porous Media. 3?. ed. EUA: Springer, 2006.
+
+ISBN 0 387 29096 6.
+
+[47] ECONOMIDES, M. J.; NOLTE, K. G. Reservoir Stimulation. New York: Ed. Wiley,
+
+2000. ISBN 0 471 49192 6.
+
+
+
+78 Bibliografia
+
+[48] MATTAX, C. C.; DALTON, R. L. Reservoir Simulation. EUA: SPE Monograph Series,
+
+1990, Volume 13.
+
+[49] FERZIGER, J. H.; PERIC, M. Computational Methods for Fluid Dynamics. 3. ed. Berlin:
+
+Springer-Verlag, 2002. ISBN 3-540-42074-6.
+
+[50] PATANKAR, S. V. Numerical Heat Transfer and Fluid Flow. EUA: Hemisphere Publish-
+
+ing Corporation, 1980. ISBN 0-89116-522-3.
+
+[51] ARIS, R. Vector, Tensors and the Basic Equations of Fluid Mechanics. Toronto - Canadá:
+
+Dover Publications, Inc., 1989. ISBN 0-486-66110-5.
+
+[52] COATS, K. H. IMPES Stability: Selection of Stable Timesteps. SPE Journal, v. 8, n. 2, p.
+
+181–187, 2003.
+
+[53] HURTADO, F. S. V.; MALISKA, C. R.; SILVA, A. F. C. A Variable Timestep Strategy
+
+for Accelerating the IMPES Solution Algorithm in Reservoir Simulation. In: Proceedings
+
+of the XXVII Iberian Latin American Congress on Computational Methods in Engineering.
+
+Belém, Brasil: UFPA, 2006. p. 14.
+
+[54] PONTING, D. K.; FOSTER, B. A.; NACCACHE, P. F.; NICHOLAS, M. O.; POLLARD,
+
+R. K.; RAE, J.; BANKS, D.; WALSH, S. K. An Efficient Fully Implicit Simulator. In: Euro-
+
+pean Offshore Petroleum Conference and Exhibition. Londres: Society of Petroleum Engi-
+
+neers, 1980. p. 9.
+
+[55] WEINSTEIN, H. G.; STONE, H. L.; KWAN, T. V. Simultaneous Solution of Multi-
+
+phase Reservoir Flow Equations. In: 44th Annual Fall Meeting of SPE. Denver: Society
+
+of Petroleum Engineers, 1969. p. 12.
+
+[56] SPILLETTE, A. G.; HILLESTAD, J. G.; STONE, H. L. A High-Stability Sequential So-
+
+lution Approach to Reservoir Simulation. In: 48th Annual Fall Meeting of SPE. Las Vegas:
+
+Society of Petroleum Engineers, 1973. p. 14.
+
+[57] THOMAS, G. W.; THURMAN, D. H. Reservoir Simulation using an Adaptative Implicit
+
+Method. In: 56th Annual Fall Technical Conference and Exibition. Dallas, Texas: Society
+
+of Petroleum Engineers, 1981. p. 10.
+
+[58] HURTADO, F. S. V.; MALISKA, C. R.; SILVA, A. F. C.; CORDAZZO, J. A Quadrilat-
+
+eral Element-Based Finite-Volume Formulation for the Simulation of Complex Reservoirs.
+
+In: SPE Latin American an Caribbean Petroleum Engineering Conference. Buenos Aires:
+
+Society of Petroleum Engineers, 2007. p. 10.
+
+
+
+Bibliografia 79
+
+[59] AAVATSMARK, I.; REISO, E.; REME, H.; TEIGLAND, R. MPFA for Faults and Lo-
+
+cal Refinement in 3D Quadrilateral Grids with Application to Field Simulations. In: SPE
+
+Reservoir Simulation Simposium. Houston, Texas: Society of Petroleum Engineers, 2001.
+
+p. 12.
+
+[60] STROUSTRUP, B. The C++ Programming Language. 3?. ed. EUA: Addison-Wesley,
+
+1997. ISBN 0201700735.
+
+[61] KOENIG, A.; MOO, B. E. Accelerated C++, Practical Programming by Example. EUA:
+
+Addison-Wesley, 2000. ISBN 0-201-70353-X.
+
+[62] SIEK, J. G. A Modern Framework for Portable High Performance Numerical Linear Al-
+
+gebra. Dissertação (Master of Science in Computer Science and Engineering) — University
+
+of Notre Dame, Indiana, 1999.
+
+[63] WEISSTEIN, E. W. CRC Concise Encyclopedia of Mathematics. EUA: CRC Press, 1999.
+
+ISBN 0-8493-9640-9.
+
+[64] MOEN, C. D. Controlling Negative Coefficients for the CVFEM Diffusion Operator. In:
+
+29th AIAA Fluid Dynamics Conference. EUA: American Institute of Aeronautics and Astro-
+
+nautics, 1998.
+
+[65] CRUMPTON, P. I.; SHAW, G. J.; WARE, A. F. Discretization and Multigrid Solutions
+
+o Elliptic Equations with Mixed Derivative Terms and Stongly Discontinuous Coefficients.
+
+Journal of Computational Physics, v. 116, p. 343–358, 1995.
+
+[66] HYMAN, J.; SHASKOV, M.; STEINBERG, S. The Numerical Solution of Diffusion
+
+Problems in Strongly Heterogeneous Non-Isotropic Materials. Journal of Computational
+
+Physics, v. 132, p. 130–148, 1997.
+
+
+	Introdução
+	Preliminares
+	Objetivos
+	Revisão bibliográfica
+	Organização do trabalho
+
+	Modelo Matemático
+	Modelo do escoamento
+	Equações do modelo
+	Condições de contorno
+
+	Modelo Discreto
+	Integração das equações diferenciais
+	Método de volumes finitos baseado em elementos
+	Aproximação dos fluxos por múltiplos pontos
+	Implementação computacional
+
+	Comparações entre os Métodos
+	Interpolação no elemento e o cálculo do gradiente
+	Armazenamento das propriedades
+	Fluxo em um meio homogêneo
+	EbFVM
+	MPFA
+	Comentários
+
+	Monotonicidade da solução
+
+	Exemplos de Aplicação
+	Validação e análise do erro
+	Meio anisotrópico homogêneo
+	Meio anisotrópico heterogêneo
+	Meio homogêneo anisotrópico particular
+
+	Análise de monotonicidade
+	Meio isotrópico com razão de aspecto unitária
+	Meio anisotrópico com razão de aspecto unitária
+	Meio isotrópico com razão de aspecto não-unitária
+
+	Problemas bifásicos
+	Problema dos três poços
+	Reservatório heterogêneo
+
+
+	Conclusões
+
+</field>
+	</doc>
+</add>

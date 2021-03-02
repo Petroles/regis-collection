@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-BP.03721</field>
+		<field name="filename">BPP_2012_7_1_Karime_Glitz.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">| Karime Louise Zenedin Glitz | António Fábio Carvalho da Silva | Clovis Raimundo Maliska
+Simulação numérica do efeito Jamin e do escoamento do tipo dry-plug a partir da modelagem de parâmetros da interface entre fluidos / Numerical simulation of the Jamin
+effect and dry-plug flow by modelling the interface parameters between fluids
+PALAVRAS-CHAVE:
+resumo
+□ efeito Jamin
+□	dry-plug flow
+□	tensão interfacial
+□	ângulos de contato
+□	VOF
+□	CSF
+□	método Height Functions
+Na produção de petróleo, um fenômeno originário dos efeitos capilares pode exercer papel relevante em algumas aplicações: o denominado efeito Jamin. A esse efeito é atribuída, por exemplo, uma parte do óleo residual em reservatórios molháveis à água após a recuperação secundária. Este trabalho tem por objetivo apresentar uma metodologia para a simulação numérica 2D desse fenômeno. Tal metodologia pode ser aplicada a domínios complexos, proporcionando melhor entendimento do impacto dos efeitos capilares na recuperação de petróleo, bem como em outras áreas onde esse fenômeno se manifesta. Implementou-se essa metodologia em um código próprio, possibilitando a realização de simulações em paralelo no cluster do Centro de Pesquisas e Desenvolvimento Leopoldo
+abstract
+KEYWORDS:
+□	Jamin effect
+□	dry-plug flow
+□	interfacial tension
+□	contact angles
+□	Volume of Fluid (VOF)
+□	Continuum Surface Force (CSF)
+□	Height Functions method
+In the oil production, the capillary effects may exercise an important role in some applications through the so called Jamin effect. Part of the residual oil in water wettable reservoirs is attributed, for example, to this effect after water injection. This work has the objective of presenting methodology for 2D numerical simulation of this phenomenon. The methodology may be applied to complex domains, providing a better understanding of the impact of capillary effects in the recovery of oil, as well as in other areas where this phenomenon is seen. This methodology is implemented using its own code, which enables the carrying out of parallel simulations in the cluster in the Leopoldo Américo Miguez de Mello Research and Development Center (Centro de Pesquisas e Desenvolvimento Leopoldo Américo Miguez de Mello - Cenpes). In the simulation of this
+Américo Miguez de Mello (Cenpes). Na simulação desse fenômeno, empregou-se uma abordagem completa, em que os efeitos dinâmicos eram considerados. Essa é a principal diferença entre a abordagem empregada neste trabalho e a abordagem usual. Dos resultados dessas simulações, foi possível identificar, para um caso sintético, a diferença de pressão necessária para deslocar uma gota de óleo e uma relação entre essa diferença de pressão e a velocidade terminal da gota, quando o escoamento é do tipo dry-plug.
+abstract
+phenomenon, a complete approach was employed in which the dynamic effects were considered. This is the main difference between the approach employed in this work and the usual approach. From the results of these simulations, it was possible to identify for one synthetic case, the difference in pressure necessary to displace a drop of oil and a relationship between this pressure difference and the terminal speed of this drop, when using dry-plug flow.
+(Expanded abstract available at the end of the paper).
+introdução
+O efeito Jamin é um fenômeno presente em diversas áreas da engenharia, onde os efeitos capilares são significativos. Ele ocorre, por exemplo, em trocadores de calor compactos, sistemas de lubrificação e dispositivos geradores de microrreatores para as indústrias farmacêutica e alimentícia.
+Na área de produção de petróleo, atribui-se a esse fenômeno a existência de parte do óleo residual em reservatórios de petróleo molháveis à água após a injeção desse fluido (Rosa et al., 2006; Lijuan et al., 2008; Li, 2011). Como os poros do reservatório são muito estreitos, com tamanhos que costumam ser da ordem de dezenas de micrometros ou menos, as forças capilares tornam-se significativas. A diferença de pressão ao longo dos poros - resultante da injeção de água - causa a deformação das interfaces de gotas de óleo residual presas a esses canais. Essa deformação origina uma diferença de pressão capilar que se opõe ao escoamento. Caso a pressão de injeção da água não seja suficiente para vencer essa resistência capilar, parte do óleo continuará presa aos poros.
+Entretanto, também se podem creditar a este efeito consequências favoráveis, como o tamponamento de poros da formação durante a perfuração de um poço ao se utilizar um tipo especial de fluido (Bjorndalen et al., 2009), o que reduz a perda de circulação do poço. E, ainda pelo princípio de tamponamento de poros, o incremento da eficiência de varrido em métodos de recuperação terciária de petróleo. Neste último caso, quando da injeção de surfactantes no reservatório, a mistura entre essa substância e o óleo residual pode formar emulsões, gerando gotas de óleo emulsionado suficientemente grandes para bloquear poros da formação (Tsay e Menzie, 1985; Wang et al., 2010), forçando que outras áreas do reservatório sejam varridas.
+Para entender a atuação deste fenômeno, tomem-se dois canais interligados, ambos sujeitos a uma diferença de pressão (DPcanal) que provoca o escoamento de um fluido molhante. Em um desses canais, há uma gota de um fluido não molhante presa às paredes, cujas interfaces se deformam devido à diferença de
+pressão aplicada. Essa situação é ilustrada esquema-ticamente na figura 1.
+Fluido 2
+Figura 1 - Dois canais interligados sujeitos a uma diferença de pressão.
+Figure 1 - Two interconnected channels subject to a difference in pressure.
+Devido à diferença de pressão, a gota se deforma, tendendo a assumir uma forma mais aerodinâmica. A deformação das interfaces gera uma diferença de pressão capilar no sentido contrário à diferença de pressão aplicada ao canal, contrapondo-se ao escoamento. Essa resistência ao escoamento da gota oriunda de efeitos capilares é conhecida como efeito Jamin.
+A histerese do ângulo de contato é uma das responsáveis por esse fenômeno: devido a particularidades da superfície sólida (heterogeneidades, presença de contaminantes químicos, rugosidade), a linha de contato pode entrar em equilíbrio metaestável para diferentes valores do ângulo de contato, variando entre o ângulo crítico de recuo (0r,cr) e o ângulo crítico de avanço (0a,cr). E justamente a possibilidade de a interface assumir diferentes valores para o ângulo de contato estático faz com que seja criada uma diferença de pressão capilar.
+Assumindo-se que as curvaturas de ambas as interfaces da gota sejam constantes ao longo de sua superfície e que não há variação do coeficiente de tensão interfacial, a diferença de pressão capilar entre as interfaces é expressa pela equação 1:
+AR = S (ka - kr)	(1)
+Onde: subscrito a = avanço;
+subscrito r = recuo;
+s = coeficiente de tensão interfacial;
+k = curvatura da interface.
+A hipótese de curvaturas constantes permite que essa variável seja expressa pela equação 2:
+k = - ! °s"	(2)
+rc
+Onde:
+rc = o raio do canal.
+Na equação 2, o sinal negativo é devido ao fato de 0 assumir valores maiores do que 90°. Assim, a equação 1 adquire a seguinte forma (Gardescu, 1930) (equação 3):
+AR =	(cos0r-cos0a)	(3)
+rc
+Os ângulos de contato da equação 3 são ilustrados na figura 2. Essa figura mostra o canal onde a gota se encontra presa, e nela é considerado que PW é maior do que PE.
+Figura 2 - Deformação da gota, conduzindo à geração de uma diferença de pressão capilar.
+Figure 2 - Deformation of the drop, leading to the generation of a difference in capillary pressure.
+Tome-se a situação inicial, em que PW é igual a PE e, portanto, não há escoamento no canal e a gota não se encontra deformada. A partir deste estado, suponha que PW sofra uma série de aumentos infi-nitesimais, enquanto a pressão na saída do canal é mantida nula. Então, a diferença de pressão no canal
+onde a gota se encontra presa começa a aumentar. Essa elevação da pressão provoca a deformação das duas interfaces da gota e, após um tempo suficiente para que as pressões a montante e a jusante da gota se uniformizem, a condição de equilíbrio é atingida. Nessa situação, tem-se que a pressão na interface de recuo (Pr) é igual à soma da pressão a montante da gota com a contribuição devido à tensão interfacial (equação 4):
+Pr = Pw - ^cos9r	(4)
+I c
+Novamente cabe ressaltar que o sinal negativo à frente da contribuição da tensão interfacial é adotado devido ao ângulo adquirir valores maiores que 90°. Já a pressão na interface de avanço (Pa) é igual à soma da pressão a jusante da gota com a contribuição da tensão interfacial (equação 5):
+Pa = Pe - -S cos9a	(5)
+rc
+Como no equilíbrio Pr é igual a Pa, obtém-se (equação 6):
+APcanal = Pw - Pe = -£■ (cos9-cos9a) = ARc (6) rc
+Aplicando-se um novo aumento infinitesimal à pressão na entrada do canal, a gota se deforma mais um pouco, até a diferença de pressão capilar equivaler à diferença de pressão no canal. Continuando com esse processo de elevação gradual da pressão, uma sucessão de estados de equilíbrio ocorre até a situação-limite, a partir da qual a gota escoará. Nessa situação, os ângulos de contato da interface atingirão valores críticos (0r,CT e 0a.cr), e ARanal se igualará à diferença de pressão capilar crítica (AR,cr). A figura 3 ilustra esquematicamente o processo descrito, sob a forma do perfil de pressão no centro do canal em função de seu comprimento. Por fim, com um novo incremento da pressão, a gota se desprenderá da superfície. Essa situação é prevista pela equação 7:
+ARcanal = -S (cos9r,cr-cos9a,cr)=AR,cr	(7)
+i c
+		AP,
+		ap2
+O		ap3
+iCQ&amp;lt;fí		ap4
+&lt;fí 0&gt; L. 			APflnal
+Q_	X	
+Figura 3 - Perfil de pressão ao longo do canal em alguns instantes para um aumento infinitesimal da pressão na entrada do canal.
+Figure 3 - Profile of the pressure along the channel in some time steps for an infinitesimal increase in pressure at the inlet of the channel.
+onde os efeitos dinâmicos não são considerados.
+Essa descrição do comportamento da pressão ao longo do canal e da deformação das interfaces da gota durante a manifestação do efeito Jamin corresponde a uma abordagem simplificada do fenômeno. Contudo, acredita-se que o aumento da pressão na entrada do canal não seja infinitesimal, nem haja tempo suficiente para a uniformização da pressão. Tendo isto em vista, este artigo apresenta uma abordagem mais completa da modelagem do fenômeno, em que os efeitos dinâmicos não são desprezados. Na discussão que segue, aborda-se o escoamento dos fluidos, que promove a deformação das interfaces da gota, porém sem desprendê-la do canal, a menos que os ângulos de contato alcancem seus valores críticos. As referências à aceleração e à desaceleração dos fluidos correspondem à situação em que a gota ainda se encontra presa, mas sujeita à deformação de suas interfaces pelo escoamento dos fluidos.
+Como as simulações numéricas mostrarão adiante, a introdução de uma variação abrupta da pressão na entrada do canal resulta em um aumento imediato do gradiente de pressão ao longo de todo o canal. Com a introdução desse gradiente, os fluidos no canal
+começam a escoar. Esse escoamento provoca a deformação das interfaces da gota. Entretanto, devido aos efeitos de adesão, a gota permanece presa ao canal, sendo sujeita apenas à deformação de suas interfaces. Por sua vez, essa deformação resulta num aumento do ângulo de contato de avanço e numa redução do ângulo de recuo. Essa reação gera uma diferença de pressão capilar que se opõe ao escoamento dos fluidos e que aumenta com a deformação da gota. Como a gota ainda se encontra presa, devido à ARcanal, a pressão a montante dela aumenta, enquanto a pressão a jusante diminui. Isto faz com que a diferença de pressão na gota aumente. Tal aumento provoca a aceleração dos fluidos no canal e na gota. Por sua vez, essa aceleração promove o aumento da deformação das interfaces da gota e, consequentemente, o aumento da diferença de pressão capilar. Logo, tem-se que a diferença de pressão aplicada ao canal age no sentido de desprender a gota, enquanto a aceleração dos fluidos e os efeitos viscosos e capilares atuam para mantê-la presa.
+Enquanto a gota permanecer presa, o processo descrito persiste até que o crescimento da diferença de pressão capilar seja maior que o aumento da diferença de pressão na gota. A partir de então, os fluidos no canal serão desacelerados. Apesar da desaceleração, a inércia dos fluidos continuará promovendo a deformação da gota e o consequente aumento da AR.
+Ainda considerando a gota presa, a sua deformação só cessará quando a diferença de pressão capilar se igualar à diferença de pressão aplicada ao canal ou quando a gota atingir o seu estado crítico, a partir do qual ocorrerá o seu desprendimento. O estado crítico pode ser alcançado tanto durante o período de aceleração dos fluidos como durante o período de desaceleração. Ou seja, todo esse processo não é estático, é influenciado pelo atrito viscoso e pela aceleração dos fluidos e acredita-se que seja exatamente esse o comportamento do escoamento na realidade.
+objetivos
+Este trabalho visa apresentar um modelo para a simulação do efeito Jamin, concebido com base em
+um estudo aprofundado da modelagem de alguns parâmetros da interface entre fluidos. O modelo desenvolvido pode ser aplicado a situações mais complexas do que a descrita pela equação 7, por considerar os efeitos dinâmicos. Além disso, este modelo não se restringe apenas a descrever o efeito Jamin, podendo também ser empregado na simulação de escoamentos do tipo dry-plug, que se sucedem após o desprendimento da gota. O dry-plug é um escoamento pistonado, em que a gota é transportada pelo duto sem estar envolta por um filme do líquido que a transporta.
+A modelagem do efeito Jamin pode auxiliar num melhor entendimento dos efeitos capilares no escoamento em meios porosos, além de possibilitar a identificação das condições críticas que devem ser transpostas para que esse fenômeno cesse ou se mantenha, caso isso seja desejável.
+Também é possível determinar, com base nas simulações numéricas, uma relação entre a velocidade terminal da gota e a diferença de pressão aplicada ao canal. Este tipo de relação é útil em outras áreas, como, por exemplo, a geração de gotas que agem como microrreatores.
+modelagem matemática e computacional
+Neste trabalho, o escoamento é descrito por um modelo de mistura que contempla a presença de mais de um fluido por meio das propriedades físicas (massa específica e viscosidade). Logo, desprezando-se efeitos térmicos e a ação da gravidade e admitindo-se que os fluidos são imiscíveis, incompressíveis e newtonianos, o escoamento bidimensional bifásico é descrito pelas equações 8, 9 e 10:
+Equação de conservação da massa de um dos fluidos
+f + t • (fu) = 0	(8)
+Equação de conservação da massa da mistura
+t • U = 0	(9)
+Equação de conservação da quantidade de movimento linear
+}( PmU) + t • (pmUU) = -tP + t •	(10)
+• {mm [tu + (tu)T]} + Fsv
+Nessas equações, f é a fração volumétrica do fluido da gota (fluido 1, conforme a figura 2); u é o vetor velocidade, cujas componentes nas direções horizontal e vertical são, respectivamente, u e v; e P representa a pressão. Pela conservação volumétrica, a fração volumétrica do segundo fluido é igual a 1 - f.
+A massa específica e a viscosidade da mistura são indicadas por pm e mm, respectivamente, e são obtidas aplicando-se uma média ponderada pela fração volumétrica às propriedades de cada fluido (equações 11 e 12): pm = fp1 - (1 - f)p2	(11)
+e
+mm = f m1 - (1 - f)m2	(12)
+onde:
+subscritos = fluido.
+O último termo da equação 10 corresponde à força devida à tensão interfacial.
+Assim, tem-se que o escoamento é descrito por quatro equações com quatro incógnitas: a fração volumétrica (f), as componentes da velocidade (u e v) e a pressão (P). Todas as incógnitas são função do espaço e do tempo. As equações apresentadas em conjunto com as condições inicial e de contorno possibilitam a solução do escoamento.
+modelo numérico
+Para resolver numericamente o escoamento, empregou-se o método dos volumes finitos na solução das equações de conservação da massa da mistura e da quantidade de movimento. Neste método, as
+equações que regem o problema são discretizadas no espaço e no tempo, sendo resolvidas em cada um dos volumes de controle que compõem a malha computacional que discretiza o domínio simulado. As variáveis do escoamento são avaliadas empregando-se um arranjo desencontrado (staggered grid): enquanto a pressão, a fração volumétrica e as propriedades físicas são estimadas no centro dos volumes de controle, as componentes da velocidade são calculadas nas faces dos volumes de controle da malha da pressão.
+Por sua vez, o problema do acoplamento pressão--velocidade foi tratado pelo método Pressure Implicit Momentum Explicit (Prime) (Maliska, 2004). A aplicação deste método resulta em um sistema de equações lineares para a pressão, o qual foi resolvido numericamente empregando-se o método TDMA linha por linha.
+mapeamento da interface
+A inclusão da ação da tensão interfacial no escoamento requer que a posição e a forma da interface sejam bem conhecidas ao longo da simulação. Neste trabalho, a interface é mapeada empregando-se o método Volume of fluid (VOF) descrito no trabalho de Hirt e Nichols (1981). Neste método, a equação 8 é resolvida para a determinação do campo de fração volumétrica. Como essa etapa envolve o cálculo dos fluxos advectivos de f através das fronteiras do volume de controle, emprega-se a técnica Piecewise-Linear Interface Calculation (Plic), que aproxima a interface por segmentos orientados de reta (Kothe et al., 1996). Salienta-se que essa técnica é utilizada apenas na determinação desses fluxos.
+efeitos da tensão interfacial
+Para inserir os efeitos da tensão interfacial nas equações de conservação da quantidade de movimento e restringir a sua ação a uma faixa estreita que envolve a interface, Brackbill et al. (1992) desenvolveram o modelo Continuum Surface Force (CSF). Segundo este modelo, a força devida à tensão interfacial é inserida nessas equações sob a forma de uma força de corpo, descrita pela equação 13:
+Fsv = s k n ô	(13)
+Onde:
+S = coeficiente de tensão interfacial;
+K = curvatura da interface;
+A
+n = vetor unitário normal à interface; ô = distribuição delta de Dirac.
+Pela definição do vetor normal à interface, o vetor unitário é igual à razão +f/|fif|. Já a distribuição delta de Dirac é aproximada por |+f |, restringindo os efeitos da força aos volumes que envolvem a interface.
+Por sua vez, a curvatura da interface é modelada utilizando-se o método Height Functions (HF) (François et al., 2006). Neste método, a interface é descrita por uma função altura somente para propósitos de determinação da curvatura. Uma vez que a curvatura da interface é definida como o negativo do divergente do vetor unitário normal à interface, ela é expressa pela equação 14:
+Estêncil para a
+Ax determinação da
+	◄	►	função altura					
+	0	0	I 0	0	0	0	0
+	0	0	: 0	0	0	0,35	0,93
+	0	0	0	0,02	0,60	1	1
+	0	0	: 0,04	0,72	1	1	1
+	0	0,02 /	:0,72	1	1	1	1
+	0	0,60	: 1	1	1	1	1
+	0,35	1	i 1	1	1	1	1
+i-3	i-2	i-1 i i+1	i+2	i+3
+j+3
+j+2
+j+1
+j
+j-1
+j-2
+j-3
+Ki,j =
+Hxx
+(1+ h2)3/2
+(14)
+Onde:
+H = função altura discreta avaliada no volume (i, j); subscritos = diferenciação.
+Os valores de H são estimados tomando-se um estêncil, conforme mostrado na figura 4 (Glitz et al., 2011). A orientação desse estêncil depende da direção de maior variação da fração volumétrica (direção dominante) e pode adquirir duas configurações: se a direção dominante for horizontal, então um estêncil com 7x3 volumes deve ser tomado; caso contrário, seleciona-se um estêncil com 3x7 volumes.
+Supondo que o gradiente de f é maior na direção y, a função altura é estimada pela equação 15:
+j+3
+H Vf ry	&lt;’5)
+k=j-3
+Onde:
+fiy = incremento espacial da malha na direção vertical.
+Para a determinação da curvatura da interface, basta então calcular as derivadas presentes na equação 14. Elas são aproximadas por diferenças finitas e, portanto, é necessário estimar também os valores da função altura nas colunas vizinhas a Hi.
+Figura 4 - Exemplo de um estêncil (azul) tomado para o cálculo da função altura (cinza = fluido 1 e branco = fluido 2). Os números indicam os valores de f.
+Figure 4 - Example of a stencil (blue) taken for the calculation of the height function (gray = fluid 1 and white = fluid 2). The numbers indicate the values of f.
+O método HF, como apresentado até aqui, é capaz de obter o valor da curvatura da interface em volumes de controle situados no seio dos fluidos. Entretanto, quando se deseja obter o valor dessa variável em volumes vizinhos a uma parede, é necessário adaptar esse método para considerar o ângulo de contato (u) entre a interface e a superfície sólida. Essa adaptação visa ao cálculo das funções altura nas colunas/linhas fantasmas vizinhas àquela em que se encontra o volume desejado. Conhecendo-se os valores dessas funções, pode-se proceder à estimativa das derivadas contempladas pela equação 14.
+Para o caso mostrado na figura 5, a função altura na linha fantasma (Hfantasma) é obtida por meio da extrapolação da função altura na linha que contém o ponto de contato (Hcl). O ponto de contato é definido como o ponto de interseção entre a interface e a parede. Assim, tem-se que a função altura fantasma é uma função do ângulo de contato (Afkhami e Bussmann, 2007) (equação 16):
+Hf t = H , fantasma d
+tge
+(16)
+Portanto, para estimar Hfantasma e, consequentemente, a curvatura da interface, é imprescindível conhecer o valor de 0.
+(17)
+Onde:
+U = velocidade característica do escoamento. Na simulação do efeito Jamin, esta velocidade foi tomada como a velocidade média da gota.
+A relação entre esse ângulo e Ca varia conforme a situação que se deseja simular: pode ser uma situação em que a interface avança, passando a molhar uma parte da superfície antes em contato com outro fluido, ou o caso em que ela recua.
+Para o avanço da interface, Jiang etal. (1979) ajustaram uma curva a dados obtidos experimentalmente, obtendo a equação 18, empregada nas simulações desse trabalho:
+C°co(ê' Ti*= tgh(4,96	(18)
+e,a
+Estudando o impacto de gotas contra uma superfície horizontal, Tanner (1979) desenvolveu uma lei segundo a qual a velocidade da interface é proporcional ao cubo do ângulo de contato. Um modelo baseado em tal lei foi empregado no desenvolvimento deste trabalho para descrever o ângulo de contato de recuo. Este modelo é expresso pela equação 19:
+O ângulo de contato pode ser de dois tipos: estático e dinâmico. O ângulo estático (0e) se manifesta na situação em que o ponto de contato é fixo. Neste trabalho, o valor desse ângulo ao longo da simulação foi obtido considerando-se uma coordenada fixa para o ponto de contato, oriunda da configuração inicial do problema. Conhecendo-se o valor dessa coordenada e da fração volumétrica no volume que contém esse ponto, determina-se o ângulo estático geometricamente, supondo que a interface seja uma reta. Já o ângulo de contato dinâmico (0d), conforme reportado na literatura sobre esse assunto, é uma função do número capilar. Esse número adimensional é definido como (equação 17):
+0jr-0^.= 72Ca	(19)
+Portanto, na simulação do efeito Jamin, durante o período que precede o desprendimento da gota, os ângulos de contato da interface correspondem aos ângulos estáticos. Após o seu desprendimento, passa-se a considerar os ângulos dinâmicos no cálculo da curvatura da interface.
+A figura 6 apresenta o algoritmo adotado nas simulações do efeito Jamin. Cabe ressaltar que a determinação dos ângulos não está explícita nesse fluxograma, pois é contemplada internamente por outras etapas mostradas na figura.
+Devido aos altos tempos de computação, consequentes das restrições ao tamanho do passo de tempo impostas pelos métodos CSF e VOF, o algoritmo de solução do escoamento foi paralelizado empregando-se a biblioteca MPI. Neste processo, o domínio computacional é particionado em subdomínios, e as variáveis u, v e P são determinadas em cada partição. Após essa etapa, um único processador recalcula os campos de fração volumétrica e de curvatura da interface (Glitz et al. 2010).
+condições inicial e de contorno
+Tome-se um domínio conforme ilustrado na figura 2. Inicialmente, os dois fluidos se encontram em repouso, e a pressão ao longo de todo o domínio é nula, exceto a pressão no interior da gota, que vale s/Rgota.
+No início das simulações, a gota é simétrica e está situada a uma distância (X0) igual a 4x10-6m da entrada do canal (fig. 2). Nesse momento, seus ângulos de contato iniciais (00) são iguais e valem 125,3°. Por sua vez, o canal possui 40x10-6m de comprimento (L) e altura (H) igual a 1x10-6m . Esse canal é suficientemente longo para que a gota atinja o regime permanente após seu desprendimento, alcançando assim sua velocidade terminal.
+Atribuíram-se às fronteiras norte e sul do domínio condição de impermeabilidade e não deslizamento. Já às fronteiras oeste e leste foi aplicada condição de abertura, com pressão prescrita. Enquanto à pressão na saída do canal (Pe) prescreveu-se valor nulo, o valor da pressão na entrada do canal (Pw) foi variado de acordo com a simulação.
+simulações e resultados
+Nas simulações numéricas do efeito Jamin, considerou-se uma gota de óleo sujeita à injeção de água. As propriedades de ambos os fluidos, além dos valores de seus ângulos de contato são mostrados na tabela 1.
+Quando a gota atinge seu estado crítico, ou seja, quando seus ângulos de contato alcançam seus valores críticos, seus pontos de contato são liberados, e a gota é desprendida das paredes do canal. Nesse momento, admite-se que a ação da tensão interfacial provoca uma redução na área superficial da gota, reduzindo seu ângulo de avanço a um valor Qa.iib e aumentando seu ângulo de recuo para drjib.
+A partir de então, passam a valer os modelos para os ângulos dinâmicos.
+Os parâmetros numéricos empregados nas simulações são apresentados na tabela 2. Ressalta-se que o pequeno tamanho do passo de tempo é devido a dois fatores: ao tempo necessário para que a dinâmica do escoamento ocorra, que é da ordem de 10-6s, e às restrições impostas pelos métodos VOF e CSF, as quais dependem do tamanho da malha computacional.
+Com o objetivo de identificar o valor da diferença de pressão crítica que deve ser aplicada ao canal para que a gota seja deslocada, executou-se um conjunto de simulações. Nessas simulações, o valor da pressão prescrita na entrada do canal (PW) foi variado entre 21kPa e 80kPa. Todas essas simulações foram realizadas no cluster de processadores do Cenpes.
+Parâmetro	Valor
+Massa específica do óleo (p;)	892,74kg/m3
+Viscosidade do óleo (p./)	1,3x10-3Pa.s
+Massa específica da água (p2)	1.000kg/m3
+Coeficiente de tensão interfacial	9x10-4Pa.s
+Coeficiente de tensão interfacial (s)	0,03N/m
+Ângulo de contato inicial (0O)	125,3°
+Ângulo crítico de avanço (0a,CT)	138°
+Ângulo crítico de recuo (Q,c.)	111°
+Ângulo de avanço após a liberação da gota (8^}	130°
+Ângulo de recuo após a liberação da gota (dr,/ib)	119°
+Tabela 1 - Propriedades dos fluidos e valores dos ângulos empregados nas simulações.
+Table 1 - Properties of the fluids and values of the angles employed in the simulations.
+Parâmetro numérico	Valor
+Tamanho da malha	1.600 x 40 volumes
+Passo de tempo	2x10-10s
+Critério de convergência para as	10-9m/s
+componentes da velocidade	
+Critério de convergência para a pressão	10-5Pa
+Critério de convergência para	10-5
+a fração volumétrica	
+Número de processadores empregados	32
+nas simulações em paralelo	
+Tabela 2 - Parâmetros numéricos utilizados nas simulações do efeito Jamin.
+Table 2 - Numerical parameters employed in the simulations of the Jamin effect.
+dinâmica do escoamento
+Enquanto a diferença de pressão aplicada ao canal não for suficiente para vencer as forças de adesão e provocar a deformação da gota até seu estado crítico, a gota permanecerá presa às paredes do canal. Esta situação está ilustrada na figura 7 para uma diferença de pressão de 21.000Pa aplicada ao canal. Essa figura mostra a evolução das forças de adesão (calculada numericamente pelo método CSF) e devido à diferença de pressão na gota, além da evolução dos ângulos com o decorrer do tempo. Também é apresentada a força de adesão obtida analiticamente por meio da equação 20:
+Fadesao = 2 O- I " - 0r) -	~ - 0a)]	(20)
+Onde:
+w = largura do canal na direção perpendicular ao plano do papel. Essa dimensão foi tomada igual à unidade.
+Como pode ser constatado, a curva da força de adesão obtida numericamente está sobreposta à analítica, validando o cálculo dessa força pelo código computacional desenvolvido neste trabalho.
+Na figura 7, inicialmente a força de adesão é nula, pois a simulação foi inicializada com uma gota simétrica. Contudo, a força devida à diferença de pressão nesse instante é diferente de zero, pois uma pressão positiva é prescrita à entrada do canal logo no início da simulação.
+Nessa situação, verifica-se que após 5x10-6s a força de adesão se igualou àquela gerada pela diferença de pressão imposta às extremidades do canal. Uma vez que os ângulos críticos não foram atingidos antes do equilíbrio entre as forças, conclui-se que, para uma diferença de 21.000Pa, a gota permanece presa.
+Por outro lado, se a diferença de pressão aplicada aos extremos do canal for suficientemente alta, a resistência imposta pela força de adesão e pelos efeitos dinâmicos não será capaz de impedir a deformação da gota até seu estado crítico. A figura 8 mostra a evolução das forças e dos ângulos para essa situação, quando uma diferença de pressão de 30.000Pa foi aplicada ao canal. Novamente, a curva da força de adesão obtida numericamente concorda com a analítica.
+As formas inicial e final da gota, esta última em que ela assume ângulos iguais a 118,45° para a interface de recuo e 131,52° para a interface de avanço, são mostradas no detalhe da figura 8.
+Há uma queda abrupta no valor da força de adesão no instante de liberação da gota (1,248x10-6s), pois o ângulo de avanço tem seu valor diminuído de 138° para 130°, enquanto o ângulo de recuo é aumentado de 111° para 119°. Como resultado da simulação, a força devida à diferença de pressão também é reduzida.
+No caso simulado, verificou-se que, quando o estado crítico da gota não é atingido e, portanto, a gota permanece presa, a diferença de pressão nela se iguala à diferença de pressão capilar. Essa é exatamente a situação prevista pela equação 7. Entretanto, essa situação em que os ângulos críticos nunca são atingidos se manifesta de forma diferente quando são simulados canais maiores, com gotas proporcionalmente maiores. Nesse caso, as forças viscosas e de aceleração dos fluidos possuem mesma ordem de
+0,025-1----------------------------------------------------------------- 140
+0,0	1,0x10'6	2,0x10'6	3,0x10'6	4,0x10'6	5,0x10’6
+Tempo (s)
+Figura 7 - Evolução ao longo do tempo das forças atuantes na gota e de seus ângulos de contato quando a gota permanece presa. A figura também mostra as formas inicial e final da gota. As curvas azul e vermelha estão sobrepostas.
+Figure 7 - Evolution throughout time of the active forces in the drop and its angles of contact when the drop remains trapped. The figure also shows the initial and final forms of the drop. The blue and red curves are superimposed.
+Figura 8 - Evolução ao longo do tempo das forças atuantes na gota e de seus ângulos de contato numa situação em que a gota é desprendida.
+Figure 8 - Evolution throughout time of the active forces in the drop and its angles of contact in a situation in which the drop is displaced.
+grandeza. Assim, no período em que os fluidos estão sendo desacelerados, com a gota presa ao canal, a inércia deles ajuda a promover a deformação da gota. Com o aumento dessa deformação, a força de adesão aumenta, desacelerando ainda mais os fluidos. Haverá um momento em que o gradiente de pressão em todo o canal será invertido devido à desaceleração. Essa inversão fará com que os fluidos sejam freados até que sua inércia pare de deformar a gota. A partir de então, como o gradiente de pressão continua invertido, os fluidos retrocederão e passarão a deformar a gota no sentido contrário.
+Com o prosseguimento do processo e a inversão dos papéis das forças atuantes na gota, ela passa a oscilar. Com o tempo, essas oscilações são amortecidas, os fluidos entram em repouso e, finalmente, a força devida à diferença de pressão na gota se iguala à de adesão, permanecendo a gota presa ao canal (Glitz, 2012). Este comportamento não foi observado no caso aqui apresentado, pois a inércia dos fluidos era pequena, e a força devida a sua aceleração é uma ordem de grandeza menor do que a força viscosa.
+Já a situação em que os ângulos críticos são atingidos e a gota é desprendida das paredes do canal pode ocorrer em dois momentos diferentes: no período de desaceleração ou de aceleração dos fluidos. O instante da liberação vai depender da magnitude da diferença de pressão aplicada aos extremos do canal.
+No primeiro caso, a força devida à desaceleração do fluido no interior da gota atua no sentido de desprendê-la, cooperando com a diferença de pressão que age sobre a gota. Contudo, como os efeitos viscosos são maiores do que os efeitos inerciais, pelo balanço de forças na gota, a diferença de pressão nela será superior à diferença de pressão capilar. Este é o cenário para o caso simulado. Para este caso, o comportamento do perfil de pressão ao longo do comprimento do canal com o tempo é apresentado na figura 9. Como pode ser observado nessa figura, antes da liberação da gota, a diferença de pressão nela aumenta com o tempo, uma vez que a pressão a montante da gota aumenta, ao passo que a pressão a jusante dela diminui. Quando os ângulos críticos são finalmente atingidos, a força de adesão diminui, provocando a queda da força devido à diferença de pressão na gota. Após a liberação da
+gota, as diferenças de pressão nas porções do canal a montante e a jusante dela aumentam. E, após a gota ter atingido sua velocidade terminal, os gradientes de pressão tanto na gota como no canal se mantêm, acompanhando apenas a translação da gota.
+Porém, em um cenário onde as forças de desaceleração e viscosa se contrabalanceiam, a inércia dos fluidos desempenha um papel mais significativo: durante a desaceleração, quando os efeitos inerciais superarem os viscosos, o gradiente de pressão em todo o canal será invertido. Com a progressiva desaceleração dos fluidos e com essa inversão do gradiente, é possível desprender a gota com uma diferença de pressão aplicada ao canal 60% menor do que a prevista pela equação 7 (Glitz, 2012). Essa diferença é justificada pelo fato de esta equação não contemplar os efeitos dinâmicos, nem ser capaz de prever a inversão do gradiente de pressão.
+Outra situação que não é considerada pela equação 7 é aquela em que a gota é desprendida no período em que os fluidos estão sendo acelerados. Agora, além dos efeitos viscosos e capilares, a aceleração dos fluidos também se opõe ao desprendimento da gota. Desta forma, diferenças de pressão maiores do que DPc devem ser alcançadas na gota para que ela seja liberada. Essa situação não foi observada para nenhum dos valores de DPcanal empregados nas simulações deste trabalho. Entretanto, acredita-se que ela possa ser reproduzida quando um valor superior a 80kPa for aplicado ao canal.
+A tabela 3 mostra os valores da diferença de pressão na gota no instante de sua liberação obtidos nas simulações para diferentes valores da diferença de pressão aplicada aos extremos do canal. Como pode ser constatado dessa tabela, a gota foi liberada quando o fluido em seu interior estava parado ou quando ele estava desacelerando. Nesta última situação, devido aos efeitos viscosos, quanto maior a diferença de pressão no canal, maior a diferença de pressão na gota necessária para desprendê-la. Por exemplo, para uma diferença de 80kPa no canal, a diferença de pressão na gota é 14,5% maior do que a prevista pela equação 7.
+Pela equação 7, no momento do desprendimento da gota, a diferença de pressão deveria valer 23.086,6Pa na situação em que os efeitos dinâmicos
+Figura 9 - Velocidade média do fluido no interior da gota e comportamento do perfil de pressão ao longo do canal na linha j = 20 da malha. Foi aplicada uma diferença de 30kPa às extremidades do canal, provocando o desprendimento da gota no período em que o fluido em seu interior desacelerava.
+Figure 9 - Average speed of the fluid in the interior of the drop and behavior of the pressure profile along the channel in the line j = 20 of the grid. A difference of 30kPa was applied to the extremities of the channel, provoking the release of the drop in the period in which the fluid in its interior decelerated.
+Diferença de pressão no canal (Pa)	Diferença de pressão na gota (Pa)	Estado do fluido no interior da gota
+23.082	23.082	Gota parada
+23.100	23.083	Gota desacelerando
+23.200	23.092	Gota desacelerando
+30.000	23.557	Gota desacelerando
+40.000	24.153	Gota desacelerando
+50.000	24.737	Gota desacelerando
+60.000	25.317	Gota desacelerando
+80.000	26.445	Gota desacelerando
+Tabela 3 - Diferença de pressão na gota no instante de sua liberação em função da diferença de pressão aplicada ao canal.
+Table 3 - Difference of pressure in the drop at the moment of its displacement due to the pressure difference applied to the channel.
+são desprezíveis. Essa situação corresponde àquela reproduzida com uma diferença de 23.082Pa aplicada aos extremos do canal, quando as pressões a montante e a jusante da gota são uniformizadas. Contudo, na simulação, a gota é desprendida quando atinge ângulos levemente diferentes dos valores críticos. Este fato justifica a diferença de 4,6Pa entre o valor teórico e o simulado.
+A liberação da gota ocorre em instantes diferentes, de acordo com a diferença de pressão aplicada ao canal, sendo mais precoce o seu desprendimento quanto maior essa diferença de pressão, como pode ser constatado na figura 10. Isto ocorre porque, quanto maior a diferença de pressão, maior a velocidade média dos fluidos, resultando numa deformação mais rápida das interfaces da gota.
+diferença de pressão crítica
+Um dos principais focos da simulação do efeito Jamin é a determinação da menor diferença de pressão que deve ser aplicada ao canal para que a gota
+de óleo seja transportada pela água. Essa diferença de pressão é denominada crítica.
+Foi possível identificar esse parâmetro por meio da variação do valor da pressão prescrita na entrada do canal. Os resultados são apresentados na figura 11 sob a forma de um gráfico da velocidade terminal da gota em função da diferença de pressão aplicada ao canal.
+Para o sistema simulado, a diferença de pressão crítica obtida das simulações é igual a 23.082Pa. É necessário salientar que essa condição crítica é válida unicamente para o problema simulado, pois ela depende da geometria do canal (distância entre as paredes) e das propriedades dos fluidos e sólido envolvidos. Ressalta-se também que essa diferença de pressão independe do comprimento do canal, uma vez que, antes da liberação da gota, as pressões a montante e a jusante dela são equalizadas.
+Para o sistema simulado, em que a inércia dos fluidos é pequena, a diferença de pressão crítica ocorre quando tanto a velocidade quanto a aceleração do fluido no interior da gota são nulas. Entretanto, em um sistema em que a força de aceleração possui a mesma ordem de grandeza das forças viscosas, a
+Figura 11 - Velocidade terminal da gota em função da diferença de pressão aplicada ao canal.
+Figure 11 - Final speed of the drop due to the difference in pressure applied to the channel.
+situação crítica ocorre quando a velocidade do fluido da gota é nula, porém sua aceleração é máxima devido à inversão do gradiente de pressão. Neste caso, a diferença de pressão crítica na gota é menor do que a prevista pela equação 7, pois a desaceleração do fluido contribui com o desprendimento da gota. Como já mencionado, em simulações que envolvem outro sistema, foi possível desprender a gota com uma diferença de pressão aplicada ao canal 60% menor do que a prevista pela equação 7 (Glitz, 2012).
+A figura 12 mostra uma comparação entre a forma inicial e a forma Anal da gota de óleo quando a velocidade terminal é atingida, para alguns valores da diferença de pressão no canal. Naturalmente, uma vez que os ângulos de contato dinâmicos dependem da velocidade da gota, quanto maior a diferença de pressão aplicada ao canal, maior a deformação da gota após a sua liberação.
+Figura 12 - Comparação entra a forma inicial (linha vermelha) e a forma final da gota quando ela atinge a velocidade terminal (linha preta) para diferentes valores da diferença de pressão aplicada ao canal.
+Figure 12 - Comparison between the initial shape (red line) and the final shape of the drop when it reaches final speed (black line) for different values of the pressure difference applied to the channel.
+modelo para estimativa da velocidade terminal da gota
+Caso apenas o fluido injetado fluísse pelo canal, o escoamento poderia ser descrito por aquele previsto por Poiseuille. Entretanto, na situação bifásica, a presença da interface da gota introduz não linearidades ao escoamento, provocando seu afastamento do escoamento de Poiseuille (Baroud et al., 2010). Nesse novo escoamento, denominado escoamento do tipo dry-plug e que sucede ao desprendimento da gota, a interface se desloca à mesma velocidade média da gota. Trata-se de uma situação análoga à de um projétil se deslocando em um cano.
+As perturbações impostas pela interface alteram o campo de velocidade nas suas adjacências, pois a velocidade média da gota é menor do que a velocidade da água no centro do canal e maior do que a velocidade com que se deslocam as camadas desse fluido junto às paredes do canal. Assim, o fluido injetado que escoa pelo centro do canal a montante da gota, ao atingi-la, tem sua direção alterada, sendo desviado em direção às paredes do canal. Já a jusante do canal, a propagação da gota faz com que a água mais lenta junto às paredes seja desviada para o centro do canal. Essa dinâmica do escoamento é ilustrada na figura 13 pelas linhas de corrente, considerando um referencial que se desloca à velocidade média da gota.
+Figura 13 - Linhas de corrente em um trecho do canal que contém a gota. As linhas azuis indicam as interfaces.
+Figure 13 - Streamlines in one stretch of the channel that contains the drop. The blue lines correspond to the interfaces.
+Uma implicação desses desvios de trajetória é uma dissipação viscosa maior na região das calotas da gota. Para escoamentos do tipo slug, alguns autores afirmam que a queda de pressão induzida pelo escoamento próximo das calotas é proporcional (sCa2/3)/H (Fuerst-man et al., 2007; Baroud et al., 2010).
+Visando à determinação da velocidade terminal da gota, aplicou-se um balanço de forças a um volume de controle compreendendo todo o canal. Nesse balanço, supôs-se que a dissipação viscosa tanto no interior da gota de óleo como ao longo da água - com exceção da perda de carga nas calotas da gota - pode ser aproximada por uma expressão derivada do escoamento de Poiseuille. Contudo, essa aproximação só é válida para gotas muito longas e porções do fluido injetado muito distantes da gota. Logo, há um erro intrínseco a tal aproximação, que deverá ser compensado pela constante de proporcionalidade da perda de carga nas calotas da gota.
+Considerando essas hipóteses, o balanço de forças em regime permanente no canal é expresso pela equação 21:
+AP ,Hm/=F . .+2flp,U2, ,L , w+
+canal	adesao 1 7 *1 gota,t gota
+(21)
++ 2f,4-p,U\ ,(L - L ,)w+AP , H,v
+2 2 gota,t' gota7	calota
+onde a diferença de pressão no último termo da equação é descrita pela expressão mencionada anteriormente (equação 22):
+C CF
+(22) calota	|_|
+Nesta equação, o número capilar é calculado com a viscosidade da água.
+Repare que, no balanço de forças, foram desprezados os termos relativos à quantidade de movimento na entrada e na saída do canal, pois as velocidades nessas duas regiões são iguais.
+Por sua vez, a força de adesão (Fadesão) é aproximada pela equação 20, sendo os ângulos de contato dinâmicos substituídos por suas expressões analíticas.
+A partir de um ajuste feito com os resultados das simulações, obteve-se um valor igual a 9 para a constante de proporcionalidade para a perda de carga nas calotas(CCaíOías).
+Resolvendo-se numericamente a equação transcendental 21, obtêm-se os valores para a velocidade terminal da gota ilustrados pela linha tracejada azul na figura 11. Ao analisar esses resultados, constata-se que a velocidade terminal da gota exibe uma dependência linear da diferença de pressão aplicada ao canal. Entretanto, essa constatação deve ser considerada com cautela, pois os resultados dependem dos modelos adotados para os ângulos de contato dinâmicos.
+Considerando o modelo descrito pela equação 21 como referência, pode-se estimar a contribuição no regime permanente dos termos de adesão e viscosos em função da diferença de pressão. Verificou-se que, para pequenos valores da diferença de pressão aplicada ao canal - os quais proporcionam menor velocidade à gota -, a força de adesão possui a mesma ordem de grandeza das forças viscosas, conforme mostrado na figura 14. Contudo, com o aumento da diferença de pressão e, consequentemente, das velocidades da
+Figura 14 - Contribuições das forças de adesão e viscosas na dissipação de energia do escoamento em regime permanente da gota ao longo do canal.
+Figure 14 - Contributions of the adhesive and viscous forces in the dissipation of energy of the flow in steady state of the drop along the channel.
+gota e do fluido injetado, os efeitos viscosos passam a predominar, chegando a corresponder a aproximadamente 82% da força motriz do escoamento para uma diferença de pressão de 80kPa.
+Ao analisar somente as forças viscosas, foi concluído que o atrito viscoso na água exerce um papel mais relevante na dissipação da energia do escoamento do que as outras duas parcelas. Devido à sua maior área de atuação, a taxa de crescimento da dissipação viscosa na água é maior do que a taxa de crescimento das outras duas parcelas com o aumento da velocidade da gota, como pode ser observado na figura 15.
+Figura 15 - Contribuições na dissipação viscosa do atrito viscoso na água injetada, na gota e em suas calotas. No eixo das ordenadas à direita, o subscrito i indica uma das três parcelas mencionadas.
+Figure 15 - Contributions in the viscous dissipation of the viscous friction of the injected water in the drop and in its segments. In the axis graded on the right, the subscribed i indicates one of the three parcels mentioned.
+conclusões
+No desenvolvimento deste trabalho foram aplicados alguns métodos de descrição de parâmetros da interface entre fluidos na modelagem de um fenômeno relevante para a engenharia de petróleo: o efeito Jamin.
+Na modelagem deste efeito foram empregados o método dos volumes finitos na discretização das equações de conservação e o método Volume of fluid no mapeamento da posição da interface. A utilização do método dos volumes finitos na solução desse escoamento traz uma dificuldade adicional ao problema: a descrição dos ângulos de contato. Uma vez que nesse método o ângulo entre os fluidos e uma superfície sólida não surge naturalmente da solução do escoamento, devem ser considerados modelos para descrever essa variável.
+Além disso, a dinâmica do efeito Jamin pode ser dividida em dois problemas de modelagem praticamente independentes: a modelagem da deformação da gota antes de sua liberação e a modelagem do seu transporte pelo fluido injetado. Enquanto a modelagem da deformação da gota depende dos ângulos de contato críticos, a modelagem de seu transporte depende dos ângulos de contato dinâmicos, descritos por funções da velocidade da gota.
+Após o estabelecimento dos modelos necessários para efetuar a transição dos regimes, dos modelos de ângulos de contato dinâmicos e de uma configuração padrão de simulação, as diversas simulações realizadas permitiram extrair algumas conclusões quanto à dinâmica do efeito Jamin e do escoamento do tipo dry-plug em um canal bidimensional.
+Em particular para a situação simulada, envolvendo o escoamento de óleo e água em um canal com 1p.m de abertura, constatou-se que a diferença de pressão crítica é igual a 23.082Pa, valor muito próximo ao previsto pela equação 7. Este resultado valida a modelagem proposta neste trabalho. Ressalta-se que esta equação prevê adequadamente a diferença de pressão crítica em uma situação estática, onde a pressão ao longo de todo o canal é uniformizada, que é exatamente uma das situações simuladas neste trabalho. Entretanto, para canais e gotas maiores, observou-se a inversão do gradiente de pressão, tornando possível o desprendimento da gota quando diferenças de pressão 60% menores do que a prevista pela equação 7 são aplicadas ao canal (Glitz, 2012). Essa situação não foi observada no caso aqui simulado, pois a inércia dos fluidos era pequena.
+Concluiu-se também que há uma relação linear entre a velocidade terminal da gota e a diferença de pressão aplicada aos extremos do canal. Entretanto, essa conclusão deve ser considerada com cautela, pois pode não ser válida quando outros modelos para os ângulos de contato dinâmicos são empregados.
+Como foi mostrado pelas linhas de corrente do escoamento, as interfaces da gota introduzem não linearidades ao escoamento. Ou seja, o escoamento da gota de óleo altera a dinâmica do escoamento da água nas suas adjacências. A principal implicação das perturbações introduzidas pelas interfaces é uma perda maior de carga na região das calotas da gota, que é mais significativa quanto menor a diferença de pressão aplicada ao canal. A pequenos valores dessa diferença de pressão, o impacto dos efeitos de adesão na velocidade terminal da gota também é maior.
+Por fim, apresentou-se um modelo de balanço de forças no canal baseado na literatura sobre escoamento do tipo slug para a determinação da velocidade terminal da gota. Este modelo contempla tanto a perda de carga na região das calotas, quanto a adesão das interfaces às paredes do canal. Concluiu-se que tal modelo pode ser aplicado ao escoamento aqui estudado, no qual, ao contrário do escoamento do tipo slug, não há a formação de um filme envolvendo a gota.
+agradecimentos
+Os autores agradecem à gerência de Simulação e Avaliação de Reservatórios do Cenpes e à TIC-Cenpes pelo apoio durante o desenvolvimento deste trabalho.
+A primeira autora também gostaria de agradecer ao Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq) por financiar o estudo que deu origem a este trabalho.
+referências bilbiográficas
+I AFKHAMI, S.; BUSSMANN, M. Height functions for applying contact angles to 2D VOF simulations. International Journal for Numerical Methods in Fluids, Chichester, v. 57, n. 4, p. 453472, Oct. 2007.
+I BAROUD, C. N.; GALLAIRE, F.; DANGLA, R. Dynamics of microfluidic droplets. Lab on a Chip, v. 10, p. 2032-2045, Jun. 2010.
+I BJORNDALEN, N.; ALVAREZ, J.; JOSSY, E.; KURU, E. An experimental study of the pore blocking mechanisms of aphron drilling fluids using micromodels. In: SPE INTERNATIONAL SYMPOSIUM ON OILFIELD CHEMISTRY, 2009, The Woodlands. Proceedings... The Woodlands: Society of Petroleum Engineers, 2009.
+I BRACKBILL, J. U.; KOTHE, D. B.; ZEMACH, C. A continuum method for modeling surface tension. Journal of Computational Physics, Orlando, v. 100, n. 2, p. 335-354, Jun. 1992.
+I FRANÇOIS, M. M.; CUMMINS, S. J.; DENDY, E. D.; KOTHE, D. B.; SICILIAN, J. M.; WILLIAMS, M. W. A balanced-force algorithm for continuous and sharp interfacial surface tension models within a volume tracking framework. Journal of Computational Physics, Orlando, v. 213, n. 1, p. 141-173, Mar. 2006.
+I FUERSTMAN, M. J.; LAI, A.; THURLOW, M. E.; SHEVKOPLYAS, S. S.; STONE, H.; WHITESIDES, G. M. The pressure drop along a rectangular microchannels containing bubbles. Lab on a Chip, v. 7, n. 11, p. 1479-1489, Aug. 2007.
+I GARDESCU, I. I. Behavior of gas bubbles in capillary spaces. Transactions of the American Institute of Mining, Metallurgical and Petroleum Engineers, New York, v. 86, n. 1, p. 351-370, Dez. 1930.
+I GLITZ, K. L. Z.; SILVA, A. F. C.; DONATTI, C. N.; MALISKA, C. R. Parallel computing simulation of multiphase flows employing the VOF method. In: BRAZILIAN CONGRESS OF THERMAL SCIENCES AND ENGINEERING, 13., 2010, Uberlândia. Proceedings. Uberlândia: Associação Brasileira de Engenharia e Ciências Mecânicas, 2010.
+I GLITZ, K. L. Z.; SILVA, A. F. C.; MALISKA, C. R. Modelagem numérica da curvatura da interface em escoamentos multifásicos. In: CONGRESSO IBERO-AMERICANO EM ENGENHARIA MECÂNICA, 10.,
+2011,	Porto. Actas... Porto: Faculdade de Engenharia da Universidade do Porto, 2011, p. 43-54.
+I GLITZ, K. L. Z. Modelagem numérica de parâmetros da interface e sua aplicação na simulação do efeito Jamin.
+2012.	299 p. Tese (Doutorado) - Centro Tecnológico, Programa de Pós-Graduação em Engenharia Mecânica, Universidade Federal de Santa Catarina, Florianópolis, 2012.
+I HIRT, C. W.; NICHOLS, B. D. Volume of fluid (VOF) method for the dynamics of free boundaries. Journal of Computational Physics, Orlando, v. 39, n. 1, p. 201-225, Jan. 1981.
+I JIANG, T.; SOO-GUN, O. H.; SLATTERY, J. C. Correlation for dynamic contact angle. Journal of Colloid and Interface Science, New York, v. 69, n. 1, p. 74-77, Mar. 1979.
+I KOTHE, D.; RIDER, W.; MOSSO, S.; BROCK, J.; HOCHSTEIN, J. Volume tracking of interfaces having surface tension in two and three dimensions. In: AEROSPACE SCIENCES MEETING AND EXHIBIT, 34., 1996, Reno. Proceedings. Reno: American Institute of Aeronautics and Astronautics, 1996.
+I LI, Y. Oil recovery by low salinity water injection into a reservoir: a new study of tertiary oil recovery mechanism. Transport in Porous Media, Dordrecht, v. 90, n. 2, p. 333-362, Nov. 2011.
+I LIJUAN, Z.; XIANG'AN, Y.; FENQIAO, G. Micro-mechanisms of residual oil mobilization by viscoelastic fluids. Petroleum Science, Beijing, v. 5, n. 1, p. 56-61, Feb. 2008.
+I MALISKA, C. Transferência de calor e mecânica dos fluidos computacional. Rio de Janeiro: Livros Técnicos e Científicos, 2004. 453 p.
+I ROSA, A. J.; CARVALHO, R. S.; XAVIER, J. Engenharia de reservatórios de petróleo. Rio de Janeiro: Interciência, 2006. 832 p.
+I TANNER, L. H. The spreading of silicone oil drops on horizontal surfaces. Journal of Physics D: applied physics, London, v. 12, n. 9, p. 1473-1484, 1979.
+I TSAY, F. S.; MENZIE, D. E. Laboratory study on the use of alkaline
+flood recovery mechanisms in water flooded oil reservoirs. Society of Petroleum Engineers, Dallas, 1985. SPE-14533-MS.
+I WANG, Y. F.; ZHAO, F.; BAI, B.; ZHANG, J.; XIANG, W.; LI, X.; ZHOU, W. Optimized surfactant IFT and polymer viscosity for surfactant--polymer flooding in heterogeneous formations. In: SPE IMPROVED OIL RECOVERY SYMPOSIUM, 2010, Tulsa. Proceedings... Tulsa: Society of Petroleum Engineers, 2010.
+autores
+Karime Louise Zenedin Glitz
+I E&amp;amp;P Pré-Sal
+I Competências Técnicas
+I Reservatórios II
+I Projetos de Cessão Onerosa
+kglitz@petrobras.com.br
+Clovis Raimundo Maliska
+I Departamento de Engenharia Mecânica
+I Universidade Federal de Santa Catarina (UFSC)
+maliska@sinmec.ufsc.br
+Karime Louise Zenedin Glitz é engenheira mecânica, formada pela Universidade Federal de Santa Catarina (UFSC) em 2005. Ingressou na Petrobras em 2010 como engenheira de petróleo e trabalha na Gerência de Simulação e Avaliação de Reservatórios, no Cenpes.
+António Fábio Carvalho da Silva
+I Departamento de Engenharia Mecânica
+I Universidade Federal de Santa Catarina (UFSC)
+afabio@sinmec.ufsc.br
+Clovis Raimundo Maliska realizou sua graduação e mestrado em Engenharia Mecânica pela Universidade Federal de Santa Catarina (1973 e 1975), e seu doutorado em Engenharia Mecânica pela Universidade de Waterloo, no Canadá (1981). É professor titular do Departamento de Engenharia Mecânica e coordenador do Laboratório de Simulação Numérica em Mecânica dos Fluidos e Transferência de Calor (Sinmec). Atua na área de desenvolvimento e aplicações de métodos numéricos para transferência de calor e mecânica dos fluidos. Coordena dois projetos das redes temáticas da Petrobras nas áreas de simulação de reservatórios e acoplamento poço-reservatório, o PRH09, de formação de recursos humanos da ANP, e o PFRH-Superior, de formação de recursos humanos da Petrobras.
+António Fábio Carvalho da Silva graduou-se em Engenharia Mecânica pela Universidade de Brasília em 1976. Obteve o título de Mestre em Ciências (1978) e de Doutor em Engenharia Mecânica (1991) pela Universidade Federal de Santa Catarina, na área de mecânica dos fluidos computacional. Desenvolve atividades de pesquisa e extensão no Laboratório de Simulação Numérica em Mecânica dos Fluidos e Transferência de Calor (Sinmec) da UFSC. É professor do Departamento de Engenharia Mecânica da UFSC desde 1977, onde atua no ensino de disciplinas da área térmica e de fluidos, tendo também exercido as funções de chefe de departamento e coordenador da pós-graduação.
+expanded abstract
+In multiphase flows, the presence of the interface can alter the dynamics of the flow significantly. This interference in the behavior of the flow is dictated by the capillary effects, and can be pronounced in situations where the interfacial tension coefficient between the fluids is high, or even when the flow occurs in a domain having small dimensions. This is the case, for example, of flows through the pores of an oil reservoir. As these pores are very narrow, having sizes of the order of tens of micrometers, the capillary forces become significant. In the secondary recovery of oil, the difference of pressure along the pores resulting from the injection of water causes deformation to the interfaces of the residual oil drops trapped in these channels. This deformation originates a difference in the capillary pressure that opposes the flow. In the event that the pressure of water injected is not sufflcient to overcome the capillary resistance, some of the oil will remain trapped in the pores. The phenomenon described is denominated the Jamin effect.
+It is possible to model the fluid dynamics during this phenomenon by numerical simulations. In these simulations, the conservation equations are made discrete in both time and space and resolved in a computational grid formed by the control volumes.
+The capillary effects are accounted for in the momentum conservation equations as a force described by the Continuum Surface Force (CSF) method. For the calculation of this force, it is necessary to know the position and the shape of the interface throughout the simulation, in addition to the value of its curvature.
+In this work, the Jamin effect and the dry-plug type of flow were simulated employing an appropriate computer code capable of foreseeing the dynamics of the interface and its effects on the flow. In the tracking stage of the interface, the Volume of Fluid (VOF) method was employed: it attributes to each volume of the grid the value of the volumetric fraction of the fluids. In turn, the advection of this variable, necessary for the solution of the volumetric fraction transport
+equation, were determined by the reconstruction of the interface, adopting segments in a straight line, according to the Piecewise-linear Interface Calculation (PLIC) technique.
+The curvature of the interface between the fluids is estimated using the original Height Functions (HF) method. However, if there is contact between the interface and a solid surface, this method is modified to include the dependence shown by the curvature of the angle of contact formed between the surface and the interface. This dependence introduces a new difficulty into the simulation of this problem: the description of the angle of contact.
+In a static situation, this angle was calculated geometrically from the field of volumetric fraction and the coordinates of the point of contact. This point is defined as the intersection of the interface with the surface and remains fixed until the angle reaches one of its critical values. On the other hand, in a dynamic situation, the angle of contact depends on the capillary number characteristic of the flow and is described by a model that contemplates this dependence.
+The numerical model proposed enables the identification of the critical value of pressure difference that must be applied to the channel, in order to displace the drop of oil trapped, even in situations where the viscous effects and the acceleration of the fluid cannot be disregarded. It was also found that, for the simulated case, there is a linear relationship between the final speed of the drop - the speed that is reached in the steady state after being dislodged - and the difference of pressure applied. In the meanwhile, this observation is only applicable to the case analyzed, and may vary according to the model adopted for the description of the angle of dynamic contact.
+Based on the results of the simulations, a model for the determination of the final speeds of the drop was conceived from a balance of forces in the channel. This model was formulated from others published in literature about slug type flows, and contemplates
+both the adhesive effects and the pressure drop in the region of the segments of the drop, resulting from the perturbation that the interfaces introduce to the flow.
+Adopting this model as a reference, it may be concluded that the contribution of the force of adhesion in the dissipation of energy is more significant when the pressure differences close to critical are applied to the channel. In this situation, the viscous effects in the interior of the drop and in its segments are also more significant.
+</field>
+	</doc>
+</add>

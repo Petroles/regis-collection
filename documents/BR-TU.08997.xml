@@ -1,0 +1,1191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.08997</field>
+		<field name="filename">13910_PFC-20141-RicardoSantosdaSilva.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">DAS Departamento de Automação e Sistemas CTC Centro Tecnológico UFSC Universidade Federal de Santa Catarina
+Identificação de Sistemas Dinâmicos Não Lineares Utilizando Métodos de Colocação
+Monografia submetida a Universidade Federal de Santa Catarina como requisito para a aprovação da disciplina:
+DAS 5511: Projeto de Fim de Curso
+Ricardo Santos da Silva
+Florianópolis, agosto de 2014
+Identificação de Sistemas Dinâmicos Não Lineares Utilizando Metodos de Colocação
+Ricardo Santos da Silva
+Esta monografia foi julgada no contexto da disciplina DAS 5511: Projeto de Fim de Curso e aprovada na sua forma final pelo
+Curso de Engenharia de Controle e Automaçao Industrial
+Banca Examinadora:
+Marco Aurelio Schmitz de Aguiar
+Orientador Empresa
+Eduardo Camponogara Orientador do Curso
+Ricardo Jose Rabelo Responsável pela disciplina
+, Avaliador
+, Debatedor
+Debatedor
+Resumo
+Este estudo busca o desenvolvimento de técnicas de identificação de modelos para sistemas de producão de petróleo utilizando o metodo de colocacão (collocation method). Combinando este metodo com tecnicas de otimizacao nao-linear resolve-se um problema de encontrar os parâmetros e condicoes iniciais de um modelo dinâmico nao linear que melhor descrevem a resposta de um sistema no tempo.
+O collocation method e um caso particular do metodo Implícito de Runge-Kutta (IRK), que consiste na solucao numerica de equacoes diferenciais e equacoes diferenciais algebricas.
+Em particular, inicialmente verifica-se se a estrategia e realizavel utilizando um simples circuito RLC e, apos a validacao, a tecnica e utilizada para resolver a identificacao de um poco produtor de petroleo e gas. Para identificacao da resposta do sistema foi utilizado um modelo de baixa ordem, com apenas 3 estados, que pode ser utilizado numa malha de controle. Utilizando os dados de simulacao deste modelo de baixa ordem, o problema de identificacao e facilmente resolvido com boa precisao. Estes resultados iniciais impulsionaram a busca de dados reais ou de simuladores complexos de fluxo multifasico (e.g.; OLGA) para serem usados como referencias da estrategia.
+A implementacao foi realizada com o emprego de ferramentas de modelagem como Modelica e solvers de otimizacao disponibilizados atraves do pacote Optimica.
+Abstract
+This study seeks to develop techniques for identifying models for oil production systems using the collocation method. Combining this method with nonlinear optimization techniques results in an effective strategy to find the parameters and initial conditions of a nonlinear dynamic model that best describe the time response of a system.
+The collocation method is a particular case of the Implicit Runga-Kutta (IRK) method, which is suitable for the numerical solution of differential equations and differential algebraic equations.
+After testing and validating the collocation method with a simple application to the identification of the parameters of a RLC circuit, using a simple RLC circuit and after validation, the technique is used to solve the identification of an oil and gas producing well. To identify the system response it was used a low-order model, with only three states, which can be used in a control loop. Using the simulation data of this low-order model, the identification problem is easily solved with good accuracy. The initial results have motivated the search for real data or complex multiphase flow simulators (eg: OLGA) to be used as reference to the strategy.
+The implementation was carried out with the use of modeling tools like Modelica and the optimization solvers available through the Optimica package.
+Contents
+1	Introdução	1
+2	Collocation Method	3
+2.1	Sistema Dinamicos.................................................. 3
+2.2	Filtro de Kalman................................................... 5
+2.3	Collocation Method................................................. 8
+2.4	Polinomio Deslocado de Gauss-Jacobi............................... 12
+2.5	Ordem de Convergencia............................................... 14
+2.6	Exemplo............................................................. 14
+2.6.1	Radau Collocation............................................. 14
+2.6.2	Gauss Collocation........................................... 16
+3	Ferramentas de Implementação	20
+3.1	Modelica ........................................................... 20
+3.2	Optimica............................................................ 20
+3.3	JModelica.org....................................................... 22
+3.3.1	CasADi...................................................... 23
+3.3.2	Sundials ................................................... 23
+3.3.3	IPOPT....................................................... 23
+4	Estimação de Parâmetros	25
+4.1	Otimizacao.......................................................... 25
+4.1.1	Funcao Objetivo............................................. 27
+4.2	Circuito RLC ....................................................... 29
+4.2.1	Estimac^o dos Parametros do Circuito RLC.................... 31
+4.3	Poço Produtor de Petróleo..................................... 36
+4.3.1	Modelo do Poço........................................... 37
+4.3.2	Estimação dos Parâmetros de um Poço Produtor de Petroleo . .	39
+4.4	Estimação do poço com dados................................... 42
+4.4.1	Annulus.................................................. 42
+4.4.2	Tubing................................................... 42
+5	Conclusão	47
+Bibliography	48
+Appendix A: Modelos Dinâmicos	50
+A.1	Modelo do Poço .............................................. 50
+A.2	Annulus...................................................... 53
+A.	3	Tubing II.................................................... 55
+Appendix B: Modelos de Simulação	59
+B.	1	Modelo RLC ................................................... 59
+B.2	Modelo de Otimizaçao	do RLC................................... 59
+B.3	Codigo Python para Simulaçao e Estimaçao ..................... 60
+Chapterl: Introdução
+Estimação é o processo de inferir o valor de uma quantidade de interesse a partir de observações indiretas, imprecisas e incertas. O proposito da observaçao pode ser, por exemplo: (a) a determinaçao da (órbita de planetas (Laplace, Gauss, Legendre); (b) a determinacao da posicao e velocidade de uma aeronave em um sistema de controle de trafego aereo; (c) a determinacao de parâmetros de um modelo de sistema como forma de predizer o estado físico do mesmo, entre outros.
+Em um processo real, existem diversos fatores que podem alterar seu comportamento. Tais fatores sao facilmente notados ao modelar o processo: ao alterar os parâmetros verificamos uma mudanca nas variaveis de saída. Por exemplo, a resistencia nos fios de transmissao de energia influenciam a corrente de um circuito eletrico. Essas mudancas, mesmo que sutis, podem influenciar na performance e estabilidade de tecnicas de controle.
+Este trabalho e a extensao de um trabalho anterior [15], onde foram desenvolvidos modelos nao lineares de uma plataforma de producao de petroleo e gas. Com o conhecimento do modelo e possuindo medicoes do processo e possível estimar os parâmetros dos modelos, com a utilizacao de uma ferramenta para amostragem e coleta de dados chamada collocation method [12], [9], e tecnicas de otimizacao. Existem outras tecnicas como o filtro de Kalman, máximum likelihood, entre outras que permitem a estimacao de parâmetros. Entretanto, “verificou-se que as tecnicas de otimizacao sao mais robustas e viaveis do que o filtro de Kalman”[2]. “Para sistemas nao-lineares, o filtro de Kalman e comumente aplicado na pratica. Enquanto o filtro de Kalman e relativamente facil de implementar, tem sido demonstrado que o filtro possui um desempenho insatisfatorio em sistemas altamente nao-lineares” [13].
+As equacoes dos modelos foram codificadas usando uma linguagem de alto nível para modelagem de sistemas chamada Modelica, baseada em equacoes e orientada a objetos projetada para modelagem grafica e textual de sistemas físicos complexos. O ambiente computacional JModelica.org foi usado para compilar o modelo. Este ambiente tambem faz a interface do modelo com ferramentas de simulacao e de otimizacao.
+O Capítulo 2 descreve o collocation method, ferramenta utilizada para a estimacao dos parâmetros. O Capítulo 3 apresenta as ferramentas utilizadas para a
+implementacao dos problemas. O Capítulo 4 descreve os problemas de estimacao e seus resultados. O Capítulo 5 apresenta as conclusões finais e possibilidades de trabalhos futuros.
+Chapter2: Collocation Method
+Neste Capítulo sera possível ver uma explicacao sobre sistemas dinâmicos, os quais terao seus parâmetros estimados pelo collocation method (combinado de tecnicas de otimizacao). Desta forma, este collocation method e um caso particular do metodo Implícito de Runge-Kutta (IRK), onde demonstra-se o equacionamento e deducao deste.
+Alem dessa explicacao, uma outra forma de estimacao de parâmetros tambem e descrita neste Capítulo: os filtros de Kalman. Este, porem, e citado brevemente, por conta das desvantagens que apresenta perante o collocation method.
+Ao final do Capítulo, portanto, apresenta-se um exemplo do collocation method, por ser um metodo mais adequado neste trabalho, para melhor entendimento.
+2.1: Sistema Dinâmicos
+Um sistema dinâmico é um conceito matemático, caracterizado por uma regra fixa que descreve a dependencia do tempo de um ponto em um espaco geometrico, portanto e um sistema que evolui no tempo. Normalmente, estes sistemas tem entradas e saídas. A qualquer momento, um sistema dinamico tem um estado determinado por um vetor de numeros reais que pode ser representado por um ponto em um espaco de estado apropriado. Pequenas variacoes no estado do sistema criam pequenas mudancas nos valores do sistema. A regra de evolucao do sistema dinamico descreve o que os estados futuros seguem a partir do estado atual. A regra e deter-minística; em outras palavras, para um dado intervalo de tempo apenas um estado futuro decorre do estado atual. A regra normalmente e definida por um conjunto de equacoes diferenciais algebricas (DAE), no molde de
+dx dt
+= f (x(t),u(t),w(t),t)
+g(x(t),u(t),w(t),t) = 0
+(2.1a)
+(2.1b)
+onde x(t) é o vetor de estados do sistema, u(t) é o vetor de sinais de controle, w(t) é o vetor com as variaveis algebricas e f e g sao funcoes que envolvem todos os componentes anteriores.
+Uma vez que o sistema possa ser resolvido, dado um ponto inicial, e possível determinar todas as suas posicoes futuras, uma colecao de pontos conhecidos como trajetória. Para sistemas dinâmicos simples, conhecendo a trajetória e muitas vezes suficiente para obter suas posicoes futuras, mas a maioria dos sistemas dinamicos sao muito complicados para serem entendidos em termos de trajetorias individuais. As dificuldades surgem porque:
+•	Os sistemas estudados somente sao conhecidos de maneira aproximada. Os parâmetros do sistema podem nao ser conhecidos com precisao ou termos da equacao podem estar faltando. As aproximacoes utilizadas podem invalidar a validade ou relevancia de solucoes numericas. Para responder a estas perguntas varias nocoes de estabilidade foram introduzidas no estudo de sistemas dinamicos, como a estabilidade de Lyapunov ou estabilidade estrutural. A estabilidade do sistema dinamico implica que ha uma classe de modelos ou condi-coes iniciais para os quais as trajetorias sejam equivalentes. A operacao para a comparacao de orbitas para estabelecer sua equivalencia muda com as diferentes nocoes de estabilidade.
+•	O tipo de trajetoria pode ser mais importante do que uma trajetoria particular. Algumas trajetorias podem ser periodicas, enquanto outras podem vagar por diferentes estados do sistema. A classificacao de todas as trajetorias possíveis levou ao estudo qualitativo de sistemas dinamicos, isto é, propriedades que nao mudam com a alteracao de coordenadas. Sistemas dinamicos lineares sao exemplos de sistemas dinamicos em que as classes de possíveis orbitas sao compreendidas.
+•	O comportamento de trajetorias como uma funcao de um parâmetro pode ser o que e necessario para uma aplicacao. Como o parâmetro pode ser variado, os sistemas dinamicos podem ter pontos de bifurcacao, onde o comportamento qualitativo do sistema dinamico muda. Uma bifurcacao ocorre quando uma pequena mudanca feita nos valores dos parâmetros de um sistema provoca uma mudanca repentina em seu comportamento. O ponto onde essa mudanca ocasiona a bifurcacao e chamado de ponto de bifurcacao. Por exemplo, pode ir de ter apenas movimentos periodicos ao comportamento aparentemente errâtico, como na transicao para escoamento turbulento de um fluido. Bifurcacoes ocorrem em ambos os sistemas contínuos e sistemas discretos.
+2.2: Filtro de Kalman
+O filtro de Kalman é um estimador denominado problema linear quadrático, o qual consiste no problema de estimar o estado instantáneo de um sistema dinamico linear perturbado por ruído branco, atraves do uso de medicoes linearmente relacionadas com este estado, porem corrompidas pelo ruído branco.
+Uma das primeiras aplicacoes do filtro de Kalman foi o controle de sistemas dinámicos complexos tais como: processos de manufatura, aeronautica e astronauti-ca, navios, etc. Desde o momento da sua introducao, o filtro de Kalman tem sido objeto de extensa pesquisa e aplicacao, em especial na area de navegacao autonoma ou assistida. Isto e provavelmente devido, em grande parte, aos avancos da computacao digital que tornaram pratica a utilizacao do filtro, mas tambem a relativa simplicidade e robustez do proprio filtro. Raramente as condicoes necessarias para otimizacao realmente existem e, no entanto, o filtro funciona bem para muitas aplicacoes apesar desta situacao [16].
+Para controlar um sistema dinamico, precisa-se primeiro saber o que ele esta fazendo. Para estas aplicacoes, nem sempre e possível ou desejavel medir toda variavel que se deseja controlar, e o filtro de Kalman permite uma maneira de inferir a informacao faltante atraves de medicoes indiretas e ruídos.
+Sob o ponto de vista pratico, algumas perspectivas do filtro de Kalman [7] podem ser consideradas:
+•	Trata-se apenas de uma ferramenta: Ele nao resolve nenhum problema por si mesmo. Nao se trata de uma ferramenta física, de um ente ou ferramenta matematica para tornar o trabalho mental mais eficiente.
+•	E um programa computacional: Ele foi chamado de idealmente preparado para um computador digital, em parte porque utiliza uma representacao finita de um problema de estimacao por um numero fixo de variaveis. Entretanto, admite-se que essas variaveis sejam numeros reais, com precisao infinita.
+•	Trata-se de uma caracterizacao estatística de um problema de estimacao: Ele e mais que um estimador, porque ele propaga o estado corrente de conhecimento de um sistema dinamico, incluindo a influencia estatística de perturbacoes randomicas e os efeitos de todas as medicoes passadas.
+O filtro age de forma a minimizar o erro médio quadrático, que é a diferença entre o estado predito e o atual. Dado um valor inicial, o filtro prediz o próximo estado e, baseado na leitura do estado, atualiza a prediçao e minimiza o erro em cada atualizaçao.
+A característica recursiva do filtro proporciona uma soluçao computacionalmente aceitavel, uma vez que a computacao ocorre a medida que os dados vao sendo processados. O filtro apoia-se no fato de que o ruido e normalmente distribuído. Mesmo que essa hipotese nao se confirme, o filtro continua sendo um estimador otimo.
+O filtro de Kalman e baseado em um modelo dinámico de sistema que representa como seus parametros, representados por um vetor de estados, que variam a medida que o filtro e processado [11]. O modelo e representado por:
+x(k) = F(k, k — 1)x(k — 1) + n(k)	(2.2)
+onde x(k) representa o vetor de estados, F(k,k — 1) e uma matriz de transicao de estados que mostra como o processo transita do estado k — 1 para o estado k, n(k) e um ruido do sistema e k representa a iteracao do processo ao longo do tempo.
+Alem do modelo dinámico do sistema, o filtro tem como base a observacao (medida) do sistema, retirado de sensores, que relaciona os sinais analíticos com o vetor de estado e e descrita por:
+y(k) = h(k)x(k — 1) + e(k)	(2.3)
+onde y(k) representa o vetor de medicao dos sinais analíticos, h(k) e a funcao de medicao que relaciona o vetor de estados com o sinal analítico e e(k) e o ruido de medicao.
+O filtro de Kalman funciona em duas etapas: predicao e atualizacao. Na fase de predicao o estado atual e estimado com base na leitura realizada do estado anterior. Na fase de atualizacao o estado predito e atualizado com base na leitura do estado em tempo real. Para ajustar a diferenca entre o vetor de estado predito e do atualizado e utilizado o ganho de Kalman, descrito por
+g(k) = P (k — 1)h(k)[h(k)P (k — 1)h(k) + r(k)]-1	(2.4)
+onde P(k) e a matriz de covariancia do sistema e r(k) e a variancia do ruido de medicao.
+A situação ideal é quando o ganho de Kalman converge a zero à medida que o vetor de estados vai se estabilizando. Entretanto, na pratica, o ganho de Kalman converge a um intervalo próximo de zero e e determinado pelo ruido do sistema. A matriz de covariancia do sistema pode ser obtida como
+P (k) = [I — g(k — 1)A.(k)]P (k — 1)[I — g(k — 1)A.(k)] + g(k — 1)r(k)g(k — 1)	(2.5)
+onde I representa a matriz identidade.
+Depois de encontrado o ganho de Kalman e atualizada a matriz de covariancia atraves das Equacoes (2.4) e (2.5), respectivamente, e feita a atualizacao do vetor de estados por
+x(k) = x(k — 1) + g(k)[y (k) — Á(k)x(k — 1)]	(2.6)
+Um ponto crucial no filtro de Kalman e a estimativa dos valores iniciais do vetor de estados e da matriz de covariancia do sistema, uma vez que no comeco do processo nao existem valores anteriores ao inicial no sinal. A Figura 2.1 apresenta o processo das etapas do filtro.
+Nova predição
+Figure 2.1: Filtro de Kalman
+2.3: Collocation Method
+O collocation method é um método para a solução numérica de equações diferenciais e equaçoes diferenciais algebricas (DAE, do ingles Differential Algebraic Equation). A ideia e a de escolher um espaco de dimensao finita de solucoes candidatas e um numero de pontos no domínio (chamados collocation points), e selecionar uma solucao que satisfaca a equacao dada nos collocation points.
+O collocation method e um caso particular do metodo Implícito de Runge-Kutta (IRK) onde o periodo de integracao numerica [0,T] (ou [t0,tf]) e particionado em ne intervalos. O elemento finito i esta definido no periodo [t^-i,t»] e cada intervalo e aproximado por um polinomio de ordem nc, onde nc e o numero de collocation points, sendo h» o comprimento do intervalo. A curva e composta por ne elementos finitos. O elemento finito pode ser observado na Figura 2.2.
+Este polinomio, (¿(t) é a aproximação do elemento finito i que está definido no período [t¿_i, ], pode ser representado de várias formas, ou seja, series de potencia, polinomio de Newton ou B-splines, no entanto, para desenvolver o metodo de co-locaçao e preferível polinomios de interpolaçao de Lagrange. A razao e que esta classe de polinomios tem propriedades, que serao evidenciadas na próxima seçao, de estabilidade, erro nulo para certos problemas e sua formulacao e mais simples, pois os parâmetros do polinomio correspondem aos estados (i.e; os parâmetros da Eq. (2.8)) tem os mesmos limites que os estados, o que significa que uma restricao de estado pode ser aplicada diretamente sobre os coeficientes de aproximacao. A Figura
+2.3	demonstra um elemento finito e seus collocation points, apresentando tambem o valor de para cada collocation point.
+O polinomio base de Lagrange e dado por:
+nc
+lk(t) =
+j=0,=k
+(t - tj) (tk — tj)
+(2.7)
+t e a variavel que seleciona um tempo específico no intervalo, sendo 0 o inicio do intervalo e 1 o fim, tk; k = 1,..., nc o conjunto de collocation points.
+A interpolacao polinomial de Lagrange tem a forma geral:
+nc
+onde lk e o k-ésimo termo da base do polinomio de Lagrange, (k e o coeficiente associado ao k-esimo termo e nc e o número de pontos de interpolacao. Verificando a Equacao 2.7, note que lk (tk) = 1, porém lk(j) = 0, o que garante que a aproximacao seja igual a curva nos collocation points.
+A normalizacao do tempo permite utilizar os mesmos pontos de interpolacao e polinomios base em todos os elementos de todas as variaveis, simplificando ainda mais o problema. A normalizacao e realizada como segue
+t(r) = ti_i + hiT	(2.9)
+onde ti e o instante final do elemento i, chamado de ponto do malha de elemento i, e hi e o comprimento do elemento i.
+Derivando uma interpolacao polinomial de Lagrange da Eq. (2.8) e utilizando a normalizacao do tempo da Eq. (2.9) a partir de agora, encontra-se:
+nc
+e a derivada de lk e obtida atraves da regra do produto çomo:
+lk (t)
+nc
+=
+m=1,=k
+1 TT (t - Ti) (Tk - Tm) j	(Tk - Tj)
+(2.11)
+No elemento i o estado x(t) e aproximado por x,(t), assim a aproximaçao so sera çontínua se
+Xi+i (0) = Xi (1)
+(2.12)
+Uma vez que e neçessario um ponto de interpolaçao, no iníçio de çada elemento para x,, a fim de garantir a çontinuidade, define-se
+to :=0	(2.13)
+sendo to o primeiro collocation point da interpolaçao.
+Para a aproximaçao de X no elemento i usa-se a derivada de x,, çom o tempo normalizado, os polinómios de çoloçaçao que representam as derivadas do estado sao dados pela regra da çadeia, para isso e neçessario diferençiar a Eq. (2.9). Como se segue:
+dt = h, dT	(2.14a)
+, . dT dx, , . 1 \,	.
+xi(T ) =	(T) = h:	(214b)
+onde x,^ e o k-esimo collocation point do elemento finito i.
+Seja
+t,,k : t,-i + h,Tk	(2.15a)
+tí;k : i G [1... ne], k G [1.. .nc]	(2.15b)
+Entao os collocation points çoinçidem çom os pontos de interpolaçao dos polinómios de çoloçaçao, çom a exçepçao de t0 em çada elemento. Esses pontos de interpolaçao sao esçolhidos çomo collocation points, porque pode-se façilmente obter todos os valores de x nesses pontos.
+Assim a aproximaçao de x fiça
+nc
+e sua derivada e
+dx(t) dr
+nc
+=
+k=0
+dlk(r)
+7 Xik
+hi f (x(ti,k ) 1 ti,k )
+nc
+=
+k=0
+dlk (r)
+7	Xik 1
+(2.17a)
+(2.17b)
+k = 1,...,nc
+No caso de nc &gt; 1, e preciso garantir a continuidade do sistema
+x1,0 = x0	(2.18a)
+nc Xi+1,0 =	lk (1)xik, Vi G [1,ne]	(2.18b)
+k=0 nc xf	lk (1)xnek	(2.18c)
+k=0
+onde xi,0 representa o valor do primeiro estado, no início do primeiro sub-intervalo, xi+i)0 e o valor de estado, no início do intervalo i e xf e o valor de estado, no final do período de simulacao.
+Generalizando o problema para a interpolacao nao somente dos estados, cons-troi-se um vetor z, definido por
+z(t) = (x(t),u(t),w(t))	(2.19)
+onde x(t) sao os estados, u(t) o sinal de controle e w(t) variaveis algebricas. No elemento i sao aproximados por um vetor de interpolacao polinomial de Lagrange
+Zi(r) = (xi(r ),Ui(r ),Wi(r))
+(2.20)
+Assim, as equações para o vetor z(t) são análogas às dos estados x(t).
+2.4: Polinómio Deslocado de Gauss-Jacobi
+A escolha dos pontos de interpolação restantes e o que define o collocation method específico. Essa escolha e baseada nas raízes do polinomio deslocado de Gauss-Jacobi de grau K = nc - a - 0, que pode ser descrito por
+K
+P^(r ) = E(-1)KYj	(2.21)
+j=0
+onde,
+Yo = 1 Y, = (K +1 - j)(K + j + a + ff)	e [1	K] Y)	j(j + ff)	,j G	'	(2.22a) (2.22b)
+onde a e são constantes a escolher, definidas no dominio [0 , 1]. O polinomio é deslocado no sentido que normalmente esta definido com t g [-1 , 1], enquanto aqui ele esta definido no dominio [0,1]. A combinacao das constantes forma 3 metodos diferentes.
+a = 0 e ff = 0 Gauss collocation
+a = 1 e ff = 0 Radau collocation
+a =1e ff =1 Lobatto collocation
+(2.23a)
+(2.23b)
+(2.23c)
+O método Lobatto, diferente do Radau e do Gauss, possui um collocation point no início de cada elemento, ou seja, t0 e obtido atraves da Eq. (2.21) e nao pode ser definido como feito na Eq (2.13). Por esta razao, o metodo descrito nesta secao nao pode ser usado para criar um metodo Lobatto. E necessaria uma abordagem diferente para o Lobatto collocation.
+Como exemplo a solucao da Eq. (2.21) e dada para nc de 1 a 4, na Tabela
+2.1	para o Radau e na Tabela 2.2 para o Gauss. As solucoes apresentadas estao arredondadas para melhor comparar a diferenca entre os dois metodos. Para nc maiores pode-se utilizar de computadores para a resolucao da Eq. (2.21)
+Table 2.1: Radau Collocation Points (a = 1 e ft = 0)
+	T1	T2	T3	T4
+nc =1	1,000	-	-	-
+nc = 2	0,333	1,000	-	-
+nc = 3	0,155	0,644	1,000	-
+nc = 4	0,088	0,409	0,787	1,000
+Table 2.2: Gauss Collocation Points (a = 0 e ff = 0)
+	T1	T2	T3	T4
+nc =1	0,500	-	-	-
+nc = 2	0,211	0,788	-	-
+nc = 3	0,112	0,500	0,887	-
+nc = 4	0,069	0,330	0,669	0,930
+2.5: Ordem de Convergencia
+Como mostrado em [3] e [10] o erro global uniforme do estado aproximado no
+elemento i, e
+O (hmin(™e+1.2nc-a-fi))
+(2.24)
+O erro global uniforme das variaveis algebricas aproximadas e variaveis de controle no elemento i e
+o(hnc)
+(2.25)
+Se nc &gt; 1 o erro global uniforme é, portanto, o mesmo para Gauss, Radau e Lobatto.
+No final/comeco dos elementos, o erro global de todas as variaveis e
+o(h2nc-a-fi)
+(2.26)
+Assim, a ordem de convergência da solução é de até duas vezes mais elevada no final/começo dos elementos do que no resto do elemento (incluindo os pontos de colocaçao). Este fenomeno e chamado super convergencia.
+2.6: Exemplo
+Define-se o sistema:
+dx 2
+= x2 — 2x + 1,	x(0) = —3
+dt
+(2.27)
+com t g [0,1]. A solugáo analítica desse sistema é dada pela equagáo x(t) = (4t -3)/(4t +1). Entretanto serao calculadas aproximacoes nUmericas usando o collocation method utilizando as raízes do polinomio (2.21) de Radau e Gauss com nc = 3.
+2.6.1: Radau Collocation
+Os collocation points sao tirados do polinomio da Eq. (2.21), substituindo os valores de a e do Radau collocation na Eq. (2.22) e esta na Eq. (2.21), obtem-se
+2
+pRadau (t ) = 1 + J2(—1)2-j j=i
+(3 — j)(3+ j) ,
+-----------T
+(2.28)
+Com Radau os collocation points sao t0 = 0, tx = 0.155051, t2 = 0.644949, e t3 = 1. A
+Figura 2.4 demonstra os collocation points em relajo com a resposta analítica
+(1)Z
+Figure 2.4: Collocation points do método de Radau
+Usando a Eq. (2.17b) com N =1 elementos, e hi = 1/N obtem-se
+3
+E
+j=0
+dlj (Tk) Zij	dT
+= hi(z2j - 2zik + 1),
+k =1,..., 3, i = 1
+(2.29)
+Desenvolvendo a base de Lagrange descrita na Eq. (2.11), encontra-se:
+dlo(Tk) dT
+dli(Tk) dT
+d¿2(Tk ) dT
+d¿3(Tk )
+dT
+-30t2 + 36Tk - 9
+46.7423t2 - 51.2392Tk - 10.0488
+-23.7423t2 + 20.5925Tk - 1.38214
+2 16 1
+10Tk - ITTk + 3
+(2.30a)
+(2.30b)
+(2.30c)
+(2.30d)
+Substituindo a Eq. (2.30) na Eq. (2.29) encontra-se:
+zo(-30t2 + 36Tk - 9) + zi(46.7423t2 - 51.2392^ + 10.0488)
+Z2(-23.7423t2 + 20.5925Tk - 1.38214) + Z3
+( 2 16 1\
+(10Tk - TTk +3j
+(2.31)
+= (zk - -■ + 1), k = i,..., 3
+Resolvendo o sistema de equacoes tem-se zx = -1.65701, z2 = 0.032053, z3 = 0.207272 com z0 = -3.
+Um grafico na Figura 2.6 mostra a comparacao do metodo de Radau com o de Gauss, que sera descrito na proxima subsecao, e com a solucao analítica.
+2.6.2: Gauss Collocation
+Os collocation points são tirados do polinómio da Eq. (2.21), substituindo os valores de a e do Gauss collocation na Eq. (2.22) e esta na Eq. (2.21), obtém-se
+3
+pGauss(T) =	v ■
+j=i
+(4 - j)(3+j) i
+------------T j2
+(2.32)
+Com Gauss os collocation points sao t0 = 0, n = 0.112702, t2 = 0.500000, e t3 =
+0.887298. A Figura 2.5 demonstra os collocation points em relagao com a resposta analítica
+O equacionamento desenvolvido na Subsecao 2.6.1 nao se altera, por excecao do conjunto de equacoes em (2.31), pois os valores de Tk sao dados pela Eq. (2.32).
+Figure 2.5: Collocation points do método de Gauss
+Resolvendo o sistema de equates, tem-se zx = -1.742931, z2 = -0.2488663, z3 = 0.176679 com z0 = -3.
+A Figura 2.6 mostra os 3 metodos considerados: solucao analítica, aproximacao com Gauss collocation e aproximacao com Radau collocation.
+Figure 2.6: Gráfico das respostas
+A Tabela 2.3 contem o erro de aproximação de Gauss e de Radau em compa-
+racao com a solucao analítica. O erro foi calculado com a seguinte formula:
+Erro
+gauss
+= !\z(t)
+0
+Erro
+f1
+radau	(z(t)
+0
+zg (t))2dt
+zr (t))2dt
+(2.33a)
+(2.33b)
+sendo zg (t) a aproximacao da curva pelo Gauss collocation, zr (t) a aproximacao da curva pelo Radau collocation e z(t) a resposta analítica.
+Table 2.3: Erro quadrático das curvas
+Erro aproximação de Gauss
+Erro aproximação de Radau
+0,0220575614331819
+0,0153388854412689
+Chapter3: Ferramentas de Implementação
+Esse capítulo apresenta as ferramentas utilizadas para modelar e resolver o problema de estimacao de parâmetros.
+3.1: Modelica
+Modelica e uma linguagem orientada a objetos desenvolvida para modelar o comportamento dinâmico dos sistemas tecnicos de uma forma simples. Os modelos sao descritos usando equacoes diferenciais, algébricas e discretas. Os modelos tambem podem ser compostos por outros modelos em uma estrutura hierârquica. Modelica consegue lidar com problemas grandes e complexos devido a sua capacidade de reutilizacao de modelos.
+Modelica e uma linguagem textual, no entanto, existem varios ambientes que fornecem uma interface grafica ao usuario. Algumas implementacoes sao gratuitas e outras comerciais. Ambientes livres sao: OpenModelica (Linkoping University) e JModelica.org (Universidade de Lund). Ambientes comerciais sao: CATIA Systems (Dassault Systemes), Dymola (Dynasim), MapleSim (MAPLESOFT), MathModelica (Wolfram Research), e outros.
+3.2: Optimica
+Enquanto o uso primário de modelos Modelica e simulacao, varios outros usos estao surgindo. Como nao e viavel recodificar os modelos para cada novo modelo de uso, futuras ferramentas Modelica e tambem a própria linguagem Modelica, devem acomodar e promover novos usos de modelos Modelica.
+Um exemplo de uso emergente de modelos Modelica e otimizacao dinamica. Uma característica de problemas de otimizacao dinamica realista e que o procedimento de formulacao de tais problemas e altamente interativo. E comum que uma extensa afinacao da funcao de custo e restricoes seja necessária, a fim de obter uma solucao aceitavel. Esses elementos sao indispensaveis na formulacao de problemas de otimizacao dinamica e nao sao suportados pela linguagem Modelica.
+A fim de formular um problema de otimizacao dinamica, a ser resolvido por um algoritmo numerico, o usuario tem de fornecer diferentes tipos de informacao. E natural categorizar essas informacoes em tres níveis, o que corresponde ao aumento dos níveis de detalhe [1].
+•	Nível I. No nível matematico, uma formulacao canônica de um problema de oti-mizacao dinamica e dado. Isto inclui variaveis e parâmetros para otimizar, funcao de custo para minimizar, restricoes e modelo Modelica constituindo a restricao dinamica. O problema formulado é, em geral, infinito no aspecto de, que nao pode ser usado diretamente atraves de um algoritmo numerico, sem informacao adicional.
+•	Nível II. No nível da transcricao, um metodo para traduzir o problema a partir de um problema de dimensao infinita para um problema de dimensao finita precisa ser fornecido. Isto pode incluir malhas de discretizacao, bem como estimativas iniciais para os parâmetros de otimizacao e variaveis. Deve ser notado que a informacao necessaria para este nível depende do algoritmo numerico que e utilizado para resolver o problema.
+•	Nível III. No nível do algoritmo, informacoes tais como tolerancias e os parametros de controle do algoritmo podem ser fornecidas. Tais parâmetros sao muitas vezes críticos, de modo a obter um desempenho aceitavel em termos de convergencia, confiabilidade numerica e velocidade.
+Em Modelica, apenas as informacoes correspondentes ao Nível I sao expressas na descricao real do modelo. Para otimizacao dinamica, a necessidade de entrada do usuario no nível de algoritmo e mais enfatizada. Algoritmos automaticos, por exemplo para a selecao de malha, existem, mas podem nao serem adequados para todos os tipos de problemas. Por conseguinte, e desejavel incluir, na linguagem, meios para o usuario especificar a maior parte dos aspectos do problema de modo a manter a flexibilidade, permitindo ao mesmo tempo o uso de algoritmos automaticos quando possível e adequado.
+A extensao Optimica permite ao usuario especificar elementos importantes de um problema de otimizacao dinamica, tais como funcoes de custo, restricoes e intervalo de otimizacao. O modelo dinâmico, no qual o problema de otimizacao dinamica e baseado, e expresso usando o padrâo Modelica. Optimica tambem suporta uma anotacao que permite ao utilizador especificar as propriedades de um metodo de
+transcricao, baseado na colocacao direta. Devido a estas propriedades, Optimica suporta formulacao de problemas de otimizacao dinamica, utilizando construcoes de alto nivel, tanto no nível matematico quanto no nivel da transcricao numerica.
+Optimica apresenta tres aspectos principais no padreo Modelica:
+•	Classe de otimizacao, uma nova classe de objetos pode ser instanciada. Ela representa o problema de otimizacao. Necessariamente precisa de uma funcao objetivo e variaveis de otimizacao. E importante notar que o horizonte de predicao pode ser uma variavel de otimizacao.
+•	Uma secao de restrição dentro de elementos de otimizacao. Nesta secao, podem-se declarar igualdades e desigualdades que impoem restricoes as variaveis.
+•	Variaveis de acesso em tempo. Com o padreo Modelica nao podemos acessar as variaveis em um momento específico. Com Optimica e possível fazer restricoes como: x(tf) = 1 (variavel x no tempo final tf deve ser igual a 1) ou y(5) &amp;lt;3 (variavel y no tempo de 5 deve ser menor do que 3).
+3.3: JModelica.org
+JModelica.org e um pacote para simulacao e otimizacao de modelos Modelica. E desenvolvido em colaboracao entre a industria e academicos, com a finalidade de criar uma plataforma industrialmente viavel usando o estado da arte dos algoritmos para analisar sistemas físicos complexos. Python e usado como uma linguagem de programacao para criar uma interface amigavel para todos os componentes do JMo-delica.org [12].
+O ambiente JModelica consiste em um conjunto de módulos de software, incluindo compiladores para Modelica e Optimica, um gerador de codigo para linguagem C, uma biblioteca de tempo de execucao em C, um algoritmo de otimizacao simultanea, e uma biblioteca para integracao com a linguagem de programacao Python. Tambem, internamente, ele se conecta com outras três ferramentas muito usadas: CasADi, Sundials, e IPOPT [15].
+E típico que a solucao de problemas de otimizacao dinâmicos exigem multiplas iteracoes, em que a funcao de custo, as restricoes, o metodo da transcricao, e mesmo o modelo sao refinados de modo a obter melhores resultados. Os resultados, entao,
+normalmente precisam ser analisados e os parâmetros de formulação de otimização ajustados. O uso de linguagens de descrição de alto nivel libera o usuario da tarefa custosa e propensa a erros de codificação das formulações de modelos e otimização em linguagens menos adequadas. Com efeito, o foco do processo de concepçao e transferido da codificaçao do problema para a formulaçao do problema, que se traduz em processos de projeto mais eficientes.
+3.3.1: CasADi
+CasADi e um sistema minimalista de algebra computacional que implementa di-ferenciaçao automatica, por meio de uma abordagem híbrida simbolica/numerica. Ele e projetado para ser uma ferramenta de baixo nível para a implementaçao rápida, mas altamente eficiente, de algoritmos de otimização numerica.
+Em otimizaçao e importante calcular eficientemente derivados de funçao. Para isso usa-se CasADi (Computer algebra system with Automatic Differentiation). Uma vez que uma representação simbólica que consiste em objetos CasADi de um problema de NLP foi criada, CasADi fornece todas as informaçoes das derivadas neces-sarias para a soluçao numerica do problema com muito pouco esforço do usuario.
+3.3.2: Sundials
+Sundials e um pacote de solvers de ODE e DAE que foi desenvolvido para ser um integrador de tempo robusto e solver nao-linear. O solver mais utilizado e CVODE, um solver de ODE com a capacidade de resolver alguns tipos especiais de DAE que podem calcular automaticamente sensibilidades.
+3.3.3: IPOPT
+Ipopt (Interior Point OPTimizer) e um pacote de software para otimizaçao nao-linear em grande escalaEle e projetado para encontrar soluçoes (locais) de problemas de otimizaçao matematica.
+Ipopt usa um algoritmo de pontos interiores com um filtro do metodo de linesearch. Ele tambem tem uma funçao automatica de problema de escala, algumas heurísticas para acelerar a convergencia, e algumas tecnicas para aumentar a robustez.
+A Figura 3.1 mostra a esquematização da estrutura dos softwares utilizados na resolução de problemas de otimizaçao.
+Solution
+Python
+JModelica.org
+FMUX Compiler
+f Modelica I Optimica
+CasADiModel
+K
+C LocalDAECollocationAIg X
+Figure 3.1: Visão geral da estrutura de otimização
+Chapter4: Estimação de Parâmetros
+Neste Capítulo apresenta-se a definicao de tecnica de otimizacao e se aplica o collocation method , descrito no Capítulo 2, juntamente com essa nova tecnica em um circuito RLC para a validac^o da metodologia.
+Assim que validada, muda-se o sistema: a metodologia e aplicada em um poco produtor de petróleo e gas. Neste caso, foi possível obter resultados positivos em relacao aos parâmetros que serâo descritos neste Capítulo. Os resultados impulsionaram a utilizacao de dados de simuladores mais sofisticados para serem usados como referência da metodologia, porem nao se obtiveram bons resultados, por isso foi necessaria a modificacao do modelo, tornando-o levemente mais sofisticado.
+Todos os codigos utilizados para os modelos e para a resolucao dos problemas de estimacao se encontram no apendice B.
+4.1: Otimização
+No caso mais simples, um problema de otimizacao consiste em maximizar ou minimizar uma funcao real, escolhendo sistematicamente valores de entrada a partir de um conjunto permitido e calculando o valor da funcao. A generalizacao da teoria de otimizacao e tecnicas para outras formulacoes compreende uma grande area da matematica aplicada. De modo mais geral, a otimizacao busca encontrar “o melhor valor possível” de alguma funcao objetivo dado um domínio definido (ou um conjunto de restricoes), incluindo uma variedade de diferentes tipos de funcoes objetivo e diferentes tipos de domínios. Problemas de otimizacao podem ser divididos em duas categorias, dependendo se as variaveis sao contínuas ou discretas. Um problema de otimizacao com variaveis discretas e conhecido como um problema de otimizacao combinatoria.
+Um problema de otimizacao dinamica normalmente tem a seguinte forma:
+min ^(t,x(t), y(t), w(t), u(t))
+s.t.: x = f (t,x(t), w(t), u(t), O)
+g(t,x(t),y(t),u(t)) = 0
+xL&amp;lt;x(t) &amp;lt;xU yL&amp;lt;y(t) &amp;lt;yU wL&amp;lt;w(t) &amp;lt;wu uL&amp;lt;u(t) &amp;lt;uu OL&amp;lt;O(t) &amp;lt;OU t0&amp;lt;t &amp;lt;tf
+(4.1a)
+(4.1b)
+(4.1c)
+(4.1d)
+(4.1e)
+(4.1f)
+(4-1g)
+(4.1h)
+(4.1i)
+onde
+•	e a funcao objetivo.
+•	x(t), y(t), w(t), u(t) e O sao os estados, saída, variaveis algebricas e de controle e os parâmetros da funcao, respectivamente.
+•	f e g sao funcoes de estado e funcoes algebricas, respectivamente.
+•	xL e xu sao os limites inferiores e superiores, respectivamente, dos estados.
+•	yL e yu sao os limites inferiores e superiores, respectivamente, da saída.
+•	wL e wu os limites inferiores e superiores, respectivamente, das variaveis alge-bricas.
+•	uL e uu sao os limites inferiores e superiores, respectivamente, do controle.
+•	OL e Ou sao os limites inferiores e superiores, respectivamente, dos parâmetros.
+Essas variaveis podem ser discretizadas utilizando o collocation method mostrado nas secoes anteriores. Os limites de variaveis sao os mesmos da formulacao de tempo contínua, os quais sao aplicados diretamente sobre os collocation points. Esta facilidade de aplicacao de restricoes e uma das razoes pelas quais o polinomio de interpolacao de Lagrange e escolhido. No entanto, essas restricoes so podem ser asseguradas nos collocation points e nao no intervalo entre eles.
+4.1.1: Função Objetivo
+A formulação mais comum e flexível para a função objetivo integra o erro quadrático ponderado entre os estados, as variáveis algebricas, os controles e suas referencias. Esta formulacao permite o controle de diferentes variáveis do sistema.
+min = í [(x - Xref )TQx(x - Xref) + (y - Vref )T Qy (y - Vref)
+Jt0	(4.2)
++ (w - Wref )TQw (w - Wref) + (u - Uref )TQu(u - Uref )]dt
+onde Qx, Qy, Qw e Qu sao os fatores de peso dos estados, saídas, variáveis algebricas e controle, respectivamente.
+No caso do problema de estimacao de parâmetros, as referencias sao obtidas pelos dados medidos do sistema. Os dados sao compostos das entradas e saídas do sistema. Para resolver o problema adicionam-se restricoes as entradas e aos estados, entretanto o mesmo nao pode ser feito com as saídas. Essas restricoes de igualdade sao aplicadas apenas nos collocation points, assim forcando as entradas a serem iguais aos dados de referencia. Nesse caso, os parâmetros possuem um valor livre, para que o algoritmo possa encontrar o valor que minimize a funcao objetivo e cumpra com as restricoes. Adicionando as novas restricoes e discretizando com o collocation method as Eqs. (4.1), obtem-se:
+min	[(xik	xref (tik)) Qx(xik	xref (tik))
+0 ¿. ¿.
+i=0 k=0
++ (yik	yref (tik )) Qy (yik	yref (tik)) + (wik	wref (tik)) Qw (wik	wref (tik))
+(4.3a)
++ (uik	uref (tik)) Qu(uik	uref (tik))]
+nc
+S-t-:
+k=0
+dlk(r) dr
+xik - hif (tik,xik,Uik,0) = 0, V k G [1, nc],i G [1, ne]
+(4.3b)
+g(tik,xik,uik) = 0, V k G [1,... ,nc],i G [1,..., nc]	(4.3c)
+nc
+xi+i,o =	Ik(1)xik, V i G [1,... ,ne]	(4.3d)
+k=0
+nc
+xf =	4 (1)xnek	(4.3e)
+k=0
+xL &amp;lt;xik &amp;lt;xU	(4.3f)
+yL &amp;lt;yik &amp;lt;yU	(4.3g)
+wL &amp;lt;wik &amp;lt;wU	(4.3h)
+uL &amp;lt;uik &amp;lt;uU	(4.3i)
+uik uref (tik ) xik xref (tik )
+xi,o = xo
+(4.3j)
+(4.3k)
+(4.3l)
+em que r encontrado dependera do tipo do collocation method, utilizando as Tabelas
+2.1	e 2.2. A Figura 4.1 demonstra um exemplo, apontando onde se encontram os collocation points, elementos finitos e o período da aproximac^o.
+4.2: Circuito RLC
+Um circuito RLC é um circuito elétrico constituído por uma resistência, um indutor e um capacitor, ligado em série ou em paralelo. O circuito forma um oscilador harmônico para a corrente que ressoa de forma semelhante a um circuito LC. A principal diferenca da presenca da resistencia e que ela faz com que qualquer oscilacao induzida no circuito ira extinguir-se ao longo do tempo se nao for mantida por uma fonte. Este efeito da resistencia e chamado de amortecimento. A presenca da resistencia tambem reduz ligeiramente a frequencia ressonante de pico. Alguma resistencia e inevitavel em circuitos reais, mesmo se uma resistencia nao esta especificamente incluída como um componente.
+Ha muitas aplicacoes para este circuito. Eles sao utilizados em diversos tipos diferentes de circuitos osciladores. Outra aplicacao importante e para tuning, como em receptores de radio ou aparelhos de televisao, onde sao usados para selecionar uma estreita faixa de frequências de ondas de radio do ambiente. Um circuito RLC pode ser usado como um filtro passa-banda, filtro rejeita-faixa, filtro passa-baixa ou filtro passa-alta. A Figura 4.2 apresenta um modelo do circuito RLC em serie.
+A equacao diferencial que regula o circuito pode ser encontrada atraves da lei
+de Kirchhoff.
+Vr + Vl + Vc = V (t) di
+Ri + L— + Vc = V (t)
+dt
+Pela equacao do capacitor temos:
+dVc	i
+~dt = C
+(4.4a)
+(4.4b)
+(4.5)
+Com isso podemos montar um sistema de equacoes de estado
+x1 = VC(t)	(4.6a)
+x2 = i(t)	(4.6b)
+Substituindo as equacoes (4.6) nas equacoes (4.4b) e (4.5) encontra-se o sis-
+tema abaixo
+X2
+X1 = ~^
+•	V(t)
+X2 = ~
+•1
+~L
+Rx2
+~~L~
+(4.7a)
+(4.7b)
+4.2.1: Estimação dos Parámetros do Circuito RLC
+Utilizando o modelo descrito anteriormente, propoe-se um problema de estimação dos parâmetros do circuito, R, L e C utilizando o collocation method e tecnicas de otimizacao. Para isso primeiramente sao necessários dados que sao obtidos a partir de simulacoes. O circuito usado na simulacao tem os parâmetros: R = 200Q, L = 0,01H, C = 1e-3F e uma entrada V(t) = 5V.
+Uma vez com os dados e o conhecimento do modelo, simula-se o modelo com uma estimativa inicial dos parâmetros. Essa simulacao fornecera a trajetória de otimizacao usada na estimacao. Apos isso, utiliza-se o collocation method nos dados amostrados de V(t), Vc(t) e I(t), reconstruindo as curvas para entao poder estimar os valores de R, L e C.
+Abaixo encontra-se a Tabela 4.1 com as diferentes situacoes de simulacao, com uma estimativa inicial de R = 400Q, L = 0,02H e C = 2e-3F.
+Table 4.1: Parâmetros Estimados
+El fin	CP	T (s)	R (Q)	L (H)	C (F)	Erro R (%)	Erro L (%)	Erro C (%)
+			200,00	0,01	0,001			
+1000	1	54,59	199,90	0,00944	0,0009756	0,047	5,590	2,432
+1000	10	465,67	200,36	0,00966	0,0009981	0,183	3,345	0,182
+100	1	1,18	199,88	0,01543	0,0007711	0,055	54,360	22,881
+100	10	7,55	201,70	0,01938	0,0009916	0,850	93,895	0,832
+Pode-se perceber que existe uma troca entre o numero de elementos finitos (El fin) e o numero de collocation points(CP), uma vez que mais elementos finitos aumenta o tempo de processamento, mas tambem aumenta a precisão da estimacao. O mesmo ocorre com o numero de collocation points. Entretanto, uma escolha ruim na razao entre esses parâmetros pode ocasionar um aumento desnecessário de tempo de processamento e uma pior estimacao.
+Para melhor estudar esse método de estimação de parâmetros, altera-se a entrada, até entao constante para uma serie de degraus, conforme ilustra a Figura 4.3.
+Figure 4.3: Entrada V(t).
+Assim, aplicando a mesma metodologia para o caso de entrada constante, com
+os mesmos valores de parametros e estimativas iniciais encontram-se os resultados mostrados na Tabela 4.2.
+		Table 4.2: Parâmetros Estimados						
+El fin	CP	T	R	L	C	Erro R	Erro L	Erro C
+		(s)	(Q)	(H)	(F)	(%)	(%)	(%)
+			200,00	0,01	0,001			
+100	1	1,04	196,62	0,0004016	0,00089185	1,69	95,984	10,815
+200	1	1,78	198,26	0,0005798	0,00094373	0,87	94,202	5,627
+1000	1	28,85	199,50	0,0067239	0,00098881	0,25	32,761	1,119
+Apesar de haver um grande erro na estimação de L, comparando as respostas do sistema com os dois conjuntos de parâmetros nas Figuras 4.4, 4.5, 4.6 e 4.7, observa-se que elas sao equivalentes. Na Tabela 4.3 apresenta-se o erro de aproxima-çao do resultado encontrado pelo collocation method em comparaçao com o sistema simulado. O erro foi calculado com a seguinte formula:
+Erro/ =	(I(t) - Ip(t))2dt	(4.8a)
+Jo
+Erroyc = í ' (Vc(t) - Vp(t))2dt	(4.8b)
+Jo
+Errovç =	(V (t) — Vp (t))2dt	(4.8c)
+o
+sendo tf o tempo final de simulacao, I(t), VC(t) e Vr(t) a corrente, tensao no capacitor e tensao no resistor do sistema simulado e Ip(t), Vp(t) e Vrp(t) a corrente, tensao no capacitor e tensao no resistor do sistema com os parametros estimados.
+Table 4.3: Erro quadrético RLC
+Erro de I	Erro de Vc
+1,15574026e-07 8,81899924e-03
+Erro de Vr
+8,88219230e-03
+6
+'0
+2
+6
+Tèmpo [s]
+Figure 4.4: Comparação entre as 3 entradas V(t).
+				— V — V — V	do sistema simulado do collocation method com os para metros estimados
+					
+					
+	1				
+					
+					
+4
+10
+Corrente [A]
+Figure 4.5: Comparação entre as 3 correntes I(t).
+Figure 4.6: Comparaçao entre as 3 tensoes Vc(t).
+Figure 4.7: Comparação entre as 3 tensões Vr(t).
+4.3: Poço Produtor de Petróleo
+Os primeiros pocos de petróleo nos tempos modernos foram perfurados percus-sivamente, martelando uma ferramenta a cabo na terra. Pouco depois, ferramentas de cabo foram substituídas por perfuracao rotativa, o que poderia perfurar pocos a uma profundidade muito maior e em menos tempo. Ate os anos 1970, a maioria dos pocos de petroleo era vertical, embora imperfeicoes causassem o desvio, ao menos levemente de uma exata verticalidade da maior parte dos pocos (o que levou aos pocos direcionais). Entretanto as tecnologias de perfuracao direcional modernas permitem pocos fortemente desviados, os quais podem, dada suficiente profundidade e com as ferramentas apropriadas, tornarem-se horizontais. Isto e de grande valor, na medida em que rochas reservatorio que contem hidrocarbonetos sao normalmente horizontais, ou sub-horizontais; um poco horizontal colocado em uma zona de producao tem mais area de superfície na zona de producao que um poco vertical, resultando em uma maior taxa de producao. O uso de perfuracao desviada e horizontal tambem tornou possível chegar a reservatorios a varios quilômetros de distancia do local de perfuracao (perfuracao de alcance estendido), permitindo a producao de hidrocarbonetos localizados abaixo dos locais que sao ou difíceis de colocar-se uma sonda de perfuracao, ou ambientalmente sensíveis, ou povoados.
+O gas-lift contínuo, metodo de elevacao do petroleo e gas, baseia-se na injecão contínua de gas a alta pressao na coluna de producao, com o objetivo de gaseificar o fluido desde o ponto de injecao ate a superfície. O gas aqui em questao e o gas natural, fruto da producao do proprio poco, que e comprimido em compressores na plataforma e enviado ao annulus do poco atraves de uma linha de servico. Na superfície, o controle da injecao de gas no poco e feito atraves de um regulador de fluxo, ou choke. Ja no poco ha uma valvula de gas lift que promove a comunicacao entre o annulus e a coluna de producao (tubing) e segue pela linha de producao ate chegar a plataforma. A valvula de gas lift tem a funcao de controlar o fluxo de gas e estabelecer contato entre o annulus e o tubing.
+Os modelos da rede de extracao de petroleo considerados neste trabalho foram modelados em [15]. Esta secao e dedicada ao modelo do poco produtor, onde e aplicado o metodo proposto para a estimacao de parâmetros.
+4.3.1: Modelo do Poço
+O poco e o principal atuador de um reservatório de petróleo, sendo composto por varias pecas distintas: choke de gas-lift, a valvula de injecao, anulus, tubo de revestimento, e choke de producao.
+A operacao de um poco pode ser descrita pelas seguintes etapas:
+1.	O gas injetado passa atraves do choke de gas-lift e aumenta a pressao do anulus.
+2.	Como a pressao no anulus excede a pressao na tubulacao (tubing), o gas comeca a fluir atraves da valvula de injecao (injection valve).
+3.O gas injetado se mistura com o fluido que emana a partir do reservatorio e reduz a densidade geral.
+4.	Com uma densidade inferior, a contrapressao induzida pelo fluido e reduzida facilitando o fluir para a superfície.
+O modelo de Binder [4] e uma extensão do modelo de Eikrem, um modelo que tem sido desenvolvido e usado nos ultimos 10 anos [15]. O esquema do poco pode ser observado na Figura 4.8. Uma versao anterior do modelo foi comparado com o simulador OLGA, mesmo com a simplicidade os resultados tem fidelidade considerável. O modelo tem apenas 3 ODEs e algumas equacoes algebricas e ainda pode representar a maioria das características e restricoes do poco. Por estas razoes e o modelo usado.
+As principais premissas do modelo sao:
+•	A producao de oleo e descrita pela equacao de Vogel [8].
+•	A producao de gas e producao de agua e dada pela relacao líquidorágua (watercut) e razao gas-oleo (GOR).
+•	A distribuicao das massas dos três fluidos ocorre sem demora de transporte.
+•	A friccao entre os fluidos e a parede do anulo/tubo nao e considerada.
+•	As pressões sao obtidas pelas leis de gas ideal e efeito gravitacional de líquidos.
+O modelo descreve o sistema dinâmico usando 3 estados e 3 entradas — wgi(vazao do gas de injecao), upc(production choke), e pds(pressao downstream) e suas equacoes completas sao apresentadas no apêndice A.1:
+Reservoir
+Annulus
+Tubing
+Injection valve
+Gas lift choke
+Gas in
+Production choke
+•&amp;lt;*&gt; Oil out
+/ Casing
+Figure 4.8: Esquema de um Poço.
+mga	win	wgi
+m gt = wgr + wgi — wgp
+m lt — wlr	wlp
+wout	fc (m;pds;upc)
+Massa de gás no Annulus
+Massa de gás na Tubulaçáo
+Massa de líquido na Tubulação choke flow
+(4.9)
+m =
+No anulus, a entrada de gas-lift win aumenta a massa de gás mga do anulus, enquanto o fluxo atraves da vaivula de injeçao wgi reduz. O gas proveniente do reservatório wgr adiciona-se ao gas proveniente do anulus wgi e e reduzida a partir do gas que flui atraves do choke de produçao wgp descrevendo a dinamica da massa de gas no tubo. A massa de líquido na tubulaçao e a integral no tempo do líquido que flui do reservatorio wlr descontado pelo fluxo líquido de saída atraves do choke de produçao wlp. O vetor de fluxo de gas, oleo e agua wout e funcao dos estados m = (mga, mgt, mlt), da abertura do estrangulamento de producao upc e da pressao a jusante de estrangulamento pds, que depende do estado dos oleodutos.
+A principal diferença entre os modelos de Binder e Eikrem é que, no modelo de Binder, o reservatório nao so produz petroleo e gas, mas agua tambem. Portanto, algumas alterações foram feitas nas equações de densidade e pressao.
+Ambos os modelos consideraram a abertura do choke de produçao upc como uma variavel controlavel, no entanto, para reduzir a complexidade do problema se assume que ela esta sempre totalmente aberta, uma vez que qualquer outra posicao do choke iria reduzir a producao de petroleo.
+Uma modificacao adicional para o modelo de Binder foi necessaria para atender a característica de nao-retorno no choke de gas-lift. Deve haver fluxo no choke apenas se a pressao no annulus e inferior a pressao antes do choke. Devido a esta limitacao, a injecao de gas-lift deve estar dentro dos limites:
+pgm	pta
+0 &amp;lt;wgl &amp;lt;wgl	= fgv(pgm — pta)
+(4.10a)
+(4.10b)
+sendo wg(ax o fluxo quando o choke de gas-lift esta totalmente aberto. Esse valor pode ser encontrado utilizando a funcao do choke, que e dependente da diferenca de pressao entre o tubo de distribuicao de gas-lift (pgm) e a parte superior do anulus (pta).
+4.3.2: Estimação dos Parâmetros de um Poço Produtor de Petróleo
+Utilizando a mesma metodologia da secao anterior, apresenta-se o problema de estimacao dos parâmetros de um poco de petróleo. Os parâmetros a serem estimados sao os coeficientes das valvulas de injecao, Civ, e de producao, Cpc, e as condicoes iniciais da massa de gas no anular do poco e na tubulacao do poco e massa de líquido na tubulacao do poco, respectivamente, mga0, mgt0 e mlt0.
+Abaixo encontra-se a Tabela 4.4 com as diferentes situacoes de simulacao, com uma estimativa inicial de Civ = 0,00017, Cpc = 0,0019, mga0 = 3700, mgt0 = 1450 e mlt0 = 3400
+Mesmo com 200 elementos finitos, que apresenta a maior porcentagem de erro, o sistema ainda se comporta como o sistema simulado, como pode ser observado nas Figuras 4.9 e 4.10. A Figura 4.11 mostra a localizacao das medicoes dos dados coletados.
+Table 4.4: Parâmetros Estimados
+Elem fin	T(s)	C	C	mga0	mgt0	mito
+		0,00016	0,0014	3629,07	1389,20	3352,26
+200	7,18	0,0001599	0,0014006	3633,32	1388,19	3275,61
+500	48,34	0,0001599	0,0014002	3630,80	1389,24	3320,57
+1000	99,57	0,0001599	0,0014001	3629,92	1389,26	3336,51
+Figure 4.9: Comparação da pressão upstream da válvula de produção (pp) e pressão downstream da valvula de injeçao (pto).
+				— Fluxo de gas do sistema simulado Fluxo de oleo do sistema simulado Fluxo de agua do sistema simulado Fluxo de oas com os Darametros estimados	
+				Fluxo de oleo Fluxo de agua	com os para metros estimados com os para metros estimados
+					
+\ \					
+					
+					
+					
+					
+400
+16
+14
+12
+200
+600
+800
+Tèmpo [s]
+1000
+Figure 4.10: Comparaçao dos fluxos de produçao de gás, oleo e agua.
+Production
+Gas in
+choke
+Figure 4.11: Esquema das medições dos dados coletados.
+4.4: Estimação do poço com dados
+A metodologia empregada ate agora utilizava o proprio modelo para estimacao, entretanto isso nao e possível numa aplicacao fora do mundo academico. Pensando nisso, abordou-se um modelo de uma ordem muito maior para se ter como referência para a estimacao. Os dados obtidos vem do modelo descrito em [14].
+Apos alguns testes, notou-se que o modelo utilizado anteriormente era muito simples e nao conseguiria replicar o comportamento dos dados. Por isso foi alterado e decidiu-se por desacoplar o poco, permitindo lidar com o annulus e o tubing de maneira separada. Os novos modelos sao descritos em [6], um trabalho ainda em andamento e nos Apêndices A.2 e A.3.
+4.4.1: Annulus
+O modelo modificado do annulus apresenta elementos de atrito para melhor representar os efeitos no sistema real. Essa modificacao ja e suficiente para aplicar a metodologia proposta. Entretanto o modelo continua simples, com apenas 1 estado, as modificacoes podem ser observadas no apendice A.2. Os parâmetros a serem estimados sao: o coeficiente da valvula Civ e a condicao inicial da massa de gas no anular do poco, mga0. A Tabela 4.5 apresenta o resultado da estimacao. Pode-se perceber, que por causa da separacao, mesmo com um numero grande de elementos finitos, apresenta um tempo râpido de solucao.
+Table 4.5: Parâmetros Estimados
+Elem fin	T(s)	Civ	mga0
+1440	49,21	0,0001357	6569,80
+As Figuras 4.12, 4.13 e 4.14 apresentam as comparações entre as medições e o modelo simulado com os parâmetros apresentados na Tabela 4.5.
+4.4.2: Tubing
+O modelo modificado do tubing apresenta elementos de atrito para melhor representar os efeitos no sistema real. Algumas modificaçoes adicionais foram neces-sarias para melhor simular o ambiente real. Um novo estado foi adicionado, a fracao massica de gas e outros parâmetros de tuning de atrito. Entretanto o modelo continua simples, com apenas 3 estados, as modificacoes podem ser observadas no
+Figure 4.12: Comparação das pressoes de fundo e topo do annulus.
+Figure 4.13: Comparação das pressoes de bottom hole.
+apéndice A.3. Os parametros a serem estimados sao: o coeficiente da valvula Cpc, os parámetros de tuning de atrito k e k2 e as condicoes iniciais da massa de gas, de líquido e de fracao massica de gas no tubing do poco, respectivamente, mgt0, mlt0 e x0 A Tabela 4.6 apresenta o resultado da estimacao.
+Table 4.6: Parametros Estimados
+Elem fin	T(s)	Cpc	k	k2	mgt0	mit0	X0
+1440	12,84	0,050005	0,464221	1,18581	171,9171	4973,5314	0.14999
+Medido
+Parámetro estimado |
+S ff 18
+
+1.2
+5000
+10000
+15000
+30000
+35000
+40000
+45000
+20000	25000
+Time (seconds)
+100
+Figure 4.14: Comparação das vazões de enrtada e de saída do annulus.
+As Figuras 4.15 e 4.16 apresentam as comparações entre as medições e o modelo simulado com os parâmetros apresentados na Tabela 4.6.
+Mesmo com as modificaçoes, a pressao de produçao (pp) nao consegue seguir a curva medida do simulador. Contudo pode-se observar pelas Figuras 4.15 e 4.16 que as vazoes e a pressao de bottom hole se aproximam muito do simulador, por isso o resultado ainda e satisfatório, pois ainda pode-se utilizar disso para algumas aplicacoes.
+45
+3:
+o5’
+i—*
+Oí
+Q o
+
+C
+te
+20
+—	Medido
+—	Parametros estimados
+O&gt;
+tí
+te
+tí
+t-i
+ÍT
+te
+g
+£
+17
+16
+J 15 ni
+S 14
+2
+ÍS 13 s
+§ 12 E
+D
+° 11
+’5
+CT
+□ 10
+r
+9	— Medido
+— Para metros estimados
+80	5000	10000	15000	20000	25000	30000	35000	40000	45000
+Time (seconds)
+■Sí
+u 16 £
+E 14
+O 12
+¡2
+10
+18
+
+80	5000	10000	15000	20000	25000	30000	35000	40000	45000
+Time (seconds)
+Figure 4.16: Comparagao das pressoes de produgao e de bottom hole.
+Chapter5: Conclusão
+Este trabalho apresentou o collocation method, a diferenca entre o Gauss collocation e Radau collocation, expondo seu equacionamento e deducao matematica. Um exemplo de Radau e Gauss collocation e demonstrado para melhor fixar o metodo.
+Uma ferramenta interessante foi apresentada neste trabalho, o JModelica.org que implementa os compiladores para Modelica e Optimica e que reune ferramentas para simulacro e otimizacao. Modelica e Optimica permitem modelar e criar problemas de otimizacao dinâmica com facilidade. A plataforma JModelica.org teve um papel importante no desenvolvimento e analise dos modelos e da estrutura de controle. A linguagem Modelica ajudou a especificar DAEs modulares que representassem componentes físicos da rede de producao, enquanto a linguagem Optimica nos permitiu definir estrategias de estimacao.
+A estimacao foi implementada utilizando o collocation method combinado com tecnicas de otimizacao que sao mais robustas e viaveis do que outros metodos (e.g; filtro de Kalman). O metodo foi demonstrado, seguido por um exemplo explicativo e demonstracao de como ele pode ser usado para formular problemas de otimizacao nao-linear.
+A validacao da estrategia desenvolvida com o circuito RLC, permitiu o avanco do estudo para um modelo de poco produtor de gas e oleo de pequena ordem. Com os resultados apresentados abordou-se um problema mais pratico. Utilizando dados de um simulador de grande ordem foi possível estimar parâmetros que aproximavam o modelo de menor ordem ao do simulador. Este resultado permite a utilizacao de simuladores mais simples, facilitando calculos (e.g; controle) e diminuindo o tempo de processamento para simulacoes. Como continuacao deste trabalho, pode-se prosseguir na verificacao dos modelos de forma a melhora-los, mas mantendo a sua forma simples, a ponto de se aproximar ainda mais do simulador. Outro ponto seria a utilizacao dessa mesma estrategia em outros componentes de uma rede de extracao de oleo e gas.
+Bibliography
+[1]	Johan Akesson. Optimica: An extension of modelica supporting dynamic optimization. Proc. 6th Int. Model. Conf. 2008, 2008.
+[2]	JS Albuquerque and LT Biegler. Decomposition algorithms for on-line estimation with nonlinear models. Comput. Chem. Eng., 1995.
+[3]	UM Ascher and LR Petzold. Computer methods for ordinary differential equations and differential algebraic equations. SIAM: Society for Industrial and Applied Mathematics, 1998.
+[4]	BJT Binder. Production Optimization in a Cluster of Gas-Lift Wells, 2012.
+[5]	GO Brown. The history of the Darcy-Weisbach equation for pipe flow resistance. Environ. Water Resour. Hist., pages 34-43, 2002.
+[6]	Marco Aurelio S. de Aguiar, Andres Codas, and Eduardo Camponogara. A Collocation-Based Approach for Optimal Control of Offshore Oil Production Networks.
+[7]	Carlos Henrique Farias dos Santos. Teoria E Pratica Do Filtro De Kalman.
+[8]	K.A. Fattah, M Elias, HA El-Banbi, and ESA El-Tayeb. New Inflow Performance Relationship For Solution-Gas Drive Oil Reservoirs. J. Pet. Technol., 20(1):343-366, 2012.
+[9]	Shivakumar Kameswaran and Lorenz T. Biegler. Convergence rates for direct transcription of optimal control problems using collocation at Radau points. Comput. Optim. Appl., 41(1):81-126, November 2007.
+[10]	S Karneswaran and LT Biegler. Convergence rates for direct transcription of optimal control problems with final-time equality constraints using collocation at Radau points. Am. Control Conf. ..., pages 165-171, 2006.
+[11]	Daniel Vitor De Lucena. Filtering and improving of spectra with Kalman filter. Abakos, 1(2), 2013.
+[12]	Fredrik Magnusson. Collocation methods in JModelica. org, 2012.
+[13]	Bethany Nicholson, Rodrigo Lopez-Negrete, and Lorenz T Biegler. On-line state estimation of nonlinear dynamic systems with gross errors. Comput. Chem. Eng., December 2013.
+[14]	Agustinho Plucenio, C. A. Ganzaroli, and Daniel J. Pagano. Stabilizing gas-lift well dynamics with free operating point. In 2012 IFAC Work. Autom. Control Offshore Oil Gas Prod., number 2010, pages 95-100, 2012.
+[15]	Marco Schmitz de Aguiar. Optimal oil production network control using Modelica, 2013.
+[16]	Greg Welch and Gary Bishop. An introduction to the Kalman filter, 1995.
+Appendix A: Modelos Dinâmicos
+A.1: Modelo do Poço
+Estas são as equações do modelo descrito em 4.3.
+Balanço de Massa:
+mga Wgl Wgi râgt = wgr + wgi — Wgp m lt = wgl — wgi
+Fluxo de Massa:
+Wgi = Civ Pgi max(0, pai — pti)
+Wp = Cp^/pp max(0,Pai — Pti)
+mgt
+Wgp =	Wp
+m
+mit
+wip	wp
+mt
+Wop   (1 rwc)wlp
+Wwp	rwcWlp
+Wlr = PlQmax 1 — (1 — C) (	— C
+Wgr = TglrWlr
+Wmax = Cgl Pgl max(0, Pgm — Pta)
+(A.1a)
+(A.1b)
+(A.1c)
+(A.2a)
+(A.2b)
+(A.2c)
+(A.2d)
+(A.2e)
+(A.2f)
+(A.2g)
+(A.2h)
+(A.2i)
+Pressoes
+í RTa	g\
+Pai = VM +2A.J m“
+RTtmgt	gm
+Pp = MgVt -	- 2At
+Pti
+gmt
+= Pp + aT
+rglrgMgLw
+1 + rglr + 2RT	Pti + Pl gLw
+Pbh
+Pta
+1 + rglr -
+RTa	g
+VMg - 2AaJ ga
+rgkgMgLw
+2RTt
+(A.3a)
+(A.3b)
+(A.3c)
+(A.3d)
+(A.3e)
+Densidades:
+pgi = RT pai	(A.4a)
+_	PlMgPpmt Pp	piRTtmn + MgPpmgt	(A.4b)
+pl	rwcpw + (1	rwc)po	(A.4c)
+Mg	
+pgl = RT pgm	(A.4d)
+Table A.1: Variáveis do modelo do poço
+Nome	Tipo	Explicação
+m ga	Estado	Massa de gás no annulus
+m gt	Estado	Massa de gas no tubing
+Th lr	Estado	Massa de láquido no the tubing
+wgi	Algébrico	Vazão de massa na valvula de injecão
+Wp	Algébrico	Vazao de massa no choke de producao
+wgp	Algábrico	Produçao de gás
+wlp	Algábrico	Producão de líquido
+wop	Algábrico	Producao de oleo
+wwp	Algábrico	Producao de água
+wir	Algábrico	Líquido extraído do reservatório
+wgr	Algábrico	Gas extraído do reservatório
+pgi	Algábrico	Densidade do gas upstream da valvula de injecão
+pp	Algábrico	Densidade da producao upstream do choke de producao
+Pai	Algábrico	Pressão upstream da valvula de injeção
+Pp	Algábrico	Pressao upstream da valvula de producao
+Pti	Algábrico	Pressao downstream de injeção
+Pbh	Algábrico	Pressão no bottom hole
+Table A.2: Variáveis do modelo do poço
+Nome	Tipo	Explicação
+Civ	Tunning	Coeficiente de vávlula de injeçao
+Cpc	Tunning	Choke de producão
+rwc	Reservatório	Watercut do reservatório
+Qmax	Reservatório	Vazão teorica máxima do reservatário
+C	Constante	Constante de Voegel
+Pr	Reservatório	Pressao de reservatório
+rgor	Reservatório	Razao gás-áleo
+R	Constante	Constante de gás ideal
+T T a	Poço	Temperatura do annulus
+g	Constante	Gravidade
+Va	Poço	Volume do Annulus
+Mg	Parâmetro	Massa molar do gas
+Aa	Poço	Area da seccao do annulus
+Tt	Poço	Temperatura do tubing
+Vt	Poço	Volume do tubing
+At	Poço	Area da secçao do tubing
+rglr	Reservatório	Razão gás-láquido
+Lw	Poço	Comprimento do tubing do reservatório para ponto de injecao
+pi	Parâmetro	Densidade de massa láquida
+pw	Parâmetro	Densidade de massa de agua
+po	Parâmetro	Densidade de massa de oleo
+A.2: Annulus
+A equação Darcy-Weisbach [5] é dada por:
+Pf - Po =
+. pLU2 fD 2D
+(A.5)
+onde pf e p0 sao pressões em dois pontos diferentes em um tubo, fD é fator de atrito de Darcy, L e a distancia entre os pontos, D o diametro do tubo, e U e a velocidade media (m/s) do fluido. O fD e dado por:
+/	rz £	\ i.ii 6 91\ 2
+fD = (-1-8Io«»[( 3td)	+ r\)	(A.6)
+porque a velocidade media e difícil de calcular e formulas complexas podem resultar em equacoes implícitas, que sao caras para resolver, e aproximada por
+U ~ Win = WinV = WinL	(A 7)
+~ Ap	Am m	( . )
+com A sendo a area de secao transversal, p a densidade media do fluido que pode ser substituído por m/V, onde m e a massa de líquido na secao e V o volume. O numero de Reynold Re pode ser definido como::
+Re =
+pDU
+WinD
+pA
+(A.8)
+P
+onde p é a viscosidade dinâmica e win é o fluxo de entrada no annulus.
+Para um comprimento substancialmente pequeno dh a queda de pressao d&amp;amp;p
+e:
+dp = fD
+1 pU2
+D 2
+dh
+(A.9)
+Usando a formula de pressao hidrostatica:
+dp = -pg dh
+(A.10)
+Somando-se a dinamica de ambos os fenômenos, a resultante e
+dp = p
+-g + fD
+1 U2_
+D ~2
+dh
+(A.11)
+se um fluxo contrario na direcao de h e assumida. Usando a lei dos gases ideais::
+pV = nRT pV = Mr * p = T
+(A.12a)
+(A.14)
+que produz:
+pM r	1 U2_|
+dp = RT -9 + 'D-
+RT
+dp
+p
+m
+RT
+-a - f 1U21
+9 fD d 2
+dh
+por uma questao de legibilidade C e definido como:
+m r f i U2' RT -9 - fD D T
+(A.15)
+integrando ambos os lados:
+logpf - logpo = C(hf - ho)
+(A.16a)
+Aplicando ao annulus:
+pf = p0eC(hf h0)
+(A.16b)
+pta — pbae
+CLa
+(A.17)
+onde ba significa fundo do annulus, e ta significa topo do annulus, e hta - hba é igual ao comprimento do annulus La. A variavel C é dada por:
+Mg
+RTa
+-9 + fD
+1 U2 1
+1 ga
+Da 2 _
+(A.18)
+
+A pressao no topo do annulus tambem pode ser definida como:
+pta	pba	9pLa + fD
+La PUga
+D 2
+(A.19)
+A densidade media no annulus e dado por:
+_	mga
+P= Va
+(A.20)
+substituicao na equacao:
+pta = pba
+gm,ga
++ fD
+La mgaUga
+Da	2Va
+(A.21)
+O que resulta em um sistema nao linear com duas equacoes e duas variaveis, com a
+solução analítica:
+Pba
+Pba (1
+Pba
+gmga . f La mga Uga
+~ÃT	fD Da	2Va
+gmga	f La mgaUga
+~ÃT — fD Da 2Va
+gmga — f La mgaU^a
+Aa	fD Da 2Va
+- eCLa)
+(1 — eCLa)
+gmga ,	, mgaUga
+pta	Pba	a + fD	A
+(A.22b)
+(A.22c)
+(A.22d)
+O conjunto de equações é:
+Uga
+winLa
+Re
+fD
+mga winDa pg Aa ^—1-81og1g Mp RTa
+\3.7Dj
+\ 1-11 r n
+Ca	. 6.9
++ Re
+1 U2 1
+1 ga
+Pba
+gmga
+Aa
+-g + fD Da 2
+— f La mga Uga fDDa	2Va
+(1 - eCLa)
+Pta
+Pgi
+_	gmga	g mgaUga
+= Pba— ~ + fD 2DÃ
+_ pbaMg
+= RTa
+(A.23a)
+(A.23b)
+(A.23c)
+(A.23d)
+(A.23e)
+(A.23f)
+(A.23g)
+C =
+A.3: Tubing II
+A equação Darcy-Weisbach [5] é dada por:
+Pf — Po =
+f PLU2 fD 2D
+(A.24)
+Para um comprimento substancialmente pequeno dh a queda de pressão dp é:
+dp = fn D ^2-dh	(A.25)
+onde pf e p0 sao pressões em dois pontos diferentes em um tubo, fD e fator de atrito de Darcy, L e a distancia entre os pontos, D o diametro do tubo, e U e a velocidade
+média (m/s) do fluido. O fD é dado por:
+fD = k	jTd)
+i-ii	6.9
++ Re
+porque a velocidade média é difícil de calcular e formulas complexas podem em equacoes implícitas, que sao caras para resolver, e aproximada por
+Um	Us,g + Us,l
+Wl	Wg
++
+Al Pl	Ag Pg
+(wl,in + Wl,out)L + (wg,in + Wg,out)L 2mu	2mgt
+é
+Re =
+pDUm
+
+
+p
+(mu + mgt) DUm V pA
+Sendo a fraçao dé massa dé gas definido como:
+x
+&lt;y.pg
+aPg + (1 — a)Pl
+é a fraçao dé vacuo definida como:
+a =
+US,g
+C0(US,g + Us,l) + Vd
+substituindo um no outro:
+x
+e isolando a na primeira equacao:
+qg
+qg + ql + VdAPl
+XPl
+(1	— X)Pg + XPl
+A mistura dé fluidos médio num détérminado ponto é:
+Pm	aPg + (1	a) Pl
+substituindo na primeira equacao temos:
+_____ apg pm
+x
+com
+_ PMg Pg
+(A.26)
+resultar
+(A.27)
+(A.28)
+(A.29)
+(A.30)
+(A.31)
+(A.32)
+(A.33)
+(A.34)
+(A.35)
+(A.36)
+a equação e expandido para:
+xpi
+1 pMg
+Pm	(1 — x)	+ xpi x RT
+pMg pi
+(1 — x)pMg + xpl RT
+Sabendo que a equaçao hidrostatica e:
+dp = —pmgdh
+se somarmos os dois fenomenos, temos:
+dp	pm
+pU21
+~ r
+—g —	D
+pMg pi
+dh
+—g — f
+(1 — x)pMg + xpi RT |_	D 2D
+dh
+por uma questao de legibilidade C e definido como:
+r	i u2i
+C = Mg pi —k2g — fD
+D 2
+consequentemente,
+p
+dp (1 — x) Mg p + xp¡ RT Cdh
+(1 — x)Mgp + xpi RT
+dp = Cdh
+p
+que tem como soluçao:
+[(1 — x)Mg p + xpi RT log p]
+pwh
+= [Ch]
+p—Pip
+hwh
+h—hip
+assumindo Lt = hwh — hip
+[(1 — x)Mg (pwh — pip) + xpl RT (log pwh — log pip)] = CLt
+alem disso, sabemos que
+Pwh	pip	^pt,m	^pt,U
+_g (mgt + mit)
+^pt,m =
+A-t
+A _ , pmLU2	(mgt + mit)U2
+AptU = f d 2 = fD—2ÃD—
+(A.37a)
+(A.37b)
+(A.38a)
+(A.39a)
+(A.39b)
+(A.40)
+(A.41a)
+(A.41b)
+(A.42a)
+(A.43)
+(A.44)
+(A.45)
+(A.46)
+com pm = mgt+mit, pode ser substituído na (A.43)
+xpiRT(logpwh - logpip) = CLt - (1 - x)Mg (pwh - pip)
+(logpwh - logpip) =
+CLt + (1 - x)Mg (Apt,m + Apt,u) xpl RT
+CLt +(l-x)-Mg (Apt,m + APt,U)
+Pwh — pipe
+x pi RT
+Resolvendo analiticamente:
+=	Apt,m + Apt,U
+Pip	CLt + (1-x)Mg(^Pt,m + ^Pt,U )
+1 — e	xpirt
+pwh	pip	Apt,m	Apt,U
+Apt,m
+g(mgt + mit) At
+Apt,u = fD
+Pm L U2
+D 2
+= fD
+(mgt + mit)U2
+2AtD
+(A.47a)
+(A.47b)
+(A.47c)
+(A.48a)
+(A.48b)
+(A.48c)
+(A.48d)
+Appendix B: Modelos de Simulapao
+Este apendice apresenta os codigos utilizados para as simulates comentadas no Capitulo 4.
+B.1: Modelo RLC
+model RLC //Valores iniciais e parametros.
+parameter Real x10 = 0;
+parameter Real x20 = 0;
+parameter Real R(min = 1, max = 500, nominal = 100) = 200;
+parameter Real L(min = 1e-4, max = 0.1, nominal = 1e-2) = 0.01;
+parameter Real C(min = 1e-7, max = 0.01, nominal = 1e-3) = 1e-3;
+Real Vr;
+// Estados
+Real Vc(start = x10, fixed = true, nominal = 1);
+Real I(start = x20, fixed = true, nominal = 1e-5);
+// Sinal de Controle
+input Real V(start = 0, fixed = true);
+equation
+der(Vc) = I/C;
+der(I) = V/L - Vc/L - R*I/L;
+Vr = R*I;
+end RLC;
+B.2: Modelo de Otimizapao do RLC
+optimization RLCParEst (startTime = 0, finalTime = 10)
+extends RLC(R(free=true), L(free=true), C(free=true));
+end RLCParEst;
+B.3: Código Python para Simulagao e Estimado
+// Importa funcoes para compilar
+from pymodelica import compilefmu
+from pyfmi import loadfmu
+import numpy as N
+from pyjmi import transfer_optimization_problem
+from collections import OrderedDict
+from pyjmi.optimization.casadLcollocation import MeasurementData
+// SIMUALTION OF THE RLC FOR DATA SAMPLING
+// Compila o modelo
+simulationModelName = compile_fmu(”RLC”,”RLC.mo”)
+// Carrega o modelo
+simulationModel = load_fmu(simulationModelName)
+t = N.linspace(0.,10.,200) // Criar pontos uniformemente espacados
+V5 = 5*N.ones(40) // Cria o vetor de entrada
+V2 = 2*N.ones(40) // Cria o vetor de entrada
+V3 = 3*N.ones(40) // Cria o vetor de entrada
+V1 = 1*N.ones(40) // Cria o vetor de entrada
+V4 = 4*N.ones(40) // Cria o vetor de entrada
+V = N.concatenate((V5,V2,V3,V1,V4),axis = 0)
+V_traj = N.transpose(N.vstack((t,V))) // Criar a matriz de dados e transpoe a matriz para a forma correta
+inpuLobject = (’V’, V_traj)
+simulationOpts = simulationModel.simulate_options() // Recupera as opções pa
+drão
+simulationOpts[’ncp’] = 200 // Altera o nUmero de pontos de comunicaçao.
+simulationOpts[’CVode_options’][’maxh’] = 0.05
+//simula o sistema RLC
+resl = simulationModel.simulate(final_time=2, options = simulationOpts, input=
+input_object)
+// Obter dados amostrados a partir dos resultados simulados
+Vc_sim = res1[’Vc’]
+l_sim = res1[’I’]
+t_sim = res1[’time’]
+V_sim = res1[’V’]
+Vr_sim = res1[’Vr’]
+// SIMULACAO PARA PRIMEIRa SUPOSICAO DO ALGORITMO DE OTIMIZA-CAO
+// Reseta o modelo
+simulationModel.reset()
+// Suposicao inicial
+simulationModel.set(’R’,400)
+simulationModel.set(’L,0.02)
+simulationModel.set(’C’,2e-3)
+// simula o sistema RLC
+res2 = simulationModel.simulate(final_time=2, options = simulationOpts, input= inpuLobject)
+// PROBLEMA DE ESTIMACAO DE PARAMETROS
+// Compila o modelo
+optimizationModel = transfer_optimization_problem(”RLCParEst”,
+[”RLCParEst.mop”, ”RLC.mo”])
+Q = N.diag([1., 1., 1., 1.])
+data_V = N.vstack([t_sim, V_sim])
+data_Vc = N.vstack([t_sim, Vc_sim]) data_Vr = N.vstack([t_sim, Vr_sim]) datai = N.vstack([t_sim, I_sim]) unconstrained = OrderedDict() constrained = OrderedDict() constrained[’V’] = data_V unconstrained[’Vc’] = data_Vc unconstrained[’Vr’] = data_Vr unconstrained[’I’] = dataJ measurement_data = MeasurementData(Q=Q, unconstrained=unconstrained, constrained=constrained)
+n_e = 200 // Numero de elementos finitos no algoritmo de collocation
+// Obtem um objeto de opcoes para o algoritmo de otimizacao
+opLopts = optimizationModel.optimize_options()
+// Defina a trajetória e numero de collocation points opt_opts[’n_e’] = n_e
+opt_opts[’init_traj’] = res2.result_data
+opt_opts[’ n_cp’ ] = 1
+opt_opts[’ measurement_data’ ] = measurement_data
+// Resolve o problema de otimizacao
+res3 = optimizationModel.optimize(options=opt_opts)
+// Extracao de valores (ótimos de parâmetros
+R_opt = res3.final(”R”)
+L_opt = res3.final(”L’)
+Copt = res3.final(”C”)
+// Imprima os valores dos parametros ideais
+print ’R: ’ + str(R_opt)
+print ’L: ’ + str(L_opt)
+print ’C: ’ + str(C_opt)
+// Reseta o modelo
+simulationModel.reset()
+// Estabelece os parametros encontrados para simulacao
+simulationModel.set(’R’,R_opt)
+simulationModel.set(’L’,L_opt)
+simulationModel.set(’C’,C_opt)
+// simula o sistema RLC
+res4 = simulationModel.simulate(final_time=2, options = simulationOpts, input=
+inpuLobject)
+// Compila o modelo
+simulationModelName = compile_fmu(”RLC2”,”RLC2.mo”)
+// Carrega o modelo
+simulationModel = load_fmu(simulationModelName)
+//simula o sistema RLC
+res5 = simulationModel.simulate(final_time=10, options = simulationOpts, input= inpuLobject)</field>
+	</doc>
+</add>

@@ -1,0 +1,3442 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.13464</field>
+		<field name="filename">19460_arquivo2004_1.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+Universidade Federal de Pernambuco
+Centro de Tecnologia e Geociências
+
+Departamento de Engenharia Mecânica
+
+Pós-graduação em Engenharia Mecânica
+
+Geração Automática do Código NC para
+Operações de Fresamento em 2 ½ eixos
+
+Eduardo Silva Neves
+
+Dissertação de Mestrado
+
+Recife
+16 de junho de 2008
+
+
+
+ 
+ 
+
+N518g Neves, Eduardo Silva. 
+ Geração automática do código NC para operações de fresamento 
+
+em 2 ½ eixos / Eduardo Silva Neves. - Recife: O Autor, 2008. 
+xii, 84 folhas, il : figs. 
+ 
+Dissertação ( Mestrado) – Universidade Federal de Pernambuco. 
+
+CTG. Programa de Pós-Graduação em Engenharia Mecânica, 2008. 
+ 
+Orientador: Prof. Dr. Félix Christian Guimarães Santos.  
+Inclui Bibliografia e Apêndices. 
+ 
+1. Engenharia Mecânica.  2. Código NC.  3.Fresamento.   
+
+4.Automação – CAD/CAM.  I.Santos, Félix Christian Guimarães 
+(Orientador). II.Título. 
+
+          UFPE 
+ 
+621        CDD (22. ed.)                     BCTG/2010-263 
+
+
+
+Universidade Federal de Pernambuco
+Centro de Tecnologia e Geociências
+
+Departamento de Engenharia Mecânica
+
+Eduardo Silva Neves
+
+Geração Automática do Código NC para Operações de
+Fresamento em 2 ½ eixos
+
+Trabalho apresentado ao Programa de Pós-graduação em
+Engenharia Mecânica do Departamento de Engenharia
+Mecânica da Universidade Federal de Pernambuco como
+requisito parcial para obtenção do grau de Mestre em En-
+genharia Mecânica.
+
+Orientador: Prof. Dr. Félix Christian Guimarães Santos
+Co-orientador: Profa. Dra. Noemia Gomes de Mattos de Mesquita
+
+Recife
+16 de junho de 2008
+
+
+
+ 
+
+
+
+Dedico esta dissertação à minha mãe,
+cujo exemplo de honestidade e trabalho
+
+tem sido um norteador para a minha vida,
+e para meus irmãos e meu pai, que têm
+
+me dado apoio nos momentos difíceis
+e mostrado a simplicidade de ter esperança.
+
+
+
+Agradecimentos
+
+Dedico meus sinceros agradecimentos para:
+– o professor doutor Félix Christian Guimarães Santos, pela orientação e incentivo;
+– a professora doutora Noemia Gomes de Mattos de Mesquita, pelos conselhos, orientação
+
+e incentivo;
+– a equipe do Laboratório de Computação (Labcom) do Departamento de Engenharia Mecânica
+
+da UFPE, em especial aos colegas mestrandos Eduardo Brito, Guaraci, Felipe e Manassés, pela
+ajuda em diversos momentos;
+
+– a coordenadora do curso de Mestrado em Engenharia Mecânica, professora doutora Ana
+Rosa Mendes Primo, pelo apoio sempre manifestado;
+
+– o professor doutor Tiago Leite Rolim, pelo auxílio nos tópicos referentes à Usinagem;
+– o Conselho Nacional de Desenvolvimento Científico e Tecnológico, pela oportunidade de
+
+realização deste trabalho;
+– os colegas da oficina do Departamento de Engenharia Mecânica, nas pessoas de Orlando
+
+Rocha e Euclides Cabral;
+– todos os colegas do Mestrado em Engenharia Mecânica da UFPE.
+
+iv
+
+
+
+Quem conduz e arrasta o mundo não são as máquinas, mas as idéias.
+—VICTOR HUGO
+
+
+
+Resumo
+
+No âmbito deste trabalho foi abordada a problemática da geração automática do código
+NC para o processo de usinagem por fresamento em 2 ½ eixos. Nele foi desenvolvida uma
+metodologia que visa auxiliar a obtenção dos parâmetros necessários para a construção do pro-
+grama de comando numérico (código NC). Esta metodologia propõe desenvolver um sistema
+de reconhecimento geométrico. O sistema lê arquivos neutros como entrada e traduz a infor-
+mação em um arquivo de informação de fabricação. A metodologia se divide nas seguintes
+partes a considerar: 1) Extrações das informações geométricas do CAD; 2) Determinação das
+seqüências de corte; 3) Otimização dos parâmetros de usinagem e 4) Geração do código NC
+propriamente dito. A extração das informações geométricas é realizada através de um pro-
+grama computacional desenvolvido neste trabalho, que captura as informações de dois arquivos
+neutros em formato IGES, um constituindo a peça bruta e o outro constituindo a peça ser fab-
+ricada. A informação geométrica de contorno (B-rep) é então analisada, onde através de pro-
+cessamento, os dados são armazenados em uma estrutura de grafo. Com a estrutura de grafo
+montada, podem-se obter informações, através das quais o programa fornece com relativa ver-
+satilidade as seqüências de operações de corte, que deverão ser executadas para a fabricação
+da peça. Após o reconhecimento geométrico e o sequenciamento das operações é realizada
+a otimização das condições de corte e dos percursos das ferramentas para cada operação, os
+quais são obtidos considerando-se o critério de mínimo tempo total de fabricação por peça, ou
+seja, critério de máxima produção. O programa computacional, assim, gera automaticamente
+programas em linguagem de máquina (código NC), para posterior envio a uma máquina CNC.
+O programa computacional foi desenvolvido por programação orientada a objetos (OOP) e es-
+crito em linguagem C++ tendo como domínio o campo de peças prismáticas de base poligonal
+que possam ser usinadas em uma fresadora ou centro de usinagem CNC.
+
+Palavras-chave: Código NC, Fresamento, CAD/CAM, Automação
+
+vi
+
+
+
+Abstract
+
+The problem of automatic generation of NC codes for the 2 ½ axis milling machining pro-
+cess is the subject considered in this work, where a methodology for supporting the definition
+of all parameters necessary for building the NC program was developed. This methodology
+makes use of the development of a geometric recognition system. This system takes neutral
+files as input and translates this information into a manufacturing information file. The method-
+ology divides the tasks into four parts: 1) Extraction of geometric information from the CAD
+files; 2) Determination of cutting sequences; 3) Optimization of machining parameters and 4)
+Generation of the NC program. The extraction of geometric information is accomplished by a
+computational program, which captures the information from two neutral files in IGES format
+(containing the workpiece and the finished piece data, respectively). Next, the boundary geo-
+metric representation (B-rep) data is analyzed and processed and stored into a graph structure.
+The graph structure is used in order to obtain information through which the program can iden-
+tify with relative versatility the sequences of cutting operations that should be performed by the
+manufacturing process. After that, the optimization of cutting conditions and tool path for each
+operation are obtained considering the criteria of minimum total manufacturing time, that is,
+the maximum production criteria. Finally, the computational program automatically generates
+the program in machine language (NC program), which is now ready to be sent to a CNC ma-
+chine. The computational program was development within an object-orientated (OOP) design
+and programming methodology, which was written in C++ language, targeting the domain of
+prismatic parts with polygonal cross section that can to be machined in a CNC milling machine
+or CNC machining center.
+
+Keywords: NC code, Milling, CAD/CAM, Automation
+
+vii
+
+
+
+Sumário
+
+1 Introdução 1
+
+2 Integração de Sistemas de Manufatura 3
+2.1 Sistema CAD 3
+2.2 Sistema CAM 4
+2.3 Sistema CAPP 5
+2.4 Integração CAD/CAM 8
+
+2.4.1 Extração de Informações Geométricas 9
+2.4.2 Geração Automática da Trajetória da Ferramenta de Corte 10
+2.4.3 Geração do Código NC por Sistemas CAD/CAM 11
+2.4.4 Otimização de Processos de Fabricação 12
+
+3 O Comando Computadorizado na Fabricação 14
+3.1 Máquinas-Ferramenta CNC 15
+3.2 Fresadoras e Centros de Usinagem 15
+3.3 Fresamento CNC 16
+
+3.3.1 Fresamento Frontal 17
+3.3.2 Fresadoras CNC 17
+
+4 Objetivos e Metodologia 19
+
+5 Extrações das Informações Geométricas do CAD e Determinação do Sequencia-
+mento das Operações de Usinagem 21
+5.1 Extração das Informações Geométricas do CAD 22
+
+5.1.1 Formato IGES 22
+5.2 Estágio de Desenho 23
+5.3 Estágio de Pré-Processamento 23
+5.4 Determinação do Sequenciamento das Operações de Usinagem 24
+
+5.4.1 Estágio de Decomposição 25
+5.4.2 Estágio de Corte 27
+5.4.3 Estágio de Geração da Trajetória da Ferramenta 31
+
+6 Otimização dos Parâmetros de Usinagem 38
+6.1 Definição dos Parâmetros de Corte 38
+6.2 Determinação dos Critérios de Restrinções 39
+6.3 Dedução e Implementação das Equações do Processo 39
+
+viii
+
+
+
+6.4 Otimização dos Parâmetros 42
+
+7 Geração do Código NC 47
+7.1 Código NC 47
+
+7.1.1 Cabeçalho Inicial e Mudança de Ferramentas de Corte 47
+7.1.2 Geração da Trajetória da Ferramenta e Término do Programa 47
+
+7.2 Estágio de Geração do Código NC 48
+
+8 Testes e Resultados 51
+8.1 Extração das Informações Geométricas 51
+8.2 Estágio de Pré-Processamento 52
+8.3 Estágio de Decomposição 52
+8.4 Estágio de Corte 53
+8.5 Estágio de Geração da Trajetória da Ferramenta 53
+8.6 Simulação do Processo 54
+8.7 Análise de Resultados 55
+
+9 Classes de Objetos de Geometria Complexa: Cavidade Interna 59
+9.1 Representação Computacional de Curvas 59
+
+9.1.1 Curvas de Bézier 60
+9.2 Dedução e Implementação Matemática 60
+9.3 Geração de Malhas 61
+
+9.3.1 Visualização Computacional 61
+9.4 Desenho no CAD 61
+9.5 Extração das Informações Geométricas do CAD 62
+9.6 Geração Automática do Código NC 62
+9.7 Simulação do Processo 65
+
+9.7.1 Pré-furação 65
+9.7.2 Furação 65
+9.7.3 Fresamento Frontal 65
+
+9.7.3.1 Fresamento Frontal: etapa inicial 65
+9.7.3.2 Fresamento Frontal Final: etapa final 65
+
+10 Conclusões e Sugestões para Trabalhos Futuros 70
+
+A Estruturas de Dados de Geometria Computacional Utilizadas 77
+
+B Arquivo Físico IGES 82
+
+C Arquivo Físico IGES 83
+
+D Entidades IGES Básicas 84
+
+E Tabela de Valores da Pressão Específica de Corte (Ks) para o Fresamento 85
+
+ix
+
+
+
+Lista de Figuras
+
+2.1 Atividades atribuídas ao CAPP. 6
+2.2 Inter-relações em um sistema CIM. 7
+
+3.1 Tipos de máquinas fresadoras. 18
+
+4.1 Organograma da metodologia proposta no trabalho. 20
+
+5.1 Estrutura global do sistema. 22
+5.2 Situação usando arquivo neutro. 23
+5.3 Polígonos da base das peças bruta e final. 25
+5.4 Polígonos da base das peças bruta e final (Begging). 27
+5.5 Sequência de cortes realizada no DecompositionStage - Step1. 27
+5.6 Sequência de cortes realizada no DecompositionStage - Step2. 28
+5.7 Sequência de cortes realizada no DecompositionStage - Step3. 28
+5.8 Sequência de cortes realizada no DecompositionStage - End. 28
+5.9 Polígonos da base das peças bruta e final (Begging). 31
+5.10 Sequência de cortes realizada no CuttingStage - Step1. 31
+5.11 Sequência de cortes realizada no CuttingStage - Step2. 32
+5.12 Sequência de cortes realizada no CuttingStage - Step3. 32
+5.13 Sequência de cortes realizada no CuttingStage - End. 32
+5.14 Resultado final do CuttingStage. 33
+5.15 Geração da trajetória da ferramenta: determinação da geometria da trajetória
+
+da ferramenta. 35
+5.16 Geração da trajetória da ferramenta: início do movimento da ferramenta. 36
+5.17 Geração da trajetória da ferramenta: término do movimento da ferramenta. 37
+
+6.1 Gráfico do acabamento superficial no fresamento. 40
+6.2 Fluxograma para otimização dos parâmetros de corte do fresamento frontal. 44
+
+7.1 Modelo do cabeçalho de um programa NC. 48
+7.2 Volumes iniciais do material a ser removido (linhas tracejadas e em negrito). 49
+7.3 Fluxograma para gerar o código CNC. 50
+
+8.1 Peça bruta e peça a ser fabricada. 51
+8.2 Leitura dos dados geométricos das peças bruta e final. 52
+8.3 Polígonos das peças bruta e final (ProfilePolygon e FinishedPolygon). 52
+8.4 Volumes iniciais do processo de corte. 53
+
+x
+
+
+
+8.5 Subvolumes do processo de decomposição. 53
+8.6 Geração da trajetória da ferramenta de corte. 54
+8.7 Simulação do processo no CNC Programmer 3D. 54
+
+9.1 Cavidade de geometria complexa. 59
+9.2 Aproximação da curva original por splines. 61
+9.3 Extração da malha de pontos pelo CAD. 62
+9.4 Desenho da cavidade interna no CAD. 63
+9.5 Trecho do arquivo para geração da cavidade interna. 64
+9.6 Simulação do processo: pré-furação. 66
+9.7 Simulação do processo: furação. 67
+9.8 Simulação do processo: fresamento. 68
+9.9 Simulação do processo: fresamento. 69
+
+A.1 A estrutura de uma lista de tamanho cinco. Os itens na lista ocorrem nas
+posições 1 até 5; a posição head ocorre entre a primeira e a última posições. A
+janela, indicada em negrito, está atualmente sobre a posição 2. 78
+
+A.2 Operação push e push. 79
+A.3 Diferentes tipos de árvores de pesquisa binária. 80
+
+B.1 Arquivo neutro IGES da peça bruta do estudo de caso. 82
+
+C.1 Arquivo neutro IGES da peça a ser usinada do estudo de caso. 83
+
+xi
+
+
+
+Lista de Tabelas
+
+5.1 Elementos geométricos do Estágio de Decomposição. 32
+5.2 Elementos geométricos do Estágio de Corte. 35
+
+6.1 Dados de entrada e saída. 46
+
+D.1 Entidades IGES básicas 84
+
+E.1 Valores da Pressão Específica de Corte (Ks) para o Fresamento 85
+
+xii
+
+
+
+CAPÍTULO 1
+
+Introdução
+
+A automação de atividades tem hoje um papel estratégico decisivo para as indústrias, pois
+o controle de equipamentos e a monitoração de processos significam padronização das tarefas
+produtivas, visando a diminuição de erros operacionais, evitando assim, re-trabalho e racional-
+izando o consumo de matérias-primas e insumos, enfim a automação significa a redução nos
+custos de produção.
+
+A automação pode ser definida atualmente como a aplicação de técnicas computacionais,
+ou seja, o uso de computadores para controlar máquinas e processos, substituindo a operação
+humana.
+
+Amplamente usados tanto no campo científico, como no setor comercial, os computadores
+têm combinado alto poder de processamento, elevada confiabilidade, tamanhos e custos cada
+vez menores, graças ao desenvolvimento da microeletrônica, tornando, portanto, sua aplicação
+cada vez mais viável. O desenvolvimento dos computadores tem contribuído, com a diminuição
+no tempo de execução de tarefas manualmente dispendiosas e laboriosas. Os computadores po-
+dem ser programados para resolver cálculos complexos, processar e armazenar grandes quan-
+tidades de dados com alta velocidade e eficiência. Como um resultado disso, os computadores
+estão sendo usados crescentemente, tanto no projeto, quanto na fabricação, levando a conceitos
+como Computer-Aided Design (CAD) e Computer-Aided Manufacture (CAM) ou simplesmente
+CAD/CAM (BOOTHROYD; KNIGHT, 1989).
+
+O auxílio do computador na determinação das informações tecnológicas que envolvem as
+condições de usinagem é uma característica importante dos sistemas CAD/CAM, pois além de
+facilitar a simulação da usinagem, reduz o tempo de geração de programas para as máquinas
+CNC, possibilitando assim, o aumento da produtividade ou economia de gastos relativos à
+produção (SIMÕES, 1999).
+
+Os programas para realizar operações de usinagem em máquinas-ferramenta equipadas com
+comando numérico, isto é, máquinas CNC, são constituídos basicamente de informações ge-
+ométricas e de dados tecnológicos. As informações geométricas estão relacionadas com as
+trajetórias das ferramentas de corte em todas as operações necessárias para definir a forma da
+peça a ser usinada. Os dados tecnológicos referem-se às condições de usinagem nessas oper-
+ações (SIMÕES; SILVA, 1999).
+
+A profundidade de corte e a penetração de trabalho são parâmetros de usinagem que de-
+pendem da posição relativa entre a ferramenta e a peça e, conseqüentemente, são funções da
+trajetória da ferramenta. Estes programas usualmente contêm valores gerais baseados em testes
+de tentativa-erro e em valores conservativos (ERDIM; LAZOGLU; OZTURK, 2006). Automatizar
+a criação da codificação dessas informações em seqüência apropriada (programa NC) é um
+fator importante para o aumento da eficiência de sistemas produtivos que empregam este tipo
+
+1
+
+
+
+de equipamento. Além da redução do tempo de programação, o aumento da produtividade é
+observado em decorrência da eliminação de erros típicos de programação manual, uma vez que
+diminui a probabilidade de interromper o processo produtivo para correções ou alterações dos
+programas NC, que normalmente são feitas no comando da máquina (SIMÕES; SILVA, 1999).
+
+Recentemente diversos pesquisadores têm desenvolvido com diferentes modos e meios para
+integrar os conceitos CAD e CAM. O reconhecimento automático de features a partir de sis-
+temas sólidos CAD aumentam significativamente o nível de integração dos sistemas de man-
+ufatura CAD/CAM. Diferentes CAD‘s ou pacotes de modelamento geométrico armazenam as
+informações relacionadas ao projeto nas suas próprias bases de dados. A estrutura destas bases
+de dados são diferentes de um para outro (NASR; KAMRANI, 2006).
+
+A extração automática de informações de fabricação a partir de sistemas CAD tem tido
+uma função importante para facilitar o atual conceito de engenharia na medida que alcança o
+vínculo entre as atividades de projeto e de fabricação. O sucesso deste vínculo pode ser con-
+siderado com um passo fundamental para automatizar o desenvolvimento do produto a partir
+do estágio de projeto até os estágios de fabricação e transporte. Conseqüentemente o ciclo total
+de obtenção do produto pode ser reduzido drasticamente (NASR; KAMRANI, 2006).
+
+Objetivando oferecer uma contribuição ao problema acima exposto, neste trabalho será
+desenvolvida uma metodologia computacional, a qual, realizará a geração do código NC au-
+tomaticamente através de um reconhecimento geométrico das informações de projeto para op-
+erações de desbaste e acabamento no fresamento de 2 ½ eixos. Para tal foi desenvolvido um
+software em linguagem C++ que executa as seguintes tarefas do planejamento de usinagem: ex-
+trações das informações geométricas do CAD; determinação das seqüências de corte; otimiza-
+ção dos parâmetros de usinagem e geração do código NC para posterior envio à uma máquina
+ferramenta CNC.
+
+2
+
+
+
+CAPÍTULO 2
+
+Integração de Sistemas de Manufatura
+
+Os computadores são usados extensivamente nas áreas científicas e comerciais. Os de-
+senvolvimentos recentes na microeletrônica têm levado a sistemas de computadores que com-
+binam alto poder de processamento com elevada confiabilidade, pequenos tamanhos e baixo
+custo, fazendo aumentar a faixa de aplicações do seu uso viável. Esses desenvolvimentos com-
+putacionais têm possibilitado a rápida execução de tarefas que são manualmente laboriosas e
+complicadas. Os computadores podem ser programados para resolver cálculos complexos, pro-
+cessar e armazenar grandes quantidades de dados com alta velocidade e eficiência. Como um
+resultado disto, os computadores estão sendo usados crescentemente, tanto no projeto quanto,
+na fabricação, levando a conceitos como projeto assistido por computador (CAD - Computer-
+Aided Design) e fabricação assistida por computador (CAM - Computer-Aided Manufacture)
+ou simplesmente CAD/CAM (BOOTHROYD; KNIGHT, 1989).
+
+O conceito de fabricação integrada por computador (CIM - Computer Integrated Manufac-
+turing) , relaciona o uso do computador em todas as etapas da fabricação, do projeto ao controle
+de qualidade, passando pelo planejamento e controle da produção. No ambiente CIM a saída
+de cada etapa fornece dados para a entrada da próxima e portanto, uma cadeia de atividades
+é interligada começando no pedido e terminando na expedição do produto acabado (LOUCA,
+1997). Sistemas como o CAD e o CAM são sistemas componentes no CIM.
+
+Assim, a finalidade deste capítulo consiste em realizar uma revisão bibliográfica de impor-
+tantes conceitos relacionados ao desenvolvimento deste trabalho, tais como CIM, CAD/CAM/CAPP.
+
+2.1 Sistema CAD
+
+Os sistemas CAD abrangem o uso do computador para facilitar a etapa de projeto. Os
+sistemas CAD tiveram início com o surgimento da computação gráfica em 1963, quando Ivan
+Sutherland do Massachusetts Institute of Technology conseguiu desenhar figuras em um tubo de
+raio catódico ligado a um computador (Lincoln TX2). Ivan é considerado o pai da computação
+gráfica e conseqüentemente dos sistemas CAD (SIMÕES, 1999).
+
+O desenvolvimento dos sistemas CAD no final dos anos 60, e sua introdução no início
+dos anos 70 na indústria americana significou, inicialmente, uma pequena redução da produ-
+tividade na engenharia de produtos, ainda não acostumada com a nova técnica de modela-
+mento (SIMÕES, 1999).
+
+Além disso, os primeiros sistemas não ofereciam uma boa interface com o usuário. No
+entanto, o potencial para aumento da produtividade nos setores de projetos já havia sido re-
+conhecido determinando a continuidade do desenvolvimento destes sistemas. Logo após este
+
+3
+
+
+
+período, o desenvolvimento de hardware permitiu o surgimento de computadores cada vez
+mais rápidos e de preços comparativamente menores. Paralelamente, ocorreu uma melhoria
+dos sistemas CAD, fazendo com que hoje existam no mercado opções para todos os setores da
+indústria e para todos os portes de empresas.
+
+Sistema CAD pode ser genericamente definido como o envolvimento do computador nas
+atividades de criação, modificação, análise e otimização de um projeto utilizando-se de sistemas
+gráficos interativos (GROOVER; ZIMMERS, 1984).
+
+2.2 Sistema CAM
+
+Um sistema CAM pode ser definido como sendo o uso de sistemas de computadores para
+planejar, gerenciar e controlar as operações de uma planta de manufatura através de interfaces
+diretas ou indiretas (GROOVER; ZIMMERS, 1984).
+
+Um dos principais objetivos do CAM é a integração de várias atividades no ciclo de um
+produto dentro de um sistema unificado, no qual dados são transferidos de uma função para
+outra automaticamente. Isto leva ao conceito de fabricação integrada por computador (CIM).
+
+Diversos desenvolvimentos têm sido realizados, mas nenhum sistema CIM totalmente inte-
+grado ainda foi alcançado (BOOTHROYD; KNIGHT, 1989).
+
+Atualmente os softwares CAM permitem que a maioria da programação CNC (Capítulo 3)
+possa ser realizada com rapidez e confiabilidade em computadores pessoais. A tecnologia
+existente está progredindo muito rapidamente e muitas aplicações de programação 2D e 3D
+são avaliados em uma fração do custo quando comparadas a apenas a alguns anos atrás e esta
+tendência continuará no futuro (SMID, 2003).
+
+As principais características que um sistema de programação CNC assistido por computa-
+dor deverá ter são (SMID, 2003):
+
+• Ambiente para criação da geometria da trajetória da ferramenta;
+
+• Geração da trajetória da ferramenta;
+
+• Ambiente completo de programação;
+
+• Pós-processamento;
+
+• Suporte técnico e treinamento.
+
+Uma análise através destas características citadas revela que atualmente um sistema CAM
+oferece um amplo e robusto suporte a automação do processo de fabricação em geral. Nestes
+sistemas pode-se observar uma completa interação do usuário com o processo como um todo
+que vai desde a geração automática da trajetória da ferramenta até considerações de pós-
+processamento.
+
+4
+
+
+
+2.3 Sistema CAPP
+
+O principal objetivo do planejamento do processo assistido por computador (CAPP - Com-
+puted Aided Process Planning) é estabelecer automaticamente métodos e meios para converter
+uma peça bruta em uma peça final. A meta do planejamento do processo em um ambiente de
+produção é selecionar e definir, em detalhes, o processo envolvido na transformação do mate-
+rial bruto em um produto final específico com uma dada forma e certas especificações. Em out-
+ras palavras, determinar a viabilidade dos processos e operações que, junto com os parâmetros
+necessários, assegure que a peça final fabricada seja obtida sem quaisquer problemas (CIURANA
+et al., 2008).
+
+Existem muitas definições na literatura para o termo “CAPP”, algumas delas são as seguintes:
+
+• “O planejamento do processo é definido como a seleção e seqüênciamento de processos
+de manufatura para converter uma matéria prima em um componente acabado de acordo
+com especificações funcionais” (ALTING; ZHANG; LENAU, 1988).
+
+• “Planejamento do processo pode ser também definido como a determinação sistemática
+dos métodos que permitem que um produto seja manufaturado de maneira econômica e
+competitiva” (IRANI; KOO; RAMAN, 1995).
+
+• “Ele é a atividade de selecionar e definir os processos que devem ser executados para
+transformar um material bruto em um produto acabado” (PRAZERES, 2004).
+
+• “Pode-se dizer que o sistema CAPP, dentro de um sistema de manufatura integrada por
+computador CIM, age como uma ponte entre o CAD e o CAM” (THOMAS; FISHER, 1996).
+
+As fases do planejamento de processo englobam as seguintes etapas (PRAZERES, 2004)
+representadas na Figura 2.1:
+
+• Interpretação do desenho do produto;
+
+• Seleção de máquinas-ferramenta;
+
+• Seleção de set-up’s;
+
+• Seleção sequenciamento de operações de usinagem ;
+
+• Seleção de parâmetros de corte.
+
+Todas estas fases acima descritas, para serem executadas pelo método tradicional de plane-
+jamento de processo, são centradas no responsável pelo planejamento, que necessita de con-
+hecimentos extensos e diversos em planejamento e manufatura, além do que experiência na
+utilização de manuais de fabricação, tabelas e formulários. Condições fundamentais para se
+ter um bom planejamento, tornavam esta atividade, um procedimento tedioso, inconsistente e
+demorado (MACHADO, 1990).
+
+Para a construção de sistemas CAPP duas abordagens básicas são seguidas (RESENDE,
+1996):
+
+5
+
+
+
+Figura 2.1 Atividades atribuídas ao CAPP.
+
+1. Variante
+
+2. Generativa
+
+Variante: A abordagem variante para o planejamento de processos é comparável à forma man-
+ual utilizada por um projetista, onde o plano de processos para uma nova peça é obtido
+através de pequenas alterações executadas em um plano de processos já existente para
+uma peça similar. Em alguns sistemas variantes, as peças são agrupadas em famílias,
+caracterizadas por similaridades no processo de fabricação. Para cada família de peças,
+um plano de processos padrão que contém todas as possíveis operações, é armazenado
+no sistema. Através da classificação e codificação, um código é definido para cada peça,
+a partir de uma série de quesitos. Este código é então utilizado para definir a qual família
+a peça pertence e qual deve ser o plano padrão associado. Em comparação com o plane-
+jamento de processos manual, a abordagem variante é bastante vantajosa, pois a manip-
+ulação de informações se torna bem mais simples e os planos de processos podem ser
+padronizados. Contudo, neste tipo de abordagem, a qualidade final do plano de proces-
+sos ainda depende da habilidade do projetista que realiza as modificações necessárias
+às particularidades de cada peça. Sendo assim, nos sistemas variantes, o computador é
+apenas uma ferramenta de auxílio às atividades de planejamento de processos (RESENDE,
+1996);
+
+Generativa: Neste tipo de abordagem, um novo plano de processos é gerado para cada peça do
+sistema, sem a intervenção de um projetista. São utilizadas tabelas de decisão, árvores
+de decisão, fórmulas, regras de produção etc., para definir quais são os procedimentos
+
+6
+
+
+
+necessários para converter um material bruto em uma peça acabada. A entrada de infor-
+mações sobre a peça para um sistema generativo pode ser do tipo texto, onde o usuário
+responde a uma série de questões predefinidas, ou do tipo gráfica, onde as caracterís-
+ticas da peça são definidas através de um módulo de CAD. Quando se pensa em um
+sistema CIM, a utilização de uma interface gráfica para a definição da peça é a maneira
+mais interessante, pois desta forma a comunicação entre os módulos de CAD e CAPP
+fica prontamente estabelecida. A grande vantagem deste tipo de abordagem é que os
+planos de processo gerados são padronizados e completamente automatizados. Este tipo
+de abordagem torna-se bastante atraente para empresas que trabalham com uma grande
+variedade de produtos que são feitos em pequenos lotes (RESENDE, 1996).
+
+Contudo, alguns sistemas que foram construídos apresentam uma combinação das aborda-
+gens básicas descritas acima, dando origem a um terceiro tipo de denominada Semi-Generativa.
+
+Embora a tecnologia computacional de Projeto Assitido por Computador (CAD) e Fab-
+ricação Assistida por Computador (CAM) tenham demonstrado significativo potencial para
+aumentar a produtividade, tanto no projeto, como na manufatura, ainda existe um espaço entre
+as tecnologias disponíveis e o entendimento geral de como utilizá-las de forma mais efetiva.
+As tecnologias computacionais existentes portanto, não preenchem todas as lacunas no sentido
+de solucionar os problemas da manufatura.
+
+Com isto surgiu o conceito de Planejamento do Processo Assistido por Computador CAPP,
+que é a aplicação da tecnologia computacional para auxiliar as tarefas do planejamento de
+processos. O Planejamento do Processo Assistido por Computador (CAPP), é tido como parte
+fundamental de um sistema de Fabricação Integrada por Computador (CIM) por ser responsável
+pela ligação de dados de projeto (CAD) e de fabricação (CAM) (PRAZERES, 2004) (Figura 2.2).
+
+Figura 2.2 Inter-relações em um sistema CIM.
+
+O planejamento de processo auxiliado por computador utiliza a tecnologia computacional,
+através de técnicas como tecnologia de grupo, inteligência artificial, redes neurais, estruturas de
+dados hierárquicas (MEDELLÍN et al., 2006), via rede de computadores (WU; SARMA, 2005), (MEDEL-
+LÍN et al., 2006), entre outras, para fazer o planejamento de processo. Os desenvolvimentos mais
+recentes em planejamentos de processos auxiliados por computador têm procurado reduzir a
+
+7
+
+
+
+tarefa do planejador, fazendo com que esta atividade seja toda realizada em um computador, de
+forma satisfatória.
+
+No passado o desenvolvimento dos sistemas auxiliados por computador, foi principalmente
+concentrado nos sistemas (CAD) (projetos) e nos sistemas (CAM) (fabricação). Devido a sua
+grande importância no contexto de um sistema CIM, nas últimas décadas, tem sido empreendi-
+dos grandes esforços no sentido de um maior desenvolvimento dos sistemas CAPP (PRAZERES,
+2004).
+
+Os sistemas CAPP, em geral, deverão prover dois grupos de funções (BABIC; NESIC; MILJKOVIC,
+2008):
+
+1. Tradução eficiente de informações geométricas de peças, definida por um sistema CAD
+(entidades de baixo nível - vértices, arestas, etc.) em informações de fabricação, necessárias
+para o planejamento do processo e CAM (entidades de alto nível - furos, rasgos, cavi-
+dades, etc.)
+
+2. Definição de possíveis planos de processos (seleção de processos de fabricação, seleção
+do tamanho de uma peça bruta, seleção de ferramentas auxiliares, planejamento de set-
+up, seleção, determinação e agrupamento de operações de usinagem elementares, seleção
+de sistemas de usinagem, sequenciamento de operações e otimização de seqüências de
+operação, seleção de ferramentas de corte, determinação de parâmetros e condições de
+corte, determinação da trajetória da ferramenta, seleção da qualidade de métodos de in-
+speção, análise de custo, otimização dos elementos dos planos de processo e geração e
+verificação do código CNC ).
+
+Sistemas automáticos para auxiliarem planejamentos de processos, também conhecidos
+como Planejamento de Processo Assistido por Computador (CAPP), são projetados variando
+graus de sucessos. Estes sistemas CAPP foram desenvolvidos originalmente como um vínculo
+entre o projeto e a fabricação, preenchendo o espaço existente entre o Projeto Assistido por
+Computador (CAD) e a Fabricação Assistida por Computador (CAM) (HAM; LU, 1988), (ALT-
+ING; ZHANG, 1989).
+
+2.4 Integração CAD/CAM
+
+A integração CAD/CAM envolve a aplicação do computador na fabricação de componentes
+para a engenharia. Esta aplicação se inicia nos departamentos de projeto e continua virtual-
+mente por todos os departamentos de uma fábrica: departamento de produção, controle de
+qualidade, linhas de montagem, e certamente até os setores de estoque de peças acabadas.
+Desta maneira, um sistema CAD/CAM integrado pode ser definido como o sistema onde a fab-
+ricação e o projeto foram ligados através de dados e informações acumuladas no processo de
+projeto e transmitidos diretamente para os procedimentos de manufatura. Este elo eliminou a
+geração independente de dados para programas de computador na área da fabricação (SIMÕES,
+1999).
+
+A integração CAD/CAM tem recebido atenção significante, recentemente, de acordo com
+o desenvolvimento do poder de velocidade de ferramentas computacionais. A separação das
+
+8
+
+
+
+atividades de projeto e fabricação na indústria moderna é amplamente reconhecida como chave
+para contribuir para o crescimento dos custos do produto (NASR; KAMRANI, 2006), algo sem
+dúvida não desejável.
+
+Os sistemas CAM ou a integração CAD/CAM alivia o operador da tarefa de ter que realizar
+a grande quantidade de cálculos, relativos às exigências de corte necessárias para a composição
+do programa para a máquina e todos os parâmetros de corte que serão usados durante a exe-
+cução da peça (SIMÕES, 1999).
+
+Entretanto, o verdadeiro desenvolvimento de sistemas de fabricação integrada tem mostrado
+não ser um empreendimento trivial. Uma importante razão para isso consiste nos desenhos de
+engenharia anotados ou no modelo sólido de um componente não serem específicos para a fab-
+ricação e geralmente representarem a geometria através de um baixo nível, ou seja, vértices,
+arestas e faces de um componente, considerando que o planejamento do processo trabalha
+com dados primitivos, tais como rasgos e furos e propriedades dessas primitivas, tais como
+dimensões e superfície acabada, que são formas produzidas pelos processos e ferramentas (JI;
+MAREFAT, 1997). Os dados de projeto, a partir de um modelo CAD não podem ser direta-
+mente usados em um sistema de planejamento de fabricação, já que tais informações não estão
+contidas nos dados de sistemas CAD.
+
+Diversos esforços têm sido realizados para superar a barreira da integração entre projeto
+e planejamento de processo, uma tarefa a qual era previamente confiada a um processo de
+interpretação manual por um engenheiro (JI; MAREFAT, 1997).
+
+2.4.1 Extração de Informações Geométricas
+
+A extração automática de informações de fabricação a partir de sistemas CAD tem tido
+uma função importante para facilitar o atual conceito de engenharia na medida que alcança
+o vínculo entre as atividades de projeto e de fabricação. O sucesso deste vínculo pode ser
+considerado como um passo fundamental para automatizar o desenvolvimento do produto a
+partir do estágio de projeto até os estágios de fabricação e transporte. Conseqüentemente o
+ciclo total de obtenção do produto pode ser reduzido drasticamente (NASR; KAMRANI, 2006).
+
+Dependendo se a entrada do modelo de projeto contém informações em features ou não,
+existem duas principais técnicas de extração de informações geométricas:
+
+1. Baseada na geometria
+
+2. Baseada em feature
+
+Existem muitas definições na literatura para o termo “feature” (CIURANA; ROMEU; CAS-
+TRO, 2003), (CUNNINGHAM; DIXON, 1988), (HARUN; CASE, 2000), (KUMAR; SHANKER; LAL,
+2003), (SHEU; LIN, 1993), (SUBRAHMANYAM; WOZNY, 1995), algumas das quais são como
+segue:
+
+• “Uma feature é qualquer entidade usada no sentido do projeto, engenharia ou fabricação
+de um produto (SREEVALSAN; SHAH, 1992)”
+
+9
+
+
+
+• “Uma forma geométrica ou entidade cuja presença ou dimensões são exigidas para efet-
+uar ao menos uma função CIM e cuja utilidade como uma primitiva permite que o pro-
+cesso do projeto ocorra (DEVIREDDY; GHOSH, 1999), (LUBY; DIXON; SIMMONS, 1986)”
+
+• “Uma região de interesse na superfície de uma peça (PRATT; WILSON, 1985)”
+
+Na técnica baseada na geometria, as features de usinagem são reconhecidas diretamente a
+partir da geometria do projeto. Por outro lado, na técnica baseada em feature, elas são conver-
+tidas a partir do modelo de projeto baseado em feature.
+
+A extração das informações geométricas para integração de sistemas CAD/CAM tem sido
+realizada, ao longo dos anos, em grande parte, por meio do reconhecimento de features. O re-
+conhecimento automático de feature (AFR - automated feature recognition) tem sido a principal
+contribuição para o completo desenvolvimento do CAPP automático (BABIC; NESIC; MILJKOVIC,
+2008). Esta técnica tem sido aplicada através, por exemplo, de modelamento matemático (GAO;
+ZHENG; GINDY, 2004b), geração de interpretações alternativas de features de usinagem (LEE;
+KIM, 1999), peças prismáticas (KARADKAR; PANDE, 1996), features específicas, tais como,
+séries de furos de componentes de caixas de embreagem (GAO; ZHENG; GINDY, 2004a), ou até
+mesmo, para estimação de custos de fabricação (JUNG, 2002). Todos tendo como foco principal
+de pesquisa a geração automática de informações de usinagem.
+
+O modelo matemático apresentado em (GAO; ZHENG; GINDY, 2004b) foi usado para descr-
+ever um processo de conversão de features de projeto em features de usinagem e é representado
+por duas funções de mapeamento do processo.
+
+Uma features é a média de informação de transmissão na integração, uma região de inter-
+esse na superfície de uma peça tais como, furos, rasgos, cavidades, chanfros, cantos arredonda-
+dos, desníveis, e assim por diante.
+
+Observa-se, no entanto, que o processo de mapeamento baseado em features é um processo
+complexo e difícil, especialmente no curso da interação das features. Além disso, a classifi-
+cação de features é totalmente dependente da aplicação.
+
+Estudos de peças de formato complexo, tais como perfis de aviões, veículos, navios, entre
+outros, exigem o desenvolvimento de métodos analíticos para obtenção do código NC (WEI;
+LIN, 2005).
+
+A partir da literatura consultada, verifica-se, portanto a necessidade do desenvolvimento
+de sistemas de extração de informações geométricas, diferentemente de sistemas baseados em
+features geométricas, que tenham a capacidade de se comunicar com ambientes de projeto
+heterogêneos em formato de troca de dados padrão e generativa, para uma efetiva integração
+dos sistemas CAD e CAM.
+
+2.4.2 Geração Automática da Trajetória da Ferramenta de Corte
+
+Recentemente, uma vasta quantidade de novas pesquisas relativas à geração automática da
+trajetória da ferramenta de corte para comando numérico (NC - Numerical Control) tem surgido
+na literatura.
+
+A geração da trajetória da ferramenta, na sua totalidade, é uma área ampla, envolvendo as
+Engenharias Mecânica, Elétrica, Eletrônica e de Produção, bem como a Ciência da Computação
+e da Matemática.
+
+10
+
+
+
+A geração da trajetória da ferramenta envolve os seguintes conceitos (DROGOMATZ; MANN,
+1997):
+
+• planejamento do processo de fabricação;
+
+• projeto de controlador de hardware e máquina-ferramenta;
+
+• modelamento e estimação da força de corte;
+
+• geração da trajetória;
+
+• verificação e simulação da usinagem.
+
+Superfícies complexas, funcionais ou até mesmo superfícies estéticas de forma livre, são
+utilizadas por engenheiros e projetistas, na indústria automobilística, aeroespacial e de eletrodomés-
+ticos, para alcançar o desempenho desejável de um produto.
+
+Em (OMIROU; NEARCHOU, 2007) é proposta uma estratégia de usinagem para fresamento de
+um conjunto de superfícies particulares, obtidas por uma técnica denominada de cross-sectional
+design. O objetivo é aumentar a precisão e diminuir o tempo de usinagem, para isso tenta-se
+evitar a contínua sucessão de acelerações e desacelerações dos motores causados pelas vari-
+ações da taxa de avanço, assim, o método de fabricação proposto tenta ser flexível, simples e
+preciso. A técnica consiste na geração de superfícies tanto de revolução quanto tipos de su-
+perfícies mais complexos, onde o perfil de uma curva gira sobre um eixo de revolução, onde a
+rotação é controlada por uma curva de trajetória, ambas as curvas, do perfil e da trajetória, são
+curvas de Bezier localizadas em planos perpendiculares. As curvas de Bezier são poderosas
+ferramentas de projeto largamente utilizadas em sistemas CAD. Assim, o método proposto in-
+clui o planejamento da trajetória da ferramenta, um algoritmo em tempo real para interpolação
+da trajetória do porta- ferramentas durante o corte e durante os tempos mortos.
+
+Um método para planejamento da trajetória da ferramenta para usinagem CNC de cinco-
+eixos para superfícies esculpidas é apresentado em (ANOTAIPAIBOON; MAKHANOV, 2003). O
+método é baseado em algoritmos para geração de SFC (space-filling curves), amplamente usa-
+dos na computação gráfica e processamento de imagem. Curvas de Hilbert, Moore ou Hamil-
+ton são usados nestes algoritmos. Assim, o método utiliza curvas adaptativas de Hilbert. As
+técnicas empregadas tentam, portanto, alcançar um comprimento da trajetória reduzido e um
+aumento da precisão.
+
+Um outro exemplo da geração da trajetória da ferramenta para superfícies esculpidas está
+em (KIM; JUN; PARK, 2005), onde se objetiva desenvolver uma técnica para processos de usi-
+nagem volumes não removidos, os quais são deixados em regiões côncavas após o processo
+de acabamento. O método usa modelos poliédricos da forma STL (Stereolithography) para as
+superfícies das peças.
+
+2.4.3 Geração do Código NC por Sistemas CAD/CAM
+
+Os sistemas CAD/CAM são os meios mais modernos para a elaboração de programas NC.
+Tais sistemas permitem uma interpretação da geometria das peças armazenadas em arquivo
+
+11
+
+
+
+gráfico criado no CAD e a geração dos programas NC de acordo com algumas informações
+fornecidas pelo usuário através do módulo CAM (OLIVEIRA et al., 1998).
+
+A programação via sistemas CAD/CAM consiste normalmente da modelagem geométrica
+da peça seguido da seleção de parâmetros como tolerâncias, sobre-metal, ferramentas e parâmet-
+ros de corte, que em alguns casos também podem ser determinados pelo sistema. As etapas
+finais consistem da geração automática da trajetória e conseqüente pós-processamento, ade-
+quando ao formato dos comandos e características da máquina (SIMÕES, 1999).
+
+O auxílio do computador na determinação das informações tecnológicas que envolvem as
+condições de usinagem é uma característica importante dos sistemas CAD/CAM, pois além de
+facilitar, reduzem o tempo de geração de programas para as máquinas CNC possibilitando o
+aumento da produtividade ou economia de gastos relativos à produção (SIMÕES, 1999).
+
+Os parâmetros de usinagem necessários aos programas NC podem ser determinados através
+de algum método empírico ou analítico, que por sua vez pode ser implementado em computa-
+dor. Fazem parte destes parâmetros, o avanço, velocidade de corte e profundidade de corte, que
+dependem essencialmente do material da peça a ser usinada e das características da ferramenta
+de corte utilizada (SIMÕES, 1999).
+
+Os métodos para determinar, através de computador, os parâmetros de usinagem, podem
+ser classificados em três categorias (FERREIRA; K.; BUTZKE, 1997):
+
+• extração de dados, onde informações contidas em catálogos de fabricantes de ferramen-
+tas são cadastradas em bancos de dados, podendo ser extraídas diretamente pelo sistema.
+Estes são freqüentemente chamados ”catálogos eletrônicos”. Eles apresentam as desvan-
+tagens da elevada quantidade de memória necessária, e de serem valores conservativos;
+
+• métodos de otimização, onde procura-se determinar os parâmetros de forma a minimizar
+o custo ou o tempo de produção, sujeito às restrições do processo. Dentre estas técni-
+cas, inclusive métodos baseados em programação geométrica, programação dinâmica e
+otimização referente à área de bom controle de cavaco;
+
+• métodos baseados em sistemas especialistas, onde os parâmetros são determinados a
+partir de uma base de conhecimento contendo regras correspondentes a uma usinagem
+eficiente.
+
+2.4.4 Otimização de Processos de Fabricação
+
+Custos e taxas de produção são de interesse vital para um engenheiro de fabricação. Estes
+dois fatores devem ser considerados separadamente, já que, na prática uma alta taxa de pro-
+dução não significa baixos custos de produção, assim as condições de fabricação que levam
+a uma alta taxa de produção não são idênticas as condições que levam a um mínimo custo
+de produção. A análise de custos e taxas de produção pode ser um assunto complicado e
+em muitos casos a análise será aplicada apenas a operações particulares em questão. Entre-
+tanto, a experiência ganha ao longo dos anos tem levado a regras empíricas seguras ou princí-
+pios norteadores para a escolha de condições ótimas de corte para uma dada operação de usi-
+nagem (BOOTHROYD; KNIGHT, 1989).
+
+12
+
+
+
+A otimização da usinagem é um objetivo importante na produção, especialmente quando se
+trabalha com lotes com um número de peças elevado, quando os custos de usinagem são eleva-
+dos ou quando os prazos de entrega do produto são muito pequenos (BOEHS, 1988). Em (AMA-
+RAL; RENCIS; RONG, 2005), através do uso de elementos finitos, foi desenvolvido um método
+para minimizar o efeito das deformações provocadas pelas forças de usinagem e meios de fix-
+ação, objetivando aumentar a precisão de peças fresadas. Em (TANDON; KISHAWY, 2002) foi
+alcançada uma redução de 35% no tempo de usinagem através da otimização das condições de
+corte.
+
+A otimização do processo de usinagem por torneamento, fazendo-se uso da programação
+linear foi abordada em (OLIVEIRA, 1999), determinando-se os parâmetros otimizados do pro-
+cesso, bem como as quantidades ótimas de peças a serem fabricadas, considerando-se deman-
+das fixas e probabilísticas.
+
+A taxa de avanço foi otimizada em (ERDIM; LAZOGLU; OZTURK, 2006), através de estraté-
+gias baseadas no mecanismo de processo do fresamento. Os tempos de produção dos exemplos
+testados conseguiram ser reduzidos de 45% a 65% comparados a casos de taxa de avanço con-
+stantes.
+
+Uma abordagem combinada de técnicas de otimização é realizada em (PRAKASVUDHIS-
+ARN; KUNNAPAPDEELERT; YENRADEE, 2008) para determinação das condições ótimas para a
+rugosidade superficial desejada e simultânea maximização da produtividade, em um processo
+de fresamento para acabamento.
+
+13
+
+
+
+CAPÍTULO 3
+
+O Comando Computadorizado na Fabricação
+
+A tecnologia de Comando Numérico como é conhecida hoje, emergiu na metade do século
+20. Ela pode ser levada para o ano de 1952, a Força aérea americana e os nomes de John
+Parsons e o Massachusetts Institute of Technology em Cambridge, MA, USA. Ela não foi
+aplicada na área de fabricação até meados de 1960. A verdadeira expansão veio na forma
+de CNC (Computer Numeric Control), por volta do ano de 1972 e décadas mais tarde com a
+introdução dos micro-computadores disponíveis.
+
+No campo da fabricação, em particular na área da metalurgia, a tecnologia do Comando
+Numérico tem causado uma verdadeira revolução, até mesmo antes do surgimento dos com-
+putadores. A recente evolução da microeletrônica e o incessante desenvolvimento dos com-
+putadores, incluindo seu impacto no Comando Numérico, têm trazido mudanças significantes
+no setor de fabricação em geral e na indústria da metalurgia em particular.
+
+A feroz competição global tem forçado fabricantes a encontrarem meios para aumentar
+a produtividade bem como melhorar a qualidade. Sistemas de fabricação automática são
+largamente empregadas na usinagem junto com máquinas de Comando Numérico Computa-
+dorizado (CNC) para alcançar tais objetivos (PRAKASVUDHISARN; KUNNAPAPDEELERT; YEN-
+RADEE, 2008).
+
+O Comando Numérico pode ser definido como uma operação de máquinas-ferramenta por
+meio de instruções codificadas para o sistema de comando da máquina (BOOTHROYD; KNIGHT,
+1989).
+
+O Comando Numérico Computadorizado (CNC) está entre as áreas de fabricação de maior
+crescimento hoje. O número de pessoas atualmente trabalhando nesta área não é suficiente para
+preencher as necessidades das companhias de fabricação que utilizam equipamentos CNC. A
+fabricação está encontrando mais e mais dificuldades para encontrar pessoas qualificadas em
+CNC. Normalmente um equipamento CNC está entre as máquinas mais sofisticadas que uma
+companhia possui (LYNCH, 1992).
+
+Na área das técnicas de aplicação da programação CNC, computadores em todos os níveis, a
+partir de um computador pessoal até estações de trabalho são capazes de produzir mais progra-
+mas de máquinas CNC em um tempo menor do que qualquer método de programação manual.
+
+As principais vantagens do comando numérico são:
+
+• Redução do tempo de setup
+
+• Redução do tempo de preparo
+
+• Precisão e repetibilidade
+
+• Formas complexas de contorno
+
+14
+
+
+
+• Ferramental simplificado e trabalho manual
+
+• Tempo de usinagem consistente
+
+• Aumento geral da produtividade
+
+3.1 Máquinas-Ferramenta CNC
+
+Diferentes tipos de máquinas CNC cobrem uma variedade extremamente vasta. O número
+delas estão aumentando rapidamente com o avanço do desenvolvimento tecnológico. Uma
+breve lista de alguns grupos de máquinas CNC é descrita a seguir:
+
+• Fresadoras e centros de Usinagem
+
+• Tornos e centros de torneamento
+
+• Furadeiras
+
+• Máquinas de eletroerosão
+
+• Máquinas brunidoras
+
+• Máquinas de cortar chapas
+
+• Perfiladoras de jato d’água e Laser
+
+• Retíficas cilindricas
+
+• Máquinas de soldagem
+
+• Máquinas de dobramento, etc.
+
+Os centros de usinagem e os tornos CNC dominam o número de instalações nas indus-
+trias. Estes dois grupos compartilham o mercado quase que igualmente. Algumas indústrias
+podem ter um número muito grande para um grupo destas máquinas, dependendo das suas
+necessidades. É importante observar que embora existam muitos tipos de tornos e centros de
+usinagem, o processo de programação para uma máquina vertical é similar a uma máquina
+horizontal ou uma simples fresadora CNC. Até mesmo entre diferentes grupos de máquinas,
+existe uma grande quantidade de aplicações gerais e o processo de programação é geralmente
+o mesmo.
+
+3.2 Fresadoras e Centros de Usinagem
+
+O número padrão de eixos de uma fresadora é três - X, Y e Z.
+As fresadoras CNC são usualmente pequenas, simples, sem um trocador de ferramentas ou
+
+outras características automáticas. Sua potência é freqüentemente baixa. Na indústria, elas são
+
+15
+
+
+
+usadas na ferramentaria, para propósitos de manutenção ou pequenas produções de peças. Elas
+são usualmente projetadas para contornos, diferentemente das furadeiras CNC.
+
+Os centros de usinagem CNC são bem mais populares e eficientes do que furadeiras ou
+fresadoras, principalmente por sua flexibilidade. O principal benefício para um usuário utilizar
+um centro de usinagem CNC é a sua capacidade de realizar muitas operações, como até mesmo
+a usinagem de peças de revolução, em um único setup, podendo ser incorporadas em um único
+programa CNC. Além disso, a flexibilidade aumentada pela troca automática de ferramenta,
+usando pallets para minimizar o tempo morto, indexação para diferentes lados da peça, us-
+ando um movimento de rotação de eixos adicionais e muitas outras características. Centros
+de usinagem CNC podem ser equipados com software especial que controla as velocidades e
+avanços, a vida da ferramenta de corte, medição automática durante o processo e ajustes de
+offset e outros aumentos de produção e dispositivos de tempo de vida.
+
+Existem dois formatos básicos de um típico centro de usinagem CNC. Eles são os verticais
+e horizontais centros de usinagem. A principal diferença entre os dois tipos é a natureza do
+trabalho que podem ser feito neles eficientemente. O trabalho que requer usinagem multiface
+em um único setup é mais desejável ser feito em um centro de usinagem CNC horizontal.
+
+O processo de programação é o mesmo para ambos os formatos, mas um eixo adicional
+(usualmente um eixo B, ver Figura 3.1(b)) é somado para o formato horizontal. Este eixo é ou
+um simples eixo de posicionamento (eixo de indexação) para a mesa, ou um eixo de rotação
+completo para contorno simultâneo.
+
+3.3 Fresamento CNC
+
+O processo de usinagem por fresamento caracteriza-se por apresentar a ferramenta de corte
+realizando um movimento de rotação em torno do seu eixo, enquanto a peça a ser usinada
+realiza um movimento de translação de avanço ao encontro da ferramenta.
+
+A ferramenta de corte do processo possui arestas cortantes dispostas simetricamente em
+relação a seu eixo de rotação e apresenta-se em diversas formas. Tal ferramenta é denominada
+de fresa.
+
+O fresamento é principalmente utilizado para usinagem de peças não-planas e não- rota-
+cionais.
+
+De acordo com a posição dos dentes ativos da ferramenta de corte o processo de fresamento
+pode ser classificado em:
+
+• Fresamento Tangencial: Caracteriza-se por apresentar os dentes ativos da ferramenta
+dispostos ao longo da superfície cilíndrica da ferramenta, o eixo de rotação da ferramenta
+é paralelo à superfície gerada, as fresas são denominadas cilíndricas ou tangenciais;
+
+• Fresamento Frontal: Caracteriza-se por apresentar os dentes ativos da ferramenta dis-
+postos na superfície frontal da ferramenta, o eixo de rotação da ferramenta é perpendic-
+ular à superfície gerada, as fresas são denominadas de topo ou frontais.
+
+16
+
+
+
+3.3.1 Fresamento Frontal
+
+O fresamento frontal pode ser classificado em dois tipos:
+
+1. Fresamento Frontal Simétrico: ocorre quando o eixo de deslocamento da ferramenta
+coincide com o eixo de simetria da peça. Existem dois tipos de fresamento frontal
+simétrico:
+
+(a) Fresamento de Canal
+
+(b) Fresamento de Face
+
+2. Fresamento Frontal Assimétrico: ocorre quando o eixo de deslocamento da ferramenta
+não é coincidente ao eixo de simetria da peça.
+
+3.3.2 Fresadoras CNC
+
+Uma fresadora pode ser definida como:
+
+uma máquina capaz de um movimento de usinagem simultâneo, usando uma fresa como
+ferramenta de corte, ao longo de ao menos dois eixos ao mesmo tempo (BOOTHROYD; KNIGHT,
+1989).
+
+As fresadoras podem ser divididas em três categorias:
+
+• Pelo número de eixos ?? dois, três ou mais
+
+• Pela orientação dos eixos ?? vertical ou horizontal (Figura 3.1)
+
+• Pela presença ou ausência de um trocador de ferramentas
+
+Atualmente as máquinas-ferramenta para usinagem torna as definições relativas aos tipos
+de fresadoras muito simplificadas. A indústria de máquinas-ferramenta está mudando constan-
+temente. Novas e mais poderosas máquinas são projetadas e produzidas por muitos fabricantes
+ao redor do mundo.
+
+A maioria das máquinas modernas projetadas para fresamento são capazes de realizarem
+uma multiplicidade de tarefas de usinagem, não apenas o fresamento tradicional, descrito an-
+teriormente. Estas máquinas são também capazes de muitas outras operações em usinagem
+metálica. Elas podem ser equipadas com magazine multi-ferramenta, trocadores de ferramenta
+completamente automático, poderosas unidades de controle computadorizado e assim por di-
+ante. Alguns modelos podem até ter características adicionais, tais como: controle adaptativo,
+interface robótica, carregamento e descarregamento automático, sistema de sondagem, capaci-
+dade de alta velocidade de usinagem e outras maravilhas da tecnologia moderna.
+
+Os centros de usinagem CNC são máquinas fresadoras que possuem ao menos algumas da
+características avanças descritas acima (BOOTHROYD; KNIGHT, 1989).
+
+17
+
+
+
+(a) Representação esquemática de um centro de usinagem CNC vertical.
+
+(b) Representação esquemática de um centro de usinagem CNC horizontal.
+
+Figura 3.1 Tipos de máquinas fresadoras.
+
+18
+
+
+
+CAPÍTULO 4
+
+Objetivos e Metodologia
+
+Este trabalho tem como objetivo propor uma metodologia inteligente para desenvolver um
+sistema de reconhecimento geométrico, o qual, terá a capacidade de comunicar-se com vários
+sistemas CAD. A metodologia proposta tomará como domínio o campo das peças prismáticas
+de base poligonal. O sistema deve receber dois arquivos neutros de formato IGES como dado
+de entrada e traduzir a informação em um arquivo de informação de fabricação. A informação
+geométrica será então analisada por meio das informações de contorno (B-rep) da peça. Estas
+informações contendo a geometria dos volumes de material da peça bruta e da peça a ser usi-
+nada serão armazenados em uma estrutura em grafo. A partir das informações recebidas pelo
+grafo, o sistema fornecerá as seqüências de corte que deverão ser executadas para a fabricação
+da peça. Assim, a etapa seguinte ao sequenciamento de corte, consistirá da otimização das
+condições de corte, as quais serão obtidas considerando-se o critério de mínimo tempo total
+de fabricação por peça, ou seja, critério de máxima produção. Todo o processo é executado
+pelo uso de um software desenvolvido em linguagem de orientação a objeto (OPP) e escrito em
+linguagem C++. Finalmente, a descrição de um exemplo de aplicação para uma peça bruta será
+apresentada com propósito de demonstração.
+
+Assim, o trabalho propõe-se a atingir os seguintes objetivos específicos:
+
+i) Desenvolvimento de um sistema de reconhecimento geométrico;
+
+ii) Desenvolvimento de uma metodologia que visa a obtenção dos parâmetros necessários
+para a obtenção do código NC;
+
+iii) Desenvolvimento de uma metodologia para otimização dos parâmetros de usinagem;
+
+iv) Desenvolvimento de um aplicativo que simule as metodologias desenvolvidas.
+
+Portanto, atingidos os objetivos acima, o presente trabalho tem como objetivos gerais:
+
+i) Dar uma contribuição para o desenvolvimento de um sistema CAM para o processo de
+fresamento;
+
+ii) Dar uma contribuição para o desenvolvimento de um sistema CIM, sendo parte integrante
+do sistema CAM, já que os parâmetros caracterizados e otimizados pelo programa serão
+utilizados para geração automática de códigos NC.
+
+A metodologia proposta para atingir os objetivos descritos acima será formada pelas seguintes
+etapas:
+
+19
+
+
+
+• Extrações das informações geométricas do CAD e determinação do sequenciamento das
+operações de usinagem;
+
+• Otimização dos parâmetros de usinagem;
+
+• Geração do código NC propriamente dito.
+
+A Figura 4.1 ilustra o organograma da metodologia proposta no trabalho.
+
+Figura 4.1 Organograma da metodologia proposta no trabalho.
+
+20
+
+
+
+CAPÍTULO 5
+
+Extrações das Informações Geométricas do CAD e
+Determinação do Sequenciamento das Operações
+
+de Usinagem
+
+O principal objetivo do planejamento do processo é estabelecer métodos e meios para con-
+verter uma peça bruta em uma peça final. A metodologia proposta para o planejamento do
+processo de usinagem consiste basicamente na determinação dos percursos da ferramenta de
+corte e na escolha das condições de usinagem. Após os dados do CAD em formato IGES/B-rep
+serem convertidos em uma estrutura de dados orientada a objetos, determina-se o sequenci-
+amento das operações necessárias para fabricação da peça e os percursos de corte para cada
+operação. Como parte do planejamento foi adotada uma otimização dos parâmetros de usi-
+nagem (Capítulo 6)). A otimização consiste na entrada de condições de corte e processamento
+matemático de minimização do tempo de corte.
+
+A estrutura global do sistema está ilustrada na Figura 5.1. A geometria do programa NC
+é inicialmente definida no CAD e convertida para o programa NC através da interpretação do
+arquivo de desenho. A rotação, o avanço e a profundidade de corte são determinados a partir
+de um algoritmo de otimização para minimizar o tempo de operação (Capítulo 6). O algoritmo
+utiliza uma série de restrições, tais como potência da máquina a ser utilizada, valores de corte
+recomendados para uma combinação material-ferramenta, bem como coeficientes de Taylor e
+dados de máquinas. O programa contendo o conjunto de códigos padronizados é finalmente
+transmitido à máquina onde será executado.
+
+Os objetos geométricos abordados no presente trabalho consistem de perfis convexos pris-
+máticos formados por segmentos de linha reta em superfícies planas. Esta abordagem prelim-
+inar tem como objetivo dar continuidade à proposta de desenvolvimento de uma abordagem
+generativa que visa o tratamento de problemas mais avançados e complexos tais como per-
+fis não-convexos formados por curvas ou arcos de circunferência em superfícies cilíndricas,
+toroidais, entre outras.
+
+No Capítulo 9 será apresentado uma abordagem do método desenvolvido para automatizar a
+seqüência de usinagem para um problema relativo a superfícies complexas, onde uma cavidade
+interna de perfil de revolução deve ser obtida por meio de um processo de fresamento, as téc-
+nicas computacionais de aproximação utilizadas, a seqüência de operações de corte propostas
+e a simulação do processo são mostrados no capítulo.
+
+21
+
+
+
+Figura 5.1 Estrutura global do sistema.
+
+5.1 Extração das Informações Geométricas do CAD
+
+A extração das informações geométricas consiste na retirada, utilização e verificação das
+informações passadas através de um sistema CAD. A partir de um arquivo neutro, dado de
+saída do sistema CAD, pode-se reconstruir o desenho através de uma estrutura geométrica
+adotada. Os arquivos neutros serviam inicialmente como interfaces para haver uma troca de
+dados produtos entre sistemas CAD. A Figura 5.2 mostra a situação da transferência de dados
+usando um formato de arquivo neutro.
+
+O presente trabalho utilizou-se do arquivo neutro em padrão ASCII IGES (Initial Graphics
+Exchange Specification) isto porque é o mais antigo e de longe o mais difundido padrão de
+troca de dados CAD atualmente, além disso, é utilizado por todos distribuidores importantes
+de CAD. Assim, o programa computacional desenvolvido captura as informações geométricas
+contidas de dois arquivos neutros em formato IGES, um constituindo a peça bruta, e o outro
+constituindo a peça ser fabricada.
+
+5.1.1 Formato IGES
+
+IGES é um formato padrão que é usado para definir os dados do objeto de desenho no
+sistema CAD. As entradas dos campos que constituem um arquivo IGES representam infor-
+mações geométricas e topográficas do objeto. As informações geométricas estão em baixo
+
+22
+
+
+
+Figura 5.2 Situação usando arquivo neutro.
+
+nível tais como linhas, planos, círculos e outras entidades geométricas para um dado objeto
+(peça projetada). Algumas das entidades IGES fundamentais são listadas na Tabela D.1 (ver
+Apêndice D) (NASR; KAMRANI, 2006). Um entendimento mais detalhado de como estas enti-
+dades são definidas é alcançado através de (IGES. . . , 2001).
+
+5.2 Estágio de Desenho
+
+Os dados geométricos para ambas, peça bruta e a peça final, são considerados como dados
+pelos desenhos gravados em formato IGES. Este processo é chamado Estágio de Desenho. Os
+desenhos podem ser feitos com qualquer sistema CAD, mas deverão seguir alguns requisitos
+para conter a informação necessária. Os requisitos são:
+
+i) Os desenhos deverão representar os perfis prismáticos para ambas peça bruta e peça final.
+
+ii) As coordenadas do sistema estão no espaço X-Y-Z, onde o eixo Z (coordenadas X e Y
+igual a zero) é considerado como o eixo de extrusão.
+
+iii) Cada perfil de extrusão deverá ser dado como um polígono convexo.
+
+Assim, este estágio tem como objetivo principal descriminar os requisitos necessários para
+modelagem sólida CAD, ou seja, quais tipos de sólidos poderão ser processados pelo sistema.
+
+5.3 Estágio de Pré-Processamento
+
+Os dados vindos a partir do Estágio de Desenho (ver Apêndice B) deverão ser lidos dentro
+de uma forma de estruturas de dados especial em ordem para os outros estágios de processa-
+mento computacionais que serão atuados de uma maneira mais compreensiva. Este processo
+é chamado de Estágio de Pré-Processamento e seu resultado esperado é o perfil de extrusão
+das peças bruta e final. A estrutura de dados de geometria especial, a qual contém esse perfil
+
+23
+
+
+
+da peça bruta é chamada de ProfilePolygon, enquanto o perfil da peça final é representado pelo
+FineshedProfilePolygon. Estes perfis são compostos de componentes, cada um deles sendo
+um polígono orientado no sentido horário, representando o contorno de uma região simples-
+mente conectada do material a ser removido do perfil de extrusão. Ele é exatamente como um
+polígono, ou seja, a curva juntando dois pontos é necessariamente um segmento de linha reto.
+
+A estrutura de dados utilizada para armazenar os dados geométricos do ProfilePolygon e
+do FineshedProfilePolygon é a estrutura de grafos, descrita no Apêndice A. Deste modo, cada
+elemento geométrico é convenientemente armazenado em uma estrutura de dados em grafo
+característico, ou seja, cada elemento geométrico é representado como objeto de uma classe.
+As classes utilizadas para representação dos elementos geométricos foram:
+
+• GeomEntity: utilizada como classe base para as demais classes;
+
+• GE_0D_3D: utilizada para representar elementos geométricos de dimensão zero (pon-
+tos);
+
+• LineSegment_1D_3D: utilizada para representar elementos geométricos unidimension-
+ais (segmentos de linha retos);
+
+• Plane_2D_3D: utilizada para representar elementos geométricos bidimensionais (polí-
+gonos convexos);
+
+• Polyhedron_3D_3D: utilizada para representar elementos geométricos tridimensionais
+(poliedros);
+
+Finalmente, catalogados os elementos geométricos, observe que todos os elementos são
+representados no espaço, em classes convenientes para este fim, é criado um objeto da classe
+GeomGraph, o qual, estrutura os elementos geométricos do ProfilePolygon e FineshedPro-
+filePolygon na forma de grafos.
+
+5.4 Determinação do Sequenciamento das Operações de Usinagem
+
+A determinação do sequenciamento das operações de usinagem que serão utilizadas na
+fabricação da peça é realizada através de três estágios:
+
+1. Estágio de Decomposição
+
+2. Estágio de Corte
+
+3. Estágio de Geração da Trajetória da Ferramenta
+
+As peças bruta e final serão, a seguir, representadas por dois sólidos prismáticos relativa-
+mente simples, onde tais peças, utilizadas como modelo, possuem um simples quadrado como
+polígono da base.
+
+24
+
+
+
+5.4.1 Estágio de Decomposição
+
+Neste estágio inicial as informações geométricas da peça bruta e da peça final já foram
+catalogadas através de um pré-processamento (Estágio de Pré-Processamento), assim com
+tais informações colhidas defini-se os volumes iniciais a serem removidos da peça bruta. Ba-
+sicamente estes volumes são obtidos por meio de operações geométricas de interseção entre as
+arestas ou “edges” dos polígonos base das peças final e bruta (Figura 5.3).
+
+Figura 5.3 Polígonos da base das peças bruta e final.
+
+A implementação computacional inicia-se através da definição dos polígonos base (peças
+bruta e final) em polígonos da classe Polygon. Assim, seleciona-se um Edge genérico do
+polígono da peça bruta, com tal Edge determina-se os devidos pontos de interseção entre as
+arestas dos polígonos, isto é realizado através da utilização do método Intersect da classe
+Edge. Observe aqui que tais pontos de intersecção são na verdade objetos da classe Point.
+Logo, determinados os pontos de intersecção convenientemente por meio do método PointIn-
+ConvexPolygon, executa-se a divisão do polígono da peça bruta original, ou seja, obtém-se
+o primeiro volume a ser retirado na forma de cavaco do processo de corte. A utilização do
+método Split da classe Edge permite a realização desta operação, que tem como resultado dois
+novos polígonos, o polígono do volume a ser removido e o novo polígono da peça bruta.
+
+O algoritmo a seguir, em forma de pseudocódigo, é usado para encontrar os volumes inici-
+ais a serem removidos da peça bruta no Estágio de Decomposição.
+
+25
+
+
+
+Begin
+
+//Variables
+
+variable WPEdge // Edge do polígono da WorkPiece
+
+variable FPEdge // Edge do polígono da FineshedPiece
+
+variable IntersectionPoint // Ponto de intersecção
+
+variable Quu // Fila de pontos (Queue)
+
+variable ListPolygons // Lista de polígonos
+
+variable WPCurrent // Polígono da WorkPiece atual
+
+variable WPsize // Tamanho do polígono da WorkPiece
+
+variable FPsize // Tamanho do polígono da FinishedPiece
+
+variable GenericPoint // Ponto genérico
+
+FPEdge = 0
+
+WPEdge = 0
+
+for(i=FPEdge;i&lt;FPSize;i++)
+
+{
+
+for(j=WPEdge;j&lt;WPSize;j++)
+
+IntersectionPoint=FPEdge.intersect(WPEdge)
+
+if(PointINConvexPolygon(IntersectionPoint,WPCurrent)=TRUE)
+
+WPCurrent.insert(IntersectionPoint)
+
+Quu.push(IntersectionPoint)
+
+end if
+
+WPEdge=j
+
+next j
+
+FPEdge=i
+
+next i
+
+}
+
+GenericPoint=Quu.pop()
+
+if(GenericPoint.classify(FPEdge)==BEYOND)||
+
+GenericPoint.classify(FPEdge)==DESTINATION)
+
+Quu.push(Quu.pop())
+
+WPCurrent.setV(Quu.pop())
+
+ListPolygons.insert(WPCurrent.split(Quu.pop()))
+
+End
+
+Durante a execução do método Split, a orientação do vértice do polígono a ser utilizado no
+
+26
+
+
+
+processo é importante, assim se faz necessário o uso dos métodos Classify e setV, respectiva-
+mente das classes Edge e Polygon.
+
+Para ilustrar o processo realizado durante este estágio são mostradas as Figuras 5.4, 5.5,
+5.6, 5.7 e 5.8.
+
+Figura 5.4 Polígonos da base das peças bruta e final (Begging).
+
+(a) Step1.1. (b) Step1.2.
+
+Figura 5.5 Sequência de cortes realizada no DecompositionStage - Step1.
+
+Os elementos geométricos presentes em cada etapa do estágio são citados na Tabela 5.2.
+
+5.4.2 Estágio de Corte
+
+Os volumes obtidos no estágio inicial de sequenciamento de corte, o Estágio de Decom-
+posição, deve obedecer a critérios de restrições de usinagem, isto é, deve-se observar se a máx-
+ima espessura de penetração satisfaz as condições de projeto para o processo de fresamento a
+ser realizado.
+
+Assim, os volumes iniciais obtidos no estágio anterior seguramente serão reduzidos a val-
+ores menores, os quais, devem obedecer aos critérios de corte estabelecidos previamente. O
+método proposto para execução desse processo consiste inicialmente em dividir convenien-
+temente os volumes obtidos pelo Estágio de Decomposição de modo a ser considerar neste
+
+27
+
+
+
+(a) Step2.1. (b) Step2.2.
+
+Figura 5.6 Sequência de cortes realizada no DecompositionStage - Step2.
+
+(a) Step3.1. (b) Step3.2.
+
+Figura 5.7 Sequência de cortes realizada no DecompositionStage - Step3.
+
+(a) End1. (b) End2.
+
+Figura 5.8 Sequência de cortes realizada no DecompositionStage - End.
+
+28
+
+
+
+momento a máxima espessura de penetração da aresta de corte e a trajetória a ser percorrida
+pela ferramenta de corte. Observando que a espessura de penetração da ferramenta está dire-
+tamente relacionada com o diâmetro da fresa no processo de fresamento frontal, a trajetória da
+ferramenta aqui proposta consiste na execução de percursos paralelos as arestas poligonais da
+peça a ser usinada.
+
+A implementação computacional deste processo consiste inicialmente no armazenamento
+dos volumes do Estágio de Decomposição em polígonos da classe Polygon. Define-se as-
+sim, um polígono da peça bruta inicial e a aresta da peça final correspondente. A partir desta
+definição inicial, determinam-se linhas paralelas a atual aresta da peça final, onde à distância
+entre as linhas corresponde a espessura máxima de penetração estabelecida. O passo seguinte
+consiste na obtenção de pontos de interseção convenientes entre as linhas paralelas obtidas e as
+arestas da peça bruta, onde assim, como fora realizado durante o Estágio de Decomposição,
+tais pontos são tratados como objetos da classe Point e também de modo similar, o polígono
+corrente é divido em polígonos menores através da utilização do método Split da classe Edge.
+O processo continua através da seleção do polígono seguinte da peça bruta e repetição dos pas-
+sos anteriores até a execução do último polígono restante da peça bruta em questão. A seleção
+dos polígonos seguintes é realizada em uma orientação horária proposta. Finalmente, o Estágio
+de Corte tem como resultado a obtenção de novos volumes resultantes da divisão do material
+da peça bruta, onde foram agora levados em consideração critérios de usinagem, espessura
+máxima de penetração, e a trajetória a ser executada pela ferramenta de corte. O processo exe-
+cutado durante o Estágio de Corte é descrito através do pseudocódigo do algoritmo a seguir.
+
+Begin
+
+//Variables
+
+variable WPn // Número de sub-polígonos da WorkPiece
+
+variable WPPolygon // Sub-polígono da WorkPiece
+
+variable WPEdge // Edge do sub-polígono da WorkPiece
+
+variable WPEdgeFirst // Primeiro do sub-polígono da WorkPiece
+
+variable WPsize // Tamanho do sub-polígono da WorkPiece
+
+variable WPEdge_ ) // Edge do sub-polígono da WorkPiece paralela à aresta da WorkFineshed
+
+variable WPCurrent // Polígono da WorkPiece atual
+
+variable WPPoint // Ponto do sub-polígono da WorkPiece
+
+variable GenericPoint // Ponto genérico
+
+variable GenericEdge // Edge genérica
+
+variable e // Espessura de penetração máxima
+
+variable IntersectionPoint // Ponto de intersecção
+
+variable WPCurrent // Sub-polígono da WorkPiece atual
+
+variable Quu // Fila de pontos (Queue)
+
+variable ListPolygons // Lista de sub-polígonos
+
+WPEdge = 0
+
+29
+
+
+
+WPPolygon = 0
+
+for(i=WPPolygon;i&lt;WPn;i++)
+
+{
+
+for(j=WPEdge;j&lt;WPSize;j++)
+
+if(WPEdge.point().distance=MaxDist)
+
+GenericEdge=parallel(WPEdge,e)
+
+IntersectionPoint=GenericEdge.intersect(WPEdge)
+
+if(PointINConvexPolygon(IntersectionPoint,WPCurrent)=TRUE)
+
+WPCurrent.insert(IntersectionPoint)
+
+Quu.push(IntersectionPoint)
+
+end if
+
+end if
+
+WPEdge=j
+
+next j
+
+WPPolygon=i
+
+next i
+
+}
+
+GenericPoint=Quu.pop()
+
+if(GenericPoint.classify(WPEdge)==BEYOND)||
+
+GenericPoint.classify(WPEdge)==DESTINATION)
+
+Quu.push()
+
+ListPolygons.insert(WPCurrent.splice(Quu.pop(),Quu.pop()))
+
+End
+
+O cálculo do número de passos a serem executados (sub-volumes a serem obtidos), por
+aresta da FineshedProfilePolygon, ou seja, por sub-volume do WorkPiece resultante do Está-
+gio de Corte, é dado pelo algoritmo a seguir:
+
+1. Para cada WPPolygon i = 1 até WPn
+
+(a) Faça GenericEdge = WPEdge_
+(b) Para cada WPPoint i = 1 até WPsize
+
+i. Calcular a distância entre WPPoint e GenericEdge
+ii. Armazenar o valor em uma fila Quu_
+
+2. O número de passes é dado pelo valor do maior inteiro da divisão max1?i?n{Quui}/ae
+
+3. Fim do cálculo
+
+30
+
+
+
+As Figuras 5.9, 5.10, 5.11, 5.12, 5.13 e 5.14 representam os passos correspondentes ao
+CuttingStage. Assim, a Figura 5.9 representa os dados de entrada do estágio, resultantes
+do Estágio de Decomposição, as Figuras 5.10, 5.11, 5.12 e 5.13 ilustram a subdivisão dos
+volumes durante o estágio, finalmente os volumes resultantes das sucessivas divisões ao longo
+do processo de corte são demonstrados na Figura 5.14.
+
+Figura 5.9 Polígonos da base das peças bruta e final (Begging).
+
+(a) Step1.1. (b) Step1.2.
+
+Figura 5.10 Sequência de cortes realizada no CuttingStage - Step1.
+
+5.4.3 Estágio de Geração da Trajetória da Ferramenta
+
+Neste estágio, subseqüente, tem-se os volumes resultantes do Estágio de Corte, onde tais
+volumes formam os volumes derivados do Estágio de Decomposição, ou seja, cada volume
+resultante do Estágio de Corte pertence a um único volume do Estágio de Decomposição.
+Tomando-se como base os volumes resultantes do Estágio de Corte (Figura 5.15(a)), o objetivo
+aqui é a determinação final da trajetória da ferramenta de corte.
+
+Inicialmente, defini-se dois polígonos externos ao polígono da peça bruta o WPPolygon,
+tais polígonos são denominados aqui de ContactPolygon (Figura 5.15(b)) e SafetyPolygon
+(Figura 5.15(c)), o primeiro polígono imediatamente externo ao WPPolygon, o ContactPoly-
+gon consiste no polígono que auxiliará a determinação do trajeto da ferramenta sempre que esta
+
+31
+
+
+
+Tabela 5.1 Elementos geométricos do Estágio de Decomposição.
+
+Elemento geométrico WorkPiece FinishedPiece Volume (I,II,III,IV)
+Point 1, 2, 3, 4 (5,6) 1, 2, 3, 4 1, 2, 3, 4
+Edge 1-2, 2-3, 3-4, 4-1 1-2, 2-3, 3-4, 4-1 1-2, 2-3, 3-4, 4-1
+
+Polygon 1-2-3-4 1-2-3-4 1-2-3-4
+
+(a) Step2.1. (b) Step2.2.
+
+Figura 5.11 Sequência de cortes realizada no CuttingStage - Step2.
+
+(a) Step3.1. (b) Step3.2.
+
+Figura 5.12 Sequência de cortes realizada no CuttingStage - Step3.
+
+(a) End1. (b) End2.
+
+Figura 5.13 Sequência de cortes realizada no CuttingStage - End.
+
+32
+
+
+
+Figura 5.14 Resultado final do CuttingStage.
+
+entrar em contato com a peça bruta, enquanto o SafetyPolygon determinará a trajetória pela
+qual a ferramenta não entrará em contato com a peça, ou seja, em tempos mortos ou vazios,
+isto é, onde permite-se avanços rápidos.
+
+Através de tais polígonos toma-se pontos de intersecção em relação a linhas geratrizes de
+arestas de polígonos do Estágio de Corte. Assim, tem-se como resultado a obtenção da tra-
+jetória da ferramenta de corte.
+
+O processo como um todo pode ser entendido através do seguinte pseudocódigo que repre-
+senta o algoritmo do atual estágio do trabalho:
+
+Begin
+
+//Variables
+
+variable WPn // Número de sub-polígonos da WorkPiece
+
+variable WPPolygon // Sub-polígono da WorkPiece
+
+variable WPEdge_ ) // Edge do sub-polígono da WorkPiece paralela à aresta da WorkFineshed
+
+variable WPEdgeFirst // Primeira edge do sub-polígono da WorkPiece
+
+variable WPsize // Tamanho do sub-polígono da WorkPiece
+
+variable WPCurrent // Polígono da WorkPiece atual
+
+variable GenericPoint // Ponto genérico
+
+variable GenericEdge // Edge genérica
+
+variable e // Espessura de penetração máxima
+
+variable IntersectionPoint // Ponto de intersecção
+
+variable WPCurrent // Sub-polígono da WorkPiece atual
+
+variable Quu // Fila de pontos (Queue)
+
+variable ListPolygons // Lista de sub-polígonos
+
+variable ContactPolygon // Polígono de contato
+
+33
+
+
+
+variable SafetyPolygon // Polígono de segurança
+
+WPPolygon = 0
+
+for(i=WPPolygon;i&lt;WPn;i++)
+
+{
+
+GenericEdge=parallel(WPEdgev_,e)
+
+IntersectionPoint=GenericEdge.intersect(ContactPolygon)
+
+IntersectionPoint=Quu.pop()
+
+IntersectionPoint=WPEdgev_.intersect(ContactPolygon)
+
+textitIntersectionPoint=Quu.pop()
+
+WPPolygon=i
+
+next i
+
+}
+
+End
+
+Tomando-se a aresta do primeiro sub-polígono do Estágio de Corte paralela à aresta da
+peça final, traça-se uma aresta paralela à direita desta aresta, de distância igual a espessura
+máxima de penetração de projeto ae, através desta aresta obtida, determina-se os pontos de in-
+tersecção entre a linha geratriz de tal aresta e a linha geratriz das arestas do ContactPolygon,
+assim armazena-se os pontos de intersecção que pertencem ao ContactPolygon. Repete-se o
+processo para os demais polígonos. Observa-se que a seqüência de pontos deve obedecer a uma
+série alternada ou em “zig-zag” entre as distâncias horizontais e verticais, dependendo do caso.
+Sempre nos inícios e nos finais de cada polígono do Estágio de Decomposição deve-se acres-
+centar um ponto extra projetado perpendicularmente no SafetyPolygon, onde os vértices do
+SafetyPolygon auxiliarão ligando os pontos entre os polígonos em questão. A representação
+da geração da trajetória da ferramenta de corte durante o Estágio de Geração da Trajetória
+da Ferramenta pode ser acompanhada através das Figuras 5.15, 5.16 e 5.17. Observe que a
+distância de paralelismo entre as linhas relativas à trajetória da ferramenta de corte correspon-
+dem ao valor da espessura máxima de penetração de projeto (ae). Uma otimização da trajetória
+da ferramenta de corte se faz necessário como pode ser observado nas Figuras 5.16(b) e 5.17.
+
+34
+
+
+
+Tabela 5.2 Elementos geométricos do Estágio de Corte.
+
+Elemento geométrico WorkPiece FinishedPiece Volume (I,II,III,IV, V, VI, VII, VIII)
+Point 1, 2, 3, 4 (5,6) 1, 2, 3, 4 1, 2, 3, 4
+Edge 1-2, 2-3, 3-4, 4-1 1-2, 2-3, 3-4, 4-1 1-2, 2-3, 3-4, 4-1
+
+Polygon 1-2-3-4 1-2-3-4 1-2-3-4
+
+(a) Begging.
+
+(b) ContactPolygon. (c) SafetyPolygon.
+
+Figura 5.15 Geração da trajetória da ferramenta: determinação da geometria da trajetória da ferramenta.
+
+35
+
+
+
+(a) Step1.
+
+(b) Step2.
+
+Figura 5.16 Geração da trajetória da ferramenta: início do movimento da ferramenta.
+
+36
+
+
+
+(a) Step3.
+
+(b) End.
+
+Figura 5.17 Geração da trajetória da ferramenta: término do movimento da ferramenta.
+
+37
+
+
+
+CAPÍTULO 6
+
+Otimização dos Parâmetros de Usinagem
+
+Neste trabalho foi desenvolvida uma metodologia que visa auxiliar a obtenção dos parâmet-
+ros ótimos de usinagem para o processo de fresamento frontal. O estágio que descreve esta
+metodologia é chamado de Estágio de Otimização. Esta metodologia se divide em três partes
+a considerar:
+
+1. Seleção dos parâmetros que influenciam significantemente o processo de fresamento
+frontal;
+
+2. Determinação de critérios de restrições;
+
+3. Dedução e implementação de expressões matemáticas para otimização do processo.
+
+A seleção dos parâmetros de influência no fresamento frontal foi feita levando-se em conta
+essencialmente o mecanismo do processo. Na metodologia desenvolvida, foram entendidos
+como critérios de restrições os valores limites dentro dos quais um parâmetro pode variar no
+processo. A otimização dos parâmetros é, então, realizada através de uma série de cálculos que
+um programa computacional desenvolvido para este fim processa, tomando-se como ponto de
+partida estes limites. Da literatura sobre o assunto (FERRARESI, 2003), (STEMMER, 1995), (DI-
+NIZ; MARCONDES; COPPINI, 2003), é muito bem conhecido que as condições que levam a um
+mínimo custo de fabricação diferem daquelas que levam a um tempo mínimo de fabricação.
+Neste trabalho foi utilizada como critério de otimização as condições que levam à máxima
+produção.
+
+6.1 Definição dos Parâmetros de Corte
+
+Os principais fatores a serem levados em conta na seleção das condições de usinagem no
+fresamento são:
+
+1. avanço por dente (fz);
+
+2. profundidade de usinagem (ap);
+
+3. rotação (n).
+
+1. O avanço (fz) é o percurso de avanço (espaço percorrido pela ferramenta, segundo a
+direção de avanço) em cada volta ou em cada curso (FERRARESI, 2003).
+
+38
+
+
+
+2. A profundidade ou largura de corte (ap) é a profundidade ou largura de penetração
+da aresta principal de corte, medida em uma direção perpendicular ao plano de tra-
+balho (FERRARESI, 2003).
+
+3. A rotação (n) da ferramenta é responsável pela velocidade de corte (Vc) que depende
+também do diâmetro da fresa.
+
+6.2 Determinação dos Critérios de Restrinções
+
+A escolha do avanço em uma operação de fresamento deve levar em conta vários fatores
+como, tipo e material da fresa, acabamento superficial especificado para a peça a ser usinada,
+potência da máquina, entre outras. A espessura média do cavaco (hm) não deve ser inferior a
+determinados valores, para que a pressão específica de corte não cresça demasiadamente. Para o
+fresamento frontal (hm) não deve ser menor que 0,10 mm (DINIZ; MARCONDES; COPPINI, 2003).
+Quando uma operação de acabamento está para ser tomada, o avanço será tal que forneça uma
+superfície final aceitável.
+
+Neste caso a escolha do avanço está nas mãos do projetista, o qual especificou as exigên-
+cias para a superfície final (BOOTHROYD; KNIGHT, 1989). A qualidade da peça fabricada não
+depende apenas da sua geometria mas também da sua textura superficial, tal como a rugosi-
+dade (PRAKASVUDHISARN; KUNNAPAPDEELERT; YENRADEE, 2008). Neste trabalho os valores
+para o avanço foram determinados através do critério de limitação quanto ao acabamento su-
+perficial da peça e da espessura mínima de (hm). Do ponto de vista econômico, deve-se usar
+a maior profundidade de usinagem possível, já que esta influencia pouco no desgaste da fer-
+ramenta e seu aumento provoca um aumento proporcional na remoção do cavaco. Assim, em
+fresas frontais, deve-se utilizar ao máximo o comprimento das arestas. Deve-se, porém, obe-
+decer à recomendação de que o comprimento de corte (b = ae ·sin(?r)) não deve exceder a 23
+do comprimento total da aresta da pastilha, para se evitar vibrações. Existem, porém, outros
+fatores que limitam o emprego da profundidade de corte grande, por exemplo, a potência e a
+rigidez da máquina, rigidez da peça e da fixação. Os fatores limitantes da profundidade de corte
+utilizados neste trabalho foram os que dizem respeito ao comprimento da aresta da ferramenta
+e a potência da máquina. Os fatores limitantes da rotação utilizados deste trabalho foram os
+que dizem respeito às características inerentes à máquina, ou seja, as rotações oferecidas por
+ela.
+
+6.3 Dedução e Implementação das Equações do Processo
+
+Os intervalos de variação para cada parâmetro, descritos anteriormente (Item 6.2), são obti-
+dos através do desenvolvimento de fórmulas de usinagem já consagradas e encontradas nas
+mais variadas literaturas sobre o assunto (FERRARESI, 2003), (STEMMER, 1995), (DINIZ; MAR-
+CONDES; COPPINI, 2003), de modo que o desenvolvimento das expressões é descrito a seguir.
+Como já foi dito na seção anterior, o valor mínimo para a espessura média do cavaco (hm) que
+não deve ser inferior a 0,10 mm e a espessura média da área da seção do cavaco é dada pela
+
+39
+
+
+
+Equação 6.1.
+
+hm =
+fz ·sin ?r ·(cos ?1 ·cos ?2)
+
+(?2 ??1)
+(6.1)
+
+onde:
+
+• hm : espessura média do cavaco (mm);
+
+• fz : avanço por dente (mm/volta);
+
+• ?r : ângulo de posição normal (rad);
+
+• ?1 : ângulo entre o ponto de saída ( ou entrada no fresamento concordante) do dente e a
+vertical (rad);
+
+• ?2 : ângulo entre o ponto de entrada ( ou saída no fresamento concordante) do dente e a
+vertical (rad);
+
+Assim, tem-se que
+
+fz,hm =
+0, 1·(?2 ??1)
+
+sin ?r ·(cos ?1 ·cos ?2)
+(6.2)
+
+onde:
+
+• fz,hm : avanço por dente em função da espessura do cavaco (mm/volta);
+
+A partir da escolha do acabamento superficial é possível determinar o avanço durante a
+usinagem. Para que seja fixada a rugosidade da peça, faz-se necessária a análise da variação do
+grau de acabamento em relação ao avanço da fresa, mostrado no gráfico da Figura 6.1. Nele
+nota-se que o acabamento é pior na direção do deslocamento do centro da fresa.
+
+Figura 6.1 Gráfico do acabamento superficial no fresamento.
+
+O valor do acabamento é dado pela Equação 6.3.
+
+Rtth =
+fz ·
+?
+
+1?( 2·yD )
+2 ·(tan ? ·tan ?l )
+
+(tan ? + tan ?l )
+(6.3)
+
+onde:
+
+40
+
+
+
+• Rtth : profundidade de rugosidade (µ m);
+
+• y : distância em y (mm);
+
+• D : Diâmetro da fresa (mm);
+
+• ? : ângulo de posição da aresta principal de corte (rad);
+
+• ?l : ângulo de posição da aresta lateral de corte (rad);
+
+Se Rtthmax é um valor máximo, então y = 0, onde y representa a distância ao centro da fresa.
+Assim, tem-se que
+
+fz,Rtthmax ?
+Rtthmax ·(tan ? + tan ?l )
+
+(tan ? ·tan ?l )
+(6.4)
+
+onde:
+
+• fz,Rtthmax : avanço por dente em função do grau de rugosidade da peça (mm/volta);
+
+• Rtthmax : profundidade máxima de rugosidade (µ m);
+
+Uma vez que, deve-se obedecer à recomendação de que o comprimento de corte não deve
+exceder a 23 do comprimento total da aresta da pastilha para se evitar vibrações (Item 6.2), o
+comprimento de corte (b) é dada por (b = ap ·sin(?r)). Assim, a profundidade de corte máxima
+é dada pela Equação 6.5
+
+apmax,CA ?
+2·CA
+
+3·sin ?r
+(6.5)
+
+onde:
+
+• apmax,CA : profundidade de corte máxima em função do comprimento total da aresta da
+pastilha (mm);
+
+• CA : comprimento total da aresta da pastilha (mm);
+
+A limitação mínima da profundidade de corte foi estabelecida como sendo a menor pro-
+fundidade que pode ser ajustada na máquina ferramenta. A profundidade de corte máxima não
+deve ultrapassar a profundidade de corte em função da potência da máquina, Equação 6.6.
+
+Nc = 2, 22 ·10?7 ·Km ·ae ·ap ·v f (6.6)
+
+Uma vez que, a potência de corte deve ser menor que o produto da potência motor pelo rendi-
+mento da máquina tem-se pela Equação 6.7 a seguinte relação
+
+apmax,Nm ?
+Nm ·?
+
+2, 22 ·10?7 ·Ksm,max ·ae ·ap ·v f ,max
+(6.7)
+
+onde:
+
+• apmax,Nm : profundidade de corte máxima em função da potência máquina (mm);
+
+41
+
+
+
+• Nm : potência motor (CV );
+
+• ? : rendimento da máquina;
+
+• Ksmmax : potência específica de corte média para o valor mínimo de hm (Kg f /mm2);
+
+• v f max : velocidade de avanço máxima (mm/min);
+
+As rotações mínima e máxima serão aquelas permitidas pela máquina. A determinação dos
+valores numéricos dos parâmetros de usinagem escolhidos é realizada através de um programa
+computacional. Os dados de entrada são inseridos pelo usuário através de uma interface gráfica.
+O valores para pressão específica de corte Ks foram obtidos da Tabela E.1(ver Anexo E) (DINIZ;
+MARCONDES; COPPINI, 2003).
+
+6.4 Otimização dos Parâmetros
+
+Uma vez fixada a faixa possível de variação dos parâmetros de corte a serem utilizados,
+
+fz,hm ? fz ? fz,Rtthmax (6.8)
+
+ap,min ? ap ? apmax,CA ou apmax,Nm (6.9)
+
+nmin ? n ? nmax (6.10)
+
+onde ap,min é a menor variação de profundidade permitida pela máquina, assim como, nmin
+e nmax, correspondem a menor variação de rotação e a rotação máxima permitida pelo equipa-
+mento, respectivamente. A profundidade máxima de corte deve obedecer aos dois critérios de
+restrições estabelecidos, ou seja, tanto para o critério do máximo comprimento da arresta da
+ferramenta, quanto da potência motor da máquina-ferramenta.
+
+O próximo passo é realizar a otimização do processo definindo-se que valores levarão a
+um mínimo tempo de corte. A otimização dos parâmetros consiste na determinação de valores
+pontuais para a profundidade de corte, o avanço por dente e para a rotação. Assim, o programa
+varre os intervalos de valores dos parâmetros e calcula os valores pontuais que levam ao menor
+tempo de usinagem, isto é realizado através da Equação 6.11.
+
+tt = tm +
+NP
+
+?
+i=1
+
+tcdi + tca (6.11)
+
+onde:
+
+• tt: tempo total de usinagem (min);
+
+• tm: tempo morto (tempo em que a ferramenta de corte não está produzindo cavaco, este
+tempo envolve a fixação da peça bruta na máquina, eventual inspeção e retirada da peça
+usinada, além da movimentação da ferramenta em vazio) (min);
+
+• NP: o número de passes para o desbaste;
+
+42
+
+
+
+• tcd: tempo de corte para o desbaste (min);
+
+• tca: tempo de corte para o acabamento (min);
+
+O programa tenta fazer com que as profundidades de corte, nos passes de desbaste, sejam
+iguais, mas em alguns casos o último passe de desbaste poderá ter uma profundidade de corte
+diferente dos demais. O principal termo da Equação 6.11, o tempo de desbaste (tca), consiste
+no tempo necessário para realizar uma operação de desbaste, dado pela Equação 6.12.
+
+tcd =
+Lt
+
+fz ·z·n
+(6.12)
+
+onde:
+
+• Lt: comprimento total de corte (mm);
+
+• z: número de dentes da ferramenta;
+
+• n: rotação do eixo árvore (rpm);
+
+O comprimento total de corte Lt (mm) é obtido pela soma dos comprimentos útil L (mm),
+dimensão da peça, diâmetro da ferramenta D (mm) e um valor para margem de segurança de
+saída da ferramenta m (mm) , Equação 6.13.
+
+Lt = L + D + 2·m (6.13)
+
+O número de passes (NP) é determinante no valor final do tempo de corte. A quantidade de
+vezes que a operação de desbaste deve ser repetida, quando necessária, consiste em um fator
+que deve ser considerado e determinado através de um planejamento da operação, observa-se
+que tal planejamento é de natureza complexa e envolve diversas possibilidades. Neste trabalho
+foram seguidos três caminhos para o planejamento do desbaste, de modo que um complementa
+o outro nos aspectos da operação, Figura 6.2.
+
+1. Primeiro caminho - O objetivo principal aqui consiste em determinar os parâmetros den-
+tro dos intervalos de variação de (ap, fz, n) que levam a máxima potência da máquina,
+através da “flexibilização” dos três parâmetros. As etapas deste caminho são as seguintes:
+
+(a) escolha do limite superior do intervalo da profundidade de corte (apmax), a profun-
+didade máxima do intervalo é sempre o menor valor entre o sobremetal (Sr) e a
+máxima profundidade em função da aresta de corte (apmaxCA);
+
+(b) determinado os intervalos de cada parâmetro (conforme anteriormente) calcula-se a
+potência de corte correspondente aos valores máximos dos parâmetros (ap, fz, n); e
+
+(c) compara-se o valor da potência em (b) com a máxima potência permitida pela
+máquina (Nmaq). Caso a potência de corte em (b) seja menor que a potência máxima
+da máquina os parâmetros ótimos são, então, os valores superiores dos (ap, fz, n).
+Caso contrário, o programa vai diminuindo estes valores até atingir uma potência
+permitida pela potência motora da máquina.
+
+43
+
+
+
+Figura 6.2 Fluxograma para otimização dos parâmetros de corte do fresamento frontal.
+
+44
+
+
+
+2. Segundo Caminho - O segundo caminho busca a determinação dos parâmetros que levam
+a potência mais próxima da máquina, utilizando-se como parâmetro para profundidade
+de corte o valor do sobremetal:
+
+(a) escolha do limite superior do intervalo da profundidade de corte (apmax); para val-
+ores do sobremetal menores que e a máxima profundidade permissível pela aresta
+de corte, a profundidade máxima do intervalo é igual ao valor do sobremetal; val-
+ores do sobremetal superiores em relação a (apmaxCA), a profundidade máxima do
+intervalo passa a ser igual ao valor de (Sr) dividido por dois, ou por três, assim por
+diante até se atingir o valor menor e mais próximo de (apmaxCA);
+
+(b) determinado os intervalos de cada parâmetro, calcula-se inicialmente a potência de
+corte correspondente aos valores máximos dos intervalos (ap, fz, n);
+
+(c) repete-se o terceiro passo do primeiro caminho.
+
+3. Terceiro caminho - O terceiro caminho de busca consiste em um caso especial do segundo
+caminho, o qual ocorre apenas quando o sobremetal é maior do que máxima profundidade
+em função da aresta de corte. Os passos deste último caminho são:
+
+(a) escolha do limite superior do intervalo da profundidade de corte (apmax). O (apmax)
+é sempre igual a (apmaxCA);
+
+(b) determinado os intervalos de cada parâmetro, calcula-se a potência de corte corre-
+spondente aos valores máximos dos intervalos (ap, fz, n);
+
+(c) repete-se o terceiro passo do primeiro caminho.
+
+A otimização dos parâmetros de usinagem, para o processo de fresamento é representado na
+Figura 6.2, onde os incrementos utilizados pelo programa são tais que o avanço varia de 0,05
+mm/volta, a profundidade de corte de 0,1 mm e a rotação de 100 RPM. A vida da ferramenta
+em função dos parâmetros otimizados é dada pela Equação 6.14.
+
+t2 =
+(
+
+l f ·? ·D·V x?1c
+1000 · f ·K
+
+?
+1
+Z
+
+)
+·t f t (6.14)
+
+onde:
+
+• t2: tempo de vida da ferramenta (min);
+
+• lf: comprimento de corte (mm);
+
+• D: diâmetro da fresa (mm);
+
+• Vc: velocidade de corte (m/mim);
+
+• K, x: parâmetros da fórmula simples de Taylor;
+
+• Z: Lote de peças;
+
+45
+
+
+
+• tft: : tempo de troca da ferramenta (min);
+
+Teoricamente os valores de t2 serão zero quando a vida da ferramenta não tiver sido atingida,
+isto é quando não houver troca. Quando o tamanho do lote for um, os valores de t2 serão baixos.
+
+A Tabela 6.1 mostra os dados de entrada necessários para o processamento e os dados de
+saída gerados pelo programa.
+
+Tabela 6.1 Dados de entrada e saída.
+
+Dados de Entrada
+Dc : diâmetro da ferramenta (mm)
+Ca : comprimento da aresta de corte da ferramenta (mm)
+z : número de dentes da ferramenta
+ae : largura de corte por passada da ferramenta
+?1 : ângulo de posicionamento inicial (rad)
+?2 : ângulo de posicionamento final (rad)
+Sm : comprimento do sobremetal (mm)
+
+Dados de Saída
+ap : profundidade de corte por passada da ferramenta (mm)
+fz : avanço por dente da ferramenta (mm/dente)
+N: potência de corte (CV)
+tc : o tempo efetivo de corte (min)
+
+A aplicação da metodologia para otimização dos parâmetros de usinagem descrita pode ser
+vista através de outros estudos de casos característicos do processo de fresamento frontal (MESQUITA;
+ROCHA; NEVES, 2006), que foge ao escopo deste trabalho a descrição mais aprofundada destes
+casos.
+
+46
+
+
+
+CAPÍTULO 7
+
+Geração do Código NC
+
+O estágio final do sistema é a geração do código NC para o fresamento da peça a ser usinada.
+Neste estágio são processados os dados obtidos nos estágios que o antecedem, como o Estágio
+de Desenho, Estágio de Pré-processamento, Estágio de Decomposição, Estágio de Corte,
+Estágio de Geração da Trajetória da Ferramenta e Estágio de Otimização.
+
+7.1 Código NC
+
+O programa gerado é apresentado aqui seguindo o formato e a sintaxe exata pela norma
+ISO 6983 (ISO. . . , 1982), a qual regula a aplicação das funções em um programa de comando
+numérico (código NC). O programa completo é composto das seguintes partes:
+
+• cabeçalho inicial;
+
+• mudança de ferramentas de corte;
+
+• geração da trajetória da ferramenta;
+
+• término do programa.
+
+7.1.1 Cabeçalho Inicial e Mudança de Ferramentas de Corte
+
+No início do programa, o cabeçalho do programa NC é gerado, onde: é dado um nome ao
+programa. Restabelecido a origem do zero máquina; deslocamento da origem do zero máquina
+para o zero da peça bruta; define as coordenadas para a troca da ferramenta; inicia o fluido de
+corte; entre outras funções. O modelo de um típico cabeçalho de um programa NC é mostrado
+na Figura 7.1.
+
+7.1.2 Geração da Trajetória da Ferramenta e Término do Programa
+
+Em seguida é definida a seqüência de operações, furação, desbaste, canal, etc, para cada
+setup de quanto a peça bruta será usinada. Uma vez reconhecidas as sub-operações de usinagem
+é feita a seleção da ferramenta de corte adequada para cada sub-processo com a ajuda de um
+banco de dados. A seqüência de sub-processos começa sempre da camada mais externa a
+camada mais interna. Depois de definida a seqüência e a seleção da primeira ferramenta de
+corte, a combinação dos parâmetros de corte são observados, dentro do possível intervalo de
+utilização, que assegura a máxima produção. Na determinação das condições de corte, deve-se
+
+47
+
+
+
+Figura 7.1 Modelo do cabeçalho de um programa NC.
+
+tomar cuidado sempre: a potência do motor da máquina nas condições de trabalho, acabamento
+desejado na operação de acabamento, comprimento útil da aresta de corte, principalmente.
+Definidas as condições de corte, a trajetória mais curta da ferramenta é gerada assegurando
+o mínimo tempo de fabricação. O próximo passo é descobrir se todas as ferramentas de corte
+foram chamadas. Se não, é chamada a próxima na seqüência, até que todas as trajetórias tenham
+sido geradas. Finalmente o programa é finalizado com a função M30 (ISO. . . , 1982).
+
+7.2 Estágio de Geração do Código NC
+
+O primeiro passo neste estágio é a determinação do volume de material a ser removido no
+eixo de extrusão z, resultante do sobre-metal existente entre a peça bruta e a peça a ser usinada.
+A profundidade de corte a ser retirada dos sobre-metais resultantes é representada na Figura 7.2
+por Dz1 e Dz2. Assim, seja Dz a altura do sobre-metal da peça bruta a ser removido no eixo
+z e a profundidade máxima de corte permitida por projeto representada por apmax, o número
+de passes necessários para operação é dado pelo valor do maior inteiro resultante da divisão
+: Dz/apmax sendo, portanto, o valor da profundidade de corte do último passe menor do que
+apmax se necessário.
+
+Verifica-se também, que o número de setup’s pode ser inicialmente definido, através das
+considerações descritas acima.
+
+A trajetória da ferramenta durante a remoção destes volumes não foram criteriosamente
+analisadas, isto é, o sequenciamento de operações para o corte destes volumes iniciais de ma-
+terial a ser removido foram considerados através de trajetórias comuns de fresamento.
+
+48
+
+
+
+Figura 7.2 Volumes iniciais do material a ser removido (linhas tracejadas e em negrito).
+
+49
+
+
+
+Definido o sequenciamento para remoção do volume de material a ser removido como des-
+baste inicial, processam-se então os dados obtidos durante os estágios efetivamente contempla-
+dos pela metodologia proposta. Finalmente, os dados de entrada catalogados são devidamente
+inseridos para construção da estrutura do código NC para o fresamento da peça a ser usinada.
+
+Assim, definidas as etapas anteriormente descritas, início do programa, troca de ferramenta,
+seleção do modo de trabalho (velocidade de corte ou rotação constante) geração do percurso da
+ferramenta e final de programa, o programa de comando numérico (código NC) é finalmente
+obtido. A Figura 7.3 mostra o fluxograma para desenvolvimento do código NC.
+
+Figura 7.3 Fluxograma para gerar o código CNC.
+
+50
+
+
+
+CAPÍTULO 8
+
+Testes e Resultados
+
+O seguinte exemplo é usado para exemplificar como o sistema gera o código NC com
+seus respectivos parâmetros de usinagem. O MATLAB foi utilizado para a visualização do
+processo. A Figura 8.1 mostra os desenhos da peça bruta e da peça que deverá ser usinada em
+uma fresadora CNC ou um centro de usinagem.
+
+Figura 8.1 Peça bruta e peça a ser fabricada.
+
+8.1 Extração das Informações Geométricas
+
+A Figura 8.2 demonstra a leitura inicial dos dados geométricos das peças pelo sistema,
+ou seja, a extração das informações geométricas dos arquivos de desenho oriundas do CAD.
+A partir dos desenhos, devidamente feitos obedecendo aos requisitos exigidos do Estágio de
+Desenho, tem-se assim a representação dos perfis prismáticos das peças bruta e final.
+
+51
+
+
+
+Figura 8.2 Leitura dos dados geométricos das peças bruta e final.
+
+8.2 Estágio de Pré-Processamento
+
+Após a leitura e armazenamento dos dados geométricos, ocorre o processo de catalogação
+de tais informações em uma estrutura de dados em grafo (Estágio de Pré-Processamento)
+determinando-se assim, os polígonos da base dos respectivos perfis prismáticos das peças (Fi-
+gura 8.3).
+
+Figura 8.3 Polígonos das peças bruta e final (ProfilePolygon e FinishedPolygon).
+
+8.3 Estágio de Decomposição
+
+Os volumes iniciais a serem removidos da peça bruta, caracterizados pelo Estágio de De-
+composição, são representados em vista explodida na Figura 8.4.
+
+52
+
+
+
+Figura 8.4 Volumes iniciais do processo de corte.
+
+8.4 Estágio de Corte
+
+A seqüência de determinação dos volumes a serem removidos ao longo do processo de
+fresamento é representada pela Figura 8.5, onde é mostrado o resultado do Estágio de Corte.
+
+Figura 8.5 Subvolumes do processo de decomposição.
+
+8.5 Estágio de Geração da Trajetória da Ferramenta
+
+A determinação do sequenciamento de cortes é completada através da geração final da
+trajetória da ferramenta de corte Estágio de Geração da Trajetória da Ferramenta como
+mostra a Figura 8.6.
+
+53
+
+
+
+Figura 8.6 Geração da trajetória da ferramenta de corte.
+
+8.6 Simulação do Processo
+
+Os dados de saída do sistema consistem do código NC obtido, o código pode ser enviado
+diretamente para uma máquina CNC ou para um simulador. A Figura 8.7 mostra a simulação
+do processo de fresamento da peça tomada como exemplo. Um software comercial foi utilizado
+para esta simulação.
+
+Figura 8.7 Simulação do processo no CNC Programmer 3D.
+
+54
+
+
+
+8.7 Análise de Resultados
+
+Para o caso estudado, foi possível desenvolver o código NC para a fabricação em fresadora
+CNC ou centro de usinagem, a partir de informações provindas do CAD, e da metodologia
+desenvolvida para sequenciamento das operações de corte, compartilhando o mesmo ambiente.
+
+As etapas que compõe o processo como um todo puderam ser visualizas através de repre-
+sentações visuais computacionais. As informações geométricas provenientes do CAD, devi-
+damente requisitadas pelo Estágio de Desenho, foram extraídas, utilizadas e verificadas, onde
+tais informações puderam, então, ser catalogas em um estrutura de dados em grafo no Estágio
+de Pré-Processamento, obtendo-se os perfis de extrusão da peça bruta (ProfilePolygon) e da
+peça a ser usinada (FinishedProfilePolygon), seguindo-se então a determinação das seqüên-
+cias de operações a serem executadas, começando com os volumes iniciais a serem extraídos da
+peça bruta durante o Estágio de Decomposição, seguindo-se a subdivisão conveniente destes
+volumes, através de critérios de usinagem estabelecidos no projeto, espessura de penetração
+máxima, através do Estágio de Corte, para finalmente obter-se a geração da trajetória final da
+ferramenta no Estágio de Geração da Trajetória Ferramenta .
+
+O método proposto no Estágio de Otimização , para sugerir os parâmetros de corte otimiza-
+dos do processo, não foi utilizado, uma vez que este não se encontrava ainda totalmente inte-
+grado ao sistema.
+
+A simulação resultou em um modelo geométrico sólido com dimensões exatas ao modelo
+da peça desejada, validando o código NC gerado e demonstrando que não haverá passagem da
+ferramenta por lugares indesejados na própria peça.
+
+O programa NC gerado para fabricação da peça tomada como exemplo é apresentado a
+seguir.
+
+;PolyhedronSample Y-2.00 X18.00
+;StartProgram Y22.00 Y-2.00
+G99 X6.00 Z16.00
+G0 X200. Y200. Z200. Y-2.00 X0.00
+;MillingCutting X8.00 Y-2.00
+T01 ; FRESA DE TOPO DE 4MM Y-2.00 Y22.00
+M06 Y22.00 X2.00
+O02 S3125.00 M03 X10.00 Y-2.00
+G0 X0. Y-2.00 Z21.00 Y-2.00 X4.00
+G01 Z20.00 F0.30 X12.00 Y-2.00
+Z18.00 Y-2.00 Y22.00
+G01 X0.00 Y22.00 X6.00
+Y-2.00 X14.00 Y-2.00
+Y22.00 Y-2.00 X8.00
+X2.00 X16.00 Y-2.00
+Y-2.00 Y-2.00 Y22.00
+X4.00 Y22.00 X10.00
+
+55
+
+
+
+Y-2.00 Z12.00 X10.49 Y22.00
+X12.00 X2.58 Y22.00 X-2.00 Y9.51
+Y-2.00 X22.00 Y12.29 X-2.00 Y8.83
+Y22.00 X22.00 Y11.24 X11.17 Y22.00
+X14.00 X0.47 Y22.00 X11.17 Y24.00
+Y-2.00 X0.47 Y24.00 X24.00 Y24.00
+X16.00 X24.00 Y24.00 X24.00 Y19.00
+Y-2.00 X24.00 Y-4.00 X22.00 Y19.00
+Y22.00 X20.00 Y-4.00 X16.00 Y22.00
+X18.00 X20.00 Y-2.00 X11.53 Y22.00
+Y-2.00 X20.00 Y22.00 X22.00 Y16.76
+Z14.00 X18.00 Y22.00 X22.00 Y14.53
+X24.00 Y-4.00 X18.00 Y-2.00 X7.06 Y22.00
+X1.75 Y-4.00 X18.00 Y-4.00 X2.58 Y22.00
+X1.75 Y-2.00 X-4.00 Y-4.00 X22.00 Y12.29
+X-2.00 Y2.29 X-4.00 Y24.00 X22.00 Y11.24
+X-2.00 Y5.32 X24.00 Y24.00 X0.47 Y22.00
+X4.41 Y-2.00 X24.00 Y0.00 X0.47 Y24.00
+X7.07 Y-2.00 X22.00 Y-0.00 X24.00 Y24.00
+X-2.00 Y8.36 X-2.00 Y-0.00 X24.00 Y-4.00
+X-2.00 Y11.40 X-2.00 Y2.0 X20.00 Y-4.00
+X9.72 Y-2.00 X22.00 Y2.00 X20.00 Y22.00
+X10.59 Y-2.00 X24.00 Y2.00 X18.00 Y22.00
+X-2.00 Y12.39 Z12.00 X18.00 Y-2.00
+X-4.00 Y12.39 X24.00 Y-4.00 X18.00 Y-4.00
+X-4.00 Y18.00 X1.75 Y-4.00 X-4.00 Y-4.00
+X-2.00 Y18.00 X1.75 Y-2.00 X-4.00 Y24.00
+X2.00 Y22.00 X-2.00 Y2.29 X24.00 Y24.00
+X4.83 Y22.00 X-2.00 Y5.32 X24.00 Y0.00
+X-2.00 Y15.17 X4.41 Y-2.00 X22.00 Y-0.00
+X-2.00 Y12.34 X7.07 Y-2.00 X-2.00 Y-0.00
+X7.66 Y22.00 X-2.00 Y8.36 X-2.00 Y2.00
+X10.49 Y22.00 X-2.00 Y11.40 X22.00 Y2.00
+X-2.00 Y9.51 X9.72 Y-2.00 X24.00 Y2.00
+X-2.00 Y8.83 X10.59 Y-2.00 Z10.00
+X11.17 Y22.00 X-2.00 Y12.39 X24.00 Y-4.00
+X11.17 Y24.00 X-4.00 Y12.39 X1.75 Y-4.00
+X24.00 Y24.00 X-4.00 Y18.00 X1.75 Y-2.00
+X24.00 Y19.00 X-2.00 Y18.00 X-2.00 Y2.29
+X22.00 Y19.00 X2.00 Y22.00 X-2.00 Y5.32
+X16.00 Y22.00 X4.83 Y22.00 X4.41 Y-2.00
+X11.53 Y22.00 X-2.00 Y15.17 X7.07 Y-2.00
+X22.00 Y16.76 X-2.00 Y12.34 X-2.00 Y8.36
+X22.00 Y14.53 X7.66 Y22.00 X-2.00 Y11.40
+
+56
+
+
+
+X9.72 Y-2.00 G01 X22.00 Y2.00 X20.00 Y-2.00
+X10.59 Y-2.00 G01 X24.00 Y2.00 X20.00 Y22.00
+X-2.00 Y12.39 G01 Z8.00 X18.00 Y22.00
+X-4.00 Y12.39 G01 X24.00 Y-4.00 X18.00 Y-2.00
+X-4.00 Y18.00 X1.75 Y-4.00 X18.00 Y-4.00
+X-2.00 Y18.00 X1.75 Y-2.00 X-4.00 Y-4.00
+X2.00 Y22.00 X-2.00 Y2.29 X-4.00 Y24.00
+X4.83 Y22.00 X-2.00 Y5.32 X24.00 Y24.00
+X-2.00 Y15.17 X4.41 Y-2.00 X24.00 Y0.00
+X-2.00 Y12.34 X7.07 Y-2.00 X22.00 Y-0.00
+X7.66 Y22.00 X-2.00 Y8.36 X-2.00 Y-0.00
+X10.49 Y22.00 X-2.00 Y11.40 X-2.00 Y2.00
+X-2.00 Y9.51 X9.72 Y-2.00 X22.00 Y2.00
+X-2.00 Y8.83 X10.59 Y-2.00 X24.00 Y2.00
+X11.17 Y22.00 X-2.00 Y12.39 Z6.00
+X11.17 Y24.00 X-4.00 Y12.39 X24.00 Y-4.00
+X24.00 Y24.00 X-4.00 Y18.00 X1.75 Y-4.00
+X24.00 Y19.00 X-2.00 Y18.00 X1.75 Y-2.00
+X22.00 Y19.00 X2.00 Y22.00 X-2.00 Y2.29
+X16.00 Y22.00 X4.83 Y22.00 X-2.00 Y5.32
+X11.53 Y22.00 X-2.00 Y15.17 X4.41 Y-2.00
+X22.00 Y16.76 X-2.00 Y12.34 X7.07 Y-2.00
+X22.00 Y14.53 X7.66 Y22.00 X-2.00 Y8.36
+X7.06 Y22.00 X10.49 Y22.00 X-2.00 Y11.40
+X2.58 Y22.00 X-2.00 Y9.51 X9.72 Y-2.00
+X22.00 Y12.29 X-2.00 Y8.83 X10.59 Y-2.00
+X22.00 Y11.24 X11.17 Y22.00 X-2.00 Y12.39
+X0.47 Y22.00 X11.17 Y24.00 X-4.00 Y12.39
+X0.47 Y24.00 X24.00 Y24.00 X-4.00 Y18.00
+X24.00 Y24.00 X24.00 Y19.00 X-2.00 Y18.00
+X24.00 Y-4.00 X22.00 Y19.00 X2.00 Y22.00
+X20.00 Y-4.00 X16.00 Y22.00 X4.83 Y22.00
+X20.00 Y-2.00 X11.53 Y22.00 X-2.00 Y15.17
+X20.00 Y22.00 X22.00 Y16.76 X-2.00 Y12.34
+X18.00 Y22.00 X22.00 Y14.53 X7.66 Y22.00
+X18.00 Y-2.00 X7.06 Y22.00 X10.49 Y22.00
+X18.00 Y-4.00 X2.58 Y22.00 X-2.00 Y9.51
+X-4.00 Y-4.00 X22.00 Y12.29 X-2.00 Y8.83
+X-4.00 Y24.00 X22.00 Y11.24 X11.17 Y22.00
+X24.00 Y24.00 X0.47 Y22.00 X11.17 Y24.00
+X24.00 Y0.00 X0.47 Y24.00 X24.00 Y24.00
+X22.00 Y-0.00 X24.00 Y24.00 X24.00 Y19.00
+X-2.00 Y-0.00 X24.00 Y-4.00 X22.00 Y19.00
+X-2.00 Y2.00 X20.00 Y-4.00 X16.00 Y22.00
+
+57
+
+
+
+X11.53 Y22.00 X-2.00 Y15.17
+X22.00 Y16.76 X-2.00 Y12.34
+X22.00 Y14.53 X7.66 Y22.00
+X7.06 Y22.00 X10.49 Y22.00
+X2.58 Y22.00 X-2.00 Y9.51
+X22.00 Y12.29 X-2.00 Y8.83
+X22.00 Y11.24 X11.17 Y22.00
+X0.47 Y22.00 X11.17 Y24.00
+X0.47 Y24.00 X24.00 Y24.00
+X24.00 Y24.00 X24.00 Y19.00
+X24.00 Y-4.00 X22.00 Y19.00
+X20.00 Y-4.00 X16.00 Y22.00
+X20.00 Y-2.00 X11.53 Y22.00
+X20.00 Y22.00 X22.00 Y16.76
+X18.00 Y22.00 X22.00 Y14.53
+X18.00 Y-2.00 X7.06 Y22.00
+X18.00 Y-4.00 X2.58 Y22.00
+X-4.00 Y-4.00 X22.00 Y12.29
+X-4.00 Y24.00 X22.00 Y11.24
+X24.00 Y24.00 X0.47 Y22.00
+X24.00 Y0.00 X0.47 Y24.00
+X22.00 Y-0.00 X24.00 Y24.00
+X-2.00 Y-0.00 X24.00 Y-4.00
+X-2.00 Y2.00 X20.00 Y-4.00
+X22.00 Y2.00 X20.00 Y-2.00
+X24.00 Y2.00 X20.00 Y22.00
+Z4.00 X18.00 Y22.00
+X24.00 Y-4.00 X18.00 Y-2.00
+X1.75 Y-4.00 X18.00 Y-4.00
+X1.75 Y-2.00 X-4.00 Y-4.00
+X-2.00 Y2.29 X-4.00 Y24.00
+X-2.00 Y5.32 X24.00 Y24.00
+X4.41 Y-2.00 X24.00 Y0.00
+X7.07 Y-2.00 X22.00 Y-0.00
+X-2.00 Y8.36 X-2.00 Y-0.00
+X-2.00 Y11.40 X-2.00 Y2.00
+X9.72 Y-2.00 X22.00 Y2.00
+X10.59 Y-2.00 X24.00 Y2.00
+X-2.00 Y12.39 GZO M5
+X-4.00 Y12.39 M30
+X-4.00 Y18.00
+X-2.00 Y18.00
+X2.00 Y22.00
+X4.83 Y22.00
+
+58
+
+
+
+CAPÍTULO 9
+
+Classes de Objetos de Geometria Complexa:
+Cavidade Interna
+
+Neste capítulo será demonstrada uma metodologia para geração automática do código NC
+de uma cavidade interna de geometria complexa, este tem como objetivo a validação da metodolo-
+gia desenvolvida para formas geométricas complexas.
+
+Figura 9.1 Cavidade de geometria complexa.
+
+Considere a Figura 9.1, o problema inicial aqui consiste na modelagem geométrica do
+sólido apresentado, observa-se que a cavidade interna pode ser aproximada por meio da ro-
+tação de uma curva geratriz, tem-se, então, que o problema apresentado poderá ser resolvido
+através de técnicas de aproximação computacional.
+
+9.1 Representação Computacional de Curvas
+
+A interpolação e a aproximação são os principais dois modos, no qual, um conjunto de
+pontos (pontos de controle) podem ser usados para descrever uma curva. Na interpolação, a
+curva passa através de cada um dos pontos de controle, enquanto na aproximação, a curva
+
+59
+
+
+
+não passa necessariamente através de todos os pontos de controle, mas, usualmente envolve
+todos eles. Em geral, a aproximação é mais acessível para cálculos computacionais do que a
+interpolação. (DAVIES; SAMUELS, 1996).
+
+9.1.1 Curvas de Bézier
+
+A técnica de aproximação computacional utilizada aqui foi a de curvas de Bézier, esta
+técnica consiste em uma das técnicas computacionais de aproximação mais usadas. A com-
+putação da curva de Bézier é realizada por meio do algoritmo de Casteljau. O procedimento
+desenvolvido para isso foge ao escopo deste trabalho e pode ser consultado através de (DAVIES;
+SAMUELS, 1996).
+
+9.2 Dedução e Implementação Matemática
+
+A equação original proposta para a curva geratriz de rotação é dada por:
+
+f (t) = (2t 2 ?3t + 1)x0 + (?4t 2 + 4t)x1 + (2t 2 ?t)x2 (9.1)
+
+onde x0, x1, x2, y0, y1, y2 são cosntantes a serem calculadas a partir das constantes escolhidas
+d, D e H por meio das seguintes relações:
+
+x0 =
+d
+2
+
+(9.2)
+
+x1 =
+d
+4
+
+(9.3)
+
+x2 =
+d
+2
+
+(9.4)
+
+y0 = 0 (9.5)
+
+y1 =
+2.05
+3H
+
+(9.6)
+
+y2 = H (9.7)
+
+Os valores escolhidos foram:
+d = 10 (9.8)
+
+D = 80 (9.9)
+
+H = 40 (9.10)
+
+onde:
+
+• d : diâmetro interno da cavidade (mm);
+
+• D : diâmetro externo da cavidade (mm);
+
+• H : altura da cavidade (mm);
+
+60
+
+
+
+9.3 Geração de Malhas
+
+Assim, a partir dos dados fornecidos acima, o sistema desenvolvido será capaz de gerar
+uma malha de pontos, correspondentes à aproximação computacional da equação da curva
+descrita anteriormente, para posterior envio a um módulo CAD, onde tal aproximação foi então
+relacionada de acordo com o grau de acabamento desejado.
+
+9.3.1 Visualização Computacional
+
+A Figura 9.2 demonstra graficamente a sobreposição da curva aproximada computacional-
+mente (verde) em relação à curva original (azul).
+
+Figura 9.2 Aproximação da curva original por splines.
+
+9.4 Desenho no CAD
+
+Catalogada a malha de pontos que representação a aproximação da curva geratriz original
+da cavidade interna da peça a ser usinada, transfere-se tal informação para um sistema CAD,
+onde será projetada a peça (Figura 9.3).
+
+A partir da malha de pontos extraídas pelo sistema CAD, projeta-se a cavidade interna
+da peça por meio de interpolações características do sistema de projeto, assim utilizando-se a
+interpolação do tipo B-Spline disponível no sistema CAD utilizado, pode-se, portanto obter a
+curva geratriz da cavidade interna da peça em questão. A rotação da curva obtida propicia a
+
+61
+
+
+
+Figura 9.3 Extração da malha de pontos pelo CAD.
+
+obtenção do volume correspondente à cavidade interna, onde através de uma simples operação
+booleana de diferença entre o volume da peça bruta e o volume obtido na rotação da curva
+interpolada, tem-se, portanto o desenho desejado da peça a ser usinada (Figura 9.4).
+
+9.5 Extração das Informações Geométricas do CAD
+
+Utilizando-se os pontos capturados, pode-se então projetar a peça desejada. Assim, proje-
+tada a peça no CAD, envia-se suas informações geométricas por meio do arquivo padrão IGES,
+onde estas informações são então extraídas pelo sistema, tomando-se como desenvolvimento
+metodológico apenas técnicas padrões de fresamento, ou seja, aqui a automação do sequenci-
+amento processo de corte não é contemplada, no momento, com o desenvolvimento de uma
+metodologia automática. A extração das entidades geométricas, por meio de um arquivo de
+padrão IGES, porém dá-se de modo idêntico às técnicas de extração já mencionada.
+
+9.6 Geração Automática do Código NC
+
+Identificadas as entidades geométricas do CAD (Ver Apêndice D), tem-se então a ger-
+ação do código NC. Um trecho do arquivo para geração da cavidade interna é apresentado
+na Figura 9.5.
+
+9.7 Simulação do Processo
+
+O processo de usinagem da cavidade interna proposto é formado pelos seguintes sub-
+processos:
+
+1. Pré-furação
+
+62
+
+
+
+Figura 9.4 Desenho da cavidade interna no CAD.
+
+63
+
+
+
+Figura 9.5 Trecho do arquivo para geração da cavidade interna.
+
+64
+
+
+
+2. Furação
+
+3. Fresamento Frontal
+
+9.7.1 Pré-furação
+
+O processo de usinagem da cavidade interna da peça começa através de uma pré-furação
+passante com uma broca helicoidal de diâmetro igual ao diâmetro interno da cavidade (10mm),
+a simulação deste processo de pré-furação pode ser visualizada através da Figura 9.6(b) e a
+broca selecionada no magazine do simulador é mostrada na Figura 9.6(a).
+
+(a) Cadastro de broca helicoidal de 10mm.
+
+(b) Pré-furação com broca helicoidal de 10mm.
+
+Figura 9.6 Simulação do processo: pré-furação.
+
+65
+
+
+
+9.7.2 Furação
+
+Uma segunda furação é realizada utilizando-se agora uma broca helicoidal de 20mm, observa-
+se que a furação desta vez não será passante e deverá obedecer, portanto o ponto da curva ger-
+atriz onde o diâmetro correspondente equivale ao diâmetro da broca. O sub-processo pode ser
+visto na Figura 9.7(b) e sua respectiva broca helicoidal cadastrada é mostrada na Figura 9.7(a).
+
+(a) cadastro de broca helicoidal de 20mm.
+
+(b) furação com broca helicoidal de 20mm.
+
+Figura 9.7 Simulação do processo: furação.
+
+66
+
+
+
+9.7.3 Fresamento Frontal
+
+9.7.3.1 Fresamento Frontal: etapa inicial
+
+Realizados os sub-processos de furação inicia-se, portanto o desbaste de fresamento frontal
+utilizando-se uma fresa de topo de 10mm (Figura 9.8).
+
+(a) cadastro de fresa de topo de 10mm.
+
+(b) fresamento frontal com fresa de topo de 10mm.
+
+Figura 9.8 Simulação do processo: fresamento.
+
+9.7.3.2 Fresamento Frontal Final: etapa final
+
+A Figura 9.9 ilustra o momento final da simulação de usinagem sendo executada e a peça
+já pronta, como resultado da simulação.
+
+67
+
+
+
+(a) Usinagem de peça sendo executada.
+
+(b) Peça resultado da simulação de usinagem.
+
+Figura 9.9 Simulação do processo: fresamento.
+
+68
+
+
+
+CAPÍTULO 10
+
+Conclusões e Sugestões para Trabalhos Futuros
+
+Neste trabalho foi apresentada uma metodologia para desenvolvimento de um sistema de
+reconhecimento geométrico que têm por objetivo a geração automática do código NC para o
+processo de usinagem por fresamento em 2 ½ eixos. Nele foram mostrados os procedimentos
+a serem seguidos: 1) Extrações das informações geométricas do CAD; 2) Determinação do
+sequenciamento das operações de usinagem; 3) Otimização dos parâmetros de usinagem e
+4) Geração do programa cnc propriamente dito. Foi mostrado como é possível reconhecer
+automaticamente as seqüências de operações de corte durante o processo, utilizando-se para
+isso de estruturas de dados de geometria computacional apresentados. Para o planejamento
+das operações de usinagem é necessário fornecer não só os dados geométricos das peças, mas
+também, os dados tecnológicos de usinagem, os dados das ferramentas de corte, como, tipos,
+ângulos, número de dentes, faixas de avanços e penetração admissíveis, e os dados da máquina,
+como, campo de trabalho possível de ser utilizado (curso dos 2 ½ eixos), faixas de rotações,
+potência motor, entre outros. A variação do tipo de material da peça a ser usinada vai influenciar
+diretamente o número de passes com que as operações devem ser realizadas, uma vez que suas
+propriedades mecânicas influenciam os parâmetros de Kienzle e com isto a potência de corte.
+
+A geração do código NC, desenvolvido em linguagem C++, tendo como dados de entrada
+os dados da peça bruta e da peça a usinar importados de um sistema CAD qualquer, já foi imple-
+mentada para aplicações no torneamento (2D), conforme (CAVALCANTE, 2001) e (ANDRADE,
+2001) e adaptada no presente trabalho para a teoria para 3D (fresamento em 2 ½ eixos).
+
+Entretanto, a pesquisa desenvolvida pretende abrir perspectivas quanto ao desenvolvimento
+de superfícies relativamente mais complexas em relação às abordadas no trabalho desenvolvido.
+Quanto a classes de objetos, as linhas, não apenas arcos de circunferência como também curvas
+genéricas quaisquer podem constituir o contorno de um polígono, observa-se a partir daí que
+em tais casos pode-se desenvolver um método de analise semelhante ao tratado, por meio da
+aplicação de polígonos de contorno (bounding box ou minimum bounding rectangle (MBR)
+), ao redor de tais polígonos formados por curvas. Sendo basicamente o fresamento externo
+o utilizado, pode-se, entretanto expandir a aplicação da metodologia proposta para casos de
+fresamento interno. Finalmente, superfícies complexas tais como, parabolóides, hiperbolóides,
+cônicas, cilíndricas ou planas podem ser aproximadas através de combinações boolenas das
+superfícies prismáticas abordadas durante o trabalho.
+
+Assim, as sugestões para trabalhos futuros são as seguintes:
+
+1. Seria de grande valor incluir tipos de constituição geométrica e classes de objetos mais
+avançados e complexos.
+
+2. Critérios comparativos e avaliação de eficiência não foram incorporados ao sistema.
+
+69
+
+
+
+3. A otimização das seqüências de operações, assim como da largura de corte (ae) e da
+trajetória da ferramenta, certamente contribuiria para aumentar a eficiência do sistema.
+
+4. O processo de reconhecimento geométrico e o método de otimização não estão ainda
+bem integrados no sistema.
+
+5. Desenvolver uma interface gráfica para comunicação com o usuário.
+
+6. Melhorar a integração entre o processo de reconhecimento geométrico e o método de
+otimização.
+
+7. Elaborar o manual de utilização, ou um tutorial do programa.
+
+8. Um simulador para análise de falhas eventuais, baseada na metodologia proposta, deveria
+ser desenvolvido.
+
+70
+
+
+
+Referências Bibliográficas
+
+ALTING, L.; ZHANG, H. Computer aided process planning: the state-of-the art survey.
+International Journal of Production Research, v. 27, p. 553–585, 1989.
+
+ALTING, L.; ZHANG, H.; LENAU, T. Xplan - an expert process planning system and its
+further development. 27th International MATADOR Conference, p. 20–21, abr. 1988.
+
+AMARAL, N.; RENCIS, J.; RONG, Y. Development of a finite element analysis for
+fixture design integrity verification and optimization. International Journal of Advanced
+Manufacturing Tecnology, n. 25, p. 409–419, 2005.
+
+ANDRADE, S. M. V. d. Integração dos Processos CAD/CAPP/CAM com Geração Automática
+do Programa de Comando Númerico para Peças Rotacionais. Dissertação (Mestrado) —
+Universidade Federal de Pernambuco, Recife, PE, ago. 2001.
+
+ANOTAIPAIBOON, W.; MAKHANOV, S. Tool path generation for five-axis nc machining
+using space-filling curves. Third Asian Conference on Industrial Automation and Robotics,
+maio 2003.
+
+BABIC, B.; NESIC, N.; MILJKOVIC, Z. A review of automated feature recognition with
+rule-based pattern recognition. Computers in Industry, Elsevier Science Ltd, v. 59, p. 321–337,
+2008.
+
+BOEHS, L. Projeto e Implementação de um Sistema Computadorizado de Banco de Dados de
+Usinagem (CINFUS). Tese (Doutorado) — Universidade Federal de Santa Catarina, 1988.
+
+BOOTHROYD, G.; KNIGHT, W. A. Fundamentals of Machining and Machine Tools.
+Second edition. 270 Madison Avenue, New York, New York 10016: Marcel Dekker, 1989.
+(Manufacturing Enginnering and Materials Processing).
+
+CAVALCANTE, P. R. Interface CAD/CAPP Aplicada a Sólidos de Revolução com Geração
+de um Grafo para Abordagem Generativa. Dissertação (Mestrado) — Universidade Federal de
+Pernambuco, Recife, PE, maio 2001.
+
+CIURANA, J. et al. A model for integrating process planning and production planning and
+control in machining processes. Robotics and Computer-Integrated Manufacturing, Elsevier
+Science Ltd, v. 24, p. 532–544, 2008.
+
+71
+
+
+
+CIURANA, J.; ROMEU, M.; CASTRO, R. Optimizing process planning using groups of
+precedence between operations based on machine volume. Engineering Computations, v. 20,
+p. 67–81, 2003.
+
+CUNNINGHAM, J.; DIXON, J. Design with features: the origin of features. American Society
+of Mechanical Engineers (ASME), p. 237–243, 1988.
+
+DAVIES, A.; SAMUELS, P. a. An Introduction to Computational Geometry for Curves
+and Surfaces. [S.l.]: Oxford University Press Inc., 1996. (Oxford applied mathematics and
+computing science series).
+
+DEVIREDDY, C.; GHOSH, K. Feature-based modeling and neural networks-based capp for
+integrated manufacturing. International Journal of Computer Integrated Manufacturing, v. 12,
+n. 1, p. 61–74, 1999.
+
+DINIZ, A. E.; MARCONDES, F. C.; COPPINI, N. L. Tecnologia da Usinagem dos Materiais.
+4.ed.. ed. [S.l.]: Artliber, 2003.
+
+DROGOMATZ, D.; MANN, S. A classified bibliography of literature on nc tool path
+generation. Computer-Aided Design, v. 29, n. 3, mar. 1997.
+
+ERDIM, H.; LAZOGLU, I.; OZTURK, B. Feedrate Scheduling Strategies for Free-Form
+Surfaces. International Journal of Machine Tools &amp;amp; Manufacture, 46, n. 7-8, p. 747–757, JUN
+2006. ISSN 0890-6955.
+
+FERRARESI, D. Fundamentos da Usinagem dos Metais. [S.l.]: Edgard Blucher, 2003. 11ª
+reimpressão.
+
+FERREIRA, J. C. E.; K., S. C. R.; BUTZKE, A. U. Determinação automática dos parâmetros
+de usinagem e geração do programa nc num sistema cad/capp/cam. COBEM 97, 1997.
+
+GAO, J.; ZHENG, D.; GINDY, N. Extraction of machining features for cad/cam integration.
+The International Journal of Advanced Manufacturing Technology, Springer-Verlag London
+Limited, n. 24, p. 573–581, abr. 2004.
+
+GAO, J.; ZHENG, D.; GINDY, N. Mathematical representation of feature conversion for
+cad/cam system integration. Robotics and Computer-Integrated Manufacturing, Elsevier
+Science Ltd, n. 20, p. 457–467, 2004.
+
+GROOVER, M. P.; ZIMMERS, E. W. CAD/CAM: computer-aided design and manufacturing.
+USA: Prentice-Hall, Inc., 1984.
+
+HAM, I.; LU, S. Computer aided process planning: the present and future. Ann CIRP, v. 37, p.
+591–601, 1988.
+
+HARUN, W.; CASE, K. Feature-based representation for manufacturing planning.
+International Journal of Production Research, v. 38, n. 17, p. 4285–4300, 2000.
+
+72
+
+
+
+IGES - The Initial Graphics Exchange Specification Version 6.0. nov. 2001.
+
+IRANI, S. A.; KOO, H. Y.; RAMAN, S. Feature-based operation sequence generation in capp.
+International Jounal of Production Research, Taylor &amp;amp; Francis Ltd, v. 1, n. 33, p. 17–39, 1995.
+
+ISO - International Organization for Standardization, Numerical Control of Machines -
+Program Format and Definitions of Address Word. Suiça: [s.n.], 1982.
+
+JI, Q.; MAREFAT, M. M. Machine interpretation of cad data for manufacturing applications.
+ACM Computing Surveys, v. 24, n. 3, p. 265–311, set. 1997.
+
+JUNG, J.-Y. Manufacturing cost estimation for machined parts based on manufacturing
+features. Journal of Intelligent Manufacturing, n. 13, p. 227–238, 2002.
+
+KARADKAR, R. B.; PANDE, S. Feature based automatic cnc code generation for prismatic
+parts. Computers in Industry, Elsevier Science Ltd, n. 28, p. 137–150, 1996.
+
+KIM, D.-S.; JUN, C.-S.; PARK, S. Tool path generation for clean-up machining by a
+curve-based approach. Computer-Aided Design, Elsevier Science Ltd, v. 37, p. 967–973, ago.
+2005.
+
+KUMAR, S.; SHANKER, K.; LAL, G. A generative process planning system for cold
+extrusion. International Journal of Production, v. 2, n. 41, p. 269–295, 2003.
+
+LASZLO, M. J. Computational Geometry and Computer Graphics in C++. [S.l.]:
+Prentice-Hall, Inc., 1996.
+
+LEE, J. Y.; KIM, K. Generating alternative interpretations of machining features. The
+International Journal of Advanced Manufacturing Technology, Springer-Verlag London
+Limited, n. 15, p. 38–48, 1999.
+
+LOUCA, G. CAD/CAM Project. 1997. Sítio na INTERNET do Higher Techical Institute,
+http://www.angelfire.com/hi/lgeorge/.
+
+LUBY, S.; DIXON, J.; SIMMONS, M. Creating and using a feature database. Computers in
+Mechanical Engineering, v. 5, n. 3, p. 25–33, 1986.
+
+LYNCH, M. Computer Numerical Control for Machining. [S.l.]: McGraw-Hill, Inc., 1992.
+
+MACHADO, A. Comando Numérico Aplicado as Máquinas-Ferramentas. 4ª ed.. ed. [S.l.]:
+Ed. Ícone, 1990.
+
+MEDELLÍN, H. et al. Algorithms for a physical redering and assembly of octree models.
+Computer-Aided Design, Elsevier Science Ltd, n. 38, p. 69–85, 2006.
+
+MESQUITA, N. G. d. M.; ROCHA, J. O. S. R.; NEVES, E. S. Otimização dos parâmetros
+de usinagem para o processo de fresamento frontal. IV Congresso Nacional de Engenharia
+Mecânica, Recife, Pernambuco, 2006.
+
+73
+
+
+
+NASR, E. S. A.; KAMRANI, A. K. A new methodology for extracting manufacturing features
+from cad system. Computers &amp;amp; Industrial Engineering, n. 51, p. 389–415, set. 2006.
+
+OLIVEIRA, J. Otimização de Processos de Fabricação por Usinagem via Programação
+Linear. Dissertação (Mestrado) — Universidade Federal de Pernambuco, Recife, PE, mar.
+1999.
+
+OLIVEIRA, L. C. d. et al. Geração de sequência de usinagem a partir de geometrias criadas
+em cad. Revista Máquinas e Metais, v. 389, p. 92–101, 1998.
+
+OMIROU, S. L.; NEARCHOU, A. C. A cnc machine tool interpolator for surfaces of
+cross-sectional design. Robotics and Computer-Integrated Manufacturing, Elsevier Science
+Ltd, n. 23, p. 257–264, 2007.
+
+PRAKASVUDHISARN, C.; KUNNAPAPDEELERT, S.; YENRADEE, P. Optimal cutting
+condition determination for desired surface roughness in end milling. The International
+Journal of Advanced Manufacturing Technology, Spring-Verlag London Limited, 2008.
+
+PRATT, M.; WILSON, P. Requirements for Support of Form Features in a Solid Modeling
+System. [S.l.], 1985. CAM-I Report R-85-ASPP-01.
+
+PRAZERES, A. G. Contribuição para o Reconhecimento Automático das Operações de
+Fresamento através da Teoria dos Grafos. Dissertação (Mestrado) — Universidade Federal de
+Pernambuco, Recife, PE, nov. 2004.
+
+RESENDE, D. Planejamento de Processo de Fabricação Assistido por Computador através de
+um Sistema Especialista Baseado na Tecnologia de Features: um modelo de desenvolvimento
+voltado para a realidade industrial. Dissertação (Mestrado) — Universidade Federal de Santa
+Catarina, Florianópolis, SC, set. 1996.
+
+SHEU, L.; LIN, J. Representation scheme for defining and operation from features. Computer
+Aided Design, v. 25, n. 6, p. 333–347, 1993.
+
+SIMÕES, F. M. S. Implementação de um Sistema CAD/CAM para Fresadoras CNC a partir
+de Funções CAM Integradas no CAD. Dissertação (Mestrado) — Universidade Federal de
+Uberlândia, Uberlândia, MG, 1999.
+
+SIMÕES, F. M. S.; SILVA, A. D. Geração automática de programas nc para fresamento.
+Máquinas &amp;amp; Metais, fev. 1999.
+
+SMID, P. CNC Programming Handbook: comprehensive guide to pratical CNC programming.
+Second edition. 989 Avenue of the Americas, New York, NY 10018: Industrial Press Inc.,
+2003.
+
+SREEVALSAN, P.; SHAH, J. Unification of form feature definition methods. Proceedings of
+the IFIP WG 5.2 Working Conference on Intelligent Computer Aided Design, p. 83–106, 1992.
+
+STEMMER, C. Ferramentas de Corte I. 4ª ed.. ed. Florianópolis: Editora da UFSC, 1995.
+
+74
+
+
+
+SUBRAHMANYAM, S.; WOZNY, M. An overview of automatic feature recognition
+techniques for computer-aided process planning. Computers in Industry, v. 26, n. 1, p. 1–21,
+1995.
+
+TANDON, V. E.-M.; KISHAWY, H. Nc end milling optimization using evolutionary
+computation. International Journal of Machine Tools and Manufacture, n. 25, p. 595–605,
+2002.
+
+THOMAS, K. K.; FISHER, G. Integrating cad/cam software for process planning. Journal of
+Materials Processing Tecnology, 1996.
+
+WEI, E.-J.; LIN, M.-C. Study on general analytical method for cnc machining the free-form
+surfaces. Journal of Materials Processing Technology, Elsevier Science Ltd, n. 168, p.
+408–413, 2005.
+
+WU, D.; SARMA, R. A framework for fast 3d solid model exchange in integrated design
+environment. Computer in Industry, Elsevier Science Ltd, n. 56, p. 289–304, 2005.
+
+75
+
+
+
+APÊNDICE A
+
+Estruturas de Dados de Geometria Computacional
+Utilizadas
+
+Este apêndice tem como objetivo fazer uma breve descrição das estruturas de dados de ge-
+ometria computacional utilizadas no presente trabalho. Estas forneceram suporte à implemen-
+tação computacional da metodologia proposta no projeto. As classes e métodos utilizados são
+em quase sua totalidade implementações de algoritmos propostos em Computational Geometry
+and Computer Graphics in C++ (LASZLO, 1996).
+
+Uma estrutura de dados consiste de três componentes:
+
+1.Um conjunto de operações para manipulação de tipos específicos de objetos abstratos;
+
+2.Uma estrutura para armazenamento na qual os objetos abstratos são armazenados;
+
+3.Uma implementação de cada um das operações, em termos da estrutura de armazena-
+mento.
+
+As principais estruturas de dados utilizadas no trabalho foram:
+
+•Listas: Uma lista é um conjunto ordenado finito de muitos itens, ou seja, uma coleção
+de itens de um dado tipo . O comprimento de uma lista é igual ao número de itens que
+ela contém. Uma lista é aqui definida pela classe List (Figura A.1);
+
+•Pilhas e Filas: São estruturas de dados que restringem o acesso aos seus itens. As pilhas
+limitam o acesso ao item mais recente inserido, por isso são conhecidas como last-in-
+first-out lists ou LIFO lists. As filas são extremamente similares, no entanto a restrição
+ocorre no primeiro item inserido, assim as filas são first-in-first-out lists ou FIFO lists.
+As duas operações básicas destas estruturas de dados são o push e o pop. A operação
+push insere um item na pilha ou fila e o pop remove o o último item colocado na pilha ou
+o primeiro item inserido na fila. Aqui uma pilha é representada pela classe Stack e uma
+fila através da classe Queue (Figura A.2);
+
+•Árvores de Pesquisa Binária: As árvores binárias provém um modo mais eficiente para
+pesquisa relativamente às listas. Uma árvore binária é uma coleção estrutura de nós. Uma
+árvore binária é chamada de árvore de pesquisa binária se seus itens são ordenados de
+um modo específico. Em geral, existem diversas árvores de pesquisa binária, de difer-
+entes formas, para um dado conjunto qualquer de itens. Aqui são utilizadas as classes
+SearchTree, BraidedNode e RandomizedNode para representar esta estrutura de dados
+(Figura A.3);
+
+76
+
+
+
+Figura A.1 A estrutura de uma lista de tamanho cinco. Os itens na lista ocorrem nas posições 1 até 5; a
+posição head ocorre entre a primeira e a última posições. A janela, indicada em negrito, está atualmente
+sobre a posição 2.
+
+•Grafos: Um grafo G(V, A) é definido com um par de um conjunto V e A, onde V é
+um conjunto finito e não vazio de elementos os quais são os vértices do grafo (também
+chamados nós) e A é um conjunto de pares ordenados a = (v, w), onde v e w são el-
+ementos de V, eles são as arestas. Usualmente é comum o uso de uma representação
+gráfica de um grafo. A classe GeomGraph foi utilizada para representação do conceito
+de armazenamento de dados em grafos;
+
+A representação computacional de objetos geométricos é realiza através de classes, as quais
+suportam operações que incluem divisão (splitting) de um polígono ao longo de uma corda em
+dois outros polígonos menores, computação de pontos de intersecção entre linhas e classifi-
+cação de um ponto em relação a uma linha.
+
+As principais estruturas de dados geométricas utilizadas no trabalho foram:
+
+•Vetores: O vetor (x, y) pode ser pensado geometricamente como um segmento de linha
+direcionado começando na origem (0, 0) e terminando no ponto (x, y). A classe Point, a
+qual contém como dados membros x e y, é utilizada para representar um vetor, com suas
+respectivas propriedades e sua aritmética;
+
+•Polígonos: Um polígono é uma curva fechada no plano composta por segmentos retos de
+linha. Os segmentos são chamados de arestas (edges) ou lados do polígono e os pontos
+finais, onde dois segmentos se interceptam são chamados de vértices. Um polígono é dito
+convexo se seu interior é convexo, sendo que uma região é convexa se para quaisquer dois
+pontos dentro da região, o segmento de linha entre os dois pontos pertencem à região. Um
+polígono é representado aqui pela classe Polygon;
+
+•Linhas: Um segmento de linha consiste dos pontos extremos junto com os pontos que
+estão entre eles. Um segmento linha é dito orientado quando a ordem dos seus pontos
+
+77
+
+
+
+(a) Uma pilha em ação.
+
+(b) Uma fila em ação.
+
+Figura A.2 Operação push e push.
+
+78
+
+
+
+(a) Árvore de pesquisa binária. (b) Uma árvore de pesquisa binária do tipo braided
+binary search tree.
+
+(c) Uma árvore de pesquisa binária do tipo randomized search
+tree.
+
+Figura A.3 Diferentes tipos de árvores de pesquisa binária.
+
+79
+
+
+
+do extremo são importantes, assim estes segmentos possuem uma origem e um destino.
+Usualmente, refere-se a um segmento de linha orientado como uma aresta (edge), quando
+este é o lado de algum polígono. A classe Edge será usada para representar todas as
+formas de linhas.
+
+80
+
+
+
+APÊNDICE B
+
+Arquivo Físico IGES
+
+Figura B.1 Arquivo neutro IGES da peça bruta do estudo de caso.
+
+81
+
+
+
+APÊNDICE C
+
+Arquivo Físico IGES
+
+Figura C.1 Arquivo neutro IGES da peça a ser usinada do estudo de caso.
+
+82
+
+
+
+APÊNDICE D
+
+Entidades IGES Básicas
+
+Tabela D.1 Entidades IGES básicas
+
+Número Tipo Descrição
+110 Linha Uma linha em IGES é definida por seus pontos extremos. As coor-
+
+denadas do ponto inicial e do ponto final são incluidas em parâme
+tros da seção de dados desta entidade
+
+100 Arco circular Para representar um arco circular no modelamento espacial, IGES
+provê as informações incluindo um novo plano (XT ,YT ),o qual as
+coordenadas do ponto central, ponto inicial e ponto final pertencem.
+Um novo sitema de coordenadas (XT ,YT , ZT ) é definido pela tranfe
+rência do sistema de coordenadas original (XO,YO, ZO) via matriz de
+transformação e todas coodenadas dos pontos(ponto central, ponto
+inicial e ponto final) relacionadas à este novo sistema coordenadas
+
+124 Matriz de transformação Esta entidade pode ser dada em relação a localização da informação
+entre dois sitemas de coordenadas XO,YO, ZO e XT ,YT , ZT
+
+120 Surperfície de revolução Uma superfície de revolução é criada pela rotação de uma geratriz
+sobre um eixo de rotação a partir da posição inicial até a posição
+final. O eixo de rotação é uma entidade linha. A geratriz pode ser
+um arco de cone, linha, arco circular ou uma curva composta. O
+ângulo de rotação é anti-horário sobre a direção positiva do eixo de
+rotação.
+
+116 Ponto Um ponto é definido por suas coordenadas (X ,Y, Z)
+123 Direção Uma entidade direção é um vertor não nulo em 3D que é definido
+
+por seus três componentes com respectivos eixos de coordenadas. O
+vetor normal da superfície pode ser determinado por esta entidade.
+
+190 Superfície plana A superfície plana é definida por um ponto no plano e a direção
+normal à superfíce
+
+502 Lista de vértices Esta entidade é usada para determinar a lista de vértices, a qual con-
+tém todos os vértices do objeto.
+
+504 Lista de arestas Esta entidade é usada para determinar a lista de arestas, a qual con-
+tém todos os arestas do objeto.
+
+508 Loop Esta entidade é usada para determinar os loops, os quais, envolvidos
+em todas as faces do objeto.
+
+510 Face Esta entidade é usada para determinar as faces, as quais consiste do
+objeto.
+
+514 Shell Uma shell é representada como um conjunto de arestas conectadas,
+orientadas usadas das faces. A normal da shell é está na mesma
+direção da normal da face.
+
+192 Superfície cilíndrica circular
+reta
+
+Uma superfífice cilíndrica circular reta é definida por um ponto no
+eixo do cilindro, a direção do eixo do cilíndro e um raio
+
+83
+
+
+
+APÊNDICE E
+
+Tabela de Valores da Pressão Específica de Corte
+(Ks) para o Fresamento
+
+Tabela E.1 Valores da Pressão Específica de Corte (Ks) para o Fresamento
+
+Material Resistência (st) [kgf/mm2] Valores Aproximados de (Ks) [kgf/mm2]
+
+ou Dureza Espessura de corte h(mm)
+0.025 0, 04 0.063 0.1 0.16 0.25 0.4 0.63 1.0
+
+1030 52 535 475 425 375 330 295 260 230 205
+1035 58 405 370 340 310 280 255 235 215 195
+1045 67 385 360 340 320 300 280 260 245 230
+1060 77 425 390 360 330 305 280 260 240 220
+8620 77 570 510 455 400 355 315 280 250 220
+4140 73 675 600 535 475 420 370 330 290 260
+4137 60 495 455 415 375 340 310 280 255 230
+6150 60 600 530 475 420 370 330 290 260 230
+
+Fofo duro HRC = 46 420 390 355 325 300 275 250 230 210
+Ff GG26 HB = 200 270 240 215 190 170 150 135 120 105
+
+84
+
+
+</field>
+	</doc>
+</add>

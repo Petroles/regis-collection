@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-BT.04880</field>
+		<field name="filename">BTP_2003_46_3_4_18_Sintonia_de_controladores.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">SINTONIA DE CONTROLADORES REGULATORIOS
+PID CONTROLLER TUNING
+SINTONÍA DE CONTROLADORES PID
+Renato Spandri1
+RESUMO
+Este trabalho é uma revisão sobre sintonia de controladores do tipo PID. O assunto é cada vez mais importante para engenheiros envolvidos com operação, principalmente após a implantação de controladores preditivos e multivariáveis (controle avançado) nas plantas químicas. Trata-se de um texto introdutório, que pretende ser fator motivador para um futuro estudo mais aprofundado. As publicações sobre o assunto são numerosas e aparecem rotineiramente na literatura de Engenharia. Abordam-se alguns métodos de sintonia tradicionais como os que se baseiam no estudo das oscilações permanentes do sistema em malha fechada, os métodos baseados na curva de resposta do processo em malha aberta e os métodos fundamentados em desempenho ótimo em malha fechada. Conclui-se com considerações sobre o valor da experiência prática (heurística) como guia para sintonia de controladores.
+ABSTRACT
+This paper is a PID controller tuning review. Tuning has been increasingly important for operation engineers with multivariable predictive control routinely implemented in most chemical plants. This is supposed to be an introductory text, a first step toward further studying. Tuning is a common subject in most engineering technical publications. Some of the well known tuning methods are reviewed, including those based on closed loop sustained oscillations analysis, the open loop transfer function based ones and some of the optimal performance with closed loop tuning methods.
+Finally, experienced operator tips on tuning are discussed as they prove to be a good heuristic way to achieve both good performance and stability controllers.
+RESUMEN Este trabalho es una revisión sobre sintonía de controladores del tipo PID. El asunto es cada vez más importante para ingenieros de operación, principalmente con control avanzado en las plantas químicas. Trátase de un texto introductorio, motivador para un futuro estudio más profundo. Las publicaciones sobre el asunto son numerosas y aparecen rutineramente en la literatura de Ingeniería. Son abordados algunos métodos de sintonía tradicionales como los que se basan en el estudio de las oscilaciones permanentes del sistema, los métodos basados en la curva de respuesta del proceso y los métodos fundamentados en desempeno óptimo . Se concluye con consideraciones sobre el valor de la experiancia práctica (heurística) como guía para sintonia de controladores.
+1.	INTRODUÇÃO: IMPORTÂNCIA DO CONTROLADOR PID
+Controle de processos é um campo do conhecimento de Engenharia. Ele é fortemente relacionado à operação e à instrumentação. A operação, de uma forma abrangente, sempre envolve algum modelo do processo: é a prática da engenharia de modelos de processo. A instrumentação, por sua vez, é uma importante área da engenharia do equipamento, voltada para os dispositivos que permitem realizar a tarefa de regulação do processo.
+1 Unidade de Negócios Replan. e-mail: spandri@petrobras.com.br
+Antigamente, mecanismos físicos permitiam a implementação de controle com ação sobre uma válvula para regular alguma propriedade medida do processo, como ilustra o sistema pneumático da figura 1.
+L
+Fig. 1 - Controle de temperatura com controlador pneumático.
+Fig. 1 - Temperature pneumatic control.
+O controlador apresentado na figura 1 regula a temperatura de saída de um fluido que passa por um permutador de calor. Para mantê-la próxima de um valor desejado, sempre que houver um erro (diferença) entre ele e o valor de temperatura medido, o sistema mecânico desencadeará naturalmente ação sobre uma válvula, abrindo-a ou fechando-a, aumentando ou diminuindo a vazão de água de refrigeração para o trocador de calor.
+Essa ação normalmente é proporcional ao erro verificado entre o valor desejado e o medido para a propriedade regulada. Três parcelas são adicionadas: uma de proporcionalidade direta a cada novo erro, outra de proporcionalidade à soma acumulada do erro e uma terceira de proporcionalidade à taxa de variação do erro, compondo uma lei de controle denominada proporcional + integral + derivativa (PID) que descreve o comportamento de boa parte dos dispositivos de controle mais simples.
+Atualmente, com a informatização da instrumentação, outras leis de controle podem ser codificadas em computadores de diversos portes. Em comparação com a tão simples lei PID, única possível antigamente, algumas das atuais merecem o nome de leis avançadas de controle, algoritmos de controle avançado. Muitas dessas leis são de fato complexas e são programadas em computadores de maior porte.
+As leis mais complexas normalmente regem tarefas de uma natureza mais ligada à otimização e supervisão. Para tarefas regulatórias mais simples, ainda continua sendo programada nos computadores a antiga e útil lei PID. Esse é o caso dos controladores que regulam vazões, temperaturas e pressões.
+A configuração final é a de um esquema hierarquizado de controladores, com o controle avançado otimizando o processo através de atuação sobre uma série de controladores regulatórios do tipo PID. Tudo é muito semelhante a um sistema em cascata: o controle avançado é mestre de diversos controladores PID, que dele recebem periodicamente novos set-points (valores desejados). Na figura 2 ilustra-se uma rede de computadores de controle de processo (SDCD), indicando o fluxo hierarquizado de informação: set-point enviado pelo controle avançado e atuação sobre o processo pelo controle regulatório.
+Fig. 2 - Computador de processo com regras de controle avançado supervisiona computador do SDCD (controle regulatório com lei PID) pelo envio de set-point, otimizando o processo.
+Fig.2 - Advanced supervisory control: set-points to DCS.
+O controle avançado inclui diversos parâmetros numéricos que devem ser ajustados. O controlador regulatório inclui as três constantes de proporcionalidade (PID) que devem também ser ajustadas.
+O valor numérico das constantes determina o comportamento dos controladores, alterando-lhes o desempenho. A escolha dos valores deve sempre atender às duas grandes questões de controle: o processo sob controle deve sempre ficar estável e o desempenho do controlador deve ser satisfatório. Estes são os dois aspectos que justificam todo o conhecimento da denominada teoria de controle clássico. Sintonizar o controlador significa encontrar valores numéricos para as constantes de proporcionalidade de um controlador PID de forma a regular o processo com estabilidade e no valor desejado para a propriedade medida (desempenho satisfatório).
+Com o controle avançado, a questão de sintonia do controlador regulatório fica ainda mais importante, uma vez que o desempenho do controlador PID acaba sendo parte (importante) do desempenho final do controle avançado.
+2.	MODELO DO PROCESSO
+O modelo é a lei do processo. Usando diagrama de blocos (fig. 3):
+Fig. 3 - Diagrama de blocos do processo.
+Fig. 3 - Process block diagram.
+representa-se a variável independente (grau de liberdade) como entrada do processo (u) e a variável dependente como saída (y).
+Por exemplo, para uma torre debutanizadora, que separa gás liquefeito (GLP) como produto de topo e gasolina (nafta) como produto de fundo:
+u	y
+- refluxo de topo de torre debutanizadora	- intemperismo do GLP
+- carga térmica no refervedor de debutanizadora	- PVR da nafta
+O refluxo é uma variável que influencia o intemperismo do GLP (95% vaporizados no ensaio de vaporização do produto e que é influenciado pela presença de hidrocarbonetos pesados). Sendo usado (manipulado) apropriadamente, pode se tornar um bom grau de liberdade para regular (controlar) o intemperismo. Considerações análogas valem para a carga térmica do refervedor no que se refere ao controle (regulação) da PVR da nafta (Pressão de Vapor Reid do produto, que é influenciada pela presença de hidrocarbonetos leves).
+O exemplo do anexo I ilustra outro fato importante relacionado ao diagrama de blocos aplicado a controle de processos: as variáveis y e u do diagrama de blocos acima estão na forma de desvio em relação a um estado estacionário do processo.
+O modelo do processo é a lei que expressa a influência de u sobre y. Nos processos químicos, essa lei é normalmente conseqüência de balanço de massa e energia, e acaba sendo expressa por equações diferenciais do tipo:
+T	+y (t) = Kpu (t - td)
+d
+Pelo fato de essa equação envolver uma derivada primeira, diz-se que os modelos dos processos químicos são geralmente de primeira ordem.
+Quando uma variação única e brusca é aplicada na entrada u (variação denominada degrau), a integração dessa equação fornece a seguinte solução típica (fig. 4):
+Au	k u
+	I AU T
+	t *
+		
+SAu		
+		
+		
+		t *
+Fig. 4 - Resposta (variável de saída) de processo de primeira ordem a um degrau na variável de entrada.
+Fig. 4 - First order process step response.
+Três termos são importantes para o modelo:
+ganho do processo: expressa quanto se altera a variável de saída para cada unidade de variação da variável de entrada. O ganho é uma razão, possui unidades e pode ser calculado pela expressão:
+K
+p
+Ay
+Au
+tempo morto (td - delay time) é o tempo que o processo leva para começar a responder à variação em degrau;
+tempo de primeira ordem ( t ) é o tempo que o processo demora, uma vez iniciada a variação, para chegar aos 63% da variação total final. Esse número 63% é conseqüência de uma exponencial que aparece na solução analítica da equação diferencial, podendo-se facilmente constatar que 100 x (1 - e 1) = 63%.
+É claro que existem modelos muito mais sofisticados para o processo. Para a maioria das finalidades práticas basta um modelo de primeira ordem com atraso.
+Processos químicos podem ser representados por diagrama de blocos como o seguinte (fig. 5):
+Fig. 5 - Diagrama da função de transferência do processo.
+Fig. 5 - Process step transfer function.
+O ganho e o tempo de primeira ordem aparecem como coeficientes de uma razão denominada função de transferência. A variável s, em última análise, representa a derivada. O tempo morto aparece no bloco imediatamente posterior ao primeiro.
+Uma vez definidas as variáveis de entrada e de saída, o levantamento prático da função de transferência é chamado identificação do processo. A maneira mais simples de se levantar a função de transferência, ou seja, de se determinarem os valores de Kp, t e td (identificar o processo), é a de se fazer teste que consiste em:
+• aplicar um degrau na variável de entrada (u) (fig. 6);
+	k u	
+Au		
+	Au	
+	t *	
+Fig. 6 - Teste de aplicação de degrau na entrada do processo.
+Fig. 6 - Step test.
+• registrar a evolução da variável de saída (y) no tempo, até estabilização em novo patamar (fig. 7);
+i K,	ty	
+T 063 Kp			
+	q—tb—tJ ld T	t r
+Fig. 7 - Resposta do teste de aplicação de degrau na entrada do processo.
+Fig. 7 - Step test results.
+• ler os termos T e td diretamente na abscissa; o termo Ay é lido na ordenada (correspondente ao processo já estabilizado) e utilizado no cálculo do ganho Kp.
+No gráfico seguinte (fig. 8) mostra-se uma aplicação prática em debutanizadora de FCC:
+Fig. 8 - Caso prático de teste de aplicação de degrau na entrada do processo (torre debutanizadora).
+Fig. 8 - Step test for an LPG-naphta fractionator.
+• aumentou-se 400 m3/d na vazão de refluxo de topo da coluna e o intemperismo caiu de 0 para -1.6oC. O ganho do processo, portanto, vale:
+K
+p
+-1.6 oC	_ °C
+- = -0.004 —
+400 m/d	m/d
+•	na abscissa pode-se verificar tempo morto de 1 minuto. O tempo de primeira ordem vale 18 minutos, ou seja, iniciado o teste e decorrido o tempo morto de 1 minuto, o intemperismo começa a cair e atinge 0 - 0.63x1.6 = -1oC após 18 minutos.
+Duas observações finais são importantes sobre modelos de primeira ordem:
+•	muitas vezes o ganho é normalizado com as faixas (ranges) das variáveis envolvidas. Por exemplo, para a torre em questão, um range de vazão de refluxo pode ser de 10000 m3/d e do intemperismo do GLP pode ser de 10 oC. Desse modo, o ganho normalizado vale Kp=-4.
+•	os três parâmetros do modelo podem variar conforme as condições operacionais da unidade. Por exemplo, o tempo de primeira ordem está relacionado a um tempo de residência (relação entre volume do equipamento e vazão de carga): para vazões mais altas, esse tempo diminui (volume constante). O mesmo ocorre para o tempo morto, que muitas vezes está ligado ao volume dos elementos de transporte (tubulações). Também o ganho do processo, que expressa a sensibilidade do mesmo, pode variar conforme o ponto operacional da unidade.
+3.	PROCESSO COM CONTROLADOR PID
+A variável de entrada (u) é usada livremente (grau de liberdade) para regular a variável de saída (y). Esse é o princípio que serve de base para o controlador. O diagrama de blocos do processo controlado é o seguinte (fig. 9):
+Fig. 9 - Diagrama de blocos da função de transferência do processo com controlador PID em malha fechada. Fig. 9 - Closed loop block diagram.
+A informação de entrada para o controlador é o erro entre o valor desejado (set-point yd) e o valor real da variável de saída do processo. O esforço do controlador sempre será o de diminuir esse erro, mantendo a variável de saída do processo sob controle, motivo pelo qual ela é também denominada variável controlada.
+A informação de saída do controlador é o grau de liberdade do processo, variável que o controlador vai manipular para manter o processo sob controle. Por esse motivo, a saída do controlador (entrada do processo) é chamada variável manipulada.
+A lei PID traduz a idéia de que a variável manipulada será alterada proporcionalmente ao erro que aparece a cada instante, ao acúmulo (integral) do erro ao longo do tempo e à taxa de variação do erro da variável controlada, ou seja:
+u(t)=kc-y(t))+— í(yd - y(t))dt+kct•d(yddty(t))+us t 0	dt
+ou
+u(t) = kc-e(t) + — í e(t)-dt + kc Td •	+ us
+T	dt
+Aparecendo três parâmetros de sintonia:
+kc
+ganho da parte proporcional do controlador tempo da ação integral do controlador (reset time)
+tempo da ação derivativa do controlador (rate)
+O valor numérico dessas três constantes deve ser determinado de maneira que o controlador tenha um bom desempenho e nunca introduza instabilidades no processo. Esse é o problema de controle clássico, o problema de sintonia do controlador PID.
+4.	SINTONIA DE CONTROLADORES - MÉTODOS COM MALHA ABERTA
+O termo malha aberta refere-se ao processo sem a ação do controlador (como se a linha de realimentação do diagrama de blocos do processo controlado estivesse aberta).
+Alguns métodos propostos para sintonia de controlador PID baseiam-se apenas nos parâmetros do processo (Kp, Te td), não levam em conta o controlador, resultando de uma análise do processo em malha aberta.
+4.1.	Método de Cohen e Coon
+O método proposto por Cohen e Coon resume-se na tabela I:
+TABELA I
+MÉTODO DE SINTONIA DE COHEN E COON
+TABLE I
+COHEN - COON TUNING METHOD
+controlador	kc	—			Td
+P	1 T[1+,d l KP td V	3t)	-			-
+PI	——f 0.9+-2T Kp td I	12—	( 30+3—) " (9 ■ 20—)			
+PID	1 Tl\ 4 + td^l	td-	f	t y 32 + 6-^ V	— f	t l 13 + 8-^ V	—		4 td f	t l 11 + 2 V T)
+	KP tdV 3 + 4—				
+Há três classes de correlações:
+•	cálculo de kc (controlador só proporcional);
+•	cálculo de kc e — (controlador proporcional e integral);
+•	cálculo de kc , — e Td (controlador proporcional, integral e derivativo).
+Para o exemplo da debutanizadora, em que Kp=-4, t = 18 min e td =1 min, os parâmetros recomendados para um controlador seriam (tabela II):
+TABELA II MÉTODO DE COHEN E COON APLICADO A TOPO DE DEBUTANIZADORA
+TABLE II
+COHEN - COON METHOD FOR FRACTIONATOR TOP SYSTEM
+controlador	kc	Ti	Td
+P	-4.58	-	-
+PI	-4.07	2.98 min	-
+PID	-6.06	2.40 min	0.36 min
+4.2.	Método de Ziegler e Nichols (malha aberta)
+Analogamente, outra proposta de Ziegler e Nichols baseia-se na tabela III:
+TABELA III
+MÉTODO DE SINTONIA DE ZIEGLER E NICHOLS (MALHA ABERTA)
+TABLE III
+ZIEGLER - NICHOLS TUNING METHOD
+controlador	kc		Td
+P	i T kp t 1 d	-	-
+PI	0.9 T Kp t	3.33td	-
+PID	12 T Kp t ld	2 td	t d 2
+recomendada para a faixa: 0 -1&amp;lt;	&amp;lt;1 .
+T
+Apesar de, rigorosamente, não se aplicar ao sistema do exemplo, usando-se a tabela, obtém-se (tabela IV):
+TABELA IV MÉTODO DE ZIEGLER E NICHOLS (MALHA ABERTA) APLICADO A TOPO DE DEBUTANIZADORA
+TABLE IV
+ZIEGLER - NICHOLS TUNING METHOD FOR FRACTIONATOR TOP SYSTEM
+controlador	kc		Td
+P	-4.50	-	-
+PI	-4.05	3.33 min	-
+PID	-54	2 min	0.5 min
+Frente aos resultados, é fortemente recomendado não se utilizar a tabela para o caso de um controlador PID completo, que inclua ação derivativa.
+5.	OSCILAÇÕES EM SISTEMAS COM MALHA FECHADA
+Estabilidade e oscilação em processo com controlador PID pode ser analisada com técnicas de álgebra linear, pela solução de equações diferenciais (anexo II). Historicamente, esse ponto de oscilação de sistemas foi estudado através de testes práticos com processos.
+Diagrama de blocos do processo vazão de refluxo de topo x intemperismo do GLP (fig. 10):
+Fig. 10 - Diagrama de blocos da função de transferência do sistema de topo de debutanizadora com controlador PID em malha fechada.
+Fig. 10 - Fractionator top system closed-loop block diagram.
+Esse é o caso de aumento no set-point do controlador. A instrução de aumento de um grau no intemperismo do GLP (degrau unitário no set-point da malha de controle) será executada pelo controlador de modo diferente, conforme seus parâmetros de sintonia.
+Examinando-se a influência do ganho proporcional do controlador para um controle apenas proporcional (sem ações integral e derivativa), o desempenho da malha pode ser tão diferente quanto mostra-se na figura 11:
+Fig. 11 - Respostas do sistema de topo de debutanizadora com controle proporcional e diferentes constantes de proporcionalidade kc.
+Fig. 11 - Fractionator top system with proportional-only PID control.
+Com ganho de controle (kc) baixo para controlador apenas proporcional, a variável não é inteiramente corrigida (aumento de 1oC). A resposta do processo sob controle é suave e, estabilizado em novo regime, há um desvio permanente em relação ao valor desejado (fora do set-point: off-set).
+Aumentando o ganho, o off-set tende a se reduzir. Entretanto, a resposta do processo fica oscilatória. Para ações proporcionais mais intensas, o caráter oscilatório fica mais drástico, a ponto de deixar o processo instável. Há um valor do ganho proporcional que faz as oscilações ficarem sustentadas (curva oscilatória com amplitude constante) (fig. 12).
+Fig. 12 - Respostas do sistema de topo de debutanizadora com controle proporcional e ganho último ku.
+Fig. 12 - Fractionator top system with proportional-only PID control - limit case.
+Esse ganho é um limite, denominado ganho último (ku), além do qual o processo fica instável. O limiar da condição estável para a instável se dá, no exemplo, para um ganho último de ku = -7.25. Nessa condição, o período de oscilação vale Pu = 4 min.
+Há outra forma de se fazer o processo sob controle oscilar permanentemente, transformando o controlador num relé. Colocam-se limites para sinal de saída do controlador. Essa saturação do sinal de saída protege a planta contra oscilações de amplitudes muito grandes.
+Utilizando-se um controle com apenas ação proporcional de ganho elevado e com saturação em seu sinal de saída para a planta, cria-se um controlador on-off que permite estudar a condição de oscilação sustentada de um modo mais seguro para o processo.
+O diagrama de blocos para o processo refluxo de topo x intemperismo de GLP para essa configuração de controle é o seguinte (fig. 13):
+Fig. 13 - Diagrama de blocos da função de transferência do sistema de topo de debutanizadora com controlador relé (PID de ganho elevado com saturação de saída) em malha fechada.
+Fig. 13 - Fractionator top system with relay control.
+Utilizando-se um ganho de kc = -100 e restringindo-se a saída do controlador aos limites -2 a +2 (unidades normalizadas de vazão de refluxo de topo), a resposta do sistema a um aumento de 1oC no set-point é a seguinte (fig. 14):
+Fig. 14 - Respostas do sistema de topo de debutanizadora com controle relé.
+Fig. 14 - Fractionator top system - sustained oscillations.
+Observa-se que, ao limitar o sinal de saída do controlador, a amplitude de variação do sinal de saída do processo é menor no regime de oscilações sustentadas. Isso significa ter-se levado o sistema ao regime de oscilações contínuas de modo mais seguro. Analogamente ao caso anterior, o período de oscilação vale Pu = 4 min. A amplitude de oscilação da variável y é de 0.4185 e a da variável u é de 2 (onda quadrada).
+6.	SINTONIA DE CONTROLADORES - MÉTODOS COM MALHA FECHADA
+6.1.	Método de Ziegler e Nichols
+O princípio dos métodos baseados em malha fechada é o de se trabalhar com margem de segurança, escolhendo para o ganho proporcional um valor suficientemente afastado do ganho limite. Uma margem de segurança típica pode ser de 50%, ou seja, reduzir o ganho último pela metade, promovendo uma dessintonia do controlador para afastá-lo do limiar da instabilidade.
+Ziegler e Nichols propuseram margens de segurança conforme tabela V.
+TABELA V
+MÉTODO DE SINTONIA DE ZIEGLER E NICHOLS (MALHA FECHADA).
+TABLE V
+ZIEGLER - NICHOLS TUNING METHOD
+controlador	kc		Td
+P	2	-	-
+PI	ku 2.2	P 1.2	-
+PID	_k^	Pl	
+	1.7	2	8
+Há três classes propostas:
+•	cálculo de kc (controlador só proporcional);
+•	cálculo de kc e Ti (controlador proporcional e integral);
+•	cálculo de kc , T e Td (controlador proporcional, integral e derivativo).
+Para uso da tabela, deve-se conhecer o ganho último (ku) e o período da oscilação sustentada (Pu). Para o exemplo discutido, a sintonia resultante da aplicação das margens de segurança de Ziegler e Nichols é a seguinte (tabela VI):
+TABELA VI MÉTODO DE ZIEGLER E NICHOLS (MALHA FECHADA) APLICADO A TOPO DE DEBUTANIZADORA.
+TABLE VI
+ZIEGLER - NICHOLS METHOD FOR FRACTIONATOR TOP SYSTEM
+controlador	kc		Td
+P	-3.6	-	-
+PI	-3.3	3.3 min	-
+PID	-4.3	2 min	0.5 min
+6.2.	Método de Astrom
+No item V foi apresentada uma forma relé do controlador que, acrescida de um limitador do sinal de saída, permite fazer o sistema oscilar com baixas amplitudes. O sinal de saída do controlador forma uma onda quadrada de amplitude d=2 e a saída da planta com amplitude a=0.4185.
+Um ganho último modificado pode ser estimado pela expressão:
+n
+Como o relé introduz não linearidade no processo, essa expressão é uma aproximação que permite estimar um ganho último de ku = -6.1. O período de oscilação do sistema foi de 4 min.
+Com esses dois dados, pode-se aplicar a dessintonização recomendada na tabela V, obtendo a seguinte sintonia recomendada:
+TABELA VII
+TABELA DE ZIEGLER E NICHOLS (MALHA FECHADA) APLICADA À PROPOSTA DE IDENTIFICAÇÃO DE SISTEMAS POR ASTROM E HAGGLUND
+TABLE VII
+ASTROM- HAGGLUND METHOD FOR FRACTIONATOR TOP SYSTEM
+controlador	kc		Td
+P	-3.0	-	-
+PI	-2.8	3.3 min	-
+PID	-3.6	2 min	0.5 min
+7.	MÉTODOS BASEADOS EM DESEMPENHO ÓTIMO COM MALHA FECHADA
+Outra forma de sintonizar controlador PID consiste em pesquisar valores das constantes kc, T e Td que minimizem um erro de desempenho. Um erro de desempenho decorre do fato de que qualquer ajuste promovido por um sistema de controle levar um tempo para se concluir e, ao longo desse tempo, acumulam-se erros de controle (valor desejado - set-point - menos valor medido).
+No gráfico seguinte (fig. 15) mostra-se o desempenho de um controle PID para um aumento de 1oC no intemperismo de GLP (set-point de controlador que manipula vazão de refluxo de topo da torre debutanizadora).
+Fig. 15 - Erro do controlador PID em aumento de set-point.
+Fig. 15 - Controller integral error - the set-point increase case.
+Inicialmente, o controlador reduz a vazão de refluxo de topo. Reduzindo o refluxo, o intemperismo começa a subir. Durante todo o período de elevação do intemperismo, segue-se acumulando o erro entre o valor desejado e o real (inferior ao desejado).
+No caso apresentado na figura, o controlador está sintonizado para reduzir o refluxo com rapidez, o que leva o intemperismo a ultrapassar o valor desejado (over-shoot). Há uma inversão do sinal do erro e o controlador, então, passa a aumentar o refluxo. Continua-se contabilizando o erro entre o valor desejado e o real (agora superior ao desejado).
+As elevações e reduções de refluxo são proporcionais ao erro instantâneo e à soma acumulada dos erros passados. Essa situação continua até o ajuste final do intemperismo.
+Para o transiente de ajuste como um todo, pode-se integralizar também o valor absoluto ou quadrático dos erros instantâneos, do que resulta um erro acumulado, global, integrado, que depende dos valores das constantes de rapidez de ação do controlador PID (kc , T e Td). Esse erro global é denominado integral (soma acumulada) do valor absoluto dos erros instantâneos (IAE - integral of absolute errors) ou integral (soma acumulada) do valor quadrático dos erros instantâneos (ISE - integral of squared errors).
+Há um conjunto de valores para kc , T e Td que minimiza esse erro integrado de simulação. Esses três valores ótimos podem ser encontrados simulando o processo várias vezes (diversos kc ,T e Td), conforme algum método de busca numérica do mínimo da função erro.
+Essa pesquisa é ilustrada a seguir para um controlador tipo PI (permite visualização gráfica e é o caso mais comum na prática) aplicado ao sistema de refluxo de topo de debutanizadora e intemperismo de GLP. Para poder construir gráfico ilustrativo, foram levantados resultados de diversas simulações de desempenho do controlador frente à elevação de 1oC no intemperismo do GLP (aumento de set-point).
+t  kc
+O ISE foi calculado para uma faixa de valores de kc desde -2 a -0.5 e uma faixa de k desde -0.1 a 0. Na figura 16 mostra-se que existe um mínimo do erro quadrático acumulado (integrado) para kc = -3.4 e ki = -0.13.
+Fig. 16 - ISE (integral ou soma do erro quadrático) para faixa de valores de kc e ki de controlador PI.
+Fig. 16 - ISE (integral or the sum of the quadratic error) for a range of values of kc and ki in a PI controller.
+Os valores precisos das duas constantes podem ser pesquisados numericamente. O método utilizado foi o de Marquardt Levenberg, cuja robustez motivou sua seleção dentre as opções de solver disponíveis no software Matlab (Optimization Toolbox).
+O resultado foi: kc = -3.4019 e k = -0.1297 min-1
+À primeira vista, esta classe de métodos é muito atraente e, de fato, eles são métodos criteriosos, cuja investigação vale a pena. Entretanto, cabe refletir sobre duas observações importantes.
+1.	O erro acumulado ao longo do tempo inclui parcelas de erros, por assim dizer, mais inevitáveis que outros, bem como parcelas de erros mais críticos que outros. Por exemplo, os erros iniciais da figura 15 (mais próximos do instante inicial - tempo zero) são uma fatalidade decorrente da inércia inicial do sistema, que precisa ser reconduzido para uma nova condição (alteração de set-point). Para tempos maiores, os erros são mais evitáveis e devem mesmo ser eliminados, pois sua persistência pode ser crítica (ou, no mínimo, indesejável). Constatações desse tipo podem ser levadas em conta através de uma função ponderal que estabeleça pesos para uma soma ponderada dos erros acumulados ao longo do tempo: erros iniciais podem ser menos ponderados (maior irrelevância de erros mais inevitáveis) e erros posteriores podem ser mais ponderados (maior criticidade de erros mais corrigíveis). A escolha da
+função ponderal é bastante particular para o processo e subjetiva do engenheiro que está aplicando este método. Uma proposta comum é escolher o próprio tempo como função ponderal (tempos menores, pesos menores e vice-versa), o que é conhecido como método de integral (soma acumulada) do valor quadrático dos erros instantâneos ponderados pelo tempo (ITSE - integral of time-weighted squared errors). Outras propostas são possíveis e essa é uma questão aberta.
+2.	O erro que é acumulado refere-se ao valor de variável de processo em relação a um valor desejado. O caso analisado é o de alteração deliberada do valor desejado, ou seja, o caso em que se deseja promover uma migração do ponto operacional do processo (caso servo-mecanismo, alteração de set-point). Entretanto, o caso mais comum é o de controladores atuando para manter o sistema em um ponto operacional definido, rejeitando perturbações aleatórias a que o processo está sujeito (caso regulatório, set-points constantes). Esse tipo de atuação é aquela a que o controlador está mais sujeito o tempo todo. Neste caso, o critério de erro da otimização fica dependendo da forma escolhida para a perturbação, perturbação que, na prática diária, é extremamente aleatória em forma e intensidade. A escolha de uma perturbação típica é também bastante particular para o processo e subjetiva do engenheiro. As numerosas propostas possíveis fazem dela uma questão aberta.
+Essas observações mostram a importância tanto da experiência prática para classificação dos erros de controle quanto do conhecimento profundo do processo a ser controlado e das condições a que está tipicamente sujeito. Essa experiência prática e esse conhecimento do processo formam uma base heurística fundamental para a tarefa de sintonia de controladores.
+8.	A ARTE DE SINTONIZAR CONTROLADORES
+As técnicas descritas até este ponto têm todas certa fundamentação teórica.
+A classe de métodos que se baseia na curva de resposta do processo se fundamenta na idéia de inversão da solução da equação diferencial do processo.
+A classe de métodos baseados na dessintonização em relação ao ponto crítico de oscilações sustentadas foi desenvolvida a partir de critérios precisos sobre a resposta do processo com controlador. Os critérios precisos que podem nortear o desenvolvimento de diferentes métodos dessa classe se fundamentam na rapidez do sistema (rising time, settling time) ou na extensão do comportamento do sistema (overshoot, decay ratio, offset). Em particular, o método de Ziegler-Nichols foi baseado numa decay ratio conveniente aplicada a um conjunto grande de controladores industriais. Alternativas mais conservativas ou mais agressivas podem ser propostas.
+Os métodos baseados em desempenho ótimo são uma aplicação da idéia de pesquisa do mínimo de funções de várias variáveis.
+Há, entretanto, um caráter fortemente prático, heurístico, na tarefa de sintonizar controladores. Esse caráter já aparece em alguns itens dos próprios métodos científicos, que exigem decisões variadas sobre margens de segurança, desempenho requerido do controlador, condições típicas da planta e erros toleráveis. Mas o caráter prático é definidor de toda uma classe de regras de sintonia. Algumas regras práticas já se tornaram clássicas:
+•	sempre que possível, usar controlador apenas proporcional;
+•	sempre que possível, usar valores baixos para ação integral (elevado reset-time);
+•	evitar o uso da ação derivativa. No caso de processos químicos, a ação derivativa fica restrita quase que somente a poucos casos de controle de temperatura, uma vez que essa variável apresenta normalmente dinâmica lenta. Assim mesmo, a ação derivativa é usada com extrema parcimônia e com forte filtro na variável controlada. Na prática industrial, as malhas de controle com ação derivativa dificilmente ultrapassam 5% do total de malhas da unidade;
+•	em controle de nível, procurar usar apenas ação proporcional e, quando possível, com banda morta. Esse talvez seja o caso mais comum de sintonia inadequada que se encontra nas plantas químicas. Ainda é muito comum o uso de um controle exagerado de nível, ou seja, manipular excessivamente vazão de
+retirada de líquido do fundo de equipamentos (torres, principalmente) para manter o nível de líquido no fundo excessivamente estável. Isso pode ser um problema porque, normalmente, o líquido retirado é carga de outro equipamento a jusante. Nesses casos, controle de nível muito rigoroso em uma parte do processo implica em variação excessiva da carga do outro equipamento, cujo controle fica difícil. Em muitos casos, off-set ou ações muito lentas em controle de nível não representam grande problema de fato, e a agressividade do controlador de nível é fruto de uma cultura imprópria de operação da planta;
+• em controle de vazão, não usar ação derivativa e usar ação integral atenuada.
+Outras regras existem, particulares para cada caso. Recordando-se a grande quantidade de controladores mais elaborados que a eletrônica e a informática viabilizaram nos dias de hoje, percebe-se a ausência de muitos métodos científicos para sintonizar itens comuns como controladores com transições (ação de controle dividida entre vários atuadores ou chaveamento dentre diversas variáveis controladas) e controladores antecipatórios, que usam sempre alguma forma de modelo do processo.
+Um item importante que ainda hoje é fortemente dependente de regras práticas de sintonia é o de controle robusto. Como já se comentou, tempos de residência e ganhos (sensibilidade) do processo variam fortemente e os controladores requerem ressintonia com certa freqüência. Uma forma de atenuar esse retrabalho é a de encontrar uma solução aproximadamente de compromisso para os ajustes do controlador, ou seja, sintonizá-lo para atender de maneira minimamente satisfatória a uma grande faixa de condições operacionais. As tentativas teóricas para solução desse problema são um esforço em andamento (e bastante, por assim dizer, complexas) e a realidade atual ainda é a da prática de regras particulares, caso a caso, para atender a essa necessidade.
+Sintonizar controladores é uma arte. Parte-se das ferramentas teóricas disponíveis. Com elas, faz-se o esforço máximo de análise das diferentes situações práticas a serem atendidas. Ao final, decretam-se refinamentos oriundos da experiência prática com o sistema em questão. Essa etapa final é importante (em muitos casos é a única disponível) e deixa claro o lado empírico do assunto.
+9.	CONCLUSÃO
+A maioria das referências da literatura de controle de processos químicos ressalta a superioridade dos métodos científicos, de base teórica, em relação aos métodos de tentativa e erro para sintonia de controladores.
+A nossa experiência já tão longa na prática dentro da indústria permite atenuar um pouco a força dessa afirmação para, um pouco concordando com ela, dela também discordar.
+Os métodos científicos são importantes. Eles são fruto de um esforço gigantesco no sentido de técnicas mais perfeitas, esforço esse que, entre nós, consome recursos de inteligências brilhantes e idealistas. Seu resultado é a grande quantidade de ferramentas hoje disponíveis para os técnicos da indústria.
+Entretanto, o conhecimento heurístico, que ingenuamente poderia ser rotulado como predisposição à tentativa e erro, é ainda muito importante. Sintonia é um ajuste de sensibilidade, e a sensibilidade desejada e desejável é algo que varia muito no espaço e no tempo. Todas as receitas cartesianas e determinísticas são sempre bem acolhidas, mas uma última análise heurística é essencial antes de viabilizar valores a serem carregados num controlador. Essa análise é essencial sob o ponto de vista de desempenho do controlador e sob o ponto de vista de segurança operacional.
+A extensão de uma automação precisa ser um pouco relativizada com a medida humana, que ainda é a medida de todas as coisas. No caso de sintonia de controladores, essa relativização pode ser feita através da compreensão do valor do esforço na ciência de sintonia e também do valor inestimável de uma experiência prática disponível e pulverizada pelos órgãos operacionais do parque produtivo. O treinamento contínuo da mão-de-obra (propiciando-lhe, inclusive, sempre mais excelência na ciência de sintonia) e a promoção de uma atuante gerência do conhecimento (knowledge management) podem ser uma rota interessante para alavancar uma área que tem caráter científico mas, sobretudo, caráter de uma verdadeira arte.
+BIBLIOGRAFIA RECOMENDADA
+Astrom, K.J., Hagglund, T.
+“PID Controllers. Tuning, Theory and Practice”
+ISA Publications, North Carolina, 1995
+Deshpande, P.B.
+“Distillation Dynamics and Control”
+ISA, Research Triangle Park, N.C., 1995
+Deshpande, P.B., Ash, R.H.
+“Computer Process Control with Advanced Control Applications”
+ISA Publications, North Carolina, 1988
+Luyben, W.L.
+“Process Modeling, Simulation and Control for Chemical Engineers”
+2nd edition
+McGraw Hill, New York, 1990
+Morari, M, Zafiriou, E.
+“Robust Process Control”
+Prentice-Hall, Englewood Cliffs, N.J., 1989
+Skogestad, S.
+“Simple Analytic Rules for Model Reduction and PID Controller Tuning”
+Journal of Process Control, 13 (2003), 291-309
+Ziegler, J., Nichols, N.
+“Optimum Settings for PID Controllers”
+Transactions of the ASME, 64 (1942), 759-768
+ANEXO I
+VARIÁVEIS DESVIO EM CONTROLE DE PROCESSOS
+A figura seguinte mostra um tanque de aquecimento de uma corrente de líquido. A vazão de saída de líquido no tanque é supostamente igual à de entrada no tanque.
+Considerando regime permanente sob o ponto de vista de balanço material, o balanço de energia pode ser escrito:
+balanço de energia em regime dinâmico:
+(pV)Cp	= wCp(Tt - T) + q
+dt
+balanço de energia em estado estacionário:
+(pV)CpdT- = 0 = wCp(T„ - Ts) + q
+dt
+A subtração das duas expressões permite escrever o balanço energético em relação ao estado estacionário:
+(pV)Cp d(T~ Ts) = wCp(Ti - Tis) - wCp(T - Ts) + (q - qs)
+dt	s
+e fazendo:
+y = T - Ts
+U = q - qs d = T - T
+i	i s
+desvio da temperatura do tanque desvio do fluxo térmico na serpentina
+desvio da temperatura de entrada
+a equação de balanço fica:
+(pV)Cp d- = wCpd - wCpy + u'	ou
+(pv) dy w dt
+u'
+wCp
+= d - y +
+redefinindo:
+pV
+w u'
+■-c
+T
+u =
+constante de tempo de primeira ordem
+variável "normalizada"
+Resulta:	dy	j t- + y = u + d dt
+Ou seja, o comportamento dinâmico do tanque é regido por uma equação diferencial de primeira ordem. Estando o tanque inicialmente em estado estacionário, a condição inicial da equação é dada por:
+t = 0 y = 0 (T = Ts)
+Visualizando o processo como uma caixa preta (sistema):
+l
+d
+u
+processo de aquecimento
+y -►
+Quaisquer variações em d ou u não se propagam instantaneamente para y. Há uma função temporal que vincula a variação de y para alterações em u ou d. Essa função temporal é solução da equação diferencial. No anexo II mostram-se algumas das soluções mais comuns em controle de processo.
+ANEXO II
+ÁLGEBRA LINEAR E CONTROLE DE PROCESSOS
+A2.1 Solução de Equações Diferenciais Homogêneas com Coeficientes Constantes
+Uma das questões importantes da álgebra linear é a de encontrar soluções para um vetor em termos de uma base geradora do espaço vetorial em questão.
+Por exemplo, dado um vetor geométrico em duas dimensões, soluções diferentes podem ser obtidas conforme a base do plano que contém o vetor, como mostra-se na figura seguinte.
+O mesmo vetor 0 pode ser resolvido em duas parcelas paralelas à base do plano que o contém. No primeiro caso, a solução é 0 = c1U1 + c 2 u 2; no segundo caso, a solução é
+0 = d	+ d2V2 . Os escalares { c} e {d d} referem o módulo de cada componente do vetor ao módulo do
+respectivo componente da base geradora do plano, e são denominados coordenadas do vetor.
+Há outros elementos matemáticos que têm comportamento semelhante ao dos vetores geométricos. Entre os mais importantes desses elementos estão algumas funções de variáveis complexas; é razoável considerar que essas funções sejam vetores de um espaço gerado por funções base. Também transformações lineares como equações diferenciais lineares e homogêneas com coeficientes constantes podem ser vistas como vetor do espaço de funções, que deve ser solucionado em termos da base geradora.
+Para solucionar a equação, basta decompô-la em relação a uma base geradora. A álgebra linear garante que a solução é determinada se a base tiver a mesma dimensão que a ordem da equação diferencial. Assim, uma equação diferencial de segunda ordem pode ser solucionada numa função (que é um vetor) que combina duas funções linearmente independentes (não paralelas). Estas duas funções formam uma base do espaço de soluções.
+Exemplo 1:
+4y = 0 pode ser solucionada em relação a uma base com duas funções
+.	„ d1 y	dy
+A equação —— + 5----------+
+dt	dt
+linearmente independentes. Sabe-se que as derivadas das funções exponenciais são também exponenciais, podendo-se investigar o efeito de se propor uma base do tipo ea como solução.
+Substituindo na equação diferencial:
+d2 eat	deat	í	\
++ 5 — + 4eat = 0 aeat + 5aeat + 4eat = eat x(a2 + 5a + 4)
+dt2	dt	v	’
+Como a função exponencial é sempre positiva, forçosamente a1 + 5a + 4 = 0 (equação característica), ou seja, a} =-1e a2 =-4. Isso significa que a uma base geradora da solução da equação diferencial é formada pelos vetores não paralelos e, e 4t. A solução da equação diferencial pode ser decomposta como:
+—t	—4t
+y = c1e + c2e
+As exponenciais decrescentes da solução indicam que a solução é assintoticamente decrescente com o tempo, ou seja, estável.
+Exemplo 2:
+Mudando os coeficientes da equação diferencial para
+d2 y	dy
+—-— 5--------+ 4 y = 0, sua equação característica será
+dt	dt
+a1 - 5a + 4 = 0, cujas soluções são a1 = 1e a2 = 4. Resulta uma solução diferente para a equação diferencial (base diferente):
+t	4t
+y = cxe + c2e
+Nesse caso, qualquer das exponenciais crescentes da solução indica que a solução é ilimitadamente crescente como tempo, ou seja, instável.
+Exemplo 3:
+dt2	dt
+a2, + 2a + 5 = 0 , cujas soluções são a1 = -1 - 2i e a2 = -1 + 2i. Resulta a solução:
+y = c1e( 1 2i)t + c2e( 1+2i)t = e t (c1e 2 + c2e2ti) = e f \d1sin(2t) + d2 cos(2t)]
+Nesse caso, a solução envolve uma curva decrescente (exponencial) e oscilatória (termo senoidal), que é estável.
+Exemplo 4:
+solução:
+y = et \d1 sin(2t) + d2 cos(2t)]
+que envolve curva crescente (exponencial) e também oscilatória (termo senoidal), que é instável.
+Os quatro exemplos mostram que a característica de estabilidade da solução depende dos coeficientes da equação diferencial. Esses coeficientes são números reais e aparecem no polinômio característico associado à equação diferencial. As raízes do polinômio aparecem em termos exponenciais: parte real negativa implica em solução estável e vice-versa; parte imaginária diferente de zero implica em solução oscilatória.
+É interessante lembrar que esses coeficientes são sempre combinações de propriedades do sistema físico e do controlador. Os exemplos seguintes mostram a importância das propriedades do sistema e dos parâmetros do controlador na obtenção de condições estáveis e pouco oscilatórias.
+A 2.2. Solução da Equação de um Sistema Físico sem Controle (malha aberta)
+Os sistemas químicos, regidos por balanços de massa e energia, são representados por equações diferenciais de primeira ordem, com atraso da saída em relação à entrada. Ou seja, a equação diferencial associada aos mesmos é do tipo:
+T	+ y(t + td ) = KPU(t)
+Num sistema sem controle, aplicando um degrau unitário na entrada, ou seja: t co —1J =uf,7 =J}
+t &gt; 0 -&gt; u = ij +1
+í
+N
+Substituindo o termo u(t), para t&gt;0 a equação diferencial é escrita como:
+T dy(t +	td) , y(t,	t ) K u (t) — , dy(t	+ td)	, y(t,	t ) y K
+T + y(t +	td)	= Kpu (t)	— T	+ y(t +	td) - ys	= Kp
+dt	dt
+Derivando a equação, obtém-se uma equação homogênea:
+T d 2 y(t + td) , dy(t + td)
+2
+dt	dt
+— 0 —— Ta + a = 0 —— *
+a1 — 0 a2 — -T
+2	T
+- x
+y(t + td) = ci+ c 2e
+Aplicada ao instante inicial (t=0), a expressão fornece:
+y s — c1 + c 2 . Longo tempo após a perturbação
+degrau, estabilizado o processo, o novo estado estacionário aplicado à expressão t
+dyt+td) dt
++y(t+td) - ys = Kp
+resulta em: yt)	= ys + KP, ou seja, ci =ys +Kp — =~Kp
+A solução é, portanto:
+-t-td
+y(t) = y + Kp(1 - e ')
+A2.3. Solução da Equação de um Sistema Físico com Controle Proporcional (malha fechada)
+Um sistema de primeira ordem sob atuação de controlador PID pode ser representado pelas seguintes equações:
+T	+ y (t) = Kpu (t)
+dt
+u(t) = us+ kcx e(t) = us+ kc(ySP - y())
+para um controlador apenas proporcional.
+As duas expressões podem ser combinadas, resultando:
+Tddt^+y(t) = Kpus+Kpkc [vsp - y(t)] ]
+T	+ (1 + K pkc ) y (t) = K p (kcySP + Us )
+Num sistema com controle, aplicando um degrau unitário no set-point, ou seja:
+Substituindo o termo ySP, para t&gt;0 a equação diferencial é escrita como:
+t +(i+ Kpkc)(y (') -y-) = Kpkc
+Derivando a equação, obtém-se uma equação homogênea:
+d2y (t)	Z1 v , x dy (t)
++ (x+Kpkc) d = 0 dt 2	dt
+a1 = 0
+(1+Kpkc)	y(t)
+a2 =—T-
+nz2 + (1 + Kpkc)a = 0
+(X+lípkc )t
+= c1 + c2e	T
+Aplicada ao instante inicial (t=0), a expressão fornece: ys = c1 + c2 . Longo tempo após a perturbação degrau, estabilizado o processo, o novo estado estacionário aplicado
++ (1 + Kpkc )(y(t) - ys) = Kpkc	resulta	em:	y (t)| ^= ys + 1 KKkct ,
+dt	1 + Kpkc
+à expressão
+ou seja,
+ci = ys +
+Kpkc	Kpkc
+c 2 =
+1 + Kpkc	1 + Kpkc
+
+A solução é, portanto:
+y(t) = ys
+Kpkc
+1 + Kpkc
+_(1+Kpkc )t
+(1 - e~ T )
++
+Esse resultado mostra que um controlador proporcional não completa integralmente a solicitação de aumento de set-point. O aumento solicitado foi de uma unidade. Entretanto, para t	&lt;x&gt; só tem-se aumento de uma
+•	•	Kpkc
+unidade no caso de o ganho kc ser muito elevado, de modo que	^y(t) = 1	limk	~.
+c	1 + Kpkc
+A2.4. Solução da Equação de um Sistema Físico com Controle Proporcional e Integral
+A solução do item anterior mostra que o aumento solicitado de set-point não é completado integralmente. O
+controlador proporcional permite certo aumento da variável y, restando uma parte não atingida denominada off-set (fora do set-point).
+Para resolver o problema de off-set, ou seja, de um erro permanente que resta entre o set-point e o valor medido para y, pode-se acrescentar à lei de controle uma parcela proporcional à soma do erro persistente (acumulado, integral do erro).
+Um sistema de primeira ordem sob controle de lei proporcional e integral é regido pelas expressões:
+T	+ y(t)	= Kpu(t)
+dt
+0 0
+As duas expressões podem ser combinadas, resultando:
++y(t)=KpUs+Kpkc [ - y(t)]+Kp T J(ySP- y(t)) dt
+0
+us + Kpkc(ySP +
+ySPdt)
+0
+Num sistema com controle, aplicando um degrau unitário no set-point, ou seja:
+
+Substituindo o termo ySP, para t&gt;0 a equação diferencial é escrita como:
+(y (t) - y,) dt = Krkc (1 + —)
+Ti
+Derivando a equação para eliminar a parcela integral:
+A presença da parcela integral do controlador faz com que a equação diferencial que rege o sistema controlado seja de segunda ordem. Há um aumento de ordem, pois o sistema sem controle é de primeira ordem e o sistema sob controle é de ordem dois.
+Derivando novamente para obter equação homogênea:
+r d3 y (t) dt3
++ (1 + Kpkc)
+d2 y (t) dt2
+kcKp dy (t)
+dt
++
+—
+= 0
+ra' + (1 + Kka' + a = 0
+P c '	ri
+A solução da equação característica para esse caso depende dos valores atribuídos às constantes kc e —. Para valores de A = (1 + K pkc )2 - 4 Tk—K p a solução é da forma:
+&lt;a2
+a3
+a1 = 0
+1 + Kpkc + Va 2r
+1 + Kpkc -TA
+2r
+=71 &amp;lt;0 y=C1+ C2e Zlí
+= 72 &amp;lt;0
++ C.e	'
+Aplicada ao instante inicial (t=0), a expressão fornece: ys = cx + c2 + c3. Longo tempo após a perturbação degrau, estabilizado o processo, o novo estado estacionário aplicado à expressão rddr+(1+Kpkc)	+krpy(t)=—(ys+1) resulta em: y(t)l t^,= ys +1
+dr	dt ‘	r
+i
+Esse resultado matemático mostra que não existe off-set para um controlador proporcional e integral. Dependendo do valor do discriminante da equação característica, a solução pode ter termos trigonométricos (raízes complexas) ou não, o que define o caráter oscilatório do sistema sob controle.
+</field>
+	</doc>
+</add>

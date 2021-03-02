@@ -1,0 +1,4008 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.17019</field>
+		<field name="filename">23738_JacquelinedeMirandaKianCorr17.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+JACQUELINE DE MIRANDA KIAN
+
+Topology Optimization Method applied to Design
+
+Channels Considering Non-Newtonian Fluid Flow
+
+São Paulo
+2017
+
+
+
+JACQUELINE DE MIRANDA KIAN
+
+Topology Optimization Method applied to Design
+Channels Considering Non-Newtonian Fluid Flow
+
+Submitted in partial fulfilment of the
+requirements for the degree of Master of
+Science in Mechanical Engineering
+
+São Paulo
+2017
+
+
+
+JACQUELINE DE MIRANDA KIAN
+
+Topology Optimization Method applied to Design
+Channels Considering Non-Newtonian Fluid Flow
+
+Submitted in partial fulfilment of the
+requirements for the degree of Master of
+Science in Mechanical Engineering
+
+Field of Study:
+Control and Mechanical Automation
+Engineering (3152)
+
+Supervised by:
+Prof. Dr. Emílio Carlos Nelli Silva
+
+São Paulo
+2017
+
+
+
+Este exemplar foi revisado e corrigido em relação à versão original, sob 
+responsabilidade única do autor e com a anuência de seu orientador.
+
+São Paulo, ______ de ____________________ de __________
+
+Assinatura do autor:         ________________________ 
+
+Assinatura do orientador:  ________________________ 
+
+Catalogação-na-publicação
+
+Kian, Jacqueline
+        Topology Optimization Method applied to Design Channels Considering
+Non-Newtonian Fluid Flow / J. Kian -- versão corr. -- São Paulo, 2017.
+        77 p. 
+
+        Dissertação (Mestrado) - Escola Politécnica da Universidade de São
+Paulo. Departamento de Engenharia Mecatrônica e de Sistemas Mecânicos.
+
+        1.Métodos Topológicos (Otimização) 2.Método dos Elementos Finitos
+3.Dinâmica dos Fluidos (Simulação) 4.Hemodinâmica I.Universidade de São
+Paulo. Escola Politécnica. Departamento de Engenharia Mecatrônica e de
+Sistemas Mecânicos II.t.
+
+
+
+ACKNOWLEDGEMENTS
+
+To my supervisor, Prof. Emilio Carlos Nelli Silva for the attention, guidance and
+patience during the execution of this work.
+
+To my boyfriend Luís Fernando Nogueira de Sá for the support and love, and for
+always giving me motivation to go on.
+
+To my parents Vilson and Marlene and my brother Guilherme, for believing in me
+and supporting my decisions.
+
+To my lab colleagues and to professor Juan Romero for the useful suggestions which
+were valuable to the development of this work.
+
+
+
+RESUMO
+
+O estudo de escoamento de fluidos não-Newtonianos apresenta-se relevante no campo de
+bioengenharia, em especial no projeto de dispositivos para condução de sangue, como bypass
+arterial. Melhorias na redução de dissipação de energia e no dano às células sanguíneas
+causados por fluxos artificiais podem ser obtidas através do uso de técnicas de simulação e
+otimização numéricas. Deste modo, este trabalho propõe o estudo do projeto de canais para
+escoamentos incompressíveis em regime permanente de fluidos não-Newtonianos através
+do Método de Otimização Topológica baseado no método de densidade. O escoamento
+é modelado com as equações de Navier-Stokes acopladas com a equação constitutiva de
+Carreau-Yasuda para a viscosidade dinâmica, para que sejam considerados os efeitos das
+propriedades não-Newtonianas do sangue. O Método de Otimização Topológica distribue
+regiões de sólido e fluido, dada uma restrição de volume, dentro de um domínio especificado
+de modo a obter uma geometria e configuração que minimize a dissipação de energia,
+tensão de cisalhamento e vorticidade, utilizando a pseudo-densidade do material como
+variável de projeto. Para aplicar este método a sistemas fluidos, um meio poroso fictício,
+baseado na equação de Darcy, é introduzido. O modelo de escoamento é implementado
+em sua forma discreta utilizando o Método de Elementos Finitos através da plataforma
+OpenSource FEniCS, aplicada para automatizar a solução dos modelos matemáticos
+baseados em equações diferenciais, e o problema de otimização é resolvido utilizando a
+biblioteca DOLFIN-adjoint e otimizador IPOpt. Topologias otimizadas de canais para
+fluxo de sangue, com foco em bypass arterial, são apresentadas para ilustrar o método
+proposto.
+
+Palavras-chave: Otimização Topológica. Fluidos Não-Newtonianos. Escoamento de
+Sangue. Bypass Arterial.
+
+
+
+ABSTRACT
+
+The study of non-Newtonian flow is presents itself as relevant in bioengineering field,
+specially for design of devices that conduct blood, as arterial bypass grafts. Improvements
+in reducing energy dissipation and blood cell damage caused by artificial flows can be
+achieved by using numerical simulation and optimization methods. Thus, the present
+work proposes the study of design channels for steady, incompressible non-Newtonian flow,
+by using Topology Optimization Method based on the density method. The fluid flow
+is modeled with the Navier-Stokes equations coupled with Carreau-Yasuda constitutive
+equation for the dynamic viscosity to take into account the effects of the non-Newtonian
+blood properties. The Topology Optimization Method distributes regions of solid and fluid,
+given a volume constraint, within a specified domain in order to obtain a geometry and
+layout that minimizes energy dissipation, shear stress and vorticity by using the material
+pseudo-density as design variable. To apply this method to fluidic systems design, a fictional
+porous media based on Darcy equation is introduced. The flow model is implemented in
+its discrete form by using the Finite Element Method through the OpenSource platform
+FEniCS, applied to automate the solution of mathematical models based on differential
+equations. The optimization problem is solved by using the library DOLFIN-adjoint and
+IPOpt optimizer. Optimized topologies of channels for blood flow, focusing in arterial
+bypass grafts, are presented to illustrate the proposed method.
+
+Keywords: Topology Optimization. Non-Newtonian Fluids. Blood Flow. Arterial Bypass.
+
+
+
+LIST OF FIGURES
+
+Figure 1.1 – Influence of red blood cells in shear thinning effect . . . . . . . . . . . 13
+Figure 1.2 – Optimization approaches . . . . . . . . . . . . . . . . . . . . . . . . . 15
+Figure 2.1 – Shear rate dependent viscosity for different models (logarithmic scale) 20
+Figure 2.2 – Taylor-Hood mixed elements . . . . . . . . . . . . . . . . . . . . . . . 23
+Figure 3.1 – Topology optimization procedure for designing non-Newtonian fluid
+
+channels . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+Figure 3.2 – Fixed extended design domain . . . . . . . . . . . . . . . . . . . . . . 27
+Figure 3.3 – Influence of penalty parameter . . . . . . . . . . . . . . . . . . . . . . 29
+Figure 5.1 – Topology optimization implementation flow chart . . . . . . . . . . . 43
+Figure 5.2 – Approaches of computing the adjoint problem . . . . . . . . . . . . . 46
+Figure 6.1 – Backward facing step problem . . . . . . . . . . . . . . . . . . . . . . 49
+Figure 6.2 – Velocity profile for newtonian model. (a) Umax = 0.025m/s. (b) Umax =
+
+0.8m/s . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 49
+Figure 6.3 – Velocity profile for Carreau-Yasuda model. (a) Umax = 0.025m/s. (b)
+
+Umax = 0.8m/s . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 49
+Figure 6.4 – Velocity profile obtained in literature: (a) Umax = 0.025m/s and (b)
+
+Umax = 0.8m/s . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+Figure 6.5 – Velocity profile at the outlet for different viscosity models obtained
+
+with FEniCS: (a) Umax = 0.025m/s and (b) Umax = 0.8m/s . . . . . 50
+Figure 6.6 – Double channel problem . . . . . . . . . . . . . . . . . . . . . . . . . 51
+Figure 6.7 – Topologies for the double channel problem with Stokes formulation . 52
+Figure 6.8 – Double channel problem with zero stress boundary condition at the
+
+outlet . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 52
+Figure 6.9 – Topology results for double channel and Navier-Stokes Newtonian model 53
+Figure 6.10 – Velocity fields for double channel and Navier-Stokes Newtonian model 53
+Figure 6.11 – Topology results for double channel and Navier-Stokes non-Newtonian
+
+model (Carreau-Yasuda viscosity model) . . . . . . . . . . . . . . . . 54
+Figure 6.12 – Velocity fields for double channel and Navier-Stokes non-Newtonian
+
+model (Carreau-Yasuda viscosity model) . . . . . . . . . . . . . . . . 54
+Figure 6.13 – Viscosity fields for double channel and Navier-Stokes non-Newtonian
+
+model (Carreau-Yasuda Viscosity Model) . . . . . . . . . . . . . . . . 54
+Figure 6.14 – Obstacle problem . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 55
+Figure 6.15 – Optimized topologies for the obstacle problem . . . . . . . . . . . . . 56
+Figure 6.16 – Velocity and viscosity profiles for the Carreau-Yasuda model . . . . . 56
+Figure 6.17 – Arterial bypass domain . . . . . . . . . . . . . . . . . . . . . . . . . . 57
+Figure 6.18 – Initial guess for bypass topology optimization of fully blocked artery . 58
+
+
+
+Figure 6.19 – Velocity and viscosity fields for bypass initial guess of fully blocked
+artery . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+
+Figure 6.20 – Final topology for bypass optimization of fully blocked artery . . . . 59
+Figure 6.21 – Velocity and viscosity fields for bypass optimization of fully blocked
+
+artery . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 59
+Figure 6.22 – Convergence curve for bypass optimization of fully blocked artery . . 60
+Figure 6.23 – Topology changes during bypass optimization of fully blocked artery . 60
+Figure 6.24 – Design domain and boundary conditions for stenosed artery bypass . 61
+Figure 6.25 – Final topology for stenosed artery optimization (Case 1) . . . . . . . 62
+Figure 6.26 – Velocity field for stenosed artery optimization (Case 1) . . . . . . . . 62
+Figure 6.27 – Viscosity field for stenosed artery optimization (Case 1) . . . . . . . . 63
+Figure 6.28 – Final topology for stenosed artery optimization (Case 2) . . . . . . . 63
+Figure 6.29 – Velocity field for stenosed artery optimization (Case 2) . . . . . . . . 64
+Figure 6.30 – Viscosity field for stenosed artery optimization (Case 2) . . . . . . . . 64
+Figure 6.31 – Final topology for stenosed artery optimization (Case 3) . . . . . . . 65
+Figure 6.32 – Velocity field for stenosed artery optimization (Case 3) . . . . . . . . 65
+Figure 6.33 – Viscosity field for stenosed artery optimization (Case 3) . . . . . . . . 65
+Figure 6.34 – Gray final topology for pure vorticity optimization . . . . . . . . . . . 66
+Figure 6.35 – Final topology for vorticity optimization . . . . . . . . . . . . . . . . 67
+Figure 6.36 – Convergence curve for bypass optimization considering vorticity functional
+
+with added inertial part . . . . . . . . . . . . . . . . . . . . . . . . . 67
+Figure 6.37 – Final topology considering the multi-objective functional . . . . . . . 68
+Figure 6.38 – Convergence curve for optimization considering the multi-objective
+
+functional . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 68
+Figure 6.39 – Topology changes during bypass optimization considering the multi-objective
+
+functional . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 69
+Figure 6.40 – Design domain and boundary conditions for the 3D convergent diffuser 70
+Figure 6.41 – Final topology for the 3D convergent diffuser optimization . . . . . . 70
+Figure 6.42 – Velocity field for optimized 3D convergent diffuser . . . . . . . . . . . 71
+Figure 6.43 – Viscosity field for optimized 3D convergent diffuser . . . . . . . . . . 71
+
+
+
+LIST OF TABLES
+
+Table 6.1 – Carreau-Yasuda parameters for blood . . . . . . . . . . . . . . . . . . 48
+Table 6.2 – Functional values for double channel . . . . . . . . . . . . . . . . . . . 53
+Table 6.3 – Final Functional values for bypass optimization of fully blocked artery 60
+Table 6.4 – Cases division for bypass optimization of partial blocked artery . . . . 61
+Table 6.5 – Functional values for vorticity optimization . . . . . . . . . . . . . . . 66
+Table 6.6 – Functional values for optimization considering the multi-objective
+
+functional . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 68
+
+
+
+ACRONYMS
+
+CFD Computational Fluid Dynamics
+
+PDE Partial Differential Equation
+
+FEM Finite Element Method
+
+LBB Ladyzhenskaya–Babuška–Brezzi
+
+TOM Topology Optimisation Method
+
+IPOpt Internal Point Optimizer
+
+FFC FEniCS Form Compiler
+
+UFL Unified Form Language
+
+UFC Unified Form-Assembly Code
+
+PETSc Portable, Extensible Toolkit for Scientific Computation
+
+GMRES Generalized minimal residual
+
+Bicstab Biconjugated Gradient Stabilized
+
+MUMPS MUltifrontal Massively Parallel Sparse
+
+ILU Incomplete Lower Upper
+
+
+
+NOTATION
+
+u Velocity field
+p Pressure field
+% Mass density
+µ Dynamic viscosity
+? Cauchy stress tensor
+f Field forces
+I Identity tensor
+? Symmetric gradient
+? Inverse permeability
+?? Shear rate
+n Power law index
+? Design domain
+? Design variable
+? Velocity interpolation function
+? Pressure interpolation function
+x,y Global coordinates
+?,? Local element coordinates
+q Penalty parameter
+? Energy dissipation function
+Jss Shear stress function
+Jv Vorticity function
+? Boundary condition
+?? Adjoint vector
+
+
+
+CONTENTS
+
+1 INTRODUCTION . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+
+1.1 Non-Newtonian Blood Flow . . . . . . . . . . . . . . . . . . . . . . . . 13
+1.2 Optimization Methods . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+1.3 Motivation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+1.4 Objectives . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+1.5 Document Outline . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+
+2 MODELING OF NON-NEWTONIAN FLOW . . . . . . . . . . . . . . . . 18
+
+2.1 Navier-Stokes Equations . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+2.2 Non-Newtonian Effects . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+2.3 Finite Element Method . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+2.3.1 Problem Formulation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+2.3.2 Implemented Finite Element . . . . . . . . . . . . . . . . . . . . . . . . . 23
+
+3 TOPOLOGY OPTIMIZATION . . . . . . . . . . . . . . . . . . . . . . . . 25
+
+3.1 Topology Optimization Applied to Fluid Flow . . . . . . . . . . . . . . 26
+3.2 Extended Design Domain . . . . . . . . . . . . . . . . . . . . . . . . . 27
+3.3 Material Model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+3.4 Problem Definition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+3.4.1 Energy Dissipation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+3.4.2 Shear Stress . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+3.4.3 Vorticity . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+3.4.4 Multi-Objective Function . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+3.4.5 Volume Constraint . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+3.5 Discrete Form . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+
+4 SENSITIVITIES CALCULATION . . . . . . . . . . . . . . . . . . . . . . 35
+
+4.1 Adjoint Method . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+4.2 Energy Dissipation Sensitivity Analysis . . . . . . . . . . . . . . . . . 36
+4.2.1 Sensitivity of Viscosity . . . . . . . . . . . . . . . . . . . . . . . . . . . . 38
+4.3 Vorticity Sensitivity Analysis . . . . . . . . . . . . . . . . . . . . . . . 39
+4.4 Shear Stress Sensitivity Analysis . . . . . . . . . . . . . . . . . . . . . 40
+4.5 Sensitivity Analysis of Multi-Objective Function . . . . . . . . . . . . 41
+
+5 NUMERICAL IMPLEMENTATION . . . . . . . . . . . . . . . . . . . . . 43
+
+5.1 Optimization Algorithm . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+
+
+
+CONTENTS 12
+
+5.2 Software Environment . . . . . . . . . . . . . . . . . . . . . . . . . . . 44
+5.2.1 Finite Element Method . . . . . . . . . . . . . . . . . . . . . . . . . . . . 44
+5.2.2 Sensitivities Computation . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+5.2.3 Optimizer . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+
+6 NUMERICAL RESULTS . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+
+6.1 FEM Verification . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+6.2 Topology Optimization Results . . . . . . . . . . . . . . . . . . . . . . 51
+6.2.1 Double Channel . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+6.2.2 Obstacle . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 55
+6.2.3 Arterial Bypass . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 57
+6.2.4 Bypass considering Vorticity . . . . . . . . . . . . . . . . . . . . . . . . . 65
+6.2.5 Multi-objective bypass . . . . . . . . . . . . . . . . . . . . . . . . . . . . 67
+6.2.6 3D Difuser . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 69
+
+7 CONCLUSIONS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+
+7.1 Future Work . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+
+REFERENCES . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 73
+
+
+
+13
+
+1 INTRODUCTION
+
+1.1 Non-Newtonian Blood Flow
+
+Flow of non-Newtonian fluids presents features that are not described by the linearly
+viscous Newtonian models with a constant value of viscosity. An important subclass of
+non-Newtonian fluids consists of those whose viscosity depends on the shear rate and/or
+on the pressure. These fluids play an important role in various areas of application, for
+instance, in chemical engineering, geology and also, blood rheology.
+
+Blood is a concentrated suspension of red blood cells (erythrocytes), white blood
+cells (leukocytes), platelets (thrombocytes) in an aqueous polymer solution called plasma.
+The non-Newtonian effects of whole blood in viscometric flow are closely related to its
+microscopic structure (GIJSEN; VOSSE; JANSSEN, 1999), specially at low shear rates.
+The red blood cells are the dominant components in rheological behavior of blood, mainly
+due to a significantly higher concentration compared to the other formed cellular elements
+(ROBERTSON; SEQUEIRA; OWENS, 2009). Both shear thinning and viscoelasticity are
+related to aggregation, deformation and alignment of these cells, as shown in Fig 1.1.
+
+Figure 1.1 – Influence of red blood cells in shear thinning effect.
+(a) Equilibrium. (b) Shear thinning effect.
+
+The study of blood flow plays an important role in disease research, treatment planning
+and design of medical devices. Some of the most relevant medical devices are arterial
+bypass grafts which provide solutions for diseases such as artherosclerosis by creating
+an alternative route around critically blocked arteries (FITZGIBBON et al., 1996) and
+ventricular assist devices (VADs) that can be an alternative for patients that present heart
+failure, specially as temporary solution as they await for a heart transplant (SLAUGHTER
+et al., 2013).
+
+Since traditional laboratory experiments are costly and time demanding, Computational
+
+
+
+Chapter 1. Introduction 14
+
+Fluid Dynamics (CFD) applied to fluid systems dealing with blood flow has been an
+active area of intensive research. Motivated by problems in biomedical engineering,
+many studies aim to find an appropriate numerical model of non-Newtonian effects
+in blood flow in order to obtain more accurate results (BOYD; BUICK; GREEN, 2007),
+(HUNDERTMARK-ZAUŠKOVÁ; LUKÁ?OVÁ-MEDVID’OVÁ, 2010), (EVJU, 2011).
+
+Numerical optimization procedures based on CFD present various advantages when
+compared to the traditional trial and error method. Thus, many approaches for the design
+of non-Newtonian fluidic systems have been developed.
+
+In the work of Abraham, Behr and Heinkenschloss (2005), shape optimization was
+applied to efficient design of arterial bypass graft, with the goal of minimizing shear
+stress, which is related to field processes such as damage of red blood cells and platelet
+aggregation. In addition, the use of this optimization method for time-dependent domains
+was studied by Soko?owski and Stebel (2014). Sousa, Castro and António (2010) presented
+an optimization framework that is suited to perform shape optimization of complex
+geometries in compute-intensive applications by using an genetic algorithm approach.
+
+This work in particular will model blood as a shear-thinning non-Newtonian fluid and
+apply the topology optimization method in order to design efficient channels for conducting
+blood, evaluating the model viscosity effects on the final topology.
+
+1.2 Optimization Methods
+
+An optimization algorithm is used to find an optimized solution, which can be obtained
+numerically to accelerate the design process. There are three basic approaches that can be
+used in numerical optimization: parametric optimization, shape optimization and topology
+optimization, as shown in Fig. 1.2. Each one of these approaches is more suitable for a
+type of application, according to the problem design objectives and restrictions.
+
+
+
+Chapter 1. Introduction 15
+
+Figure 1.2 – Optimization approaches.
+
+Adapted from Koga (2010).
+
+In parametric optimization, also known as size optimization, the system geometry is
+previously defined and a basic model is described through some parameters that can be
+related to the geometry, material, physical properties, among others. The value of this
+parameters varies until a configuration considered optimized is reached. As an example,
+the work of Murakami and Mikic (2001) studies the optimization of multi-channel heat
+sinks for electronic devices and the channel diameter, number of channels and flow rate
+are considered as design parameters. This method presents more flexibility when it comes
+to the design variable, that is not necessarily related to the system geometry.
+
+In shape optimization, the contour boundaries of the system are modified in the
+process, aiming to extremize a determined objective function. In this case, the geometry is
+fixed as defined in the initial condition, which means that no holes or connections can be
+included in the domain, however its shape is allowed to change. The work of Abraham,
+Behr and Heinkenschloss (2005) shows the optimization of an arterial bypass graft using
+this method, where the main goal is to reduce the total shear stress in blood flow.
+
+In topology optimization method (BENDSOE; SIGMUND, 2003), an amount of
+material is distributed inside a domain, in a way of searching the optimal geometry of
+the system according to a desired characteristic. The use of this technique enables more
+complex and non-intuitive solutions to emerge. Thus, it is appropriate for applications
+where more freedom to modify the domain is desired. The material distribution over the
+domain is controlled by a design variable. The design variable of a topology optimization
+problem is used to determine the absence or presence of material within each point. The
+final topology presents a domain distribution described as "empty" or "filled" with material.
+In solid mechanics, the material model determines where the structure will be filled with
+solid material. However, in fluid systems a porous domain is used and the final domain
+shows which portions of the domain will be filled with fluid, and which will be filled with
+
+
+
+Chapter 1. Introduction 16
+
+a low permeability, representing the "solid", indicating the absence of flow.
+
+Recently, researchers have shown interest in applying the topology optimization method
+to devices conducting blood, considering non-Newtonian effects existent in this fluid. There
+are approaches that model the fluid flow through the Navier-Stokes equations, as proposed
+by Hyun, Wang and Yang (2014), Zhang and Liu (2015) and also through the Lattice
+Boltzmann method as shown in the work of Pingen and Maute (2010).
+
+Thus, this work focuses in optimizing fluid blood flow devices, taking into account
+non-Newtonian effects in the dynamic viscosity, through the use of the numerical topology
+optimization procedure based on finite element method. The methodology is applied to
+design bi-dimensional channels, considering generic design domains.
+
+1.3 Motivation
+
+The study of non-Newtonian flow is important in bioengineering, to model correctly
+the flow of biological fluids. Among these, the most relevant are medical devices dealing
+with blood, such as bypass grafts and pumping systems, where the main goal is to reduce
+blood cell damage caused by artificial flows.
+
+The use of computational simulation and optimization algorithms is a valid methodology
+to improve the design process of medical devices for blood flow, reducing its development
+time. This work studies the issues of blood constitutive behavior on the solution of the
+optimization design problem. The application of topology optimization to these systems
+makes it possible to obtain non-intuitive designs due to the freedom of domain modifications,
+allowing new borders and fluid regions to emerge.
+
+1.4 Objectives
+
+The present work aims to develop a methodology for designing optimized channels for
+non-Newtonian fluid flow, with emphasis on applications in bioengineering field of devices
+conducting blood, by using computer simulation and topology optimization method. The
+channels obtained should be efficient to conduct blood with low energy consumption and
+reduce damage to blood cells. Thus, the design problem requisites chosen aim to minimize
+energy dissipation, vorticity and shear stress. In order to achieve more accurate results,
+fluid flow is modeled by incompressible and steady state Navier-Stokes equations, coupled
+with a viscosity cross model, which takes into account non-Newtonian fluid effects. The
+system governing equations are solved numerically by using Finite Element Method (FEM).
+Topology optimization method is used to determine the path to be followed by fluid flow,
+by introducing a porosity model that allows the design variable to vary continuously from
+
+
+
+Chapter 1. Introduction 17
+
+solid to fluid. This procedure is performed by a gradient based optimizer that uses the
+interior point method.
+
+1.5 Document Outline
+
+This document is organized as follows. In Chapter 2, the problem governing equations
+are presented and the algebraic system used in the finite element method is shown. In
+Chapter 3, the topology optimization method is described and the problem is defined in
+terms of its objective function and constraints. Furthermore, in Chapter 4, the sensitivity
+analysis by using the adjoint method is introduced. In Chapter 5, it is explained how
+the numerical implementation is performed, detailing the optimization procedure and the
+software used at each optimization phase. In Chapter 6, the numerical results obtained
+are presented, comparing different viscosity models. Finally, in Chapter 7, some overall
+conclusions are reported and some suggestions of future work are presented.
+
+
+
+18
+
+2 MODELING OF NON-NEWTONIAN
+
+FLOW
+
+2.1 Navier-Stokes Equations
+
+In this work, the fluid flow will be considered incompressible, laminar and in steady
+state regime. The system dimensions are chosen to be much larger than blood cells, so that
+fluid flow model based on the continuous assumption can be employed (ROBSON, 2003).
+
+The fluid motion is described by the Navier-Stokes equations (BORRVALL; PETERSSON,
+2003)
+
+%
+
+(
+?u
+?t
+
++ ?u · u
+)
+
+= ?·? + f (2.1)
+
+where u is the velocity field, % is the mass density and f are field forces and the Cauchy
+Stress Tensor ? is defined as
+
+?(u,p) = 2µ?(u) ?pI (2.2)
+
+where I denotes the identity tensor, p is the pressure, µ is the dynamic viscosity, and ?(u)
+is the symmetric gradient given by
+
+?(u) =
+1
+2
+
+(?u + (?u)T ) (2.3)
+
+The mass conservation equation combined for incompressible flow ( % is constant)
+results in the following continuity equation
+
+?· u = 0 (2.4)
+
+Also, since the flow is assumed to be in steady state regime, the derivative
+?u
+?t
+
+is null.
+Therefore, we have the Navier-Stokes equations for incompressible steady state flow.
+
+%(?u · u) = ?· 2µ?(u) ??p + f (2.5)
+
+?· u = 0 (2.6)
+
+The topology optimization method distributes regions of solid and fluid through a
+domain, which makes it necessary to work with a model that is able to combine fluid and
+
+
+
+Chapter 2. Modeling of Non-Newtonian Flow 19
+
+solid behavior. A porous material model is used to simulate the solid regions by imposing
+local flow restrictions. The flow through a porous media is described by Darcy’s Law
+(BORRVALL; PETERSSON, 2003):
+
+?u = ?p? f (2.7)
+
+where ? is the inverse permeabilty.
+
+This parameter ? allowsto differentiate low permeability areas (? ??), where the
+flow is blocked, representing solid material, from high permeability areas (? ? 0) where
+there is unconstrained fluid flow. This material model of flow in porous media is used in
+topology optimization problems for both newtonian fluids (BORRVALL; PETERSSON,
+2003) and non-newtonian (PINGEN; MAUTE, 2010).
+
+Brinkman’s equation is obtained by introducing a porosity term from Darcy’s Law
+into Navier-Stokes, given by (HYUN; WANG; YANG, 2014):
+
+%(u ·?u) = ??p + ?· 2µ?(u) + f ??u (2.8)
+
+2.2 Non-Newtonian Effects
+
+Blood is composed by cellular elements suspended in an aqueous solution called
+plasma. The cellular elements are red blood cells or erythrocytes, white blood cells or
+leukocytes and platelets or thrombocytes. Due to its microscopic structure, this fluid is
+more accurately represented when modeled as non-Newtonian fluid, where the dynamic
+viscosity µ is dependent of the shear rate ??, given by the following equation:
+
+?? =
+?
+
+2?(u) : ?(u) (2.9)
+
+where the symbol : stands for the double scalar product of two tensors.
+
+When related to viscosity effects, non-Newtonian fluids can have two different behaviors.
+If the viscosity increases with shear rate, the fluid is called dilatant or shear-thickening. If
+the effective viscosity decreases with shear, then it is called pseudoplastic or shear-thinning,
+which is the case of blood. In this work, fluids that present viscoelastic effects will not be
+considered.
+
+Blood shear-thinning behavior is mainly related to following aspects of red blood
+cells: the propensity to form microstructures called rouleaux at low shear rates, their
+deformability, and the flow field alignment at high shear rates (ROBERTSON; SEQUEIRA;
+OWENS, 2009).
+
+A very common model to describe the shear rate dependent viscosity is the Power-Law
+
+
+
+Chapter 2. Modeling of Non-Newtonian Flow 20
+
+equation
+µ(??) = K??n?1 (2.10)
+
+where K is a positive constant and n is the Power-Law index, which defines the behaviour of
+the fluid. A Newtonian fluid presents n = 1, whereas for n &gt; 1, the fluid is shear-thickening
+and for n &amp;lt;1, it is shear-thinning (BOEK; CHIN; COVENEY, 2003).
+
+Since the Power-law model applied to shear-thinning fluids presents an infinite dynamic
+viscosity at very low shear rates and zero viscosity at very high shear rates, which can
+lead to numerical instabilities, another model is adopted.
+
+The blood viscosity model implemented is the Carreau-Yasuda, which given by Equation
+2.11
+
+µ(??) = µ? + (µ0 ?µ?)[1 + (???)a]
+n?1
+
+a (2.11)
+
+where ?, a, n, µ?, µ0 are fluid parameters.
+
+Thus, for zero shear rate, the viscosity presents a maximum value of µ0 = 0.16Pa.s
+and for very high shear rates (approximately &gt; 103s?1) the viscosity value converges to the
+same as the Newtonian model µ? = 0.0035Pa.s, as verified experimentally (MACOSKO,
+1994). The relation between viscosity and shear rate for blood in the models discussed are
+presented in Figure 2.1.
+
+Figure 2.1 – Shear rate dependent viscosity for different models (logarithmic scale).
+
+2.3 Finite Element Method
+
+2.3.1 Problem Formulation
+
+The partial differential equations (PDE) presented in Section 2.1 are solved by
+using a numerical method, since it is very difficult to solve them analytically. The
+
+
+
+Chapter 2. Modeling of Non-Newtonian Flow 21
+
+finite element method (FEM) is implemented to find the approximate solution of the
+Navier-Stokes equations. This method is especially attractive for problems dealing with
+complex geometries, where other numerical methods are difficult to apply.
+
+The first step for the FEM formulation is to obtain the weak formulation. For this,
+a weighted residual procedure is applied. The PDE is multiplied by a test function and
+the resulting equation is integrated over the domain ?. The Galerkin’s method is used,
+where the weighting functions and the unknown fields are represented by the same space
+functions. Thus, the stated problem weak formulation is given by (ROMERO; SILVA,
+2014) ?
+
+?
+?u · vd? +
+
+?
+?
+%(u ·?u) · vd? +
+
+?
+?
+? : ?vd? =
+
+?
+?
+
+f · vd? (2.12)
+
+?
+?
+q(?· u)d? = 0 (2.13)
+
+where v and q are weighting test functions, with q being scalar and v a vector.
+
+The stress tensor ? is defined by:
+
+? =
+
+?
+?????
+?p + 2µ
+
+?u1
+?x1
+
+µ
+
+(
+?u1
+?x2
+
++
+?u2
+?x1
+
+)
+
+µ
+
+(
+?u1
+?x2
+
++
+?u2
+?x1
+
+)
+?p + 2µ
+
+?u2
+?x2
+
+?
+????? (2.14)
+
+The Finite Element Method is used to find an approximated solution for the weak
+formulation problem, through the discretization of the continuous model, where the
+solution is evaluated at discrete points over the domain, called nodes. The relation between
+approximated continuous distribution of velocity and pressure and the nodal values, per
+element, is given by:
+
+u1 ?=
+n?
+j=1
+
+?ju
+1
+j = ?
+
+T u1; u2 ?=
+n?
+j=1
+
+?ju
+2
+j = ?
+
+T u2 (2.15)
+
+p ?=
+m?
+j=1
+
+?jpj = ?T p (2.16)
+
+where u = [u1u2]T is velocity field, p is the pressure, u1, u2, p are vectors at the nodal
+points of the approximated solutions,? and ? are interpolation functions defined in Section
+2.3.2, n and m are the number of interpolations nodes per element for velocity and pressure,
+respectively.
+
+By replacing the approximation for pressure and velocity fields obtained through finite
+element interpolation functions in the week formulation, we obtain the algebraic equations
+
+
+
+Chapter 2. Modeling of Non-Newtonian Flow 22
+
+for the finite element method. The matricial coefficients per element are given by:
+
+K? =
+?
+
+?e
+???Tdx;
+
+Cj(uj) =
+?
+
+?e
+%?(?T ui)
+
+??
+?xj
+
+dx
+
+Kij =
+?
+
+?e
+µ
+??
+?xj
+
+??T
+
+?xi
+dx; (2.17)
+
+Qi =
+?
+
+?e
+
+??
+?xi
+
+?Tdx
+
+fi =
+?
+
+?e
+?fidx, i,j = 1, 2; (2.18)
+
+The global algebraic system, considering two-dimensional case, is defined in the matrix
+form as (ROMERO; SILVA, 2014):
+?
+????
+K? 0 0
+0 K? 0
+0 0 0
+
+?
+????
+?????
+????
+
+u1
+u2
+p
+
+?????
+???? +
+
+?
+????
+C1(u1) + C2(u2) 0 0
+
+0 C1(u1) + C2(u2) 0
+0 0 0
+
+?
+????
+?????
+????
+
+u1
+u2
+p
+
+?????
+???? +?
+
+????
+2K11 + K22 K12 ?Q1
+
+K21 K11 + 2K22 ?Q2
+?QT1 ?QT2 0
+
+?
+????
+?????
+????
+
+u1
+u2
+p
+
+?????
+???? =
+
+?????
+????
+
+f1
+f2
+0
+
+?????
+???? (2.19)
+
+The resulting system is non-symmetrical and non-linear due to the term C(u). Therefore,
+to solve the system a non-linear solver, based on an iterative Newton method, needs to be
+applied (GERSBORG-HANSEN; SIGMUND; HABER, 2005). The velocity and pressure
+fields are the state variables of the problem, and the residual can be defined in a compact
+form based on Equation 2.19 as
+
+R(z(?),?) = 0 (2.20)
+
+where z is a vector that contains all state variables z = [u1 u2 p]T , and it is shown that R
+and state variables z depend on the material model described in Section 3.3.
+
+The viscosity dependent terms would also introduce non-linearities to the system,
+which would lead to an increase of complexity. Thus, the viscosity is calculated with respect
+to the computed velocity field from the previous iteration. This approach of neglecting
+the non-linear influence of viscosity has shown to be satisfactory, and has been used by
+Abraham, Behr and Heinkenschloss (2005) where the derivative of µ with respect to u is
+dropped.
+
+
+
+Chapter 2. Modeling of Non-Newtonian Flow 23
+
+2.3.2 Implemented Finite Element
+
+The choice of the problem discretization for the incompressible Navier-Stokes equations
+must satisfy the Ladyzhenskaya–Babuška–Brezzi (LBB or inf-sup) conditions (LOGG et
+al., 2012) in order to obtain a stable configuration. The use of equal-order continuous
+Lagrange finite element for both pressure and velocity leads to an unstable problem
+(ABRAHAM; BEHR; HEINKENSCHLOSS, 2005).
+
+One of the most widely used types of element for solving Navier-Stokes equations that
+satisfy these LBB conditions is the Taylor–Hood element (TAYLOR; HOOD, 1973). It
+consists of a continuous polynomial interpolation function of degree r ? 2 for the velocity
+components and a continuous polynomial of degree r ? 1 for the pressure field.
+
+The finite element used in this work is a triangular Taylor-Hood element, where the
+velocity has a quadratic interpolation function with six nodes per element and the pressure
+has a linear interpolation with three nodes. Thus, in Equations 2.15 and 2.16, the sum
+indexes values are n = 6 and m = 3. For the topology optimization process, the design
+variable is defined to be constant within an element, as shown in the Figure 2.2
+
+Figure 2.2 – Taylor-Hood mixed elements.
+
+The interpolation values are calculated in local normalized coordinates ? and ?
+(0 ? ? ? 1 and 0 ? ? ? 1) and then converted to the global coordinates, according to the
+following coordinate transformation for a triangular element with vertices (x1,y1), (x2,y2)
+and (x3,y3)
+
+x = x1 + (x2 ?x1)? + (x3 ?x1)? (2.21)
+
+y = y1 + (y2 ?y1)? + (y3 ?y1)? (2.22)
+
+The linear pressure interpolation is given by:
+
+?1(?,?) = 1 ? ? ??
+
+?2(?,?) = ? (2.23)
+
+?3(?,?) = ?
+
+
+
+Chapter 2. Modeling of Non-Newtonian Flow 24
+
+and the quadratic velocity interpolation in the local coordinates yields:
+
+?1(?,?) = (1 ? ? ??)(1 ? 2? ? 2?)
+
+?2(?,?) = ?(2? ? 1)
+
+?3(?,?) = ?(2? ? 1) (2.24)
+
+?4(?,?) = 4?(1 ? ? ??)
+
+?5(?,?) = 4??
+
+?6(?,?) = 4?(1 ? ? ??)
+
+
+
+25
+
+3 TOPOLOGY OPTIMIZATION
+
+The topology optimization (BENDSOE; SIGMUND, 2003) is a method that aims
+to design an optimized topology of a defined system in order to extremize a certain
+characteristic, which is represented by an objective function. The basic concept of this
+optimization type is that material can be distributed inside a domain, independent of the
+initial system configuration, by defining which domain point should be filled or empty.
+This method was originally developed for solving structural solid mechanics problems
+(BENDSOE; KIKUCHI, 1988), (SUZUKI; KIKUCHI, 1991) aiming to minimize mean
+compliance, where this distribution indicates presence or absence of solid material. In this
+specific work, where the fluid flow properties are evaluated, the filled parts represent fluid
+material and the empty parts represent solid that defines the contours of the fluid channel
+(BORRVALL; PETERSSON, 2003).
+
+The implementation of topology optimization arises from the combination of an
+optimization algorithm with an analysis method. The analysis is usually performed by
+using Finite Element Method, which allows working with complex geometries.
+
+The design variable, the parameter that will change through the optimization iterations,
+is defined by the model adopted to define the material distribution. Then, the design
+domain is specified where it is desired to obtain an optimized topology, with its boundary
+conditions. It is also necessary to define the objective function that will be extremized
+along with the constraints that the system must satisfy.
+
+After the complete description of the continuous problem, it is written in its discrete
+form in order to execute the analysis step through the Finite Element Method. The
+optimization algorithm changes the system topology until a convergence criteria is reached.
+Then, the results are post-processed to smooth the edges and it is verified if the system
+requirements are still consistent before prototype building (Sá, 2016).
+
+Figure 3.1 shows a simplified scheme of the main phases of design using topology
+optimization.
+
+
+
+Chapter 3. Topology Optimization 26
+
+Figure 3.1 – Topology optimization procedure for designing non-Newtonian fluid channels.
+
+Adapted from Koga (2010).
+
+3.1 Topology Optimization Applied to Fluid Flow
+
+The implementation of topology optimization method (TOM) to fluid systems has
+been first introduced by Borrvall e Peterson, where it is applied to two-dimensional flow
+channel design aiming to minimize viscous energy dissipation (BORRVALL; PETERSSON,
+2003). Fluid flow is modeled by considering steady state Stokes flow. The adopted design
+variable is the material pseudo-density.
+
+Since then, this theme has been quite explored in literature. Non-linear effects that occur
+for higher Reynolds numbers and Navier-Stokes constitutive equations (GERSBORG-HANSEN;
+SIGMUND; HABER, 2005), large scale flow and three-dimensional problems (AAGE et
+al., 2008) and flows driven by body forces (DENG; LIU; WU, 2013) have been studied.
+
+In the work of Klarbring et al. (2003), procedures from truss topology optimization
+are applied to flow networks, related to arterial tree-type networks.
+
+Different methods for implementing topology optimization applied to fluid problems
+have been proposed, such as using the viscosity as design variable (EVGRAFOV, 2005)
+and also modelling the flow using the Lattice- Boltzmann method (PINGEN; EVGRAFOV;
+MAUTE, 2007).
+
+The topology optimization method has been applied to systems with Stokes and
+Darcy flows coupled, by distributing regions of fluid and regions of porous material, which
+introduces the need for a regularization method (WIKER; KLARBRING; BORRVALL,
+2007).
+
+Recently, researchers have shown interest in applying the topology optimization method
+
+
+
+Chapter 3. Topology Optimization 27
+
+to design devices that conduct blood, by considering the non-Newtonian effects present in
+this fluid. One of the approaches, proposed by Hyun, Wang and Yang (2014), optimizes the
+fluid flow channel through the Navier-Stokes equations, where a multi-objective function
+is defined by relating reduction of wall shear stress and viscous energy dissipation through
+the use of different weights.
+
+Another approach can be found in the work of Pingen and Maute (2010), who has
+implemented the optimization of bidimensional channel design aiming to reduce the average
+pressure drop between inlet and outlet, modelling the non-Newtonian fluid through the
+Lattice Boltzmann method.
+
+Arterial bypass configurations problems with the objective of minimizing flow shear
+stress have been studied in the work of Zhang and Liu (2015). The topology optimization
+is implemented by using a level set method. The results are compared to the results of
+Abraham, Behr and Heinkenschloss (2005), that are achieved by using shape optimization.
+
+3.2 Extended Design Domain
+
+An important concept in topology optimization is the extended design domain, which
+consists in a predetermined fixed region in which the final system configuration must be
+contained. Within this fixed domain ?, the optimal solution ?f, which represents the
+distribution of fluidic regions, must be found. Thus, the optimization algorithm works
+with a domain that is larger than the expected optimal solution. Figure 3.2 illustrates this
+concept.
+
+Figure 3.2 – Fixed extended design domain.
+
+The main advantage of using a fixed domain, since its dimensions remain unchanged,
+is that the finite element mesh does not need to be readjusted during the optimization
+process, which makes the numerical implementation easier.
+
+
+
+Chapter 3. Topology Optimization 28
+
+3.3 Material Model
+
+Another essential concept to Topology Optimization Method is the material model
+used which relax the discrete (0-1) problem in order to achieve an optimized solution. In
+this case, the optimization algorithm uses a density based model.
+
+Given a domain ? with predefined boundary conditions, it is desired to find in which
+regions of ? must exist fluid and which must be solid in order to minimize (or maximize)
+a certain objective function subjected to a constraint of an amount of fluid.
+
+At the final optimization result, the domain distribution should be discrete, i.e, the
+value of the design variable at each point is zero (solid) or one (fluid). Since the discrete
+topology optimization problem is bad posed, it is usual to work with intermediate values
+during the optimization process (WIKER; KLARBRING; BORRVALL, 2007). Thus, a
+material model is applied to relax the problem and allow a continuous transition between
+solid and fluid.
+
+In the adopted material model, the design variable is the pseudo-density ?, 0 ? ? ? 1,
+which represents the amount of fluid present at each point of the domain. The material
+model represents a porous material that allows a continuous transition between these two
+states, through the inverse permeability term, present in Darcy’s equation, as presented in
+Section 2.1.
+
+In the final optimized topology, the design variable should achieve discrete values
+so that ? = 1 represents a pure fluid and ? = 0 indicates a fully solid material. In
+order to suppress the intermediate values of the pseudo-density ?, non-linear interpolation
+functions are adopted for describing the inverse permeability as functions of ? (BORRVALL;
+PETERSSON, 2003), given by
+
+?(?) = ?s + (?f ??s)
+?(1 + q)
+? + q
+
+(3.1)
+
+where q is the penalty parameter that controls the linearity of the interpolation function,
+?f = 0 is the inverse permeability for fluid material and ?s ?? is for solid material.
+
+The influence of the penalty parameter is shown in Figure 3.3, where higher values
+lead to an interpolation function with linear behavior and the distribution of ? in the
+domain tends to find extreme values (0 or 1). Due to non-convexity, as stated by Borrvall
+and Petersson (2003), when a high value of q is used there might be local optimal solution
+problems. Thus, the optimization is first solved with a small value of q = 0.01 to obtain a
+better initial guess for the problem and then the penalty parameter value is increased in
+order to achieve a discrete solution.
+
+
+
+Chapter 3. Topology Optimization 29
+
+Figure 3.3 – Influence of penalty parameter.
+
+Some authors suggest that the non-Newtonian effects should be reduced in areas of high
+porosity in order to avoid convergence problems. Thus, the viscosity also is interpolated
+as a function of the pseudo-density ?. Hyun, Wang and Yang (2014) proposed a model
+where viscosity is interpolated with the same penalty parameter q used for the inverse
+permeability, given by
+
+µ(?) = µs + (µf ?µs)
+?(1 + q)
+? + q
+
+(3.2)
+
+where µf is the shear rate dependent viscosity µ(??) and µs is equal to the Newtonian
+viscosity (µ? = 0.0035Pa.s).
+
+Pingen and Maute (2010) introduced a scaling term (1 ??)K, where K is a constant,
+into the Carreau-Yasuda viscosity model defined in Equation 2.11, resulting in
+
+µ(??,?) = µ? + (µ0 ?µ?)(1 ??)K[1 + (???)a]
+n?1
+
+a (3.3)
+
+In both equations presented, when ? = 1, the material is pure fluid and presents a
+full non-Newtonian behavior and when ? = 0, the material is solid and the viscosity value
+adopted is numerically equal to the Newtonian viscosity µ?, which can be found in regions
+of high shear rate. This interpolation can be justified by the fact that highly porous or
+solid material is concentrated in the interfaces between fluid and solid, where the velocity
+gradients are higher and present a minimal value of viscosity, as shown in Section 2.2, and
+in regions where fluid flow is approximately null and can be neglected.
+
+
+
+Chapter 3. Topology Optimization 30
+
+3.4 Problem Definition
+
+In an optimization problem, it is necessary to define the objective function, which
+represents the value that must be extremized, the constraints that the problem should
+satisfy and the design domain with its boundary conditions. The different objective
+functions studied will be presented next and the design domain and constraints will be
+detailed for each case in Section 6.
+
+The optimization problem in this work is defined by the following formulation
+
+Minimize : c(z(?),?)
+?
+
+subjected to : g(z(?),?) ? 0
+r(z(?),?) = 0
+?min ? ? ? ?max
+
+(3.4)
+
+where c(z(?),?) is a multi-objective function that can include terms of energy dissipation,
+shear stress and vorticity and g(z(?),?) is the volume constraint, described as follows. The
+term r(z(?),?) represents the problem governing equations defined in Section 2.1 and the
+limits of the design variable, according with the material model presented are ?min = 0
+and ?max = 1.
+
+3.4.1 Energy Dissipation
+
+Minimizing the energy dissipation is one of the objective functions in this work. For
+this case, there are no forces applied to the fluid and the fluid velocities are normal to the
+boundaries, thus, to minimize the potential energy dissipation is equivalent to minimize
+the channel average pressure drop (BORRVALL; PETERSSON, 2003).
+
+This objective function is valid in many applications, and it is specially important in
+applications where the energy available is restricted, requiring a good performance of the
+channel in which the fluid flows.
+
+Borvall and Petersson proposed a formulation for the fluidic energy dissipation that
+considers the effect of material model, given by
+
+? =
+?
+
+?
+
+1
+2
+µ(?u + ?uT ) : (?u + ?uT )d? +
+
+?
+?
+?(?)u2d? (3.5)
+
+The first term in the equation corresponds to the viscous dissipation effects present in
+the fluid flow. The second term corresponds to energy dissipation due to porous media
+model and it is introduced to minimize flow through porous and solid regions.
+
+
+
+Chapter 3. Topology Optimization 31
+
+3.4.2 Shear Stress
+
+One important criterion for designing devices for blood flow is to minimize blood
+damage. Since shear stress in the flow field is related to hemolysis (damage to red blood
+cells) and it also influences processes as platelet aggregation and thrombus formation
+(PROBST et al., 2010), it can be a good indicator of quality in a biomedical application.
+
+A common criteria used in blood flow problems is wall shear stress, which is typically
+defined on the channel wall. During the optimization process, the interface between solid
+and fluid changes continuously, which makes it difficult to evaluate this parameter.
+
+Topology optimization authors usually consider the shear rate as a representative
+measure of shear stress. Thus, we aim to minimize the integral of the squared shear rate
+as an objective function (ABRAHAM; BEHR; HEINKENSCHLOSS, 2005)
+
+Jss =
+?
+
+?
+2?(u) : ?(u)d? (3.6)
+
+where ?(u) is defined in Equation 2.3.
+
+It is important to notice that the only difference between this objective function and
+the previously defined energy dissipation objective function is the absence of the dynamic
+viscosity term.
+
+3.4.3 Vorticity
+
+High vorticity is prevalent in turbulent flow and can damage particles flowing in the
+current, causing a loss of material integrity, due to fluid mixing. It can be hazardous to
+sensitive fluids such as blood.
+
+A measure of vorticity can be expressed in the functional given by (QUARTERONI;
+ROZZA, 2003; ABRAHAM; BEHR; HEINKENSCHLOSS, 2004):
+
+Jv(u) =
+?
+
+?
+|?× u|2d? =
+
+?
+?
+
+(
+?u2
+?x1
+?
+?u1
+?x2
+
+)2
+d? (3.7)
+
+As it is presented in the Results Chapter 6, the energy dissipation due to porous media
+model term, presented in Eq.3.5, is introduced in order to achieve discrete results.
+
+Jv(u) =
+?
+
+?
+|?× u|2d? +
+
+?
+?
+?(?)u2d? =
+
+?
+?
+
+(
+?u2
+?x1
+?
+?u1
+?x2
+
+)2
+d? +
+
+?
+?
+?(?)u2d? (3.8)
+
+3.4.4 Multi-Objective Function
+
+In the present work, we combine the previous different objective functions to define a
+multi-objective function based on the weighting sum method, according to the following
+
+
+
+Chapter 3. Topology Optimization 32
+
+equation
+? = ?e? + ?vJv + ?sJss, (3.9)
+
+where ? is the viscous energy dissipation term, Jv is related to vorticity and Jss represents
+total shear stress. ?e,?v and ?s are the weighting coefficients associated with energy
+dissipation, vorticity and total shear stress respectively. Note that the sum ?e+?v+?s = 1.0.
+
+The functionals of the multi-objective function presented in Equation 3.9 have different
+orders of magnitude. Thus, in order to smooth these differences, two coefficients can be
+introduced (ZHU; ZHANG; FATIKOW, 2014):
+
+?k =
+?k?1
+
+Jv
+k?1 , k ? 1 (3.10)
+
+?k =
+?k?1
+
+Jss
+k?1 , k ? 1 (3.11)
+
+where ?k and ?k are weighting factors which values change at each iteration k of the
+optimization algorithm, calculated with respect the previous iteration k?1. For k = 0 the
+functional values for the initial domain distribution are used.
+
+Thus, the multi-objective function can be rewritten as
+
+? = ?e? + ?v?kJv + ?s?kJss, (3.12)
+
+where energy dissipation ? is the main term of the multi-objective function.
+
+As follows in Chapter 6, the total shear stress and vorticity objective functions do not
+converge to a final discrete distribution when are evaluated individually. Satisfactory results
+are obtained only when the term which minimizes flow in porous media (
+
+?
+? ?(?)u2d?) is
+
+included. Thus, these functions must combined with the total energy dissipation function or
+with the porous media term in order to achieve a domain distribution without intermediate
+values.
+
+3.4.5 Volume Constraint
+
+As a constraint, a given fraction of the design domain V is allowed to be occupied by
+fluid and the remaining must be solid, as defined in Equation 3.13.
+
+?
+?
+?d? ? V (3.13)
+
+This constraint is commonly used in solid mechanics field, to limit the amount of
+material or weight that a system can have. In the studied case, this weight limit is not
+
+
+
+Chapter 3. Topology Optimization 33
+
+relevant, however, it is necessary to apply this constraint in order to not obtain a final
+topology where the entire domain is filled with fluid, because the value of the function
+presented in Equation 3.5 is minimized when the values of velocity u are reduced, which
+occurs when the area occupied by fluid is augmented.
+
+In addition, the value of the design variable must be within the range 0 ? ? ? 1, as
+described before, and the Navier-Stokes constitutive equations must be satisfied.
+
+3.5 Discrete Form
+
+In this section, it will be presented the discrete form of each objective function
+previously described.
+
+The discrete form of the energy dissipation objective function is defined by (ROMERO;
+SILVA, 2014):
+
+? =
+1
+2
+uT(K?d + K??)u =
+
+1
+2
+zTCz (3.14)
+
+where the vector z = [u1 u2 p]T and the matrix C are given by
+
+C =
+?
+?K?d + K?? 0
+
+0 0
+
+?
+? (3.15)
+
+K?d =
+?
+?2K11 + K22 K12
+
+K21 K11 + 2K22
+
+?
+? (3.16)
+
+K?? =
+?
+?K? 0
+
+0 K?
+
+?
+? (3.17)
+
+and the matrices K? and Kij are defined in Section 2.3.
+
+The discrete form of the vorticity objective function is obtained by performing the
+numerical integration of functional presented in Equation 3.7.
+
+J(u) =
+ne?
+e=1
+
+?
+?e
+
+(
+?u2
+?x1
+?
+?u1
+?x2
+
+)2
+d? =
+
+ne?
+e=1
+
+ueT Mv,eue, (3.18)
+
+where ne is the total number of elements, the underscript e indicates that the matrices
+are assembled per element, u = [u1u2]T u1, u2 are vectors with nodal values of velocity in
+the x1 and x2 directions, respectively, and the local matrix Mv,e is defined as
+
+Mv,e =
+?
+?M11v,e M12v,e
+M21v,e M
+
+22
+v,e
+
+?
+? , (3.19)
+
+
+
+Chapter 3. Topology Optimization 34
+
+where
+
+M11v,e =
+?
+
+?e
+
+(
+??
+?x2
+
+??T
+
+?x2
+
+)
+d?; M12v,e = ?
+
+?
+?e
+
+(
+??
+?x2
+
+??T
+
+?x1
+
+)
+d?; (3.20)
+
+M21v,e = ?
+?
+
+?e
+
+(
+??
+?x1
+
+??T
+
+?x2
+
+)
+d?; M22v,e =
+
+?
+?e
+
+(
+??
+?x1
+
+??T
+
+?x1
+
+)
+d?; (3.21)
+
+and ? are interpolation functions for the triangular element presented in Section 2.3.2.
+
+The discrete form of shear stress functional is expressed by:
+
+Jss =
+1
+2
+uT(K?s)u (3.22)
+
+where the matrix K?s is defined by
+
+K?s =
+?
+?2Ks11 + Ks22 Ks12
+
+Ks21 Ks11 + 2Ks22
+
+?
+? (3.23)
+
+with the following matricial coefficients:
+
+Ksij =
+?
+
+?e
+
+??
+?xj
+
+??T
+
+?xi
+dx (3.24)
+
+
+
+35
+
+4 SENSITIVITIES CALCULATION
+
+In this work, a gradient-based optimization algorithm is used, which requires the
+derivative of the model output with respect to its input parameters, i.e, the derivative
+of the functional of interest in relation to the design variable must be calculated. The
+sensitivities calculation is computed through the adjoint method (FUNKE, 2013).
+
+4.1 Adjoint Method
+
+In the development of this section, the following considerations are taken in to account:
+F(u,m) = 0 is the forward model defined by the PDE of the governing equations, where
+m is the design variable and u is the solution vector. J(u,m) is the defined functional of
+interest.
+
+Thus, the calculation of the total derivative dJ
+dm
+
+can be done by applying the chain
+rule
+
+dJ
+
+dm
+=
+?J
+
+?u
+
+du
+
+dm
++
+?J
+
+?m
+(4.1)
+
+The derivative of u is obtained by taking the derivative of the FEM system of equations
+(forward model), since the PDE operator F is defined in explicit form.
+
+?F
+
+?u
+
+du
+
+dm
++
+?F
+
+?m
+= 0 (4.2)
+
+du
+
+dm
+= ?
+
+(
+?F
+
+?u
+
+)?1
+?F
+
+?m
+(4.3)
+
+Thus, the desired derivative is given by
+
+dJ
+
+dm
+= ?
+
+?J
+
+?u
+
+(
+?F
+
+?u
+
+)?1
+?F
+
+?m
++
+?J
+
+?m
+(4.4)
+
+The adjoint vector ?? is defined as
+
+?? = ?
+?J
+
+?u
+
+(
+?F
+
+?u
+
+)?1
+(4.5)
+
+where ? represents the complex conjugate of the transpose.
+
+To summarize, the adjoint method first solves the adjoint equation
+
+?F?
+
+?u
+? =
+
+?J?
+
+?u
+(4.6)
+
+
+
+Chapter 4. Sensitivities Calculation 36
+
+and then uses the adjoint solution to compute the functional gradient.
+
+dJ
+
+dm
+= ???
+
+?F
+
+?m
++
+?J
+
+?m
+(4.7)
+
+4.2 Energy Dissipation Sensitivity Analysis
+
+The gradient of the objective function ? is calculated by using the adjoint method
+described in Section 4.1.
+
+The gradient of energy dissipation with respect to the design variable ?i is obtained
+by differentiating Equation 3.14. Notice that the matrix C is symmetric, thus CT = C.
+
+??
+??i
+
+=
+1
+2
+
+?
+?( ?z
+
+??i
+
+)T
+Cz + zT
+
+?C
+??i
+
+z + zT C
+?z
+??i
+
+?
+? = 1
+
+2
+zT
+?C
+??i
+
+z + zT C
+?z
+??i
+
+(4.8)
+
+The derivative
+?z
+??i
+
+can be obtained through the FEM equilibrium equation. The
+residual R is given by:
+
+R = KGz ? F (4.9)
+
+where
+
+KG =
+?
+?C(u) + K ?Q
+?QT 0
+
+?
+? (4.10)
+
+Thus, by differentiating Equation 4.9 with respect to the design variable ?
+
+dR
+d?i
+
+=
+?R
+?z
+
+dz
+d?i
+
++
+?R
+??i
+
+(4.11)
+
+where
+?R
+?z
+
+= J is the Jacobian matrix resulting from the application of Newton’s method
+to the solution of the nonlinear system.
+
+Thus,
+J
+dz
+d?i
+
+= ?
+?R
+??i
+
+= ?
+?Kg
+??i
+
+z +
+?F
+??i
+
+= ri (4.12)
+
+From Equation 4.12,
+dz
+d?i
+
+= J?1ri (4.13)
+
+where the vector ri is calculated for each element i in the domain. Therefore, the second
+term of Equation 4.8 becomes
+
+zT C
+?z
+??i
+
+= zT CJ?1ri = ST ri (4.14)
+
+
+
+Chapter 4. Sensitivities Calculation 37
+
+ST = zT CJ?1 (4.15)
+
+The following linear system is obtained by rearranging the previous expressions
+
+JT S = Cz (4.16)
+
+Thus, the vector S is calculated by solving the above linear system. This system is
+independent of the derivative with respect to design variable ?, so it is solved once per
+iteration of the optimization process by using the velocity field u computed in the previous
+iteration. Then, by replacing the vector S in Equation 4.15, the unknown term
+
+?z
+??i
+
+and
+thus, the energy dissipation gradient is obtained.
+
+The sensitivity of
+?C
+??i
+
+can be computed as a sum of the gradients of K?? and K?d with
+respect to the design variable.
+
+?C
+??i
+
+=
+
+?
+???
+?K?d
+??i
+
++
+?K??
+??i
+
+0
+
+0 0
+
+?
+??? (4.17)
+
+These gradients are calculated by
+
+?K??
+??i
+
+=
+??(?i)
+??i
+
+?
+?k?,e 0
+
+0 k?,e
+
+?
+? (4.18)
+
+?K?d
+??i
+
+=
+?µ(?i)
+??i
+
+?
+?k11,e k12,e
+k21,e k22,e
+
+?
+? (4.19)
+
+where the matrix coefficients k? and kij, independent from the design variable ?, are
+defined as:
+
+k?,e =
+?
+
+?
+??Tdx; (4.20)
+
+kij,e =
+?
+
+?
+
+??
+?xj
+
+??T
+
+?xi
+dx, i,j = 1, 2;
+
+From Equation 3.1 it is obtained:
+
+??(?)
+??i
+
+= (?f ??s)
+q(q + 1)
+(q + ?)2
+
+(4.21)
+
+The term µ(?) is also dependant of the shear-rate. Thus, it is necessary to apply the
+
+
+
+Chapter 4. Sensitivities Calculation 38
+
+chain rule to obtain the viscosity derivative:
+
+?µ(??)
+??i
+
+=
+?µ(??)
+?u
+
+?u
+??i
+
+(4.22)
+
+When a viscosity interpolation is applied, its derivative should also be considered. For
+the interpolation presented in Equations 3.2 the derivative with the respect to the design
+variable is:
+
+?µ(?)
+??i
+
+= (µf (??) ?µs)
+q(q + 1)
+(q + ?)2
+
++
+?µf (??)
+??i
+
+?(1 + q)
+(? + q)
+
+(4.23)
+
+and for the interpolation present in Equation 3.3, we have
+
+?µ(?)
+??i
+
+= (µ0?µ?)
+{
+?K(1 ??)K?1[1 + (???a]
+
+n?1
+a ] + (1 ??)K(n? 1)(???)a?1[1 + (???)a]
+
+n?1?a
+a
+
+???
+
+??i
+
+}
+(4.24)
+
+where the derivative of the shear rate is calculated by
+
+???
+
+??i
+=
+???
+
+?u
+?u
+??i
+
+(4.25)
+
+4.2.1 Sensitivity of Viscosity
+
+As described before, in order to obtain the gradient of the matrix C, the derivative
+?µf (??)
+?u
+
+must be computed.
+
+Considering the shear rate for bi-dimensional flow, Equation 2.9 becomes:
+
+?? =
+?
+?2
+(
+?u1
+?x1
+
+)2
++ 2
+
+(
+?u2
+?x2
+
+)2
++
+(
+?u1
+?x2
+
++
+?u2
+?x1
+
+)2??1/2 (4.26)
+The derivative of viscosity with respect to velocity is obtained by the chain rule:
+
+?µf (??)
+?u
+
+=
+?µf (??)
+???
+
+???
+
+?u
+(4.27)
+
+where the first term corresponds to the derivative of Equation 2.11
+
+?µf (??)
+???
+
+= (n? 1)?(µ0 ?µ?)[1 + (???)a]
+n?1
+
+a
+?1(???)a?1 (4.28)
+
+From Equation 4.26,
+
+???
+
+?u1
+= ???1
+
+[
+2
+?u1
+?x1
+
+??
+
+?x1
++
+(
+?u1
+?x2
+
++
+?u2
+?x1
+
+)
+??
+
+?x2
+
+]
+(4.29)
+
+
+
+Chapter 4. Sensitivities Calculation 39
+
+???
+
+?u2
+= ???1
+
+[
+2
+?u2
+?x2
+
+??
+
+?x2
++
+(
+?u1
+?x2
+
++
+?u2
+?x1
+
+)
+??
+
+?x1
+
+]
+(4.30)
+
+where ? is the velocity interpolation function defined in Section 2.3.2
+
+Thus, the system can be represented using the matrix form:
+
+???
+
+?u
+= ???1Mgu (4.31)
+
+where
+
+Mg =
+
+?
+????
+
+2
+??
+?x1
+
+??T
+
+?x1
++
+??
+?x2
+
+??T
+
+?x2
+
+??
+?x2
+
+??T
+
+?x1
+??
+?x1
+
+??T
+
+?x2
+2
+??
+?x2
+
+??T
+
+?x2
++
+??
+?x1
+
+??T
+
+?x1
+
+?
+???? (4.32)
+
+4.3 Vorticity Sensitivity Analysis
+
+The vorticity sensitivity is obtained by differentiating Equation 3.7 with respect to
+design variable ? (ROMERO; SILVA, 2014).
+
+dJv
+d?i
+
+=
+duT
+
+d?i
+Mvu + uT
+
+?Mv
+??i
+
+u + uT Mv
+du
+d?i
+
+(4.33)
+
+Since Mv is not a direct function of the design variable ?, ?Mv??i = 0, thus
+
+dJ
+
+d?i
+= uT
+
+(
+Mv + MTv
+
+) du
+d?i
+
+(4.34)
+
+The term du
+d?i
+
+can be obtained from system FEM equations and with the use of an
+auxiliary matrix LT the velocities are isolated from the vector z
+
+u = LT z =?
+du
+?i
+
+= LT
+dz
+?i
+, (4.35)
+
+where LT is defined as:
+LT = [In×n 0n×m]. (4.36)
+
+The matrix L is composed by identity matrix I, of dimension (n×n), where n is the
+number of degrees of freedom of velocity, and an array of dimension (n×m) which consists
+only of zeros, where m is the number of pressure degrees of freedom.
+
+From Equations 4.13 and 4.35
+
+dz
+d?i
+
+= J?1ri =?
+du
+d?i
+
+= LT J?1ri (4.37)
+
+
+
+Chapter 4. Sensitivities Calculation 40
+
+By replacing Equation 4.34 on Equation 4.37, we obtain:
+
+dJ
+
+d?i
+= uT
+
+(
+Mv + MTv
+
+)
+LT J?1ri = STv ri (4.38)
+
+where,
+STv = u
+
+T
+(
+Mv + MTv
+
+)
+LT J?1. (4.39)
+
+By rearranging the previous expression, we obtain the linear system
+
+JT Sv = L
+(
+Mv + MTv
+
+)
+u. (4.40)
+
+The Sv vector is obtained by solving this linear system. This system is solved once
+per iteration of the optimization process, since it is independent of the derivative with
+respect to the design variable. It depends on the previous velocity field u and the residual
+R is assumed to be zero. The vector ri, from Equations 4.38, given by Equation 4.12, is
+calculated for each element i within the domain ?.
+
+4.4 Shear Stress Sensitivity Analysis
+
+The gradients of shear stress objective function with respect to the fluid pseudo-density
+? is obtained by using the same method as described before.
+
+dJss
+d?i
+
+=
+1
+2
+
+?
+?(?u
+
+??i
+
+)T
+K?su + uT
+
+?K?s
+??i
+
+u + uT K?s
+?u
+??i
+
+?
+? (4.41)
+
+Since the matrix K?s is independent of the design variable,
+?K?s
+??i
+
+= 0 and thus
+
+dJss
+d?i
+
+= uT
+(
+K?s + K?s
+
+T
+) du
+d?i
+
+(4.42)
+
+The derivative du
+d?i
+
+can be obtained as described before in Equation 4.37.
+
+dJss
+d?i
+
+= uT
+(
+K?s + K?s
+
+T
+)
+
+LT J?1ri = STs ri (4.43)
+
+The considerations for the system above and the vectors St and ri are the same as
+stated for the energy dissipation and vorticity objective functions.
+
+
+
+Chapter 4. Sensitivities Calculation 41
+
+4.5 Sensitivity Analysis of Multi-Objective Function
+
+The gradient of multi-objective function (Eq. 3.12) is given by:
+
+d?
+
+d?i
+= ?e
+
+d?
+d?i
+
++ ?v?k
+dJv
+d?i
+
++ ?v
+??k
+??i
+
+dJv + ?ss?k
+dJss
+d?i
+
++ ?ss
+??k
+??i
+
+dJss (4.44)
+
+The sensitivities of ?k and ?k are terms that arise due to the derived chain rule. Since
+?k and ?k represent constant values within each iteration, the derivative of these terms
+with respect to design variable ? is null. Thus, (ZHU; ZHANG; FATIKOW, 2014):
+
+??k
+??i
+
+= 0 (4.45)
+
+??k
+??i
+
+= 0 (4.46)
+
+Thus, we can define a simplified gradient of the multi-objective function for each
+optimization iteration as:
+
+d?
+
+d?i
+= ?e
+
+d?
+d?i
+
++ ?v
+dJv
+d?i
+
++ ?ss
+dJss
+d?i
+
+(4.47)
+
+The terms d?
+d?i
+
+, dJv
+d?i
+
+and dJss
+d?i
+
+, which correspond to energy, vorticity and shear stress
+sensitivities, respectively, have been calculated previously.
+
+The energy dissipation sensitivity is
+
+??
+??i
+
+=
+1
+2
+zT
+?C
+??i
+
+z + zT CJ?1ri (4.48)
+
+The vorticity sensitivity term is
+
+dJ
+
+d?i
+= uT
+
+(
+Mv + MTv
+
+)
+LT J?1ri (4.49)
+
+And the shear stress sensitivity contribution is
+
+dJ
+
+d?i
+= uT
+
+(
+K?s + K?s
+
+T
+)
+
+LT J?1ri (4.50)
+
+In order to obtain the multi-objective sensitivity, the equations above can be calculated
+separately and its results replaced in Eq. 4.47. However, it is also possible to combine
+the three adjoint problems in a way that only one final adjoint equation related to the
+multi-objective function needs to be solved. Thus, by replacing the adjoint equations above
+
+
+
+Chapter 4. Sensitivities Calculation 42
+
+in Eq. 4.47:
+
+d?
+d?i
+
+= ?e
+[
+
+1
+2
+zT
+?C
+??i
+
+z + zT CJri
+]
++?v?kuT
+
+(
+Mv + MTv
+
+)
+LT J?1ri+?s?kuT
+
+(
+K?s + K?s
+
+T
+)
+
+LT J?1ri
+(4.51)
+
+By packing the terms, it is obtained
+
+d?
+d?i
+
+= ?e
+1
+2
+zT
+?C
+??i
+
+z +
+[
+?ezT C + ?v?kuT
+
+(
+Mv + MTv
+
+)
+LT + ?s?kuT
+
+(
+K?s + K?s
+
+T
+)
+
+LT
+]
+J?1ri
+(4.52)
+
+In a simplified notation:
+
+d?
+d?i
+
+= ?e
+1
+2
+zT
+?C
+??i
+
+z + SmJ?1ri (4.53)
+
+where Sm is obtained from the solution of the system:
+
+JT Sm =
+[
+?eCz + ?v?kL
+
+(
+Mv + MTv
+
+)
+u + ?s?kL
+
+(
+K?s + K?s
+
+T
+)
+
+u
+]
+
+(4.54)
+
+In Equation 4.53, the vector ri, given by Equation 4.12, is calculated for each element
+i in the domain, and J, is the Jacobian matrix resulting from the application of Newton’s
+method to the solution of nonlinear system.
+
+
+
+43
+
+5 NUMERICAL IMPLEMENTATION
+
+5.1 Optimization Algorithm
+
+In order to determine the distribution of fluid and solid material within a design
+domain, finite element method and an optimization algorithm are combined in an iterative
+process, described bellow. In this work, a gradient based algorithm is used, where the
+gradient information with respect to the desired functional is evaluated and gives the
+direction to update the design variables values.
+
+First, the initial system information (design domain, boundaries) is defined and then
+the Navier-Stokes equations are solved by using finite element method. The value of the
+objective function and constraints are calculated with respect to the current distribution of
+? and u. Then, adjoint equations are solved in order to calculate the functional sensitivities
+that will be used by an optimizer to update the design variable.
+
+This iterative process is repeated until convergence is reached, resulting in the final
+material distribution. Figure 5.1 presents the simplified flow chart for the implementation
+of the topology optimization method.
+
+Figure 5.1 – Topology optimization implementation flow chart.
+
+The stopping criteria for the iterative process described is given by
+
+? ?k ??k?1 ??? 1 × 10?3 (5.1)
+
+where ? is the design variable distribution and k is the iteration number.
+
+
+
+Chapter 5. Numerical Implementation 44
+
+5.2 Software Environment
+
+To implement the optimization software, the OpenSource FEniCS environment combined
+with Dolfin-Adjoint library and IPOpt optimizer package will be used. This software
+collection allows the automation of solving mathematical models based on partial differential
+equations by using Finite Element Method, through an interface written in high level code,
+where the PDE is described in the weak formulation.
+
+Thus, it is possible to focus on the development and test of different formulations to
+the proposed problem, instead of spending time coding ordinary tasks related to most
+numerical simulation software, as assembly of FEM matrices and system equation solvers.
+
+This section will give a more detailed description of how this packages and libraries
+are used within the topology optimization procedure.
+
+5.2.1 Finite Element Method
+
+The finite element method is implemented by using the OpenSource FEniCS environment
+(ALNæS et al., 2015), which consists of a collection of software components for automating
+the solution of PDEs. It has modules that receive the problem weak formulation in a
+mathematical syntax and assemble the FEM problem in a language that can be interpreted
+by the computer.
+
+In listing 5.1, it is exemplified how the FEniCS coding (this case in Python) is similar
+to a mathematical formulation.
+
+Listing 5.1 – FEM coding using FEniCS/Dolfin-Adjoint notation..
+
+I = Identity (U. c e l l ( ) . topological_dimension ( ) )
+T = ?pI + 2.0? v i s c ( rho , u )?( grad (u)+grad (u ) .T) #s t r e s s t e n s o r
+
+F = dens ? inner ( dot ( grad (u ) , u ) , v) ? dx \
++ alpha ( rho )? inner (u , v)?dx \
++ inner (T, grad (v )) ? dx \
+? q?div (u)?dx
+
+The FEniCS main feature relies on a form compiler for compilation of code for
+individual forms. A Form Compiler is a type of software that can interpret equations
+written in a high-level language and generate a numerical routine to solve them. The
+FEniCS Form Compiler (FFC) is responsible for interpreting an input equation described in
+weak variational form through UFL (Unified Form Language) and generating an optimized
+low level code (C++) of finite element assembly in UFC (Unified Form-Assembly Code).
+The UFC code is combined with mesh and coefficient data, in order to assemble the FEM
+tensors.
+
+
+
+Chapter 5. Numerical Implementation 45
+
+The communication between all FEniCS modules is handled by Dolfin (LOGG et al.,
+2012), a library coded in C++/Python, which works as the main user interface of FEniCS.
+Dolfin is organized as a collection of FEniCS components and external software modules,
+each one covering a certain area of functionality, such as: linear algebra, meshes, finite
+elements, functions and solvers.
+
+Some of the most important functionalities from external software are provided by
+the linear algebra libraries PETSc, Trilinos, uBLAS and MTL4 and the mesh partitioning
+libraries ParMETIS and SCOTCH.
+
+The Finite Element equations lead to large sparse system which is non-linear and
+non-symmetrical, thus, an iterative solver, a more complex method than the basic
+Newton method is needed to guarantee the solution convergence. The FEniCS system
+offers pre-installed support methods such as Generalized minimal residual (Gmres) and
+Biconjugate gradient stabilized (Bicstab), that are also commonly used on Navier-Stokes
+problems. In this work, the Multifrontal Massively Parallel Sparse direct Solver (MUMPS)
+(MUMPS Guide, 2011) and a preconditioner that is the combination of the Incomplete
+LU factorization (ILU) and Block Jacobi iteration (Bjacobi) have been adopted.
+
+5.2.2 Sensitivities Computation
+
+Since it is used a gradient-based optimizer, it is necessary to derive the functional of
+interest in relation to design variable ?. The sensitivities calculation is performed through
+the adjoint method, as defined in Section 4.
+
+The implementation of the adjoint method can be based in one of the three steps
+needed to solve a Finite Element problem, as shown in Figure 5.2: the continuous FEM
+equations, the discrete FEM equations or the FEM implemented code. The resulting
+adjoint system will be at the same discretization stage as the model from which it is was
+derived. That is, the continuous adjoint equations are continuous PDE, the discrete adjoint
+equation are discrete PDE and the adjoint of the source code is an implementation of
+these discrete PDE.
+
+
+
+Chapter 5. Numerical Implementation 46
+
+Figure 5.2 – Approaches of computing the adjoint problem.
+
+adapted from Funke (2013).
+
+The continuous adjoint equations are obtained by deriving the adjoint system prior
+to the discretization of the PDE. This implies that the discontinuities that arrive from
+numerical methods can be avoided. Obtaining the continuous adjoint system requires
+a complex implementation due to manual derivation which increases considerably the
+development work.
+
+It is possible to compute the derivatives with algorithmic differentiation at the last
+stage of the FEM implementation. This approach is performed at the lower level, i.e., the
+source code. The applicability can be limited and it also requires extensive user intervention
+and expertise.
+
+The implemented method, illustrated as the highlighted path in Figure 5.2, consists in
+the adjoint derivation of the discrete equations. The main advantages obtained are that
+this derivation is performed independently of implementation details and the resulting
+gradient information is consistent with discrete finite element model.
+
+The software library libadjoint (FUNKE, 2013) receives a high-level representation
+of the FEM equations and derives high-level representation of the adjoint model. It is
+responsible for assembling and solving the adjoint equations. The interface with FEniCS
+software platform is managed by the Dolfin-Adjoint package.
+
+5.2.3 Optimizer
+
+The optimization algorithm used in this work is implemented through the optimizer
+IPOpt, which stands for Interior Point Optimizer (WÄCHTER; BIEGLER, 2006). It is an
+open source software package for large-scale nonlinear optimization, written in Fortran 77
+and compatible with FEniCS and Python language.
+
+The implemented algorithm uses a primal-dual barrier method with a filter line-search
+
+
+
+Chapter 5. Numerical Implementation 47
+
+method to solve nonlinear optimization problems which will be assumed to be stated in
+the generic form:
+
+Minimize : f(x)
+x ? Rn
+
+subjected to: c(x) = 0
+x ? 0
+
+(5.2)
+
+In order to avoid the problem of identifying the active bound constraints, the problem
+constraints are replaced by a logarithmic barrier term which is added to the objective
+function, resulting in the following barrier problem:
+
+Minimize : ?µ(x) = f(x) ?µ
+n?
+i=1
+
+ln(xi)
+
+x ? Rn
+
+subjected to: c(x) = 0
+
+(5.3)
+
+where ?µ(x) is the barrier function, µ &gt; 0 is the barrier parameter which determines the
+degree of influence of the barrier term µ
+
+n?
+i=1
+
+ln(xi).
+
+The global convergence of the optimization is enforced by using filter line search
+approaches, in which the basic concept is to accept trial points that improve the objective
+function or improve the constraint violation instead of a combination of those two measures
+defined by a merit function. Thus, the barrier problem can be interpreted as a bi-objective
+problem with the two goals of minimizing the objective function ?µj (x) and the constraint
+violation ?(x) = ||c(x)||.
+
+A strategy for solving the original problem is to compute the solutions for a sequence
+of barrier problems with a decrease sequence of barrier parameters µk converging to zero,
+where the solution of the next barrier problem continues from the approximate solution of
+the previous one. The algorithm ends when the error for the barrier problem µk+1 ?µk
+satisfies a certain specified tolerance.
+
+
+
+48
+
+6 NUMERICAL RESULTS
+
+In this chapter, numerical examples are presented to illustrate the proposed methods for
+non-Newtonian fluid finite element modeling and topology optimization. Blood properties
+have been adopted, where mass density is % = 1056kg/m3 and the viscosity parameters for
+the Carreau-Yasuda model, defined in Section 2.2, are shown in Table 6.1 (ABRAHAM;
+BEHR; HEINKENSCHLOSS, 2005).
+
+Table 6.1 – Carreau-Yasuda parameters for blood.
+
+Parameter Value
+a 0.64
+n 0.2128
+? 8.2
+µ? 0.0035Pa.s
+µ0 µ0 = 0.16Pa.s
+
+Firstly, the finite element method for non-Newtonian fluids is validated with a backward
+facing step problem. Then, optimized topologies for bi-dimensional channels are presented
+by comparing the constant viscosity model with shear-thinning model. Then, arterial
+bypass graft results are shown, for cases where the artery is fully or partially blocked.
+Finally, the method is extended to a tri-dimensional problem, and a 3D diffuser is presented.
+
+6.1 FEM Verification
+
+The fluid flow over a two-dimensional backward-facing step is analyzed to verify the
+non-Newtonian fluid model implemented. The results obtained are compared with the
+work of Siebert and Fodor (2009), in which a case study for different blood viscosity models
+in commercial software COMSOL Multiphysics is presented.
+
+The investigated problem consists of fluid flow inside a bi-dimensional 10cm long
+channel with a backward-facing step of 2cm length and 1mm height. The considered
+boundary conditions are presented in Figure 6.1: no-slip conditions at the top and bottom
+walls, a parabolic velocity profile at the inlet, with maximum velocity Umax = 0.025m/s
+for the first case and Umax = 0.8m/s for the second case, and zero pressure at the outlet.
+
+
+
+Chapter 6. Numerical Results 49
+
+Figure 6.1 – Backward facing step problem.
+
+In Siebert and Fodor (2009), the Power-law, Carreau and Newtonian viscosity models
+are studied. In this work, Newtonian and Carreau-Yasuda models are used for the
+optimization problems. Even though the literature reference uses the Carreau model, for
+this finite element verification, the Carreau-Yasuda and Newtonian models are implemented
+and compared with this reference. The comparison is still valid since the Carreau model
+presents the same constitutive equation as the Carreau-Yasuda, however with different
+constants and thus, having a very similar shear-thinning behavior.
+
+The velocity profiles for the newtonian model and two different velocities are shown in
+Fig. 6.2. The velocity profiles for the Carreau-Yasuda model are shown in Fig. 6.3. The
+influence of inlet maximum velocity can be noted in both figures. We observe that in the
+high velocity case a vortex arises near the backward step. Also, the maximum velocity
+decays faster in the low velocity case, and the flow profile becomes developed very close to
+the step.
+
+Figure 6.2 – Velocity profile for newtonian model. (a) Umax = 0.025m/s. (b) Umax = 0.8m/s.
+
+Figure 6.3 – Velocity profile for Carreau-Yasuda model. (a) Umax = 0.025m/s. (b) Umax =
+0.8m/s.
+
+These velocity profiles for the newtonian and non-newtonian are very similar however,
+
+
+
+Chapter 6. Numerical Results 50
+
+they are consistent with previous works (SIEBERT; FODOR, 2009). Taking a closer look
+at the profiles we can observe some differences, as shown in Fig. 6.5, in which a section of
+the velocity profile is taken at the outlet for each case.
+
+Figure 6.5 shows a comparison of the velocity profiles at the outlet, which, again,
+correspond to the profiles obtained by Siebert and Fodor (2009) (Fig.6.4). It can be
+observed that for a lower inlet velocity, the non-Newtonian profiles are flatter at the
+center and exhibit larger velocity gradients towards the walls. Also, for higher speeds, the
+shear-thinning dynamic viscosity converges to Newtonian value, which leads to almost
+identical outlet profiles.
+
+Even though the viscosity model adopted in this work is the Carreau-Yasuda, the
+results are very similar to the Carreau model and presented the same shear-thinning
+characteristics.
+
+Figure 6.4 – Velocity profile obtained in literature: (a) Umax = 0.025m/s and (b) Umax =
+0.8m/s.
+
+Adapted from Siebert and Fodor (2009) by interpolating the points.
+
+Figure 6.5 – Velocity profile at the outlet for different viscosity models obtained with FEniCS:
+(a) Umax = 0.025m/s and (b) Umax = 0.8m/s.
+
+
+
+Chapter 6. Numerical Results 51
+
+6.2 Topology Optimization Results
+
+In this section, it will be presented the results obtained by applying the method
+described in Chapter 3 to design of blood flow channels, where the fluid is modeled as
+Newtonian and Non-Newtonian with Carreau-Yasuda viscosity (Eq. 2.11).
+
+6.2.1 Double Channel
+
+The double channel problem is the classical example of topology optimization applied
+to fluid flow. First, the results will be compared with the Stokes formulation and fictional
+properties (% = 1), as studied by Borrvall and Petersson (2003). Then, optimization
+considering blood flow will be studied. The viscosity is modelled as constant Newtonian
+fluid with viscosity µ = 1. The objective function adopted aims to minimize the energy
+dissipation (Equation 3.5).
+
+Although in the example presented in Section 6.1 the non-Newtonian velocity profile
+obtained presents a more flattened distribution at the center, in this case, a parabolic
+velocity profile is adopted in order to compare the results for different viscosity models
+and also confront them with the existing literature. The boundary conditions and design
+domain for the optimization problem are presented in Figure 6.6.
+
+Figure 6.6 – Double channel problem.
+
+The volume constraint imposed limits in the total amount of fluid to 1/3 of the domain.
+The adopted values for inverse permeability, as defined in Equation 3.1, are: ?f = 0 and
+?s = 10000.
+
+The height is maintained fixed while the length L is variable to observe how the
+topology may change. Given that, the results obtained in Borrvall and Petersson (2003),
+for L = 1.0 are two separated straight channels connecting the inlets to the outlets and
+for L = 1.5, the channels merge into one at the center with an angle of 90? between the
+two inlets and the two outlets, which corresponds to the analytical results obtained in
+
+
+
+Chapter 6. Numerical Results 52
+
+Pironneau (1974).
+
+Figure 6.7 shows the results obtained by using the energy functional, Stokes formulation
+and the Newtonian model with arbitrary properties (density % = 1 and viscosity µ = 1).
+We observe that the topologies are very consistent with the topologies of Borrvall and
+Petersson (2003), indicating that the optimization process is correctly implemented.
+
+Figure 6.7 – Topologies for the double channel problem with Stokes formulation.
+
+In addition, topology optimization for a double channel problem considering two inlets
+and two outlets is studied, now considering the zero stress boundary condition (Eq.2.2
+equals to zero) at the outlet, as shown in Fig. 6.8. Also, the Navier-Stokes formulation
+of fluid flow and real blood properties are considered, as studied in Pingen and Maute
+(2010). Thus, the domain has dimensions in cm, i.e., 1cm × 1.5cm. For this case, the
+adopted objective function aims to minimize total shear stress combined with the term
+(
+?
+
+? ?(?)u2d?), necessary in order to achieve a final discrete distribution.
+
+The optimized topologies for both Newtonian and Carreau-Yasuda (with interpolation
+dependant of pseudo-density) models of viscosity are presented for two different values of
+the maximum value of the parabolic velocity profile at inlet.
+
+Figure 6.8 – Double channel problem with zero stress boundary condition at the outlet.
+
+
+
+Chapter 6. Numerical Results 53
+
+Figure 6.9 shows the results for the Newtonian model with inlet peak velocities of 0.02
+and 0.2 cm/s, viscosity of 0.0035Pa · s and considering the shear stress functional. We
+observe that both topologies are very similar for this model of constant viscosity. Figure
+6.10 shows the velocity fields for this case. The objective function values are shown in
+Table 6.2.
+
+As can be seen in Fig. 6.9, the topology for high velocity (Fig.6.9b) unite the channel
+farther from the inlet with a small curvature, while the topology for low velocity (Fig.6.9a)
+has a more straight path. This can be explained by the fact that the fluid at higher
+velocities has more inertia and then a smoother transition to the united channel provides
+a lower shear stress.
+
+Figure 6.9 – Topology results for double channel and Navier-Stokes Newtonian model.
+(a) Re=0.1. (b) Re=1.0.
+
+Figure 6.10 – Velocity fields for double channel and Navier-Stokes Newtonian model.
+(a) Re=0.1. (b) Re=1.0.
+
+Table 6.2 – Functional values for double channel.
+
+Case Inlet Velocity [cm/s] Area [cm2] Total Shear Stress
+Newtonian 0.02 0.5 0.002
+Newtonian 0.2 0.5 0.221
+Non Newtonian 0.02 0.5 0.220
+Non Newtonian 0.2 0.5 0.303
+
+Figure 6.11 show the results for the Non-Newtonian Carreau-Yasuda model with inlet
+
+
+
+Chapter 6. Numerical Results 54
+
+peak velocities of 0.02 and 0.2 cm/s and considering the shear stress functional. In this
+case, the results are very different, given that for low velocities (Fig.6.11a) the channels
+do not merge, while for high velocities (Fig.6.11b) the channels unite giving a topology
+similar to the result from the Newtonian model (Fig.6.9b). Figure 6.12 and 6.13 show the
+velocity and viscosity fields, respectively. The objective function values are shown in Table
+6.2.
+
+Figure 6.11 – Topology results for double channel and Navier-Stokes non-Newtonian model
+(Carreau-Yasuda viscosity model).
+
+(a) Re=0.1. (b) Re=1.0.
+
+Figure 6.12 – Velocity fields for double channel and Navier-Stokes non-Newtonian model
+(Carreau-Yasuda viscosity model).
+(a) Re=0.1. (b) Re=1.0.
+
+Figure 6.13 – Viscosity fields for double channel and Navier-Stokes non-Newtonian model
+(Carreau-Yasuda Viscosity Model).
+
+(a) Re=0.1. (b) Re=1.0.
+
+The results obtained are similar to the results presented in the work of Pingen and
+Maute (2010), where the total shear stress in the domain is also considered as the objective
+
+
+
+Chapter 6. Numerical Results 55
+
+function.
+
+It is possible to observe that the topologies may differ significantly when a constant
+or variable viscosity model is adopted. For higher velocity, thus higher shear rate, both
+cases presented a similar optimized design, with a merged channel. This is consistent with
+the Carreau-Yasuda model adopted for the shear-thinning effect, where in cases of higher
+shear rate, the behavior of blood is close to a Newtonian fluid with a value of viscosity
+that tends to the minimum µ? = 0.0035Pa.s.
+
+In Fig.6.13 it is possible to see that the viscosity field is consistent with the velocity
+field, given that at the center of the channels the viscosity presents a high value, indicating
+that at this point the shear rate is low. Also, the viscosity presents a lower value near the
+channel walls, indicating high shear rates, which is coherent with the no-slip condition
+and the boundary layer. The viscosity profile is in accordance with the interpolation used,
+described in Equation 3.3, given that in solid regions the viscosity presents a lower constant
+value.
+
+6.2.2 Obstacle
+
+The second implementation example is the pipe bend optimization problem with
+an obstacle, having energy dissipation as objective function. The corresponding design
+domain is shown in Figure 6.14. The volume constraint defines the total amount of fluid
+V ? 0.08?L2. This value corresponds to a quarter of the volume of torus with inner
+radius ri = 0.07m and outer radius ro = 0.09m that fits exactly to the inlet and outlet, as
+suggested for the simple pipe bend problem in Borrvall and Petersson (2003). Parabolic
+velocity profiles are used at the inlet and outlet, where the velocity at the center presents
+a value Umax = 0.01m/s.
+
+Figure 6.14 – Obstacle problem.
+
+As a result, a comparison of topologies generated by considering Newtonian and
+
+
+
+Chapter 6. Numerical Results 56
+
+Carreau-Yasuda viscosity model is presented in Figure 6.15, where the effect of modelling
+blood shear-thinning in the final design is visible.
+
+Figure 6.15 – Optimized topologies for the obstacle problem.
+(a) Newtonian viscosity. (b) Carreau-Yasuda.
+
+In Figure 6.16, the velocity profile and shear-thinning viscosity distribution for the
+non-Newtonian optimized topology are observed. The direct relation between them can
+be observed: in regions where the velocity gradients are lower, shear-stress has also a
+decreased value, an thus, the dynamic viscosity tends to the maximum adopted value
+µ0 = 0.16Pa.s.
+
+Figure 6.16 – Velocity and viscosity profiles for the Carreau-Yasuda model.
+(a) Velocity. (b) Viscosity.
+
+In addition, the value of Newtonian constant viscosity µ0 = 0.0035Pa.s is displayed in
+the areas where the domain is filled with solid, due to the interpolation function employed
+(Eq. 3.2). The results obtained are similar to the results obtained by using the interpolation
+function from Equation 3.3, however, when applying this pondering the convergence rate
+decreases. In the Newtonian model, the viscosity distribution is not shown because it is
+constant within the domain, both solid and fluid area present the same viscosity value.
+
+
+
+Chapter 6. Numerical Results 57
+
+6.2.3 Arterial Bypass
+
+Having verified the topology optimization process with the previous examples, the
+methodology is applied to practical problems, such as the arterial bypasses. The next
+sections illustrates the application of TOM to different cases of arterial bypasses.
+
+a) Fully blocked arterial bypass
+
+An important example of application of topology optimization to blood flow is the
+design of an arterial bypass, studied before by Abraham, Behr and Heinkenschloss (2005)
+and Zhang and Liu (2015), which consists in an artificial channel that allows the existence
+of flow in places where an artery is blocked. The objective function used aims to minimize
+the total shear stress of the fluid, since it is directly related with blood cell damage in
+artificial flows.
+
+A parabolic inlet profile is adopted to simplify the examples, as seen in Section 6.1.
+This profile is adjusted by the formulation of Non-newtonian profile in the beginning of
+the channel. Thus, the optimization domain is defined in a region distant from the inlet.
+
+The dimensions and boundary conditions for this problem are shown in Fig. 6.17.
+The highlighted area corresponds to the design domain, and the inferior central part
+corresponds to the blocked artery. Also, the original artery, represented by the lower
+channel with height h, is not modified during the process, so it is a fixed domain always
+filled with fluid. At the inlet, velocity profile is imposed with Umax = 0.025m/s and at
+the outlet a zero stress condition is considered. The upper region is the domain where the
+bypass topology will be formed.
+
+Figure 6.17 – Arterial bypass domain.
+
+The adopted dimension are: h = 0.068m, d = 0.006m, L1 = 0.06m, L2 = 0.03m,
+L3 = 0.019m, L4 = d/4, and L5 = 0.02m.
+
+In this example the Carreau-Yasuda viscosity model is used without the porous
+interpolation on viscosity, due to the fact that without this interpolation the convergence
+is faster and the results are not influenced too much. A volume constraint of 33% of the
+total volume is used. Also, an initial guess similar to Abraham, Behr and Heinkenschloss
+
+
+
+Chapter 6. Numerical Results 58
+
+(2005) is used, as shown in Fig.6.18.
+
+Figure 6.18 – Initial guess for bypass topology optimization of fully blocked artery.
+
+Figure 6.19 – Velocity and viscosity fields for bypass initial guess of fully blocked artery.
+(a) Velocity Field.
+
+(b) Viscosity Field.
+
+The final topology is shown in Fig.6.20. Here, it is possible to notice that the algorithm
+tends to create the shorter path between the inlet and outlet. This result was also observed
+by Zhang and Liu (2015). This indicates that this topology, juxtaposed to the wall, creates
+a lower energy dissipation value than the initial guess.
+
+Figure 6.21 shows the velocity and viscosity fields for the optimized topology. In
+Fig.6.21a, we observe that the overall velocity is lower in the bypass region when compared
+with the initial guess (Fig.6.19a). The viscosity field (Fig.6.21b) shows a higher viscosity
+within the channel, which signifies that the shear rate in the optimized channel is lower.
+Thus, from this conclusion we can infer that the initial topology (Fig.6.19b) has a higher
+shear rate inside the channel.
+
+It is important to notice that, as cited before, the viscosity is not interpolated with
+
+
+
+Chapter 6. Numerical Results 59
+
+respect to the design variable, thus, the solid regions on the viscosity fields present a low
+shear rate, hence, close to the upper value for viscosity (µ0 = 0.16Pa ·s).
+
+Figure 6.20 – Final topology for bypass optimization of fully blocked artery.
+
+Figure 6.21 – Velocity and viscosity fields for bypass optimization of fully blocked artery.
+(a) Velocity Field.
+
+(b) Viscosity Field.
+
+Figure 6.22 shows the convergence curve for the optimization and Fig.6.23 shows the
+topology evolution during the process. The functional value can be broken in two different
+parts, being the first identified as the shear stress (
+
+?
+?
+
+1
+2 (?u +?u
+
+T ) : (?u +?uT )d?) and
+the second as the inertial velocity term (
+
+?
+? ?(?)u2d?). As can be seen, initially the shear
+
+stress value increases as the volume decreases to attend the restriction. Also, the inertial
+part is initially very low, given that the domain do not present intermediary porosity
+regions, however, as the optimization proceeds the value grows and then decreases as the
+gray regions disappear.
+
+The final functional values can be seen in Table 6.3. The final topology presents a
+improvement in shear stress of 42% while the inertial part increases, however the reduction
+
+
+
+Chapter 6. Numerical Results 60
+
+of the shear stress is the main objective, thus the optimization is performed successfully.
+
+Table 6.3 – Final Functional values for bypass optimization of fully blocked artery.
+
+Case Area [cm2] Objective Function Shear Stress Inertial Part
+Initial guess 16.57 198.79 198.35 0.44
+Optimized 15.63 129.65 115.47 14.18
+
+Figure 6.22 – Convergence curve for bypass optimization of fully blocked artery.
+
+Figure 6.23 – Topology changes during bypass optimization of fully blocked artery.
+(a) Iteration 0. (b) Iteration 150.
+
+(c) Iteration 10. (d) Iteration 200.
+
+(e) Iteration 50. (f) Iteration 300.
+
+
+
+Chapter 6. Numerical Results 61
+
+b) Partial blocked arterial bypass
+
+The second case of an arterial bypass consists of a partial blocked artery (stenosed) in
+which another artery outlet is appended. Thus, in order to obtain a better design of the
+joint section between the host artery and the graft, both the host artery and graft outlets
+are set as the design objects. The objective function evaluated corresponds to minimizing
+the domain shear stress (Eq. 3.6). This application is also studied in the work of Zhang
+and Liu (2015) and the arterial bypass domain includes two inlets which are the host
+artery inlet and the graft inlet and one outlet referring to the host artery continuation.
+
+Again, two parabolic inlet profiles are adopted and domain extensions are added to
+allow the flow development until the Non-Newtonian profile. The viscosity model adopted
+is the Carreau-Yasuda Non-Newtonian model without the interpolation with respect to
+the design variable. The dimensions and boundary conditions for this problem are shown
+in Fig. 6.24. The highlighted area corresponds to the design domain, which excludes the
+domain extension cited before.
+
+This application is divided in three sub-cases, in which the inlet velocities are changed
+to represent different situations. The three cases are described in Table 6.4.
+
+Table 6.4 – Cases division for bypass optimization of partial blocked artery.
+
+Case 1 Case 2 Case 3
+u1[cm/s] 10.5 15.75 5.25
+u2[cm/s] 10.5 5.25 15.75
+
+Figure 6.24 – Design domain and boundary conditions for stenosed artery bypass.
+
+
+
+Chapter 6. Numerical Results 62
+
+Case 1 (u1 = 10.5[cm/s], u2 = 10.5[cm/s])
+
+This case considers both artery and graft with the same flow rate, i.e., the same
+parabolic profiles with peak velocity of 10.5[cm/s], which represents a Reynolds number
+of 100. The final topology is shown in Fig. 6.25. The velocity and viscosity fields are
+presented in Fig.6.27.
+
+In this example we can see that both channels have similar widths close to the inlet.
+Observing the velocity field (Fig.6.26) the channels unite midway in an angle close to the
+double channel results (Fig.6.11b).
+
+The viscosity profile, shown in Fig. 6.27a, presents a higher value at the solid regions
+since velocity gradients are close to zero. At the fluid channel, the viscosity value is lower
+and apparently constant, however in Fig. 6.27b the viscosity profile is plotted with a
+reduced maximum value and it is possible to observe the non-Newtonian behavior of the
+fluid. At the walls, where velocity gradient and also shear rate is higher, viscosity has a
+lower value. At the center of the fluid channel, the opposite effect is observed, velocity
+gradients are lower and, thus, the viscosity value increases sightly.
+
+Figure 6.25 – Final topology for stenosed artery optimization (Case 1).
+
+Figure 6.26 – Velocity field for stenosed artery optimization (Case 1).
+
+
+
+Chapter 6. Numerical Results 63
+
+Figure 6.27 – Viscosity field for stenosed artery optimization (Case 1).
+(a) Viscosity Field. (b) Viscosity field inside the channel.
+
+Case 2 (u1 = 5.25[cm/s], u2 = 15.75[cm/s])
+
+This case considers that the upper artery is obstructed and graft must provide the
+remaining flow to maintain the flow rate at the outlet, i.e., the parabolic profiles have
+different peak values of 5.25[cm/s], in the upper inlet, and 15.75[cm/s] in the lower inlet.
+The final topology is shown in Fig. 6.28. The velocity and viscosity fields are presented in
+Fig.6.30.
+
+In this example we can see that the high velocity channel dominates the optimization,
+in a way that the final topology is almost a straight channel with a small collaboration
+of the upper inlet in the contour, promoting a small curvature in the lower part of the
+channel near where it unites.
+
+The final topology seems discontinuous near the upper inlet, however, the results is
+correct, given that the small extensions are considered fixed as fluid and do not enter the
+optimization. If this extension is part of the optimization domain, a curve consistent with
+the velocity profile would be created. The velocity field (Fig.6.29) is coherent with the
+topology and the fluid only flows where the topology enables. The viscosity profile (Fig.
+6.30) is consistent with the characteristics of fluid flow at this optimized topology and
+again, the profile is shown in two different value ranges so that the viscosity inside the
+fluid can be observed.
+
+Figure 6.28 – Final topology for stenosed artery optimization (Case 2).
+
+
+
+Chapter 6. Numerical Results 64
+
+Figure 6.29 – Velocity field for stenosed artery optimization (Case 2).
+
+Figure 6.30 – Viscosity field for stenosed artery optimization (Case 2).
+(a) Viscosity Field. (b) Viscosity field inside the channel.
+
+Case 3 (u1 = 15.75[cm/s], u2 = 5.25[cm/s])
+
+This case is the opposite of the Case 2, it considers that the lower artery is obstructed
+and graft must provide the remaining flow to maintain the flow rate at the outlet, i.e.,
+the parabolic profiles have different peak values of 15.75[cm/s], in the upper inlet, and
+5.25[cm/s] in the lower inlet. The final topology is shown in Fig. 6.31. The velocity and
+viscosity fields are presented in Fig.6.33.
+
+The same effect of apparently discontinuity occurs in the final topology near the inlet
+(Fig.6.31), however, as explained before, the domain extensions are always fluid and inside
+the design domain the fluid only flows where the topology permits.
+
+Even though the example is very similar to Case 2, the velocity profile (Fig.6.32) shows
+that the union of the channels occur farther from the inlet and promotes a union angle
+similar to the double channel result (Fig.6.9b). As the cases presented before, the viscosity
+(Fig. 6.33) has a higher value in the solid regions. In Fig. 6.33b, it is shown that the central
+region of the fluid channel presents a sightly higher value then the rest of the channel,
+which indicates lower shear rate and a minimum value at the walls, where the velocity
+gradient is higher.
+
+
+
+Chapter 6. Numerical Results 65
+
+Figure 6.31 – Final topology for stenosed artery optimization (Case 3).
+
+Figure 6.32 – Velocity field for stenosed artery optimization (Case 3).
+
+Figure 6.33 – Viscosity field for stenosed artery optimization (Case 3).
+(a) Viscosity Field. (b) Viscosity field inside the channel.
+
+6.2.4 Bypass considering Vorticity
+
+The vorticity is an objective function of interest when designing devices that operates
+with blood, because it has a direct relation with the blood stagnation, which causes a
+agglomeration of blood cells in regions with high re-circulation. The cell agglomeration can
+cause thrombosis, i.e., the agglutination can detach from the re-circulation zone and go
+through the circulatory system blocking a capillary artery causing more serious diseases.
+
+This example considers the same design domain from Fig.6.17. Also, the initial guess
+is the same of Fig.6.18. The pure vorticity functional presents a particularity, being that
+the optimized topology is formed by a "gray" domain. The intermediary porosity causes
+
+
+
+Chapter 6. Numerical Results 66
+
+the reduction in the velocity and, with this, a reduction in the vorticity value, as can be
+seen in Tab.6.5. This "gray" topology is shown in Fig. 6.34.
+
+Table 6.5 – Functional values for vorticity optimization.
+
+Topology Volume Vorticity Inertial Part.
+Initial Guess (Fig.6.18) 16.57 41.41 -
+Gray Topology (Fig.6.34) 15.57 6.40 -
+Final Topology (Fig.6.35) 15.60 20.96 2.32
+
+Figure 6.34 – Gray final topology for pure vorticity optimization.
+
+This gray domain represents a material with intermediary porosity and it is not possible
+to build. Thus in order to circumvent this problem, a term is added to the functional
+representing the flow within the porous media, as shown in Eq. 6.1. This added term
+implies in the minimization of the velocity in low porosity regions, thus promoting a
+continuous topology.
+
+Jv(u) =
+?
+
+?
+|?× u|2d? + ?v
+
+?
+?
+?(?)u2d? (6.1)
+
+where ?v is a weight coefficient used to calibrate the optimization direction (adopted value
+is 0.3). The added term is the same present in the energy dissipation functional and refers
+to the inertial part.
+
+The final topology obtained with this new objective function is shown in Fig.6.35.
+The topology is very similar to the one obtained with the energy dissipation functional
+(Fig.6.20), which may indicate that the inertial term dominated the optimization. However,
+observing the convergence curve from Fig. 6.36 it is possible to notice that the vorticity
+part is also minimized. From Tab. 6.5, the vorticity is reduced to approximately 49.38% of
+the initial guess in the optimized topology.
+
+
+
+Chapter 6. Numerical Results 67
+
+Figure 6.35 – Final topology for vorticity optimization.
+
+Figure 6.36 – Convergence curve for bypass optimization considering vorticity functional with
+added inertial part.
+
+6.2.5 Multi-objective bypass
+
+The previous sections introduced the optimization considering different objective
+functions, such as, energy dissipation, shear rate and vorticity. However, it is possible
+to optimize the bypass by considering a weighted union between these functionals, as
+described in Section 3.4.4. Hence, this section presents the optimization considering both
+the vorticity and the energy dissipation functionals.
+
+This example considers the same design domain from Fig.6.17. Also, the initial guess
+is the same of Fig. 6.18. The weights of we = 0.5 and wv = 0.5 are used, i.e., the final
+functional has the same weight for both energy dissipation and vorticity, respectively.
+However, the vorticity has an additional multiplier ?k, used to normalize the difference in
+magnitude of the two functions, as described in Section 4.5.
+
+The final topology is shown in Fig. 6.37. Comparing this topology with the one obtained
+in the vorticity optimization (Fig. 6.35) we can see that the channel is more detached from
+the boundary.
+
+
+
+Chapter 6. Numerical Results 68
+
+Figure 6.37 – Final topology considering the multi-objective functional.
+
+The convergence curve and the evolution of the topology during the optimization can
+be seen in Fig.6.38 and Fig.6.39, respectively. Also, the functional values for the final
+topology is shown in Table 6.6.
+
+Comparing the vorticity value from Tab.6.6 to the one from the vorticity optimization
+(Tab.6.5) we can see that the value is 25% higher in the multi-objective case. This indicates
+that the introduction of the viscous dissipation term in the objective function introduces a
+pareto behavior, i.e., the minimization of the viscous dissipation occurs in detriment of
+the vorticity. However, the final vorticity is still 33% lower than the initial guess, which
+indicates that the optimization succeeded and, therefore, this multi-objective optimization
+scheme is a viable option to minimize multiple functions.
+
+Table 6.6 – Functional values for optimization considering the multi-objective functional.
+
+Topology Volume Total Viscous Dissip. Inertial Part. Vorticity
+Initial Guess (Fig.6.18) 16.62 22.33 5.57 1.61 37.49
+Vorticity Opt. (Fig.6.35) 15.60 - - 2.32 20.96
+Multi-obj. Opt. (Fig.6.37) 15.69 14.68 2.93 1.40 25.03
+
+Figure 6.38 – Convergence curve for optimization considering the multi-objective functional.
+
+
+
+Chapter 6. Numerical Results 69
+
+Figure 6.39 – Topology changes during bypass optimization considering the multi-objective
+functional.
+(a) Iteration 20. (b) Iteration 120.
+
+(c) Iteration 60. (d) Iteration 140.
+
+6.2.6 3D Difuser
+
+This example is presented to illustrate how the same methodology can be extended
+to 3D domains. It covers a 3D convergent diffuser designed by using the Navier-Stokes
+equations along with the Non-Newtonian Carreu-Yasuda model. The 3D example is rather
+simple, however it takes a much longer time to converge than the 2D problems. For
+example, this case took 27 hours to complete.
+
+The objective function evaluated for this case is to minimize energy dissipation, which
+corresponds to pressure drop at the diffuser. A parabolic velocity profile is adopted at
+the inlet and zero stress condition at the outlet. Domain extensions are added to permit
+the flow development until the Non-Newtonian profile. The dimensions and boundary
+conditions for this problem are shown in Fig. 6.40. The highlighted area corresponds to
+the design domain, which excludes the domain extension cited before.
+
+
+
+Chapter 6. Numerical Results 70
+
+Figure 6.40 – Design domain and boundary conditions for the 3D convergent diffuser.
+(a) Domain Dimensions. (b) Boundary Conditions.
+
+The final topology can be seen in Fig.6.41, where blue represents solid (? = 0) and
+red represents fluid (? = 1). The velocity and viscosity fields are shown in Fig.6.42 and
+Fig.6.43, respectively. It is possible to notice that the methodology can be extended to
+the 3D cases. Also, observing the velocity field (Fig.6.42b) we can see that the velocity is
+minimized in the solid regions.
+
+Figure 6.41 – Final topology for the 3D convergent diffuser optimization.
+(a) Isometric view. (b) Slice view.
+
+
+
+Chapter 6. Numerical Results 71
+
+Figure 6.42 – Velocity field for optimized 3D convergent diffuser.
+(a) Isometric view. (b) Slice view.
+
+Figure 6.43 – Viscosity field for optimized 3D convergent diffuser.
+(a) Isometric view. (b) Slice view.
+
+
+
+72
+
+7 CONCLUSIONS
+
+A methodology for design channel for non-Newtonian fluid flow based on topology
+optimization is presented. Carreau-Yasuda shear thinning model is coupled with the
+Navier-Stokes equations to represent more accurately non-Newtonian effects in blood flow.
+
+In topology optimization for Newtonian fluids, a porous material model is used to
+allow a continuous transition between fluid and solid, where the inverse permeability ? is
+interpolated as a function of the design variable ?. For non-Newtonian fluids, some authors
+suggest to adapt this material model by adding an interpolation function of the dynamic
+viscosity µ, which is also dependent of the pseudo-density ?. In the examples studied,
+the convergence of the optimization algorithm was faster when only inverse permeability
+interpolation was employed.
+
+It is also verified that optimization considering only shear stress or vorticity functional
+results in a "gray" domain, where many regions present an intermediate porosity value.
+Thus, it is necessary to add a term correspondent to minimization of flow thought the
+porous media in the objective function in order to achieve a discrete domain distribution.
+
+The results show that the numerical formulation adopted is consistent with the
+literature, obtaining non-intuitive solutions that minimize the fluidic system dissipation of
+energy, shear stress or vorticity and satisfy the volume constraint imposed.
+
+The optimized topologies differ significantly according to the fluid model used, Newtonian
+or shear-thinning, specially for higher velocities. This justifies the need to model blood as
+a non-Newtonian fluid and analyze a more complex system.
+
+It is also shown that the FEniCS software library, the Dolfin-adjoint package and
+the IPOpt optimizer make a valid tool to implement the finite element method and
+optimization algorithm in a more automated way, simplifying the coding and application
+of topology optimization to fluidic problems.
+
+7.1 Future Work
+
+As future work, it is suggested to extend these studies to the optimization of rotary
+systems, which can be employed in another important bio-medical device for conducting
+blood, that is the ventricular assist device pump.
+
+Also, for applications outside Bio-engineering field, it might be useful to explore the
+influence of non-Newtonian shear-thickening behavior, where, opposite to what occurs
+with blood, the dynamic viscosity value increases with higher velocity gradients.
+
+
+
+73
+
+REFERENCES
+
+AAGE, N.; POULSEN, T.; GERSBORG-HANSEN, A.; SIGMUND, O. Topology
+optimization of large scale stokes flow problems. Structural and Multidisciplinary
+Optimization, Springer-Verlag, v. 35, n. 2, p. 175–180, 2008. ISSN 1615-147X. Available
+from Internet:&amp;lt;http://dx.doi.org/10.1007/s00158-007-0128-0&gt;. Cited in page 26.
+
+ABRAHAM, F.; BEHR, M.; HEINKENSCHLOSS, M. The effect of stabilization
+in finite element methods for the optimal boundary control of the oseen equations.
+Finite Elements in Analysis and Design, v. 41, n. 3, p. 229 – 251, 2004. ISSN
+0168-874X. Available from Internet:&amp;lt;http://www.sciencedirect.com/science/article/pii/
+S0168874X04000861&gt;. Cited in page 31.
+
+ABRAHAM, F.; BEHR, M.; HEINKENSCHLOSS, M. Shape optimization in steady
+blood flow: A numerical study of non-newtonian effects. Computer Methods in
+Biomechanics and Biomedical Engineering, v. 8, n. 2, p. 127–137, 2005. PMID:
+16154876. Available from Internet:&amp;lt;http://dx.doi.org/10.1080/10255840500180799&gt;.
+Cited 9 times in pages 14, 15, 22, 23, 27, 31, 48, 57, and 58.
+
+ALNæS, M.; BLECHTA, J.; HAKE, J.; JOHANSSON, A.; KEHLET, B.; LOGG, A.;
+RICHARDSON, C.; RING, J.; ROGNES, M.; WELLS, G. The fenics project version
+1.5. Archive of Numerical Software, v. 3, n. 100, 2015. ISSN 2197-8263. Available
+from Internet:&amp;lt;http://journals.ub.uni-heidelberg.de/index.php/ans/article/view/20553&gt;.
+Cited in page 44.
+
+BENDSOE, M.; SIGMUND, O. Topology Optimization: Theory, Methods
+and Applications. Springer, 2003. ISBN 9783540429920. Available from Internet:
+&lt;http://books.google.com.br/books?id=NGmtmMhVe2sC&gt;. Cited 2 times in pages 15
+and 25.
+
+BENDSOE, M. P.; KIKUCHI, N. Generating optimal topologies in structural design using
+a homogenization method. Comput. Methods Appl. Mech. Eng., Elsevier Sequoia S.
+A., Lausanne, Switzerland, Switzerland, v. 71, n. 2, p. 197–224, nov. 1988. ISSN 0045-7825.
+Available from Internet:&amp;lt;http://dx.doi.org/10.1016/0045-7825(88)90086-2&gt;. Cited in
+page 25.
+
+BOEK, E. S.; CHIN, J.; COVENEY, P. V. LATTICE BOLTZMANN SIMULATION
+OF THE FLOW OF NON-NEWTONIAN FLUIDS IN POROUS MEDIA.
+International Journal of Modern Physics B, v. 17, n. 01n02, p. 99–102, jan 2003.
+ISSN 0217-9792. Available from Internet:&amp;lt;http://discovery.ucl.ac.uk/29827/http:
+//www.worldscientific.com/doi/abs/10.1142/S021797920301714X&gt;. Cited in page 20.
+
+BORRVALL, T.; PETERSSON, J. Topology optimization of fluids in Stokes flow.
+International Journal for Numerical Methods in Fluids, v. 41, n. 1, p. 77–107,
+jan. 2003. ISSN 0271-2091. Available from Internet:&amp;lt;http://onlinelibrary.wiley.com/doi/
+10.1002/fld.426/abstracthttp://doi.wiley.com/10.1002/fld.426&gt;. Cited 9 times in pages
+18, 19, 25, 26, 28, 30, 51, 52, and 55.
+
+http://dx.doi.org/10.1007/s00158-007-0128-0
+http://www.sciencedirect.com/science/article/pii/S0168874X04000861
+http://www.sciencedirect.com/science/article/pii/S0168874X04000861
+http://dx.doi.org/10.1080/10255840500180799
+http://journals.ub.uni-heidelberg.de/index.php/ans/article/view/20553
+http://books.google.com.br/books?id=NGmtmMhVe2sC
+http://dx.doi.org/10.1016/0045-7825(88)90086-2
+http://discovery.ucl.ac.uk/29827/ http://www.worldscientific.com/doi/abs/10.1142/S021797920301714X
+http://discovery.ucl.ac.uk/29827/ http://www.worldscientific.com/doi/abs/10.1142/S021797920301714X
+http://onlinelibrary.wiley.com/doi/10.1002/fld.426/abstract http://doi.wiley.com/10.1002/fld.426
+http://onlinelibrary.wiley.com/doi/10.1002/fld.426/abstract http://doi.wiley.com/10.1002/fld.426
+
+
+References 74
+
+BOYD, J.; BUICK, J. M.; GREEN, S. Analysis of the Casson and Carreau-Yasuda
+non-Newtonian blood models in steady and oscillatory flows using the lattice Boltzmann
+method. Physics of Fluids, v. 19, n. 9, p. 093103, 2007. ISSN 10706631. Available from
+Internet:&amp;lt;http://scitation.aip.org/content/aip/journal/pof2/19/9/10.1063/1.2772250&gt;.
+Cited in page 14.
+
+DENG, Y.; LIU, Z.; WU, Y. Topology optimization of steady and unsteady incompressible
+navier–stokes flows driven by body forces. Structural and Multidisciplinary
+Optimization, Springer-Verlag, v. 47, n. 4, p. 555–570, 2013. ISSN 1615-147X. Available
+from Internet:&amp;lt;http://dx.doi.org/10.1007/s00158-012-0847-8&gt;. Cited in page 26.
+
+EVGRAFOV, A. The limits of porous materials in the topology optimization
+of stokes flows. Applied Mathematics and Optimization, Springer-Verlag,
+v. 52, n. 3, p. 263–277, 2005. ISSN 0095-4616. Available from Internet:&amp;lt;http:
+//dx.doi.org/10.1007/s00245-005-0828-z&gt;. Cited in page 26.
+
+EVJU, Ø. Sensitivity Analysis of Simulated Blood Flow in Cerebral Aneurysms.
+2011. Cited in page 14.
+
+FITZGIBBON, G. M.; KAFKA, H. P.; LEACH, A. J.; KEON, W. J.; HOOPER,
+G.; BURTON, J. R. Coronary bypass graft fate and patient outcome: Angiographic
+follow-up of 5,065 grafts related to survival and reoperation in 1,388 patients
+during 25 years. Journal of the American College of Cardiology, v. 28,
+n. 3, p. 616 – 626, 1996. ISSN 0735-1097. Available from Internet:&amp;lt;http:
+//www.sciencedirect.com/science/article/pii/0735109796002069&gt;. Cited in page 13.
+
+FUNKE, S. The Automation of PDE-constrained Optimisation and Its
+Applications. Department of Earth Science and Engineering, Imperial College London,
+2013. Available from Internet:&amp;lt;https://books.google.com.br/books?id=ltLujgEACAAJ&gt;.
+Cited 2 times in pages 35 and 46.
+
+GERSBORG-HANSEN, A.; SIGMUND, O.; HABER, R. Topology optimization
+of channel flow problems. Structural and Multidisciplinary Optimization,
+Springer-Verlag, v. 30, n. 3, p. 181–192, 2005. ISSN 1615-147X. Available from Internet:
+&lt;http://dx.doi.org/10.1007/s00158-004-0508-7&gt;. Cited 2 times in pages 22 and 26.
+
+GIJSEN, F.; VOSSE, F. van de; JANSSEN, J. The influence of the non-Newtonian
+properties of blood on the flow in large arteries: steady flow in a carotid bifurcation model.
+Journal of Biomechanics, v. 32, n. 6, p. 601–608, jun 1999. ISSN 00219290. Available
+from Internet:&amp;lt;http://linkinghub.elsevier.com/retrieve/pii/S0021929099000159&gt;. Cited
+in page 13.
+
+HUNDERTMARK-ZAUŠKOVÁ, A.; LUKÁ?OVÁ-MEDVID’OVÁ, M. Numerical
+study of shear-dependent non-Newtonian fluids in compliant vessels. Computers &amp;amp;
+Mathematics with Applications, Elsevier Ltd, v. 60, n. 3, p. 572–590, aug 2010. ISSN
+08981221. Available from Internet:&amp;lt;http://dx.doi.org/10.1016/j.camwa.2010.05.004http:
+//linkinghub.elsevier.com/retrieve/pii/S0898122110003445&gt;. Cited in page 14.
+
+HYUN, J.; WANG, S.; YANG, S. Topology optimization of the shear thinning
+non-newtonian fluidic systems for minimizing wall shear stress. Comput. Math. Appl.,
+Pergamon Press, Inc., Tarrytown, NY, USA, v. 67, n. 5, p. 1154–1170, mar. 2014. ISSN
+0898-1221. Available from Internet:&amp;lt;http://dx.doi.org/10.1016/j.camwa.2013.12.013&gt;.
+Cited 4 times in pages 16, 19, 27, and 29.
+
+http://scitation.aip.org/content/aip/journal/pof2/19/9/10.1063/1.2772250
+http://dx.doi.org/10.1007/s00158-012-0847-8
+http://dx.doi.org/10.1007/s00245-005-0828-z
+http://dx.doi.org/10.1007/s00245-005-0828-z
+http://www.sciencedirect.com/science/article/pii/0735109796002069
+http://www.sciencedirect.com/science/article/pii/0735109796002069
+https://books.google.com.br/books?id=ltLujgEACAAJ
+http://dx.doi.org/10.1007/s00158-004-0508-7
+http://linkinghub.elsevier.com/retrieve/pii/S0021929099000159
+http://dx.doi.org/10.1016/j.camwa.2010.05.004 http://linkinghub.elsevier.com/retrieve/pii/S0898122110003445
+http://dx.doi.org/10.1016/j.camwa.2010.05.004 http://linkinghub.elsevier.com/retrieve/pii/S0898122110003445
+http://dx.doi.org/10.1016/j.camwa.2013.12.013
+
+
+References 75
+
+KLARBRING, A.; PETERSSON, J.; TORSTENFELT, B.; KARLSSON, M. Topology
+optimization of flow networks. Computer Methods in Applied Mechanics and
+Engineering, v. 192, n. 35-36, p. 3909–3932, aug 2003. ISSN 00457825. Available from
+Internet:&amp;lt;http://linkinghub.elsevier.com/retrieve/pii/S0045782503003931&gt;. Cited in
+page 26.
+
+KOGA, A. A. Projeto de Dispositivos de Microcanais Utilizando o Método de
+Otimização Topológica. 2010. Cited 2 times in pages 15 and 26.
+
+LOGG, A.; MARDAL, K.-A.; WELLS, G. N. et al. Automated Solution of
+Differential Equations by the Finite Element Method. [S.l.]: Springer, 2012. ISBN
+978-3-642-23098-1. Cited 2 times in pages 23 and 45.
+
+MACOSKO, C. Rheology: Principles, Measurements, and Applications. Wiley,
+1994. ISBN 9780471185758. Available from Internet:&amp;lt;https://books.google.com.br/
+books?id=Kai7QgAACAAJ&gt;. Cited in page 20.
+
+MUMPS Guide. MUltifrontal Massively Parallel Solver. 4. ed. MUMPS, 2011. 1–54 p.
+Available from Internet:&amp;lt;http://mumps.enseeiht.fr/http://graal.ens-lyon.fr/MUMPS/&gt;.
+Cited in page 45.
+
+MURAKAMI, Y.; MIKIC, B. Parametric optimization of multichanneled heat sinks
+for VLSI chip cooling. IEEE Transactions on Components and Packaging
+Technologies, v. 24, n. 1, p. 2–9, mar 2001. ISSN 15213331. Available from Internet:
+&lt;http://ieeexplore.ieee.org/lpdocs/epic03/wrapper.htm?arnumber=910795&gt;. Cited in
+page 15.
+
+PINGEN, G.; EVGRAFOV, A.; MAUTE, K. Topology optimization of flow domains using
+the lattice boltzmann method. Structural and Multidisciplinary Optimization,
+Springer-Verlag, v. 34, n. 6, p. 507–524, 2007. ISSN 1615-147X. Available from Internet:
+&lt;http://dx.doi.org/10.1007/s00158-007-0105-7&gt;. Cited in page 26.
+
+PINGEN, G.; MAUTE, K. Optimal design for non-newtonian flows using a topology
+optimization approach. Comput. Math. Appl., Pergamon Press, Inc., Tarrytown, NY,
+USA, v. 59, n. 7, p. 2340–2350, abr. 2010. ISSN 0898-1221. Available from Internet:
+&lt;http://dx.doi.org/10.1016/j.camwa.2009.08.044&gt;. Cited 6 times in pages 16, 19, 27, 29,
+52, and 54.
+
+PIRONNEAU, O. On optimum design in fluid mechanics. Journal of Fluid Mechanics,
+v. 64, n. 1, p. 97–110, 1974. Cited in page 52.
+
+PROBST, M.; LüLFESMANN, M.; NICOLAI, M.; BüCKER, H.; BEHR, M.;
+BISCHOF, C. Sensitivity of optimal shapes of artificial grafts with respect to flow
+parameters. Computer Methods in Applied Mechanics and Engineering,
+v. 199, n. 17–20, p. 997 – 1005, 2010. ISSN 0045-7825. Available from Internet:
+&lt;http://www.sciencedirect.com/science/article/pii/S0045782509003880&gt;. Cited in page
+31.
+
+QUARTERONI, A.; ROZZA, G. Optimal Control and Shape Optimization of
+Aorto-Coronaric Bypass Anastomoses. Mathematical Models and Methods in
+Applied Sciences, v. 13, n. 12, p. 1801–1823, 2003. ISSN 0218-2025. Cited in page 31.
+
+http://linkinghub.elsevier.com/retrieve/pii/S0045782503003931
+https://books.google.com.br/books?id=Kai7QgAACAAJ
+https://books.google.com.br/books?id=Kai7QgAACAAJ
+http://mumps.enseeiht.fr/ http://graal.ens-lyon.fr/MUMPS/
+http://ieeexplore.ieee.org/lpdocs/epic03/wrapper.htm?arnumber=910795
+http://dx.doi.org/10.1007/s00158-007-0105-7
+http://dx.doi.org/10.1016/j.camwa.2009.08.044
+http://www.sciencedirect.com/science/article/pii/S0045782509003880
+
+
+References 76
+
+ROBERTSON, A. M.; SEQUEIRA, A.; OWENS, R. G. Rheological models for blood.
+Milano: Springer Milan, 2009. 211–241 p. ISBN 978-88-470-1152-6. Cited 2 times in
+pages 13 and 19.
+
+ROBSON, J. A finite element approximation of non-Newtonian flow. Tese
+(Doutorado) — PhD Thesis, 2003. Cited in page 18.
+
+ROMERO, J.; SILVA, E. A topology optimization approach applied to laminar flow
+machine rotor design. Computer Methods in Applied Mechanics and Engineering,
+v. 279, p. 268–300, sep 2014. ISSN 00457825. Available from Internet:&amp;lt;www.elsevier.com/
+locate/cmahttp://linkinghub.elsevier.com/retrieve/pii/S0045782514002151&gt;. Cited 4
+times in pages 21, 22, 33, and 39.
+
+SIEBERT, M. W.; FODOR, P. S. Newtonian and Non-Newtonian Blood Flow over a
+Backward- Facing Step – A Case Study. Proceedings of the COMSOL Conference
+2009 Boston, 2009. Cited 3 times in pages 48, 49, and 50.
+
+SLAUGHTER, M.; PAGANI, F.; MCGEE, E.; BIRKS, E.; COTTS, W.; GREGORIC, I.;
+Howard Frazier, O.; ICENOGLE, T.; NAJJAR, S.; BOYCE, S.; ACKER, M.; JOHN, R.;
+HATHAWAY, D.; NAJARIAN, K.; AARONSON, K. Heartware ventricular assist system
+for bridge to transplant: Combined results of the bridge to transplant and continued
+access protocol trial. Journal of Heart and Lung Transplantation, Elsevier USA,
+v. 32, n. 7, p. 675–683, 7 2013. ISSN 1053-2498. Cited in page 13.
+
+SOKO?OWSKI, J.; STEBEL, J. Shape optimization for non-Newtonian fluids
+in time-dependent domains. Evolution Equations and Control Theory,
+v. 3, n. 2, p. 331–348, may 2014. ISSN 2163-2480. Available from Internet:
+&lt;http://www.aimsciences.org/journals/displayArticlesnew.jsp?paperID=9922&gt;. Cited in
+page 14.
+
+SOUSA, L. C.; CASTRO, C. F.; ANTÓNIO, C. C. Shape optimization of an artificial
+bypass graft using genetic algorithms. 2nd International Conference on Engineering
+Optimization, n. 2, p. 6–11, 2010. Cited in page 14.
+
+SUZUKI, K.; KIKUCHI, N. A homogenization method for shape and topology
+optimization. Computer Methods in Applied Mechanics and Engineering,
+v. 93, n. 3, p. 291 – 318, 1991. ISSN 0045-7825. Available from Internet:
+&lt;http://www.sciencedirect.com/science/article/pii/0045782591902452&gt;. Cited in page
+25.
+
+Sá, L. F. N. d. Topology Optimization Method applied to Laminar Flow
+Machine Rotor Design Topology Optimization Method applied to Laminar
+Flow Machine Rotor Design. 2016. Cited in page 25.
+
+TAYLOR, C.; HOOD, P. A numerical solution of the Navier-Stokes equations using
+the finite element technique. Computers &amp;amp; Fluids, v. 1, n. 1, p. 73–100, jan 1973.
+ISSN 00457930. Available from Internet:&amp;lt;http://linkinghub.elsevier.com/retrieve/pii/
+0045793073900273&gt;. Cited in page 23.
+
+WÄCHTER, A.; BIEGLER, L. T. On the implementation of an interior-point
+filter line-search algorithm for large-scale nonlinear programming. Mathematical
+Programming, v. 106, n. 1, p. 25–57, mar 2006. ISSN 0025-5610. Available from
+
+www.elsevier.com/locate/cma http://linkinghub.elsevier.com/retrieve/pii/S0045782514002151
+www.elsevier.com/locate/cma http://linkinghub.elsevier.com/retrieve/pii/S0045782514002151
+http://www.aimsciences.org/journals/displayArticlesnew.jsp?paperID=9922
+http://www.sciencedirect.com/science/article/pii/0045782591902452
+http://linkinghub.elsevier.com/retrieve/pii/0045793073900273
+http://linkinghub.elsevier.com/retrieve/pii/0045793073900273
+
+
+References 77
+
+Internet:&amp;lt;http://dx.doi.org/10.1007/s10107-004-0559-yhttp://link.springer.com/10.1007/
+s10107-004-0559-y&gt;. Cited in page 46.
+
+WIKER, N.; KLARBRING, A.; BORRVALL, T. Topology optimization of regions of
+Darcy and Stokes flow. n. July 2006, p. 1374–1404, 2007. Cited 2 times in pages 26
+and 28.
+
+ZHANG, B.; LIU, X. Topology optimization study of arterial bypass configurations
+using the level set method. Structural and Multidisciplinary Optimization,
+v. 51, n. 3, p. 773–798, mar 2015. ISSN 1615-147X. Available from Internet:
+&lt;http://link.springer.com/10.1007/s00158-014-1175-y&gt;. Cited 5 times in pages 16, 27,
+57, 58, and 61.
+
+ZHU, B.; ZHANG, X.; FATIKOW, S. A multi-objective method of hinge-free compliant
+mechanism optimization. Structural and Multidisciplinary Optimization,
+v. 49, n. 3, p. 431–440, 2014. ISSN 1615-1488. Available from Internet:&amp;lt;http:
+//dx.doi.org/10.1007/s00158-013-1003-9&gt;. Cited 2 times in pages 32 and 41.
+
+http://dx.doi.org/10.1007/s10107-004-0559-y http://link.springer.com/10.1007/s10107-004-0559-y
+http://dx.doi.org/10.1007/s10107-004-0559-y http://link.springer.com/10.1007/s10107-004-0559-y
+http://link.springer.com/10.1007/s00158-014-1175-y
+http://dx.doi.org/10.1007/s00158-013-1003-9
+http://dx.doi.org/10.1007/s00158-013-1003-9
+
+	Title page
+	Resumo
+	Abstract
+	List of Figures
+	List of Tables
+	Acronyms
+	Notation
+	Contents
+	Introduction
+	Non-Newtonian Blood Flow
+	Optimization Methods
+	Motivation
+	Objectives
+	Document Outline
+
+	Modeling of Non-Newtonian Flow
+	Navier-Stokes Equations
+	Non-Newtonian Effects
+	Finite Element Method
+	Problem Formulation
+	Implemented Finite Element
+
+
+	Topology Optimization
+	Topology Optimization Applied to Fluid Flow
+	Extended Design Domain
+	Material Model
+	Problem Definition
+	Energy Dissipation
+	Shear Stress
+	Vorticity
+	Multi-Objective Function
+	Volume Constraint
+
+	Discrete Form
+
+	Sensitivities Calculation
+	Adjoint Method
+	Energy Dissipation Sensitivity Analysis
+	Sensitivity of Viscosity
+
+	Vorticity Sensitivity Analysis
+	Shear Stress Sensitivity Analysis
+	Sensitivity Analysis of Multi-Objective Function
+
+	Numerical Implementation
+	Optimization Algorithm
+	Software Environment
+	Finite Element Method
+	Sensitivities Computation
+	Optimizer
+
+
+	Numerical Results
+	FEM Verification
+	Topology Optimization Results
+	Double Channel
+	Obstacle
+	Arterial Bypass
+	Bypass considering Vorticity
+	Multi-objective bypass
+	3D Difuser
+
+
+	Conclusions
+	Future Work
+
+	References
+
+</field>
+	</doc>
+</add>

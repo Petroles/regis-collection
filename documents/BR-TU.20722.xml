@@ -1,0 +1,4867 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.20722</field>
+		<field name="filename">4341_335653.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+UNIVERSIDADE FEDERAL DE SANTA CATARINA
+PROGRAMA DE PÓS-GRADUAÇÃO EM ENGENHARIA MECÂNICA
+
+Bruno Terêncio do Vale
+
+IMPLEMENTAÇÃO DO MODELO DE FRATURA DISCRETA NA
+SIMULAÇÃO DE RESERVATÓRIOS NATURALMENTE FRATURADOS
+
+UTILIZANDO O MÉTODO DE VOLUMES FINITOS BASEADO EM
+ELEMENTOS (EBFVM)
+
+Florianopólis
+
+2014
+
+
+
+
+
+Bruno Terêncio do Vale
+
+IMPLEMENTAÇÃO DO MODELO DE FRATURA DISCRETA NA
+SIMULAÇÃO DE RESERVATÓRIOS NATURALMENTE FRATURADOS
+
+UTILIZANDO O MÉTODO DE VOLUMES FINITOS BASEADO EM
+ELEMENTOS (EBFVM)
+
+Dissertação submetida ao Programa de
+Pós-Graduação em Engenharia Mecânica
+para a obtenção do grau de Mestre em
+Engenharia Mecânica.
+
+Orientador: Prof. Clovis Raimundo Ma-
+liska
+Coorientador: Prof. Francisco Marcon-
+des
+
+Florianopólis
+
+2014
+
+
+
+Ficha de identificação da obra elaborada pelo autor,
+ através do Programa de Geração Automática da Biblioteca Universitária da UFSC.
+
+Vale , Bruno Terêncio do 
+   Implementação do modelo de fratura discreta na simulação
+de reservatórios naturalmente fraturados utilizando o
+método de volumes finitos baseado em elementos (EbFVM) /
+Bruno Terêncio do  Vale  ; orientador, Clovis Raimundo
+Maliska ; coorientador, Francisco Marcondes. -
+Florianópolis, SC, 2014.
+   88 p.
+
+   Dissertação (mestrado) - Universidade Federal de Santa
+Catarina, Centro Tecnológico. Programa de Pós-Graduação em
+Engenharia Mecânica.
+
+   Inclui referências 
+
+   1. Engenharia Mecânica. 2. Simulação de Reservatórios de
+Petróleo. 3. Reservatórios Naturalmente Fraturados. 4.
+Modelo de Fratura Discreta. I. Maliska, Clovis Raimundo.
+II. Marcondes, Francisco. III. Universidade Federal de
+Santa Catarina. Programa de Pós-Graduação em Engenharia
+Mecânica. IV. Título.
+
+
+
+Bruno Terêncio do Vale
+
+IMPLEMENTAÇÃO DO MODELO DE FRATURA DISCRETA NA
+SIMULAÇÃO DE RESERVATÓRIOS NATURALMENTE FRATURADOS
+
+UTILIZANDO O MÉTODO DE VOLUMES FINITOS BASEADO EM
+ELEMENTOS (EBFVM)
+
+Esta dissertação foi julgada adequada para a obtenção do título de
+“Mestre em Engenharia Mecânica”, e aprovada em sua forma final pelo
+Programa de Pós-Graduação em Engenharia Mecânica.
+
+Florianopólis, 10 de Março 2014.
+
+Prof. Armando Albertazzi Gonçalves Júnior, Dr. Eng., Coordenador do
+Curso
+
+Prof. Clovis Raimundo Maliska, Ph.D., Orientador
+
+Prof. Francisco Marcondes, Dr. Eng., Coorientador
+
+BANCA EXAMINADORA
+
+Prof. António Fábio Carvalho da Silva, Dr. Eng.
+
+Prof. Emilio Ernesto Paladino, Dr. Eng.
+
+Prof. Sergio Peters, Dr. Eng.
+
+
+
+
+
+AGRADECIMENTOS
+
+Ao professor Clovis Raimundo Maliska, meu orientador, pelo voto
+enorme de confiança depositado na realização desta pesquisa. Agradeço
+também ao professor Francisco Marcondes, meu coorientador, por toda
+disponibilidade e auxílio prestado.
+
+A todo pessoal do laboratório SINMEC, pelo companheirismo ao lon-
+go destes últimos sete anos. Em particular à Tatiane, por ser nossa maior
+incentivadora e por ter me apresentado à engenharia quando me indicou
+como bolsista, ao Fernando e ao Gustavo, por todos conselhos e pela
+disposição em sempre ajudar, e aos melhores companheiros de sala que
+se pode pedir, Ederson e Giovani.
+
+À Agência Nacional do Petróleo pelo apoio financeiro concedido atra-
+vés da bolsa de estudos.
+
+Ao POSMEC (Programa de Pós-Graduação em Engenharia Mecânica)
+pela infraestrutura oferecida, pelo corpo docente de qualidade e pelos
+exímios funcionários. Em particular agradeço à Marieta e à Goreti, duas
+pessoas que admiro muito e sem as quais não haveria dissertação.
+
+Aos meus amigos, por fazerem minha vida.
+À minha família, pelo apoio incondicional. Ao meu pai, onde quer
+
+que esteja, por tudo que fez para eu chegar até aqui. Às mulheres de
+minha vida: Maria Júlia, Maria Helena e Mariana. São, respectivamente,
+meus exemplos máximos de motivação, bondade e amizade.
+
+A Deus.
+
+
+
+
+
+SUMÁRIO
+
+Lista de Figuras iii
+
+Lista de Tabelas vii
+
+Lista de Símbolos ix
+
+Resumo xiii
+
+Abstract xv
+
+1 Introdução 1
+1.1 Preliminares . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+1.2 Objetivos . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+1.3 Organização do trabalho . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+
+2 Revisão Bibliográfica 7
+2.1 Caracterização dos reservatórios naturalmente fraturados . 7
+2.2 Simulação de reservatórios naturalmente fraturados . . . . . 9
+
+2.2.1 Modelo de meio poroso equivalente . . . . . . . . . . . . 11
+2.2.2 Modelo de múltiplos domínios . . . . . . . . . . . . . . . . 12
+2.2.3 Modelo de fraturas discretas . . . . . . . . . . . . . . . . . . 15
+2.2.4 Modelos híbridos . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+
+2.3 Fraturamento hidráulico . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+2.4 Método de volumes finitos baseado em elementos - EbFVM 21
+
+2.4.1 Biblioteca EFVLib . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+2.4.2 Biblioteca ACMLib . . . . . . . . . . . . . . . . . . . . . . . . . 25
+
+3 Modelo Matemático 29
+3.1 Formulação das equações governantes . . . . . . . . . . . . . . . 29
+
+3.1.1 Modelos para a permeabilidade relativa e para a pres-
+são capilar . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+
+i
+
+
+
+3.2 Modelo de Fratura Discreta . . . . . . . . . . . . . . . . . . . . . . . . 33
+
+4 Modelo Numérico 37
+4.1 Discretização das equações de conservação na rocha-matriz 37
+4.2 Discretização das equações de conservação na fratura . . . . 47
+4.3 Método IMPES . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+
+5 Resultados 53
+5.1 Validação do modelo de fratura discreta . . . . . . . . . . . . . . . 53
+
+5.1.1 Caso 1: geometria com uma fratura . . . . . . . . . . . . . 53
+5.1.2 Caso 2: geometria com seis fraturas . . . . . . . . . . . . 62
+
+5.2 Influência de propriedades da fratura . . . . . . . . . . . . . . . . 67
+5.3 Anisotropia da rocha-matriz . . . . . . . . . . . . . . . . . . . . . . . 74
+
+6 Conclusões 77
+6.1 Sugestões para trabalhos futuros . . . . . . . . . . . . . . . . . . . . 78
+
+Referências Bibliográficas 81
+
+ii
+
+
+
+LISTA DE FIGURAS
+
+Figura 2.1 Representação explícita da fratura em uma malha – mo-
+delo de porosidade simples . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+
+Figura 2.2 Representação do modelo de dupla porosidade conven-
+cional . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+
+Figura 2.3 Comparação entre o modelo de porosidade simples e os
+modelos de múltiplos domínios . . . . . . . . . . . . . . . . . . . . . . . . . 14
+
+Figura 2.4 Representação da fratura na malha – modelo USDFM . . . 16
+
+Figura 2.5 Simplificação geométrica proposta no modelo de fratura
+discreta . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+
+Figura 2.6 Exemplo de um modelo híbrido . . . . . . . . . . . . . . . . . . . . . . . . . 19
+
+Figura 2.7 Esquema de um fraturamento hidráulico . . . . . . . . . . . . . . . . 20
+
+Figura 2.8 Volume de controle e seus componentes no EbFVM . . . . . 23
+
+Figura 2.9 Hierarquia de malhas no método multigrid . . . . . . . . . . . . . 26
+
+Figura 3.1 Exemplo de curvas de permeabilidade relativa com o mo-
+delo de Corey . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+
+Figura 3.2 Coordenada ? ao longo da fratura . . . . . . . . . . . . . . . . . . . . . . 35
+
+Figura 3.3 Pressão capilar e relação entre as saturações na interface
+matriz-fratura . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+
+Figura 4.1 Obtenção do volume de controle no EbFVM . . . . . . . . . . . . 38
+
+Figura 4.2 Transformação de variáveis e padronização dos elemen-
+tos . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+
+Figura 4.3 Vetores área com convenção utilizada na EFVLib: a) ele-
+mento triangular; b) elemento quadrilátero . . . . . . . . . . . . . 45
+
+iii
+
+
+
+Figura 4.4 Método upwind para escolha do ponto no qual valorar a
+mobilidade: a) ?j k =?j ; b) ?j k =?k . . . . . . . . . . . . . . . . . . . . . 46
+
+Figura 4.5 Volume de controle com um trecho de fratura . . . . . . . . . . . 48
+
+Figura 4.6 Fluxograma do método numérico . . . . . . . . . . . . . . . . . . . . . . . 52
+
+Figura 5.1 Estrutura do caso 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+
+Figura 5.2 Malha e nós considerados na análise da anisotropia dos
+coeficientes do sistema linear resultante . . . . . . . . . . . . . . . . 56
+
+Figura 5.3 Malhas utilizadas para o caso 1 e similares. a) Malha 1
+- 580 nós, 1074 elementos; b) Malha 2 - 841 nós, 1600
+elementos; c) Malha 3 - 3281 nós, 6400 elementos . . . . . . . 57
+
+Figura 5.4 Resultados do caso 1 sem pressão capilar para diferentes
+tamanhos de malha . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+
+Figura 5.5 Comparação de resultados do caso 1 proposto por Mon-
+teagudo e Firoozabadi (2004) . . . . . . . . . . . . . . . . . . . . . . . . . . . . 59
+
+Figura 5.6 Comparação de resultados do caso 1 proposto por Mar-
+condes, Varavei e Sepehrnoori (2010) . . . . . . . . . . . . . . . . . . . 60
+
+Figura 5.7 Comparação do volume de óleo produzido com resulta-
+dos de Marcondes, Varavei e Sepehrnoori (2010) para o
+caso 1 sem pressão capilar . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 61
+
+Figura 5.8 Campo de saturação para o caso 1 após 50 dias. a) B m =
+B f = 0 atm; b) B m = B f = 1 atm; c) B m = 1 atm e B f =
+0, 2 atm. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 62
+
+Figura 5.9 Rede de fraturas e malha utilizada na resolução do caso 2 62
+
+Figura 5.10 Comparação dos campos de saturação para o caso 2 após
+aproximadamente 25 dias. a) B m = B f = 0 atm; b) B m =
+B f = 1 atm; c) B m = 1 atm e B f = 0, 2 atm. . . . . . . . . . . . . . . . 64
+
+Figura 5.11 Comparação dos campos de saturação para o caso 2 com
+B m = B f = 0 atm após a) 12 dias; b) 25 dias; c) 40 dias. . . 65
+
+Figura 5.12 Volume de óleo produzido com o caso 2 para diferentes
+valores de pressão capilar . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 66
+
+iv
+
+
+
+Figura 5.13 Detalhe de uma intersecção de fraturas na malha do caso
+2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 67
+
+Figura 5.14 Campo de saturação para o caso 1 sem considerar pres-
+são capilar após: a) 5 dias; b) 10 dias; c) 25 dias; d) 35
+dias . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 68
+
+Figura 5.15 Volume de óleo produzido no caso 1 para diferentes va-
+lores de permeabilidade da fratura . . . . . . . . . . . . . . . . . . . . . . 69
+
+Figura 5.16 Campo de saturação para o caso 1 após 50 dias. a) K f =
+8, 26119 x 10?12 m2; b) K f = 8, 26119 x 10?11 m2; c) K f =
+8, 26119 x 10?10 m2. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 70
+
+Figura 5.17 Geometrias de acordo com a inclinação ? da fratura em
+relação à horizontal: a) ? = 45?; b) ? = 0?; c) ? =?45? . . . 71
+
+Figura 5.18 Volume de óleo produzido para casos com fraturas em
+diferentes graus de inclinação . . . . . . . . . . . . . . . . . . . . . . . . . . . 71
+
+Figura 5.19 Campo de saturação após 50 dias para fraturas com in-
+clinação: a) ? = 45?; b) ? = 0?; c) ? =?45? . . . . . . . . . . . . . . . 72
+
+Figura 5.20 Geometrias abordadas, classificadas pela coordenada da
+fratura mais próxima do poço injetor, aqui indicada pela
+letra A: a) A =(0, 1; 0, 1); b) A =(0, 2; 0, 2); c) A =(0, 3; 0, 3). 72
+
+Figura 5.21 Volume de óleo produzido para casos com fratura em
+diferentes posições . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 73
+
+Figura 5.22 Campo de saturação após 50 dias para casos com coor-
+denada: a) A =(0, 1; 0, 1); b) A =(0, 2; 0, 2); c) A =(0, 3; 0, 3) 74
+
+Figura 5.23 Campo de saturação após 50 dias para casos onde na
+matriz: a) K x x = K y y ; b) K x x = 2K y y ; c) K x x = 4K y y . . . . . 74
+
+v
+
+
+
+
+
+LISTA DE TABEL AS
+
+Tabela 4.1 Funções de forma para o elemento triangular . . . . . . . . . . . 40
+
+Tabela 4.2 Funções de forma para o elemento quadrilátero . . . . . . . . 40
+
+Tabela 4.3 Coordenadas dos centróides e volumes dos subelemen-
+tos no triângulo padrão . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+
+Tabela 4.4 Coordenadas dos centróides e volumes dos subelemen-
+tos no quadrilátero padrão . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 42
+
+Tabela 4.5 Coordenadas dos centróides das faces no triângulo pa-
+drão . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 44
+
+Tabela 4.6 Coordenadas dos centróides das faces no quadrilátero
+padrão . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+
+Tabela 5.1 Propriedades do fluido . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+
+Tabela 5.2 Propriedades do meio poroso . . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+
+Tabela 5.3 Constantes da permeabilidade relativa para Monteagudo
+e Firoozabadi (2004) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 55
+
+Tabela 5.4 Coeficientes para o passo de tempo . . . . . . . . . . . . . . . . . . . . . 55
+
+Tabela 5.5 Coeficiente da diagonal principal do sistema linear re-
+sultante para o volume de controle p , após 10 dias . . . . . . 56
+
+Tabela 5.6 Constantes da permeabilidade relativa para Marcondes,
+Varavei e Sepehrnoori (2010) . . . . . . . . . . . . . . . . . . . . . . . . . . . . 59
+
+Tabela 5.7 Coordenadas dos extremos de cada uma das fraturas no
+caso 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 63
+
+vii
+
+
+
+
+
+LISTA DE SÍMBOLOS
+
+Símbolos Romanos
+
+A Coordenada inicial da fratura, m
+
+B Coeficiente da pressão capilar, Pa
+
+g Aceleração da gravidade, m/s2
+
+J Matriz jacobiana da transformação de coordenadas
+K Tensor permeabilidade absoluta, m2
+
+K Permeabilidade absoluta, m2
+
+kr Permeabilidade relativa
+
+kr o w i Permeabilidade relativa do óleo na saturação de água
+irredutível
+
+kr w o r Permeabilidade relativa da água na saturação residual de
+óleo
+
+L Comprimento da fratura, m
+
+no Expoente de Corey para o óleo
+
+Nv Número de vértices de um elemento
+
+nw Expoente de Corey para a água
+
+N Função de forma
+P Pressão, Pa
+
+Pc Pressão capilar, Pa
+
+q Vazão volumétrica por unidade de volume, s–1
+
+q? Vazão mássica por unidade de volume, (kg/s)/m3
+
+q? Vazão volumétrica, m3/s
+
+S Saturação
+
+So r Saturação de óleo residual
+
+Sw i Saturação de água irredutível
+
+ix
+
+
+
+t Variável tempo, s
+
+u Vetor velocidade de Darcy, m/s
+
+VP Volume ocupado pelos poros, m
+3
+
+VT Volume total ocupado pela rocha, m
+3
+
+x , y , z Coordenadas globais, m
+
+Símbolos Gregos
+
+? Fator de correção do passo de tempo adaptativo
+
+?t Passo de tempo, s
+
+?S Variação de saturação
+
+?S Vetor área de passagem do fluxo, m2
+
+?Vp Volume de um volume de controle p , m
+3
+
+?Vs Volume do subelemento s , m
+3
+
+?P Gradiente de pressão, Pa/m
+? Propriedade genérica
+
+? Mobilidade, (Pa.s)–1
+
+µ Viscosidade dinâmica, Pa.s
+
+? Coordenada ao longo da fratura, m
+
+? Domínio fraturado
+
+?f Subdomínio da fratura
+
+?m Subdomínio da rocha-matriz
+
+? Porosidade
+
+? Potencial, Pa
+
+? Massa específica, kg/m3
+
+? Inclinação
+" Espessura da fratura, m
+
+?,? Coordenadas locais do elemento
+
+?x ,?y Variação das coordenadas globais, m
+
+??,?? Variação das coordenadas locais do elemento
+
+Abreviaturas
+
+x
+
+
+
+ACM Método multigrid de correções aditivas
+
+EbFVM Element-based Finite Volume Method
+
+EDFM Embedded Discrete-Fracture Model
+
+IMPES Implicit Pressure, Explicit Saturation
+
+SIGER Rede Temática de Gerenciamento e Simulação de Reser-
+vatórios da Petrobras
+
+USDFM Unstructured Discrete-Fracture Model
+
+VER Volume elementar representativo
+
+VPI Volume poroso injetado
+
+Subscritos
+
+? Fase ?
+
+f Face
+
+f? Ponto de integração, localizado no centróide da face
+
+i , j , k , p Nós
+
+j p Aresta do elemento formada pelos nós j e p
+
+min Mínimo
+
+max Máximo
+
+o Fase não molhante
+
+s Subelemento
+
+s? Centróide do subelemento
+
+t Total, referente à soma dos termos da fase molhante e da
+fase não molhante
+
+u p Upwind
+
+w Fase molhante
+
+Sobrescritos
+
+xi
+
+
+
+?? Espaço transformado
+
+f Fratura
+
+m Rocha-matriz
+
+o Passo de tempo anterior
+
+t Total, relativo à soma dos termos da fratura e da matriz
+
+? Período de tempo arbitrário
+
+Símbolos Especiais
+
+e ?Ep Conjunto de elementos que contribuem na formação do
+volume de controle p
+
+f ?Fp Conjunto de faces da superfície de controle associado ao
+volume p
+
+f ?Fep Conjunto de faces do elemento e na superfície de con-
+trole do volume p
+
+s ?Sp Conjunto de subelementos s que contribuem na forma-
+ção do volume de controle p
+
+j p ?Nf Conjunto de arestas que representam trechos de fratura
+formadas pelos nós j e p
+
+xii
+
+
+
+RESUMO
+
+Uma quantidade expressiva das reservas mundiais de gás e óleo são for-
+mações naturalmente fraturadas. As fraturas encontradas nestas regiões
+interferem de forma efetiva na permeabilidade do meio, servindo muitas
+vezes como via primária de locomoção do fluido, o que pode ocasionar
+por exemplo a diminuição do tempo de vida útil do poço produtor. De
+modo a prever de forma coerente o escoamento em meios fraturados, di-
+versos modelos para sua representação foram desenvolvidos ao longo das
+últimas cinco décadas. Atualmente, os modelos com maior aplicação na
+indústria de petróleo e gás são os de dupla porosidade ou de dupla perme-
+abilidade. Estes aplicam, contudo, simplificações geométricas que, frente
+à complexidade da rede de fraturas observada em análises de campo, po-
+dem afetar de forma relevante a precisão dos resultados. Para sanar esta
+dificuldade, o modelo de fratura discreta apresenta-se como uma boa
+alternativa. Nesta dissertação, simula-se o escoamento bidimensional
+bifásico imiscível óleo-água, incompressível e isotérmico, com ou sem
+pressão capilar, para reservatórios naturalmente fraturados utilizando o
+modelo de fratura discreta, de modo a analisar as características geomé-
+tricas inerentes desta metodologia. Para isto, faz-se uso da biblioteca
+computacional desenvolvida pelo Laboratório de Simulação Numérica
+em Mecânica dos Fluidos e Transferência de Calor (SINMEC/UFSC) cha-
+mada EFVLib. Esta biblioteca possui todos os elementos geométricos e
+numéricos para implementar algoritmos empregando o método de vo-
+lumes finitos baseado em elementos (EbFVM), possibilitando o uso de
+malhas não-estruturadas para melhor representação das fraturas. Apro-
+veitando a generalidade do modelo de fratura discreta, discute-se ainda a
+aplicação dessa metodologia para representação do fraturamento hidráu-
+lico nas proximidades dos poços.
+
+Palavras-chave: Reservatórios naturalmente fraturados. Modelo de fra-
+tura discreta. Método de volumes finitos baseado em elementos (EbFVM).
+Malhas não estruturadas.
+
+xiii
+
+
+
+
+
+ABSTRACT
+
+A large amount of the gas and oil resides in naturally fractured reservoirs.
+In these regions, the fractures interfere effectively with the permeability
+of the medium, often serving as the fluid main locomotion path, which
+may cause, for instance, a reduction of the useful life of the production
+well. In order to correctly forecast the fluid flow in fractured media, many
+models have been developed in the last five decades. Nowadays, either
+the double-porosity or the double-permeability models are the most used
+in the petroleum and gas petroleum industry. However, these models
+apply geometrical simplifications to the complex fracture network, which
+may affect significantly the precision of the results. To deal with this pro-
+blem, the discrete fracture model could be a suitable alternative. In this
+work, a bidimensional, isothermal, incompressible, two-phase immisci-
+ble water-oil flow will be simulated using the discrete fracture model in
+naturally fractured reservoirs, with or without capillary pressure, in or-
+der to analyze the geometric characteristics inherent to the formulation.
+To achieve this aim, EFVLib will be used; it consists in a computatio-
+nal library developed by the Computational Fluid Dynamics Laboratory
+(SINMEC-UFSC). This library has all the geometrical and numerical ele-
+ments to implement algorithms using the element based finite volume
+method (EbFVM), allowing the application of unstructured meshes to re-
+produce the fractures with more fidelity. Taking advantage of the genera-
+lity of the discrete fracture model, the application of this methodology to
+represent the hydraulic fracturing in the surroundings of the well will be
+discussed.
+
+Keywords: Naturally fractured reservoir. Discrete fracture model. Element-
+based finite volume method (EbFVM). Unstructured grids.
+
+xv
+
+
+
+
+
+CAPÍTULO
+
+1
+INTRODUÇÃO
+
+1.1 Preliminares
+
+No decorrer das últimas décadas, a simulação numérica tornou-se
+uma ferramenta indispensável nos processos de exploração e explotação
+das bacias petrolíferas. Dentro das diversas aplicações, pode-se citar por
+exemplo o processo de avaliação de formações, em particular a perfura-
+ção do poço pioneiro. Normalmente restrita pela própria complexidade
+do procedimento ou pelos custos envolvidos, esta etapa da análise de um
+reservatório pode se beneficiar grandemente de uma diretriz pré-definida
+por uma simulação do meio.
+
+Outra vertente da utilização dos métodos numéricos encontra-se no
+acréscimo da eficiência da recuperação do petróleo disponível nos re-
+servatórios. Segundo Maliska (2004), a média mundial de recuperação
+é em torno de 30%. Com a crescente demanda de petróleo e um número
+finito de bacias petrolíferas disponíveis, aumentar essa média torna-se
+imperativo para a sustentabilidade do mercado. Uma forma de auxiliar
+os métodos numéricos na execução de ambas tarefas supracitadas, dentre
+outras, encontra-se em aprimorar a forma como o reservatório, e toda sua
+estrutura, são representados e repassados ao programa.
+
+Neste trabalho, em específico, atenta-se à representação dos reser-
+vatórios naturalmente fraturados. De acordo com Monteagudo e Firooza-
+badi (2004), formações naturalmente fraturadas compreendem cerca de
+
+1
+
+
+
+20% das reservas mundiais de petróleo e gás natural. Regiões com estas
+características apresentam uma alta importância econômica e são estu-
+dadas com grande interesse devido à alta capacidade de drenagem decor-
+rente da presença de fraturas, o que pode aumentar a produtividade ou,
+no caso de uma recuperação secundária, por exemplo, até mesmo acele-
+rar a inviabilização do poço produtor com a chegada prematura do fluido
+de injeção. No âmbito de pesquisa nacional proeminente, destacam-se
+ainda as rochas carbonáticas, formações altamente fraturadas presentes
+em grande quantidade na camada do pré-sal.
+
+As fraturas são normalmente regiões de maior permeabilidade em
+comparação com a rocha porosa do reservatório, servindo de meio pri-
+mário para o escoamento do fluido. Uma determinação precisa de suas
+características e de seu comportamento na produção, por conseguinte,
+torna-se vital. O completo conhecimento de tais aspectos, contudo, é
+uma tarefa inviável. A irregularidade e desconexidade comumente en-
+contradas nas redes de fraturas fazem com que abordagens estatísticas
+sejam normalmente utilizadas para sua caracterização, enquanto o es-
+coamento no meio fraturado apresenta nuances que dependem de uma
+série de informações, principalmente no que diz respeito ao escoamento
+multifásico, já que cada uma de suas fases pode possuir um comporta-
+mento distinto perante o meio.
+
+Este comportamento diferenciado incentiva o estudo de modelos
+para simulação destes reservatórios de modo a representar a ocorrência
+de zonas naturalmente fraturadas, a presença de heterogeneidades fortes
+nas propriedades petrofísicas e o comportamento geológico e de fluxo
+destes reservatórios da maneira mais apropriada possível, balanceando
+todos os fatores envolvidos a fim de obter um ponto ótimo. O modelo
+de porosidade simples, por exemplo, busca representar explicitamente
+e discretizar todas fraturas presentes no meio, mas em casos nos quais
+estas são numerosas e refinamentos são necessários, torna-se numerica-
+mente dispendioso. Os primeiros modelos desenvolvidos, na década de
+1960, chamados de modelos de dupla porosidade, padronizam a distri-
+buição de rocha e fraturas de forma a auxiliar no cálculo das equações
+de conservação. Nesta simplificação, no entanto, algumas propriedades
+importantes das fraturas podem ser relevadas.
+
+O modelo de fratura discreta, implementado neste trabalho, encontra-
+se num intermédio entre os dois modelos anteriormente citados. As ca-
+
+2
+
+
+
+racterísticas de cada uma das fraturas são consideradas individualmente,
+buscando uma maior fidedignidade na representação do escoamento, po-
+rém algumas hipóteses são feitas de modo a minimizar o trabalho com-
+putacional. Os primeiros trabalhos nesse sentido ocorreram na década
+de 1980, porém aprimoramentos e ramificações da proposta inicial desse
+modelo são constantemente desenvolvidos. Seus ramos de aplicação vem
+sendo aprimorados, expandindo-se por exemplo para a representação do
+fraturamento hidráulico durante a perfuração de poços.
+
+Assim como qualquer modelo para representação de um reservató-
+rio naturalmente fraturado, o modelo de fratura discreta apresenta cer-
+tas limitações, similares ao do modelo de porosidade simples. Pesquisas
+recentes, provenientes das últimas duas décadas, adotam um procedi-
+mento hierárquico de modo a inibir as restrições de determinadas me-
+todologias e assim cobrir uma gama maior de casos. Ressalta-se que esta
+proposta não inviabiliza a importância do trabalho apresentado nesta dis-
+sertação, mas sim expande o escopo da pesquisa proposta ao analisá-la
+como uma etapa de um modelo mais amplo, fato que é apresentado como
+uma sugestão de trabalho futuro.
+
+Nesta dissertação, utilizam-se malhas não-estruturadas, atentando-
+se primariamente aos aspectos geométricos de representação da fratura.
+Para o escoamento, atém-se a um modelo simplificado do processo de
+recuperação secundária dado por injeção de água. Para discretização das
+equações de conservação na matriz, faz-se uso do método de volumes
+finitos baseado em elementos (EbFVM), um método de volumes finitos,
+portanto conservativo, mas que utiliza das facilidades de consideração
+da geometria advindas do modelo de elementos finitos. Estas qualidades
+fizeram com que tal metodologia seja um foco comum de estudo do Labo-
+ratório de Simulação Numérica em Mecânica dos Fluidos e Transferência
+de Calor (SINMEC/UFSC), culminando numa biblioteca intitulada EF-
+VLib, que fornece todos os elementos geométricos e numéricos para im-
+plementar o presente algoritmo. Em conjunto com a biblioteca ACMLib,
+responsável pela resolução dos sistemas lineares gerados nas simulações,
+otimizou-se o processo de implementação do modelo de fratura discreta.
+Esta escolha destaca a importância das pesquisas desenvolvidas no la-
+boratório SINMEC ao possibilitar a engenharia simultânea de diferentes
+linhas de pesquisa, necessidade recorrente no mercado de trabalho.
+
+3
+
+
+
+1.2 Objetivos
+
+Esta pesquisa diz respeito à implementação e estudo do modelo de
+fratura discreta na simulação de um escoamento bidimensional, bifásico,
+incompressível, imiscível e isotérmico em reservatórios rígidos e natural-
+mente fraturados, fazendo uso do método EbFVM por meio da biblioteca
+EFVLib, desenvolvida na linguagem de programação C++ pelo Laborató-
+rio SINMEC/UFSC. Para tal, apresentam-se as equações de conservação
+obtidas para fratura e matriz por intermédio do modelo de fratura dis-
+creta, discutindo-se, principalmente do ponto de vista numérico, a abor-
+dagem que é adotada para o acoplamento entre os meios. Apresentam-
+se ainda alguns exemplos tanto para validação do modelo implementado
+quanto para análise da metodologia.
+
+1.3 Organização do trabalho
+
+Este trabalho está dividido em 6 capítulos, incluindo esta introdu-
+ção. O capítulo 2 é destinado à revisão bibliográfica dos conceitos empre-
+gados nesta dissertação, entre eles a estrutura dos reservatórios natural-
+mente fraturados e o estado da arte no que diz respeito à sua simulação,
+com destaque para o modelo de fratura discreta, no qual se baseia esta
+dissertação. São apresentados ainda um breve histórico do fraturamento
+hidráulico, o método EbFVM e as bibliotecas EFVLib e ACMLib.
+
+O capítulo 3 apresenta o modelo matemático desta dissertação. Tra-
+balha-se com o escoamento bifásico bidimensional incompressível e imis-
+cível, apresentando toda formulação até obter as devidas equações de
+conservação para a matriz e a fratura. São apresentados modelos para
+a pressão capilar e permeabilidade relativa, além do modo como são aco-
+pladas as equações de ambos meios.
+
+O capítulo 4 abrange a formulação numérica da dissertação, englo-
+bando a discretização das equações em cada um dos meios. A fratura pos-
+sui um escoamento unidimensional que é facilmente discretizado. Para a
+matriz, contudo, tem-se a aplicação da metodologia EbFVM, a qual é ex-
+planada em detalhes. Ao fim do capítulo, exibe-se a aplicação do método
+IMPES.
+
+O capítulo 5 é dedicado a apresentar os resultados obtidos com o
+programa implementado. Faz-se uma validação do modelo comparando
+
+4
+
+
+
+dois casos com os resultados disponíveis na literatura especializada. Por
+fim, apresentam-se alguns resultados com a finalidade de analisar pro-
+priedades da rede de fraturas e da matriz.
+
+O capítulo 6, por fim, está destinado às considerações finais e suges-
+tões para trabalhos futuros.
+
+5
+
+
+
+
+
+CAPÍTULO
+
+2
+REVISÃO BIBLIOGRÁFICA
+
+2.1 Caracterização dos reservatórios naturalmente fra-
+
+turados
+
+Nas últimas cinco décadas, movido pela demanda crescente de pe-
+tróleo, o estudo de reservatórios naturalmente fraturados tem recebido
+uma atenção cada vez maior. Frutos de complexas movimentações tectô-
+nicas e processos de sedimentação, apresentam uma grande complexi-
+dade em sua caracterização: uma marcante heterogeneidade devido à
+presença de dois meios distintos para locomoção do fluido. As fraturas
+caracterizam descontinuidades no meio poroso ao apresentar uma con-
+dutividade hidráulica e efeito capilar diferentes da matriz (PAIVA, 2012,
+p. 1). Segundo Kaul, Putra e Schechter (2004), a grande questão nessa
+análise encontra-se na interação entre esses dois meios e nas proprie-
+dades que afetam o escoamento, com destaque para a capilaridade e a
+gravidade, o que torna o fenômeno difícil de se quantificar.
+
+Em um sistema naturalmente fraturado as fraturas ou fissuras na-
+turais são as grandes responsáveis pelo transporte de fluidos através do
+reservatório, apresentando alta permeabilidade e pouca capacidade de
+armazenamento de fluido (a relação entre o volume das fraturas e o vo-
+lume total da rocha é da ordem de 1 %). A rocha-matriz, ou simplesmente
+matriz, funciona em grande parte como uma fonte alimentadora de flui-
+dos para as fraturas, possuindo baixa permeabilidade (0,01 a 1 mD) mas
+
+7
+
+
+
+alta capacidade para armazenamento dos fluidos (ROSA; CARVALHO; XA-
+VIER, 2006). Para que as fraturas, todavia, se comportem como meio
+principal de transporte, é de se esperar que elas precisem estar conecta-
+das entre si. Isso acarreta na necessidade de conhecer tanto a conectivi-
+dade das fraturas quanto sua distribuição e propriedades para determinar
+adequadamente o escoamento do fluido (LONG; WITHERSPOON, 1985).
+Essa necessidade torna-se ainda mais pronunciada em situações onde o
+escoamento no meio é multifásico, uma vez que para cada meio as fases
+podem se comportar de maneiras distintas. A fratura pode ser o principal
+meio de escoamento para somente alguns dos componentes, por exem-
+plo, enquanto os demais escoam pela própria matriz (MONTEAGUDO;
+FIROOZABADI, 2004).
+
+Segundo Li e Lee (2008), o completo conhecimento da distribuição
+das fraturas em um reservatório é uma tarefa basicamente impossível, já
+que o sistema de fraturas é bastante irregular e comumente desconexo.
+Geólogos usam diversas informações para sintetizar tal distribuição, en-
+tre elas perfilagem de produção, testes de pressão em poços, imagens e
+amostras do reservatório. Em geral, os dados das fraturas são fornecidos
+estatisticamente, por intermédio de funções de distribuição para a espes-
+sura, comprimento e orientação, dentre outras características. Apesar do
+comportamento aparentemente aleatório, é comum se encontrar situa-
+ções em que há uma direção preferencial das fraturas, já que estas tendem
+a ocorrer em planos perpendiculares à direção de menor tensão da rocha.
+
+O presente trabalho tem como foco o processo de recuperação se-
+cundária dado pela injeção de água. O que se deseja analisar é o efeito
+de tal método, convencional e largamente utilizado, em reservatórios fra-
+turados. Segundo Paiva (2012), neste processo a presença das fraturas
+pode reduzir a eficiência da produção ao formar caminhos preferenciais
+para o escoamento. A presença das fissuras reduz o gradiente de pressão
+exercido na rocha-matriz, característica que é intensificada pela molha-
+bilidade ao óleo do sistema rocha-fluido.
+
+Segundo Ahmed (2006), a molhabilidade, citada acima, é a tendên-
+cia de um fluido de aderir à superfície de um sólido em presença de outros
+fluidos imiscíveis, sendo normalmente medida através do ângulo de con-
+tato. Paiva (2012) adiciona que este é um fenômeno de superfície, sendo
+caracterizado pelo equilíbrio entre diferentes fases mediante a formação
+de uma interface de separação entre tais. A distribuição dos fluidos no
+
+8
+
+
+
+reservatório é função da molhabilidade: há a fase molhante, que tende a
+ocupar os poros menores e está aderida à rocha, e a não molhante, nos
+poros maiores e canais. As moléculas da fase molhante se atraem mais
+fortemente com as moléculas do sólido do que aquelas da fase não mo-
+lhante. Um sistema contendo óleo e água terá geralmente a água como
+fase molhante.
+
+A capilaridade está relacionada com a molhabilidade, uma vez que
+se trata da habilidade das fases de se locomoverem entre si. Tal proprie-
+dade se torna apreciável em condutos de dimensões bastante reduzidas,
+como os poros da rocha reservatório, podendo ser interrompida nas fra-
+turas, já que sua espessura possui dimensão geralmente muito superior às
+do poro (PAIVA, 2012). A pressão capilar é a diferença de pressão existente
+entre as diferentes fases decorrente dessas tensões interfaciais, podendo
+facilitar ou dificultar o deslocamento do fluido nos poros. Segundo Rosa,
+Carvalho e Xavier (2006), a pressão capilar é uma função da tensão su-
+perficial e do raio de curvatura da interface entre os fluidos envolvidos.
+Quando o raio de curvatura aumenta, a pressão capilar decai. Quando a
+pressão capilar diminui, a saturação da fase molhante aumenta. Assim,
+pode-se dizer que a saturação influi no raio de curvatura e que, por ex-
+tensão, a pressão capilar é função da saturação.
+
+2.2 Simulação de reservatórios naturalmente fratu-
+
+rados
+
+Ao longo das últimas décadas, diversos estudos foram conduzidos
+para avaliar tanto o efeito da capilaridade no processo de recuperação
+secundária em reservatórios naturalmente fraturados quanto para buscar
+alternativas para a injeção de água em tais meios. Na área experimen-
+tal, são exemplos os trabalhos de Horie, Firoozabadi e Ishimito (1990),
+Pooladi-Darvish e Firoozabadi (2000) e Hirasaki e Zhang (2004). Nos tra-
+balhos de cunho numérico, os quais são discutidos de forma mais deta-
+lhada a seguir, além dos objetivos supracitados, destaca-se uma contínua
+proposta de metodologias para representação do meio e do escoamento
+visando balancear o detalhamento de informações do modelo com um
+tempo viável de simulação.
+
+O chamado modelo de porosidade simples é uma destas possibili-
+dades de representação do meio que oferece resultados precisos inde-
+
+9
+
+
+
+pendente da rede de fraturas. Conforme apresentado por Phelps, Pham
+e Shari (2000) e Dogru et al. (2001), trata-se da discretização explícita
+das fissuras na malha do reservatório. Ou seja, a malha possui elementos
+representando a rocha-matriz e elementos representando cada uma das
+fraturas. Propriedades da rocha, como porosidade e permeabilidade, são
+descontínuas e sofrem variações bruscas, o que é causado pela discrepân-
+cia entre os meios. Apesar da qualidade dos resultados obtidos com essa
+abordagem, já que a geometria e a física do escoamento são devidamente
+descritas, este método não é prático devido à quantidade exacerbada de
+elementos da malha para representar todo reservatório. Além disso, re-
+finamentos localizados são comuns para representar adequadamente as
+fraturas, fazendo com que haja ainda uma discordância acentuada entre
+a ordem de grandeza das células da malha. Um exemplo desse caso é
+apresentado na Fig. 2.1.
+
+Figura 2.1 – Representação explícita da fratura em uma malha – modelo
+de porosidade simples
+
+Fonte: Próprio autor
+
+Limitações como essas fizeram que vários modelos macroscópicos
+ou estratégias numéricas para representação de diferentes estruturas de
+fraturas fossem propostos ao longo das últimas décadas. Os seguintes
+casos são discutidos nas próximas páginas:
+
+1. Modelo de Meio Poroso Equivalente, Modelo do Contínuo Único;
+
+2. Modelo de Múltiplos Domínios;
+
+3. Modelo de Fraturas Discretas;
+
+10
+
+
+
+4. Modelo Híbrido.
+
+Vale ressaltar que esta divisão não é exata, não sendo incomum di-
+ferentes metodologias se interceptarem, diferentes classificações serem
+propostas ou surgirem novas modelagens. Para o caso da fratura discreta,
+tem-se um detalhamento maior, uma vez que é o objeto de estudo dessa
+dissertação.
+
+2.2.1 Modelo de meio poroso equivalente
+
+Nessa classificação estão os métodos que buscam representar o meio
+fraturado como um único meio contínuo, estabelecendo uma alteração
+nas propriedades de modo que o escoamento seja representado com to-
+das suas nuances. Um dos primeiros trabalhos nesse sentido é o de Hsieh
+e Neuman (1985), no qual se buscou representar um sistema onde o es-
+coamento se dava somente pela rede de fraturas através de uma permea-
+bilidade absoluta que representasse uma média volumétrica das perme-
+abilidades de cada meio. O valor obtido foi assumido como o tensor per-
+meabilidade equivalente do meio. Vale ressaltar que, apesar do trabalho
+supracitado assumir que a permeabilidade da rocha-matriz era desprezí-
+vel, esta não é uma condição necessária para aplicação do modelo.
+
+Essa homogeneização das propriedades é indicada para meios com
+alto grau de fraturamento ou onde fissuras individuais não são determi-
+nantes no fluxo do sistema como um todo. Nessa metodologia, espe-
+cial atenção deve ser demandada para o volume elementar representa-
+tivo (VER), o qual indica o mínimo volume de rocha que pode ser con-
+siderado representativo do meio fraturado, ou seja, o volume em que a
+hipótese do contínuo adotada nesse modelo é válida. Em uma forma-
+ção naturalmente fraturada, esse valor pode ser bem elevado, impedindo
+inicialmente a escolha da homogeneização. Neuman (1988), contudo,
+utilizou uma aproximação estocástica para viabilizar o modelo indepen-
+dentemente do VER. Apesar de ser facilmente aplicado, esse modelo peca
+ao generalizar as propriedades do meio, ocultando características locais
+das fraturas necessárias para uma representação precisa do escoamento.
+
+Apresentado por Van Lingen et al. (2001), o método das pseudocur-
+vas também busca analisar o meio fraturado como um único domínio,
+evitando refinamentos ou malhas não estruturadas. Difere-se de uma
+
+11
+
+
+
+simples homogeneização das propriedades por, além de propor altera-
+ções na porosidade e permeabilidade absoluta, adotar também pseudo-
+curvas de pressão capilar e permeabilidade relativa nos elementos da ma-
+lha que interceptam fraturas, buscando considerar e representar tanto o
+escoamento nestas quanto suas trocas com a rocha-matriz. Essa adap-
+tação restringe grandemente a flexibilidade desse modelo. Isso acontece
+porque esses pseudoparâmetros, em particular a permeabilidade relativa,
+dificilmente podem ser determinados, já que dependem de todos os fa-
+tores controlando as trocas entre a matriz e as fraturas, além de serem
+transientes.
+
+O método das pseudocurvas é indicado para reservatórios nos quais,
+somado a um grande espaçamento entre as fraturas, boa parte do escoa-
+mento ocorra na matriz. Segundo Paiva (2012, p. 11), é indicado em situ-
+ações nas quais a transferência entre matriz e fratura é rápida o suficiente
+para que o sistema se comporte como um único meio. Enquanto que para
+a homogeneização das propriedades a ordem de grandeza das fraturas
+precisa ser inferior à dos elementos da malha, o método de pseudocurvas
+aplica-se para a situação oposta.
+
+2.2.2 Modelo de múltiplos domínios
+
+Esta classificação engloba as metodologias nas quais os meios são
+discretizados independentemente, estando conectados por meio de um
+termo de transferência de fluido ou soluto. O modelo mais comum nesta
+categoria, amplamente utilizado na indústria de petróleo, é o modelo de
+dupla porosidade. Em cada ponto no espaço é considerada uma dupla
+das variáveis em estudo, sendo um valor referente à matriz e o outro às
+fissuras. A função de transferência, que garante o acoplamento entre as
+equações, representa a massa que se desloca de um meio para o outro.
+Este conceito foi idealizado por Barenblatt, Zheltov e Kochina (1960) para
+um escoamento monofásico ligeiramente compressível no qual a função
+de transferência foi obtida considerando um regime pseudopermanente.
+
+Warren e Root (1963) apresentaram um modelo prático para esse
+método. Buscou-se uma solução analítica para um escoamento monofá-
+sico radial, sendo os blocos da rocha-matriz representados como parale-
+lepípedos retangulares homogêneos, uniformes e isotrópicos, separados
+entre si por planos representando as fraturas (MAZO, 2005, p. 16). Além
+da geometria simplificada – apresentada na Fig. 2.2 – houve também
+
+12
+
+
+
+simplificações nas equações do problema. Assumiu-se que o escoamento
+ocorria somente através da rede de fraturas, tendo a matriz função so-
+mente de armazenamento do fluido, alimentando as fraturas através da
+função de transferência. Esta metodologia proposta por Warren e Root
+(1963) se consagrou como o modelo de dupla porosidade convencional
+(ou dupla porosidade permeabilidade simples) e se tornou base para vá-
+rias pesquisas, em especial no que diz respeito à função de transferência.
+
+Figura 2.2 – Representação do modelo de dupla porosidade convencional
+
+Fonte: Modificado de Warren e Root (1963)
+
+Kazemi et al. (1976) generalizaram o modelo para um escoamento
+bifásico com presença de efeitos gravitacionais e mobilidades relativas,
+e Thomas, Dixon e Pierson (1983) desenvolveram um modelo tridimen-
+sional, trifásico, utilizando inclusive o método das pseudocurvas na de-
+terminação da função de transferência. Nesses trabalhos, no entanto, os
+blocos da rocha-matriz ainda não se comunicam entre si. Essa simpli-
+ficação é possível para casos onde não há um escoamento significativo
+na rocha-matriz, o que não é uma constante na análise dos reservatórios
+naturalmente fraturados. O modelo de dupla permeabilidade (ou dupla
+porosidade permeabilidade dupla) foi desenvolvido para representar os
+casos nos quais tal hipótese não é possível. Introduzido por Blaskovich
+et al. (1983) e Hill e Thomas (1985), generaliza o modelo de dupla po-
+rosidade ao estabelecer conexões entre os blocos da matriz, permitindo
+troca de massa entre eles. Uma comparação entre os diferentes modelos
+de múltiplos domínios é feita na Fig. 2.3.
+
+13
+
+
+
+Figura 2.3 – Comparação entre o modelo de porosidade simples e os mo-
+delos de múltiplos domínios
+
+Fonte: Modificado de Dean e Lo (1988)
+
+O modelo de múltiplos domínios é ideal para reservatórios altamente
+fraturados, com a rede de fissuras formada por fraturas pequenas e conec-
+tadas. Apesar de não se restringir a esse caso apenas, essa metodologia
+apresenta algumas fortes limitações. A determinação da função de trans-
+ferência entre fratura e matriz é uma tarefa árdua, dependendo de diver-
+sas propriedades do meio. Além disso, a uniformização da geometria e
+propriedades dificulta a representação da heterogeneidade de uma rede
+complexa de fraturas, podendo relevar características como espessura,
+comprimento, conectividade, direção e espaçamento, as quais, conforme
+discutido, interferem de forma efetiva no escoamento. Com relação à
+representação geométrica do meio, algumas pesquisas foram desenvol-
+vidas de modo a garantir uma maior flexibilidade neste quesito. Naimi-
+Tajdar (2005), por exemplo, propõe uma discretização, tanto horizontal
+quanto vertical, de cada um dos blocos da matriz (gerando assim um sub-
+domínio) para obter uma descrição do escoamento transiente de forma
+mais adequada. Cada uma das células de matriz no interior deste sub-
+domínio, por sua vez, estão associadas a uma única célula de fratura na
+malha correspondete (PAIVA, 2012, p. 13).
+
+14
+
+
+
+2.2.3 Modelo de fraturas discretas
+
+Comparando com o esquema de múltiplos domínios, que adota sim-
+plificações do meio para dar destaque à modelagem do escoamento, o
+modelo de fratura discreta foca numa representação mais realista da rede
+de fissuras (LA POINTE et al., 1997). Ou seja, propriedades das fratu-
+ras como conectividade, direção e espessura são mantidas e considera-
+das, buscando-se captar de forma mais precisa como o escoamento se
+comporta. Restringindo-se à esta definição, alguns autores, como Gong
+(2007), consideram que o modelo de porosidade simples é na realidade
+um modelo de fratura discreta. Esta escolha, contudo, não é unânime e
+não será adotada neste trabalho. O que se considera como modelo de
+fratura discreta, por fim, pode ser entendido como uma simplificação do
+modelo de porosidade simples anteriormente apresentado. Devido à di-
+versidade de metodologias, utiliza-se uma divisão de tais em dois grupos,
+baseando-se no tipo de malha utilizada: Unstructured Discrete-Fracture
+Model (USDFM) e Embedded Discrete-Fracture Model (EDFM) (MOINFAR
+et al. 2011, MOINFAR et al. 2012).
+
+As origens do USDFM e do modelo de fratura discreta como um
+todo coincidem. As primeiras menções sobre este assunto ocorreram nos
+trabalhos de Noorishad e Mehran (1982) e Baca, Arnett e Langford (1984)
+para simular escoamento monofásico em uma geometria bidimensional.
+Nos modelos que se enquadram como USDFM, são utilizadas malhas não
+estruturadas que se adequam à rede de fraturas, já que estas são represen-
+tadas por arestas de elementos da malha, conforme apresentado na Fig.
+2.4. Ou seja, propõe-se uma redução da dimensão das fraturas, de n para
+(n ?1), baseada na hipótese de que a variação das propriedades no sen-
+tido lateral da fratura é irrisória frente às demais grandezas do problema.
+Esta consideração é apresentada na Fig. 2.5 e foi analisada no trabalho de
+Karimi-Fard e Firoozabadi (2001). Seus resultados mostraram que essa
+simplificação não afetou a precisão dos resultados quando comparada
+com a do modelo de porosidade simples.
+
+Nessa metodologia, a matriz e as fraturas são acopladas usando o
+princípio da superposição, ou seja, cada meio é discretizado separada-
+mente, adicionando suas respectivas contribuições para obter as equa-
+ções gerais do escoamento. Para manter a consistência do problema,
+antes de somar tais contribuições multiplica-se a integral obtida para o
+balanço na fratura pela espessura da mesma. Kim e Deo (2000), Karimi-
+
+15
+
+
+
+Figura 2.4 – Representação da fratura na malha – modelo USDFM
+
+Fonte: Próprio autor
+
+Figura 2.5 – Simplificação geométrica proposta no modelo de fratura dis-
+creta
+
+Fonte: Modificado de Karimi-Fard e Firoozabadi (2001)
+
+Fard e Firoozabadi (2001, 2003) e Monteagudo e Firoozabadi (2004) são
+alguns dos trabalhos que expandiram esse conceito, adicionando o efeito
+da pressão capilar na simulação de escoamentos multifásicos incompres-
+síveis.
+
+Comparada com a representação explícita das fraturas, a principal
+vantagem desta proposta encontra-se em uma redução considerável do
+tempo de simulação, mantendo ainda a representação realística da rede
+de fraturas. O efeito individual de cada fissura é enfatizado neste modelo
+e, como se aplica o princípio da superposição, perde-se a necessidade
+de calcular o termo de transferência entre os meios, já que o termo de
+
+16
+
+
+
+transferência da fratura para a matriz se anula com o termo da matriz para
+a fratura. Por fim, tem-se uma certa adaptabilidade nesse modelo, não
+sofrendo grandes alterações de desempenho perante restrições na geo-
+metria do reservatório tais como fraturas com espessura muito pequena.
+Dentre as desvantagens, o fato de representar todas fraturas explicita-
+mente traz limitações, já que, além de ser necessário informações sobre
+as propriedades de cada uma das fissuras, à medida que o número delas
+aumenta, o modelo e o processo de geração da malha tendem a se tornar
+dispendiosos. Ademais, esse modelo normalmente gera um sistema de
+equações discretas que possuem uma estrutura complexa, com elevado
+índice de anisotropia nos coeficientes, nos quais as parcelas associadas
+ao fluxo na fratura possuem valores muitos maiores do que aqueles as-
+sociados à matriz. Assim, a solução do sistema linear associado a es-
+tas equações de conservação torna-se difícil de resolver numericamente.
+(MOINFAR et al., 2011)
+
+O método EDFM surgiu como parte do modelo híbrido de Lee, Lough
+e Jensen (2001), sendo posteriormente explorado por Li e Lee (2008) e
+Moinfar et al. (2012). Nessa concepção, a desvantagem relacionada à
+complexidade na geração da malha desaparece, uma vez que as malhas
+adotadas são estruturadas e não há necessidade de moldá-las ao redor
+das fraturas. Estabelece-se uma analogia com poços para se calcular pa-
+râmetros de transporte. Nestes trabalhos, o conceito do índice de poço
+introduzido por Peaceman (1978) é utilizado para se obter tanto equações
+idênticas às de um poço para cada fratura quanto para gerar um termo
+fonte acoplando as equações para cada um dos meios. Resolve-se, assim,
+um problema similar ao do acoplamento poço-reservatório. Enquanto os
+trabalhos iniciais aproximaram as fraturas por planos retangulares verti-
+cais, Moinfar et al. (2012) extendeu o método para modelar fraturas incli-
+nadas. Persiste nesse modelo, contudo, o custo computacional elevado
+conforme se aumenta o número de fraturas para representação.
+
+Devido ao cuidado com a geometria e propriedades das fissuras, o
+modelo de fratura discreta torna-se particularmente vantajoso em situ-
+ações nas quais a rede de fraturas determina o escoamento, como por
+exemplo em reservatórios naturalmente fraturados onde a rocha-matriz
+tem permeabilidade intrínseca muito baixa. Em um caso extremo, no
+qual a permeabilidade da matriz pode ser considerada nula, esta não pre-
+cisa ser representada, já que o escoamento se dá somente pelas fissuras.
+
+17
+
+
+
+Isto leva a uma simplificação do modelo, que recebe o nome de sistemas
+de fraturas discretas.
+
+2.2.4 Modelos híbridos
+
+Nessa classe se enquadram os métodos que acoplam dois ou mais
+dos modelos supracitados simultaneamente. Para isso, os trabalhos re-
+latados a seguir propõem uma análise prévia das fraturas no reservató-
+rio, classificando-as de acordo com a ordem de grandeza dos elementos
+da malha. Clemo e Smith (1989 apud LEE; LOUGH; JENSEN, 2001), por
+exemplo, representaram as fraturas maiores discretamente e as demais
+por uma rede de blocos. Por sua vez, Lee, Lough e Jensen (2001) e pos-
+teriormente Li e Lee (2008) adotaram um procedimento como apresen-
+tado na Fig. 2.6. As fraturas pequenas e médias são tratadas inicialmente
+através de um modelo de meio poroso equivalente, substituindo-as por
+um tensor permeabilidade equivalente. De posse deste meio equivalente,
+aplica-se o modelo de fratura discreta para tratamento das fraturas lon-
+gas. Devido à flexibilidade obtida com o uso de diferentes metodologias
+(aproveitando as vantagens e indicações de cada), os modelos híbridos
+têm uma gama maior de aplicação na indústria de petróleo e gás.
+
+Apesar de não ser possível generalizar as características do modelo,
+em razão de sua definição abrangente, pode-se notar pelos exemplos apre-
+sentados uma tendência a uma solução de forma hierárquica. Com isto,
+busca-se subdividir o problema em etapas mais simples de serem resolvi-
+das, facilitando sua análise física e implementação computacional. Sana-
+se assim, por exemplo, a impossibilidade numérica advinda da represen-
+tação de todas fissuras no modelo de fratura discreta, uma vez que nos tra-
+balhos citados só houve a necessidade de representar as fraturas longas,
+facilmente identificadas por perfis sísmicos, mapeamentos geológicos e
+análises de poços. Do ponto de vista de implementação computacio-
+nal, ainda, estas etapas podem ser vistas como trechos independentes do
+programa, recebendo as informações das demais etapas como dados de
+entrada. Desta maneira, pode-se pensar na presente dissertação não só
+como a implementação de um modelo de fratura discreta, mas sim como
+uma etapa de um modelo híbrido.
+
+18
+
+
+
+Figura 2.6 – Exemplo de um modelo híbrido
+
+Fonte: Modificado de Li e Lee (2008)
+
+2.3 Fraturamento hidráulico
+
+A estimulação de poços objetiva aumentar a produtividade ou a inje-
+tividade de poços de petróleo e gás pelo aumento do fator de recuperação
+do campo, antecipação da produção ou até mesmo para corrigir algum
+tipo de dano causado no poço. Dentre os vários processos voltados para
+essa prática, destaca-se o fraturamento hidráulico.
+
+De acordo com Castro (2005), o fraturamento hidráulico é realizado
+através da aplicação de um gradiente de pressão acima da resistência me-
+cânica da formação, causando uma fratura artificial no meio. Faz-se en-
+tão o bombeio de um fluido a alta vazão de modo a propagar os canais
+formados, seguido da injeção de um agente de sustentação, que pode ser
+à base de areia ou outros compostos, com uma pressão suficiente para
+evitar que as fraturas criadas se fechem após a retirada da pressão gerada
+
+19
+
+
+
+pelo bombeio dos fluidos. Um esquema deste processo é apresentado na
+Fig. 2.7.
+
+O fraturamento ácido é um procedimento semelhante, no qual o
+fluido injetado é uma solução ácida. Neste caso, no entanto, criam-se
+canalizações irregulares e não há necessidade de agentes de sustentação.
+
+Figura 2.7 – Esquema de um fraturamento hidráulico
+
+Fonte: Castro (2005, p. 4)
+
+Segundo de Oliveira (2012), a primeira realização experimental do
+fraturamento hidráulico data de 1947, tendo sua primeira aplicação co-
+mercial feita em 1949. Desde então, estima-se que já tenham sido reali-
+zadas aproximadamente 2,5 milhões de operações de fraturamento e que
+hoje em dia em torno de 60% dos poços perfurados recebam este trata-
+mento (MOHAGHEGH; HILL; REEVES, 2000 apud DE OLIVEIRA, 2012).
+Quando bem aplicada, esta técnica pode duplicar ou até mesmo qua-
+druplicar a produção de reservatórios cujas características dificultam a
+extração (THOMAS, 2001 apud CASTRO, 2005). Ela é especialmente atra-
+tiva em grandes campos de gás, além de reservas de óleo onde a perme-
+abilidade absoluta ao redor do poço é pequena ou ocorreram danos à
+formação (BELHAJ; MNEJJA, 2011).
+
+20
+
+
+
+A previsão do desempenho de produção dos poços fraturados é um
+passo essencial no projeto desse tratamento. Dessa forma, a modelagem
+desta operação visando estimar as propriedades da fratura e consequen-
+temente o comportamento do escoamento tornou-se um tema comum
+de estudo. Várias propostas foram desenvolvidas, englobando desde so-
+luções analíticas, metodologias baseadas em fatores de dano de formação
+(ambas normalmente não reproduzem com fidedignidade toda comple-
+xidade relacionada com o escoamento na região danificada) até a aplica-
+ção de um modelo de porosidade simples. Destaca-se nesta dissertação
+o trabalho apresentado por Belhaj, Dhabi e Mnejja (2011), que propõe a
+utilização do modelo de fratura discreta USDFM para representação das
+fraturas. Conforme exposto anteriormente, o modelo de fratura discreta
+é vantajoso em situações nas quais a permeabilidade da rocha-matriz
+é pequena, caso em que o fraturamento hidráulico também é indicado.
+Esta última última escolha, por conseguinte, fica ratificada.
+
+2.4 Método de volumes ?nitos baseado em elemen-
+
+tos - EbFVM
+
+Para o presente trabalho faz-se uso do método de fratura discreta
+classificado como USDFM. Portanto, utilizam-se malhas não estrutura-
+das. Para discretização das equações de conservação, os trabalhos de
+Noorishad e Mehran (1982), Baca, Arnett e Lagnford (1984), Kim e Deo
+(2000) e Karimi-Fard e Firoozabadi (2001, 2003) optaram por esquemas
+da família do método de elementos finitos. Devido a uma certa facilidade
+em se trabalhar com geometrias mais complexas, o método normalmente
+se apresenta como uma primeira escolha.
+
+Para escoamento monofásico, como no caso dos dois primeiros tra-
+balhos, os resultados obtidos foram satisfatórios. Contudo, para os de-
+mais, com escoamento multifásico, certas restrições foram notadas. Co-
+mo os reservatórios naturalmente fraturados normalmente apresentam
+um alto índice de heterogeneidade, o contraste de propriedades entre
+fraturas e rocha-matriz ressalta a necessidade de um método que seja
+localmente conservativo. Com este objetivo, Monteagudo e Firoozabadi
+(2004, 2007), Matthai et al. (2007) e Marcondes, Varavei, Sepehrnoori
+(2010), entre outros, adotaram o método de volumes finitos baseado em
+
+21
+
+
+
+elementos (EbFVM) para implementar o modelo de fratura discreta. É
+este esquema numérico que é considerado nessa dissertação.
+
+O Método EbFVM (em inglês, Element-based Finite Volume Method)
+teve suas primeiras aplicações na resolução, em malhas não estruturadas,
+das equações de Navier-Stokes, resultando em softwares comerciais ro-
+bustos como o CFX, da empresa ANSYS (CORDAZZO, 2006). Esse esque-
+ma também é conhecido como método de elementos finitos baseado no
+volume de controle (CVFE - Control Volume Finite Elements), uma no-
+menclatura que, segundo Maliska (2004), não é precisa por passar a ideia
+errônea de que esta é uma técnica de elementos finitos.
+
+O EbFVM é um método de volumes finitos, ancorado no balanço
+das propriedades em volumes de controle discretos e, portanto, local-
+mente conservativo. No entanto, utiliza do método de elementos finitos
+as funções de forma e a representação geométrica do meio por elemen-
+tos, definidos pelos vértices da malha. Essa metodologia foi apresentada
+inicialmente para a solução das equações de Navier-Stokes por Baliga e
+Patankar (1983) e Schneider e Zedan (1983) utilizando, respectivamente,
+elementos triangulares e quadriláteros. Em problemas de petróleo, sua
+primeira utilização foi feita por Rozon (1989 apud CORDAZZO, 2006, p.
+15), discretizando as equações de um escoamento monofásico para ele-
+mentos quadrangulares.
+
+Este é um método Cell-Vertex, ou seja, o campo vinculado às variá-
+veis do problema é aproximado pelos valores discretos nos vértices dos
+elementos da malha, denominados nós. Os volumes de controle são en-
+tidades duais de tais nós, ou seja, para cada nó é associado um volume de
+controle. Existem várias formas de obtenção destes volumes de controle;
+uma delas, utilizada neste trabalho, é através do método das medianas:
+cada elemento é dividido em subelementos ao ligar o baricentro com o
+ponto médio de cada uma de suas arestas (para o caso bidimensional).
+O volume de controle é formado pela junção de todos subelementos que
+compartilham determinado vértice. Os segmentos de reta criados com
+essa divisão, por sua vez, são as faces. O conjunto das faces de um volume
+de controle é então chamado de superfície de controle. Essas denomina-
+ções são apresentadas na Fig. 2.8.
+
+O ponto médio de cada face é comumente denominado ponto de
+integração. Isto se deve pois, considerando o teorema do valor médio,
+este ponto é o local onde os fluxos que atravessam as faces são estima-
+
+22
+
+
+
+dos. Para esta estimativa, faz-se uma interpolação da variável em ques-
+tão utilizando os valores nos nós do elemento que contém a face. Além
+disso, assume-se neste trabalho que os elementos são homogêneos (as
+propriedades do meio não variam em seu interior) – o que foi proposto
+por Cordazzo (2006). Como cada face fica localizada no interior de um
+elemento, elimina-se a necessidade de uma média para avaliar a perme-
+abilidade absoluta nas interfaces dos volumes de controle.
+
+Figura 2.8 – Volume de controle e seus componentes no EbFVM
+
+Fonte: Próprio autor
+
+Para determinar uma aproximação numérica do gradiente de deter-
+minada variável em função de seus valores nodais, normalmente faz-se a
+diferenciação de funções analíticas que indicam a variação das variáveis
+no elemento. Estas funções são chamadas funções de forma (habitual-
+mente utilizadas no método de elementos finitos) e dependem somente
+da geometria do elemento. Não há impedimento, contudo, para o uso de
+outros tipos de aproximações. Neste trabalho, por exemplo, não se utiliza
+uma simples interpolação das funções de forma para o cálculo do termo
+advectivo. Faz-se aproximações do tipo upwind, as quais possuem uma
+clara interpretação física.
+
+Devido à qualidade dos resultados obtidos, com poucos efeitos de
+orientação da malha, o método EbFVM vem ganhando notoriedade na si-
+
+23
+
+
+
+mulação de escoamentos multifásicos em reservatórios de petróleo, tanto
+para problemas envolvendo a recuperação secundária, como o trabalho
+de Cordazzo et al. (2004) na simulação de um escoamento óleo-água, e o
+de Paluszny, Matthäi e Hohmeyer (2007) na representação do processo de
+injeção de água em reservatórios naturalmente fraturados, quanto para
+aqueles com recuperação terciária – Karpinski et al. (2009), Marcondes e
+Sepehrnoori (2007, 2010), Marcondes et al. (2013), Fernandes, Marcondes
+e Sepehrnoori (2013) e Santos, Marcondes e Sepehrnoori (2013) são al-
+guns exemplos da aplicação do EbFVM em um simulador composicional
+para representação dos variados processos de recuperação avançada de
+petróleo.
+
+2.4.1 Biblioteca EFVLib
+
+No programa desenvolvido para esse trabalho, o método EbFVM foi
+implementado por intermédio de uma biblioteca chamada EFVLib, es-
+crita em C++ orientado a objetos, fruto de um trabalho de pesquisa do
+laboratório SINMEC na Rede Temática de Gerenciamento e Simulação
+de Reservatórios da Petrobras (SIGER). Dentre as especificações apresen-
+tadas em Maliska et al. (2008), suprem as necessidades do programa,
+ratificando sua escolha:
+
+• Implementação na linguagem C++, mantendo uma sintaxe sim-
+ples, consistente e intuitiva para a interface da biblioteca;
+
+• Habilidade para lidar com malhas não estruturadas híbridas em du-
+as e três dimensões;
+
+• Suporte para programação de algoritmos de simulação de escoa-
+mentos multifásicos em reservatórios de petróleo usando o método
+de volumes finitos baseado em elementos;
+
+• Arquitetura projetada com a premissa de otimizar a velocidade de
+execução e economizar memória, na medida do possível;
+
+• Rotinas para cálculo de todas as grandezas geométricas associadas
+às entidades das malhas, relevantes na construção da forma discre-
+tizada das equações que descrevem os escoamentos;
+
+24
+
+
+
+• Ferramentas para a montagem eficiente dos sistemas de equações
+lineares resultantes da discretização das equações diferenciais que
+descrevem o escoamento de fluidos nos reservatórios.
+
+Ainda segundo Maliska et al. (2008), a EFVLib possui três módulos
+principais: o módulo topológico, que funciona como o núcleo no qual
+os demais são construídos, é responsável pela representação abstrata das
+entidades que formam parte da malha e suas relações topológicas. O
+módulo geométrico, por sua vez, garante acesso aos parâmetros geomé-
+tricos, necessários para obter as equações discretizadas, e associados às
+entidades da malha, independente da forma que elas possuirem. Por fim,
+o módulo numérico possui como função a construção e armazenamento
+de tais equações, fornecendo vários operadores para aproximação numé-
+rica de termos comuns nas expressões que definem o escoamento.
+
+A forma como foi feita sua implementação permite que o usuário
+utilize os parâmetros dos elementos sem que seja necessário se envolver
+com seus detalhes geométricos. Isso garante uma simplificidade e uma
+característica otimizada ao código, economizando tempo na implemen-
+tação de formas geométricas.
+
+2.4.2 Biblioteca ACMLib
+
+A biblioteca ACMLib apresenta-se como um complemento para a
+EFVLib, oferecendo métodos para resolução dos sistemas lineares prove-
+nientes de discretizações numéricas com malhas não estruturadas (MA-
+LISKA et al., 2009, p. 79). O núcleo dessa biblioteca é a implementação do
+método multigrid de correções aditivas (ACM), buscando uma resolução
+de forma eficiente e rápida independente do porte do problema.
+
+Os métodos multigrid podem ser definidos como estratégias de ace-
+leração dos métodos iterativos tradicionais empregados na resolução de
+sistemas lineares de equações. Baseiam-se numa análise espectral do
+erro, conforme apresentada, por exemplo, no trabalho de Briggs, Henson
+e McCormick (2000 apud CORDAZZO, 2006). Considera-se que a dife-
+rença entre a solução exata do sistema linear e a solução numérica em
+determinada iteração pode ser representada por uma superposição de
+ondas de diferentes frequências. Somente a faixa que possui compri-
+mento de onda da ordem do tamanho da malha é efetivamente reduzida
+nos solvers iterativos, o que faz com que sua taxa de convergência decaia
+
+25
+
+
+
+significativamente após um tempo. Para evitar isto, o método multigrid
+propõe que as iterações sejam feitas em uma hierarquia de malhas, ob-
+tidas a partir da original, de modo a cobrir uma gama maior de com-
+primentos de onda e assim reduzir simultaneamente componentes do
+erro associados a diferentes frequências. Um esquema dessa hierarquia é
+apresentado na Fig. 2.9
+
+Figura 2.9 – Hierarquia de malhas no método multigrid
+
+Fonte: Maliska et al. (2009)
+
+Os primeiros trabalhos acerca deste assunto remontam à década de
+1960, com Fedorenko (1961,1964) e posteriormente Bakhvalov (1966). A
+notoriedade, porém, começou a partir da década de 1970, com o traba-
+lho de Brandt (1973 apud HAASE; LANGER, 2002), o qual desenvolveu a
+teoria de modo a expandi-la para outros tipos de problema. Sua proposta
+hoje se enquadra em uma das duas subdivisões do método: o multigrid
+geométrico. Nesta classe, as malhas grosseiras são formadas através de
+aspectos geométricos da malha original, sendo preciso realizar uma nova
+discretização das equações para cada malha. As dificuldades advindas
+desta necessidade serviram de impulso para o desenvolvimento de uma
+outra classe de métodos multigrid: o multigrid algébrico. Apresentado
+pela primeira vez de forma estruturada por Brandt, McCormick e Ruge
+
+26
+
+
+
+(1982 apud HAASE; LANGER, 2002), em sua proposta não há a necessi-
+dade de repassar informações da malha, uma vez que o sistema linear
+das malhas grosseiras é obtido a partir somente da análise dos coefici-
+entes do sistema linear original. O método multigrid algébrico baseado
+na correção aditiva é um caso particular desta classe. Apresentado por
+Hutchinson e Raithby (1986 apud CORDAZZO, 2006) e Van Doormaal,
+Turan e Raithby (1987 apud CORDAZZO, 2006), atenta-se na manutenção
+dos princípios de conservação nas malhas grosseiras, ou seja, faz-se a
+inserção da física na concepção do solver (CORDAZZO, 2006).
+
+O método multigrid se dá em etapas. De forma sucinta, cada ní-
+vel de malha transfere informações para o próximo nível mais grosseiro
+por meio dos seus coeficientes (no caso do multigrid algébrico). Com
+tais, faz-se o cálculo dos coeficientes do sistema linear na nova malha,
+resolvendo-o em seguida por intermédio de um método iterativo auxiliar
+ou até mesmo direto, no caso das malhas mais grosseiras. Os resultados
+são então repassados para as malhas mais refinadas, reduzindo assim
+várias componentes do erro. Na biblioteca ACMLib optou-se por Gauss-
+Seidel e fatoração incompleta LU como os métodos iterativos auxiliares.
+Para o nível mais grosseiro, utiliza-se um método direto, a fatoração LU.
+Esta escolha se deve à simplicidade, versatilidade e leveza que estes mé-
+todos apresentam (MALISKA et al., 2009, p. 87).
+
+27
+
+
+
+
+
+CAPÍTULO
+
+3
+MODELO MATEMÁTICO
+
+3.1 Formulação das equações governantes
+
+As equações que modelam o escoamento de um fluido são as equa-
+ções de conservação da massa, quantidade de movimento e energia. Em
+um meio poroso, contudo, ao se adotar uma descrição macroscópica do
+escoamento, a lei de Darcy é empregada substituindo a equação de con-
+servação da quantidade de movimento. Para esta dissertação, trabalha-
+se com um escoamento bifásico, incompressível e imiscível em um meio
+poroso. Estas hipóteses são comuns na representação do processo de
+recuperação secundária por injeção de água em reservatórios de petróleo.
+Considera-se ainda que o escoamento é isotérmico e o meio poroso, rí-
+gido (não se deforma ao longo da produção). Sendo isotérmico, elimina-
+se a necessidade de utilização da equação de conservação de energia.
+Este problema, por conseguinte, passa a ser totalmente descrito por uma
+equação elíptica de pressão e uma equação parabólica de saturação, de-
+senvolvidas a seguir.
+
+A porosidade, relação entre o volume ocupado pelos poros (ou seja,
+o volume disponível para o fluido) e o volume total ocupado pela rocha,
+é dada por
+
+?=
+VP
+VT
+
+. (3.1)
+
+29
+
+
+
+Com relação à saturação, esta é definida como a razão entre o vo-
+lume ocupado por uma das fases do escoamento (aqui representada pelo
+subíndice ?) e o volume poroso disponível no meio,
+
+S? =
+V?
+VP
+
+. (3.2)
+
+Com tais conceitos, o balanço de massa para a fase ?, considerando
+fluidos imiscíveis, pode ser representado pela equação diferencial
+
+?
+?
+
+??S??
+?
+
+? t
+=?? ·
+
+?
+
+??u?
+?
+
++ q?? , (3.3)
+
+na qual ?? é a massa específica da fase ?, q?? representa a vazão mássica
+injetada ou produzida da fase ? por unidade de volume total (rocha mais
+vazios) e u? denota o vetor velocidade da fase ?. A velocidade da fase
+?, por sua vez, é obtida aplicando-se a lei de Darcy para escoamentos
+multifásicos,
+
+u? =?K
+kr ?
+µ?
+??? , (3.4)
+
+para a qualKrepresenta o tensor permeabilidade absoluta do meio e kr ?,
+µ? e ?? denotam respectivamente a permeabilidade relativa, a viscosi-
+dade dinâmica e o potencial, todos da fase ?. Este potencial é função da
+pressão da fase ? e de um termo gravitacional, a saber
+
+?? = P?+??g z . (3.5)
+
+Nesta expressão, P? é a pressão da fase ? na profundidade z , a qual
+é definida em relação a um ponto de referência. O termo g representa a
+aceleração da gravidade. Como as simulações se darão somente para ca-
+sos bidimensionais, não se considera variação na profundidade, de modo
+que a Eq. (3.3) pode ser reescrita como
+
+?
+?
+
+??S??
+?
+
+? t
+=? ·
+
+?
+
+??K
+kr ?
+µ?
+?P?
+
+?
+
++ q?? . (3.6)
+
+Para fins de simplificação da nomenclatura, pode-se estabelecer ainda
+a mobilidade da fase ?, dada como a razão entre sua permeabilidade re-
+
+30
+
+
+
+lativa e sua viscosidade dinâmica, ou seja,
+
+?? =
+kr ?
+µ?
+
+. (3.7)
+
+Como o meio poroso é considerado rígido e tem-se um escoamento
+incompressível e imiscível, a Eq. (3.6) resulta em
+
+?
+? S?
+? t
+=? ·(??K?P?)+q? , (3.8)
+
+na qual
+
+q? =
+q??
+??
+
+. (3.9)
+
+Estabelecendo a pressão e a saturação de cada fase como incógnitas
+do problema, há duas equações (uma equação de conservação da massa
+para cada fase) e quatro incógnitas. As duas equações de fechamento vêm
+da soma das saturações de cada fase,
+
+So +Sw = 1 , (3.10)
+
+e da própria definição da pressão capilar Pc ,
+
+Po ?Pw = Pc . (3.11)
+
+Em ambas, o subíndice w indica a fase molhante e o , a não mo-
+lhante. Neste trabalho, em alguns momentos chama-se a fase molhante
+simplesmente de água e a não molhante, de óleo. Deve-se ter em mente,
+contudo, que este é um caso particular da metodologia apresentada.
+
+Apesar de haver quatro incógnitas, na prática somente duas equa-
+ções são discretizadas. Para se obter Sw , utiliza-se a de conservação da
+massa para a fase molhante – Eq. (3.8) com ?= w . Para o cálculo de Pw ,
+no entanto, utiliza-se o somatório das equações de conservação da massa
+de cada fase com algumas manipulações possibilitadas pelas Eqs. (3.10)
+e (3.11). Tal procedimento resulta na seguinte equação:
+
+?? ·(?tK?Pw )?? ·(?oK?Pc )= qt , (3.12)
+
+na qual ?t = ?o +?w é a mobilidade total e qt = qo + qw . As demais
+
+31
+
+
+
+incógnitas, relacionadas à fase não molhante, são obtidas posteriormente
+com a aplicação direta das equações de fechamento.
+
+3.1.1 Modelos para a permeabilidade relativa e para a pressão
+
+capilar
+
+Enquanto a permeabilidade absoluta – que representa a capacidade
+do fluido em escoar no meio poroso quando ele satura 100% o meio – é
+uma propriedade intrínseca da rocha, a permeabilidade relativa depende
+das interações entre fluido e meio, sendo usualmente calculada em fun-
+ção da saturação. Existem vários modelos analíticos para descrever o com-
+portamento da permeabilidade relativa. Um dos modelos mais utilizados
+para este tipo de escoamento, e adotado neste trabalho, é o modelo apre-
+sentado por Corey (1954) para o escoamento óleo-água, que propõe as
+expressões
+
+kr w = kr w o r
+
+?
+
+Sw ?Sw i
+1?Sw i ?So r
+
+?nw
+
+, (3.13)
+
+kr o = kr o w i
+
+?
+
+1?Sw ?So r
+1?Sw i ?So r
+
+?no
+
+, (3.14)
+
+nas quais Sw i e So r determinam os extremos do domínio de saturação e
+são denominadas respectivamente saturação de água irredutível e satura-
+ção de óleo residual. kr w o r é a permeabilidade relativa da água quando a
+saturação do óleo é So r , kr o w i é a permeabilidade relativa do óleo quando
+a saturação da água é Sw i , nw é o expoente de Corey para a água e no é o
+expoente de Corey para o óleo. Um exemplo é apresentado na Fig. 3.1
+
+Para a pressão capilar, por sua vez, adota-se a mesma formulação
+empregada em Monteagudo e Firoozabadi (2004), dada por
+
+Pc (Sw )=?B ln Sw , (3.15)
+
+em que B é uma constante. Esta função, que depende unicamente da
+saturação da fase molhante, decresce à medida que sua saturação au-
+menta. Ela se anula caso a saturação da água assuma valor unitário e
+tende a infinito para uma saturação nula. De forma a impedir este último
+comportamento, estabelece-se um valor máximo para a pressão capilar,
+obtido quando Sw = 0, 001.
+
+32
+
+
+
+Figura 3.1 – Exemplo de curvas de permeabilidade relativa com o modelo
+de Corey
+
+Fonte: Próprio autor
+
+3.2 Modelo de Fratura Discreta
+
+A metodologia adotada neste trabalho, e explanada a seguir, foi apre-
+sentada por Monteagudo e Firoozabadi (2004) para a aplicação do mé-
+todo de fratura discreta USDFM. Conforme comentado, o sistema de equa-
+ções final é gerado usando o princípio de superposição. De acordo com
+tal, um determinado domínio fraturado ? pode ser decomposto em
+
+?=?m +"?f , (3.16)
+
+no qual ?m e "?f representam, respectivamente, os subdomínios da ma-
+triz e da fratura. O termo " representa a espessura da fratura (o subdomí-
+nio da fratura torna-se um somatório de subdomínios caso ocorram fis-
+suras de espessuras distintas). Para cada um dos meios, já considerando
+as dimensões distintas, têm-se os seguintes sistemas de equações (os so-
+brescritos m e f indicam os subdomínios, respectivamente, da rocha-
+matriz e da fratura):
+
+33
+
+
+
+• Matriz (2D):
+
+– Para cálculo da pressão da fase molhante:
+
+?? ·
+?
+
+?mt K
+m?P mw
+
+?
+
+?? ·
+?
+
+?mo K
+m?P mc
+
+?
+
+= q mt , (3.17)
+
+– Para cálculo da saturação da fase molhante:
+
+?m
+? S mw
+? t
+
+?? ·
+?
+
+?mwK
+m?P mw
+
+?
+
+= q mw , (3.18)
+
+• Fratura (1D):
+
+– Para cálculo da pressão da fase da molhante:
+
+?
+?
+
+??
+
+?
+
+?
+f
+t K
+
+f ? P
+f
+
+w
+
+??
+
+?
+
+?
+?
+
+??
+
+?
+
+?fo K
+f ? P
+
+f
+c
+
+??
+
+?
+
+= q
+f
+
+t , (3.19)
+
+– Para cálculo da saturação da fase molhante:
+
+? f
+? S
+
+f
+w
+
+? t
+?
+?
+
+??
+
+?
+
+?fw K
+f ? P
+
+f
+w
+
+??
+
+?
+
+= q fw . (3.20)
+
+Para o último conjunto de equações, a variável ? indica a coorde-
+nada local ao longo da fratura, conforme apresentado na Fig. 3.2. Vale
+ressaltar ainda nas equações da fratura que, como é um caso unidimen-
+sional, a permeabilidade absoluta pode ser representada por um escalar.
+
+Ao analisar as Eqs. (3.17)–(3.20), nota-se que inclusive as propri-
+edades a serem calculadas – pressão e saturação – apresentam sobres-
+critos, ou seja, até o momento se assume que os valores nodais de tais
+propriedades podem ser distintos para cada meio. Esta proposta é o que
+diferencia o trabalho de Monteagudo e Firoozabadi (2004) dos anterior-
+mente apresentados para o método USDFM. Com isto, para possibilitar o
+acoplamento dos problemas, torna-se necessário uma relação entre as in-
+cógnitas da fratura e as da matriz. A hipótese feita é a de que, na interface
+da fratura com a matriz, há uma igualdade dos potenciais do escoamento
+– por extensão uma igualdade das pressões. Por definição, isto implica
+que as pressões capilares também devem ser iguais, ou seja,
+
+P mc
+?
+
+S mw
+?
+
+= P fc
+?
+
+S fw
+?
+
+. (3.21)
+
+34
+
+
+
+Figura 3.2 – Coordenada ? ao longo da fratura
+
+Fonte: Próprio autor
+
+Com tal consideração, podem-se relacionar as saturações na fratura
+e na matriz, conforme é apresentado na Fig. 3.3. Atenção deve ser dada ao
+fato que, com essa consideração, as permeabilidades relativas da fratura
+e da rocha-matriz na interface entre os meios poderão ser distintas não
+só pelos parâmetros do modelo, mas também pela descontinuidade da
+saturação.
+
+Figura 3.3 – Pressão capilar e relação entre as saturações na interface
+matriz-fratura
+
+Fonte: Modificado de Monteagudo e Firoozabadi (2004)
+
+35
+
+
+
+Aplicando a regra da cadeia ao termo de acumulação da Eq. (3.20),
+pode-se escrevê-lo como
+
+? S
+f
+
+w
+
+? t
+=
+
+d S
+f
+
+w
+
+d S mw
+
+? S mw
+? t
+
+. (3.22)
+
+Considerando a igualdade fornecida pela Eq. (3.21) e o modelo de
+pressão capilar adotado neste trabalho, dado pela Eq. (3.15), tem-se
+
+?B m ln S mw =?B
+f ln S fw . (3.23)
+
+De posse das propriedades da função logaritmo, pode-se reescrever
+esta equação como
+
+ln S fw = ln
+?
+
+S mw
+?
+
+B m
+
+B f , (3.24)
+
+a qual resulta em
+
+S fw =
+?
+
+S mw
+?
+
+B m
+
+B f . (3.25)
+
+A regra da potência para derivadas fornece, por conseguinte,
+
+d S
+f
+
+w
+
+d S mw
+=
+
+B m
+
+B f
+?
+
+S mw
+?
+
+B m
+
+B f
+?1
+
+. (3.26)
+
+Com estas informações, a forma final das equações do escoamento
+na fratura, em função das incógnitas da matriz, é:
+
+• Fratura:
+
+– Para cálculo da pressão da fase água:
+
+?
+?
+
+??
+
+?
+
+?
+f
+t K
+
+f
+? P mw
+??
+
+?
+
+?
+?
+
+??
+
+?
+
+?fo K
+f
+? P mc
+??
+
+?
+
+= q
+f
+
+t , (3.27)
+
+– Para cálculo da saturação da fase água:
+
+? f
+B m
+
+B f
+?
+
+S mw
+?
+
+B m
+
+B f
+?1 ? S
+
+m
+w
+
+? t
+?
+?
+
+??
+
+?
+
+?fw K
+f
+? P mw
+??
+
+?
+
+= q fw . (3.28)
+
+36
+
+
+
+CAPÍTULO
+
+4
+MODELO NUMÉRICO
+
+Neste tópico são apresentadas as discretizações realizadas nos do-
+mínios da rocha-matriz e das fraturas. O sistema final de equações dis-
+cretizadas, por sua vez, será obtido, a partir da Eq. (3.16), com o balanço
+
+?
+
+?
+
+f d?=
+
+?
+
+?m
+
+fm d?m +"
+
+?
+
+?f
+
+f f d?f . (4.1)
+
+Nesta proposta, f representa os resíduos das Eqs. (3.8) e (3.12) para
+os respectivos subdomínios.
+
+4.1 Discretização das equações de conservação na
+
+rocha-matriz
+
+Para a rocha-matriz, as discretizações são feitas utilizando o método
+EbFVM. Conforme apresentado na revisão bibliográfica, a geometria é
+representada por meio de elementos, porém a discretização é feita em
+volumes de controle. Propôs-se obter estes volumes, por sua vez, atra-
+vés do método da mediana, que é representado na Fig. 4.1. Liga-se o
+centróide do elemento com os pontos médios de suas faces, criando os
+subelementos. O conjunto dos subelementos que compartilham o nó p
+forma então o volume de controle p .
+
+37
+
+
+
+Figura 4.1 – Obtenção do volume de controle no EbFVM
+
+Fonte: Próprio autor
+
+Na Fig. 4.1 também estão marcados os centróides das faces que
+compõem o volume. Estes pontos são necessários para a aproximação
+das integrais de superfície que surgem durante a discretização. Estas,
+por sua vez, representam os fluxos que atravessam a face do volume de
+controle.
+
+Para a estimativa das integrais, é feita uma varredura por elementos,
+calculando-se a contribuição de cada subelemento que faz parte do vo-
+lume p separadamente. Faz-se então o somatório de todas contribuições
+de modo a obter o balanço final. Este raciocínio é indicado na integral de
+superfície ao reescrever o somatório de todas as faces como dois somató-
+rios, um indicando o elemento e o outro qual face do elemento.
+
+A seguir, é apresentada a discretização realizada da Eq. (3.18). Rea-
+lizando sua integração no tempo e em um volume de controle, tem-se
+
+?
+
+t
+
+?
+
+V
+
+?m
+? S mw
+? t
+
+dVdt?
+?
+
+t
+
+?
+
+V
+
+?·
+?
+
+?mwK
+m?P mw
+
+?
+
+dVdt =
+
+?
+
+t
+
+?
+
+V
+
+q mw dVdt . (4.2)
+
+Denotando o volume de controle no qual está sendo realizada a in-
+tegração pelo subíndice p , o primeiro termo da Eq. (4.2), ou termo de
+acumulação, tem sua integral aproximada por
+
+?
+
+t
+
+?
+
+V
+
+?m
+? S mw
+? t
+
+dVdt ??mp ?Vp
+?
+
+S mw ,p ?S
+m ,o
+w ,p
+
+?
+
+, (4.3)
+
+na qual o superíndice o na saturação indica que ela é avaliada no passo
+de tempo anterior, enquanto a que não possui superíndice é avaliada
+
+38
+
+
+
+no passo de tempo atual. O termo ?Vp indica o volume do volume de
+controle p (pela dimensão do problema, trata-se na realidade de uma
+área), enquanto o subíndice p indica que as propriedades são avaliadas
+no nó p .
+
+Para auxiliar, dentre outros, no cálculo de algumas das componentes
+da Eq. (4.3), o método EbFVM propõe comumente uma transformação de
+coordenadas – das coordenadas globais
+
+?
+
+x , y
+?
+
+para as coordenadas locais
+?
+
+?,?
+?
+
+– a fim de se trabalhar em um elemento-padrão. Este procedimento
+é adotado para unificar a formulação em cada tipo de elemento da malha,
+já que em coordenadas locais este passa a ter tamanho e forma fixos,
+independentemente de quão distorcido ele for em coordenadas globais.
+Um exemplo dessa situação é apresentado na Fig. 4.2. Uma forma sim-
+ples de obter as relações entre estes dois sistemas de coordenadas é por
+intermédio de funções de forma. Nesta dissertação, adotam-se para cada
+tipo de elemento as funções dispostas nas Tabs. 4.1 e 4.2.
+
+Figura 4.2 – Transformação de variáveis e padronização dos elementos
+
+Fonte: Próprio autor
+
+39
+
+
+
+Tabela 4.1 – Funções de forma para o elemento triangular
+
+Nk
+?
+
+?,?
+?
+
+N1 1????
+
+N2 ?
+
+N3 ?
+
+Tabela 4.2 – Funções de forma para o elemento quadrilátero
+
+Nk
+?
+
+?,?
+?
+
+N1 (1??)(1??)
+
+N2 ?(1??)
+
+N3 ??
+
+N4 (1??)?
+
+Utilizando as funções de forma, é possível expressar a coordenada
+global de qualquer ponto no interior do elemento através das relações
+
+x
+?
+
+?,?
+?
+
+=
+Nv
+?
+
+i=1
+
+Ni
+?
+
+?,?
+?
+
+xi , (4.4)
+
+y
+?
+
+?,?
+?
+
+=
+Nv
+?
+
+i=1
+
+Ni
+?
+
+?,?
+?
+
+yi , (4.5)
+
+nas quais Nv denota o número de vértices do elemento, Ni é a função de
+forma que é igual a 1 no nó i e zero nos demais vértices do elemento, e
+xi e yi representam as coordenadas globais do nó i . Considerando que
+os elementos são isoparamétricos, pode-se expandir a utilização dessas
+funções de forma para representar a variação espacial de uma variável
+física qualquer do problema. Chamando-a de ?, tem-se a expressão
+
+?
+?
+
+?,?
+?
+
+=
+Nv
+?
+
+i=1
+
+Ni
+?
+
+?,?
+?
+
+?i , (4.6)
+
+em que ?i é o valor da propriedade ? no nó i .
+
+40
+
+
+
+De posse de tais informações, pode-se definir a matriz jacobiana da
+transformação de coordenadas, necessária para vários cálculos geométri-
+cos e aproximações numéricas. Denotada porJ, é dada por
+
+J=
+
+?
+
+?
+
+?
+
+? x
+
+??
+
+? x
+
+??
+? y
+
+??
+
+? y
+
+??
+
+?
+
+?
+
+?
+. (4.7)
+
+Seu determinante, por conseguinte, é
+
+detJ=
+? x
+
+??
+
+? y
+
+??
+?
+? x
+
+??
+
+? y
+
+??
+. (4.8)
+
+Os componentes ?Vp e ?
+m
+p da Eq. (4.3) podem então ser definidos.
+
+No método EbFVM o volume de um volume de controle é dado pelo so-
+matório dos volumes dos subelementos que o formam, ou seja,
+
+?Vp =
+?
+
+s?Sp
+
+?Vs , (4.9)
+
+na qual Sp é o conjunto dos subelementos que contribuem na formação
+do volume de controle p e ?Vs é o volume do subelemento s . O volume
+de cada subelemento s , por sua vez, é aproximado pela expressão:
+
+?Vs ? det J|s? ?V
+??
+
+s , (4.10)
+
+na qual o subíndice s? indica que a expressão é avaliada no centróide do
+subelemento s e ?V
+
+??
+s é o volume do subelemento s no espaço trans-
+
+formado. Como os elementos são padronizados, esses dados no plano
+transformado estão bem definidos e são fornecidos nas Tabs. 4.3 e 4.4.
+
+Tabela 4.3 – Coordenadas dos centróides e volumes dos subelementos no
+triângulo padrão
+
+Subelemento ?s? ?s? ?V
+??
+
+s
+
+s1 7/36 7/36 1/6
+
+s2 11/18 7/36 1/6
+
+s3 7/36 11/18 1/6
+
+41
+
+
+
+Tabela 4.4 – Coordenadas dos centróides e volumes dos subelementos no
+quadrilátero padrão
+
+Subelemento ?s? ?s? ?V
+??
+
+s
+
+s1 1/4 1/4 1/4
+
+s2 3/4 1/4 1/4
+
+s3 3/4 3/4 1/4
+
+s4 1/4 3/4 1/4
+
+A porosidade no nó p demanda certa atenção por conta da hipótese
+de homogeneidade nos elementos, e não no volume de controle. Com
+isso, o volume de controle resultante poderá ser heterogêneo. Define-se
+então uma média volumétrica para calcular seu valor, ou seja,
+
+?mp ?
+1
+
+?Vp
+
+?
+
+s?Sp
+
+?Vs?
+m
+s . (4.11)
+
+O único termo novo nessa fórmula é ?ms , que é a porosidade da
+matriz no elemento s .
+
+O terceiro termo da Eq. (4.2), referente à vazão mássica por unidade
+de volume, pode ser aproximado por
+
+?
+
+t
+
+?
+
+V
+
+q mw dVdt ??t q?
+m ,?
+w ,p , (4.12)
+
+em que ?t é o passo de tempo e q? m ,?w ,p é a vazão volumétrica dada por
+
+q? m ,?w ,p = q
+m ,?
+w ,p ?Vp . (4.13)
+
+Dos índices na vazão volumétrica, o único novo é o superíndice ? .
+Ele vem da aplicação do teorema do valor médio para aproximar a integral
+no tempo, indicando que ainda é necessário definir em que ponto do in-
+tervalo de tempo será avaliada a grandeza. Esta decisão está relacionada
+com a escolha do método IMPES e será discutida na seção 4.3.
+
+Para o segundo termo do lado esquerdo da Eq. (4.2), pode-se aplicar
+o teorema da divergência,
+
+42
+
+
+
+?
+
+t
+
+?
+
+V
+
+? ·
+?
+
+?mwK
+m?P mw
+
+?
+
+dVdt =
+
+?
+
+t
+
+?
+
+S
+
+?mwK
+m?P mw ·dSdt, (4.14)
+
+de modo que se tem uma integral de superfície sobre todas as faces do
+volume de controle. Esta, por sua vez, pode ser aproximada numerica-
+mente aplicando a regra do ponto médio, ou seja, utilizando os pontos de
+integração que se localizam no centróide de cada uma das faces,
+
+?
+
+t
+
+?
+
+S
+
+?mwK
+m?P mw ·dSdt ??t
+
+?
+
+f ?Fp
+
+?
+
+?m ,?w K
+m?P m ,?w
+
+?
+?
+
+?
+
+f?
+·?S f , (4.15)
+
+na qual Fp é o conjunto das faces associado ao volume p e ?S f é o vetor
+área de passagem do fluxo da face f – possui direção normal e magnitude
+igual ao comprimento da face. O subíndice f? indica que toda expressão
+entre parênteses é avaliada no centróide da face f . O somatório dessa
+equação ainda pode ser reescrito de forma equivalente, considerando as
+contribuições por elemento, através da expressão
+
+?
+
+f ?Fp
+
+?
+
+?m ,?w K
+m?P m ,?w
+
+?
+?
+
+?
+
+f?
+·?S f =
+
+?
+
+e?Ep
+
+?
+
+f ?Fep
+
+?
+
+?m ,?w K
+m?P m ,?w
+
+?
+?
+
+?
+
+f?
+·?S f , (4.16)
+
+na qual Ep é o conjunto dos elementos que contribuem na formação do
+volume de controle p e Fep é o conjunto das faces associadas ao volume
+p que estão no interior do elemento e . Neste trabalho, sempre existirão
+duas faces associadas a cada subelemento.
+
+Como as funções de forma são contínuas e diferenciáveis no interior
+de cada elemento, o gradiente de pressão da fase molhante pode ser es-
+timado por intermédio de tais (MALISKA, 2004). As derivadas espaciais
+parciais da pressão podem ser calculadas em qualquer ponto
+
+?
+
+?,?
+?
+
+por
+
+? P
+
+? x
+
+?
+
+?,?
+?
+
+=
+Nv
+?
+
+i=1
+
+? Ni
+? x
+
+Pi , (4.17)
+
+? P
+
+? y
+
+?
+
+?,?
+?
+
+=
+Nv
+?
+
+i=1
+
+? Ni
+? y
+
+Pi . (4.18)
+
+43
+
+
+
+Para avaliar os gradientes nas direções x e y é preciso calcular as de-
+rivadas parciais das funções de forma em relação às coordenadas globais
+x e y . Estas derivadas parciais podem ser obtidas a partir da aplicação da
+regra da cadeia seguida da utilização da matrizJ. Para uma determinada
+função de forma Ni , obtém-se
+
+? Ni
+? x
+
+=
+1
+
+detJ
+
+?
+
+? Ni
+??
+
+? y
+
+??
+?
+? Ni
+??
+
+? y
+
+??
+
+?
+
+, (4.19)
+
+? Ni
+? y
+
+=
+1
+
+detJ
+
+?
+
+? Ni
+??
+
+? x
+
+??
+?
+? Ni
+??
+
+? x
+
+??
+
+?
+
+. (4.20)
+
+O vetor ?S f , percorrendo a interface no sentido anti-horário, pode
+ser escrito em coordenadas globais como
+
+?S f =?yf i??x f j , (4.21)
+
+em que ?yf é a variação da coordenada y e ?x f é a variação da coor-
+denada x , ambas na face f . Utilizando as coordenadas locais, pode-se
+reescrever estes termos como
+
+?x f =
+? x
+
+??
+
+?
+
+?
+
+?
+
+?
+
+f?
+
+??f +
+? x
+
+??
+
+?
+
+?
+
+?
+
+?
+
+f?
+
+??f , (4.22)
+
+?yf =
+? y
+
+??
+
+?
+
+?
+
+?
+
+?
+
+f?
+
+??f +
+? y
+
+??
+
+?
+
+?
+
+?
+
+?
+
+f?
+
+??f . (4.23)
+
+O termo ??f indica a variação da coordenada ? na face f , assim
+como ??f é a variação da coordenada ? na face f . Estes valores e as
+coordenadas do centróide de cada face são fornecidos nas Tabs. 4.5 e 4.6.
+
+Tabela 4.5 – Coordenadas dos centróides das faces no triângulo padrão
+
+Face ? f? ? f? ??f ??f
+
+f1 5/12 1/6 -1/6 1/3
+
+f2 5/12 5/12 -1/6 -1/6
+
+f3 1/6 5/12 1/3 -1/6
+
+44
+
+
+
+Tabela 4.6 – Coordenadas dos centróides das faces no quadrilátero padrão
+
+Face ? f? ? f? ??f ??f
+
+f1 1/2 1/4 0 1/2
+
+f2 3/4 1/2 -1/2 0
+
+f3 1/2 3/4 0 -1/2
+
+f4 1/4 1/2 1/2 0
+
+O sentido do vetor área obedece uma convenção – em relação à po-
+sição dos subelementos que a face separa – estabelecida na biblioteca
+EFVLib. Esta é apresentada na Fig. 4.3. Há outras possibilidades de ori-
+entação, porém uma vez estabelecida, deve-se ater a ela para manter a
+congruência da representação. O sentido tem uma função importante de
+referência absoluta para o sentido do fluxo que atravessa a face.
+
+Figura 4.3 – Vetores área com convenção utilizada na EFVLib: a) elemento
+triangular; b) elemento quadrilátero
+
+Fonte: Próprio autor
+
+Como os elementos são homogêneos, o tensor permeabilidade per-
+manece constante no elemento e, por extensão, está definido nas faces
+do volume de controle. A última componente que precisa ser discutida
+na Eq. (4.15), por conseguinte, é a mobilidade. De imediato, uma al-
+ternativa é a interpolação de valores, assim como foi feita para o gra-
+diente de pressão. Essa escolha, entretanto, não é adequada. Segundo
+
+45
+
+
+
+Cordazzo (2006, p. 44), o termo que possui a mobilidade pode ser anali-
+sado como um termo advectivo da equação da saturação, de modo que,
+para conferir estabilidade ao método, deve ser representado por funções
+de interpolação baseadas no valor a montante. Adota-se, portanto, um
+modelo upwind para determinação da mobilidade nas faces do volume
+de controle. Assumindo uma face na interface de dois volumes k e j
+quaisquer, por exemplo, onde o vetor área aponta para fora do volume
+j , a mobilidade na face aqui chamada j k será
+
+(
+
+?j k =?j se (K?P ·?S)j k &amp;lt;0 ,
+?j k =?k se (K?P ·?S)j k &gt; 0 ,
+
+(4.24)
+
+ou seja, dependendo do sentido do fluxo que atravessa a face, a mobi-
+lidade será avaliada por um dos vértices do elemento. A Fig. 4.4 busca
+exemplificar essa escolha. Na letra a), como o fluxo está saindo do volume
+j , esse nó é escolhido para calcular a mobilidade. Caso contrário, como
+na letra b), utiliza-se o nó k .
+
+Figura 4.4 – Método upwind para escolha do ponto no qual valorar a
+mobilidade: a) ?j k =?j ; b) ?j k =?k
+
+Fonte: Próprio autor
+
+Com isso, a discretização da Eq. (3.18) está bem definida. A expres-
+são final é
+
+?mp ?Vp
+
+?
+
+S mw ,p ?S
+m ,o
+w ,p
+
+?
+
+?t
+?
+?
+
+e?Ep
+
+?
+
+f ?Fep
+
+?
+
+?m ,?w ,u pK
+m?P m ,?w
+
+?
+
+?
+
+?
+
+?
+
+f?
+·?S f = q?
+
+m ,?
+w ,p , (4.25)
+
+46
+
+
+
+na qual o subíndice u p na mobilidade indica que é adotado o método
+u p w i n d .
+
+Para a Eq. (3.17), utilizada para o cálculo da pressão, as discretiza-
+ções são análogas às que acabaram de ser explanadas. Em particular,
+os dois termos do lado esquerdo da equação são discretizados de forma
+idêntica à Eq. (4.15) enquanto o termo no lado direito apresenta uma
+discretização similar à da Eq. (4.12). Sua forma final é
+
+?
+?
+
+e?Ep
+
+?
+
+f ?Fep
+
+Km
+?
+
+?m ,?t ,u p?P
+m ,?
+
+w +?
+m ,?
+o ,u p?P
+
+m ,?
+c
+
+?
+
+?
+
+?
+
+?
+
+f?
+·?S f = q?
+
+m ,?
+t ,p . (4.26)
+
+4.2 Discretização das equações de conservação na
+
+fratura
+
+A discretização na fratura é bem mais simples, uma vez que se trata
+de um problema unidimensional. A entrada da fratura no programa com-
+putacional, por meio da biblioteca EFVLib, se dá de forma similar à de
+uma fronteira, repassando as arestas que a formam. Desta forma, a varre-
+dura se dá por intermédio das arestas, as quais, por sua vez, são definidas
+pelos dois nós que as compõem. Assim, as aproximações do gradiente e
+afins são obtidas a partir do valor das variáveis nestes nós. Considera-se,
+para fim de representação, um volume de controle que possua um trecho
+de fratura, como o caso do volume na Fig. 4.5. O balanço é feito para
+cada trecho de fratura separadamente. Para a aresta definida pelos nós
+p e j , o balanço da equação da saturação, dada pela Eq. (3.28), será (a
+discretização da equação da pressão, Eq. (3.27), é análoga):
+
+?
+
+t
+
+?
+
+V
+
+? f
+d S
+
+f
+w
+
+d S mw
+
+? S mw
+? t
+
+dVdt?
+?
+
+t
+
+?
+
+V
+
+?
+
+??
+
+?
+
+?fw K
+f
+? P mw
+??
+
+?
+
+dVdt =
+
+?
+
+t
+
+?
+
+V
+
+q fw dVdt .
+
+(4.27)
+Analisando o primeiro termo, de acumulação, tem-se
+
+?
+
+t
+
+?
+
+V
+
+? f
+d S
+
+f
+w
+
+d S mw
+
+? S mw
+? t
+
+dVdt ?? fp
+d S
+
+f
+w
+
+d S mw
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+p
+
+"L
+
+2
+
+?
+
+S mw ,p ?S
+m ,o
+w ,p
+
+?
+
+, (4.28)
+
+47
+
+
+
+Figura 4.5 – Volume de controle com um trecho de fratura
+
+Fonte: Próprio autor
+
+na qual L indica o comprimento da fratura, ou seja, a distância entre
+os nós p e j . Conforme citado anteriormente, " indica a espessura da
+fratura.
+
+O termo de vazão mássica por unidade de volume na Eq. (4.27), por
+sua vez, pode ser aproximado por
+
+?
+
+t
+
+?
+
+V
+
+q fw dVdt ??t q?
+f ,?
+w ,p , (4.29)
+
+na qual
+
+q? f ,?w ,p = q
+f ,?
+
+w ,p
+
+"L
+
+2
+. (4.30)
+
+Por último, o segundo termo da Eq. (4.27) pode ser aproximado por
+
+?
+
+t
+
+?
+
+V
+
+?
+
+??
+
+?
+
+?fw K
+f
+? P mw
+??
+
+?
+
+dVdt ?"?t ?f ,?w ,u p K
+f
+? P m ,?w
+??
+
+, (4.31)
+
+na qual
+
+? P m ,?w
+??
+
+=
+P m ,?w , j ?P
+
+m ,?
+w ,p
+
+L
+. (4.32)
+
+Assumindo esses dois nós p e j , tem-se
+
+48
+
+
+
+(
+
+?
+f ,?
+w ,u p =?
+
+f ,?
+w ,p se Pp &gt; Pj ,
+
+?
+f ,?
+w ,u p =?
+
+f ,?
+w , j se Pp &amp;lt;Pj .
+
+(4.33)
+
+A equação discretizada, por fim, pode ser escrita como
+
+? fp
+d S
+
+f
+w
+
+d S mw
+
+?
+
+?
+
+?
+
+?
+
+?
+
+p
+
+"L
+
+2
+
+?
+
+S mw ,p ?S
+m ,o
+w ,p
+
+?
+
+?t
+?"?f ,?w ,u p K
+
+f
+
+ 
+
+P m ,?w , j ?P
+m ,?
+
+w ,p
+
+L
+
+!
+
+= q? f ,?w ,p . (4.34)
+
+Para a Eq. (3.19), a expressão discretizada é
+
+?"K f
+
+?
+
+??
+f ,?
+t ,u p
+
+ 
+
+P m ,?w , j ?P
+m ,?
+
+w ,p
+
+L
+
+!
+
+??f ,?o ,u p
+
+ 
+
+P m ,?c , j ?P
+m ,?
+
+c ,p
+
+L
+
+!
+
+?
+
+?= q?
+f ,?
+t ,p , (4.35)
+
+Com as discretizações da fratura e da matriz, aplica-se agora a Eq.
+(4.1), de modo a obter o sistema de equações final. Vale ressaltar que, da
+maneira como foi realizada a discretização na fratura, já foi realizada a
+multiplicação pelo termo " presente na Eq. (4.1), não sendo necessário
+um novo produto. Para obtenção da saturação, a equação final é
+
+?V tp
+
+?
+
+S mw ,p ?S
+m ,o
+w ,p
+
+?
+
+?t
+?
+?
+
+j p?Nf
+
+"j p?
+f ,?
+w ,u p K
+
+f
+
+ 
+
+P m ,?w , j ?P
+m ,?
+
+w ,p
+
+L j p
+
+!
+
+?
+?
+
+e?Ep
+
+?
+
+f ?Fep
+
+?
+
+?m ,?w ,u pK
+m?P m ,?w
+
+?
+
+?
+
+?
+
+?
+
+f?
+·?S f = q?
+
+t ,?
+w ,p . (4.36)
+
+Note que nesta equação, para fins de simplificação da nomenclatura,
+utiliza-se a notação
+
+?V tp =?
+m
+p ?Vp +?
+
+f
+p
+
+d S
+f
+
+w
+
+d S mw
+
+?
+
+?
+
+?
+
+?
+
+?
+
+p
+
+"j p L j p
+2
+
+. (4.37)
+
+Para obtenção da pressão, é utilizada a equação
+
+49
+
+
+
+?
+?
+
+j p?Nf
+
+"j p K
+f
+
+?
+
+??
+f ,?
+t ,u p
+
+ 
+
+P m ,?w , j ?P
+m ,?
+
+w ,p
+
+L j p
+
+!
+
+??f ,?o ,u p
+
+ 
+
+P m ,?c , j ?P
+m ,?
+
+c ,p
+
+L j p
+
+!
+
+?
+
+?
+
+?
+?
+
+e?Ep
+
+?
+
+f ?Fep
+
+Km
+?
+
+?m ,?t ,u p?P
+m ,?
+
+w +?
+m ,?
+o ,u p?P
+
+m ,?
+c
+
+?
+
+?
+
+?
+
+?
+
+f?
+·?S f = q?
+
+t ,?
+t ,p . (4.38)
+
+Em ambas equações, Eqs. (4.36) e (4.38), os termos relacionados à
+matriz permaneceram os mesmos. Para as fraturas, inseriu-se um soma-
+tório, indicando uma varredura por todos trechos de fratura. Ou seja,
+Nf indica o conjunto de arestas que representam trechos de fissuras e
+j p é a aresta formada pelos nós j e p (este último, coincidente com o
+volume de controle). Para os termos " e L , acrescentou-se esta aresta
+como subíndice para indicar que são relativos a este trecho de fratura
+em específico. Deve-se ter em mente que o mesmo se aplica aos termos
+com o sobrescrito f , porém não foi acrescentado este subíndice para não
+sobrecarregar a formulação. Para a vazão, colocou-se um sobrescrito t
+indicando que este se trata do somatório da respectiva propriedade tanto
+da fratura quanto da matriz.
+
+4.3 Método IMPES
+
+Nesta dissertação, faz-se uso de uma formulação IMPES (do inglês
+Implicit Pressure, Explicit Saturation). Este esquema consiste na reso-
+lução sequencial das equações desacopladas da pressão e da saturação.
+Todas as propriedades dependentes da saturação da fase molhante são
+computadas com os resultados do passo de tempo anterior. O campo
+de pressão é então calculado implicitamente (através da solução de um
+sistema linear) e o campo de saturação é obtido posteriormente de forma
+explícita utilizando os valores mais recentes do campo de pressão. Ou
+seja, com o uso do esquema IMPES o coeficiente ? que aparece nas equa-
+ções do modelo numérico é substituído por o nos termos advindos das
+pressões capilares e mobilidades, e é suprimido (indicando estar no passo
+de tempo atual) para a pressão da água.
+
+A maior limitação deste método encontra-se na restrição do passo de
+tempo devido à avaliação explícita das saturações. Algumas outras meto-
+
+50
+
+
+
+dologias foram desenvolvidas no sentido de suprir esta deficiência, tais
+como os métodos totalmente implícitos (nos quais se resolve um único
+sistema de equações envolvendo todas as variáveis, já que todas elas são
+avaliadas no passo de tempo atual). Mesmo com o advento destas novas
+técnicas, o método IMPES ainda é bastante utilizado e aprimorado devido
+a sua simplicidade e eficiência.
+
+Um fluxograma do processo utilizado nesta dissertação é exibido na
+Fig. 4.6. Percebe-se neste fluxograma, pela presença dos termos ?, ?Smax
+e ?Smin (sendo ? &gt; 1), que é adotado um passo de tempo adaptativo para
+garantir estabilidade aos resultados e limitar a restrição supracitada. Se
+a variação da saturação em um passo de tempo, para algum dos nós da
+malha, for superior a um valor estabelecido?Smax, o resultado é desconsi-
+derado, ?t sofre uma redução por um fator ? e a simulação volta ao início
+daquele passo de tempo. Caso a maior variação de saturação na malha,
+para um dado passo de tempo, seja ainda inferior a um valor ?Smin, os
+resultados são aceitos, ?t é multiplicado pelo mesmo fator ? e inicia-se
+o cálculo do próximo passo de tempo. Caso nenhuma das duas situações
+ocorram, o resultado obtido é aceito e o passo de tempo, mantido.
+
+51
+
+
+
+Figura 4.6 – Fluxograma do método numérico
+
+ 
+
+NÃO 
+
+SIM 
+
+SIM NÃO 
+
+Encerrar o programa e salvar o 
+
+arquivo de resultados 
+
+o
+w wS S= , 
+
+o
+w wP P=  
+
+Atualizar o valor de t  (somar t? ) e 
+gravar os resultados do intervalo 
+
+Atingiu o tempo de simulação definido? 
+
+,minwx S&amp;lt;? ? 
+ 
+
+t t?? = ?  
+Fazer uma varredura em todos nós e 
+
+calcular , ,max( )
+o
+
+w p w px S S= ?  
+
+Substituir os valores atualizados de pressão na 
+
+equação da saturação, obtendo wS  explicitamente 
+
+SIM 
+
+o
+w wS S= e 
+
+t
+t
+
+?
+?
+
+? =  
+
+Estimar valores para
+o
+
+wP , 
+o
+wS  e t?  
+
+ 
+
+Calcular os termos advindos da pressão 
+
+capilar e as mobilidades com 
+o
+wS  
+
+Gerar o sistema linear para a 
+
+Equação da Pressão 
+
+Obter wP resolvendo o sistema 
+linear com o método multigrid 
+
+Início do programa ( 0t = ) 
+
+,maxwx S&gt; ? ? 
+ 
+
+NÃO 
+
+52
+
+
+
+CAPÍTULO
+
+5
+RESULTADOS
+
+5.1 Validação do modelo de fratura discreta
+
+Neste capítulo são apresentados alguns resultados obtidos com o
+programa desenvolvido nesta dissertação. A disponibilidade de resulta-
+dos para validação deste programa é pequena, sendo em sua maior parte
+fornecidos através de campos de saturação. Neste trabalho, são utilizadas
+propostas de problemas advindas do artigo de Monteagudo e Firoozabadi
+(2004), cujo modelo de fratura discreta é utilizado nesta dissertação, e do
+trabalho de Marcondes, Varavei e Sepehrnoori (2010), que se basearam no
+mesmo modelo. São analisados dois casos, presentes em ambos artigos:
+um com uma fratura e outro com seis fraturas.
+
+5.1.1 Caso 1: geometria com uma fratura
+
+O primeiro problema, aqui chamado de caso 1, trata-se de um reser-
+vatório no formato de um quadrado com 1 m de lado, com uma fratura
+de espessura " = 10?4 m representada por uma reta ligando os pontos
+(0, 2; 0, 2) e (0, 8; 0, 8). O meio é isolado em todas laterais, com um poço
+injetor no ponto (0; 0)e um poço produtor no ponto (1, 0; 1, 0). A geometria
+deste problema está especificada na Fig. 5.1.
+
+53
+
+
+
+Figura 5.1 – Estrutura do caso 1
+
+Fonte: Próprio autor
+
+As propriedades do fluido e da rocha encontram-se, respetivamente,
+nas tabelas 5.1 e 5.2. Considera-se a matriz um meio isotrópico, de modo
+que seu tensor permeabilidade é definido por um único valor. A vazão
+volumétrica do poço injetor é igual a 2, 3148 x 10?8 m3/s. Cada um dos
+artigos analisados propõe valores distintos para as constantes da permea-
+bilidade relativa e para a saturação inicial do reservartório. Por esta razão,
+as comparações são feitas separadamente.
+
+Tabela 5.1 – Propriedades do fluido
+
+Propriedade Fase molhante Fase não molhante
+
+Viscosidade, Pa.s 0, 8 x 10?3 0, 45 x 10?3
+
+Tabela 5.2 – Propriedades do meio poroso
+
+Propriedade Matriz Fratura
+
+Porosidade 0,2 1,0
+
+Permeabilidade, m2 9, 87 x 10?16 8, 26119 x 10?10
+
+Para Monteagudo e Firoozabadi (2004), a saturação inicial de fluido
+molhante no reservatório é considerada nula e as constantes necessárias
+para o cálculo da permeabilidade relativa são dadas na Tab. 5.3.
+
+54
+
+
+
+Tabela 5.3 – Constantes da permeabilidade relativa para Monteagudo e
+Firoozabadi (2004)
+
+Matriz (m ) Fratura ( f )
+
+Água Óleo Água Óleo
+
+Valor máximo da curva 1,0 1,0 1,0 1,0
+
+Saturação residual 0,0 0,0 0,0 0,0
+
+Expoente de Corey 5,0 5,0 3,0 3,0
+
+Antes de analisar os resultados, algumas observações devem ser fei-
+tas sobre o processo iterativo, em particular no que diz respeito ao passo
+de tempo e ao refinamento da malha. Para o primeiro, conforme apre-
+sentado anteriormente na discussão sobre o método IMPES, adota-se um
+passo de tempo adaptativo. Tal obedece às constantes propostas em Mon-
+teagudo e Firoozabadi (2004), cujos valores são dados na Tab. 5.4.
+
+Tabela 5.4 – Coeficientes para o passo de tempo
+
+? ?Smax ?Smin
+
+1,2 0,01 0,005
+
+Apesar de testada, a utilização de um passo de tempo fixo não se
+mostrou vantajosa. Duas razões se destacam para esta assertiva: uma
+associada à própria formulação IMPES, já que, como a resolução da equa-
+ção da saturação se dá de forma explícita, restringem-se os valores que
+este pode assumir; e outra relacionada às desvantagens do próprio mo-
+delo de fratura discreta. No momento em que o fluido injetado chega a
+uma fratura, o passo de tempo precisa ser reduzido drasticamente para
+balancear a anisotropia dos coeficientes do sistema linear. Manter este
+passo de tempo reduzido por toda a simulação acrescenta um tempo de
+simulação desnecessário.
+
+Conforme comentado brevemente na revisão bibliográfica, esta ani-
+sotropia do sistema linear surge na superposição dos sistemas de equa-
+ções (da matriz e da fratura), devido às grandes discrepâncias em suas
+propriedades. A fim de visualizar e aferir esta anisotropia, foram esco-
+
+55
+
+
+
+lhidos a malha e os nós indicados na Fig. 5.2, sendo um nó separado da
+fratura, um no extremo e outro no meio da fissura.
+
+Figura 5.2 – Malha e nós considerados na análise da anisotropia dos coe-
+ficientes do sistema linear resultante
+
+Fonte: Próprio autor
+
+Para cada um dos volumes de controle obtidos com estes nós, são
+apresentados, na Tab. 5.5, os coeficientes da diagonal principal do sis-
+tema linear resultante, com as propriedades até então apresentadas, após
+10 dias de simulação (quando a fase molhante já chegou à fratura) e em
+diferentes situações de pressão capilar. Percebe-se que, quando a fissura
+é considerada, a ordem de grandeza dos coeficientes dos volumes de con-
+trole com fratura torna-se quatro vezes maior que no volume sem tal.
+Vale ressaltar que a presença da pressão capilar, apesar de modificar os
+coeficientes, não chegou a alterar sua ordem de grandeza.
+
+Tabela 5.5 – Coeficiente da diagonal principal do sistema linear resultante
+para o volume de controle p , após 10 dias
+
+Nó Caso sem fratura B m = B f = 0 atm B m = B f = 1 atm
+
+1 7, 12 x 10?13 1, 15 x 10?9 1, 32 x 10?9
+
+2 5, 94 x 10?13 2, 19 x 10?9 2, 66 x 10?9
+
+3 6.38 x 10?13 5.99 x 10?13 4.15 x 10?13
+
+56
+
+
+
+Portanto, os resultados desta dissertação atêm-se ao passo de tempo
+adaptativo. Para a confecção dos gráficos, adota-se a variável PVI/VPI
+(Pore Volume Injected/Volume Poroso Injetado) como uma forma de adi-
+mensionalizar o tempo. Conhecendo-se a vazão de injeção, o volume po-
+roso do reservatório e o valor de PVI, encontra-se o valor do tempo físico.
+Ainda nesta vertente, o volume de óleo produzido é fornecido através do
+volume poroso (PV ), também adimensional, obtido pela razão entre o
+volume de óleo produzido ao longo do tempo e o volume poroso total. A
+vazão volumétrica proposta para os casos estudados corresponde a 0, 01
+PVI/d.
+
+Com relação à escolha da malha, uma malha refinada foi empregada
+para verificar os resultados obtidos com outras mais grosseiras. Estas são
+apresentadas na Fig. 5.3.
+
+Figura 5.3 – Malhas utilizadas para o caso 1 e similares. a) Malha 1 - 580
+nós, 1074 elementos; b) Malha 2 - 841 nós, 1600 elementos; c)
+Malha 3 - 3281 nós, 6400 elementos
+
+Fonte: Próprio autor
+
+Uma comparação de resultados para este caso, sem considerar pres-
+são capilar, é apresentada na Fig. 5.4. Estes apresentam uma boa con-
+cordância, com uma diferença percentual máxima (tomando os resulta-
+dos da malha refinada como referência) de aproximadamente 2%. Esta
+qualidade manteve-se em outros exemplos, com pressão capilar ou mais
+fraturas. Com essa confirmação, utiliza-se a malha da Fig. 5.3.a), cha-
+mada aqui de Malha 1, para a resolução do caso 1. Esta é a mesma malha
+proposta no trabalho de Marcondes, Varavei e Sepehrnoori (2010).
+
+57
+
+
+
+Figura 5.4 – Resultados do caso 1 sem pressão capilar para diferentes
+tamanhos de malha
+
+Fonte: Próprio autor
+
+São analisados dois casos de pressão capilar. Para isto, assumem-
+se diferentes valores para a constante B f , enquanto B m = 1 atm. Os
+resultados são apresentados na Fig. 5.5, junto com os de uma situação
+sem a presença da fratura, de modo que se possa visualizar o decréscimo
+da vida útil do poço produtor com tal. Nota-se que a tendência das curvas
+com pressão capilar, para ambos casos, são bem similares. O volume de
+óleo produzido obtido com o programa desenvolvido nesta dissertação,
+contudo, é um pouco superior. É importante mencionar, contudo, que
+a diferença aproximada entre a chegada de água ao poço produtor em
+ambos é de apenas 2 dias, o que representa uma diferença percentual má-
+xima, tomando os resultados de Monteagudo e Firoozabadi (2004) como
+base, inferior a 4%.
+
+Marcondes, Varavei e Sepehrnoori (2010) resolveram o mesmo pro-
+blema propondo uma saturação inicial de fluido molhante no reservató-
+rio igual a 0, 0001 e constantes da permeabilidade relativa iguais às da Tab.
+5.6. São estas as condições utilizadas para as demais simulações do caso
+
+58
+
+
+
+1 e para o caso 2.
+
+Figura 5.5 – Comparação de resultados do caso 1 proposto por Montea-
+gudo e Firoozabadi (2004)
+
+Fonte: Próprio autor
+
+Tabela 5.6 – Constantes da permeabilidade relativa para Marcondes, Va-
+ravei e Sepehrnoori (2010)
+
+Matriz (m ) Fratura ( f )
+
+Água Óleo Água Óleo
+
+Valor máximo da curva 1,0 1,0 1,0 1,0
+
+Saturação residual 0,2 0,1 0,0 0,0
+
+Expoente de Corey 5,0 5,0 3,0 3,0
+
+59
+
+
+
+A Fig. 5.6 mostra a comparação dos resultados sob as mesmas con-
+dições de pressão capilar. Novamente, a tendência das curvas é a mesma,
+apesar do volume de óleo produzido obtido com o programa desta disser-
+tação ser um pouco superior. A diferença percentual, contudo, continua
+inferior a 4%. No caso de B f = 0, 2 atm, inclusive, ela decai nos últimos
+dias de simulação.
+
+Figura 5.6 – Comparação de resultados do caso 1 proposto por Marcon-
+des, Varavei e Sepehrnoori (2010)
+
+Fonte: Próprio autor
+
+A Fig. 5.7 apresenta as curvas de produção para uma situação sem
+pressão capilar. Nota-se nesse caso uma grande concordância entre os
+resultados, com uma diferença percentual inferior a 2,5%. Comparando
+com os dois casos de pressão capilar anteriores, os valores de produção
+obtidos são próximos aos do caso em que B f = 1 atm.
+
+60
+
+
+
+Figura 5.7 – Comparação do volume de óleo produzido com resultados de
+Marcondes, Varavei e Sepehrnoori (2010) para o caso 1 sem
+pressão capilar
+
+Fonte: Próprio autor
+
+A Fig. 5.8 apresenta o campo de saturação da fase molhante, no que
+seria o quinquagésimo dia de produção, para vários valores de pressão
+capilar. Os resultados são semelhantes aos apresentados nos demais tra-
+balhos: a presença da fratura acelera a chegada de água ao poço produtor
+e a pressão capilar, por sua vez, retarda esse efeito. Esta última afirma-
+ção, claro, está relacionada ao modelo de pressão capilar adotado. Para a
+formulação desta dissertação, Eq. (3.15), pode-se estabelecer ainda uma
+análise a partir da razão B m/B f . Caso esta seja maior que a unidade, o
+coeficiente B f será menor que B m . A igualdade da pressão capilar na
+interface matriz-fratura faz com que, nesta região, a saturação na fratura
+seja inferior à saturação na matriz. Quanto maior esta razão, maior a
+discrepância, limitando a passagem de água pelas fissuras e, assim, au-
+mentando a vida útil do poço produtor. Ou seja, motivada pela pressão
+capilar, há imbibição da fase molhante, advinda da fratura, na matriz
+rochosa, sendo este efeito evidenciado com o aumento da razão B m/B f .
+
+61
+
+
+
+Figura 5.8 – Campo de saturação para o caso 1 após 50 dias. a) B m = B f =
+0 atm; b) B m = B f = 1 atm; c) B m = 1 atm e B f = 0, 2 atm.
+
+Fonte: Próprio autor
+
+5.1.2 Caso 2: geometria com seis fraturas
+
+O outro problema, apresentado pelos autores supracitados e aqui
+chamado de caso 2, apresenta a mesma estrutura e propriedades do an-
+terior, alterando somente a quantidade e localização das fraturas. O novo
+sistema, assim como a malha utilizada para resolução, são apresentadas
+simultaneamente na Fig. 5.9. As coordenadas de cada fratura são apre-
+sentadas na Tab. 5.7.
+
+Figura 5.9 – Rede de fraturas e malha utilizada na resolução do caso 2
+
+Fonte: Próprio autor
+
+62
+
+
+
+Tabela 5.7 – Coordenadas dos extremos de cada uma das fraturas no caso
+2
+
+Fratura Ponto 1, m Ponto 2, m
+
+1 (0, 18; 0, 40) (0, 75; 0, 70)
+
+2 (0, 30; 0, 83) (0, 85; 0, 33)
+
+3 (0, 55; 0, 74) (0, 87; 0, 53)
+
+4 (0, 50; 0, 75) (0, 40; 0, 16)
+
+5 (0, 25; 0, 70) (0, 65; 0, 90)
+
+3 (0, 35; 0, 30) (0, 80; 0, 15)
+
+Não foram fornecidos dados adequados para uma análise numé-
+rica dos resultados. Em contato com o coorientador desta dissertação,
+contudo, foram obtidos campos de saturação provenientes do programa
+utilizado na confeccção do trabalho de Marcondes, Varavei e Sepehrnoori
+(2010), de modo que a comparação se dá de forma qualitativa. As Figs.
+5.10 e 5.11 apresentam tais comparações, com os campos de saturação da
+fase molhante após aproximadamente 25 dias para diferentes valores de
+pressão capilar e os campos de saturação para diferentes dias na situação
+sem pressão capilar, respectivamente. Assim como no caso 1, nota-se
+que, apesar do comportamento das curvas de nível da fase molhante ser
+similar, o volume de óleo produzido com o programa desenvolvido nesta
+dissertação é superior. Isto pode ser observado pelo fato de tais curvas de
+nível estarem mais retraídas em comparação aos resultados de Marcon-
+des, Varavei e Sepehrnoori (2010). Apesar desta diferença se acentuar à
+medida que se aumentou a razão B m/B f , o volume aproximado de óleo
+produzido ao fim dos 100 dias permaneceu com uma diferença percen-
+tual na casa de 5%.
+
+63
+
+
+
+Figura 5.10 – Comparação dos campos de saturação para o caso 2 após
+aproximadamente 25 dias. a) B m = B f = 0 atm; b) B m =
+B f = 1 atm; c) B m = 1 atm e B f = 0, 2 atm.
+
+Fonte: Próprio autor
+
+64
+
+
+
+Figura 5.11 – Comparação dos campos de saturação para o caso 2 com
+B m = B f = 0 atm após a) 12 dias; b) 25 dias; c) 40 dias.
+
+Fonte: Próprio autor
+
+A Fig. 5.12, por sua vez, indica o volume de óleo produzido, para
+diferentes valores de pressão capilar, com o programa desenvolvido nesta
+dissertação. As mesmas análises acerca da pressão capilar e da presença
+da fratura feita para os casos anteriores se aplicam aqui.
+
+65
+
+
+
+Figura 5.12 – Volume de óleo produzido com o caso 2 para diferentes
+valores de pressão capilar
+
+Fonte: Próprio autor
+
+Vale ressaltar que, no caso 2, há várias fissuras que se interceptam.
+Esta ocorrência, comum em reservatórios naturalmente fraturados, rati-
+fica um cuidado necessário na implementação do modelo. Para exempli-
+ficar este cuidado, a Fig. 5.13 apresenta em detalhe um trecho da malha
+no qual ocorre um cruzamento de duas fraturas. Nesta situação, repassar
+somente os nós ao programa não seria suficiente para determinação de
+tais: a conectividade dos nós que representam as fraturas é fundamental
+para sua completa caracterização. Caso contrário, o programa conside-
+raria que a aresta formada pelos nós 2 e 3 da Fig. 5.13 representaria um
+trecho da fissura, o que resultaria em informações errôneas na interpre-
+tação do escoamento.
+
+66
+
+
+
+Figura 5.13 – Detalhe de uma intersecção de fraturas na malha do caso 2
+
+Fonte: Próprio autor
+
+5.2 In?uência de propriedades da fratura
+
+Como apresentado na revisão bibliográfica, a principal vantagem do
+modelo de fratura discreta encontra-se na representação fiel da rede de
+fraturas. Com enfoque nesta vantagem, analisa-se a influência de algu-
+mas das propriedades que caracterizam uma rede de fraturas, abordando
+algumas características do método que não foram analisadas nos casos
+de validação. Para essas simulações, as propriedades, salvo indicado o
+contrário, são as mesmas do caso 1 propostas por Monteagudo e Firooza-
+badi (2004). Não é considerada pressão capilar. A malha utilizada nessa
+análise é a Malha 2, dada na Fig. 5.3.b), o que facilita na representação de
+diferentes posições e inclinações da fratura.
+
+Antes de discutir estas propostas, contudo, e no intuito de visualizar
+o efeito da fratura na produtividade do poço, mostram-se, na Fig. 5.14, os
+campos de saturação para momentos diferentes da simulação do caso 1.
+Pode-se notar que a fase molhante chega na fratura em 5 dias, saturando-
+a em toda sua extensão rapidamente. Aos 10 dias de simulação, esta já
+começa a se deslocar para fora das fraturas, alcançando o poço produtor
+em aproximadamente 35 dias. Caso a fratura não estivesse presente, a
+chegada da fase molhante ao poço produtor, sob essas circunstâncias,
+seria de aproximadamente 68 dias.
+
+67
+
+
+
+Figura 5.14 – Campo de saturação para o caso 1 sem considerar pressão
+capilar após: a) 5 dias; b) 10 dias; c) 25 dias; d) 35 dias
+
+Fonte: Próprio autor
+
+A primeira análise refere-se à permeabilidade da fissura. Partindo
+do valor dado pela Tab. 5.2, trabalhou-se com permeabilidades dez e cem
+vezes menores, assim como dez e cem vezes maiores. Os resultados são
+apresentados na Fig. 5.15. Para os primeiros casos, em que a permea-
+bilidade na fratura decai, a chegada de água no poço produtor é adiada,
+uma vez que o fluido já não possui a mesma facilidade para escoar na
+fissura. Para as situações em que a permeabilidade da fratura aumentou,
+contudo, pouca diferença é notada, de modo que somente um dos casos
+é representado.
+
+68
+
+
+
+Figura 5.15 – Volume de óleo produzido no caso 1 para diferentes valores
+de permeabilidade da fratura
+
+Fonte: Próprio autor
+
+Uma possível explicação para o fato da produção permanecer bem
+próxima da original mesmo com o acréscimo de K f seria a de que, nestas
+condições, a ordem de grandeza dos coeficientes difusivos obtidos para
+a fratura já é significativamente superior à da matriz, fazendo com que
+mudanças no sentido de distanciar esses termos ainda mais não causem
+alterações significativas nos resultados.
+
+A Fig. 5.16 mostra os campos de saturação após 50 dias de simulação,
+sendo considerados somente o caso de origem e os dois casos com per-
+meabilidade menor, nos quais as diferenças podem ser notadas. Percebe-
+se que a frente de saturação, na matriz-rochosa, que se propaga a partir
+do poço injetor está mais avançada na Fig. 5.16.a), uma vez que, quanto
+menor a permeabilidade na fratura, menor o peso do escoamento na fis-
+sura.
+
+69
+
+
+
+Figura 5.16 – Campo de saturação para o caso 1 após 50 dias. a) K f =
+8, 26119 x 10?12 m2 ; b) K f = 8, 26119 x 10?11 m2 ; c) K f =
+8, 26119 x 10?10 m2 .
+
+Fonte: Próprio autor
+
+A porosidade da fratura também foi analisada. Variações desta pro-
+priedade, entretanto, não alteraram de forma perceptível o escoamento,
+de forma que não é apresentado o gráfico com estes resultados. Isto ocorre
+pois, além do volume da fratura ser bem inferior ao da matriz rochosa, a
+porosidade aparece somente no termo de acumulação. Como o escoa-
+mento é incompressível e as fraturas possuem dimensões pequenas po-
+rém com propriedades expressivas, inicialmente o gradiente de saturação
+na mesma é abrupto. Este descresce de forma rápida, contudo, fazendo
+com que o termo de acumulação perca importância. Vale ressaltar que
+esta análise se atém ao fato da porosidade como um termo matemático
+presente na equação discretizada. Como a porosidade e a permeabili-
+dade estão relacionadas entre si pela conectividade e tamanho dos poros
+do meio poroso, alterações na primeira provavelmente modificariam a
+segunda, o que, conforme discutido anteriormente, poderia afetar o es-
+coamento.
+
+Os próximos resultados referem-se à inclinação da fratura. É de se
+esperar que fraturas cuja direção coincide com a do gradiente de pres-
+são influenciem os resultados de forma mais marcante. Para este estudo,
+parte-se do caso 1 e, mantendo o ponto médio da fratura fixo, altera-se
+a inclinação da mesma. As geometrias estudadas encontram-se na Fig.
+5.17. No caso ? = 0, a dimensão da fratura é um pouco maior para poder
+se acomodar à malha.
+
+70
+
+
+
+Figura 5.17 – Geometrias de acordo com a inclinação ? da fratura em
+relação à horizontal: a) ? = 45?; b) ? = 0?; c) ? =?45?
+
+Fonte: Próprio autor
+
+As curvas de produção de óleo são fornecidas na Fig. 5.18. Para o
+gráfico, acresce-se ainda o caso sem fratura alguma, o qual apresenta alta
+concordância com o caso ? =?45?.
+
+Figura 5.18 – Volume de óleo produzido para casos com fraturas em dife-
+rentes graus de inclinação
+
+Fonte: Próprio autor
+
+71
+
+
+
+Nota-se que caso a direção da fratura seja perpendicular ao gradi-
+ente de pressão, seu efeito será praticamente desprezível. À medida que
+se aumenta sua inclinação, contudo, há um decréscimo do tempo de vida
+útil do poço produtor, tendo a maior limitação com ? = 45?. A Fig. 5.19
+apresenta os campos de saturação após 50 dias para cada um destes casos.
+
+Figura 5.19 – Campo de saturação após 50 dias para fraturas com inclina-
+ção: a) ? = 45?; b) ? = 0?; c) ? =?45?
+
+Fonte: Próprio autor
+
+A última análise relacionada à caracterização das fraturas trabalha
+com a posição da mesma no meio, conforme é apresentado na Fig. 5.20.
+
+Figura 5.20 – Geometrias abordadas, classificadas pela coordenada da
+fratura mais próxima do poço injetor, aqui indicada pela
+letra A: a) A =(0, 1; 0, 1); b) A =(0, 2; 0, 2); c) A =(0, 3; 0, 3).
+
+Fonte: Próprio autor
+
+72
+
+
+
+Para tal, manteve-se a mesma inclinação ? = 45? e o comprimento,
+porém deslocou-se a fratura ao longo da diagonal que liga poços produtor
+e injetor. As curvas de produção de óleo e os campos de saturação para
+50 dias de produção são fornecidos respectivamente nas Figs. 5.21 e 5.22.
+Pode-se perceber que, quanto mais próxima a fratura do poço produtor,
+mais cedo se dá a chegada da fase molhante no mesmo. Isto se deve
+tanto ao fato do escoamento entre o poço injetor e o ponto A estar limi-
+tado pelas laterais impermeáveis do reservatório quanto ao fato da vazão
+da fase molhante no outro extremo da fratura ser somente uma parcela
+do fluxo de injeção original. Assim, a velocidade de propagação da fase
+molhante antes de adentrar a fissura é superior àquela logo após sair da
+fratura, fazendo com que o fluido necessite de mais tempo, neste último
+caso, para percorrer a mesma distância. Como o comprimento da fratura
+é constante, retarda-se a inviabilização do poço produtor com a extensão
+da distância entre este e a fratura.
+
+Figura 5.21 – Volume de óleo produzido para casos com fratura em dife-
+rentes posições
+
+Fonte: Próprio autor
+
+73
+
+
+
+Figura 5.22 – Campo de saturação após 50 dias para casos com coorde-
+nada: a) A =(0, 1; 0, 1); b) A =(0, 2; 0, 2); c) A =(0, 3; 0, 3)
+
+Fonte: Próprio autor
+
+5.3 Anisotropia da rocha-matriz
+
+Apesar de todos os casos apresentados aqui a matriz ser considerada
+isotrópica, essa não é uma restrição do programa. De modo a apresentar
+esta característica, apresentam-se na Fig. 5.23 as curvas de saturação,
+novamente para 50 dias de produção, do caso 1 sem pressão capilar, alte-
+rando a componente K x x do tensor permeabilidade da rocha-matriz.
+
+Figura 5.23 – Campo de saturação após 50 dias para casos onde na matriz:
+a) K x x = K y y ; b) K x x = 2K y y ; c) K x x = 4K y y
+
+Fonte: Próprio autor
+
+74
+
+
+
+À medida que K x x aumenta, o fluxo horizontal torna-se predomi-
+nante no resultado. Como a fratura possui uma permeabilidade bem su-
+perior à da matriz, contudo, uma vez que se alcança a fratura, o deslo-
+camento ocorre primariamente por ela. Assim que a saturação em toda
+extensão da fratura torna-se elevada e o fluido começa a se deslocar no-
+vamente para a matriz, quanto maior o valor de K x x , menos fluido se
+desloca para sua parte inferior. Isso ocorre porque, somado à maior per-
+meabilidade na direção horizontal, o fluido que se desloca nessa direção
+encontra um gradiente de pressão negativo na direção vertical e positivo
+na direção horizontal.
+
+Esta análise é particularmente importante pois, caso seja aplicado
+um modelo híbrido que substitui as fraturas menores por uma permeabi-
+lidade equivalente, por exemplo, a capacidade de processar a anisotropia
+do meio passa a ser uma necessidade do modelo.
+
+75
+
+
+
+
+
+CAPÍTULO
+
+6
+CONCLUSÕES
+
+No presente trabalho foi implementado um programa com o mo-
+delo de fratura discreta USDFM para simulação do escoamento bifásico,
+incompressível, imiscível, isotérmico na simulação de reservartórios na-
+turalmente fraturados, rígidos e bidimensionais. Estas hipóteses, apesar
+de restritas, são comumente aplicadas na simulação do processo de recu-
+peração secundária dado pela injeção de água.
+
+Antes disso, contudo, foi apresentada uma revisão do estado da arte
+no que diz respeito à simulação dos reservatórios naturalmente fratura-
+dos. Atentou-se também ao fato que a metodologia aqui apresentada
+possui aplicações fora do escopo deste trabalho, em particular no projeto
+do fraturamento hidráulico. Em um âmbito numérico, foram apresenta-
+das as bibliotecas EFVLib e ACMLib, desenvolvidas no laboratório SIN-
+MEC, para facilitar a aplicação do método EbFVM. Este método, por sua
+vez, foi apresentado e aplicado na discretização das equações da matriz.
+O método IMPES foi escolhido para resolução das equações.
+
+Dois casos foram apresentados para validação do modelo, seguidos
+de algumas simulações para análise de características do meio. Com es-
+tas, desejou-se mostrar que a representação adequada de informações
+como conectividade, orientação e distribuição das fraturas, qualidade que
+distingue o modelo de fratura discreta do modelo de dupla porosidade
+– o mais utilizado comercialmente – possuem efeito decisivo no desem-
+penho de um reservatório. Discutiu-se também as restrições que o mo-
+delo aplicado nesta dissertação possui, assim como a possibilidade de
+
+77
+
+
+
+utilização do modelo híbrido visando aumentar a gama de aplicações do
+modelo de fratura discreta.
+
+Este projeto buscou mostrar a importância desta pesquisa frente às
+atuais necessidades da indústria de petróleo. O atual nível de tecnologia
+e de conhecimento disponíveis nessa área permite a geração de modela-
+gens mais complexas do reservatório e que representem melhor sua física,
+o que por fim auxiliam no processo produtivo. Como amplamente discu-
+tido nesse texto, o modelo de fratura discreta vem fazer uso da evolução
+numérica na representação da geometria e das fissuras.
+
+Vale repetir e ressaltar o quadro no qual se insere esse trabalho. Como
+essa linha de pesquisa é nova no laboratório SINMEC, espera-se que esta
+dissertação forneça uma base para que novos modelos sejam desenvolvi-
+dos e outros aspectos da física possam ser incorporados. O que se apre-
+sentou nesta dissertação, portanto, foi uma proposta de incorporação do
+que há disponível na literatura do modelo de fratura discreta em uma es-
+trutura computacional robusta e eficiente advinda das bibliotecas EFVLib
+e ACMLib. Com isso, há a possibilidade, não só de expansão do escopo da
+pesquisa, podendo trabalhar com malhas híbridas ou até mesmo escoa-
+mento tridimensional, mas também de incorporação destes resultados
+em softwares de maior envergadura em desenvolvimento no laboratório.
+
+6.1 Sugestões para trabalhos futuros
+
+Dentre as sugestões para trabalhos futuros, três propostas são par-
+ticularmente interessantes no intuito de representar os reservatórios e
+os processos utilizados na Indústria de Petróleo e Gás de maneira mais
+fidedigna. São elas:
+
+• Expandir a metodologia aqui desenvolvida para casos tridimensi-
+onais. Nesta conjectura, como as fraturas deixam de ser represen-
+tadas por arestas e passam a ser representadas pelas faces dos ele-
+mentos, pode-se adotar, por exemplo, um tensor permeabilidade
+para representá-las. Como as fraturas devem estar explícitas na ma-
+lha, a geração e processamento desta tornam-se bem mais comple-
+xos. É necessária uma estrutura topológica e geométrica robusta
+para a varredura e análise dos elementos com fraturas, uma de-
+manda que é satisfeita pela biblioteca EFVLib.
+
+78
+
+
+
+• Adotar um modelo físico mais adequado. Nesta dissertação, traba-
+lhou-se com um escoamento bifásico, incompressível, imiscível e
+isotérmico. Processos de recuperação terciária relacionados com
+a injeção de gás ou o aquecimento do reservatório, por exemplo,
+não podem ser representados pelo presente trabalho. Além disso,
+ratifica-se esta necessidade com o comportamento diferenciado que
+as fraturas possuem na presença de um escoamento multifásico.
+
+• Ampliar o escopo deste trabalho, transformando-o em um modelo
+híbrido. Conforme exposto na revisão bibliográfica, o modelo de
+fratura discreta é preciso porém não apresenta um tempo de simu-
+lação competitivo quando o número de fraturas é elevado, o que
+acontece, por exemplo, em rochas carbonáticas. Buscar uma meto-
+dologia hierárquica para resolução dos casos reais é a melhor ma-
+neira de suprir essa restrição.
+
+79
+
+
+
+
+
+REFERÊNCIAS
+
+BIBLIOGRÁFICAS
+
+[1] AHMED, T. Reservoir Engineering Handbook. Elsevier Science, 2006.
+
+[2] BACA, R. G.; ARNET T, R. C.; LANGFORD, D. W. Modelling fluid flow in
+fractured-porous rock masses by finite-element techniques. Interna-
+tional Journal for Numerical Methods in Fluids, v. 4, n. 4, pp. 337–348,
+1984.
+
+[3] BAKHVALOV, N. S. On the convergence of a relaxation method with
+natural constraints on the elliptic operator. {USSR} Computational
+Mathematics and Mathematical Physics, v. 6, n. 5, pp. 101 – 135, 1966.
+
+[4] BALIGA, B. R.; PATANKAR, S. V. A control volume finite-element
+method for two-dimensional fluid flow and heat transfer. Numerical
+Heat Transfer, v. 6, n. 3, pp. 245–261, 1983.
+
+[5] BARENBL AT T, G. E.; ZHELTOV, I. P.; KOCHINA, I. N. Basic concepts in the
+theory of seepage of homogeneous liquids in fissured rocks strata.
+PMM (Soviet Applied Mathematics and Mechanics), v. 24, n. 5, pp. 852–
+864, 1960.
+
+[6] BELHAJ, H. A.; MNEJJA, M., 2011. Hydraulic fracture simulation of two-
+phase flow: Discrete fracture modelling/mixed finite element appro-
+ach. In: SPE Reservoir Characterisation and Simulation Conference and
+Exhibition, Abu Dhabi, UAE.
+
+[7] BL ASKOVICH, F. T.; CAIN, G. M.; SONIER, F.; WALDREN, D.; WEBB, S. J.,
+1983. A multicomponent isothermal system for efficient reservoir
+simulation. In: Middle East Oil Technical Conference and Exhibition.
+
+[8] BRANDT, A. Multi-level adaptive technique (MLAT) for fast numeri-
+cal solution to boundary value problems. In: Cabannes, H.; Temam, R.
+
+81
+
+
+
+(eds.). Proceedings of the Third International Conference on Numerical
+Methods in Fluid Mechanics, vol. 18 of Lecture Notes in Physics, pp. 82–
+89. Springer Berlin Heidelberg, 1973.
+
+[9] BRANDT, A.; MCCORMICK, S. F.; RUGE., J. W. Algebraic Multigrid
+(AMG) for Automatic Multigrid Solution with Application to Geodetic
+Computations. Technical Report, Institute for Computational Studies,
+Colorado State University, 1982.
+
+[10] BRIGGS, W.; HENSON, V.; MCCORMICK. A Multigrid Tutorial, 2a
+
+edition. SIAM Books, Philadelphia, 2000.
+
+[11] CASTRO, A. O. S. Seleção de Poços de Petróleo para a Operação de
+Fraturamento Hidráulico: Uma Comparação entre Sistemas Fuzzy-
+Genético e Neuro-Fuzzy. Ph.D. Thesis, Escola Politécnica - Universi-
+dade Federal do Rio de Janeiro, 2005.
+
+[12] CLEMO, T. M.; SMITH, L. Solute transport in fractured media: Dual
+permeability models. Eos, Transactions American Geophysical Union,
+v. 70, n. 43, pp. 969–1445, 1989.
+
+[13] CORDAZZO, J. Simulação de reservatórios de petróleo utilizando
+o método EbFVM e multigrid algébrico. Ph.D. Thesis, Universidade
+Federal de Santa Catarina, 2006.
+
+[14] CORDAZZO, J.; HURTADO, F. S. V.; MALISKA, C. R.; DA SILVA, A. F. C.,
+2004. The negative transmissibility issue when using cvfem in pe-
+troleum reservoir simulation – 2. results. In: Proceedings of the 10o.
+Brazilian Congress of Thermal Sciences and Engineering – ENCIT , Rio
+de Janeiro.
+
+[15] CORDAZZO, J.; MALISKA, C.; DA SILVA, A. F. C.; HURTADO, F. S. V., 2005.
+An element based conservative scheme using unstructured grids for re-
+servoir simulation. In: 18th World Petroleum Congress, Johannesburg,
+South Africa.
+
+[16] COREY, A. T. The Interrelation Between Gas and Oil Relative Perme-
+abilities. Production Monthly, v. 19, pp. 38–41, 1954.
+
+[17] DE OLIVEIRA, A. A. Seleção de poços para operações de estimulação
+utilizando inteligência artificial. Master’s Thesis, Escola Politécnica -
+Universidade Federal do Rio de Janeiro, 2012.
+
+82
+
+
+
+REFERÊNCIAS BIBLIOGRÁFICAS
+
+[18] DEAN, R. H.; LO, L. L. Simulations of Naturally Fractured Reservoirs.
+SPE Reservoir Engineering , v. 3, pp. 638 – 648, 1988.
+
+[19] DOGRU, A. H.; DREIMAN, W. T.; HEMANTHKUMAR, K.; FUNG, L. S.,
+2001. Simulation of super-k behavior in ghawar by a multi-millio cell
+parallel simulator. In: Proceedings of the SPE Middle East Oil Technical
+COnference and Exhibition, Bahrain.
+
+[20] FEDORENKO, R. P. A relaxation method for elliptic difference equa-
+tions. USSR Computational Mathematics and Mathematical Physics, v.
+1, n. 5, pp. 1092–1096, 1961.
+
+[21] FEDORENKO, R. P. The speed of convergence of one iterative process.
+{USSR} Computational Mathematics and Mathematical Physics, v. 4, n.
+3, pp. 227 – 235, 1964.
+
+[22] FERNANDES, B. R. B.; MARCONDES, F.; SEPEHRNOORI, K. Investigation
+of Several Interpolation Functions for Unstructured Meshes in Con-
+junction with Compositional Reservoir Simulation. Numerical Heat
+Transfer, Part A: Applications: An International Journal of Computation
+and Methodology, v. 3, pp. 974–993, 2013.
+
+[23] GONG, B. Effective Models of Fractured Systems. Ph.D. Thesis,
+Stanford University, 2007.
+
+[24] HAASE, G.; LANGER, U. Multigrid methods: from geometrical to
+algebraic versions. Modern Methods in Scientific Computing and
+Applications - NATO Science Series, v. 75, pp. 103–153, 2002.
+
+[25] HILL, A. C.; THOMAS, G. W., 1985. A new approach for simulating
+complex fractured reservoirs. In: Middle East Oil Technical Conference
+and Exhibition.
+
+[26] HIRASAKI, G.; ZHANG, D. L. Surface Chemistry of Oil Recovery
+From Fractured, Oil-Wet, Carbonate Formations. Society of Petroleum
+Engineers, v. 9, pp. 151–162, 2004.
+
+[27] HORIE, T.; FIROOZ ABADI, A.; ISHIMITO, K. Laboratory studies of
+capillary interaction in fracture/matrix systems. SPE Reservoir Eval.
+Eng., v. 5, pp. 353–360, 1990.
+
+83
+
+
+
+[28] HSIEH, P. A.; NEUMAN, S. P. Field Determination of the Three-
+Dimensional Hydraulic Conductivity Tensor of Anisotropic Media: 1.
+Theory. Water Resources Research, v. 21, n. 11, pp. 1655–1665, 1985.
+
+[29] HUTCHINSON, B. R.; RAITHBY, G. D. A Multigrid Method Based on
+theAdditive Correction Strategy. Numerical Heat Transfer, v. 9, n. 5,
+pp. 511–537, 1986.
+
+[30] KARIMI-FARD, M.; FIROOZ ABADI, A., 2001. Numerical simulation of
+water injection in 2d fractured media using discrete-fracture model. In:
+SPE Annual Technical Conference and Exhibition, vol. 6, p. 117 – 126,
+New Orleans, Louisiana. Society of Petroleum Engineers.
+
+[31] KARIMI-FARD, M.; FIROOZ ABADI, A. Numerical Simulation of Water
+Injection in Fractured Media Using the Discrete-Fracture Model and
+the Galerkin Method. SPE Reservoir Evaluation &amp;amp; Engineering , v. 6,
+pp. 117 – 126, 2003.
+
+[32] KARPINSKI, L.; MARCONDES, F.; DELSHAD, M.; SEPEHRNOORI, K., 2009.
+An element based conservative approach using unstructured grids in
+conjunction with a chemical flooding compositional reservoir simula-
+tor. In: 20th International Congress of Mechanical Engineering .
+
+[33] KAUL, S. P.; PUTRA, E.; SCHECHTER, D. S., 2004. Simulation of sponta-
+neous imbibition using rayleigh-ritz finite element method-adiscrete
+fracture approach. In: Canadian International Petroleum Conference.
+Petroleum Society of Canada.
+
+[34] KAZEMI, H.; MERRILL JR., L. S.; PORTERFIELD, K. L.; ZEMAN, P. R. Nu-
+merical simulation of water-oil flow in naturally fractured reservoirs.
+SPE Journal, v. 16, n. 06, pp. 317–326, 1976.
+
+[35] KIM, J.; DEO, M. Finite element, discrete fracture model for mul-
+tiphase flow in porous media. AIChE Journal, v. 46, n. 6, p. 1120–1130.,
+2000.
+
+[36] LA POINTE, P. R.; EIBEN, T.; DERSHOWITZ, W., 1997. Compartmen-
+talization analysis using discrete fracture network models. In: 4th In-
+ternational Reservoir Characterization Technical Conference, Houston,
+TX.
+
+84
+
+
+
+REFERÊNCIAS BIBLIOGRÁFICAS
+
+[37] LEE, S. H.; LOUGH, M. F.; JENSEN, C. L. Hierarchical modeling of flow
+in naturally fractured formations with multiple length scales. Water
+Resources Research, v. 37, pp. 443–455, 2001.
+
+[38] LI, L.; LEE, S. H. Efficient Field-Scale Simulation of Black Oil in a
+Naturally Fractured Reservoir Through Discrete Fracture Networks
+and Homogenized Media. SPE Reservoir Evaluation &amp;amp; Engineering , v.
+11, pp. 750–758, 2008.
+
+[39] LONG, J. C. S.; WITHERSPOON, P. A. The relationship of the degree
+of interconnection to permeability in fracture networks. Journal of
+Geophysical Research: Solid Earth, v. 90, n. B4, pp. 3087–3098, 1985.
+
+[40] MALISKA, C. R. Transferência de Calor e Mecânica dos Fluidos
+Computacional, 2nd edition. Livros Técnicos e Científicos Editora S.
+A., Rio de Janeiro, 2004.
+
+[41] MALISKA, C. R.; DA SILVA, A. F. C.; HURTADO, F. S. V.; DONAT TI,
+C. N.; AMBRUS, J. Relatório Técnico No 2 do Projeto Simulação de
+Reservatórios de Petróleo pelo Método EbFVM e Solver Multigrid
+(SimReP) - Rede de Gerenciamento e Simulação de Reservatórios
+(SiGeR). Technical Report, Laboratório de Simulação Numérica em
+Mecânica dos Fluidos e Transferência de Calor, Universidade Federal
+de Santa Catarina, Florianópolis, Brasil, 2008.
+
+[42] MALISKA, C. R.; DA SILVA, A. F. C.; HURTADO, F. S. V.; DONAT TI, C. N.;
+PESCADOR JR., A. A. V. B. Relatório Técnico No 3 do Projeto Simulação
+de Reservatórios de Petróleo pelo Método EbFVM e Solver Multigrid
+(SimReP) - Rede de Gerenciamento e Simulação de Reservatórios
+(SiGeR). Technical Report, Laboratório de Simulação Numérica em
+Mecânica dos Fluidos e Transferência de Calor, Universidade Federal
+de Santa Catarina, Florianópolis, Brasil, 2009.
+
+[43] MARCONDES, F.; SEPEHRNOORI, K., 2007. Unstructured grids and
+an element based conservative approach for compositional reservoir
+simulation. In: Proceedings of the 19th International Congress of
+Mechanical Engineering , Brasília, Brasil.
+
+[44] MARCONDES, F.; SEPEHRNOORI, K. An element-based finite-volume
+method approach for heterogeneous and anisotropic compositional
+
+85
+
+
+
+reservoir simulation. Journal of Petroleum Science and Engineering , v.
+73, pp. 99 – 106, 2010.
+
+[45] MARCONDES, F.; VARAVEI, A.; SEPEHRNOORI., K., 2010. An element-
+based finite-volume method approach for naturally fractured compo-
+sitional reservoir simulation. In: 13th Brazilian Congress of Thermal
+Sciences and Engineering .
+
+[46] MARCONDES, F.; SANTOS, L. O. S.; VARAVEI, A.; SEPEHRNOORI, K. A 3D
+hybrid element-based finite-volume method for heterogeneous and
+anisotropic compositional reservoir simulation. Journal of Petroleum
+Science and Engineering , v. 108, pp. 342 – 351, 2013.
+
+[47] MAT THÄI, S. K.; GEIGER, S.; ROBERTS, S. G.; PALUSZNY, A.; BEL AYNEH,
+M.; MEZENTSEV, A. Numerical simulation of multi-phase fluid-flow in
+structurally complex reservoirs. Geological Society Publishing House,
+v. 292, pp. 405–429, 2007.
+
+[48] MAZO, E. O. M. Estratégias de Produção em Reservatórios Na-
+turalmente Fraturados. Master’s Thesis, Universidade Estadual de
+Campinas., 2005.
+
+[49] MOHAGHEGH, S.; REEVES, S.; HILL, D., Abril, 2000. Development
+of an intelligent systems approach for restimulation candidate. In:
+Proceedings of SPE/CERI Gas Technology Symposium, Calgary.
+
+[50] MOINFAR, A.; NARR, W.; HUI, M.-H.; MALLISON, B. T.; LEE, S. H.,
+2011. Comparison of discrete-fracture and dual-permeability models
+for multiphase flow in naturally fractured reservoirs. In: SPE Reservoir
+Simulation Symposium, The Woodlands, Texas, USA.
+
+[51] MOINFAR, A.; VARAVEI, A.; SEPEHRNOORI, K.; JOHNS, R. T., 2012. De-
+velopment of a novel and computationally-efficient discrete-fracture
+model to study ior processes in naturally fractured reservoirs. In: SPE
+Improved Oil Recovery Symposium. Society of Petroleum Engineers.
+
+[52] MONTEAGUDO, J. E. P.; FIROOZ ABADI, A. Control-volume method
+for numerical simulation of two-phase immiscible flow in two- and
+three-dimensional discrete-fractured media. Water Resources Rese-
+arch, v. 40, pp. 1–20, 2004.
+
+86
+
+
+
+REFERÊNCIAS BIBLIOGRÁFICAS
+
+[53] MONTEAGUDO, J. E. P.; FIROOZ ABADI, A. Control-Volume Model
+for Simulation of Water Injection in Fractured Media: Incorporating
+Matrix Heterogeneity and Reservoir Wettability Effects. SPE Journal,
+v. 12, pp. 355–366, 2007.
+
+[54] NAIMI-TAJDAR, R. Development and implementation of a natu-
+rally fractured reservoir model into a fully implicit, equation-of-state
+compositional, parallel simulator. Ph.D. Thesis, University of Texas,
+2005.
+
+[55] NEUMAN, S. P. Stochastic Continuum Representation of Fractured
+Rock Permeabilityas an Alternative to the REV and Fracture Network
+Concepts. In: Custodio, E.; Gurgui, A.; Ferreira, J. (eds.). Groundwater
+Flow and Quality Modelling , vol. 224 of NATO ASI Series, pp. 331–362.
+Springer Netherlands, 1988.
+
+[56] NOORISHAD, J.; MEHRAN, M. An upstream finite element method for
+solution of transient transport equation in fractured porous media.
+Water Resources Research, v. 18, n. 3, pp. 588–596, 1982.
+
+[57] PAIVA, H. P. Simulação da recuperação de petróleo em reservatórios
+naturalmente fraturados. Master’s Thesis, Universidade Estadual de
+Campinas, 2012.
+
+[58] PALUSZNY, A.; MAT THÄI, S. K.; HOHMEYER, M. Hybrid finite
+elemente-finite volume discretization of complex geologic structures
+and a new simulation workflow demonstrated on fractured rocks.
+Geofluids, v. 7, n. 2, pp. 186–208, 2007.
+
+[59] PEACEMAN, D. W. Interpretation of Well-Block Pressures in Nume-
+rical Reservoir Simulation. Society of Petroleum Engineers Journal, v.
+18, pp. 183 – 194, 1978.
+
+[60] PHELPS, R.; PHAM, T.; SHARI, A. M., 2000. Rigorous inclusion of faults
+and fractures in 3-d simulation. In: Proceedings of the SPE Asia Pacific
+Conference on Integrated Modeling for Asset Management, Yokohoma,
+Japan.
+
+[61] POOL ADI-DARVISH, M.; FIROOZ ABADI, A. Experiments and modeling
+of water injection in water-wet fractured porous media. Petroleum
+Society of Canada, v. 39, Brasília, DF, pp. 31–42, 2000.
+
+87
+
+
+
+[62] ROSA, A. J.; CARVALHO, R. D. S.; XAVIER, J. A. D. Engenharia De
+Reservatórios De Petróleo. Editora Interciência, 2006.
+
+[63] ROZON, B. J., 1989. A generalized finite volume discretization method
+for reservoir simulation. In: Reservoir Simulation Symposium. SPE.
+
+[64] SANTOS, L. O. S.; MARCONDES, F.; SEPEHRNOORI, K. A 3D compositi-
+onal miscible gas flooding simulator with dispersion using Element-
+based Finite-Volume method. Journal of Petroleum Science and Engi-
+neering , v. 112, pp. 61 – 68, 2013.
+
+[65] SCHNEIDER, G. E.; ZEDAN, M. Control-Volume-Based Finite-
+Element Formulation Of The Heat Conduction Equation. Spacecraft
+Thermal Control, Design and Operation., v. 86, pp. 305–327, 1983.
+
+[66] THOMAS, J. E. Fundamentos de Engenharia de Petróleo. Editora
+Interciência, 2001.
+
+[67] THOMAS, L. K.; DIXON, T. N.; PIERSON, R. G. Fractured Reservoir
+Simulation. Society of Petroleum Engineers Journal, v. 23, p. 42–54,
+1983.
+
+[68] VAN DOORMAAL, J. P.; TURAN, A.; RAITHBY, G. D., Janeiro, 1987. Eva-
+luation of new techniques for the calculation of internal recirculating
+flows. In: AIAA 25th Aerospace Sciences Meeting , Reno, Nevada.
+
+[69] VAN LINGEN, P.; SENGUL, M.; DANIEL, J. M.; COSENTINO, L., 2001. Sin-
+gle medium simulation of fractured reservoirs with conductive faults
+and fractures. In: Proceedings of the SPE midle East Oil Technical
+Conference and Exhibition, Bahrain.
+
+[70] WARREN, J. E.; ROOT, P. J. The behavior of naturally fractured
+reservoirs. Soc. Petrol. Eng. J., v. 3, pp. 245–255, 1963.
+
+88
+
+
+</field>
+	</doc>
+</add>

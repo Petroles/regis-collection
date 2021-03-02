@@ -1,0 +1,1559 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.19674</field>
+		<field name="filename">3085_001045361.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+MINISTÉRIO DA EDUCAÇÃO
+UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL
+
+DEPARTAMENTO DE ENGENHARIA MECÂNICA
+
+MODELAGEM DA COMBUSTÃO PRÉ-MISTURADA DE METANO-AR EM MEIO
+POROSO INERTE
+
+por
+
+Laura Marques Prandi
+
+Monografia apresentada ao Departamento de
+Engenharia Mecânica da Escola de Engenharia
+da Universidade Federal do Rio Grande do Sul,
+como parte dos requisitos para obtenção do
+diploma de Engenheiro Mecânico.
+
+Porto Alegre, julho de 2017
+
+
+
+Universidade Federal do Rio Grande do Sul
+Escola de Engenharia
+
+Departamento de Engenharia Mecânica
+
+MODELAGEM DA COMBUSTÃO PRÉ-MISTURADA DE METANO-AR EM MEIO
+POROSO INERTE
+
+por
+
+Laura Marques Prandi
+
+ESTA MONOGRAFIA FOI JULGADA ADEQUADA COMO PARTE DOS
+REQUISITOS PARA A OBTENÇÃO DO TÍTULO DE
+
+ENGENHEIRO MECÂNICO
+APROVADA EM SUA FORMA FINAL PELA BANCA EXAMINADORA DO
+
+DEPARTAMENTO DE ENGENHARIA MECÂNICA
+
+Profa. Dra. Thamy Cristina Hayashi
+Coordenadora do Curso de Engenharia Mecânica
+
+Área de Concentração: Energia e Fenômenos de Transporte
+
+Orientadora: Profa. Dra. Thamy Cristina Hayashi
+
+Comissão de Avaliação:
+
+Prof. Dr. Fernando Marcelo Pereira
+
+Prof. Dr. Felipe Roman Centeno
+
+Prof. Dr. Cirilo Seppi Bresolin
+
+Porto Alegre, 20 de julho de 2017
+
+i
+
+
+
+AGRADECIMENTOS
+
+À minha família, por todo amor, carinho e suporte. Aos meus amigos, pelo companhei-
+rismo, amizade e apoio. À Profa. Thamy Hayashi, pela sua dedicação, paciência e ensinamentos
+ao longo da orientação deste trabalho.
+
+ii
+
+
+
+PRANDI, LAURA M. Modelagem da Combustão Pré-Misturada de Metano-Ar em
+Meio Poroso Inerte. 2017. 23. Monografia (Trabalho de Conclusão do Curso em Engenharia
+Mecânica) – Departamento de Engenharia Mecânica, Universidade Federal do Rio Grande do
+Sul, Porto Alegre, 2017.
+
+RESUMO
+
+O impacto ambiental resultante da queima de combustíveis fósseis tem estimulado a busca
+por fontes renováveis de energia e o desenvolvimento de formas mais eficientes de combustão.
+A combustão em meio poroso surge, nesse contexto, como alternativa, na medida em que é
+aumentada a eficiência da combustão e reduzida a emissão de poluentes como NOx e CO.
+A combustão pré-misturada de metano-ar em meio poroso inerte foi estudada numérica
+e teoricamente, utilizando o código para chama unidimensional CHEM1D. Parâmetros de
+entrada da mistura ar-combustível (razão de equivalência e velocidade dos reagentes) e da
+matriz sólida (porosidade e emissividade) foram variados, e o comportamento da chama foi
+analisado e comparado com a literatura disponível. A influência desses parâmetros foi também
+avaliada na quantidade de poluentes (NOx, CO e CO2) emitidos.
+
+PALAVRAS-CHAVE: Combustão em meio poroso, queimadores porosos, modelagem,
+CHEM1D.
+
+iii
+
+
+
+PRANDI, LAURA M. Modelling of Methane-Air Combustion in Porous Media. 2017.
+23. Monografia (Trabalho de Conclusão do Curso em Engenharia Mecânica) – Departamento
+de Engenharia Mecânica, Universidade Federal do Rio Grande do Sul, Porto Alegre, 2017.
+
+ABSTRACT
+
+The impacts of fossil fuel combustion on the environment has encouraged the search for
+renewable energy sources and the development of more efficient combustion systems. Porous
+media combustion offers an alternantive route, as the combustion efficiency is increased
+and the emission of pollutants such as NOx and CO is reduced. Premixed combustion of
+methane-air in inert porous media was numerically and theoretically studied using the one-
+dimensional flame code CHEM1D. Air-fuel mixture input parameters (air ratio and velocity)
+and solid matrix (porosity and emissivity) were varied, and the flame temperature profile
+was analyzed and compared with the available literature. The influence of these parameters
+was also evaluated in the emission of pollutants (NOx, CO and CO2).
+
+KEYWORDS: Porous media combustion, porous burners, modelling, CHEM1D.
+
+iv
+
+
+
+SUMÁRIO
+
+Lista de ilustrações . . . . . . . . . . . . . . . . . . . . . . . . . . . . . vi
+1 INTRODUÇÃO . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+2 OBJETIVO . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+3 REVISÃO BIBLIOGRÁFICA . . . . . . . . . . . . . . . . . . . . . . . . 2
+4 FUNDAMENTAÇÃO TEÓRICA . . . . . . . . . . . . . . . . . . . . . . 3
+4.1 Mecanismo de Reação . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+4.2 Modelagem Unidimensional da Combustão em Meio Poroso . . . . . 3
+4.2.1 Equações Governantes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+4.2.1.1 Condições de Acoplamento . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+4.2.2 Modelos de Fechamento . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+4.2.3 A Química da Combustão . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+5 METODOLOGIA . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+5.1 Discretização . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+5.2 Configuração de Parâmetros no CHEM1D . . . . . . . . . . . . . . . . . 7
+6 RESULTADOS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+6.1 Perfil de Temperatura . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+6.2 Influência de Porosidade . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+6.3 Influência de Velocidade . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+6.4 Influência de Razão Ar-Combustível . . . . . . . . . . . . . . . . . . . . 11
+6.5 Emissão de Poluentes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+7 Conclusão . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+REFERÊNCIAS BIBLIOGRÁFICAS . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+
+APÊNDICE A – OUTROS PARÂMETROS DO CHEM1D . . . . . 15
+
+v
+
+
+
+LISTA DE ILUSTRAÇÕES
+
+Figura 3.1 – Chama estabilizada dentro e na superfície do queimador cerâmico. A tempera-
+tura do gás Tg é representada pela linha sólida e o calor liberado por unidade
+de volume devido às reações químicas é representado pela linha pontilhada.
+Adaptado de Bouma, 1997. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+
+Figura 6.1 – Evolução da temperatura do gás e do sólido na combustão de metano em meio
+poroso. O refinamento local da malha pode ser observado em (a), enquanto a
+diferença entre Tg e Tsé evidenciada em (b). . . . . . . . . . . . . . . . . . . . 8
+
+Figura 6.2 – Perfis de temperatura do gás para combustão em meio poroso adaptados de
+Zhou e Pereira, 1998. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+
+Figura 6.3 – Distribuição de temperaturas de uma chama metano-ar para três porosidades
+volumétricas (? = 0, 8 e 0,5) em função do comprimento do queimador. . . . 9
+
+Figura 6.4 – Variação da velocidade dos reagentes provocando o deslocamento do perfil de
+temperatura Tg do gás. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+
+Figura 6.5 – Efeito do retorno de chama na distribuição de temperatura (emissividade do
+meio igual a 0,7). . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+
+Figura 6.6 – Perfil de temperatura do gás Tg para três razões de equivalência (? = 0, 8, 0,7
+e 0,6) em função do comprimento do queimador. . . . . . . . . . . . . . . . . 11
+
+Figura 6.7 – Perfis de emissão de poluentes obtidos para diferentes valores de razão de
+equivalência e potências de queima. . . . . . . . . . . . . . . . . . . . . . . . . 12
+
+vi
+
+
+
+1
+
+1 INTRODUÇÃO
+
+A poluição e o impacto ambiental resultantes da queima de combustíveis fósseis têm
+estimulado de forma cada vez mais intensa a busca por fontes renováveis de energia e o desenvol-
+vimento de formas mais eficientes de combustão, capazes de reduzir a emissão de poluentes como
+NOx, SOx, CO e CO2. Quando comparado às demais fontes fósseis, o gás natural tem aumentado
+sua importância como fonte de energia, em razão da emissão de menor quantidade de poluentes,
+se apresentando assim como solução energética viável. Embora sua composição química varie em
+função da região geográfica de origem, o gás natural é uma mistura de hidrocarbonetos saturados
+em que prevalece a presença de metano (CH4). Com relação à geração de poluentes, a oxidação
+do gás natural é livre da emissão de SOx, no entanto CO2, CO e NOx são inerentes ao processo
+de combustão das fontes fósseis com ar (Bouma, 1997).
+
+Nesse contexto, o emprego da combustão em meio poroso surge como alternativa, na
+medida em que é aumentada a eficência da combustão e reduzida a emissão de poluentes
+como NOx e CO, devido às altas capacidade térmica, condutividade e emissividade da matriz
+sólida (Mujeebu et al., 2010). É facilitada também a queima de combustíveis com reduzido
+poder calorífico, já que a utilização de um queimador poroso proporciona maior temperatura e
+velocidade de chama e ampliação dos limites de inflamabilidade.
+
+A combustão em meio poroso se refere à interação heterogênea entre um sólido e um gás
+(Mujeebu et al., 2009). A abordagem desse tipo de combustão pode ser em regime estacionário
+ou transiente. Na primeira, aplicada aos queimadores radiantes ou de superfície, a zona de
+reação é estabilizada na matriz porosa pela imposição de condições de contorno. Na segunda,
+conhecida como transiente ou filtration combustion, a frente de chama tem a liberdade de se
+deslocar continuamente contra ou a favor do escoamento de reagentes (Moser, 2011). A chama
+pode ser, ainda, de pré-mistura (ar e combustível injetados por uma única passagem) ou não
+pré-misturada. Usualmente, no modo estacionário de combustão, uma mistura de ar/combustível
+penetra incialmente em uma matriz sólida de baixa porosidade, para depois mover-se para uma
+segunda região mais quente e de porosidade superior, onde se estabiliza.
+
+Como formas de aplicações da combustão em meio poroso, podem ser citados turbinas à
+gás e de propulsão, trocadores de calor, recuperação de petróleo e gás, produção de hidrogênio a
+partir de metano e sulfeto de hidrogênio, conversão termoelétrica, sistema combinado de potência,
+queima de combustíveis com baixo poder calorífico, sólidos e líquidos e oxidação de compostos
+orgânicos voláteis (VOC’s), como formaldeído, fenol, acetona e benzeno (Mujeebu et al., 2009).
+
+O desenvolvimento da combustão em meio poroso requer, todavia, a complexa modelagem
+desse fenômeno, caracterizado pela presença de termos altamente não-lineares nas equações de
+transferência de calor por convecção e radiação entre o gás e a matriz sólida.
+
+Este trabalho é dividido em sete seções. Essa seção introdutória contextualizou o tema
+e sua relevância na atualidade. As seções seguintes apresentam: os objetivos, uma pequena
+revisão bibliográfica que cita trabalhos essenciais para o entendimento do tema, a fundamentação
+teórica necessária para a modelagem da combustão em meio poroso, a metodologia utilizada, os
+resultados obtidos e, finalmente, as conclusões.
+
+2 OBJETIVO
+
+O objetivo deste trabalho é analisar numérica e teoricamente o comportamento de uma
+chama pré-misturada de metano-ar estabilizada no interior de um meio poroso inerte, utilizando
+o código numérico CHEM1D. Entre os objetivos específicos estão a verificação da influência da
+porosidade, velocidade de alimentação e diluição da mistura sobre a estabilidade da chama.
+
+
+
+2
+
+3 REVISÃO BIBLIOGRÁFICA
+
+A complexidade envolvida na modelagem da combustão em meio poroso se deve ao
+acoplamento entre a transferência de calor e a cinética química, bem como à necessidade de
+adaptação das equações governantes para que representem a troca de calor entre as fases fluida e
+sólida.
+
+Takeno, Echigo e seus colaboradores foram os pioneiros no estudo da combustão em meio
+poroso (Mujeebu et al., 2010). Em 1979, Takeno e Sato propuseram um modelo para o estudo da
+vazão mássica e do coeficente de transferência de calor em chamas com excesso de entalpia e
+sugeriram a utilização de uma matriz sólida, porosa e com elevada condutividade que pudesse
+trocar calor com os reagentes.
+
+No que concerne a equação da conservação da energia, a primeira tendência observada
+na modelagem da combustão em meio poroso assumia um equilíbrio térmico local entre as fases
+sólida e gasosa. Era suficente, por conseguinte, apenas uma equação para representar o balanço
+de energia durante o processo (Mujeebu et al., 2010). Posteriormente, essa hipótese se mostrou
+inadequada para a correta modelagem desse tipo de combustão, e a utilização de duas equações
+de energia, uma para o fluido e outra para o sólido, conquistou espaço após o trabalho de Chen
+et al. (1988).
+
+No modelo de Zhou e Pereira (1998), as equações de energia do gás e do sólido para uma
+chama adiabática laminar unidimensional inserida num meio poroso foram acopladas através
+de um coeficiente convectivo de transferência de calor. As equações governantes foram escritas
+de forma a representar trocas radiativas e convectivas aravés da matriz sólida e transferência
+de calor por convecção entre a fase gasosa e a matriz sólida. Não foram incluídos termos
+relacionados à radiação na equação de energia para o gás, ao passo que na equação do sólido
+foram desconsiderados os termos de liberação de energia.
+
+O acoplamento entre a cinética química e a transferência de calor tem como resultado
+um sistema de equações diferenciais extremamente rígido, do inglês, stiff equations. A despeito
+da falta de uma definição matemática precisa sobre o conceito de rigidez, Curtiss e Hirschfelder
+(1952) constataram que um problema rígido impõe dificuldades às técnicas numéricas explíci-
+tas normalmente utilizadas (Loch, 2016). De modo consequente, torna-se difícil a solução da
+distribuição de espécies, temperatura e velocidade de chama na combustão em meio poroso.
+
+Por esse motivo, códigos numéricos têm sido desenvolvidos especialmente para a modela-
+gem da combustão em meio poroso. O CHEM1D, desenvolvido em uma universidade holandesa
+(Multiphase and Reactive Flows Research Group - TU Eindhoven), resolve as equações para
+chamas unidimensionais em queimadores de superfície através da aplicação de linearização e do
+método de Newton-Raphson modificado, como explicado por Sommers (1994).
+
+De acordo com Bouma (1997), existem dois modos de combustão em meio poroso inerte,
+ambos mostrados na Fig. 3.1.
+
+Figura 3.1 – Chama estabilizada dentro e na superfície do queimador cerâmico. A temperatura
+do gás Tg é representada pela linha sólida e o calor liberado por unidade de volume
+devido às reações químicas é representado pela linha pontilhada. Adaptado de Bouma,
+1997.
+
+
+
+3
+
+A combustão pode ocorrer dentro do próprio meio cerâmico ou próxima da superfície do
+queimador. Para o primeiro caso, a temperatura do gás atinge seu máximo no interior do sólido
+e decresce à medida em que avança pelo meio poroso. Pereira (2002) apresenta distribuições de
+temperatura dentro da matriz sólida, resultantes da variação de alguns parâmetros operacionais
+de um queimador poroso de duas camadas. Também foram estudados os limites inferior e superior
+de estabilização da chama. Moser (2011) também avaliou os perfis de temperatura dentro do
+meio sólido em seu estudo sobre a combustão em meio poroso de etanol, butanol e gás natural.
+
+4 FUNDAMENTAÇÃO TEÓRICA
+
+4.1 Mecanismo de Reação
+
+Um mecanismo de reação é um conjunto completo de reações elementares e suas respectivas
+constantes de reação, que descreve como uma reação acontece a nível molecular, quais ligações
+são quebradas ou formadas e em que sequência isso ocorre (Heghes, 2006).
+
+Para a modelagem da combustão em meio poroso, Hsu e Matthews (1999) enfatizaram
+que a utilização de um mecanismo de reação detalhado é essencial para a correta previsão da
+taxa de liberação de energia, distribuição de temperatura e emissões, embora mecanismos de
+reação simples mostrem-se suficientes em grande parte dos problemas. O emprego de mecanismos
+simplificados, entretanto, é desejável a fim de reduzir a quantidade de trabalho computacional
+na modelagem de sistemas de natureza heterogênea que apresentem variações de concentração e
+temperatura.
+
+O mecanismo utilizado para representar a combustão do metano foi o GRI-Mech 3.0
+(Smith et al., 1999), originalmente proposto para a combustão do gás natural, composto por 325
+reações e 53 espécies químicas diferentes. Embora seja um mecanismo detalhado, o emprego do
+GRI-Mech 3.0 não representou um aumento significativo do trabalho computacional, motivo que
+justifica sua escolha nesse trabalho.
+
+4.2 Modelagem Unidimensional da Combustão em Meio Poroso
+
+4.2.1 Equações Governantes
+
+A combustão em meio poroso pode ser modelada como unidimensional quando o queimador
+opera em modo radiante, já que uma chama plana se estabiliza dentro ou na superfície do meio
+sólido (Bouma et al., 1994). Para a combustão em meio poroso, o código numérico CHEM1D
+resolve as equações apresentadas por Bouma (1997).
+
+Para esse modelo, a equação estacionária de convecção-difusão-reação para as espécies
+químicas é dada por
+
+?
+
+?x
+(??guYi) ?
+
+?
+
+?x
+
+(
+??gDim
+
+?Yi
+?x
+
+)
+= ???i ? i ? [1,N] (4.1)
+
+As quantidades ?g, Yi, u, Dim, ??i e ? representam, respectivamente, a densidade, a fração mássica
+da espécie i, a velocidade da mistura gasosa, o coeficiente de difusão da espécie i na mistura, o
+termo fonte e a porosidade volumétrica. Os termos à esquerda da Eq. 4.1 descrevem o transporte
+convectivo e difusivo da espécie i. O coeficiente difusivo é definido pela Primeira Lei de Fick para
+sistemas binários e pela relação de Stefan-Maxwell para um sistema com um maior número de
+
+
+
+4
+
+espécies químicas, onde Dim é uma função da composição da mistura (Bird et al., 1960). A partir
+da relação de Stefan-Maxwell, Wilke derivou a seguinte expressão (Krishna e Wesselingh, 1997)
+
+Dim =
+(1 ?Xi)?N
+j 6=i Xj/Dij
+
+? i ? [1,N], (4.2)
+
+onde Dij é o coeficiente de difusão binário e Xj = YjM?/Mj a fração molar da espécie j. A massa
+molar média é definida como
+
+M? =
+[
+N?
+i=1
+
+Yi
+Mi
+
+]?1
+, (4.3)
+
+sendo Mi a massa molar da espécie i. A soma de todas as frações mássicas é igual a 1 (
+?N
+i=1 Yi = 1)
+
+e a soma dos fluxos difusivos é, por definição, igual a zero, i.e.,
+
+N?
+i=1
+
+UiYi = ?
+N?
+i=1
+
+Dim~?Yi = 0, (4.4)
+
+com ~Ui a diferença entre as velocidades real ~ui da espécie e média da mistura ~u,
+
+~Ui = ~ui ?~u (4.5)
+
+Para o caso geral, a equação de convecção-difusão-reação deve incluir os efeitos da tortu-
+osidade do meio cerâmico. Contudo, em situações unidimensionais, essa pode ser neglicenciada,
+visto que seu valor médio é bastante próximo à unidade (Bouma, 1997).
+
+A equação de balanço da energia para a temperatura do gás, de acordo com o modelo de
+Bouma (1997), pode ser expressa por
+
+??gucp,g
+?Tg
+?x
+?
+
+?
+
+?x
+
+(
+??g
+
+?Tg
+?x
+
+)
+= ?S(Ts ?Tg) ??
+
+N?
+i=1
+
+hi??i, (4.6)
+
+onde o calor específico cp,g e a condutividade térmica ?g são funções da temperatura e da mistura.
+Os sub-índices g e s são associados à fase gasosa e sólida, respectivamente. Já para a matriz
+sólida, a equação de balanço da energia, resolvida somente dentro dos limites do meio poroso, é
+dada por
+
+?
+?
+
+?x
+
+[
+(1 ??)?s
+
+?Ts
+?x
+
+]
+= ??S(Ts ?Tg) +
+
+?qrad
+?x
+
+(4.7)
+
+O produto do coeficente de transferência de calor ? entre as fases gasosa e sólida pela
+área interfacial específica S da matriz cerâmica, com unidade de m2/m3, resulta no coeficente de
+transferência de calor por covecção que acopla as duas equações de energia.
+
+O fluxo radiativo qrad dentro do meio poroso pode ser aproximado pela aplicação de uma
+condutividade efetiva global ?eff na equação de energia do sólido, válida apenas para a região
+do meio poroso, que pode agora ser reescrita como
+
+?
+
+?x
+
+{
+(1 ??)?s
+
+?Ts
+?x
+
++ qrad
+}
+
+=
+?
+
+?x
+
+{[
+(1 ??)?s +
+
+16?T 3s
+3K
+
+]
+?Ts
+?x
+
+}
+=
+
+?
+
+?x
+
+(
+?eff
+
+?Ts
+?x
+
+)
+, (4.8)
+
+
+
+5
+
+onde K é o coeficiente de extinção do queimador cerâmico.
+O conjunto de equações necessário para a modelagem da combustão em meio poroso é
+
+completado pela equação da continuidade
+
+???gu
+
+?x
+= 0 (4.9)
+
+e pela equação de gás ideal
+
+P0 =
+?gRTg
+
+M?
+, (4.10)
+
+onde R é a constante universal do gases.
+
+4.2.1.1 Condições de Acoplamento
+
+Foram impostas condições de contorno no domínio computacional (início e fim) e condições
+de acoplamento no queimador cerâmico (superfícies de entrada e saída do sólido), totalizando 4
+posições diferentes.
+
+Na posição inicial do domínio computacional, uma condição de contorno de Robin
+(?f/?x + ?f = fixo) foi aplicada para fixar o fluxo total (difusivo e convectivo) associado à
+temperatura Tg do gás e das frações mássicas Yi de todas as espécies. Segundo Bouma (1997),
+para a modelagem da combustão em meio poroso é mais adequada a utilização de condições
+de Robin, já que a chama pode se estabilizar próximo da interface de entrada da matriz sólida.
+Condições de Neumann (?f/?x = 0) foram impostas para todas as espécies e para a temperatura
+do gás na saída do domínio computacional.
+
+Para o meio poroso, foi considerado que existe troca de calor por radiação entre a
+vizinhança e o queimador, que se estende de x = ?L/2 a x = L/2, onde L é a espessura da
+matriz sólida. As condições de acoplamento nos planos de entrada e saída do meio poroso são
+similares e podem ser derivadas de forma análoga, razão pela qual será somente definida nesse
+momento a condição para x = L/2. Assim, para a interface de saída do queimador,
+
+??eff
+?Ts
+?x
+
+?????
+?L/2
+
+= (1 ??A)?[Ts(L/2) ?Tg(L/2)] + ??(T 4s (L/2) ?T
+4
+surr), (4.11)
+
+onde ?A é a porosidade na superfície e Tsurr é a temperatura exterior. A aproximação por ?eff
+implica que as perdas por radiação para o exterior acontecem somente na superfície do queimador
+e que a radiação emitida dentro do sólido é absorvida pelo próprio sólido (Bouma, 1997).
+
+Além da condição para a temperatura do sólido, devem ser incluídas duas condições, uma
+para a temperatura do gás e outra para as espécies químicas, a fim de contabilizar a transferência
+de massa e calor nas interfaces do meio poroso. Para a espécie i,
+
+???gDim
+?Yi
+?x
+
+?????
+?L/2
+
+= ??gDim
+?Yi
+?x
+
+?????
++L/2
+
+, (4.12)
+
+e para a temperatura do gás,
+
+???g
+?Tg
+?x
+
+?????
+?L/2
+
++ (1 ??A)?[Tsurf ?Tg(L/2)] = ??g
+?Tg
+?x
+
+?????
++L/2
+
+(4.13)
+
+
+
+6
+
+4.2.2 Modelos de Fechamento
+
+A descrição detalhada dos modelos de radiação na superfície e dentro do queimador, que
+resultam no fluxo qrad e na dedução da condutividade efetiva global ?eff, fogem ao escopo deste
+trabalho. As deduções dessas equações, entretanto, são detalhadas com profundidade por Bouma
+(1997).
+
+As propriedades termofísicas necessárias para a modelagem da combustão já são incluídas
+nas bibliotecas do código CHEM1D. Em relação ao coeficiente difusivo, foi adotado um valor
+médio determinado localmente a partir da fração mássica de cada espécie.
+
+4.2.3 A Química da Combustão
+
+A processo de combustão é, muitas vezes, simplificado para uma reação elementar do
+tipo combustível + oxidante = produtos. A razão de equivalência ? quantifica a proporção de
+oxidante e combustível numa mistura qualquer relativamente a uma mistura estequiométrica por
+meio de
+
+? =
+Yfu/Yox
+
+(Yfu/Yox)esteq
+, (4.14)
+
+em que os sub-índices fu e ox se referem ao combustível e ao oxidante, respectivamente. Dessa
+forma, ? = 1 representa uma mistura estequiométrica. Para ? &amp;lt;1, a quantidade de oxidante
+teoricamente necessária para a combustão completa do combustível é inferior à quantidade de
+oxidante na mistura, chamada de mistura pobre. Já para ? &gt; 1, a quantidade de oxidante para a
+queima total é superior à quantidade de oxidante na mistura, designando-se esse tipo de mistura
+de rica (Coelho e Costa, 2007). Caso o oxidante seja o ar, pode-se definir ? = 1/? como o
+coeficiente de excesso de ar da mistura.
+
+A taxa de reação global do combustível é expressa por
+
+??fu = c?fuc
+?
+oxk, (4.15)
+
+sendo a ordem da reação é igual a ? + ?. As concentrações ci do combustível e do oxidante
+podem ser calculadas por ci = ?gYi/Mi. A constante de reação k é função da temperatura T e é
+descrita pela equação de Arrhenius,
+
+k = Ae?Ea/RT , (4.16)
+
+onde Ea é a energia de ativação e A é o fator de frequência. A taxa em que o combustível é
+consumido ??fu é obtida pela combinação das Eq. 4.15 e 4.16.
+
+Entretanto, as reações geralmente ocorrem de forma simultânea nas misturas. Uma reação
+reversível com índice n ? [1,M] pode ser escrita como
+
+N?
+i=1
+
+v?i,nMi 
+
+N?
+i=1
+
+v??i,nMi, (4.17)
+
+com v?i,n e v
+??
+i,n os coeficientes estequiométricos para as espécies i dos reagentes e produtos da
+
+n-ésima reação, respectivamente. O símbolo para a espécie i é dado por Mi. A variação da
+concentração no tempo dci,n/dt da espécie i na n-ésima reação é dada por
+
+dci,n
+dt
+
+= (v??i,n ?v
+?
+i,n)
+
+?
+?kf,n N?
+
+j=1
+c
+v?
+
+j,n
+
+j ?kb,n
+N?
+j=1
+
+c
+v??
+
+j,n
+
+j
+
+?
+? (4.18)
+
+
+
+7
+
+As taxas de reação kf,n e kb,n representam as taxas específicas das reações direta e inversa
+da n-ésima reação. A variação total de ci devida a todas as reações é encontrada pela soma da
+Eq. 4.18 para todas as reações
+
+??i = Mi
+M?
+n=1
+
+dci,n
+dt
+
+= Mi
+M?
+n=1
+
+(v??i,n ?v
+?
+i,n)
+
+?
+?kf,n N?
+
+j=1
+c
+v?
+
+j,n
+
+j ?kb,n
+N?
+j=1
+
+c
+v??
+
+j,n
+
+j
+
+?
+? (4.19)
+
+5 METODOLOGIA
+
+A metodologia consistiu na modelagem da combustão pré-misturada no CHEM1D,
+modificado a fim de permitir a alteração das posições de aplicação das condições de acoplamento
+e a consequente movimentação da chama no interior do meio poroso.
+
+5.1 Discretização
+
+O domínio computacional é dividido em volumes de controle com uma distribuição
+não-equidistante dos pontos da malha. O termo fonte ??i é fortemente não-linear e igual a zero
+em grande parte do domínio, crescendo rapidamente, porém, perto da posição da chama. Assim,
+a densidade de pontos deve ser maior nas zonas de pré-aquecimento e de reação, a fim de
+representar com fidelidade os gradientes da fração mássica Yi e da temperatura do gás Tg. Uma
+técnica adaptativa que refina a malha localmente (Sommers, 1994) é usada para localizar esses
+gradientes, já que a posição da chama não é conhecida a princípio.
+
+As equações diferenciais que governam a combustão em meio poroso devem ser resolvidas
+por meio de técnicas numéricas. Em cada ponto da malha, devem ser resolvidas N + 2 equações,
+totalizando (N + 2)K equações em todo o domínio, onde K é o número total de pontos. Para
+a maior parte dos problemas, 70 pontos é o suficiente para a obtenção de uma solução precisa
+(Bouma, 1997). O procedimento para a solução dessas equações é a linearização e a aplicação do
+método modificado de Newton-Raphson (Sommers, 1994). Os termos convectivo e difusivo foram
+avaliado através da aplicação de um esquema de discretização exponencial.
+
+5.2 Configuração de Parâmetros no CHEM1D
+
+Para a modelagem da combustão dentro de um meio poroso, foi escolhido o tipo de chama
+burnerstabilized, i.e., uma chama estabilizada em um queimador cerâmico. Ainda, a chama foi
+definida como pré-misturada, onde a mistura do combustível e do oxidante se dá anteriormente à
+ignição.
+
+O domínio computacional foi definido de x = ?2 cm até x = 2 cm, com uma matriz
+sólida simétrica em relação à origem com 2 cm de espessura. O critério de convergência foi fixado
+em 1E-10 e o número de pontos da malha em 200.
+
+Na entrada do domínio, foi definida temperatura de 300 K. À temperatura exterior foi
+atribuído o valor de Tsurr = 293 K e à pressão no domínio o valor de 1 atm. O meio cerâmico foi
+especificado com área interfacial específica S = 50 cm2/cm3, coeficiente de transferência de calor
+? = 0, 04 W/cm2K, condutividade ? = 0, 020 W/cmK, e calor específico c = 1, 3 J/gK.
+
+Outros parâmetros de definição de malha e métodos de solução foram adotados conforme
+sugerido por van Oijen (2013) (Apêndice A).
+
+Dentre as inúmeras combinações possíveis, o valor de cada parâmetro foi escolhido de
+forma a permitir a estabilização da chama para cada situação.
+
+
+
+8
+
+6 RESULTADOS
+
+O modelo de chama descrito nas seções anteriores foi resolvido variando-se as condições
+de operação e propriedades do meio poroso dentro dos intervalos:
+
+1. Razão de equivalência: 0, 6 ? ? ? 0, 909
+2. Velocidade de entrada dos reagentes: 20 ? Vin ? 45 cm/s
+3. Porosidade volumétrica: 0, 5 ? ? ? 0, 9
+4. Emissividade: 0, 7 ? ? ? 0, 8
+
+Os resultados referentes à modelagem da combustão metano-ar em meio poroso são
+apresentados e discutidos nos parágrafos subsequentes. As temperaturas do gás e sólido são
+plotadas em função da posição x/L para diferentes porosidades, velocidades e relações de
+equivalência. As posições x/L = ?1 e x/L = 1 representam o início e o fim do domínio
+computacional, ao passo que x/L = ?0, 5 e x/L = 0, 5 são equivalentes às superfícies de entrada
+e saída do queimador, respectivamente. No fim da seção, são expostos os resultados relacionados
+à emissão de poluentes (NOx, CO e CO2).
+
+6.1 Perfil de Temperatura
+
+A discretização não-homogênea do domínio, com os pontos da malha distanciados de
+forma não-equidistante, é mostrado na Fig. 6.1(a), em que é evidenciado o maior refinamento da
+malha na região com gradiente mais acentuado. Uma distribuição equidistante do grid não seria
+adequada para a modelagem do problema da combustão, na medida em que o número de pontos
+se tornaria excessivo, aumentando o custo computacional.
+
+Como explicado por Moser (2011), a combustão em meio poroso se baseia na utilização
+de um meio poroso interposto na zona de combustão, promovendo, assim, a recirculação interna
+de calor e o pré-aquecimento dos reagentes. No caso de queimadores porosos de duas camadas,
+a chama pode se estabilizar na interface entre os dois meios sólidos ou na região de maior
+porosidade. Neste trabalho, entretanto, é considerada a combustão em apenas uma camada
+porosa, e o pré-aquecimento ocorre a uma distância de poucos poros a partir da superfície de
+entrada. Para essa configuração, a mistura ignita logo após o contato com o queimador cerâmico,
+como pode ser observado na Fig. 6.1(b).
+
+ 200
+
+ 400
+
+ 600
+
+ 800
+
+ 1000
+
+ 1200
+
+ 1400
+
+ 1600
+
+ 1800
+
+-1 -0.5  0  0.5  1
+
+T
+ (
+
+?
+C
+
+)
+
+x/L (cm)
+
+Tg
+
+(a)
+
+ 200
+
+ 400
+
+ 600
+
+ 800
+
+ 1000
+
+ 1200
+
+ 1400
+
+ 1600
+
+ 1800
+
+-1 -0.5  0  0.5  1
+
+T
+ (
+
+?
+C
+
+)
+
+x/L (cm)
+
+Tg
+Ts
+
+(b)
+
+Figura 6.1 – Evolução da temperatura do gás e do sólido na combustão de metano em meio poroso.
+O refinamento local da malha pode ser observado em (a), enquanto a diferença entre
+Tg e Tsé evidenciada em (b).
+
+Para as duas configurações, contudo, o comportamento da chama é análogo. Os reagentes,
+que entram no meio cerâmico a baixa temperatura, são aquecidos pela matriz sólida à medida que
+
+
+
+9
+
+escoam. A temperatura dos reagentes cresce até a ignição da mistura, formando, na fase gasosa,
+uma frente de chama. Nessa região, as temperaturas do gás e do sólido atingem seu valor máximo.
+Após a frente de chama, as temperaturas das duas fases decrescem, devido à transferência de
+calor entre gás-sólido e à perda por radiação para o ambiente externo (Moser, 2011). Na Fig.
+6.1(b), percebe-se essa promoção da recirculação de calor. Esse resultado é semelhante ao obtido
+por Zhou e Pereira (1998) (Fig. 6.2), no seu estudo de chamas pré-misturadas de metano em
+propagação livre em meio poroso.
+
+(a) (b)
+
+Figura 6.2 – Perfis de temperatura do gás para combustão em meio poroso adaptados de Zhou e
+Pereira, 1998.
+
+6.2 Influência de Porosidade
+
+O perfil de temperaturas Tg e Ts (Fig. 6.3) para duas porosidades volumétricas ? foi
+construído considerando-se a velocidade de entrada da mistura 19 cm/s e a razão de equivalência
+? = 0, 909.
+
+ 200
+
+ 400
+
+ 600
+
+ 800
+
+ 1000
+
+ 1200
+
+ 1400
+
+ 1600
+
+ 1800
+
+-1 -0.5  0  0.5  1
+
+T
+ (
+
+?
+C
+
+)
+
+x/L (cm)
+
+Tg ?=0.8
+Tg ?=0.5
+Ts ?=0.8
+Ts ?=0.5
+
+Figura 6.3 – Distribuição de temperaturas de uma chama metano-ar para três porosidades volu-
+métricas (? = 0, 8 e 0,5) em função do comprimento do queimador.
+
+
+
+10
+
+A dimiuição da porosidade resulta no aumento da velocidade do escoamento Vflow no
+interior da matriz porosa, já que Vin = ?Vflow, onde Vin é a velocidade do escoamento a montante
+do meio poroso. A estabilização da chama requer que a velocidade de queima seja então maior, o
+que é condizente com o aumento da temperatura observado.
+
+6.3 Influência de Velocidade
+
+A matriz sólida foi definida com porosidade ? = 0, 9, condutividade ?s = 0, 020 W/cmK,
+emissividade ? = 0, 8 e coeficiente de tranferência de calor ? = 0, 04 W/cm2K para a análise da
+distribuição de temperatura em função da variação da velocidade de entrada dos reagentes (Fig.
+6.4). Além disso, a razão de equivalência foi definida como ? = 0, 909. Esses parâmetros foram
+retirados de Bouma (1997).
+
+A velocidade de propagação da frente de chama s?L deve se igualar à velocidade de
+escoamento dos reagentes para que a chama se estabilize dentro do queimador cerâmico. Quando
+a velocidade cresce, devido a um aumento da potência do queimador, a frente de chama se
+move para uma nova posição na direção do escoamento até que as velocidades sejam novamente
+iguais (Moser, 2011). A curva da Fig. 6.4 é condizente com essa afirmação, uma vez que a chama
+realmente se deslocou em direção à saída do queimador quando foi fixada uma maior velocidade de
+entrada da mistura. Esse deslocamento, contudo, é pequeno e as duas curvas são ainda bastante
+p?oximas. Como explicado por Pereira (2002), a inércia térmica do sistema é aumentada pela
+inserção de uma matriz porosa, o que o torna menos sensível às variações na vazão dos reagentes.
+Sob outra perspectiva, quando é reduzida a velocidade de entrada da mistura, a chama se desloca
+à montante e sua velocidade diminui até se igualar mais uma vez à velocidade dos reagentes.
+
+ 800
+
+ 900
+
+ 1000
+
+ 1100
+
+ 1200
+
+ 1300
+
+ 1400
+
+ 1500
+
+ 1600
+
+-0.45 -0.4 -0.35 -0.3 -0.25 -0.2
+
+T
+ (
+
+?
+C
+
+)
+
+x/L (cm)
+
+V = 25 cm/s
+V = 20 cm/s
+
+Figura 6.4 – Variação da velocidade dos reagentes provocando o deslocamento do perfil de tempe-
+ratura Tg do gás.
+
+Foi verificado que, para emissividades menores ou iguais a 0.7, o aumento de velocidade
+leva à estabilização da chama próximo à entrada do queimador (Fig. 6.5). Nessa situação, a
+matriz sólida é capaz de trocar menos calor por radiação com o ambiente, implicando em maiores
+recirculação interna de calor, pré-aquecimento do gás e temperatura de chama. Esse efeito poderia
+ser observado também caso fosse aumentada a temperatura exterior.
+
+
+
+11
+
+ 400
+
+ 600
+
+ 800
+
+ 1000
+
+ 1200
+
+ 1400
+
+ 1600
+
+ 1800
+
+-0.5 -0.45 -0.4 -0.35 -0.3 -0.25 -0.2
+
+T
+ (
+
+?
+C
+
+)
+
+x/L (cm)
+
+V = 25 cm/s
+V = 20 cm/s
+
+Figura 6.5 – Efeito do retorno de chama na distribuição de temperatura (emissividade do meio
+igual a 0,7).
+
+6.4 Influência de Razão Ar-Combustível
+
+A influência da razão de equivalência nos perfis de temperatura foi avaliada para o caso
+de um queimador com porosidade ? = 0, 7, condutividade ?s = 0, 020 W/cmK, emissividade
+? = 0, 7 e coeficiente de tranferência de calor ? = 0, 04 W/cm2K, e velocidade de entrada dos
+reagentes de 35 cm/s. As curvas de temperatura do gás para as diferentes relações de equivalência
+são mostradas na Fig. 6.6.
+
+ 200
+
+ 400
+
+ 600
+
+ 800
+
+ 1000
+
+ 1200
+
+ 1400
+
+ 1600
+
+ 1800
+
+-0.6 -0.4 -0.2  0  0.2  0.4  0.6
+
+T
+ (
+
+?
+C
+
+)
+
+x/L (cm)
+
+? = 0.8
+? = 0.7
+? = 0.6
+
+Figura 6.6 – Perfil de temperatura do gás Tg para três razões de equivalência (? = 0, 8, 0,7 e 0,6)
+em função do comprimento do queimador.
+
+
+
+12
+
+Pode-se notar que a diminuição da fração de combustível acarreta diminuição da tempe-
+ratura de chama. Essa redução na temperatura é esperada, uma vez que a energia liberada na
+combustão é diretamente proporcional à quantidade de combustível.
+
+6.5 Emissão de Poluentes
+
+Nas Figuras 6.7(a), (b) e (c) são apresentados os perfis referentes à emissão de CO2, CO
+e NOx para variações na velocidade de entrada e razão de equivalência da mistura. Para o estudo
+da influência da razão de equivalência, foi utilizado um queimador cerâmico de condutividade
+?s = 0, 020 W/cmK, emissividade ? = 0, 7, coeficiente de transferência de calor ? = 0, 04 W/cm2K
+e porosidade ? = 0, 7, combinado com uma velocidade dos reagentes de 35 cm/s. Já para a
+variação de velocidade, foi considerada uma mistura de razão de equivalência ? = 0, 909 e um
+meio poroso de porosidade ? = 0, 9, condutividade ?s = 0, 020 W/cmK, emissividade ? = 0, 7 e
+coeficiente de tranferência de calor ? = 0, 04 W/cm2K.
+
+-2x10
+-6
+
+ 0
+
+ 2x10
+-6
+
+ 4x10
+-6
+
+ 6x10
+-6
+
+ 8x10
+-6
+
+ 1x10
+-5
+
+ 1.2x10
+-5
+
+ 1.4x10
+-5
+
+-1 -0.5  0  0.5  1
+
+M
+a
+
+s
+s
+ F
+
+ra
+c
+ti
+o
+
+n
+
+x/L (cm)
+
+? = 0.8
+? = 0.6
+
+(a) Emissão de NOx em função da razão de
+equivalência.
+
+-0.02
+
+ 0
+
+ 0.02
+
+ 0.04
+
+ 0.06
+
+ 0.08
+
+ 0.1
+
+ 0.12
+
+ 0.14
+
+-1 -0.8 -0.6 -0.4 -0.2  0
+
+M
+a
+
+s
+s
+ F
+
+ra
+c
+ti
+o
+
+n
+
+x/L (cm)
+
+? = 0.8 CO2
+? = 0.6 CO2
+
+? = 0.6 CO
+? = 0.8 CO
+
+(b) Concentrações de CO2 e CO em função da
+razão de equivalência.
+
+-5x10
+-6
+
+ 0
+
+ 5x10
+-6
+
+ 1x10
+-5
+
+ 1.5x10
+-5
+
+ 2x10
+-5
+
+ 2.5x10
+-5
+
+-1 -0.5  0  0.5  1
+
+M
+a
+
+s
+s
+ F
+
+ra
+c
+ti
+o
+
+n
+
+x/L (cm)
+
+V = 30 cm/s
+V = 45 cm/s
+
+(c) Emissão de NOx para diferentes velocida-
+des.
+
+Figura 6.7 – Perfis de emissão de poluentes obtidos para diferentes valores de razão de equivalência
+e potências de queima.
+
+Como mostra a Fig. 6.7(a), a emissão de NOx (NO, NO2 e N2O) aumenta com o aumento
+da razão de equivalência, já que a formação de NO é altamente dependente da temperatura
+da chama (Pereira, 2002). A emissão de NOx também cresce com a potência de queima (Fig.
+6.7(c)), o que pode ser visto nos trabalhos de Bouma e de Goey (1999) e Pereira (2002). Assim
+como para o NOx, a emissão de CO2 é mais elevada para maiores relações de equivalência (Fig
+6.7(b)), o que é esperado devido à maior concentração de combustível nos reagentes (Pereira,
+
+
+
+13
+
+2002). Percebe-se ainda, que o tempo de residência foi suficiente para que ocorresse a oxidação
+de todo CO em CO2, ou seja, ocorreu combustão completa. Apesar de não ocorrer emissão de
+CO, nota-se que o perfil de concentração dessa espécie segue a mesma tendência do CO2, sendo
+justificado pelos mesmos argumentos.
+
+7 CONCLUSÃO
+
+Neste trabalho foi realizada a modelagem de uma chama de metano estabilizada no interior
+de uma matriz porosa no código CHEM1D. Foram estudadas qualitativamente as distribuições
+de temperatura do gás e do sólido para variações em parâmetros de entrada (velocidade dos
+reagentes e razão de equivalência) e da matriz sólida (porosidade e emissividade). Os resultados
+obtidos mostraram boa concordância qualitativa com estudos prévios disponíveis na literatura. A
+emissão de poluentes, fator de grande influência na seleção de um queimador poroso, foi também
+estudada pela variação de dois parâmetros de operação (potência e razão de equivalência) e
+discutida através de dados provenientes da literatura.
+
+Como esperado, foi observado que:
+
+1. O aumento da porosidade acarreta em maior velocidade de queima e, portanto, em maior
+temperatura;
+
+2. A dimuição da razão ar-combustível resulta em temperaturas menores de chama;
+3. O aumento da potência do queimador, nesse modelo, implica no deslocamento da chama
+
+na direção do escoamento para emissividades superiores a 0,8. Para valores menores de
+emissividade, a chama se desloca no sentido da entrada do queimador devido ao aumento
+da recirculação de calor e pré-aquecimento;
+
+4. Maiores razões de equivalência e potência da queima significam maior emissão de NOx.
+
+Para estudos futuros, é sugerido:
+1. Adaptação do código CHEM1D para a modelagem da combustão em meio poroso a partir
+
+das equações modificadas de livre propagação da chama, mais adequadas do que o modelo
+de chama estabilizada em queimador.
+
+2. Utilização desse modelo para a modelagem da combustão em queimador poroso de duas
+camadas.
+
+3. Estudo dos limites de flamabilidade para diferentes razões de equivalência, a fim de analisar
+os limites superior e inferior de estabilização da chama no queimador.
+
+4. Uso desse modelo para investigação mais aprofundada do fenômeno de flashback.
+5. Estudo dos limites de operação de queimadores porosos a partir do modelo apresentado.
+
+REFERÊNCIAS BIBLIOGRÁFICAS
+
+Bird, R.B., Stewart, W.E., Lighfoot, E.N. "Transport Phenomena". Estados Unidos: John
+Wiley &amp;amp; Sons, 1960.
+
+Bouma, P.H., Somers, L.M.T., de Goey, L.P.H., Nieuwenhuizen, J.K. "Modelling of Methane-
+Air Combustion on Ceramic Foam Surface Burners in the Radiation Mode". Heat
+Transfer in Radiating and Combusting System-2, Eurotherm Seminar n.37, p.153-166, 1994.
+
+Bouma, P.H. "Methane-Air Combustion on Ceramic Foam Surface Burners". Disserta-
+ção, Eindhoven University of Technology, Eindhoven, 1997.
+
+Bouma. P.H., de Goey, L.P.H. "Premixed combustion on ceramic foam burners". Com-
+bustion and Flame, v.119, p.133-143, 1999.
+
+
+
+14
+
+Chen, Y.K., Hsu, P.F., Lim, I.G., Lu, Z.H., Matthews, R.D., Howell, J.R., et al. "Experi-
+mental and theoretical investigation of combustion within porous inert media". In:
+The 22nd international symposium on combustion, 1988, The Combustion Institute. Poster paper
+22-207.
+
+Coelho, P.J., Costa, M. "Combustão". Portugal: Orion, 2007.
+
+Curtiss, C.F., Hirschfelder, J.O. "Integration of stiff equations". Proceedings of the Na-
+tional Academy of Sciences of The United States of America, v.38, p.235-243, 1952.
+
+Hegues, C.I. "C1-C4 Hydrocarbon Oxidation Mechanism". Dissertação, Rupertus Ca-
+rola University of Heidelberg, Heidelberg, 2006.
+
+Hsu, P.F., Matthews, R.D. "The necessity of using detailed chemical kinetics in model
+for premixed combustion in porous media". Combustion and Flame, v.93, p. 457-466, 1999.
+
+Krishna, R., Wesselingh, J.A., "The Maxwell-Stefan approach to mass transfer". Chemical
+Enginnering Science, v.52, p.861-911, 1997.
+
+Loch, Guilherme G. "Sistemas Rígidos Associados a Cadeias de Decaimento Radio-
+ativo". Dissertação, Universidade de São Paulo, São Paulo, 2016.
+
+Moser, Rafael H. "Estudo da Combustão de Gás Natural, Butano e Etanol em Meio
+Poroso para Produção de Gás de Síntese". Dissertação, Universidade Federal de Santa
+Catarina, Florianópolis, 2011.
+
+Mujeebu, M.A., Abdullah, M.Z., Abu Bakar, M.Z., Muhad, R.M.N, Abdullah, M.K., "Com-
+bustion in porous media and its applications - A comprehensive survey". Journal of
+Environmental Management, v.90, p.2287-2312, 2009.
+
+Mujeebu, M.A., Abdullah, M.Z., Mohamad, A.A., Abu Bakar, M.Z. "Trends in modeling of
+porous media combustion". Progess in Energy and Combustion Science, v.36, p.627-650, 2010.
+
+Pereira, F.M. "Medição de características térmicas e estudo do mecanismo de es-
+tabilizaçõa de chama em queimadores porosos radiantes". Dissertação, Universidade
+Federal de Santa Catarina, Florianópolis, 2002.
+
+Smith, G.P., Golden, D.M., Frenklach, M., Moriarty, N.W., Eiteneer, B., Goldenberg, M.,
+Bowman, C.T., Hanson, R.K., Song, S., Gardiner Jr, W., Lissianski, V. and Qin, V.Z. "GRI-
+Mech 3.0. Technical Report", 1999, Gas Research Institute.
+
+Somers, L.M.T. "The Simulation of Flat Flames with Detailed and Reduced Che-
+mical Models". Dissertação, Eindhoven University of Technology, Eindhoven, 1994.
+
+Takeno, T., Sato, K. "An excess enthalpy flame theory". Combustion Science and Te-
+chnology, v.20, p.73-84, 1979.
+
+van Oijen, J.A. "CHEM1D: A one-dimensional flame code". Relatório: Eindhoven Univer-
+sity of Technology, 2013.
+
+Zhou, X.Y., Pereira, J.C.F. "Comparison of Four Combustion Models for Simulating
+the Premixed Combustion in Inert Porous Media". Fire and Materials, v.22, p.187-197,
+1998.
+
+
+
+15
+
+APÊNDICE A – OUTROS PARÂMETROS DO CHEM1D
+
+São apresentados nessa seção outros parâmetros necessários para a modelagem da com-
+bustão no CHEM1D.
+
+[SOLVER_MAXIMUMITERATIONS]
+1000000
+[SOLVER_DIFFERENTIALSCHEME]
+EXPONENTIAL
+[SOLVER_TIMEINTERGRATION]
+BDF1
+
+[MODEL_SIMULATIONTYPE]
+STATIONARY
+[MODEL_TRANSPORT]
+MIXTUREAVERAGED
+[MODEL_CHEMISTRY]
+DETAILED
+[MODEL_RADIATION]
+PLANCK
+
+[TIMESTEPPER_INITIALTIMESTEP]
+1.000000E-05
+[TIMESTEPPER_MINIMUMTIMESTEP]
+1.000000E-10
+[TIMESTEPPER_MAXIMUMTIMESTEP]
+1.000000E-02
+[TIMESTEPPER_MAXSIMULATIONTIME]
+5.000000E+01
+[TIMESTEPPER_OUTPUTSTEP]
+100
+
+[GASMIXTURE_MIXTURECOMPOSITION]
+CH4 0.055167 0.055167
+O2 0.220068 0.220068
+N2 0.724765 0.724765
+[ENDOF_MIXTURECOMPOSITION]
+[GASMIXTURE_FUELCOMPOSITION]
+CH4 1.000
+[ENDOF_FUELCOMPOSITION]
+[GASMIXTURE_OXIDIZERCOMPOSITION]
+O2 0.210
+N2 0.790
+[ENDOF_OXIDIZERCOMPOSITION]
+[GASMIXTURE_BATHGAS]
+N2
+
+[GRID_WEIGHT]
+Density 1.0
+Porosity 1.0
+Temp 1.0
+H2 1.0
+CH4 1.0
+
+
+
+16
+
+HeatRel 1.0
+[ENDOF_WEIGHT]
+[GRID_SETTOZERO]
+ON
+[GRID_REGRID]
+ON
+[GRID_UNIFORMITYMESH]
+0.15
+[GRID_MESHRATIO]
+2.0
+[GRID_ADAPTATIONINTERVAL]
+1 0
+[GRID_INTERPOLATION]
+LINEAR
+
+[LEWIS_DIFFUSIONCORRECTION]
+N2
+[LEWIS_LAMBDACP]
+0.2580E-03 0.690
+[LEWIS_ETACP]
+0.1670E-03 0.510
+
+[MIXTUREAVERAGED_DIFFUSIONCORRECTION]
+N2
+
+
+	Folha de aprovação
+	Agradecimentos
+	 
+	 
+	Sumário
+	Lista de ilustrações
+	INTRODUÇÃO
+	OBJETIVO
+	REVISÃO BIBLIOGRÁFICA
+	FUNDAMENTAÇÃO TEÓRICA
+	Mecanismo de Reação
+	Modelagem Unidimensional da Combustão em Meio Poroso
+	Equações Governantes
+	Condições de Acoplamento
+
+	Modelos de Fechamento
+	A Química da Combustão
+
+
+	METODOLOGIA
+	Discretização
+	Configuração de Parâmetros no CHEM1D
+
+	RESULTADOS
+	Perfil de Temperatura
+	Influência de Porosidade
+	Influência de Velocidade
+	Influência de Razão Ar-Combustível
+	Emissão de Poluentes
+
+	Conclusão
+	REFERÊNCIAS BIBLIOGRÁFICAS
+
+	Outros Parâmetros do CHEM1D
+
+</field>
+	</doc>
+</add>

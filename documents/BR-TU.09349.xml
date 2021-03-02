@@ -1,0 +1,1252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.09349</field>
+		<field name="filename">14331_TEGI347.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">MESTRADO
+Estatística e Gestão de Informação
+Modelos de previsão de preços de commodities
+Ricardo Jorge Pinto Ribeiro
+Trabalho de Projecto apresentado como requisito parcial para obtenção do grau de Mestre em Estatística e Gestão de Informação
+UNIVtRSIDADt N&gt;VA	Instituto Superior de Estatística e Gestão de Informação Universidade Nova de Lisboa
+Instituto Superior de Estatística e Gestão de Informação
+Universidade Nova de Lisboa
+MODELOS DE PREVISÃO DE PREÇOS DE COMMODITIES
+por
+Ricardo Jorge Pinto Ribeiro
+Trabalho de Projecto apresentado como requisito parcial para a obtenção do grau de Mestre em Estatística e Gestão de Informação, Especialização em Análise e Gestão de Risco
+Coorientador: Professor Doutor Luís Vasco Lourenço Pinheiro
+Coorientador: Professor Doutor Fernando José Ferreira Lucas Bação
+Novembro 2013
+ii
+Em primeiro lugar agradeço à minha família pelo apoio e incentivo que sempre me deram.
+Ao professor Luís Pinheiro gostaria de expressar o meu sincero agradecimento pelo seu empenho e dedicação durante todo o processo de elaboração deste trabalho.
+Gostaria também de agradecer ao professor Fernando Bação pela sua disponibilidade e ajuda.
+iii
+RESUMO
+O principal objectivo deste trabalho assenta em desenvolver modelos de previsão de preços de commodities para assim comparar a capacidade preditiva da simulação de Monte Carlo com a das redes neuronais. A simulação de Monte Carlo é principalmente utilizada para avaliar as opções, já as redes neuronais são utilizadas para fazer previsões, classificações, clustering ou aproximação de funções. Os diversos modelos desenvolvidos foram aplicados na previsão do preço futuro do milho, petróleo, ouro e cobre. Sendo que os horizontes temporais testados neste trabalho foram 1 dia, 5 dias, 20 dias e 60 dias.
+Através da análise do erro absoluto médio percentual (MAPE) concluiu-se que no geral o modelo individual que apresentou um melhor desempenho preditivo foram as redes neuronais. Contudo, nas previsões a 1 e a 5 dias os resultados obtidos foram semelhantes para ambos os modelos.
+Para se tentar melhorar os resultados obtidos pelos modelos individuais foram aplicadas algumas técnicas de combinação de modelos. A combinação de modelos demonstrou no geral capacidade para melhorar os resultados dos modelos individuais, porém apenas para o horizonte a 60 dias é que os resultados melhoraram significativamente.
+PALAVRAS-CHAVE
+Previsões, Commodities, Simulação de Monte Carlo, Redes neuronais, Combinação de previsões.
+iv
+ABSTRACT
+The main objective of this work is based on developing forecasting models for commodity prices to compare the predictive ability of the Monte Carlo simulation with the neural networks. The Monte Carlo simulation is mainly used to evaluate the options, the neural networks are used to do forecasting, classification, clustering and function approximation. The various models developed were applied to forecast the future price of corn, oil, gold and copper. The time horizons tested in this study were 1 day, 5 days, 20 days and 60 days.
+Through the analysis of the mean absolute percentage error (MAPE) concluded that overall the individual model that had a better performance were the neural networks. However, in forecasts of 1 and 5 days the results were similar for both models.
+To try to improve the results obtained by the individual models were applied some techniques of combining models. The combination of models showed overall ability to improve the results of the individual models, but only in the horizon of 60 days is that the results improved significantly.
+KEYWORDS
+Forecasting, Commodities, Monte Carlo simulation, Neural networks, Forecasts combination.
+v
+ÍNDICE
+1.	Introdução..................................................................1
+2.	Revisão da Literatura.......................................................5
+3.	Fundamentos Teóricos.......................................................10
+3.1.	Previsões.............................................................10
+3.1.1.	Classificação das previsões.......................................10
+3.1.2.	Processo de previsão..............................................11
+3.1.3.	Séries temporais..................................................13
+3.1.4.	Factores que afectam o desempenho das previsões...................13
+3.2.	Mercados futuros......................................................14
+3.2.1.	História dos mercados.............................................14
+3.2.2.	Contratos futuros.................................................15
+3.2.3.	Categorias de commodities.........................................15
+3.2.4.	Preço.............................................................16
+3.2.5.	Participantes no mercado..........................................18
+3.3.	Simulação de monte carlo..............................................18
+3.3.1.	Vantagens e Desvantagens..........................................20
+3.4.	Redes neuronais.......................................................20
+3.4.1.	Histórico.........................................................21
+3.4.2.	Neurónio biológico................................................22
+3.4.3.	Neurónio artificial...............................................23
+3.4.4.	Funções de activação..............................................24
+3.4.5.	Arquitectura......................................................24
+3.4.6.	Redes Multilayer Perceptron (MLP).................................25
+3.4.7.	Algoritmo de Backpropagation......................................26
+3.4.8.	Pré-processamento dos dados.......................................29
+3.4.9.	Selecção de variáveis.............................................30
+3.4.10.	Vantagens e Desvantagens.........................................30
+4.	Metodologia................................................................32
+4.1.	Apresentação dos dados................................................32
+4.2.	Avaliação das previsões...............................................40
+4.2.1.	Erro médio percentual (MPE).......................................40
+4.2.2.	Erro absoluto médio percentual (MAPE).............................41
+4.3.	Simulação de monte carlo..............................................41
+4.4.	Redes neuronais.......................................................43
+4.5.	Combinação de Previsões...............................................46
+vi
+5.	Resultados e Discussão....................................................50
+5.1.	Previsões individuais................................................50
+5.2.	Previsões combinadas.................................................55
+6.	Conclusões................................................................58
+7.	Limitações e Recomendações para Trabalhos	Futuros.........................60
+8.	Bibliografia..............................................................62
+9.	Anexos....................................................................69
+9.1.	Anexo A - Demonstração da simulação de Monte Carlo...................69
+9.2.	Anexo B - Especificações dos contratos futuros.......................70
+9.3.	Anexo C - Apresentação dos resultados das combinações de variáveis para a
+selecção dos inputs das redes neuronais......................................71
+9.4.	Anexo D - Resultados das previsões combinadas através da média simples .... 86
+vii
+Figura 3.1 - Diagrama do processo de previsão..................................11
+Figura 3.2 - Relação entre preço futuro e preço à vista: (a) preço futuro acima do preço
+à vista; (b) preço futuro abaixo do preço à vista..........................16
+Figura 3.3 - Ilustração de contango e backwardation............................17
+Figura 3.4 - Exemplo da simulação de Monte Carlo...............................20
+Figura 3.5 - Estrutura de um neurónio biológico................................22
+Figura 3.6 - Exemplo da transmissão de informação..............................22
+Figura 3.7 - Modelo do neurónio artificial.....................................23
+Figura 3.8 - Função logística..................................................24
+Figura 3.9 - (a) Rede feedforward; (b) Rede feedback...........................25
+Figura 3.10 - Rede MLP com duas camadas ocultas................................26
+Figura 3.11 - Exemplo de soluções: (a) com sobre aprendizagem, (b) sem sobre aprendizagem...............................................................28
+Figura 3.12 - Exemplo da validação cruzada.....................................29
+Figura 4.1 - Série temporal	do preço do milho...............................34
+Figura 4.2 - Série temporal	do preço do petróleo...............................35
+Figura 4.3 - Série temporal	do preço do ouro...............................36
+Figura 4.4 - Série temporal	do preço do cobre...............................37
+Figura 4.5 -	qq-plots: (a) Milho, (b) Petróleo, (c) Ouro, (d) Cobre............38
+Figura 4.6 -	Histograma: (a) Milho, (b) Petróleo, (c) Ouro, (d) Cobre..........39
+Figura 4.7 -	Exemplo de uma folha de Excel com a simulação de Monte Carlo......43
+Figura 4.8 -	Exemplo de um diagrama com duas redes neuronais...................46
+Figura 5.1 - Previsão do preço do milho a 60 dias através da simulação de Monte Carlo
+...........................................................................51
+Figura 5.2 - Previsão do preço do milho a 60 dias através da rede neuronal.....51
+Figura 5.3 - Previsão do preço do petróleo a 60 dias através da simulação de Monte
+Carlo......................................................................52
+viii
+Tabela 3.1 - Maiores bolsas de futuros do mundo...............................15
+Tabela 4.1 -	Estatísticas descritivas do	preço	do milho.......................33
+Tabela 4.2 -	Estatísticas descritivas do	preço	do petróleo....................34
+Tabela 4.3 -	Estatísticas descritivas do	preço	do ouro........................35
+Tabela 4.4 -	Estatísticas descritivas do	preço	do cobre.......................36
+Tabela 4.5 - Resultados do teste de Kolmogorov-Smirnov........................39
+Tabela 4.6 -	Número de neurônios da camada oculta.............................43
+Tabela 4.7 -	Resumo das variáveis de input....................................45
+Tabela 4.8 -	Resumo dos parâmetros das regressões.............................47
+Tabela 4.9 -	Resumo dos pesos dos modelos individuais.........................49
+Tabela 5.1 -	Resultados das previsões do	ano de	2012	para	o milho.............50
+Tabela 5.2 -	Resultados das previsões do	ano de	2012	para	o petróleo..........51
+Tabela 5.3 -	Resultados das previsões do	ano de	2012	para	o ouro..............53
+Tabela 5.4 -	Resultados das previsões do	ano de	2012	para	o cobre.............54
+Tabela 5.5 -	Resultados das previsões combinadas	para o	milho.................55
+Tabela 5.6 -	Resultados das previsões combinadas	para o	petróleo..............56
+Tabela 5.7 -	Resultados das previsões combinadas	para o	ouro..................56
+Tabela 5.8 -	Resultados das previsões combinadas	para o	cobre.................57
+Tabela 9.1 - Especificações dos contratos futuros do milho e do petróleo.......70
+Tabela 9.2 - Especificações dos contratos futuros do ouro e do cobre...........70
+Tabela 9.3 - Resultados das combinações de variáveis para a previsão a 1 dia do milho
+.........................................................................71
+Tabela 9.4 - Resultados das combinações de variáveis para a previsão a 5 dias do milho
+.........................................................................72
+Tabela 9.5 - Resultados das combinações de variáveis para a previsão a 20 dias do
+milho.....................................................................73
+Tabela 9.6 - Resultados das combinações de variáveis para a previsão a 60 dias do milho....................................................................74
+Tabela 9.7 - Resultados das combinações de variáveis para a previsão a 1 dia do petróleo.................................................................75
+Tabela 9.8 - Resultados das combinações de variáveis para a previsão a 5 dias do petróleo.................................................................76
+Tabela 9.9 - Resultados das combinações de variáveis para a previsão a 20 dias do petróleo.................................................................77
+Tabela 9.10 - Resultados das combinações de variáveis para a previsão a 60 dias do petróleo.................................................................78
+ix
+Tabela 9.11 - Resultados das combinações de variáveis para a previsão a 1 dia do ouro
+......................................................................78
+Tabela 9.12 - Resultados das combinações de variáveis para a previsão a 5 dias do
+ouro..................................................................79
+Tabela 9.13 - Resultados das combinações de variáveis para a previsão a 20 dias do
+ouro.................................................................80
+Tabela 9.14 - Resultados das combinações de variáveis para a previsão a 60 dias do
+ouro.................................................................81
+Tabela 9.15 - Resultados das combinações de variáveis para a previsão a 1 dia do
+cobre................................................................81
+Tabela 9.16 - Resultados das combinações de variáveis para a previsão a 5 dias do
+cobre................................................................82
+Tabela 9.17 - Resultados das combinações de variáveis para a previsão a 20 dias do
+cobre.................................................................83
+Tabela 9.18 - Resultados das combinações de variáveis para a previsão a 60 dias do
+cobre.................................................................84
+Tabela 9.19 - Resultados das previsões	combinadas através da média simples.86
+x
+LISTA DE SIGLAS E ABREVIATURAS
+ARIMA	Modelo Auto-regressivo Integrado de Médias Móveis
+ATR	Average True Range
+CBOT	Chicago Board of Trade
+CCI	Commodity Channel Index
+CME	Chicago Mercantile Exchange
+COMEX	Commodities Exchange
+MAPE	Erro absoluto médio percentual
+MLP	Redes Multilayer Perceptron
+MPE	Erro médio percentual
+NYMEX	New York Mercantile Exchange
+ROC	Rate of Change
+RSI	Relative Strength Index
+VAR	Método de combinação baseado na variância do erro
+WTI	West Texas Intermediate
+xi
+1.	INTRODUÇÃO
+O objectivo de prever o futuro é um desejo antigo da humanidade. As previsões servem principalmente para satisfazer a curiosidade das pessoas sobre um determinado assunto, para ajudar a tomar melhores decisões ou para gerar consensos (Makridakis, 1990). As previsões possuem um papel importante em diversas áreas, tais como no marketing, na demografia, na economia ou na área financeira e na gestão de riscos (Montgomery, Jennings e Kulahci, 2008).
+Na área financeira existem diversos activos no mercado que podem ser alvo de previsões, tais como as acções, obrigações, taxas de juro, taxas de câmbio ou commodities. Este trabalho vai incidir sobre as commodities, sendo que as commodities seleccionadas foram o milho, o petróleo, o ouro e o cobre.
+As commodities são mercadorias em estado bruto ou com um baixo grau de transformação, nos últimos anos tem-se verificado que os investidores aumentaram o seu interesse por este mercado (Belousova e Dorfleitner, 2012).
+Com base no Capital Asset Pricing Model pode-se afirmar que o retorno de um investimento encontra-se relacionado com o seu risco. Ou seja, se um mercado tem uma baixa volatilidade então investir nesse mercado tem um risco menor, contudo o retorno também tende a ser menor.
+Uma das características do mercado das commodities é a sua alta volatilidade (Deaton e Laroque, 1992), o que permite a oportunidade de gerar elevados ganhos aos investidores, porém o elevado grau de incerteza também pode levar a grandes perdas.
+A negociação de commodities pode ser realizada através do mercado à vista, a termo ou futuro (Geman, 2005).
+Os investidores normalmente preferem os mercados futuros uma vez que investir no bem físico não é muito usual devido aos altos custos das transacções, dos seguros e dos custos de armazenamento (Jensen, Johnson e Mercer, 2000).
+O preço de um activo encontra-se dependente de diversos factores. Segundo Borensztein e Reinhart (1994), existem dois factores que ajudam a explicar as variações nos preços das commodities. O primeiro é o estado do ciclo de negócios dos países industrializados, uma vez que este factor influência a variável procura. O segundo é a taxa de câmbio do dólar, porque a maioria das commodities são cotadas em dólares.
+Já Frankel (1986) indica a política monetária como outro dos factores importantes na determinação dos preços das commodities. A diminuição da oferta de dinheiro implica uma subida das taxas de juro, o que faz baixar os preços das commodities. Ou seja, as commodities desvalorizam para que exista uma expectativa de que no futuro o preço aumente o suficiente para compensar o aumento das taxas de juro. Por outro lado, a inflação provoca o aumento dos preços (Jensen et al., 2000).
+Actualmente, encontram-se disponíveis diversos modelos para realizar previsões. Neste trabalho vão ser utilizados a simulação de Monte Carlo e as redes neuronais. Contudo, uma vez que cada técnica de previsão utiliza fundamentos diferentes, supõe-se que a combinação de vários modelos possa melhorar os resultados obtidos, uma vez que deste modo existe a possibilidade de incluir uma maior quantidade de informação. Portanto, será também testada a combinação entre a simulação de Monte Carlo e as redes neuronais.
+O objectivo geral deste trabalho passa por comparar a capacidade preditiva da simulação de Monte Carlo com a das redes neuronais, sendo que ambos os modelos vão ser aplicados individualmente e em conjunto para prever o preço futuro das commodities milho, petróleo, ouro e cobre.
+Para alcançar o objectivo geral deste trabalho, definiram-se os seguintes objectivos específicos:
+•	Encontrar os inputs a utilizar em cada rede neuronal;
+•	Verificar qual dos modelos individuais apresenta no geral melhores resultados;
+•	Verificar se a combinação dos dois modelos individuais melhora os resultados;
+•	Analisar qual é a commodity que demonstra ser mais fácil de se prever o preço futuro;
+2
+A comercialização de commodities é caracterizada pela elevada incerteza em relação ao preço de mercado, por este motivo a previsão dos preços torna-se importante para todos os intervenientes neste mercado que assim podem tomar as melhores decisões sobre o momento de comprar e de vender e assim conseguem controlar melhor o risco.
+Sendo o mercado futuro de commodities cada vez mais utilizado como instrumento para diversificar as carteiras de investimentos. Desta forma, para estes investidores os modelos de previsão de preços são fundamentais para ajudar na tomada de decisões sobre qual a exposição que a sua carteira deverá ter sobre este mercado.
+Segundo Borensztein e Reinhart (1994), os mercados de commodities desempenham um papel importante na transmissão de perturbações entre países. Uma vez que ligam os países importadores aos países produtores e assim qualquer variação de preço ou de quantidade transaccionada irá afectar a economia desses países. Portanto, um prévio conhecimento do preço futuro poderá evitar algumas perturbações na economia destes países.
+Este trabalho encontra-se estruturado em nove capítulos. No capítulo 1 é efectuada a introdução ao trabalho, na qual são apresentadas algumas considerações iniciais, o objectivo geral e os específicos, a importância e relevância do estudo em causa e a forma de como se encontra estruturado.
+No capítulo 2 encontra-se a revisão da literatura, no qual são apresentados diversos artigos sobre o tema deste trabalho.
+No capítulo 3 faz-se uma breve introdução sobre alguns conceitos relevantes para este trabalho, entre os quais o que são as previsões, os mercados futuros, a simulação de Monte Carlo e as redes neuronais.
+No capítulo 4 são apresentados os dados utilizados neste trabalho e também qual será a metodologia a ser seguida para alcançar o objectivo proposto.
+No capítulo 5 são apresentados e discutidos os resultados obtidos através da metodologia adoptada para este trabalho.
+3
+No capítulo 8 encontram-se as referencias bibliográficas. Por fim, apresentam-se os anexos no capítulo 9.
+4
+2.	REVISÃO DA LITERATURA
+Boyle (1977) avaliou o valor das opções de compra do tipo europeu sobre acções que paguem dividendos através da simulação de Monte Carlo. Nesse modelo assumiu-se que os preços seguem uma distribuição lognormal e que a taxa de retorno esperada ao investir em acções é igual a taxa de juro sem risco. Com base nos pressupostos anteriores foram gerados 5.000 caminhos aleatórios para as cotações futuras de uma acção, calculados os seus payoffs finais e depois descontados à taxa de juro sem risco. O valor da opção resulta do cálculo da média dos payoffs descontados.
+Jabbour e Liu (2005) desenvolveram um estudo sobre a eficiência da simulação de Monte Carlo. Neste estudo os autores aplicaram a simulação para avaliar as opções de venda do tipo europeu, para essa avaliação foram analisados os resultados obtidos através da variação do número de simulações de 100, 400 e 2.500. Como conclusão foi demonstrado que quanto maior for o número de simulações realizadas, menor será o erro padrão do modelo.
+A simulação de Monte Carlo também é utilizada na gestão de riscos através do cálculo do Value at Risk. Suhobokov (2007) aplicou este método à carteira de moeda estrangeira de um dos maiores bancos da Letónia, assim ao gerar vários cenários hipotéticos para o futuro desta carteira foi possível incorporar a possibilidade de existência de acontecimentos não expectáveis durante esse período. Portanto, o Value at Risk calculado não se encontra limitado apenas aos acontecimentos históricos.
+Buliali, Fatichah e Susanto (2009) avaliaram a precisão que a aplicação da simulação de Monte Carlo pode transmitir às previsões realizadas através de redes neuronais. Os dados recolhidos para este estudo foram as cotações do índice de acções de Jacarta.
+5
+O modelo híbrido proposto foi testado para produzir previsões a 3, 6 e 9 meses, para todos os períodos este modelo apresentou um menor erro absoluto médio percentual (MAPE) quando comparado com o erro obtido pela rede neuronal sem inclusão dos dados obtidos através da simulação de Monte Carlo.
+Pelo exposto anteriormente constata-se que as previsões obtidas através da simulação de Monte Carlo têm diversas aplicações, contudo não existe muita literatura que avalie o seu desempenho preditivo. É sobre este ponto que este trabalho vai incidir.
+Nos últimos anos, a utilização das redes neuronais para realizar previsões tem adquirido uma grande popularidade entre as diversas técnicas disponíveis, devido à sua capacidade de resolver problemas complexos (Grudnitski e Osburn, 1993).
+Por exemplo Kohzadi, Boyd, Kermanshahi e Kaastra (1996) desenvolveram um estudo onde comparam as redes neuronais com o modelo Auto-regressivo Integrado de Médias Móveis (ARIMA). Para este estudo foram seleccionadas duas commodities, o trigo e o gado vivo.
+Com base nos preços mensais de 41 anos, os autores desenvolveram uma rede neuronal multilayer perceptron com apenas uma camada oculta, como inputs da rede foram utilizadas seis lags. Foram testados vários números de neurónios para a camada oculta, contudo foi com cinco neurónios que o modelo apresentou os melhores resultados. O output da rede era o preço do mês seguinte.
+Os autores concluíram através da comparação do erro quadrático médio, do erro absoluto médio e do erro absoluto médio percentual que para estas duas commodities foram as redes neuronais que apresentaram os melhores resultados. A justificação para o melhor desempenho das redes neuronais pode-se dever ao facto dos dados apresentarem não linearidade, o que não favorece previsões com o modelo linear ARIMA.
+Ntungo e Boyd (1998) testaram a aplicabilidade das redes neuronais como possível método de ajuda à negociação de commodities, como benchmark foi utilizado o modelo ARIMA. Os activos testados foram o milho, a prata e o marco alemão.
+6
+A estratégia de negociação consistiu em vender a posição caso a previsão fosse que o preço iria descer e comprar no caso contrário. Os resultados atingidos através a estratégia adoptada resultaram na obtenção de retornos positivos e de nível semelhante em ambos os modelos testados.
+Yonenaga e Figueiredo (1999) analisaram a capacidade preditiva das redes neuronais para o caso da previsão do preço da soja no mês seguinte.
+As cotações do preço da soja utilizadas tinham periodicidade mensal e corresponderam a 247 observações, sendo que foram normalizadas através do método do min-max. A arquitectura da rede neuronal adoptada foi a multilayer perceptron com uma camada oculta, como inputs foram escolhidos os preços dos dois meses anteriores. Para a escolha do número de neurônios que iriam constituir a camada oculta foram testadas várias quantidades, sendo que foi com cinco que se obtiveram os melhores resultados. Dos dados recolhidos, 202 observações foram utilizadas para o treino da rede enquanto os restantes serviram para a fase de teste.
+Através da análise do erro quadrático médio dos dados de teste, os autores concluíram que o desempenho da rede neuronal foi bastante positivo e que pode ser considerada uma boa alternativa aos métodos estatísticos.
+Freiman e Pamplona (2005) elaboraram um estudo para ilustrar as potencialidades das redes neuronais na previsão dos preços das commodities agrícolas, a commodity estudada foi o boi gordo.
+A arquitectura da rede neuronal escolhida foi a multilayer perceptron com uma camada oculta, como inputs da rede foram utilizadas seis variáveis, o mês da previsão, as cotações dos últimos dois meses, a taxa de inflação dos últimos dois meses e a taxa de juros do mês anterior. A camada oculta foi constituída por quinze neurônios. A variável mês da previsão é binária enquanto as restantes foram normalizadas através do método do z-score.
+Para poderem comparar os resultados obtidos nos três meses escolhidos como conjunto de teste, os autores desenvolveram um modelo de regressão múltipla para os mesmos dados. Com base nos dois modelos, verificaram que a previsão para os meses de Março e Abril de 2004 obtinha melhores resultados através da regressão múltipla enquanto em Maio de 2004 era a rede neuronal.
+7
+Os dados seleccionados para este trabalho corresponderam aos preços diários de 240 observações. A arquitectura da rede neuronal adoptada foi a multilayer perceptron com três camadas ocultas, como inputs da rede foram utilizados os preços dos últimos cinco dias. Para definir o número de neurónios a utilizar na camada oculta foi aplicada a seguinte equação:
+(2.1)
+onde k representa o número de neurônios na camada oculta, a representa o número de neurônios de input, ( representa o número de neurônios de output e o representa uma constante entre 2 e 10;
+Com base na equação 2.1, o número de neurônios seleccionados foi de oito. Para o conjunto de treino foram utilizadas 200 observações enquanto as restantes 40 observações foram usadas como conjunto de teste.
+Através da observação da soma do erro quadrático, concluiu-se que o modelo combinado apresentou maior precisão em comparação com o modelo individual da rede neuronal.
+Malliaris e Malliaris (2009) realizaram um estudo para analisar as relações entre os preços do ouro, petróleo e euro. Para atingir o seu objectivo aplicaram as redes neuronais para preverem o preço futuro de cada activo com base nos preços passados dos três activos.
+Os dados recolhidos foram os preços diários durante oito anos dos contratos futuros, porém no modelo utilizou-se o logaritmo desses preços. A arquitectura da rede neuronal eleita foi a multilayer perceptron com uma camada oculta, como inputs da rede foram usados os preços dos últimos cinco dias de cada um dos três activos seleccionados, ou seja, existiram quinze inputs. Para a camada oculta foram seleccionados trinta neurônios.
+Com base na análise do erro quadrático médio, os autores concluíram que a rede neuronal foi capaz de gerar previsões de qualidade. Assim, os autores puderam analisar a importância das variáveis de input para a previsão e concluíram que o preço do petróleo influência o preço do ouro, porém o preço do petróleo também é sensível às variações do preço do ouro, contudo o impacto é menor.
+8
+Os autores utilizaram para o seu trabalho os preços mensais, contudo estas cotações foram normalizadas para valores entre 0.1 e 0.9. A arquitectura da rede neuronal escolhida foi a multilayer perceptron com uma camada oculta, o número inputs da rede foi definido através da análise da correlação dos preços da série temporal, foram seleccionados os preços dos últimos vinte meses. Para decidir a composição da camada oculta foi utilizada a equação 2.1, com o sendo uma constante entre 0 e 10, portanto esta camada poderá ser constituída por um valor entre quatro e catorze neurónios.
+Os autores concluíram que a capacidade preditiva da rede neuronal era boa, uma vez que o erro relativo médio mensal foi de 6.56%, contudo o modelo híbrido construído apresentou ainda um melhor resultado de 4.35%.
+Ferreira, Moura, Borenstein e Fischmann (2011) efectuaram um estudo sobre a capacidade das redes neuronais em preverem os preços das commodities agrícolas, as commodities seleccionadas foram a soja, o boi gordo, o milho e o trigo.
+A informação recolhida para o modelo tinha periodicidade mensal, contudo estes dados foram normalizados para valores entre 0 e 1. A arquitectura da rede neuronal adoptada foi a multilayer perceptron com uma camada oculta. O número inputs escolhidos foi de dois, uma vez que o objectivo era prever o preço no mês seguinte recorrendo aos dois meses anteriores. Para a escolha do número de neurónios na camada oculta foram seleccionados cinco após a realização de vários testes.
+Para avaliar os modelos construídos os autores escolheram o coeficiente de desigualdade de Theil, o R2, o erro absoluto médio percentual e a raiz quadrada do erro quadrático médio. Com base nestas medidas, os autores concluíram que as redes neuronais demonstraram alta capacidade preditiva para os casos estudados.
+Através da leitura dos artigos anteriores, sobressai numa primeira fase que as redes neuronais têm apresentado resultados bastante positivos quando aplicadas à previsão de preços, contudo existe margem para melhorar os resultados obtidos quando se emprega a combinação de metodologias diferentes.
+9
+3.	FUNDAMENTOS TEÓRICOS
+Neste capítulo serão abordados alguns conceitos fundamentais para se compreender melhor o que são as previsões, os mercados futuros, a simulação de Monte Carlo e as redes neuronais e que servirão de base para o estudo em causa.
+3.1.	PREVISÕES
+3.1.1.	Classificação das previsões
+Os modelos de previsões podem ser classificados em dois grandes grupos, modelos quantitativos ou modelos qualitativos (Makridakis, Wheelwright e Hyndman, 1998). Os modelos quantitativos aplicam-se quando se assume que a informação quantitativa é suficiente para realizar previsões, estes modelos subdividem-se em séries temporais ou em modelos explicativos. Nas séries temporais as previsões são produzidas apenas com base nos valores apresentados no passado. Já os modelos explicativos não se baseiam nos valores passados, uma vez que assumem que a variável a prever apresenta uma relação de natureza explicativa com uma ou mais variáveis independentes, ou seja, qualquer alteração que aconteça nas variáveis independentes irá afectar a variável a prever.
+Os modelos de séries temporais são considerados mais fáceis de se utilizar para realizar previsões, uma vez que são tratados como uma caixa negra onde não existe a tentativa de encontrar os factores que afectam a variável em estudo e apenas tentam descobrir padrões nos dados históricos para posteriormente extrapolar para o futuro.
+Para se poder aplicar a previsão quantitativa é fundamental ter disponível informação sobre o passado, essa informação tem de ser convertível em dados numéricos e tem de ser possível assumir que os padrões observados no passado irão perdurar no futuro. Os modelos qualitativos aplicam-se quando se encontra disponível pouca ou nenhuma informação quantitativa, contudo o conhecimento qualitativo existente sobre o fenómeno é suficiente para realizar previsões. Uma forma será através da inclusão de variáveis dummy. Estes modelos são normalmente utilizados para fornecer sugestões e para complementar as previsões quantitativas.
+10
+Em termos de horizonte, as previsões são classificadas em curto, médio ou longo prazo. Como curto prazo são consideradas as previsões inferiores a um ano, como médio prazo são as previsões entre um e dois anos e como longo prazo são as previsões a mais de dois anos (Montgomery et al., 2008).
+Em termos de forma, as previsões podem ser apresentadas como previsões pontuais ou em intervalos. No primeiro caso, o modelo prevê um único valor para cada período de previsão, enquanto no segundo caso o modelo indica, para cada período de previsão, qual o intervalo onde o valor previsto se encontra inserido, com um determinado intervalo de confiança. A apresentação da previsão na forma de intervalo é bastante útil, uma vez que fornece o melhor e o pior cenário, e assim, quem fornece a previsão encontra-se mais protegido, uma vez que não se pode esperar que a previsão pontual seja perfeita (Makridakis et al., 1998).
+3.1.2.	Processo de previsão
+Segundo Montgomery et al. (2008), o processo de previsão pode ser dividido
+nas seguintes etapas:
+Figura 3.1 - Diagrama do processo de previsão
+Fonte: Montgomery et al. (2008)
+11
+A definição do problema envolve a compreensão de como é que a previsão será utilizada aliada com as expectativas dos futuros utilizadores. Nesta fase devem ser abordadas questões como a forma desejada da previsão, o horizonte de previsão, o prazo de entrega, o número de vezes que é necessário rever as previsões e qual o nível de precisão das previsões.
+A recolha de dados consiste em obter a informação relevante para as variáveis que serão previstas, incluindo informações históricas sobre as potenciais variáveis preditivas. A questão fulcral nesta fase é a relevância da informação, uma vez que nem todos os dados são úteis. Muitas vezes nesta fase aparecem problemas tais como valores em falta ou outliers.
+A análise dos dados é um passo relevante para a selecção do modelo a ser usado. Devem ser construídos e analisados gráficos com os dados recolhidos para identificar padrões, tais como as tendências, a sazonalidade ou outras componentes cíclicas. Também devem ser calculadas e estudadas as estatísticas dos dados, tais como a média, o desvio padrão, percentis ou auto correlações.
+A selecção de modelos resume-se a escolher um ou mais modelos de previsão e a adequar os modelos aos dados existentes.
+A validação do modelo consiste em avaliar o desempenho do modelo de previsão. Esta avaliação não deve ter apenas em conta a adaptação do modelo aos dados históricos, mas também é importante analisar a magnitude dos erros obtidos quando o modelo é utilizado para prever novos dados. Os erros de adaptação serão sempre menores do que os erros de previsão.
+A implementação do modelo de previsão envolve a obtenção do modelo. É importante assegurar que o utilizador compreenda como usar o modelo e que consiga produzir previsões facilmente. Também é necessário acautelar que as fontes de dados e outras informações essenciais continuarão a estar disponíveis.
+12
+3.1.3.	Séries temporais
+Uma série temporal pode ser definida como sendo uma sequência de valores ou de leituras ordenadas por um parâmetro temporal (Granger e Newbold, 1977).
+As séries temporais podem ser observadas em diversas áreas. Na agricultura, pode-se observar a produção das culturas ou os preços. Na economia e nos negócios, pode-se observar os preços das acções, as taxas de juros, as vendas ou os lucros. Nos estudos médicos, existem os electroencefalogramas e os electrocardiogramas. Na meteorologia, pode-se mensurar a velocidade do vento, a temperatura ou a pluviosidade (Wei, 2006).
+As séries temporais podem ser classificadas como contínuas ou discretas. Uma série temporal é considerada contínua quando as observações são efectuadas ininterruptamente ao longo do tempo ou discreta quando as observações são efectuadas em intervalos de tempo específicos (Brockwell e Davis, 1996).
+3.1.4.	Factores que afectam o desempenho das previsões
+De acordo com Makridakis (1990), existem diversos factores que podem influenciar o desempenho dos modelos de previsão.
+O horizonte temporal das previsões é uma das questões a ter em consideração, uma vez que quanto maior for o horizonte temporal, maior serão as probabilidades de que aconteçam alterações nos padrões ou relações observadas anteriormente.
+As evoluções tecnológicas também podem implicar alterações nos pressupostos que foram empregados durante o desenvolvimento dos modelos.
+As barreiras à entrada de novos intervenientes, ou seja, quanto mais fácil for entrar num negócio, mais perturbações irão aparecer e consequentemente complicase a tarefa da previsão.
+A disseminação da informação, ou seja, quanto mais rapidamente se propagar a informação, menor relevância terão as previsões, uma vez que todos irão aceder a informação semelhante e ao mesmo tempo.
+13
+3.2.	MERCADOS FUTUROS
+3.2.1.	História dos mercados
+A história dos mercados futuros remonta à Idade Média. Estes mercados foram desenvolvidos para proteger os agricultores e os comerciantes. No caso dos agricultores existia o problema da incerteza sobre o preço que iriam receber, uma vez que se encontravam dependentes dos resultados das colheitas. Ou seja, nos períodos onde existe excesso de oferta os preços tendem a ser mais baixos enquanto na situação inversa os preços tendem a ser mais elevados. Consequentemente, os comerciantes também se encontravam expostos às variações de preço, uma vez que em momentos de excesso de oferta, os preços são mais favoráveis enquanto nos períodos com menos oferta, os preços são mais elevados.
+Em 1848, foi concebido o primeiro mercado futuro organizado, o Chicago Board of Trade (CBOT). Inicialmente a sua principal função era de uniformizar as quantidades e a qualidade dos grãos que eram transaccionados. Em 1874, para negociar a manteiga, ovos, aves e outros produtos agrícolas perecíveis foi fundado o Chicago Produce Exchange. Em 1898, os negociadores da manteiga e dos ovos abandonaram este mercado e originaram o Chicago Butter and Egg Board, porém em 1918 este mercado passou a chamar-se Chicago Mercantile Exchange (CME). Desde então várias commodities agrícolas passaram a ser transaccionadas neste mercado tais como as barrigas de porco (1961), o gado vivo (1964), os suínos vivos (1966) e o gado de criação (1971). Já em 1972, começaram a ser negociados futuros sobre moedas estrangeiras (Hull, 1998).
+Em 2012, as quinze maiores bolsas mundiais em termos de número de contratos negociados eram as seguintes:
+Classificação	Bolsa	N° Contratos negociados
+1	CME Group	2 890 036 506
+2	Eurex	2 291 465 606
+3	National Stock Exchange of India	2 010 493 487
+4	NYSE Euronext	1 951 376 420
+5	Korea Exchange	1 835 617 727
+6	BM&amp;amp;Fbovespa	1 635 957 604
+7	CBOE Holdings	1 134 316 703
+14
+8	Nasdaq OMX	1 115 529 138
+9	Moscow Exchange	1 061 835 904
+10	Multi Commodity Exchange of India	959 613 240
+11	Dalian Commodity Exchange	633 042 976
+12	IntercontinentalExchange	473 895 526
+13	Shanghai Futures Exchange	365 329 379
+14	Zhengzhou Commodity Exchange	347 091 533
+15	ASX Group	259 966 030
+Tabela 3.1 - Maiores bolsas de futuros do mundo Fonte: Acworth (2013)
+3.2.2.	Contratos futuros
+Os contratos futuros são acordos padronizados para comprar ou vender uma determinada commodity numa data e local definidos no futuro. O preço do contrato é uma variável determinada através da negociação no mercado futuro (Rothstein e Little, 1984). A tarefa de assegurar todas as transacções existentes nos mercados futuros é da responsabilidade da câmara de compensação, que também desempenha o papel de ajustamento das posições às variações diárias dos preços (Leuthold, Junkus e Cordier, 1989).
+Para se poder negociar contratos futuros é obrigatório depositar fundos numa conta chamada de conta margem, esta situação deve-se à circunstância de se querer evitar situações de incumprimento (Wilmott, 2007). O montante depositado na abertura da conta margem é chamado de margem inicial e varia de acordo com o contrato ou com o subjacente em causa, em alguns casos representa aproximadamente 10% do valor do contrato. Contudo, é necessário manter um montante mínimo na conta, chamado de margem de manutenção, que normalmente corresponde a cerca de três quartos da margem inicial. Sempre que a margem de manutenção é ultrapassada, o investidor recebe um telefonema a solicitar a reposição do valor da margem inicial (Leuthold et al., 1989).
+3.2.3.	Categorias de commodities
+• Agrícola: tais como o trigo, o milho ou a soja;
+15
+•	Gado: tais como o gado bovino ou os suínos;
+•	Metais preciosos: tais como o ouro ou a prata;
+•	Metais industriais: tais como o alumínio, o cobre ou o zinco;
+•	Energia: tais como o gás natural, o petróleo ou o óleo de aquecimento;
+3.2.4.	Preço
+A diferença que existe entre o preço de um contrato futuro para um determinado vencimento e o preço à vista é chamado de base (New York Board of Trade, 2007). Teoricamente, a base deverá ser igual ao cost of carry menos o convenience yield (Melolinna, 2011). O cost of carry inclui os custos de armazenamento, os custos com seguros, os custos com o transporte e os custos de financiamento (Kolb, 1991).
+Kaldor (1939) define a convenience yield como um benefício que reverte para o proprietário pela posse física da commodity. Por sua vez, Brennan (1958) vê a convenience yield como uma vantagem para preservar os clientes satisfeitos, através de preços mais baixos e entregas atempadas, ou então para ajudar a optar pelo melhor momento para colocar as commodities no mercado, e assim, obter um lucro maior.
+16
+Figura 3.2 - Relação entre preço futuro e preço à vista: (a) preço futuro acima do preço à vista; (b) preço futuro abaixo do preço à vista
+Fonte: Hull (2009)
+A relação entre o preço futuro e o preço à vista no caso das commodities armazenáveis pode ser representada pela seguinte equação (Wilmott, 2007):
+F(t) = S(f)e^r+s-y^T~^
+(3.1)
+Onde:
+•	F( t) representa o preço futuro da commodity no momento t;
+•	S ( t) representa o preço à vista da commodity no momento t;
+•	r representa a taxa de juro sem risco;
+•	s representa o custo de armazenamento em percentagem;
+•	y representa a convenience yield;
+•	T representa a maturidade;
+Outro conceito importante é a curva futura, que representa a evolução dos preços dos contratos futuros para diversas maturidades. Esta curva é utilizada pelos participantes no mercado futuro para ajudar a tomar decisões, uma vez que fornece uma indicação de qual será a expectativa para a evolução do preço à vista no futuro (Geman, 2005). A curva futura pode apresentar duas formas, backwardation ou contango. Diz-se que a curva se encontra em backwardation quando o preço à vista se encontra acima do preço futuro, para o caso contrário diz-se que a curva se encontra em contango (Alizadeh e Nomikos, 2009).
+17
+No caso das commodities que podem ser armazenadas a forma da curva futura depende da convenience yield, ou seja, se a convenience yield for maior do que a taxa de juro sem risco então obtemos uma curva na situação de backwardation, no caso contrário obtemos em contango (Geman, 2005).
+3.2.5.	Participantes no mercado
+Os intervenientes no mercado futuro podem ser agrupados em três categorias, os especuladores, os hedgers e os arbitragistas. Os hedgers participam neste mercado para se protegerem contra as flutuações dos preços no mercado à vista. Os especuladores procuram apenas retirar proveito financeiro das variações do mercado, actuando segundo as suas expectativas e providenciando liquidez ao mercado. Enquanto, os arbitragistas procuram obter lucro sem assumir riscos através da realização de operações em simultâneo em diferentes mercados, aproveitando a diferença de preços de um activo (Hull, 2009).
+3.3.	SIMULAÇÃO DE MONTE CARLO
+A Simulação de Monte Carlo é um método numérico utilizado para resolver problemas matemáticos em diversas áreas tais como na economia, na medicina, nas ciências ou na agricultura (Sobol, 1994). A nível financeiro é principalmente utilizado para avaliar as opções (Kroese, Taimre e Botev, 2011).
+O primeiro pensamento sobre a simulação de Monte Carlo surgiu em 1946 quando Stan Ulam, que se encontrava a recuperar de uma doença, jogava paciência. Ulam tentou estimar as probabilidades de sucesso no jogo através de cálculos combinatórios, contudo como estava a demorar muito tempo, questionou-se se não seria mais rápido simular cem jogos e depois observar o número de sucessos. Intrigado com o pensamento que Ulam lhe tinha transmitido, Von Neumann decidiu aplicar o conceito ao estudo sobre o comportamento dos neutrões em dispositivos de fissão (Eckhardt, 1987).
+18
+dS = [iSdt + aSdz
+Onde:
+• S representa o preço de um activo;
+• dz é um processo de Wiener;
+• p representa o retorno esperado num mundo sem riscos;
+• o representa a volatilidade;
+Um processo de Wiener é definido pela equação:
+dz = ^.4dt
+(3.2)
+(3.3)
+Onde:
+•	representa uma variável aleatória que segue uma distribuição normal, com média zero e desvio padrão um;
+Aplicando o Lema de Itô ao logaritmo do preço (Hull, 2009) obtém-se a seguinte equação, cuja demonstração poderá ser encontrada no anexo A, para se simular o valor futuro de um activo:
+5 ( t + A t) = 5 ( t) e 1 - P)-At+ff^]	(3.4)
+Onde:
+•	A t representa o incremento de tempo;
+Sendo que se o activo seleccionado para aplicar a simulação for uma commodity armazenável então é necessário retirar o efeito da convenience yield (Geman, 2005), ou seja, a equação 3.4 altera-se para:
+5 ( t + A t) = 5 ( t) e 1 -y-	(3.5)
+Onde:
+19
+• y representa a convenience yield;
+A figura 3.4 mostra uma representação de duas trajectórias obtidas através da aplicação da simulação de Monte Carlo para um determinado activo.
+Figura 3.4 - Exemplo da simulação de Monte Carlo Fonte: Jorion (2001)
+3.3.1.	Vantagens e Desvantagens
+As vantagens da simulação de Monte Carlo são segundo Wilmott (2007), o facto da matemática necessária para aplicar o método ser muito básica, as correlações são facilmente modeladas, para melhorar a sua fiabilidade basta incrementar o número de simulações e o esforço que é necessário para se obter algum resultado é muito baixo. Por sua vez, Boyle (1977) ressalta que é um método muito flexível em relação à escolha da distribuição a utilizar.
+As desvantagens são de que o método pode-se tornar demasiadamente demorado quando existir a necessidade de se realizar um elevado número de simulações (Shorter e Rabitz, 1997). Também, encontra-se muito dependente da qualidade da informação que o alimenta e se a distribuição utilizada na simulação não se adequar aos dados, os resultados podem sair enviesados (Kwak e Ingall, 2007).
+20
+3.4.	REDES NEURONAIS
+previsões, classificações, clustering, controlo de aplicações, aproximação de funções ou optimizações (Mehrotra, Mohan e Ranka, 1996). O facto de possuírem diversas características distintas, que serão abordadas mais à frente, é o que as tornam atractivas para serem utilizadas na tarefa de realizar previsões. Em particular as redes apresentam a possibilidade de modelar problemas arbitrariamente complexos e sem a necessidade de ter pressupostos sobre a complexidade e a distribuição dos dados (Jain e Martin, 1998; Zhang, Patuwo e Hu, 1998).
+3.4.1.	Histórico
+O primeiro trabalho sobre as redes neuronais artificiais foi apresentado em 1943 por Warren McCulloch, um psiquiatra e Walter Pitts, um matemático. Neste trabalho os autores desenvolveram um modelo artificial de um neurónio biológico (Braga, Ludermir e Carvalho, 2000).
+Em 1949, deu-se o primeiro desenvolvimento significativo das redes neuronais quando Donald Hebb apresentou pela primeira vez uma regra de aprendizagem, esta regra ficou conhecida como aprendizagem Hebbiana (Haykin, 1999). Em 1958, Frank Rosenblatt concebeu o modelo perceptron. Neste modelo Rosenblatt demonstrou que, caso fossem adicionadas sinapses ajustáveis, as redes neurais poderiam ser utilizadas para classificar alguns tipos de padrões (Braga et al., 2000).
+Em 1960, Widrow e Hoff introduziram o modelo adaline, onde o modelo é treinado através do algoritmo do gradiente descendente de forma a minimizar o erro quadrático médio (Mehrotra et al., 1996). Em 1969, Minsky e Papert expuseram as limitações do modelo perceptron, provando que este modelo não era capaz de resolver problemas que não fossem linearmente separáveis. Este trabalho provocou durante alguns anos um desinteresse no tema das redes neuronais (Braga et al., 2000).
+21
+3.4.2.	Neurónio biológico
+O cérebro humano é constituído por cerca de 1011 neurónios. Existem diversos tipos de neurónios, estes podem ser distinguidos através da sua forma e da sua função, contudo existe uma correlação entre a forma e a função (Kasabov, 1996). A figura 3.5 mostra a representação de um neurónio.
+Figura 3.5 - Estrutura de um neurónio biológico Fonte: Jain e Mao (1996)
+Como pode ser observado na figura 3.5, um neurónio é constituído pelas dendrites, corpo celular, axónio e sinapses. Os neurónios comunicam entre si através de sinais eléctricos. A informação proveniente de outros neurónios é transmitida para o corpo celular através das dendrites, ou seja, as dendrites funcionam como inputs do neurónio. No corpo celular a informação recebida é somada e se o resultado exceder um determinado limiar consequentemente será gerada uma resposta. O axónio é o responsável por transmitir os sinais recebidos do corpo celular para outros neurónios, ou seja, pode ser considerado o output do neurónio. Cada neurónio só tem um axónio, contudo pode ter inúmeras dendrites. A ligação entre um axónio de um neurónio e uma dendrite de outro é chamada de sinapse (Gurney, 1997).
+22
+É devido à capacidade de aprendizagem e generalização do cérebro, que nos é possível resolver problemas complexos e reagir a situações desconhecidas. A informação recolhida através da aprendizagem é armazenada nas sinapses (Kasabov, 1996).
+3.4.3.	Neurónio artificial
+Os neurônios artificiais são constituídos por três elementos básicos. Um conjunto de sinapses que transmitem os sinais de entrada, uma função que combina a soma ponderada dos sinais de entrada e uma função de activação que tem como objectivo de restringir a amplitude do output (Haykin, 1999). A figura 3.7 apresenta a representação de um neurônio artificial.
+Bias
+Activation function
+¥=(•)
+Output
+Figura 3.7 - Modelo do neurónio artificial
+Fonte: Haykin (1999)
+O modelo do neurónio artificial que se pode observar na figura 3.7 pode ser descrito através da seguinte equação:
+m
+(3.6)
+Onde:
+e
+Xj representa os inputs;
+e
+wkj representa os pesos sinápticos;
+e
+m representa o número de sinais de input;
+23
+•	bk representa o bias, que tem como objectivo aumentar ou diminuir o sinal recebido pela função de activação, dependendo se for positivo ou negativo;
+•	&lt;p(.) representa a função de activação;
+3.4.4.	Funções de activação
+Nas redes neuronais existe a possibilidade de se utilizarem diversas funções de activação. Algumas das principais funções de activação que se encontram disponíveis são a função linear, a função rampa, a função degrau e a função sigmóide (Braga et al.,
+2000). O facto de a função logística apresentar uma derivada simples faz com que seja uma das funções de activação mais usadas nas redes neuronais, uma vez que muitos dos algoritmos de aprendizagem existentes utilizam a derivada da função de activação (Kasabov, 1996).
+Figura 3.8 - Função logística
+Fonte: Braga et al. (2000)
+24
+A função logística que pode ser visualizada na figura 3.8 é definida pela seguinte equação:
+(3.7)
+1 + e
+Onde:
+• T determina a suavidade de curva;
+3.4.5.	Arquitectura
+Na figura 3.9 podem ser observados um exemplo de cada categoria.
+(a)
+Figura 3.9 - (a) Rede feedforward; (b) Rede feedback
+Fonte: Haykin (1999)
+3.4.6.	Redes Multilayer Perceptron (MLP)
+As redes com apenas uma camada, só resolvem problemas que sejam linearmente separáveis (Minsky e Papert, 1969). Para se conseguir ultrapassar esta limitação foram introduzidas as redes MLP. Estas redes encontram-se organizadas em camadas, são do tipo feedforward e utilizam aprendizagem supervisionada. Na figura 3.10 encontra-se um exemplo destas redes.
+Figura 3.10 - Rede MLP com duas camadas ocultas
+Fonte: Haykin (1999)
+A utilização de apenas uma camada oculta é suficiente para obter uma boa aproximação ao resultado pretendido (Hornik, Stinchcombe e White, 1989). O número adequado de neurónios que devem compor a camada oculta depende de vários factores, tais como o número de exemplos disponíveis para o treino, a quantidade de ruído existente nos exemplos, a complexidade da função a ser aprendida e a distribuição estatística dos dados (Braga et al., 2000). Contudo, não existe uma fórmula para determinar a arquitectura ideal de uma rede (Jain e Martin, 1998).
+3.4.7.	Algoritmo de Backpropagation
+Existem dois tipos de algoritmos de aprendizagem, os supervisionados e os não supervisionados. Dentro dos supervisionados, os mais utilizados são a regra delta e o backpropagation (Braga et al., 2000).
+O algoritmo de backpropagation é uma generalização do algoritmo mínimo quadrado médio e é baseado no algoritmo do gradiente descendente. O seu objectivo é de minimizar o erro quadrático médio entre o valor previsto pela rede e o valor real, através da correcção dos pesos sinápticos (Mehrotra et al., 1996). Este algoritmo é bidireccional, ou seja, durante o período de treino o sinal percorre num primeiro momento o caminho entre a camada de input e a camada de output, num segundo momento o sinal de erro percorre o caminho inverso (Freeman e Skapura, 1991).
+26
+4	Mji(ri) = r 5 j(n) y^ri)	(3.8)
+Onde:
+•	representa a taxa de aprendizagem do algoritmo;
+•	representa o gradiente local;
+•	representa o sinal de input;
+No caso do neurônio j pertencer à camada de output, o gradiente local é definido pela seguinte equação:
+5	j(n) = e j(ri) p'j(v j(n))	(3.9)
+Onde:
+•	representa o erro observado no output do neurónio j na iteração ;
+•	p'j(Vj(n)) representa a 1- derivada output do neurônio j na iteração n;
+No caso do neurónio j pertencer a uma camada oculta, o gradiente local é definido pela seguinte equação:
+5j (n) = p' j(vj (n) )^Sk (n) o) kj(n)	(3.10)
+k
+Onde:
+•	k representa os neurónios da camada seguinte;
+•	representa o gradiente local do neurónio k na iteração ;
+27
+A correcção dos pesos sinápticos deixa de ser realizada quando o erro for menor do que um determinado critério de paragem ou então quando se atinge o número máximo de iterações definidas no algoritmo (Mitchell, 1997).
+Um dos principais problemas deste algoritmo é a possibilidade de o período de treino acabar quando se atinge um mínimo local e não o mínimo global, como desejável. Para reduzir a possibilidade de ocorrência deste problema pode-se utilizar uma taxa de aprendizagem decrescente, aumentar o número de neurónios na camada oculta (Braga et al., 2000) ou treinar várias vezes a rede com diferentes inicializações (Mitchell, 1997).
+Outro problema que pode ocorrer é a sobre aprendizagem1. A sobre aprendizagem é um fenómeno que impede que a rede neuronal seja capaz de generalizar, devido ao facto de que durante o período de treino a rede adaptou-se excessivamente às características dos exemplos, incluindo o ruído (Kasabov, 1996).
+Figura 3.11 - Exemplo de soluções: (a) com sobre aprendizagem, (b) sem sobre aprendizagem
+Fonte: Gurney(1997)
+1 Em inglês é conhecido por overfitting.
+28
+Figura 3.12 - Exemplo da validação cruzada
+Fonte: Gurney(1997)
+Contudo, para se poder avaliar a capacidade de generalização de uma rede neuronal deve-se aplicar essa rede a um terceiro conjunto de dados independente dos anteriores, chamado de conjunto de teste. É com base no erro obtido no conjunto de teste que se escolhe o modelo que apresenta o melhor desempenho (Kaastra e Boyd, 1996).
+3.4.8.	Pré-processamento dos dados
+O pré-processamento dos dados tem como objectivo transformar as variáveis de input e output para assim reduzir o efeito do ruído, realçar as relações importantes e ajudar a detectar tendências para auxiliar a rede neuronal a conseguir identificar os padrões relevantes (Kaastra e Boyd, 1996).
+O min-max e o z-score são duas das técnicas mais populares de normalização de dados (Jain, Nandakumar e Ross, 2005). O z-score é definido pela seguinte equação:
+x — ¡J.
+z =--------------
+&lt;7
+(3.11)
+Onde:
+•	x representa a observação a ser normalizada;
+•	¡1 representa a média da população;
+•	&lt;7 representa o desvio padrão da população;
+29
+O min-max é definido pela seguinte equação:
+, y — min y =--------—
+max — min
+Onde:
+(3.12)
+•	y representa a observação a ser normalizada;
+•	min representa o valor mínimo da população;
+•	m ax representa o valor máximo da população;
+A normalização os dados é realizada para se evitar que uma variável se sobreponha às outras, assim os dados são colocados numa escala comum o que permite que dados de diferentes escalas possam ser comparados (Lopes et al., 2012).
+3.4.9.	Selecção de variáveis
+O sucesso das previsões das redes neuronais encontra-se dependente da escolha das variáveis. As variáveis a utilizar podem ser simplesmente lags da variável dependente, indicadores técnicos que são construídos com base nos preços passados ou variáveis económicas que se acredita que influenciam a variável dependente. Um dos métodos para seleccionar as variáveis de input a incluir na rede neuronal passa por testar diversas combinações de variáveis, uma vez que existem variáveis que ajudam a alcançar melhores previsões quando são combinadas com certas variáveis e não com outras (Kaastra e Boyd, 1996).
+3.4.10.	Vantagens e Desvantagens
+Uma das principais vantagens das redes neuronais é o facto de serem tolerantes ao ruído, ou seja, não são muito prejudicadas pelas imprecisões que possam existir nos dados. São de fácil manutenção, uma vez que sempre que necessário facilmente podem ser actualizadas com novos dados (Singh e Chauhan, 2009).
+30
+As redes neuronais não necessitam de conhecimentos a priori sobre a natureza dos dados, uma vez que elas aprendem a partir dos exemplos e conseguem captar as relações entre os dados, mesmo se as relações forem desconhecidas ou difíceis de descrever. São modelos não lineares, o que proporciona uma vantagem em relação aos modelos tradicionais que assumem que os dados são lineares. Têm boa capacidade de generalização, uma vez que com base no conhecimento adquirido através dos exemplos é possível inferir com boa precisão os novos casos (Zhang et al., 1998).
+Um dos principais problemas com as redes neuronais é o facto de ser difícil, se não impossível, determinar o tamanho adequado e a estrutura que uma rede neuronal deve ter para resolver um dado problema (Jain e Martin, 1998). Também, é difícil seleccionar um conjunto de dados de treino que descreva totalmente o problema a ser resolvido (Singh e Chauhan, 2009).
+Geralmente necessitam de um grande volume de dados, o que pode implicar que o período de treino se torne algo demorado. Em algumas situações podem não ser a melhor escolha, como nos casos onde os processos são lineares com poucas perturbações (Zhang et al., 1998).
+São propensas a ter problemas de sobre aprendizagem, especialmente quando é necessário estimar um elevado número de parâmetros, contudo estes problemas podem ser evitados com uma escolha correcta de arquitectura e com a utilização de um conjunto de validação (Livingstone, Manallack e Tetko, 1997).
+31
+4.	METODOLOGIA
+Este capítulo visa apresentar a metodologia utilizada para atingir o objectivo deste trabalho.
+4.1.	APRESENTAÇÃO DOS DADOS
+As commodities seleccionadas para serem testadas neste trabalho foram o milho, petróleo, ouro e cobre. A escolha recaiu nestas commodities uma vez que se pretendia aplicar os modelos em commodities de categorias diferentes.
+Dentro das commodities agrícolas o milho foi em 2012 a commodity que transaccionou maior quantidade (Acworth, 2013). Por causa das suas diversas aplicações “o milho é considerado o ouro dos cereais” (Cardoso, Pinheiro, Machado, Borges e Rios, 2011, p. 175). O milho é principalmente utilizado para a alimentação humana, para produzir rações para animais e para produzir etanol (Shultz, 2008). Os principais produtores de milho no mundo são os Estados Unidos, a China, o Brasil e o México (Balbinot, Delai e Werle, 2011).
+Na energia o petróleo foi a commodity mais transaccionada durante o ano de 2012 (Acworth, 2013). A grande procura deve-se à dependência mundial do petróleo, uma vez que muito do que nos rodeia provém do petróleo ou derivados, como por exemplo o plástico, os fertilizantes e os combustíveis (Heydová, Maitah e Hammad,
+2011). Devido a essa dependência qualquer flutuação existente no preço do petróleo provoca impactos significativos na economia dos países importadores e dos exportadores (Abosedra e Baghestani, 2004). Os principais produtores de petróleo no mundo em 2012 foram a Arábia Saudita, a Rússia e os Estados Unidos, já os principais consumidores foram os Estados Unidos, a China e o Japão (BP, 2013).
+O ouro é uma das commodities mais importantes, uma vez que é um activo que os investidores procuram nos momentos de crise, ou seja, serve de refúgio nos momentos críticos (Khan, 2013). Assim sendo, algumas pessoas vêm no preço do ouro um indicador do desempenho futuro da economia mundial (Parisi, Parisi e Díaz, 2008). Ao contrário do que acontece por exemplo no caso das commodities agrícolas, o preço do ouro não se encontra muito dependente da produção do ano, dado que este pode ser armazenado durante vários séculos (Ismail, Yahya e Shabri, 2009). O ouro é utilizado fundamentalmente na joalharia, para componentes industriais e como um
+32
+O cobre é um dos materiais mais importantes para a indústria (Yue, Lu e Zhi, 2009), é principalmente utilizado são na construção, na electricidade e nos bens de consumo (Smith e Bracker, 2003). Nos últimos anos, a China tem sido o maior consumidor desta commodity devido às necessidades inerentes ao seu desenvolvimento (Fung, Liu, e Tse, 2010). Os restantes maiores consumidores de cobre são os Estados Unidos, a Alemanha e o Japão (Khazanov, 2013). Já os principais produtores de cobre são o Chile, os Estados Unidos, o Peru e a Austrália (Goss e Avsar,
+2013).
+Os dados utilizados neste trabalho foram recolhidos através da Bloomberg e correspondem às cotações de fecho dos dias úteis entre 2 de Janeiro de 2003 e 31 de Dezembro de 2012 dos contratos futuros das commodities seleccionadas.
+A informação sobre o preço do milho é proveniente da Chicago Board of Trade (CBOT), o preço do petróleo corresponde ao West Texas Intermediate (WTI) da New York Mercantile Exchange (NYMEX) enquanto no caso do ouro e do cobre a sua proveniência é o Commodities Exchange (COMEX). As especificações dos contratos futuros destas commodities podem ser consultadas no anexo B.
+Com o objectivo de conhecer o comportamento dos preços das quatro commodities seleccionadas para este trabalho no período entre 2 de Janeiro de 2003 e 31 de Dezembro de 2012, serão apresentadas de seguida as suas séries temporais e algumas estatísticas descritivas dos dados.
+N°	Preço	Desvio	Preço	1°	Mediana	3°	Preço
+observações	médio	padrão	mínimo	Quartil		Quartil	máximo
+2 520	403.32	179.59	186.25	237.25	362.75	564	831.25
+33
+900 -|
+Fonte: Elaborado pelo autor
+Como pode ser observado na figura 4.1, o preço do milho nos últimos 10 anos apresentou um comportamento relativamente estável até sensivelmente o meio de 2006, onde os preços se situaram quase sempre dentro do 1° quartil. A partir dessa data até meio de 2008 verificou-se uma grande valorização do milho, porém após este período aconteceu uma grande queda na cotação. Com a aproximação do final de 2010 a cotação retomou a tendência de crescimento.
+Uma vez que neste trabalho se vai tentar prever os preços do ano de 2012 então torna-se importante analisar com um maior pormenor este período. Neste período os preços situaram-se quase sempre dentro do 4° quartil e foi durante 2012 que se atingiu o valor máximo. Com base na média móvel a 60 dias percebe-se que no primeiro semestre de 2012 o preço do milho não apresentou uma clara tendência, tendo apresentado no terceiro trimestre uma clara tendência de subida, a que se seguiu um trimestre relativamente estável.
+N° observações	Preço médio	Desvio padrão	Preço mínimo	1° Quartil	Mediana	3° Quartil	Preço máximo
+2 514	69.93	24.88	25.24	50.97	69.985	88.14	145.29
+34
+130 -i
+Figura 4.2 - Série temporal do preço do petróleo Fonte: Elaborado pelo autor
+Como pode ser observado na figura 4.2, nos últimos 10 anos o preço do petróleo exibiu uma tendência de subida que culminou em 2008, com a crise do subprime. Após este período tem-se verificado paulatinamente a subida do preço. A grande maioria dos preços em 2012 encontra-se no quarto quartil, sendo que durante este período a média móvel a 60 dias apresenta inicialmente uma ligeira tendência de subida, a que se segue uma clara tendência de descida até sensivelmente o final de Julho. Após Julho retoma-se a tendência de subida, a que se segue novamente uma tendência de descida até ao final do ano.
+N°	Preço	Desvio	Preço	1°	Mediana	3°	Preço
+observações	médio	padrão	mínimo	Quartil		Quartil	máximo
+2 514	884.97	455.10	321.5	439.5	792.55	1 214.9	1 888.7
+35
+1 900 -i
+Fonte: Elaborado pelo autor
+Como pode ser observado na figura 4.3, o preço do ouro nos últimos 10 anos apresentou um comportamento praticamente sempre no sentido da valorização, mesmo durante a crise do subprime o ouro registou uma queda mais branda em comparação com outras commodities. A totalidade dos preços em 2012 encontra-se no quarto quartil, sendo que durante este período a média móvel a 60 dias não apresenta inicialmente uma tendência definida, a que se segue uma clara tendência de descida até sensivelmente o final de Julho. Após Julho existe uma clara tendência de subida, a que se segue
+N°	Preço	Desvio	Preço	1°	Mediana	3°	Preço
+observações	médio	padrão	mínimo	Quartil		Quartil	máximo
+2 515	266.40	110.94	71.1	150.2	307.1	355.7	462.85
+36
+420 -i
+Figura 4.4 - Série temporal do preço do cobre Fonte: Elaborado pelo autor
+Como pode ser observado na figura 4.4, nos últimos 10 anos o preço do cobre exibiu numa primeira fase um comportamento de subida, a que se seguiu uma grande queda na cotação. Contudo, num curto período temporal o preço voltou a situar-se a um nível elevado. Os preços em 2012 encontraram-se distribuídos pelo terceiro e quarto quartil, sendo que durante este período a média móvel a 60 dias apresenta inicialmente uma clara tendência de subida, a que se segue uma clara tendência de descida até aproximadamente o final de Agosto. Após Agosto retoma-se a tendência de subida, sendo que no final do ano já começa a haver uma inversão da tendência.
+Figura 4.5 - qq-plots: (a) Milho, (b) Petróleo, (c) Ouro, (d) Cobre Fonte: Elaborado pelo autor
+Se a amostra tiver sido retirada de uma população com a distribuição lognormal então os pontos devem-se agrupar em torno da linha gerada no diagrama e como pode ser verificado na figura 4.5, não se pode afirmar que alguma das commodities segue a distribuição lognormal.
+O milho e o ouro apresentam um qq-plot muito semelhante, a grande disparidade em relação aos quantis da lognormal acontece nos valores mais elevados. O cobre é claramente a commodity que apresenta uma distribuição mais distinta da lognormal. Já o petróleo é a commodity que mais se aproxima da lognormal, contudo as extremidades ainda se encontram bastante desalinhadas da recta.
+Commodity Parâmetro D p-value
+Milho	0.1042629	&lt;0.001
+Petróleo	0.0509763	&lt;0.001
+Ouro	0.1009164	&lt;0.001
+Cobre	0.1440377	&lt;0.001
+Tabela 4.5 - Resultados do teste de Kolmogorov-Smirnov
+Fonte: Elaborado pelo autor
+Tendo em conta os valores dos p-values que podem ser observados na tabela
+4.5,	conclui-se que para todas as commodities rejeita-se a hipótese nula para um nível de significância de 99.9%.
+Para compreender melhor a rejeição da hipótese de lognormalidade dos dados torna-se interessante visualizar os histogramas dos preços das commodities.
+PRECO	PRECO
+(c)
+(d)
+Figura 4.6 - Histograma: (a) Milho, (b) Petróleo, (c) Ouro, (d) Cobre Fonte: Elaborado pelo autor
+39
+No histograma do petróleo verifica-se que o seu preço médio durante o período em estudo localiza-se ligeiramente à esquerda do centro do histograma, sendo que a média e a mediana são aproximadamente iguais. Contudo, como os valores mais elevados são pouco frequentes então não existe uma simetria, tem-se apenas uma concentração de valores ao centro e à esquerda. Ou seja, entre o ano de 2003 e 2012 o preço do petróleo encontrou-se muito frequentemente perto da sua média ou abaixo.
+No histograma do cobre observa-se que o seu preço médio durante o período em estudo localiza-se no centro do histograma, contudo a frequência de valores neste ponto é muito baixa. Neste caso o histograma apresenta dois picos. Ou seja, entre o ano de 2003 e 2012 o preço do cobre encontrou-se em muitos períodos com valores elevados, porém também existiram bastantes períodos onde o preço se encontrava mais baixo.
+4.2. Avaliação das previsões
+A tarefa de produzir um modelo de previsão implica que dificilmente se alcança o resultado preciso, ou seja, os valores previstos podem encontrar-se afastados dos verdadeiros. Por este motivo é essencial avaliar a precisão dos modelos, para alcançar este objectivo existem várias medidas de erro, tais como o erro médio, o erro médio percentual, o erro quadrático médio, a raiz quadrada do erro quadrático médio, o erro absoluto médio ou o erro absoluto médio percentual.
+Neste trabalho as estatísticas seleccionadas foram o erro médio percentual e o erro absoluto médio percentual, uma vez que através da análise das percentagens se torna possível comparar os erros obtidos em diferentes commodities. O erro médio percentual serve para analisar o enviesamento da previsão. O erro absoluto médio percentual complementa o anterior, uma vez que a utilização do valor absoluto não permite que os erros positivos e negativos se possam anular e assim consegue-se ter a noção da magnitude do erro.
+4.2.1.	Erro médio percentual (MPE)
+O erro médio percentual pode ser expresso através da seguinte equação:
+40
+n
+t=l
+(4.1)
+Onde:
+•	yt representa o valor previsto;
+•	yt representa o valor real;
+•	n representa o número de observações;
+4.2.2.	Erro absoluto médio percentual (MAPE)
+O erro absoluto médio percentual pode ser expresso através da seguinte
+equação:
+n
+MAPE =
+|7t - yt n / t I yt
+t=l
+(4.2)
+Onde:
+•	yt representa o valor previsto;
+•	yt representa o valor real;
+•	n representa o número de observações;
+4.3.	Simulação de monte carlo
+Como pode ser observado na equação 3.5, para se empregar a simulação de Monte Carlo é necessário inicialmente obter três variáveis, que são a taxa de juro sem risco, a volatilidade e a convenience yield.
+Para a taxa de juro sem risco foi seleccionada a taxa anualizada das T-Bills a 3 meses. As T-Bills são títulos de dívida a curto prazo utilizadas para financiar o governo dos Estados Unidos da América.
+41
+Para se obter a convenience yield foi aplicada a equação 3.1, que relaciona o preço futuro com o preço à vista. Uma vez que neste trabalho utilizou-se a maturidade igual a um ano então a convenience yield foi obtida através da seguinte expressão:
+y = r + s — ln Ç—)	(4.3)
+Onde:
+•	y representa a convenience yield;
+•	r representa a taxa de juro sem risco;
+•	s representa o custo de armazenamento;
+•	F representa o preço futuro da commodity;
+•	S representa o preço à vista da commodity;
+Para o preço à vista utilizou-se o valor dos contratos futuros com a maturidade mais próxima da data de referência, ou seja, o ticker C 1 para o milho, o ticker CL1 para o petróleo, o ticker GC1 para o ouro e o ticker HG1 para o cobre.
+Já para o preço futuro utilizou-se o valor dos contratos futuros com a maturidade de um ano, ou seja, o ticker C 6 para o milho, o ticker CL13 para o petróleo, o ticker GC6 para o ouro e o ticker HG6 para o cobre.
+O valor dos custos de armazenamento utilizados foi de $1.12 por barril por mês para o caso do petróleo (Brooks, 2009), $1.44 por onça por ano para o caso do ouro (“COMEX 101”, 2013), $0.36 por tonelada por dia para o caso do cobre (Wilson, 2010) e $0.4355 por bushel por ano para o caso do milho (Remsen Farmers Coop, 2013). Uma vez que a informação recolhida sobre os custos de armazenamento representa o custo monetário dos mesmos e não a percentagem como necessário para se calcular a convenience yield então é necessário dividir os custos anuais pelo preço à vista para assim se ter o parâmetro s da equação 4.3.
+Para a taxa de juro sem risco foi usada a taxa anualizada das T-Bills a 3 meses.
+42
+O software utilizado para desenvolver a simulação de Monte Carlo foi o Microsoft Office Excel 2003, através do qual se realizaram 10.000 simulações para cada previsão, tal como sugerido por Scheffer (2004) de forma a minimizar o erro.
+	A	B	C	D	E	F	G	H	i 1 j		K	L	M
+1													
+2 3		Data Preço final	01-02-2012 384.2	02-02-2012 378.1	03-02-2012 390.15	06-02-2012 386.45	07-02-2012 387.6	08-02-2012 390.95	09-02-2012 397.85	10-02-2012 386.2	13-02-2012 383.95	14-02-2012 381.45	15-02-2012 380.15
+4		Preço inicial	382.95	390.15	388.9	382.65*	379	384.2	378.1	390.15	386.45	387.6	390.95
+5		Vol. implícita	0.3199	0.2948	0.2948	0.2948:	0.2947	0.2945	0.2944	0.2954	0.2942	0.2943	0.2947
+6		T-Bill 3m	0.0014248	0.0018333	0.0020335	0.0018333	0.0020335	0.0022379	0.0030555	0.002851	0.0026466	0.003256	0.0030555
+7		Conv. yield	-0.0068705	-0.0058011	-0.0062629	, -0.0068572.	-0.0079163	-0.007578	-0.0078338	-0.0071965	-0.0080087	-0.0071126	-0.0070982
+8													
+9		Simulação N2											
+10		1	364.94	377.95	376.38	372.50	386.42	398.82	360.10	392.74	385.86	397.46	395.76
+11		2	377.62	367.50	379.26	390.96	384.93	370.02	361.16	373.35	420.57	397.80	375.10
+12		3	378.32	390.34	400.11	369.30	370.11	393.47	371.63	393.35	370.74	383.15	433.88
+13		4	360.01	391.16	378.20	397.85	380.31	365.31	392.63	386.91	377.21	422.17	396.94
+14		5	376.48	350.65	387.19	=F$4*EXP(((F$6-F$7-O.5*F$5A2)*(5/252))+NORMSINV(RAND())*F$5*SQRT(5/252							413.98
+15		5	371.12	385.03	380.71	384.29	363.88	369.25	372.27	388.81	400.63	389.00	418.52
+16		7	390.08	410.92	414.86	367.49	387.69	382.29	377.75	388.25	366.14	376.52	397.04
+17		8	397.15	381.99	394.19	360.41	373.06	410.07	360.18	382.38	380.15	389.77	378.16
+18		9	372.76	407.78	391.86	393.92	367.46	385.79	373.21	406.09	400.67	402.56	391.71
+19		10	394.58	384.77	393.23	369.98	400.81	405.65	358.01	394.89	389.15	387.23	395.39
+20		11	386.79	405.77	370.20	370.19	387.41	399.26	398.40	370.98	383.18	386.25	382.94
+21		12	408.06	401.74	370.77	382.60	353.91	368.96	362.22	388.00	409.99	378.99	378.11
+Figura 4.7 - Exemplo de uma folha de Excel com a simulação de Monte Carlo Fonte: Elaborado pelo autor
+4.4.	REDES NEURONAIS
+Para desenvolver os modelos de previsão através das redes neuronais foi utilizado o software SAS Enterprise Miner 5.2. As redes utilizadas foram as multilayer perceptron (MLP) com apenas uma camada oculta. Para obter o número de neurônios que constituem a camada oculta de cada rede foram realizados diversos testes onde se fez variar o número de neurônios entre 2 e 10, sendo que o critério de escolha foi pelo número de neurônios que gerou o menor MAPE. A opção final pode ser observada na tabela 4.6.
+Horizonte Milho Petróleo Ouro Cobre
+1 Dia	2	3	4	5
+5 Dias	4	7	8	4
+20 Dias	3	7	5	4
+60 Dias	8	8	9	6
+Tabela 4.6 - Número de neurônios da camada oculta Fonte: Elaborado pelo autor
+As redes neuronais usaram como algoritmo de aprendizagem o
+43
+Os dados foram divididos em dois conjuntos, o primeiro conjunto contem os dados entre 02/01/2003 e 31/12/2011 e o segundo conjunto contem os dados entre 03/01/2012 e 31/12/2012. O primeiro conjunto foi utilizado para o treino e a validação das redes neuronais, sendo que a atribuição dos dados a cada subconjunto foi feita aleatoriamente, a proporção atribuída a cada subconjunto foi de 80% para o subconjunto de treino e os restantes 20% para o subconjunto de validação (Oleskovicz, Coury e Aggarwal, 2003). O segundo conjunto foi empregado para testar os resultados das redes neuronais.
+Os preços das commodities encontram-se dependentes de diversos factores, sendo que apesar de existirem alguns comuns, por exemplo durante a crise do subprime existiu uma queda generalizada nos preços, também existem alguns específicos a cada commodity, por exemplo uma praga pode estragar a produção do milho, contudo não tem influência sobre a produção do ouro. Assim sendo, os inputs seleccionados para desenvolver os modelos podem variar consoante a commodity e o horizonte de previsão.
+Para obter as variáveis de input das redes neuronais foi seguido o método indicado por Kaastra e Boyd (1996) de desenvolver inúmeras redes neuronais com a combinação de diversas variáveis. As variáveis testadas foram o preço, a média móvel, a volatilidade histórica, o índice S&amp;amp;P 500, a taxa das T-bills, o Average True Range (ATR), o Commodity Channel Index (CCI), o Rate of Change (ROC), o Relative Strength Index (RSI). A escolha de variáveis que se encontram apenas dependentes da informação histórica do preço deve-se ao facto de se seguir a teoria da análise técnica. A análise técnica é um método muito utilizado pelos negociadores nos mercados financeiros, este método baseia-se na ideia de que é suficiente olhar apenas para os preços, uma vez que estes já reflectem todos os factores que afectaram ou podem vir a afectar o seu valor, assume também que os movimentos dos preços seguem tendências e de que a história tem tendência a se repetir (Pandya, 2013). Já a escolha do índice S&amp;amp;P 500 e da taxa das T-Bills deve-se à análise fundamentalista, este método baseia-se na análise de diversas variáveis que podem ter influência sobre os preços, tais como informação económica ou as condições da indústria (Little e Rhodes, 2004).
+44
+O output de cada modelo é a previsão do preço de cada commodity para o horizonte temporal ensaiado, ou seja, a 1 dia, a 5 dias, a 20 dias e a 60 dias. O horizonte temporal escolhido deve-se ao facto de se querer perceber qual o comportamento dos modelos desenvolvidos conforme o período temporal da previsão vai alargando.
+1 dia	5 dias	20 dias	60 dias
+Milho	• último preço disponível	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última cotação disponível do índice S&amp;amp;P 500 •	RSI	•	último preço disponível •	última média móvel dos preços a 60 dias	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	CCI
+Petróleo	• último preço disponível	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	RSI	•	último preço disponível •	última média móvel dos preços a 20 dias	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 120 dias
+Ouro	• último preço disponível	•	último preço disponível •	última média móvel dos preços a 5 dias •	última taxa disponível das T-Bills a 3 meses	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500
+Cobre	• último preço disponível	• último preço disponível	• último preço disponível	•	último preço disponível •	última volatilidade histórica a 60 dias
+Tabela 4.7 - Resumo das variáveis de input Fonte: Elaborado pelo autor
+O Commodity Channel Index (CCI) é obtido através da seguinte expressão:
+Preço típico — MA CCI ”	0.015 x Dpt
+Onde:
+(4.4)
+•	Preço típico é dado pela soma do preço máximo com o preço mínimo e o preço de fecho a dividir por 3, num determinado período;
+•	MA representa a média móvel do Preço típico;
+•	D p T representa o desvio padrão do Preço típico;
+45
+O Relative Strength Index (RSI) é obtido através da seguinte expressão:
+/ 100
+RSI = 100 - ----Tv
+\1 + D.
+(4.5)
+Onde:
+• U representa a média das cotações dos últimos n dias em que a cotação subiu;
+• D representa a média das cotações dos últimos n dias em que a cotação desceu;
+Figura 4.8 - Exemplo de um diagrama com duas redes neuronais Fonte: Elaborado pelo autor
+4.5.	Combinação de Previsões
+Agregar duas ou mais previsões individuais através da sua combinação é uma boa alternativa aos modelo individuais, através da utilização da combinação deixa de haver o problema de ter escolher apenas um único método de previsão (Winkler e Makridakis, 1983). Actualmente, encontram-se disponíveis diversas técnicas para combinar previsões, contudo não existe uma escolha obvia sobre qual a técnica a empregar (Menezes, Bunn e Taylor, 2000). Todavia, normalmente os métodos mais simples apresentam resultados bastante satisfatórios em comparação com métodos mais complexos (Clemen, 1989).
+46
+Uma vez que Granger e Ramanathan (1984) demonstraram que para se alcançar o melhor resultado na combinação das previsões deve-se acrescentar ao método um termo constante e não se deve limitar a soma dos pesos a ser igual à unidade então neste trabalho vai-se adoptar a regressão múltipla como o principal método de combinação. Ou seja, a previsão combinada será representada pela seguinte expressão:
+R e g r e ss So = a&gt; r.M C+ a&gt; 2.R N + k	(4.6)
+Onde:
+•	a&gt; x representa o peso da previsão obtida através da simulação de Monte Carlo;
+•	a&gt;2 representa o peso da previsão obtida através das redes neuronais;
+•	representa um termo constante;
+Para se obter os parâmetros da regressão foi utilizada a opção existente no Microsoft Office Excel 2003. As 252 previsões previamente obtidas para o ano de 2012 através da simulação de Monte Carlo e das redes neuronais, para cada commodity e para cada horizonte de previsão, foram distribuídas aleatoriamente em duas amostras com 126 registos cada. A primeira amostra teve como função ajudar a obter os parâmetros da regressão, a segunda amostra serviu para testar os resultados das regressões e assim obter os erros reais deste método.
+Na tabela 4.8 encontra-se o resumo dos parâmetros da regressão para cada commodity e horizonte de previsão.
+Milho	Petróleo	Ouro	Cobre
+Horizonte---------------------------------------------------------------------------------------
+o)1 m2 k	ú)2 k ú)1	ú)2 k	a&gt;2 k
+1 Dia	4.79	-3.85	45.89	2.78	-1.79	0.90	10.88	-9.90	39.23	-10.23	11.41	-62.63
+5 Dias	16.22	-16.88	1169.80	-1.70	2.75	-5.22	0.66	0.20	230.96	1.36	-0.59	80.85
+20 Dias	-0.91	1.82	89.88	-0.56	1.61	-5.65	0.49	-0.05	928.02	-0.37	1.17	75.05
+60 Dias	-0.10	0.73	263.32	-0.66	1.31	33.12	-0.10	0.25	1410.89	-0.47	0.70	279.81
+47
+Contudo, para haver a possibilidade de confrontar os resultados conseguidos através da regressão foram testados dois métodos, o método baseado na variância do erro (VAR) e a média simples. Uma vez que o VAR apresentou um MAPE mais baixo em comparação com o obtido através da média simples então este foi o método seleccionado para confrontar os resultados obtidos através da regressão. O VAR foi desenvolvido em 1969 por Bates e Granger e consiste em uma média ponderada de duas previsões onde o peso da ponderação é calculado de forma a minimizar a variância do erro (Smith e Wallis, 2009). Ou seja, neste caso a previsão combinada é expressa através da seguinte equação:
+VAR = a1.MC+ a2.RN
+(4.7)
+Onde:
+• representa o peso da previsão obtida através da simulação de Monte Carlo;
+•&amp;lt;z2 representa o peso da previsão obtida através das redes neuronais;
+Já e são expressas pelas seguintes equações:
+g22 ~ °~12
+°1 + °2 ~ 2&lt;712
+a2 = 1 —
+(4.8)
+(4.9)
+Onde:
+• a,2 representa a variância do erro do primeiro modelo;
+• a2 representa a variância do erro do segundo modelo;
+• a12 representa a covariância dos erros das previsões individuais;
+No caso deste trabalho a função de erro utilizada foi o erro absoluto médio percentual. Para seleccionar o peso a atribuir a cada modelo foi utilizado o Microsoft Office Excel 2003 através da opção disponibilizada por este software que permite obter a matriz de covariância.
+48
+Milho	Petróleo	Ouro	Cobre
+Horizonte-----------------------------------------------------------
+aL	a2	a1	a2	aL	a2	aL	a2
+1 Dia	0.44	0.56	0.99	0.01	-0.47	1.47	0.21	0.79
+5 Dias	0.73	0.27	0.33	0.67	0.64	0.36	0.39	0.61
+20 Dias	-0.47	1.47	0.31	0.69	0.29	0.71	-0.28	1.28
+60 Dias	-0.04	1.04	-0.23	1.23	0.54	0.46	-0.05	1.05
+Tabela 4.9 - Resumo dos pesos dos modelos individuais Fonte: Elaborado pelo autor
+49
+5.	RESULTADOS E DISCUSSÃO
+Neste capítulo serão apresentados os principais resultados das previsões realizadas, ou seja, dos modelos individualmente e também das técnicas de combinação de previsões aplicadas neste trabalho.
+5.1.	Previsões individuais
+De seguida serão apresentados todos os resultados obtidos para as previsões de todos os dias úteis do ano de 2012 de cada uma das quatro commodities seleccionadas para este trabalho.
+Volatilidade Rede neuronal Monte Carlo
+implícita2	MAPE MPE MAPE MPE
+1 Dia	1.89%	1.35%	0.15%	1.35%	0.06%
+5 Dias	4.25%	2.92%	0.08%	3.04%	0.35%
+20 Dias	8.60%	5.01%	2.47%	5.44%	1.98%
+60 Dias	15.61%	7.15%	0.63%	9.04%	5.57%
+Tabela 5.1 - Resultados das previsões do ano de 2012 para o milho Fonte: Elaborado pelo autor
+Como pode ser observado na tabela 5.1, em todos os horizontes a volatilidade implícita é significativamente superior ao erro absoluto médio percentual (MAPE) dos modelos desenvolvidos com recurso às redes neuronais e à simulação de Monte Carlo para prever o preço futuro do milho2 3. Sendo que essa disparidade é realçada nas previsões a longo prazo.
+Quanto à comparação do MAPE das redes neuronais em relação ao da simulação de Monte Carlo verifica-se que no geral através das redes neuronais consegue-se obter um erro inferior. Contudo, essa diferença só se torna relevante na previsão a 60 dias. Em relação ao erro médio percentual (MPE) verifica-se que ambos os modelos apresentam uma tendência a subestimar o valor real, com mais impacto nas previsões a 20 e a 60 dias.
+2	Para obter a volatilidade implícita para cada horizonte (cr) foi necessário utilizar a fórmula 04 = c . VT onde T representa o período, uma vez que a volatilidade implícita recolhida através da Bloomberg encontra-se anualizada (04).
+3	A volatilidade implícita apresenta ao longo do tempo um comportamento aleatório (Cont, Fonseca e Durrleman, 2002), ou seja, pode-se dizer que os modelos desenvolvidos são melhores do que o aleatório.
+50
+-----Preço real------Monte Carlo
+Figura 5.1 - Previsão do preço do milho a 60 dias através da simulação de Monte Carlo Fonte: Elaborado pelo autor
+------Preço real ------Rede neuronal
+Figura 5.2 - Previsão do preço do milho a 60 dias através da rede neuronal Fonte: Elaborado pelo autor
+Como pode ser observado na figura 5.1 e na 5.2, a previsão através da simulação de Monte Carlo demorou mais tempo a prever a grande subida que existiu a meio do ano de 2012, o que prejudicou o seu MAPE em relação ao da rede neuronal.
+Volatilidade Rede neuronal____________Monte Carlo
+implícita MAPE MPE MAPE MPE
+1 Dia	1.82%	1.19%	-0.04%	1.20%	0.01%
+5 Dias	4.08%	2.34%	-0.19%	2.43%	0.01%
+20 Dias	8.31%	4.79%	-0.27%	5.51%	-0.09%
+60 Dias	15.07%	6.07%	0.64%	10.50%	0.65%
+51
+Como pode ser averiguado na tabela 5.2, o MAPE dos modelos desenvolvidos com recurso às redes neuronais e à simulação de Monte Carlo para prever o preço futuro do petróleo é substancialmente inferior à volatilidade implícita em todos os horizontes. Sendo que as previsões com um horizonte maior evidenciam ainda mais essa desigualdade.
+Quanto à comparação do MAPE das redes neuronais em relação ao da simulação de Monte Carlo pode-se constatar que através das redes neuronais consegue-se obter um menor erro em todos os horizontes. Contudo, essa diferença só se torna relevante a partir da previsão a 20 dias. Já a análise do MPE apenas na previsão a 60 dias é que demonstra uma ligeira subestimação do valor real, nos restantes horizontes os resultados são semelhantes e próximos de zero.
+130 -
+120 -
+110
+100
+80
+70 -
+60 d----1---1----1---1----1---1----1---1---1----1---r
+Preço real ----Monte Carlo
+Figura 5.3 - Previsão do preço do petróleo a 60 dias através da simulação de Monte Carlo Fonte: Elaborado pelo autor
+130 i
+120 ■
+110 ■
+100
+On
+£ 90 ■
+80 ■
+70 ■
+60 T----1---1----1---1----1---1----1---1----1---1---T
+-----Preço real ------Rede neuronal
+52
+Figura 5.4 - Previsão do preço do petróleo a 60 dias através da rede neuronal
+Fonte: Elaborado pelo autor
+Volatilidade Rede neuronal____________Monte Carlo
+implícita MAPE MPE MAPE MPE
+1 Dia	1.02%	0.73%	0.06%	0.73%	0.02%
+5 Dias	2.31%	1.54%	0.01%	1.60%	0.08%
+20 Dias	4.78%	2.98%	-0.48%	3.32%	0.10%
+60 Dias	9.22%	4.13%	0.22%	4.81%	0.08%
+Tabela 5.3 - Resultados das previsões do ano de 2012 para o ouro Fonte: Elaborado pelo autor
+Como pode ser examinado na tabela 5.3, em todos os horizontes a volatilidade implícita é nitidamente superior ao MAPE dos modelos desenvolvidos com recurso às redes neuronais e à simulação de Monte Carlo para prever o preço futuro do ouro. Sendo que essa diferença torna-se mais saliente nas previsões a mais longo prazo.
+Em relação ao MAPE das redes neuronais comparado com o da simulação de Monte Carlo verifica-se que ambos os modelos apresentaram erros muito semelhantes, excepto na previsão a 60 dias. Quanto ao MPE das previsões nota-se que ambos os modelos exibem valores muito próximos de zero, logo as previsões não se encontram enviesadas.
+-----Preço real -----Monte Carlo
+53
+------Preço real ------Rede neuronal
+Figura 5.6 - Previsão do preço do ouro a 60 dias através da rede neuronal Fonte: Elaborado pelo autor
+Como pode ser observado na figura 5.5 e na 5.6, embora com muitas oscilações as previsões através da rede neuronal tendem a conseguir seguir a trajectória do preço do ouro, com a excepção do final do ano. Já a simulação de Monte Carlo volta a demonstrar dificuldades em se distanciar da série inicial.
+Volatilidade Rede neuronal Monte Carlo
+implícita MAPE MPE MAPE MPE
+1 Dia	1.49%	1.04%	0.05%	1.05%	0.01%
+5 Dias	3.37%	2.13%	0.41%	2.19%	0.05%
+20 Dias	7.01%	3.91%	0.44%	4.57%	0.22%
+60 Dias	13.34%	4.45%	1.09%	7.42%	0.52%
+Tabela 5.4 - Resultados das previsões do ano de 2012 para o cobre Fonte: Elaborado pelo autor
+Como pode ser observado na tabela 5.4, o MAPE dos modelos desenvolvidos com recurso às redes neuronais e à simulação de Monte Carlo para prever o preço futuro do cobre é claramente inferior à volatilidade implícita em todos os horizontes. Sendo que com o aumento do horizonte da previsão essa diferença sobressai mais.
+420 -i
+------Preço real ------Monte Carlo
+Figura 5.7 - Previsão do preço do cobre a 60 dias através da simulação de Monte Carlo Fonte: Elaborado pelo autor
+420
+400
+o o&amp;lt;d
+340
+380 ■
+360 ■
+320
+300
+280
+------Preço real --------Rede neuronal
+
+Figura 5.8 - Previsão do preço do cobre a 60 dias através da rede neuronal Fonte: Elaborado pelo autor
+Como pode ser observado na figura 5.7 e na 5.8, as trajectórias obtidas pelas previsões de ambos os modelos são semelhantes, contudo a rede neuronal consegue aproximar-se mais do preço real do cobre.
+5.2.	Previsões combinadas
+De seguida serão apresentados todos os resultados obtidos através dos dados da segunda amostra de cada uma das quatro commodities seleccionadas para este trabalho.
+Volatilidade Rede neuronal Monte Carlo	VAR	Regressão
+Horizonte .	„ .	-------------------------------------------------------------------
+implícita MAPE MPE MAPE MPE MAPE MPE MAPE MPE
+1 Dia	1.87%	1.28%	0.08%	1.27%	-0.01%	1.27%	0.04%	1.30%	-0.15%
+5 Dias	4.18%	2.57%	-0.24%	2.65%	-0.04%	2.60%	-0.09%	2.85%	-0.82%
+20 Dias	8.63%	4.49%	1.88%	4.95%	1.35%	4.71%	2.12%	5.20%	-1.51%
+60 Dias	15.83%	7.15%	0.61%	9.31%	6.45%	7.18%	0.37%	7.17%	-0.88%
+55
+Como pode ser observado na tabela 5.5, no caso do milho a combinação através do método do VAR apresentou no geral um MAPE ligeiramente inferior em comparação com o da regressão. O MPE do VAR demonstra que apenas a previsão a 20 dias é que denota uma importante subestimação do valor real.
+Apesar de neste caso o método do VAR ter sido considerado o método de combinação com melhores resultados, verificar-se no entanto que não existe uma melhoria em relação aos resultados da rede neuronal isolada.
+Volatilidade Rede neuronal Monte Carlo	VAR	Regressão
+Horizonte .	„ .	-----------------------------------------------------------------
+implícita MAPE MPE MAPE MPE MAPE MPE MAPE MPE
+1 Dia	1.84%	1.12%	0.04%	1.13%	0.08%	1.13%	0.08%	1.14%	0.12%
+5 Dias	4.07%	2.48%	0.01%	2.61%	0.23%	2.52%	0.08%	2.47%	0.27%
+20 Dias	8.36%	4.61%	0.25%	5.29%	0.48%	4.78%	0.32%	4.50%	0.65%
+60 Dias	15.26%	5.75%	0.74%	10.27%	0.90%	4.97%	0.70%	4.16%	-0.30%
+Tabela 5.6 - Resultados das previsões combinadas para o petróleo Fonte: Elaborado pelo autor
+Como pode ser verificado na tabela 5.6, no caso do petróleo, excepção feita na previsão a 1 dia, a combinação através da regressão apresentou nos restantes horizontes um MAPE inferior em comparação com o do VAR. Todavia, apenas na previsão a 60 dias é que se observa uma diferença com relevância. O MPE da regressão apresenta valores próximos de zero, consequentemente este modelo de previsão não se encontra enviesado.
+Tendo sido a rede neuronal o método que obteve os melhores resultados em termos individuais, pode-se observar que só se torna relativamente importante utilizar a combinação destes dois métodos através da regressão na previsão a 60 dias.
+Volatilidade Rede neuronal Monte Carlo	VAR	Regressão
+Horizonte .	„ .	------------------------------------------------------------------
+implícita MAPE MPE MAPE MPE MAPE MPE MAPE MPE
+1 Dia	1.02%	0.78%	0.20%	0.77%	0.16%	0.78%	0.22%	0.81%	0.25%
+5 Dias	2.28%	1.56%	0.06%	1.62%	0.14%	1.58%	0.11%	1.51%	0.04%
+20 Dias	4.77%	2.83%	-0.46%	3.27%	0.15%	2.91%	-0.28%	2.62%	-0.20%
+60 Dias	9.26%	4.24%	-0.06%	4.61%	-0.23%	3.56%	-0.15%	3.02%	-0.41%
+56
+Como pode ser observado na tabela 5.7, para o caso do ouro a combinação através da regressão apresentou no geral um MAPE mais baixo em comparação com o do VAR, a excepção encontra-se na previsão a um dia onde os resultados podem ser considerados equivalentes. Ressalta ainda que nas previsões a mais longo prazo os resultados do VAR tendem a piorar em relação à regressão. O MPE da regressão exibe valores bastante próximos de zero, portanto este modelo de previsão pode ser considerado não enviesado.
+Sendo neste caso a regressão o método de combinação mais eficaz, pode-se verificar que apenas na previsão a um dia este método não melhora o MAPE em relação aos modelos individuais. Contudo, só na previsão a 60 dias é que a melhoria é relevante.
+Volatilidade Rede neuronal Monte Carlo	VAR	Regressão
+Horizonte .	„ .	-------------------------------------------------------------------
+implícita MAPE MPE MAPE MPE MAPE MPE MAPE MPE
+1 Dia	1.47%	1.01%	-0.07%	1.01%	-0.11%	1.01%	-0.08%	1.06%	-0.28%
+5 Dias	3.33%	2.06%	0.33%	2.14%	-0.04%	2.08%	0.19%	2.15%	-0.25%
+20 Dias	7.03%	4.00%	0.32%	4.79%	0.03%	3.89%	0.40%	3.93%	-0.38%
+60 Dias	13.03%	4.48%	0.81%	7.04%	0.71%	4.45%	0.82%	4.00%	-0.82%
+Tabela 5.8 - Resultados das previsões combinadas para o cobre
+Fonte: Elaborado pelo autor
+Como pode ser examinado na tabela 5.8, no caso do cobre a combinação através da regressão apresentou um menor MAPE em comparação com o do VAR apenas na previsão a 60 dias. Nos restantes horizontes os resultados foram bastante semelhantes. O MPE dos modelos combinados apresentam valores próximos de zero, a excepção acontece apenas na previsão a 60 dias.
+Sendo a rede neuronal o método que exibiu os melhores resultados em termos individuais, pode-se constatar que só se torna vantajoso utilizar a combinação destes dois métodos na previsão a 60 dias e através da regressão.
+57
+6.	CONCLUSÕES
+Tal como foi apresentado na introdução, o principal objectivo deste trabalho passava por desenvolver modelos de previsão de preços de commodities para assim comparar a capacidade preditiva da simulação de Monte Carlo com a das redes neuronais. Para alcançar o objectivo foram desenvolvidos diversos modelos e aplicados na previsão do preço futuro do milho, petróleo, ouro e cobre.
+Através dos resultados obtidos e que podem ser observados no capítulo 5, pode-se concluir que no geral o modelo individual que apresentou um melhor desempenho preditivo foram as redes neuronais.
+Contudo, verificou-se que nos horizontes temporais a 1 e a 5 dias os resultados obtidos foram semelhantes para ambos os modelos. Com base nos dados do horizonte a 60 dias, constata-se que conforme o horizonte se expande existe uma tendência para que as previsões realizadas através da simulação de Monte Carlo se degradem em relação às previsões realizadas através das redes neuronais, uma vez que os gráficos demonstraram que a simulação de Monte Carlo não conseguiu distanciar-se muito dos dados iniciais nos momentos onde existiu uma grande volatilidade.
+Ao se analisar a volatilidade implícita das quatro commodities seleccionadas para este trabalho verifica-se que qualquer das previsões obtidas apresenta um valor inferior, independentemente do horizonte temporal e do modelo empregado. Isto significa que através destes modelos se consegue alcançar resultados melhores que o aleatório.
+Entre as quatro commodities estudadas neste trabalho o ouro foi a commodity para a qual se conseguiu obter as melhores previsões, seguido pelo cobre, petróleo e milho que foi a commodity que apresentou as piores previsões. Esta situação poderá ser explicada pela circunstância do ouro ter apresentado a menor volatilidade histórica durante o ano de 2012 com 16.24%, já o cobre apresentou 21.64%, o petróleo 25.94% e o milho 29.47%.
+No entanto a utilização da regressão múltipla demonstrou uma boa capacidade para melhorar os resultados dos modelos individuais nas previsões a 20 e a 60 dias, sendo principalmente para o horizonte a 60 dias uma real mais-valia. Contudo, nas previsões a 1 e a 5 dias não existe vantagem em utilizar este método.
+Em suma temos que para as previsões a 1 e a 5 dias a simulação de Monte Carlo equivale-se às redes neuronais. Contudo, a simulação de Monte Carlo apresenta algumas vantagens, uma vez que é um método bastante simples de se compreender e o utilizador apenas necessita de ter conhecimentos básicos de Excel.
+Nas previsões para um horizonte temporal mais distante já existe um benefício em utilizar as redes neuronais, porém nestas situações ainda se conseguem alcançar melhores resultados caso se combinem as redes neuronais com a simulação de Monte Carlo através de uma regressão múltipla.
+59
+7.	LIMITAÇÕES E RECOMENDAÇÕES PARA TRABALHOS FUTUROS
+Uma das limitações com mais relevância para este trabalho foi a circunstância de existirem diversas variáveis económicas que não puderam ser utilizadas devido ao facto não possuírem periodicidade diária, tais como a inflação, o índice de preços ao consumidor, o índice de preços ao produtor ou a informação sobre a oferta monetária.
+Devido à instabilidade que se tem verificado nos mercados financeiros nos últimos anos, não foi possível utilizar informação com mais do que dez anos, uma vez que nesse período essa informação não é comparável com a posterior. Portanto, estes dados não iriam adicionar conhecimento aos modelos, uma vez que o objectivo é de se tentar reconhecer possíveis padrões, iriam porém servir de ruído e assim prejudicar os resultados finais.
+O conjunto de teste das previsões dos modelos individuais deveria ter sido apurado de forma aleatória. Contudo, existiu a necessidade de se utilizar como conjunto de teste os 252 dias úteis do ano de 2012, esta decisão deveu-se ao facto de se tornar muito demorado calcular as previsões para dias aleatórios através da simulação de Monte Carlo.
+A circunstância de ter sido utilizado o software Microsoft Office Excel 2003 para produzir as previsões através da simulação de Monte Carlo fez com que o seu cálculo seja algo demorado, uma vez que não é o software mais indicado para trabalhar com muitos dados. Por exemplo, para se realizar a previsão a um dia dos 252 dias de 2012 de uma determinada commodity através de 10.000 simulações, isto implica que se calcule 2.520.000 valores.
+O facto do software SAS Enterprise Miner 5.2 não calcular o erro absoluto médio percentual (MAPE) implicou a utilização do Microsoft Office Excel 2003 para calcular o MAPE das inúmeras simulações realizadas para seleccionar as variáveis de input e o número de neurônios necessários para a camada oculta das redes MLP, assim este processo tornou-se mais lento do que seria se o MAPE fosse calculado pelo SAS Enterprise Miner 5.2.
+60
+Outra possibilidade passa por alterar a periodicidade dos dados de input, por exemplo podem passar para mensais em vez de serem diários como neste trabalho. Esta alteração permite estudar a inclusão de outras variáveis, que não se encontram disponíveis na forma diária.
+Outra sugestão passa por tentar prever apenas a tendência dos preços futuros ou então apresentar a previsão na forma de intervalo e não tentar prever o valor exacto como neste trabalho, uma vez que desta maneira o erro tende a ser mais elevado.
+Como última alternativa sugere-se testar as quatro commodities seleccionadas para este trabalho através de outros modelos preditivos para deste modo se ter acesso a mais resultados e assim este estudo torna-se mais completo.
+61
+8.	BIBLIOGRAFIA
+Abosedra, S., &amp;amp; Baghestani, H. (2004). On the predictive accuracy of crude oil futures prices. Energy Policy, 32(12), 1389-1393.
+Acworth, W. (2013). FIA Annual Volume Survey: Trading Falls 15.3% in 2012. Acedido em 18 de Agosto de 2013, em http://www.futuresindustry.org/downloads/FI-2012 Volume Survey.pdf
+Alizadeh, A., &amp;amp; Nomikos, N. (2009). Shipping Derivatives and Risk Management. Palgrave Macmillan.
+Andrawis, R., Atiya, A. F., &amp;amp; El-Shishiny, H. (2011). Combination of long term and short term forecasts, with application to tourism demand forecasting. International Journal of Forecasting, 27(3), 870-886.
+Balbinot, A., Delai, R. M., &amp;amp; Werle, A. (2011). Viabilidade do Pólen de Milho. Cascavel, 4(2), 133-142.
+Belousova, J., &amp;amp; Dorfleitner, G. (2012). On the diversification benefits of commodities from the perspective of euro investors. Journal of Banking and Finance, 36(9), 2455-2472.
+Borensztein, E., &amp;amp; Reinhart, C. M. (1994). The Macroeconomic Determinants of Commodity Prices. IMF Staff Papers, 41(2), 236-261.
+Boyle, P. (1977). Options: A Monte Carlo approach. Journal of Financial Economics, 4(3), 323-338.
+BP. (2013). BP Statistical Review of World Energy June 2013. Acedido em 29 de Setembro de 2013, em http://www.bp.com/content/dam/bp/pdf/statistical-review/statistical review of world energy 2013.pdf
+Braga, A. P., Ludermir, T. B., &amp;amp; Carvalho, A. C. P. L. F. (2000). Redes Neurais Artificiais: Teoria e Aplicações. Rio de Janeiro: Livros Técnicos e Científicos.
+Brennan, M. J. (1958). The Supply of Storage. The American Economic Review, 48(1), 50-72.
+Brockwell, P. J., &amp;amp; Davis, R. A. (1996). Introduction to time series and forecasting . New York: Springer Verlag.
+Brooks, G. A. (2009). Musings: Do WTI Oil Prices Reflect Underlying Market Conditions? Acedido em 8 de Abril em 2013, em http://www.rigzone.com/news/article.asp?a id=71899
+62
+Clemen, R. T. (1989). Combining forecasts: A review and annotated bibliography. International Journal of Forecasting, 5(4), 559-583.
+COMEX 101: All About the Gold and Silver Futures Market. (2013). Acedido em 8 de Abril de 2013, em http://about.ag/futures.htm
+Cont, R., Fonseca, J., &amp;amp; Durrleman, V. (2002). Stochastic Models of Implied Volatility Surfaces. Economic Notes, 31(2), 361-377.
+Crane, D., &amp;amp; Crotty, J. (1967). A Two-Stage Forecasting Model: Exponential Smoothing and Multiple Regression. Management Science, 13(8), B-501-B-507.
+Deaton, A., &amp;amp; Laroque, G. (1992). On the Behaviour of Commodity Prices. The Review of Economic Studies, 59(1), 1-23.
+DeFusco, R. A., McLeavey, D. W., Pinto, J. E., &amp;amp; Runkle, D. E. (2007). Quantitative Investment Analysis (2nd ed.). New Jersey: John Wiley &amp;amp; Sons, Inc.
+Eckhardt , R. (1987). Stan Ulam, John von Neumann, and the Monte Carlo Method. Los Alamos Science, 15, 131-137.
+eResearch. (2013). Top Gold-Producing Countries In 2012. Acedido em 29 de Setembro de 2013, em http://www.eresearch.ca/ report/BW 071513TopTenGold.pdf
+Ferreira, L., Moura, G. L., Borenstein, D., &amp;amp; Fischmann, A. A. (2011). Utilização de Redes Neurais Artificiais como Estratégia de Previsão de Preços no Contexto de Agronegócio. Revista de Administração e Inovação, 8(4), 6-26.
+Frankel, J. A. (1984). Commodity Prices and Money: Lessons from International Finance. American Journal of Agricultural Economics, 66(5), 560-566.
+Frankel, J. A. (1986). Expectations and commodity price dynamics: the overshooting model. American Journal of Agricultural Economics, 68(2), 344.
+Freeman, J. A., &amp;amp; Skapura, D. M. (1991). Neural networks: algorithms, applications, and programming techniques. Addison-Wesely.
+Freiman, J. P., &amp;amp; Pamplona, E. O. (2005). Redes neurais artificiais na previsão do valor de commodity do agronegócio. Paper presented at the V Encuentro Internacional de Finanzas, Santiago, Chile.
+French, K. R. (1986). Detecting spot price forecasts in futures prices. The Journal of Business, 59(2), S39-S54.
+63
+Goss, B., &amp;amp; Avsar, S. (2013). Simultaneity, Forecasting and Profits in London Copper Futures. Australian Economic Papers, 52(2), 79-96.
+Granger, C. W. J., &amp;amp; Newbold, P. (1977). Forecasting economic time series. New York: Academic Press.
+Granger, C. W. J., &amp;amp; Ramanathan, R. (1984). Improved methods of combining forecasts. Journal of Forecasting, 3, 197-204.
+Grudnitski, G., &amp;amp; Osburn, L. (1993). Forecasting S&amp;amp;P and gold futures prices: An application of neural networks. Journal of Futures Markets, 13, 631-643.
+Gurney, K. (1997). An introduction to neural networks. London: Routledge.
+Haykin, S. (1999). Neural Networks: A Comprehensive Foundation (2nd ed.). Prentice Hall.
+Heydova, J., Maitah, M., &amp;amp; Hammad, F. (2011). The reasons and the impacts of crude oil prices on world economy. European Journal of Business and Economics, 2, 38-44.
+Hornik, K., Stinchcombe, M., &amp;amp; White, H. (1989). Multilayer Feedforward Networks are Universal Approximators. Neural Networks, 2, 359-366.
+Hull, J. (1998). Introduction to futures and options markets (3rd ed.). London: PrenticeHall.
+Hull, J. (2009). Options Futures and Other Derivatives (7th ed.). Upper Saddle River, New Jersey: Prentice Hall.
+Ismail, Z., Yahya, A., &amp;amp; Shabri, A. (2009). Forecasting Gold Prices Using Multiple Linear Regression Method. American Journal of Applied Sciences, 6(8), 1509-1514.
+Jabbour, G. M., &amp;amp; Liu, Y. (2005). Option Pricing And Monte Carlo Simulations. Journal of Business &amp;amp; Economics Research, 3(9), 1-6.
+Jain, A. K., &amp;amp; Mao, J. (1996). Artificial Neural Networks: A Tutorial. IEEE Computer, 3144.
+Jain, A., Nandakumar, K., &amp;amp; Ross, A. (2005). Score normalization in multimodal biometric systems. Pattern Recognition, 38(12), 2270-2285.
+Jain, L. C., &amp;amp; Martin, N. M. (1998). Fusion of Neural Networks, Fuzzy Systems, and Genetic Algorithms: Industrial Applications. CRC Press.
+Jensen, G. R., Johnson, R. R., &amp;amp; Mercer, J. M. (2000). Efficient use of commodity futures in diversified portfolios. Journal of Futures Markets, 20, 489-506.
+Jorion, P. (2001). Value at Risk: The New Benchmark for Managing Financial Risk (2nd ed.). New York: Mcgraw-Hill.
+64
+Kaldor, N. (1939). Speculation and Economic Stability. The Review of Economic Studies, 7(1), 1-27.
+Kasabov, N. K. (1996). Foundations of Neural Networks, Fuzzy Systems, and Knowledge Engineering. Cambridge, MA: MIT Press.
+Kennedy, P. (1992). A guide to econometrics (3rd ed.). Oxford: Basil Blackwell.
+Khan, M. (2013). Forecasting of Gold Prices (Box Jenkins Approach). International Journal of Emerging Technology and Advanced Engineering, 3(3), 662-670.
+Khazanov, L. (2013). Production and consumption trends in the copper industry. Metallurg, 56(11-12), 869-873.
+Kohzadi, N., Boyd, M. S., Kermanshahi, B., &amp;amp; Kaastra, I. (1996). A comparison of artificial neural network and time series models for forecasting commodity prices. Neurocomputing, 10(2), 169-181.
+Kolb, R. W. (1991). Understanding Futures Markets (3rd ed.). New York Institute Finance.
+Kroese, D. P., Taimre, T., &amp;amp; Botev, Z. I. (2011). Handbook of Monte Carlo Methods. Hoboken, New Jersey: John Wiley and Sons.
+Kwak, Y. H., &amp;amp; Ingall, L. (2007). Exploring monte carlo simulation applications for project management. Risk Management, 9(1), 44-57.
+Leuthold, R. M., Junkus, J. C., &amp;amp; Cordier, J. E. (1989). The theory and practice of futures markets. Lexington Books.
+Little, J. B., &amp;amp; Rhodes, L. (2004). Understanding Wall Street (4th ed.). McGraw-Hill.
+Liu, C. (2009). Price Forecast for Gold Futures Based on GA-BP Neural Network. Paper presented at the International Conference on Management and Service Science.
+Livingstone, D. J., Manallack, D. T., &amp;amp; Tetko, I. V. (1997). Data modelling with neural networks: Advantages and limitations. Journal of Computer-Aided Molecular Design, 11(2), 135-142.
+London Stock Exchange. (2009). Exchange Traded Commodities: Redefining the commodities marketplace. Acedido em 20 de Setembro de 2013, em http://www.londonstockexchange.com/specialist-issuers/etps/etcbrochure.pdf
+65
+Makridakis, S., Wheelwright, S. C., &amp;amp; Hyndman, R. J. (1998). Forecasting: methods and applications (3rd ed.). New York: John Wiley &amp;amp; Sons.
+Malliaris, A. G., &amp;amp; Malliaris, M. (2009). Time Series and Neural Networks Comparison on Gold, Oil and the Euro. Paper presented at the Proceedings of International Joint Conference on Neural Networks, Atlanta, Georgia.
+Mehrotra, K., Mohan, C. K., &amp;amp; Ranka, S. (1996). Elements of Artificial Neural Networks. Bradford Books.
+Melolinna, M. (2011). What explains risk premiums in crude oil futures? OPEC Energy Review, 35(4), 287-307.
+Menezes, L. M., Bunn, D. W., &amp;amp; Taylor, J. W. (2000). Review of guidelines for the use of combined forecasts. European Journal of Operational Research, 120(1), 190204.
+Metropolis, N. (1987). The beginning of the Monte Carlo method. Los Alamos Science, 15, 125-130.
+Minsky, M., &amp;amp; Papert, S. (1969). Perceptrons. Cambridge, MA: MIT Press.
+Mitchell, T. M. (1997). Machine Learning. McGraw-Hill.
+Montgomery, D. C., Jennings, C. L., &amp;amp; Kulahci, M. (2008). Introduction to Time Series Analysis and Forecasting. Hoboken, New Jersey: John Wiley &amp;amp; Sons, Inc.
+Nayakovit, S., Khantanapoka, K., &amp;amp; Jaritngam, U. (2010). Prediction exchange rate of USD/GBP with intelligence cyberspace experimental. Paper presented at the Electronics and Information Engineering.
+New York Board of Trade (2007). Entendendo futuros e opções. Acedido em 10 de Novembro de 2012, em http://www.zaner.com/pdf/UFO Portuguese.pdf
+Ntungo, C., &amp;amp; Boyd, M. (1998). Commodity futures trading performance using neural network models versus ARIMA models. Journal of Futures Markets, 965-983.
+Oleskovicz, M., Coury, D. V., &amp;amp; Aggarwal, R. K. (2003). O emprego de redes neurais artificiais na detecção, classificação e localização de faltas em linhas de transmissão. Revista Controle &amp;amp; Automação, 14(2), 138-150.
+Pandya, H. (2013). Technical Analysis for Selected Companies of Indian IT Sector. International Journal of Advanced Research, 1(4), 430-446.
+Parisi, A., Parisi, F., &amp;amp; Díaz, D. (2008). Forecasting gold price changes: Rolling and recursive neural network models. Journal of Multinational Financial Management, 18(5), 477-487.
+Remsen Farmers Coop (2013). Remsen Farmers Coop Grain. Acedido em 8 de Abril de 2013, em http://www.remsencoop.com/grain
+66
+Rothstein, N. H., &amp;amp; Little, J. M. (1984). The handbook of financial futures: a guide for investors and professional financial managers. New York: McGraw-Hill.
+Scheffer, L. (2004). The Count of Monte Carlo. Paper presented at the Proceedings of the International Workshop on Timing Issues.
+Schuster, M., &amp;amp; Paliwal, K. K. (1997). Bidirectional recurrent neural networks. IEEE Transactions on Signal Processing, 45(11), 2673-2681.
+Shorter, J. A., &amp;amp; Rabitz, H. A. (1997). Risk analysis by the guided Monte Carlo technique. Journal Of Statistical Computation And Simulation, 57(1-4), 321-336.
+Shultz, S. (2008). Corn. Journal of Agricultural &amp;amp; Food Information, 9(2), 101-114.
+Singh, Y., &amp;amp; Chauhan, A. (2009). Neural Networks in Data Mining. Journal of Theoretical and Applied Information Technology, 5(1), 37-42.
+Smith, J., &amp;amp; Wallis, K. F. (2009). A Simple Explanation of the Forecast Combination Puzzle. Oxford Bulletin of Economics and Statistics, 71 (3), 331-355.
+Smith, K., &amp;amp; Bracker, K. (2003). Forecasting Changes in Copper Futures Volatility with GARCH Models Using an Iterated Algorithm. Review of Quantitative Finance and Accounting, 20(3), 245-265.
+Sobol, I. M. (1994). A primer for the Monte Carlo method. Boca Raton, FL: CRC Press.
+Sopipan, N., Sattayatham, P., &amp;amp; Premanode, B. (2012). Forecasting Volatility of Gold Price Using Markov Regime Switching and Trading Strategy. Journal of Mathematical Finance, 02(01), 121-131.
+Suhobokov, A. (2007). Application of Monte Carlo Simulation method in risk management. Journal of Business Economics and Management, 8(3), 165-168.
+Svozil, D., Kvasnicka, V., &amp;amp; Pospichal, J. (1997). Introduction to multi-layer feed-forward neural networks. Chemometrics and Intelligent Laboratory Systems, 39(1), 4362.
+Wei, W. (2006). Time Series Analysis: Univariate and Multivariate Methods (2nd ed.). Addison Wesley.
+Wilmott, P. (2007). Paul Wilmott on quantitative finance (2nd ed.). John Wiley &amp;amp; Sons.
+Wilson, D. (2010). Physically-Backed Metal ETCs. Acedido em 8 de Abril de 2013, em http://www.commodities-now.com/news/metals-and-mining/4349-physically-backed-metal-etcs.html
+67
+Yu, S., &amp;amp; Ou, J. (2009). Forecasting Model of Agricultural Products Prices in Wholesale Markets Based on Combined BP Neural Network -Time Series Model. Paper presented at the 2009 International Conference on Information Management, Innovation Management and Industrial Engineering.
+Yue, Q., Lu, Z. W., &amp;amp; Zhi, S. K. (2009). Copper cycle in China and its entropy analysis. Resources, Conservation and Recycling, 53(12), 680-687.
+Zhang, G., Patuwo, B. E., &amp;amp; Hu, M. Y. (1998). Forecasting with artificial neural networks: The state of the art. International Journal of Forecasting, 14(1), 35-62.
+68
+9.	ANEXOS
+9.1.	Anexo A - Demonstração da simulação de Monte Carlo
+Um processo estocástico é considerado um processo de Itô, quando é
+representado pela equação:
+dx = a(x, t). dt + b(x, t). dz
+(9.1)
+O Lema de Itô mostra que se uma função G(x,t) for diferenciável pelo menos duas vezes em x e uma vez em t então a mesma segue o seguinte processo:
+(9.2)
+Comparando a equação 3.2 com a 9.1, pode-se assumir que o movimento geométrico Browniano é um processo de Itô onde a(x,t) = àS e b(x,t) = aS.
+Portanto, assumindo que G = ln S e aplicando o Lema de Itô obtêm-se:
+g — |&lt;72) ■ dt + a. dz
+(9.3)
+(9.4)
+Ou seja,
+In(S ( t + At) ) — In (S (t ) )= (i — -&lt;72).At+o^VÃt	(9.5)
+Portanto, para se obter uma simulação para o valor futuro de uma commodity utiliza-se a seguinte equação:
+S ( t + A t) = S ( t) e 1	(9.6)
+69
+9.2.	Anexo B - Especificações dos contratos futuros
+Milho	Petróleo
+Símbolo do produto	ZC	CL
+Tamanho do contrato	5 000 bushels4	1 000 Barris
+Cotação	Usd por bushel	Usd por barril
+Tamanho do Tick	0.25	0.01
+Valor do Tick	$12.5	$10
+Meses dos Contratos	Março (H), Maio (K), Julho (N), Setembro (U) e Dezembro (Z)	Janeiro (F), Fevereiro (G), Março (H), Abril (J), Maio (K), Junho (M), Julho (N), Agosto (Q), Setembro (U), Outubro (V), Novembro (X) e Dezembro (Z)
+Tabela 9.1 - Especificações dos contratos futuros do milho e do petróleo Fonte: Bloomberg
+Ouro	Cobre
+Símbolo do produto	GC	HG
+Tamanho do contrato	100 onças troy5	25 000 libras6
+Cotação	Usd por onça troy	Usd por libra
+Tamanho do Tick	0.1	0.05
+Valor do Tick	$10	$12.5
+Meses dos Fevereiro (G), Abril (J), Junho (M), Março (H), Maio (K), Julho (N), Contratos Agosto (Q), Outubro (V) e Dezembro (Z) Setembro (U) e Dezembro (Z)
+Tabela 9.2 - Especificações dos contratos futuros do ouro e do cobre Fonte: Bloomberg
+4
+1 bushel de milho = 25.40117272
+Kg
+5
+6
+1 onça troy = 0.0311034768 Kg
+1 libra = 0.45359237 Kg
+70
+Nas tabelas seguintes são apresentadas algumas das diversas combinações que foram testadas com o objectivo de seleccionar os inputs para as redes neuronais utilizadas neste trabalho, a escolha final recaiu sobre as variáveis que apresentaram o erro absoluto médio percentual (MAPE) mais baixo.
+Variáveis	MAPE	Variáveis	MAPE
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	1.35%	•	último preço disponível •	RSI	1.35%
+•	último preço disponível •	ATR	1.35%	•	último preço disponível •	ROC	1.35%
+•	último preço disponível •	última média móvel dos preços a 5 dias	1.44%	•	último preço disponível •	CCI	1.35%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	1.35%	•	último preço disponível •	ATR •	CCI	1.35%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos	1.35%	•	último preço disponível •	última média móvel dos preços a 60 dias •	última média móvel dos preços a 20 dias	1.36%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última volatilidade histórica a 10 dias	1.35%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	ROC	1.35%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	RSI •	ROC	1.35%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última média móvel dos preços a 5 dias	1.45%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última cotação disponível do índice S&amp;amp;P 500 •	CCI	1.35%	•	último preço disponível •	ATR •	última volatilidade histórica a 30 dias •	última volatilidade histórica a 60 dias	1.35%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos •	última cotação disponível do índice S&amp;amp;P 500 •	última média móvel dos preços a 20 dias	1.37%	•	último preço disponível •	ROC •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 5 dias •	última média móvel dos preços a 60 dias	1.41%
+71
+Variáveis	MAPE	Variáveis	MAPE
+• último preço disponível	2.94%	•	último preço disponível •	ROC	2.94%
+•	último preço disponível •	RSI	2.94%	•	último preço disponível •	ATR	2.97%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	2.95%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	3.00%
+•	último preço disponível •	última média móvel dos preços a 5 dias	3.02%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos	2.93%
+•	último preço disponível •	última média móvel dos preços a 5 dias •	última média móvel dos preços a 60 dias	3.03%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos	2.95%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	ROC	2.98%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	CCI	2.99%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses	2.95%	•	último preço disponível •	última média móvel dos preços a 5 dias •	última volatilidade histórica a 30 dias	3.03%
+•	último preço disponível •	última média móvel dos preços a 5 dias •	RSI	3.04%	•	último preço disponível •	RSI •	ROC	2.96%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 20 dias •	ROC	2.97%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	CCI •	RSI	2.97%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última volatilidade histórica a 60 dias •	ATR	3.01%	•	último preço disponível •	última taxa disponível das T-Bills a 3 mese •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 20 dias •	última volatilidade histórica a 10 dias •	CCI	2.96%
+Tabela 9.4 - Resultados das combinações de variáveis para a previsão a 5 dias do milho Fonte: Elaborado pelo autor
+Variáveis	MAPE	Variáveis	MAPE
+• último preço disponível	5.42%	•	último preço disponível •	ATR	5.43%
+•	último preço disponível •	RSI	5.12%	•	último preço disponível •	CCI	5.34%
+•	último preço disponível •	última média móvel dos preços a 20 dias	5.29%	•	último preço disponível •	ROC	5.40%
+•	último preço disponível •	última taxa disponível das T-Bills a	5.28%	•	último preço disponível •	última taxa disponível das T-Bills a	5.32%
+72
+2 anos	3 meses		
+• RSI			
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última volatilidade histórica a 30 dias	5.33%	•	último preço disponível •	última média móvel dos preços a 20 dias •	última média móvel dos preços a 60 dias	5.69%
+•	último preço disponível •	ATR •	última taxa disponível das T-Bills a 3 meses	5.52%	•	último preço disponível •	ATR •	CCI	5.47%
+•	último preço disponível •	última média móvel dos preços a 20 dias •	RSI	5.70%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última cotação disponível do índice S&amp;amp;P 500	5.22%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	CCI	5.27%	•	último preço disponível •	última média móvel dos preços a 60 dias •	última volatilidade histórica a 10 dias •	CCI	5.59%
+•	último preço disponível •	última média móvel dos preços a 120 dias •	última taxa disponível das T-Bills a 2 anos •	última volatilidade histórica a 60 dias	5.58%	•	último preço disponível •	última média móvel dos preços a 60 dias •	última taxa disponível das T-Bills a 3 meses •	ROC •	RSI	5.37%
+•	último preço disponível •	última média móvel dos preços a 60 dias •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos •	última cotação disponível do índice S&amp;amp;P 500	5.78%	•	último preço disponível •	última média móvel dos preços a 20 dias •	última taxa disponível das T-Bills a 3 meses •	última cotação disponível do índice S&amp;amp;P 500 •	RSI	5.44%
+Tabela 9.5 - Resultados das combinações de variáveis para a previsão a 20 dias do milho Fonte: Elaborado pelo autor
+Variáveis	MAPE
+Variáveis
+MAPE
+• último preço disponível	8.45%	•	último preço disponível •	ATR	9.32%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	8.72%	•	último preço disponível •	última volatilidade histórica a 60 dias	8.99%
+•	último preço disponível •	última média móvel dos preços a 60 dias	11.48%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos	7.83%
+•	último preço disponível •	RSI	8.94%	•	último preço disponível •	ROC	8.54%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última cotação disponível do índice S&amp;amp;P 500	7.62%	•	último preço disponível •	última média móvel dos preços a 20 dias •	última média móvel dos preços a 60 dias	11.85%
+• último preço disponível	7.81%	• último preço disponível	7.51%
+73
+•	última taxa disponível das T-Bills a 2 anos •	última volatilidade histórica a 60 dias		•	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos	
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 60 dias	10.02%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos	9.53%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 5 dias •	última média móvel dos preços a 120 dias	8.51%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses •	ROC	7.76%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 20 dias	8.37%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última volatilidade histórica a 30 dias •	RSI	9.44%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses •	última volatilidade histórica a 60 dias •	RSI	9.09%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses •	ROC •	RSI	8.38%
+Tabela 9.6 - Resultados das combinações de variáveis para a previsão a 60 dias do milho Fonte: Elaborado pelo autor
+Variáveis	MAPE
+Variáveis
+MAPE
+•	último preço disponível •	ROC	1.19%	•	último preço disponível •	CCI	1.20%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	1.19%	•	CCI •	RSI	28.59%
+•	último preço disponível •	ATR	1.20%	•	último preço disponível •	RSI	1.20%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	1.20%	•	último preço disponível •	última média móvel dos preços a 5 dias	1.22%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	ROC	1.19%	•	último preço disponível •	última média móvel dos preços a 20 dias •	CCI	1.22%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última volatilidade histórica a 10 dias	1.19%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 60 dias	1.19%
+•	último preço disponível •	última taxa disponível das T-Bills a	1.19%	•	último preço disponível •	ROC	1.19%
+74
+3 meses • última taxa disponível das T-Bills a 2 anos		• RSI	
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 5 dias •	RSI	1.21%	•	último preço disponível •	última média móvel dos preços a 20 dias •	última média móvel dos preços a 60 dias	1.21%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última cotação disponível do índice S&amp;amp;P 500 •	ATR	1.23%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	CCI •	RSI	1.19%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos •	última volatilidade histórica a 10 dias •	última volatilidade histórica a 60 dias	1.19%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 5 dias •	RSI •	ROC	1.21%
+Tabela 9.7 - Resultados das combinações de variáveis para a previsão a 1 dia do petróleo Fonte: Elaborado pelo autor
+Variáveis	MAPE	Variáveis	MAPE
+• último preço disponível	2.40%	•	último preço disponível •	CCI	2.41%
+•	último preço disponível •	ATR	2.43%	•	último preço disponível •	RSI	2.40%
+•	último preço disponível •	última média móvel dos preços a 5 dias	2.44%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	2.39%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	2.51%	•	último preço disponível •	última média móvel dos preços a 20 dias	2.40%
+•	último preço disponível •	ROC •	RSI	2.34%	•	último preço disponível •	ROC	2.40%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos	2.40%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última cotação disponível do índice S&amp;amp;P 500	2.54%
+•	último preço disponível •	ATR •	CCI	2.47%	•	último preço disponível •	última média móvel dos preços a 20 dias •	ROC	2.43%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última volatilidade histórica a 10 dias	2.44%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	ROC •	RSI	2.39%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	2.41%	•	último preço disponível •	última média móvel dos preços a 5 dias	2.43%
+75
+•	última média móvel dos preços a 20 dias •	RSI		• última média móvel dos preços a 120 dias	
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos •	ROC	2.39%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última volatilidade histórica a 10 dias •	CCI	2.41%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última volatilidade histórica a 30 dias •	RSI	2.41%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 20 dias •	RSI •	CCI	2.35%
+Tabela 9.8 - Resultados das combinações de variáveis para a previsão a 5 dias do petróleo Fonte: Elaborado pelo autor
+Variáveis	MAPE	Variáveis	MAPE
+• último preço disponível	5.14%	•	último preço disponível •	CCI	5.02%
+•	último preço disponível •	ROC	5.16%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	5.17%
+•	último preço disponível •	RSI	4.97%	•	último preço disponível •	ATR	5.49%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	5.49%	•	último preço disponível •	última média móvel dos preços a 5 dias	5.09%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos	5.06%	•	último preço disponível •	ATR •	CCI	5.61%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	RSI	5.04%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	ROC	5.64%
+•	último preço disponível •	última média móvel dos preços a 5 dias •	última média móvel dos preços a 20 dias	4.94%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última volatilidade histórica a 30 dias	4.96%
+•	último preço disponível •	última média móvel dos preços a 20 dias •	RSI	5.07%	•	último preço disponível •	última média móvel dos preços a 60 dias •	RSI	5.60%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 20 dias	4.85%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 20 dias •	RSI	4.81%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 20 dias •	última média móvel dos preços a	5.25%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos	5.14%
+76
+60 dias			
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última volatilidade histórica a 10 dias •	ATR •	ROC	5.03%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 20 dias •	ROC •	RSI	4.95%
+Tabela 9.9 - Resultados das combinações de variáveis para a previsão a 20 dias do petrôleo Fonte: Elaborado pelo autor			
+Variáveis	MAPE	Variáveis	MAPE
+• último preço disponível	8.05%	•	último preço disponível •	CCI	8.66%
+•	último preço disponível •	última média môvel dos preços a 60 dias	10.05%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	7.90%
+•	último preço disponível •	ATR	9.52%	•	último preço disponível •	ROC	8.60%
+•	último preço disponível •	última volatilidade histôrica a 60 dias	9.52%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos	9.24%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	11.06%	•	último preço disponível •	última média móvel dos preços a 20 dias	8.92%
+•	último preço disponível •	ROC •	RSI	10.86%	•	último preço disponível •	última média móvel dos preços a 60 dias •	ROC	11.08%
+•	último preço disponível •	última média môvel dos preços a 20 dias •	última média môvel dos preços a 120 dias	8.90%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	CCI	8.27%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última cotação disponível do índice S&amp;amp;P 500	19.05%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última volatilidade histórica a 60 dias	7.93%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média môvel dos preços a 60 dias •	última volatilidade histôrica a 30 dias	8.93%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos	7.86%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média môvel dos preços a 120 dias •	CCI	7.98%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 180 dias •	RSI	8.37%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills •	a 2 anos •	última média môvel dos preços a	7.25%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 120 dias •	ROC	7.79%
+77
+120 dias		• RSI	
+Tabela 9.10 - Resultados das combinações de Fonte: Elaborado pelo autor		; variáveis para a previsão a 60 dias do petróleo	
+Variáveis	MAPE	Variáveis	MAPE
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	0.73%	•	último preço disponível •	RSI	0.73%
+•	último preço disponível •	ROC	0.73%	•	último preço disponível •	CCI	0.74%
+•	último preço disponível •	ATR	0.73%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	0.73%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses	0.73%	•	último preço disponível •	última média móvel dos preços a 20 dias	0.81%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 5 dias	0.78%	•	último preço disponível •	ATR •	CCI	0.74%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	CCI	0.73%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos	0.74%
+•	último preço disponível •	última média móvel dos preços a 5 dias •	última média móvel dos preços a 20 dias	0.81%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses •	RSI	0.73%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última volatilidade histórica a 10 dias •	última volatilidade histórica a 60 dias	0.73%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última volatilidade histórica a 10 dias •	RSI •	ROC	0.74%
+Tabela 9.11 - Resultados das combinações de variáveis para a previsão a 1 dia do ouro Fonte: Elaborado pelo autor
+Variáveis	MAPE
+Variáveis
+MAPE
+• último preço disponível	1.56%	•	último preço disponível •	RSI	1.58%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	1.57%	•	último preço disponível •	última média móvel dos preços a 5 dias	1.55%
+•	último preço disponível •	ATR	1.63%	•	último preço disponível •	ROC	1.57%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	1.58%	•	último preço disponível •	última média móvel dos preços a 20 dias •	ROC	1.65%
+78
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos	1.58%	•	último preço disponível •	ATR •	CCI	1.63%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última cotação disponível do índice S&amp;amp;P 500	1.57%	•	último preço disponível •	última média móvel dos preços a 5 dias •	última média móvel dos preços a 60 dias	1.56%
+•	último preço disponível •	última média móvel dos preços a 5 dias •	CCI	1.55%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses •	ROC	1.58%
+•	último preço disponível •	última média móvel dos preços a 5 dias •	última cotação disponível do índice S&amp;amp;P 500	1.56%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última volatilidade histórica a 10 dias •	ROC	1.58%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 5 dias •	CCI •	RSI	1.55%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 5 dias •	última cotação disponível do índice S&amp;amp;P 500 •	ATR	1.62%
+Tabela 9.12 - Resultados das combinações de variáveis para a previsão a 5 dias do ouro Fonte: Elaborado pelo autor
+Variáveis	MAPE
+Variáveis
+MAPE
+• último preço disponível	3.19%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	3.32%
+•	último preço disponível •	RSI	3.29%	•	último preço disponível •	ATR	3.66%
+•	último preço disponível •	ROC	3.30%	•	último preço disponível •	CCI	3.27%
+•	último preço disponível •	última média móvel dos preços a 20 dias	3.26%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos	3.01%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última volatilidade histórica a 30 dias	3.34%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	RSI	3.02%
+•	último preço disponível •	última média móvel dos preços a 20 dias •	última média móvel dos preços a 60 dias	3.47%	•	último preço disponível •	última média móvel dos preços a 20 dias •	última taxa disponível das T-Bills a 2 anos	3.08%
+•	último preço disponível •	última média móvel dos preços a 20 dias •	CCI	3.22%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	3.13%
+79
+•	último preço disponível •	ATR •	CCI	3.42%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última cotação disponível do índice S&amp;amp;P 500	3.17%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 20 dias •	RSI	3.13%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última volatilidade histórica a 10 dias •	ROC	3.26%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 20 dias •	última média móvel dos preços a 60 dias	3.18%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos •	última cotação disponível do índice S&amp;amp;P 500 •	RSI	3.45%
+Tabela 9.13 - Resultados das combinações de variáveis para a previsão a 20 dias do ouro Fonte: Elaborado pelo autor
+Variáveis	MAPE	Variáveis	MAPE
+• último preço disponível	4.69%	•	último preço disponível •	CCI	4.31%
+•	último preço disponível •	RSI	5.64%	•	último preço disponível •	ROC	5.11%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	4.84%	•	último preço disponível •	última média móvel dos preços a 60 dias	6.07%
+•	último preço disponível •	última volatilidade histórica a 60 dias	4.69%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos	5.06%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última volatilidade histórica a 60 dias	4.83%	•	último preço disponível •	ATR •	CCI	5.87%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses	5.27%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	ROC	5.68%
+•	último preço disponível •	última média móvel dos preços a 20 dias •	última média móvel dos preços a 60 dias	6.80%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos	4.56%
+•	último preço disponível •	RSI •	ROC	5.55%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 60 dias	7.14%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	CCI	5.37%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 2 anos	5.16%
+80
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 2 anos •	RSI	5.20%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última volatilidade histórica a 10 dias •	última volatilidade histórica a 60 dias	4.91%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos •	ATR	5.49%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última volatilidade histórica a 10 dias •	última média móvel dos preços a 20 dias •	RSI	5.91%
+Tabela 9.14 - Resultados das combinações de variáveis para a previsão a 60 dias do ouro Fonte: Elaborado pelo autor			
+Variáveis	MAPE	Variáveis	MAPE
+•	último preço disponível •	última média móvel dos preços a 5 dias	1.09%	•	último preço disponível •	ATR	1.05%
+•	último preço disponível •	RSI	1.05%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	1.05%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses	1.05%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	1.05%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	RSI	1.05%	•	último preço disponível •	ATR •	CCI	1.05%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	ATR •	CCI	1.05%	•	último preço disponível •	última média móvel dos preços a 5 dias •	última volatilidade histórica a 10 dias	1.09%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 60 dias •	ROC	1.05%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos •	ATR	1.06%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 5 dias •	ATR	1.10%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última volatilidade histórica a 10 dias •	última volatilidade histórica a 30 dias ATR	1.05%
+Tabela 9.15 - Resultados das combinações de variáveis para a previsão a 1 dia do cobre Fonte: Elaborado pelo autor
+81
+Variáveis	MAPE	Variáveis	MAPE
+•	último preço disponível •	última média móvel dos preços a 5 dias	2.15%	•	último preço disponível •	CCI	2.15%
+•	último preço disponível •	RSI	2.16%	•	último preço disponível •	ATR	2.16%
+•	último preço disponível •	ROC	2.15%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	2.15%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	2.14%	•	último preço disponível •	última média móvel dos preços a 20 dias •	última média móvel dos preços a 60 dias	2.20%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses	2.16%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	ROC	2.16%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 5 dias	2.14%	•	último preço disponível •	última média móvel dos preços a 5 dias •	CCI •	RSI	2.16%
+•	última média móvel dos preços a 5 dias •	última cotação disponível do índice S&amp;amp;P 500 •	última taxa disponível das T-Bills a 3 meses •	RSI	2.25%	•	último preço disponível •	última média móvel dos preços a 60 dias •	última volatilidade histórica a 10 dias	2.16%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 5 dias	2.17%	•	último preço disponível •	última média móvel dos preços a 5 dias •	última média móvel dos preços a 60 dias •	última taxa disponível das T-Bills a 3 meses •	CCI	2.16%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última média móvel dos preços a 5 dias •	última volatilidade histórica a 10 dias •	CCI	2.14%	•	último preço disponível •	última média móvel dos preços a 5 dias •	última média móvel dos preços a 10 dias •	ATR •	CCI	2.18%
+Tabela 9.16 - Resultados das combinações de variáveis para a previsão a 5 dias do cobre Fonte: Elaborado pelo autor
+Variáveis	MAPE
+Variáveis
+MAPE
+•	último preço disponível •	CCI	4.28%	•	último preço disponível •	RSI	4.12%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	4.08%	•	último preço disponível •	última média móvel dos preços a 20 dias	4.34%
+•	último preço disponível •	última cotação disponível do	4.24%	•	último preço disponível •	ROC	4.30%
+82
+índice S&amp;amp;P 500			
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	CCI	4.64%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos	4.11%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos	4.05%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	ATR	4.16%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	RSI	4.07%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última volatilidade histórica a 10 dias	4.22%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última média móvel dos preços a 20 dias	3.99%	•	último preço disponível •	última média móvel dos preços a 20 dias •	última média móvel dos preços a 60 dias	4.49%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos •	RSI	3.95%	•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	última média móvel dos preços a 20 dias •	ATR	4.43%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 20 dias •	ATR	3.92%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	CCI •	RSI	4.57%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 20 dias •	ATR •	CCI	4.07%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 20 dias •	RSI	3.96%
+Tabela 9.17 - Resultados das combinações de variáveis para a previsão a 20 dias do cobre Fonte: Elaborado pelo autor
+Variáveis	MAPE
+Variáveis
+MAPE
+• último preço disponível	7.18%	•	último preço disponível •	ATR	7.26%
+•	último preço disponível •	CCI	8.24%	•	último preço disponível •	ROC	7.76%
+•	último preço disponível •	última taxa disponível das T-Bills a 3 meses	5.53%	•	último preço disponível •	última média móvel dos preços a 60 dias	7.65%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos	4.90%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	CCI	4.46%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500	6.52%	•	último preço disponível •	última média móvel dos preços a 20 dias	6.83%
+83
+• CCI			
+•	último preço disponível •	última média móvel dos preços a 60 dias •	última volatilidade histórica a 60 dias	6.23%	•	último preço disponível •	última taxa disponível das T-Bills a 3 meses •	ATR	5.56%
+•	último preço disponível •	última volatilidade histórica a 60 dias •	CCI	5.26%	•	último preço disponível •	última volatilidade histórica a 60 dias •	ROC	6.44%
+•	último preço disponível •	última cotação disponível do índice S&amp;amp;P 500 •	RSI	8.79%	•	último preço disponível •	ATR •	CCI	7.73%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última volatilidade histórica a 60 dias	5.27%	•	último preço disponível •	última volatilidade histórica a 60 dias •	RSI •	ROC	7.16%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 60 dias •	CCI	7.61%	•	último preço disponível •	última média móvel dos preços a 20 dias •	última média móvel dos preços a 60 dias •	última volatilidade histórica a 60 dias	6.98%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	CCI •	RSI	4.81%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	CCI •	ROC	5.70%
+•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 20 dias •	última média móvel dos preços a 60 dias	5.45%	•	último preço disponível •	última taxa disponível das T-Bills a 2 anos •	última média móvel dos preços a 60 dias •	última volatilidade histórica a 60 dias •	CCI	7.22%
+Tabela 9.18 - Resultados das combinações de variáveis para a previsão a 60 dias do cobre Fonte: Elaborado pelo autor
+
+
+
+O Average True Range (ATR) é obtido através da seguinte expressão:
+TR
+AT Rt = AT R t_! X ( n - 1 ) +	(9.7)
+Onde:
+T Rt é o True Range e é obtido pela seguinte expressão:
+TR = max ( Ht - k, | Ht - Q _ x | , | Lt - Q_ x | )	(9.8)
+Ht representa o preço máximo durante o dia t;
+Lt representa o preço mínimo durante o dia t;
+84
+•	C t _ , representa o preço de fecho do dia t-1;
+•	n representa o número de dias;
+O Rate of Change (ROC) é obtido através da seguinte expressão:
+ROC = Pt Pt~n
+°t-n
+Onde:
+(9.9)
+•	Pt representa o preço no dia t;
+•	Pt _ n representa o preço no dia t-n;
+•	n representa o número de dias;
+85
+Milho	Petróleo	Ouro	Cobre
+MAPE MPE MAPE MPE MAPE MPE MAPE MPE
+1 Dia	1.27%	0.03%	1.13%	0.06%	0.77%	0.18%	1.01%	-0.09%
+5 Dias	2.58%	-0.14%	2.54%	0.12%	1.57%	0.10%	2.09%	0.15%
+20 Dias	4.51%	1.61%	4.90%	0.36%	3.00%	-0.15%	4.33%	0.17%
+60 Dias	7.31%	3.53%	7.82%	0.82%	3.55%	-0.14%	5.25%	0.76%
+Tabela 9.19 - Resultados das previsões combinadas através da média simples Fonte: Elaborado pelo autor
+86</field>
+	</doc>
+</add>

@@ -1,0 +1,3517 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.23374</field>
+		<field name="filename">7504_000994516.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL
+INSTITUTO DE INFORMÁTICA
+
+PROGRAMA DE PÓS-GRADUAÇÃO EM COMPUTAÇÃO
+
+LUAN FONSECA GARCIA
+
+Um Framework Conceitual para Inserção
+de Dados de Rochas em Modelos de
+
+Reservatório
+
+Dissertação apresentada como requisito parcial para
+a obtenção do grau de Mestre em Ciência da
+Computação
+
+Orientador: Profa. Dra. Mara Abel
+Co-orientador: Prof. Dr. Luiz Fernando De Ros
+
+Porto Alegre
+2016
+
+
+
+CIP — CATALOGAÇÃO NA PUBLICAÇÃO
+
+Garcia, Luan Fonseca
+
+Um Framework Conceitual para Inserção de Dados de Rochas
+em Modelos de Reservatório / Luan Fonseca Garcia. – Porto Ale-
+gre: PPGC da UFRGS, 2016.
+
+76 f.: il.
+
+Dissertação (mestrado) – Universidade Federal do Rio Grande
+do Sul. Programa de Pós-Graduação em Computação, Porto Ale-
+gre, BR–RS, 2016. Orientador: Mara Abel; Co-orientador: Luiz
+Fernando De Ros.
+
+1. Ontologia. 2. Dados de Rocha. 3. Modelagem de Reserva-
+tório. 4. Geologia do Petróleo. 5. Interoperabilidade de Dados.
+I. Abel, Mara. II. De Ros, Luiz Fernando. III. Título.
+
+UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL
+Reitor: Prof. Carlos Alexandre Netto
+Vice-Reitor: Prof. Rui Vicente Oppermann
+Pró-Reitor de Pós-Graduação: Prof. Vladimir Pinheiro do Nascimento
+Diretor do Instituto de Informática: Prof. Luis da Cunha Lamb
+Coordenador do PPGC: Prof. Luigi Carro
+Bibliotecária-chefe do Instituto de Informática: Beatriz Regina Bastos Haro
+
+
+
+“ Navegadores antigos tinham uma frase gloriosa:
+
+"Navegar é preciso; viver não é preciso."
+
+Quero para mim o espírito desta frase,
+
+transformada a forma para a casar com o que eu sou:
+
+Viver não é necessário; o que é necessário é criar. ”
+
+FERNANDO PESSOA
+
+
+
+
+
+AGRADECIMENTOS
+
+Agradeço à todos colegas e funcionários do Instituto de Informática da UFRGS, por
+
+tornarem este um lugar especial de se trabalhar.
+
+Agradeço aos colegas que tive em minha curta passagem na empresa Endeeper, onde
+
+aprendi que pode sim existir uma empresa onde seus funcionários são mais do que colegas, são
+
+amigos.
+
+Agradeço meus colegas do grupo BDI, Alexandre Lorenzatti, Ana Júlia Assis, Cauã
+
+Antunes, Eduardo Chandelier, Bruno Zanette, Sandro Fiorini. Um agradecimento especial aos
+
+colegas Joel Luis Carbonera e Vínicius Graciolli, pelas várias discussões que certamente agre-
+
+garam muito ao meu trabalho.
+
+Não posso esquecer de agradecer minha família, minha mãe Laura, minha irmã Júlia e
+
+minha esposa Rosi, por compreender a importância deste trabalho em minha vida e por sempre
+
+fazerem todo o possível para me auxiliar.
+
+Agradeço a professora Karin Goldberg, do Instituto de Geociências da UFRGS, por me
+
+permitir a acompanhar sua disciplina como ouvinte. Seus ensinamentos foram muito importan-
+
+tes para que eu pudesse realizar este trabalho.
+
+Agradeço também meu co-orientador, Luis Fernando De Ros, por estar sempre de pron-
+
+tidão e disposto a discutir e ensinar esta Ciência tão apaixonante que é a Geologia.
+
+Por último, mas não menos importante, agradeço à minha orientadora Mara Abel, que
+
+esteve sempre ao meu lado nesta caminhando, me auxiliando tanto profissionalmente quanto
+
+pessoalmente.
+
+
+
+
+
+RESUMO
+
+A contribuição deste trabalho é um framework conceitual para a inserção de dados diretos de
+
+rocha em modelos de grid de reservatório, através da calibragem de logs de poço. Este tipo
+
+de dado é frequentemente ignorado ou processado manualmente nas modelagens atuais, seja
+
+por custos elevados para sua obtenção, seja pelo alto grau de complexidade para a modelagem,
+
+interpretação e extrapolação dos dados. O framework busca definir os requisitos para um pro-
+
+jeto de software que inclua os componentes necessários para o processamento automático ou
+
+supervisionado dos dados de rocha desde sua geração até sua utilização final, em modelos de
+
+simulação de fluxo, suportando a interoperabilidade dos dados e o rastreamento da informação
+
+de rochas. A proposta é embasada na combinação de ontologias de domínio para a petrogra-
+
+fia, o conceito geológico de petrofácies de reservatório, um algoritmo de reconhecimento de
+
+padrões em logs de poço que podem corresponder a camadas homogêneas na rocha e um al-
+
+goritmo para extrapolação de padrões baseado em algoritmos de alinhamento de sequências de
+
+DNA. A combinação das abordagens utilizadas neste trabalho é inédita e fornece suporte para
+
+o uso de petrofácies de reservatório durante a modelagem de reservatório. O levantamento de
+
+informações foi realizado em forma de aquisição de conhecimento, através de entrevistas com
+
+cinco profissionais de Geologia, Geofísica e Geoquímica, com diferentes formações na indús-
+
+tria do petróleo, além de extensa revisão da literatura. Esta aquisição nos possibilitou mapear
+
+as grandes atividades durante o processo de exploração, bem como os dados resultantes de cada
+
+etapa. Um modelo conceitual ontologicamente bem fundamentado permite mapear e integrar
+
+os dados de rocha nas diferentes etapas de processamento desde sua aquisição, como descrições
+
+de amostras de poços, descrições microscópicas e logs geofísicos até a identificação e inserção
+
+das propriedades relevantes em grids 3D utilizando padrões de trocas de dados da indústria.
+
+Palavras-chave: Ontologia. Dados de Rocha. Modelagem de Reservatório. Geologia do Pe-
+
+tróleo. Interoperabilidade de Dados.
+
+
+
+
+
+A Conceptual Framework for Rock Data Insertion in Reservoir Models
+
+ABSTRACT
+
+A Conceptual Framework to insert direct rock data into reservoir models trough well logs cali-
+
+bration is the contribution of this work. This kind of data is often ignored or manually processed
+
+in the current modeling process, due to its high costs or due to the complexity for the modeling,
+
+interpretation and extrapolation of the data. The framework aims to define a software project
+
+requirements that includes the necessary components for automated or supervised process of
+
+the rock data from its generation until its final use in the flow simulation models, supporting the
+
+interoperability of the data and the tracking of the rock information.
+
+The proposal is based in the combination of domain ontology for petrography, the geological
+
+concept of reservoir petrofacies, a pattern recognition algorithm on well logs that can corre-
+
+spond to homogeneous rock layers and an algorithm to extrapolate patterns based on algorithms
+
+for the alignment of DNA sequences. The combination of the approaches used in this work is
+
+novel and provides support for the use of reservoir petrofacies during reservoir modeling. Five
+
+different professionals from the Geology, Geophysics and Geochemistry fields, with different
+
+backgrounds in the oil industry, were interviewed in order to acquire the necessary knowledge,
+
+and an extensive review of the literature. This acquisition enabled us to map the major activities
+
+during the process of exploration, as well as the data resulting from each step. A ontologi-
+
+cal well-grounded conceptual model allows mapping and integrating rock data in the different
+
+processing steps from its acquisition, such as descriptions of sample wells, microscopic descrip-
+
+tions and geophysical logs, to the identification and insertion of the relevant properties on 3D
+
+grids using standards of industry data exchange.
+
+Keywords: Ontology, Rock Data, Reservoir Modeling, Petroleum Geology, Data Interoper-
+
+ability.
+
+
+
+
+
+LISTA DE FIGURAS
+
+Figura 2.1 Etapas sedimentares do ciclo da rocha. .................................................................. 20
+Figura 2.2 Exemplo de reservatório de óleo na subsuperfície. ................................................ 21
+Figura 2.3 Visão 2D de um grid de reservatório e uma célula em destaque com uma
+
+disposição geométrica bloco-centrada. .............................................................................. 24
+Figura 2.4 Mapa de contorno. .................................................................................................. 25
+Figura 2.5 Mapa geológico. ..................................................................................................... 25
+Figura 2.6 Princípio da aquisição sísmica................................................................................ 26
+Figura 2.7 Esquema de captura de logs.................................................................................... 27
+Figura 2.8 Exemplo de Arquivo LAS. ..................................................................................... 28
+Figura 2.9 Workflow da modelagem de reservatório. ............................................................... 30
+
+Figura 3.1 Hierarquia de classificação de ontologias............................................................... 34
+Figura 3.2 O Quadrado de Aristóteles. .................................................................................... 36
+
+Figura 4.1 Exemplo de três colunas estratigráficas correlacionadas........................................ 41
+Figura 4.2 Workflow de nossa abordagem. ............................................................................... 42
+
+Figura 5.1 Rocha, Mineral e suas relações............................................................................... 44
+Figura 5.2 Ocorrência de rocha em Porção de Rocha e de Mineral em Cristal. ...................... 46
+Figura 5.3 Constituintes primários de uma porção de rocha sedimentar. ............................... 46
+Figura 5.4 Qualificadores de uma Porção de Rocha. .............................................................. 47
+Figura 5.5 Qualificadores de Rochas Carbonáticas e Evaporíticas. ......................................... 48
+Figura 5.6 Qualificadores de Rochas Siliciclásticas. .............................................................. 49
+
+Figura 6.1 Petrofácies dispostas em um gráfico de volume intergranular pelo volume de
+cimentos de sílica. .............................................................................................................. 52
+
+Figura 6.2 Framework conceitual para a inserção de dados de rocha em modelos de re-
+servatório. ......................................................................................................................... 53
+
+
+
+
+
+SUMÁRIO
+
+1 INTRODUÇÃO .................................................................................................................... 15
+2 GEOLOGIA DO PETRÓLEO ........................................................................................... 19
+2.1 Modelos Geológicos.......................................................................................................... 21
+2.2 Principais Dados Utilizados para Modelagem de Reservatórios ................................. 24
+2.2.1 Mapas .............................................................................................................................. 25
+2.2.2 Sísmica ............................................................................................................................ 26
+2.2.3 Perfis de Poço.................................................................................................................. 27
+2.2.4 Amostras de Rocha ......................................................................................................... 28
+2.3 Aquisição de Conhecimento Geológico .......................................................................... 29
+3 ONTOLOGIAS .................................................................................................................... 33
+3.1 Unified Foundational Ontology ...................................................................................... 35
+4 TRABALHOS RELACIONADOS ..................................................................................... 39
+4.1 Detecção de planos de acamadamento: Uma abordagem com médias móveis .......... 39
+4.2 Sistema para Correlação Litológica Baseado em Ontologias ...................................... 40
+5 ONTOLOGIA PARA REPRESENTAÇÃO DE PETROFÁCIES DE RESERVA-
+
+TÓRIO ........................................................................................................................... 43
+5.1 Apresentação da Ontologia de Domínio......................................................................... 44
+6 ENRIQUECENDO MODELOS DE GRID DE RESERVATÓRIO COM DADOS
+
+DE ROCHA ................................................................................................................... 51
+7 CONCLUSÃO ...................................................................................................................... 59
+REFERÊNCIAS ...................................................................................................................... 61
+APÊNDICE A — ENTREVISTA COM GEOFíSICO ESPECIALISTA EM MODE-
+
+LOS 3D........................................................................................................................... 63
+APÊNDICE B — ENTREVISTA COM GEÓLOGO ESPECIALISTA EM PETRO-
+
+GRAFIA......................................................................................................................... 67
+APÊNDICE C — ENTREVISTA COM GEÓLOGO DE RESERVATÓRIO................... 69
+
+
+
+
+
+15
+
+1 INTRODUÇÃO
+
+Pessoas, organizações e sistemas devem comunicar-se entre si, entretanto, devido a di-
+
+ferentes experiências, conhecimentos, necessidades e contextos, existe uma grande variação
+
+entre pontos de vistas. Segundo (USCHOLD; GRUNINGER, 1996), a consequência desta falta
+
+de entendimento compartilhado é a má comunicação entre estas pessoas e suas organizações.
+
+Em especial, no contexto do desenvolvimento de sistemas de informação, Uschold e Grunin-
+
+ger argumentam que esta falta de entendimento compartilhado dificulta a identificação dos seus
+
+requisitos e assim, a especificação do sistema também é prejudicada. Além disso, diferentes
+
+métodos de modelagem, paradigmas, linguagens e ferramentas prejudicam severamente a inte-
+
+roperabilidade, potencial de reuso e compartilhamento dos sistemas construídos.
+
+Um exemplo simples dos problemas causados por esta heterogeneidade é apresentado
+
+em (BITTNER; DONNELLY; WINTER, 2005). Consideremos o termo tanque. Em um sistema
+
+de informação utilizado em um contexto militar, o termo usualmente refere-se a uma espécie
+
+de veículo blindado de guerra. Já em um sistema de informação inserido em um contexto
+
+de equipamentos para zoológicos, o termo tanque refere-se a um tipo de recipiente que pode
+
+armazenar água e servir de moradia para peixes. Agora suponha que ambos sistemas devam ser
+
+utilizados em uma base militar, em um contexto de guerra. Certamente haverá um problema
+
+para interpretar uma afirmativa do tipo três tanques.
+
+Como forma de superar este problema de interoperabilidade, em (USCHOLD; GRU-
+
+NINGER, 2004) é defendido o uso de ontologias. Uma ontologia é uma especificação formal e
+
+explícita de uma conceitualização compartilhada (STUDER; BENJAMINS; FENSEL, 1998).
+
+Ontologias são importantes porque esclarecem a estrutura do conhecimento, explici-
+
+tando um conhecimento que por hora foi implícito (WACHE et al., 2001). Sendo assim, a
+
+ontologia de certo domínio forma o coração de um sistema de representação de conhecimento
+
+para tal domínio (CHANDRASEKARAN; JOSEPHSON; BENJAMINS, 1999).
+
+Um exemplo de área que pode se beneficiar do uso de ontologias para a integração de
+
+seus dados é a Geologia do Petróleo. Geologia do Petróleo é a aplicação da Geologia, o estudo
+
+da Terra, na exploração e produção de óleo e gás (SELLEY, 1998) Em (MA, 2011), Interope-
+
+rabilidade de Dados Geológicos é definida como a habilidade de dados geológicos fornecidos
+
+por uma fonte de dados serem acessados, decodificados, compreendidos e apropriados pelos
+
+usuários. Na exploração de petróleo, uma enorme quantidade de dados é gerada todos os dias
+
+a partir de variadas fontes. Notadamente podem ser citados dados sísmicos, dados de poços e
+
+dados de perfuração. A indústria petrolífera depende do uso eficiente destes dados para a cons-
+
+
+
+16
+
+trução de modelos computacionais que facilitem a redução da incerteza e risco nas tomadas de
+
+decisões (WERLANG et al., 2014).
+
+Uma pesquisa realizada pela Associação Norueguesa da Indústria do Óleo (NOIA) em
+
+2005, mostra que existia necessidade de mais colaboração e integração entre as etapas, disci-
+
+plinas e companhias desta indústria. Mesmo cinco anos após isto, segundo (EDISON; BRAN-
+
+TLEY; EDWARDS, 2011), em 2010, pesquisadores externalizaram o seu entendimento do que
+
+esperam dos próximos 20 anos para a indústria energética. Foram entrevistados mais de 100
+
+executivos de alto escalão, de várias partes da cadeia do óleo e gás, principalmente focando no
+
+seguimento de exploração e produção. O resultado é que os executivos veem a integração dos
+
+dados tornando-se ainda mais crítica para conectar as variadas tecnologias e inovações com as
+
+pessoas e os processos. Para eles, a integração é essencial para entregar a informação correta à
+
+pessoa certa ao momento certo para uma melhor tomada de decisão.
+
+A modelagem de reservatório é o conjunto de atividades de modelagem de dados como
+
+o intuito de realizar a simulação de um reservatório de óleo. Um problema bastante atual na
+
+Modelagem de Reservatórios é a carência de dados diretos de rocha em modelos de grid de
+
+reservatório, modelos utilizados para representar reservatórios de petróleo. Dados diretos de
+
+rocha são aqueles obtidos por Geólogos através da observação por contato direto com as rochas,
+
+seja em acesso a afloramentos, testemunhos de poços, amostras de mão ou de calha. Já os dados
+
+indiretos são obtidos através de medições de propriedades das rochas através de diversos tipos
+
+de sensores, especialmente os sísmicos e de perfilagem de poço. Dados diretos são importantes
+
+porque permitem calibrar os métodos indiretos de interpretação das rochas, detectar erros nestas
+
+avaliações e também acessar propriedades da rocha que não têm expressão nas medidas feitas
+
+por sensores.
+
+As razões para a subutilização dos dados diretos de rocha são diversas. A dificuldade de
+
+sua obtenção, o que torna o seu custo elevado, resultando na retiradas de amostras com teste-
+
+munhos de uma parcela muito reduzida do total de poços em exploração. O número escasso de
+
+amostras torna a interpretação dos processos sedimentares (ocorrentes durante a deposição da
+
+rocha) e diagenéticos (ocorrentes após a deposição da rocha) extremamente difícil. A dificul-
+
+dade existente quando da extrapolação das propriedades da rocha para diferentes escalas, que
+
+iniciam em milímetros, para lâminas delgadas, passando por metros, com testemunhos, cente-
+
+nas de metros, com poços, dezenas quilômetros, com os reservatórios, e até mesmo centenas de
+
+quilômetros, para bacias sedimentares inteiras. Outro fator impactante muitas vezes é a limita-
+
+ção durante a formação de engenheiros de reservatório, que carecem de maior compreensão da
+
+interação das propriedades petrográficas da rocha e o comportamento de fluxo da rocha.
+
+
+
+17
+
+De modo a fornecer uma alternativa para a utilização de dados de rocha para aperfeiçoar
+
+os modelo de reservatório e de fluxo, é proposto neste trabalho um framework conceitual para
+
+a calibragem de logs de poço, dados frequentemente utilizados por geólogos para preencher os
+
+modelos de grid de reservatório. O framework consiste em uma combinação de ontologias de
+
+domínio para a petrografia, o conceito geológico de petrofácies de reservatório, um algoritmo
+
+de reconhecimento de padrões litológicos em logs de poço e a adaptação de um framework
+
+já existente baseado em algoritmos de alinhamento de sequências de DNA para extrapolação
+
+destes padrões para interpretar logs de poços não amostrados.
+
+Cada uma das abordagens tem por objetivo migrar as propriedades da rocha da escala
+
+microscópica para a escala de poço e desta para a escala de reservatório. A combinação das
+
+abordagens utilizadas neste trabalho é inédita e fornece suporte para o uso de petrofácies de
+
+reservatório durante a modelagem de reservatório. O objetivo deste trabalho é enriquecer a
+
+interpretação de dados de log de poço, que são utilizados por geólogos e engenheiros para
+
+a construção de modelos de grid de reservatório, através do uso de dados diretos de rocha,
+
+realizando a integração de dados geológicos de diferentes escalas. Entretanto, é importante
+
+salientar que não é objetivo deste trabalho fornecer uma metodologia para extrapolação dos
+
+dados de log para modelos de grid de reservatório.
+
+O framework tem como característica um alto grau de modularização. É possível aper-
+
+feiçoar etapas, aperfeiçoando ou substituindo algum dos algoritmos utilizados, sem que o fra-
+
+mework como um todo seja afetado. A validação deste framework proposto foi realizada através
+
+de entrevistas com profissionais da área.
+
+Uma ontologia de domínio com o intuito de suportar a descrição de lâminas delgadas,
+
+principal fonte de dados durante definição de Petrofácies, também é apresentada. Esta onto-
+
+logia foi inicialmente descrita em (ABEL, 2001), e foi parcialmente reprojetada utilizando a
+
+ontologia de fundamentação UFO - Unified Foundational Ontology como ferramenta para a
+
+fundamentação ontológica.
+
+O texto encontra-se organizado da seguinte maneira. O capítulo 2 trata dos principais
+
+conceitos geológicos necessários para o entendimento deste trabalho. O capítulo 3 contém uma
+
+revisão sobre o conceito de ontologias bem como um resumo sobre a ontologia de fundamen-
+
+tação utilizada para a construção da ontologia proposta, a UFO. No capítulo 4, os trabalhos
+
+utilizados para construção do framework proposto são detalhados. O capítulo 5 apresenta a on-
+
+tologia de domínio construída, enquanto o capítulo 6 possui o detalhamento do funcionamento
+
+de nossa proposta. Os trabalhos futuros e conclusões são discutidos no capítulo 7. Algumas das
+
+entrevistas realizadas estão parcialmente transcritas em forma de apêndice deste texto.
+
+
+
+18
+
+
+
+19
+
+2 GEOLOGIA DO PETRÓLEO
+
+Geologia do Petróleo é a aplicação da Geologia, o estudo das rochas e da Terra, à ex-
+
+ploração e produção de óleo e gás (SELLEY, 1998). Neste capítulo, definiremos os conceitos
+
+comuns que são necessários para compreender o domínio de aplicação deste trabalho.
+
+Uma rocha é um agregado sólido de minerais que ocorre na natureza (PRESS et al.,
+
+2004). Rochas podem ser de três tipos: ígneas; metamórficas; ou sedimentares. Rochas ígneas
+
+são formadas pela cristalização de magma. Rochas sedimentares são formadas pela litificação
+
+(processo que converte sedimentos em uma rocha sólida) de sedimentos depois do soterramento.
+
+Rochas metamórficas são formadas pela transformação de outras rochas - ígneas, sedimentares
+
+ou mesmo metamórficas -, quando submetidas a altas temperaturas e pressões no interior da
+
+Terra.
+
+A superfície da Terra é coberta por aproximadamente três quartos de rochas sedimenta-
+
+res. A sua importância reside na significância genética de suas texturas, estruturas, composição
+
+e conteúdo fóssil, os quais revelam a formação histórica dos ambientes de superfície e formas
+
+de vida passadas na Terra.
+
+A formação de rochas sedimentares inicia pelo processo de intemperismo, que é o pro-
+
+cesso pelo qual rochas são quebradas na superfície terrestre para produzir partículas de sedi-
+
+mentos. Pode ser um intemperismo físico ou químico.O intemperismo físico ocorre quando
+
+uma rocha sólida é fragmentada por um processo mecânico. O intemperismo químico ocorre
+
+quando os minerais em uma rocha são quimicamente alterados ou dissolvidos (PRESS et al.,
+
+2004).
+
+Óleo bruto e gás natural ocorrem naturalmente em depósitos de subsuperfície. Eles são
+
+formados a partir de matéria orgânica originada essencialmente de fitoplâncton, algas microscó-
+
+picas acumuladas no fundo de mares e lagos. Para que exista um depósito que seja economica-
+
+mente viável, devem ocorrer três condições geológicas importantes, que constroem um sistema
+
+petrolífero: deve existir uma rocha geradora com alto conteúdo de matéria orgânica, que te-
+
+nha gerado hidrocarbonetos durante seu soterramento na bacia sedimentar em algum tempo no
+
+passado geológico; deve existir uma rocha reservatório porosa e permeável capaz de armaze-
+
+nar os hidrocarbonetos; e deve existir uma estrutura da rocha reservatório, ou uma armadilha,
+
+tipicamente limitada por rochas impermeáveis, ou rochas selo, permitindo a acumulação em
+
+quantidades comerciais (HYNE, 2012). A figura 2.2 apresenta um exemplo de um reservatório
+
+de subsuperfície.
+
+
+
+20
+
+Figura 2.1 – Etapas sedimentares do ciclo da rocha.
+
+Fonte: (PRESS et al., 2004).
+
+A rocha geradora é uma rocha sedimentar que contém matéria orgânica suficiente, de
+
+forma que quando ela for soterrada e aquecida, produzirá gás e óleo (GLUYAS; SWARBRICK,
+
+2009). Rocha reservatório é uma rocha capaz de armazenar e transmitir fluidos como gás e
+
+óleo. Armadilhas consistem em rochas reservatórios porosas envolvidas por rochas de baixa
+
+permeabilidade, também chamadas de rocha selo, as quais não permitem o fluxo de gás ou óleo
+
+(BJORLYKKE, 2010).
+
+Durante a exploração e produção de petróleo, o mais importante é poder predizer a quan-
+
+tidade de óleo e gás que fluirão a partir dos reservatórios pelos poços perfurados. É importante
+
+porque sabendo-se a quantidade de óleo e gás que um poço irá produzir, calcula-se sua viabi-
+
+lidade econômica. Além disto, também é importante evitar a depletação do poço. Isto ocorre
+
+quando a pressão do poço diminui, ou seja, é retirado mais fluido do que o reservatório pode
+
+repor para manter a pressão.
+
+Simulações de fluxo são utilizadas para calcular o comportamento dos fluidos dentro de
+
+um reservatório. Esta simulação é geralmente realizada por Engenheiros de Reservatório, que
+
+para isto apenas está interessado nos atributos de porosidade e permeabilidade das rochas, bem
+
+como sua geometria. Porosidade à percentagem da rocha que corresponde a espaço não-sólido
+
+(poros), ocupado por fluidos como água, óleo ou gás. Permeabilidade refere-se à conectividade
+
+destes poros dentro de uma rocha. Para que uma rocha contenha petróleo é necessário que ela
+
+
+
+21
+
+Figura 2.2 – Exemplo de reservatório de óleo na subsuperfície.
+
+Fonte: traduzido de (HYNE, 2012).
+
+possua poros e, para que este petróleo seja extraído, é necessário que existe conectividade entre
+
+estes poros.
+
+A seguir, serão abordados alguns dos modelos existentes na modelagem de reservatório,
+
+apresentada uma síntese de um workflow para a modelagem de reservatórios e também serão
+
+apresentados em maior detalhe os principais tipos de dados existentes durante a modelagem de
+
+reservatório.
+
+2.1 Modelos Geológicos
+
+De acordo com (PERRIN; RAINAUD, 2013), modelos geológicos são classificados
+
+como modelos físicos ou modelos descritivos. Modelos físicos são construído para estudar e
+
+visualizar os processos físicos, físico-químicos e mecânicos em Geologia. Podem ser analó-
+
+gicos, quando resultantes de processos de simulação física, ou numéricos, quando resultantes
+
+exclusivamente de computação. Modelos descritivos, também chamados de Modelos da Terra,
+
+ou ainda, em inglês Earth Models, são construídos para fornecer descrições de características
+
+geológicas. Além disso, modelos descritivos são chamados de Modelos Estáticos, quando des-
+
+crevem características geológicas em um dado momento geológico, ou Modelos Dinâmicos,
+
+quando descrevem a evolução durante o tempo destas características. Ao longo deste trabalho
+
+usaremos o termo Earth Model para nos referirmos a modelos descritivos da Terra.
+
+Earth models são bastante complexos, o que torna difícil de apresentá-los com um única
+
+representação. Por isto, earth models são normalmente uma soma de representações parciais.
+
+Por exemplo, modelos de reservatório de petróleo na subsuperfície são descritos por modelos
+
+estruturais, estratigráficos, petrográficos, de reservatório e de bacias. Cada um destes modelos
+
+
+
+22
+
+possui uma representação distinta, mas todos compartilham da mesma intenção: representar um
+
+reservatório de petróleo.
+
+Representações da subsuperfície em 2D (duas dimensões), como mapas geológicos ou
+
+seções, são largamente utilizadas por geólogos, são muitas vezes inadequadas para descrever
+
+e quantificar volumes. Por esta razão, modelos em 3D, que descrevem a distribuição espacial
+
+das propriedades do reservatório, e 4D, que descrevem a evolução das propriedades em 3D no
+
+tempo, surgiram nas últimas décadas como um meio de representar reservatórios de petróleo.
+
+O principal objetivo durante a prospecção de óleo e gás é identificar potenciais reservatórios e
+
+estimar o volume que possa ser extraído dele. Segundo (PERRIN; RAINAUD, 2013), para isto,
+
+diversos estudos são necessários.
+
+Na escala regional, que varia de dezenas até centenas de quilômetros de área, o principal
+
+objetivo é identificar sucessões sedimentares que possivelmente incluam rochas geradoras e
+
+rochas reservatório, e estruturas geológicas que possam corresponder a armadilhas para estas
+
+rochas reservatório. Dados regionais como paleográficos - rochas e superfícies que existiram
+
+na Terra nos diferentes períodos geológicos -, sedimentológicos - dados sobre os sedimentos
+
+existentes na área-, diagenéticos - dados sobre as mudanças químicas e físicas ocorrentes após
+
+a deposição dos sedimentos-, e evolução tectônica, devem ser utilizados (PERRIN; RAINAUD,
+
+2013). Com todos estes dados o geólogo pode construir um Modelo de Bacia para descrever
+
+bacias sedimentares que podem conter óleo ou gás. Estes modelos são geralmente em quatro
+
+dimensões, incluindo a evolução no tempo e permitindo que seja possível simular os variados
+
+estágios da formação de hidrocarbonetos.
+
+Já na escala de reservatório, que varia de centenas de metros até alguns poucos quilô-
+
+metros, o objetivo é estimar a produção potencial de um reservatório. Para isto, estuda-se sua
+
+geometria, o que permite quantificar o volume de rocha reservatório, e estuda-se a natureza li-
+
+tológica das rochas reservatório, assim como também os tipos de fluidos e suas características,
+
+como densidade, viscosidade, e quantificam-se propriedades como porosidade e permeabili-
+
+dade, o que subsidia uma avaliação de qualidade do reservatório. São necessários diversos
+
+modelos 3D para representar todo este conhecimento. Inicialmente, temos o modelo estrutural,
+
+construído através de interpretações de dados sísmicos, e que serve como suporte geométrico
+
+para todos os outros modelos. Após isto, são construídos modelos estratigráficos para espe-
+
+cificar as diversas litologias e para representar a distribuição de eletrofácies e as propriedades
+
+petrofísicas associadas aos volumes. Os modelos dividem os volumes descritos em malhas es-
+
+tratigráficas construídas de acordo com estratificações locais, com a superposição de diferentes
+
+tipos de rochas e fácies (PERRIN; RAINAUD, 2013).
+
+
+
+23
+
+As próximas etapas consistem em avaliar a quantidade de óleo e gás no reservatório
+
+com maior precisão. Com a geometria definida pelo modelo estrutural, o volume potencial
+
+de óleo e gás confinados no reservatório é calculado. Multiplicando o volume bruto por uma
+
+média de porosidade estimada com base em dados de logs de poço e análise de testemunhos
+
+uma estimativa financeira é definida. Esta estimativa tem uma precisão aproximada de 10%.
+
+Novas estimativas com melhor precisão são calculadas com base nos modelos estratigráficos e
+
+de reservatório (PERRIN; RAINAUD, 2013).
+
+Existe uma grande ambiguidade quando se fala em modelo de reservatório, pois costuma-
+
+se colapsar diversos modelos como sendo um único modelo. Entre os principais, destacamos
+
+três modelos, o modelo de reservatório conceitual, o modelo de grid de reservatório e o modelo
+
+de simulação de fluxo.
+
+O modelo de reservatório conceitual é um modelo geológico e abstrato, existente na
+
+mente do geólogo de reservatório, onde um modelo do reservatório que está na subsuperfície
+
+e das características do seu entorno é construído. Este modelo é abstrato, sem representação
+
+formal e pode incluir também uma dimensão temporal da Geologia do local.
+
+Após o modelo de reservatório conceitual, o geólogo de reservatório constrói um mo-
+
+delo de grid de reservatório, que é um modelo matemático-geométrico, divido espacialmente
+
+por células. Segundo (ADAMSON et al., 1996), geralmente as células deste grid são retilíneas,
+
+com um topo horizontal achatado em uma disposição de geometria chamada de bloco-centrada
+
+(figura 2.3). Para construí-lo, o geólogo leva em consideração o seu modelo de reservatório
+
+conceitual, bem como os outros modelos já criados ao longo da prospecção, como o modelo
+
+estrutural, o modelo estratigráfico, e então modela a geometria do reservatório, além de inserir
+
+algumas propriedades químicas e físicas das rochas que o compõe. Outro tipo de geometria uti-
+
+lizada é a geometria corner-point, onde os cantos das células não necessariamente precisam ser
+
+ortogonais, o que facilita a modelagem da estrutura dos volumes das rochas do reservatório. En-
+
+tretanto, este tipo de abordagem torna a simulação de fluxo mais custosa computacionalmente.
+
+O terceiro e último modelo é o chamado modelo de simulação de fluxo. Ele é cons-
+
+truído geralmente por um Engenheiro de Reservatório, que se baseia no modelo de grid que
+
+lhe foi entregue pelo geólogo de reservatório. O objetivo deste modelo é servir de base para
+
+uma simulação do fluxo dos fluidos existentes no reservatório. É muito comum que este mo-
+
+delo possua um refinamento muito menor do que o modelo de grid de reservatório por razões
+
+computacionais. Como estes modelos costumam ter uma grande quantidade de células e muitas
+
+propriedades atreladas a cada uma delas, o custo computacional para realizar uma simulação
+
+completa torna-se impraticável.
+
+
+
+24
+
+Figura 2.3 – Visão 2D de um grid de reservatório e uma célula em destaque com uma disposição
+geométrica bloco-centrada.
+
+Fonte: (ADAMSON et al., 1996)
+
+Devido à complexidade dos earth models, que contém grande quantidade de conheci-
+
+mentos de diferentes tipos e com diversos profissionais de áreas diferentes trabalhando, onto-
+
+logias surgiram como solução para a formalização de conhecimento geológico. Existem dados
+
+que são adquiridos através de descrições e interpretações de geólogos, dados gerados por simu-
+
+lações computacionais, dados de medidas de ferramentas e diversas outras fontes. Um problema
+
+é que geralmente estes dados não são integráveis, e é assim que ontologias ganham espaço, pois
+
+suportam o desenvolvimento de sistemas que podem ser utilizados para capturar e organizar in-
+
+formações geológicas. Seu uso é essencial para possibilitar geólogos a reduzir a complexidade
+
+deste tipo de conhecimento, e fornecer base conceitual para permitir a integração de informação,
+
+mantendo a correlação entre os mesmos objetos geológicos em modelos diferentes.
+
+2.2 Principais Dados Utilizados para Modelagem de Reservatórios
+
+Os reservatórios são estudados e modelados a partir dos dados obtidos diretamente ou
+
+indiretamente das rochas que o compõe. Nesta seção, serão apresentados alguns dos principais
+
+tipos de dados que profissionais utilizam durante a modelagem de um reservatório de petróleo.
+
+
+
+25
+
+2.2.1 Mapas
+
+Mapas de superfície e subsuperfície são representações de duas dimensões em planta da
+
+superfície da terra ou de superfícies de interesse no substrato. Dentre os principais, podemos
+
+destacar mapas topográficos, mapas geológicos, mapas de base e mapas de subsuperfície.
+
+O mapa topográfico é utilizado para representar a elevação da superfície da Terra. Para
+
+representar a terceira dimensão em um mapa plano, de duas dimensões, linhas de contorno são
+
+utilizadas. Uma linha de contorno sempre possui uma elevação atrelada a si que é acima ou
+
+abaixo do nível do mar. Ao longo de todo contorno da linha a elevação é a mesma. A figura 2.4
+
+apresenta um exemplo de mapa de contorno.
+
+Figura 2.4 – Mapa de contorno.
+
+Fonte: (HYNE, 2012).
+
+Mapas geológicos mostram onde cada camada de rocha corta na superfície representada
+
+no mapa. A cada camada são designados diferentes padrões, cores e símbolos no mapa. A
+
+unidade básica de rochas sedimentares utilizada utilizada no mapeamento geológico é chamada
+
+de formação. Uma formação é uma camada de rocha mapeável com topo e base definidos,
+
+associada a uma mesma idade estratigráfica. Formações podem ser subdividas em unidades
+
+menores chamadas de membros. Um membro é uma camada distintiva, porém local, em uma
+
+formação.
+
+Figura 2.5 – Mapa geológico.
+
+Fonte: (HYNE, 2012).
+
+
+
+26
+
+Mapas de base são mapas geográficos que mostram a localização de todos os poços
+
+que foram perfurados na área. Mapas de subsuperfície são aqueles que representam camadas
+
+abaixo da superfície terrestre. São três os principais mapas de subsuperfície: estrutural, isópaca
+
+e percentagem. Mapas estruturais utilizam linhas de contorno para mostrar a elevação do topo
+
+de uma camada de rocha sedimentar. Mapas de isópacas usam linhas de contorno para mostrar
+
+a espessura de uma camada de subsuperfície. Mapas de percentagem plotam a percentagem de
+
+um tipo específico de rocha em uma formação.
+
+2.2.2 Sísmica
+
+A sísmica é uma fonte de dados extremamente importante na exploração de óleo e gás.
+
+O método sísmico utiliza a emissão de energia sonora na subsuperfície da Terra, para que ondas
+
+sonoras sejam refletidas nas superfícies camadas de rochas e então capturadas. Para isto, são
+
+utilizados uma fonte emissora e um detector. A fonte emite um impulso de energia sonora na
+
+superfície do continente ou do oceano. A energia sonora é refletida pelas superfícies das cama-
+
+das de rocha. Aproximadamente 2% à 4% das ondas sonoras são refletidas em cada camada,
+
+enquanto as ondas restantes continuam até camadas mais profundas. As ondas refletidas voltam
+
+para a superfície, onde um detector as grava (HYNE, 2012). A figura 2.6 contém um esquema
+
+de funcionamento básico do método sísmico.
+
+Figura 2.6 – Princípio da aquisição sísmica.
+
+Fonte: (HYNE, 2012).
+
+
+
+27
+
+2.2.3 Perfis de Poço
+
+Segundo (HYNE, 2012), perfis de poço, também chamados de logs de poço, são aqueles
+
+construídos através do uso de uma ferramenta inserida dentro de um poço suspensa por um cabo.
+
+Foram inventados na França, em meados de 1920 e foram inicialmente aplicados a campos
+
+de óleo na Califórnia e Oklahoma em 1930. Para criar um log de poço, após a perfuração
+
+do mesmo, o buraco é inicialmente condicionado pela lama de perfuração em circulação, e o
+
+equipamento de perfuração é retirado do poço. Um caminhão com equipamentos para realizar
+
+os logs é levado até o campo de perfuração. Uma ferramenta de log ou sonda é percorrida dentro
+
+do poço em um cabo de log. É um cabo blindado, que possui cabos de aço que cercam cabos
+
+condutores. Este cabo é desenrolado a partir de um tambor instalado na traseira do caminhão.
+
+A figura 2.7 apresenta um esquema de captura de logs.
+
+Figura 2.7 – Esquema de captura de logs.
+
+Fonte: (HYNE, 2012).
+
+A ferramenta de log ou sonda, é um cilindro preenchido com diversos pacotes de ins-
+
+trumentos, como densidade de formação, porosidade neutrônica, e raios gama podem ser com-
+
+binados para formar este ferramenta. À medida que a ferramenta desce ao longo do poço, ela
+
+pode captar estímulos elétricos, acústicos e propriedades radioativas das rochas e seus fluidos
+
+e também a geometria do poço. Os dados produzidos são transmitidos digitalmente através
+
+dos cabos condutores para instrumentos existentes no caminhão, onde um Engenheiro de Logs
+
+pode monitorar as respostas da ferramenta de log. Estes dados são armazenados em arquivos
+
+
+
+28
+
+que contém um cabeçalho e trilhas de gravação, onde a cada profundidade são registrados os
+
+valores da amostra captada. A figura 2.8 apresenta um exemplo de arquivo LAS - Log ASCII
+
+Standard, um padrão para o armazenamento de dados log.
+
+Figura 2.8 – Exemplo de Arquivo LAS.
+
+Fonte: do autor.
+
+Logs são importantes porque possuem um bom custo benefício em termos de qualidade
+
+e quantidade de dados capturados. Embora sua qualidade seja muito inferior à de dados diretos
+
+de rocha, a possibilidade de obter o rastreio de poços inteiros o torna um dos tipos de dado mais
+
+utilizados na indústria petrolífera. Os logs mais utilizados são o de raio gama, o de nêutron e o
+
+de resistividade.
+
+2.2.4 Amostras de Rocha
+
+Amostras de Rocha são porções de rochas retiradas diretamente do poço de petróleo ou
+
+de afloramentos. Entre as principais amostras retiradas de poços podemos destacar testemunho,
+
+amostra de calha e amostra lateral, além de lâminas delgadas, que são preparar a partir das três
+
+amostras anteriores. (PERRIN; RAINAUD, 2013). O testemunho é uma seção cilíndrica de
+
+rocha, retirado durante a perfuração do poço. Testemunhos são de difícil obtenção e possuem
+
+
+
+29
+
+custo elevado. Diversos metros podem ser amostrados, mas ainda assim correspondem a uma
+
+pequena fração do intervalo total do poço, e nunca de todos os poços existentes. Amostras
+
+de calha são pequenas porções de rochas cortadas pela ferramenta de perfuração e que são
+
+trazidas à superfície pelo fluxo da lama utilizada na perfuração. Para uma amostra de calha ser
+
+considerada representativa é necessário que sua posição no poço seja corretamente determinada.
+
+Amostras laterais são pequenas porções de rochas que são retiradas da lateral do poço. Uma
+
+lâmina delgada é uma fatia de rocha de cerda de três centímetros de comprimento e meio
+
+milímetro de espessura, montada sobre uma lamínula de vidro que permite a passagem da luz,
+
+preparada para ser observada em um microscópio ótico de luz polarizada.
+
+As amostras físicas de rocha permitem diferentes tipos de análises físicas e químicas
+
+que geram diversos relatórios e estudos. Entre os principais, pode-se destacar a composição
+
+química das rochas, a composição mineralógica do arcabouço (petrografia por microscópio de
+
+luz transmitida) ou dos cimentos (microscopia eletrônica), datação da rocha obtida por analise
+
+química do decaimento radioativo dos minerais, o estudo das inclusões fluidas em minerais, a
+
+descrição da litologia, estruturas deposicionais e contatos em testemunhos, testes químicos de
+
+presença de carbonatos e muitos outros. Além de amostras de rocha, também fluidos, como
+
+água e petróleo, são coletados do poço e permitem a realização de diversos testes. O petróleo
+
+sofre diversas análises químicas (composição dos elementos orgânicos e inclusões) e físicas
+
+(viscosidade). A água permite a compreensão da composição química da água original de
+
+formação das rochas reservatório e, portanto, a evolução química deste reservatório.
+
+Esse enorme conjunto de dados orienta engenheiros e geólogos na definição das melho-
+
+res estratégias de desenvolvimento e exploração dos poços de petróleo.
+
+2.3 Aquisição de Conhecimento Geológico
+
+As principais atividades existentes durante a modelagem de reservatório, bem como os
+
+principais dados gerados em cada etapa, foram sintetizadas em um workflow de BPM. Este
+
+conhecimento foi adquirido através de revisão na literatura da área e entrevistas com cinco
+
+diferentes profissionais atuantes em alguma das etapas da modelagem de reservatório. As en-
+
+trevistas ocorreram de forma não estruturada, em forma de perguntas e respostas livres com
+
+gravação de áudio. Este foi o método escolhido devido a dificuldade em agendar entrevistas
+
+com antecedência com estes profissionais, por possuírem agendas com poucos horários dispo-
+
+níveis. Os profissionais entrevistados são de cinco áreas diferentes: Petrografia; Estratigrafia;
+
+
+
+30
+
+Figura 2.9 – Workflow da modelagem de reservatório.
+
+Fonte: do autor.
+
+
+
+31
+
+Geofísica; Geoquímica; e Geologia de Reservatório. Algumas destas entrevistas estão parcial-
+
+mente descritas como apêndice deste trabalho.
+
+Para a representação deste workflow, utilizamos BPMN - Business Process Model and
+
+Notation. O workflow encontra-se na figura 2.9. Esta notação possui como elementos objetos
+
+de fluxo, objetos de conexão, raias e artefatos. Retângulos simples representam atividades,
+
+retângulos que possuem no seu interior um quadrado com um sinal de adição são subprocessos.
+
+Subprocessos podem conter todos os outros elementos de BPMN. Os processos são sempre
+
+iniciados e terminados por eventos: um círculo verde indica um evento de início de processo,
+
+enquanto um círculo vermelho indica um evento de término de processo. Eventos, atividades
+
+e subprocessos são interligados através de linhas com uma seta em seu final. A semântica
+
+pretendida é de que a atividade da qual a linha sai ocorre antes da atividade em que a linha com a
+
+seta está conectada. Existem ainda gateways, os quais possuem a forma gráfica de um diamante,
+
+e permitem que sejam modeladas bifurcações e uniões de acordo com alguma condição.
+
+É importante salientar que o modelo aqui proposto não tem por objetivo detalhar todos
+
+os subprocessos existentes na modelagem de reservatório, mas sim mapear os principais tipos
+
+de dados gerados ao longo da modelagem. Por esta razão, cada área modelada como um subpro-
+
+cesso compreende diversas outras atividades, as quais não foram aqui modeladas. O workflow
+
+inicia com duas atividades em paralelo: mapeamento regional e sísmica. No mapeamento regi-
+
+onal, temos como resultado diversos mapas, os quais serão interpretados por geólogos e servirão
+
+de entrada para outros modelos. A sísmica gera como resultado seções sísmicas, as quais serão
+
+interpretadas por geofísicos, que criarão modelos sísmicos, e servirão de suporte para a criação
+
+de diversos outros modelos durante o workflow.
+
+No próximo passo, três frentes são abertas em paralelo: a sismoestratigrafia, a perfura-
+
+ção e a modelagem estrutural. Na sismoestratigrafia, o geólogo se aproveita dos mapas e da
+
+sísmica para gerar modelos estratigráficos, que suportarão a construção de modelos conceituais
+
+pelo geólogo de reservatório. Já na modelagem estrutural, o resultado é um modelo estrutural,
+
+cuja geometria servirá como base para a criação dos futuros grids. A perfuração diz respeito
+
+ao ato de perfurar os poços de petróleo. Após a perfuração, quatro frentes são abertas com um
+
+gateway inclusivo. Isto significa que as atividades serão realizadas em paralelo, mas não há ne-
+
+cessidade de que todas sejam finalizadas para que a próxima atividade seja iniciada, baste que
+
+uma delas finalize. Os quatro subprocessos são: amostragem de rocha, amostragem de fluido,
+
+perfilagem, análise de laboratório.
+
+Na amostragem de rocha, amostras reais da rocha são retiradas, como testemunhos,
+
+amostras de calhas, lâminas delgadas e amostras laterais. Geólogos realizarão descrições deste
+
+
+
+32
+
+material, que servirá de base para a construção de modelos conceituais mais ricos no próximo
+
+passo. Na amostragem de fluido, são analisados os fluidos existentes no poço e temos como
+
+resultado os tipos de fluidos existentes bem como a pressão deles no poço. A perfilagem tem
+
+como resultado logs de poço, ou registros de sinais analógicos medidos ao longo do poço, que
+
+serão largamente utilizados como forma de análise da rocha ao longo de todo reservatório. As
+
+análises de laboratório são análises petrofísicas, petrográficas, químicas, microscopia eletrônica
+
+de varredura, microsonda, entre outros. Resultam em dados como porosidade e permeabilidade
+
+da rocha e composição química e mineralógica.
+
+A atividade de modelagem conceitual compreende a construção de modelos geológi-
+
+cos, onde são interpretados os dados e modelos gerados nas atividades anteriores. Entre estes
+
+modelos geológicos estão o modelo de litofácies, modelo de petrofácies e modelos geológicos
+
+conceituais. Todas estes modelos servem de entrada para a próxima atividade, a modelagem de
+
+reservatório. Esta atividade se beneficia dos modelos construídos anteriormente para a criação
+
+do modelo de grid de reservatório, que servirá de entrada para a última atividade. A simula-
+
+ção de fluxo é responsável por simular os fluidos no reservatório com base em todos dados já
+
+coletados.
+
+O próximo capítulo contém a definição do conceito de ontologia, além de uma revisão
+
+da ontologia de fundamentação Unified Foundational Ontology.
+
+
+
+33
+
+3 ONTOLOGIAS
+
+Neste capítulo, será introduzido o conceito de ontologia e a importância de seu papel na
+
+interoperabilidade de dados. Dedicaremos uma seção para a introdução da Unified Foundational
+
+Ontology - UFO, a ontologia de fundamentação utilizada para a modelagem do conhecimento
+
+exposto neste trabalho.
+
+O termo Ontologia tem origem no campo da Filosofia, significando um sistema de cate-
+
+gorias específico e que representa uma determinada visão do mundo. Sendo assim, uma ontolo-
+
+gia não é dependente de uma linguagem. Ela pode ser representada em diferentes linguagens e
+
+continuará sendo a mesma ontologia. Entretanto, no campo da Inteligência Artificial, a palavra
+
+ontologia possui um significado distinto. Em (GUARINO, 1998), Guarino define uma ontolo-
+
+gia como um artefato de engenharia, constituído por um vocabulário específico e utilizado para
+
+descrever uma certa realidade, mais um conjunto de assertivas explícitas definindo o signifi-
+
+cado pretendido das palavras deste vocabulário. Apesar das definições serem diferentes para
+
+cada área, elas são de fato relacionadas. Guarino mantém o termo ontologia para referenciar o
+
+artefato de engenharia, composto de conceitos e relacionamentos, enquanto renomeia a visão
+
+filosófica como conceitualização.
+
+Uma outra definição muito citada na literatura de Inteligência Artificial foi criada em
+
+(STUDER; BENJAMINS; FENSEL, 1998). Studer combinou as definições existentes em (GRU-
+
+BER, 1993) e (BORST, 1997), definindo uma ontologia como uma especificação explícita e
+
+formal de uma conceitualização compartilhada. O conhecimento descrito em uma ontologia
+
+deve ser explícito e formal, pois é desejável que todo conhecimento existente no domínio possa
+
+ser computável. Além disso, este conhecimento deve refletir uma visão de mundo consensual
+
+de uma comunidade, e não apenas um conhecimento individual.
+
+Em (GUARINO, 1998), Guarino classifica ontologias em quatro categorias: ontologias
+
+de topo; ontologias de domínio, ontologias de tarefas; e ontologias de aplicação. Ontologias
+
+de topo, também conhecidas como de fundamentação, descrevem conceitos gerais, como es-
+
+paço, tempo, eventos, entre outros conceitos que são independentes de domínio. Ontologias de
+
+domínio e ontologias de tarefas descrevem um vocabulário relacionado ao domínio ou à tarefa
+
+através de uma especialização de uma ontologia de topo. Ontologias de aplicação descrevem
+
+conceitos que são uma união de uma tarefa e um domínio em específico, ambos descritos em
+
+ontologias de domínio e de tarefa, respectivamente. (PRESTES et al., 2013) inclui ontologias
+
+core como uma quinta categoria de ontologias. Ontologias core reusam conceitos especificados
+
+por ontologias de topo e especificam novos conceitos que podem ser usados em domínios e ta-
+
+
+
+34
+
+refas específicas. A figura 3.1 apresenta uma hierarquia desta classificação. (GÓMES-PÉREZ;
+
+FERNÁNDEZ-LÓPEZ; CORCHO, 2004) classifica ainda ontologias como ontologias leves,
+
+sendo simples taxonomias, e ontologias pesadas, sendo o resultado de uma análise profunda do
+
+domínio, fornecendo restrições na semântica do domínio.
+
+Figura 3.1 – Hierarquia de classificação de ontologias.
+
+Fonte: do autor.
+
+Ontologias são importantes porque esclarecem a estrutura do conhecimento, explici-
+
+tando um algo que por hora foi implícito (WACHE et al., 2001). Sendo assim, a ontologia
+
+de um certo domínio forma o coração de um sistema de representação de conhecimento para
+
+tal domínio (CHANDRASEKARAN; JOSEPHSON; BENJAMINS, 1999). Devido à sua ca-
+
+racterística de representar o conhecimento consensual de uma comunidade, Gruber (GRUBER,
+
+1993) defende também o uso de ontologias para o compartilhamento do conhecimento.
+
+Um exemplo de área que pode beneficiar-se do uso de ontologias para a integração de
+
+seus dados é a Geologia do Petróleo. Geologia do Petróleo é a aplicação da Geologia, o es-
+
+tudo da Terra, na exploração e produção de óleo e gás (SELLEY, 1998). Os esforços para o
+
+desenvolvimento de ontologias nesta área advém da necessidade de formalizar o conhecimento
+
+geológico. Usualmente, modelos geológicos possuem muita informação, originada de diversas
+
+fontes e com muitas pessoas trabalhando ao seu redor. Existem dados provenientes de inter-
+
+pretações e descrições de geólogos, dados gerados por simulações computacionais, dados de
+
+medidas adquiridas por ferramentas automáticas e diversas outras fontes.
+
+Infelizmente, é muito comum que todos estes dados não sejam integrados, e é neste
+
+ponto que a ontologia têm o seu papel destacado, pois ajudam a desenvolver sistemas que podem
+
+ser usados para capturar e organizar informações geológicas. Segundo (PERRIN; RAINAUD,
+
+2013), seu uso é essencial para permitir que geólogos e outros profissionais da área reduzam
+
+a complexidade deste tipo de conhecimento, e que forneça a base conceitual para suportar a
+
+
+
+35
+
+integração de informação, mantendo correlação entre objetos geológicos em um modelo com
+
+os mesmos objetos em outro modelo.
+
+Na próxima seção, serão apresentaremos os principais conceitos relacionados à Unified
+
+Foundational Ontology - UFO.
+
+3.1 Unified Foundational Ontology
+
+Unified Foundational Ontology, a UFO, é uma ontologia de fundamentação construída
+
+com base em diversas teorias de áreas como Ontologia Formal, Lógica Filosófica, Filosofia da
+
+Linguagem e Psicologia Linguísticas e Cognitiva. A UFO foi concebida como uma unificação
+
+da ontologia de referência GFO (Generalized Formalized Ontology) e da ontologia de topo
+
+DOLCE/OntoClean (GUIZZARDI; WAGNER, 2010).
+
+Inicialmente é necessário que seja feita a distinção entre particular e universal. Parti-
+
+culares são entidades existentes na realidade e que possuem identidade. Identidade é o critério
+
+que utilizamos para diferenciar dois particulares e decidirmos se é a mesma entidade ou não.
+
+Univerais são padrões de características que podem ocorrer em inúmeros particulares. O núcleo
+
+da UFO é fundamentado no quadrado ontológico de Aristóteles, também chamado de ontolo-
+
+gia de quatro categorias, sendo elas object / object universal e moment / moment universal
+
+(GUIZZARDI; WAGNER, 2010).
+
+Segundo Guizzardi (GUIZZARDI, 2005), moments são existencialmente dependentes
+
+em outros particulares. Um particular x é existencialmente dependente em outro particular y
+
+se e somente se, necessariamente exista y para que x possa existir. Além disto, a relação de
+
+dependência existencial é modalmente constante, ou seja, se x depende de y, esta relação se
+
+mantém para todos os possíveis mundos em que x exista.
+
+Objects são particulares que possuem qualidades espaço-temporal e que são baseados
+
+em matéria. Exemplos são pessoa, uma porção de rocha, o continente africano. Objects são
+
+existencialmente independentes, ou seja, um objeto x é independente de todos os outros objetos
+
+que não compartilham partes em comum com x. Entretanto, o fato de objetos serem indepen-
+
+dentes não exclui a dependência entre um objeto e suas partes essenciais e inseparáveis e a
+
+dependência entre um objeto e seus moments essenciais (GUIZZARDI; WAGNER, 2010).
+
+Object universals e moment universals classificam objects e moments, respectivamente.
+
+Exemplos de object universals são pessoa, rocha, oceano, água enquanto exemplos de moment
+
+universals são cor, dor de cabeça, carga elétrica. A distinção entre ambos está presente na dife-
+
+renciação entre o que é dito sobre um sujeito, denotando classificação, e o que é exemplificado
+
+
+
+36
+
+em um sujeito, denotando inerência. Quando coloquialmente se diz que "João é um homem", o
+
+object João está sendo classificado como o object universal pessoa. Já quando se diz que "João
+
+é gordo", significa que João exemplifica o moment universal peso. Existe ainda a relação de
+
+caracterização entre um moment universal e os particulares que o exemplificam. A figura 3.2
+
+sumariza as relações existentes entre as quatro categorias do quadrado de Aristóteles.
+
+Figura 3.2 – O Quadrado de Aristóteles.
+
+Fonte: (GUIZZARDI; WAGNER, 2010)
+
+Object Univerals podem ser distinguidos ainda em sortal univerals e mixin univerals.
+
+Todos os universais carregam o princípio de aplicação, enquanto apenas os sortais possuem
+
+princípio de identidade. O princípio de aplicação é o que nos permite decidir se um particular
+
+é uma instância de um universal em específico. Dentro da categoria dos sortais a UFO ainda
+
+distingue seus construtos baseando-se na noção de rigidez.
+
+Um universal U é dito rígido se para todas instâncias x de U, x é necessariamente uma
+
+instância de U, isto é, se x instancia U em algum mundo w, então x deve fazê-lo em todo mundo
+
+possível w’. Um universal U é dito anti-rígido se para cada instância x de U em um mundo w,
+
+é possível que x não seja uma instância de U em um mundo possível w’ (GUIZZARDI, 2005).
+
+Sortal universals rígidos são chamados de substance sortals, e podem ser divididos em
+
+kind, quantity e collective. Kinds são indivíduos que constituem complexos funcionais, como
+
+pessoa, cão, fruta, etc. Collectives são coleções de complexos funcionais, como uma matilha,
+
+uma nuvem de insetos ou um baralho. Quantity é uma porção de matéria maximalmente auto-
+
+contida que possui princípio de identidade e é contável, como água, vinho, etc. SubKinds são
+
+sortal universals que herdam a identidade de substance sortals, como por exemplo mulher e
+
+momem, que herdam sua identidade do kind pessoa.
+
+Sortal universals que são anti-rígidos são chamados de phased sortals. Podem ser dife-
+
+renciados em phase e role. Ambos carregam o princípio de identidade provido por um único
+
+kind, mas diferenciam-se com relação à sua condição de especialização. Phases constituem
+
+
+
+37
+
+possíveis estágios da história de um particular e possuem uma especialização que depende uni-
+
+camente de suas propriedades intrínsecas, enquanto roles dependem de propriedades relacio-
+
+nais extrínsecas, ou seja, são relacionalmente dependentes (GUIZZARDI; WAGNER, 2010).
+
+Tomemos como exemplo o conceito pessoa. Pessoa é um conceito rígido, e provê um critério
+
+de identidade, portanto é classificada como kind. Agora consideremos o conceito de estudante.
+
+Claramente para que alguém seja uma instância de estudante se faz necessário que também seja
+
+uma instância de pessoa. Sendo assim, dizemos que estudante carrega o princípio de identidade
+
+do kind pessoa e que é anti-rígido, pois uma pessoa pode deixar de ser um estudante e continuar
+
+a existir. Como estudante depende relacionalmente de propriedades externas à pessoa - como
+
+uma instituição de ensino -, dizemos que estudante é um role. Agora consideremos uma cri-
+
+ança, que certamente também é uma instância de pessoa. Algum dia esta criança deixará de ser
+
+uma instância de criança e passará a instanciar um adolescente, sem deixar de ser uma pessoa.
+
+Como a condição de especialização é intrínseca à pessoa, dizemos que o conceito de criança ou
+
+de adolescente são phases.
+
+Mixin universals correspondem à generalizações de sortal universals distintos e são se-
+
+parados em category, role mixin e mixin. Sua separação se dá quanto a rigidez. Categories abs-
+
+traem uma propriedade essencial (rígida) comum a sortal universals distintos e disjuntos, sendo
+
+ela mesma rígida. Um exemplo é entidade racional, que abstrai uma propriedade essencial de
+
+uma pessoa e um agente artificial. Role mixins abstraem propriedades acidentais à universals
+
+distintos. Por exemplo, cliente generaliza cliente pessoal (role de pessoa) e cliente corporativo
+
+(role de organização). Mixins abstraem propriedades que são acidentais para algumas instân-
+
+cias, mas essenciais para outras. Por exemplo, objeto sentável abstrai uma propriedade que é
+
+essencial para cadeira, mas acidental para mesa.
+
+Em (GUIZZARDI; WAGNER, 2010), o autor apresenta ainda algumas regras: um uni-
+
+versal rígido não pode possuir como super-classe um universal anti-rígido; todo object deve
+
+instanciar exatamente um substance sortal; um mixin não pode ser subsumido por um sortal; e
+
+um mixin não pode ter instâncias diretas.
+
+Moments podem ser instrinsic moments ou relators. Instrinsic moments são aqueles
+
+que são dependentes apenas de um universal como cor, altura, enquanto relators são depen-
+
+dentes de dois ou mais universals, como emprego, que depende de empregador e empregado.
+
+Instrinsic moments são categorizados em qualities e modes. Qualities são a objetificação das
+
+propriedades de objetos que podem ser diretamente avaliadas em um determinado espaço de va-
+
+lores. Exemplos são a massa de um objeto, a altura, a cor. Modes são moments que não podem
+
+ser diretamente avaliados em termos de um único espaço de valores, como credos, intenções,
+
+
+
+38
+
+objetivos.
+
+Quality universals são sempre associados com espaços de valores, ou quality structure,
+
+que podem ser entendidas como o conjunto de todas possíveis regiões que delimitam o espaço
+
+de valores que pode ser associado a um quality em particular. A relação entre um quality e sua
+
+quality structure é a relação de caracterização. Por exemplo, o quality universal altura pode ser
+
+caracterizado por uma quality structure isomórfica ao domínio dos números reais positivos. A
+
+percepção de um quality é chamada de quale. Por exemplo, suponha que existe um cachorro
+
+e que a cor dele é branca. O branco é um quale, do quality universal cor, que caracteriza o
+
+universal cachorro, com um quality structure do espaço RGB.
+
+Quality universals são ainda divididos em nominal qualities e measurable qualities. No-
+
+minal qualities são baseados em convenções sociais e possuem um quality structure abstrato,
+
+como CPF, endereço, etc. Já measurable qualities são aqueles que podem ser objetivamente
+
+medidos por agentes cognitivos ou ferramentas, e podem ainda ser classificados em perceivable
+
+qualities e non-perceivable qualities. Os primeiros são aqueles que podem ser medidos direta-
+
+mente por um agente cognitivo, enquanto os últimos requerem algum tipo de ferramente para
+
+sua medição.
+
+O relacionamento entre entidades na UFO se dá em forma de relações. Relações são se-
+
+paradas em duas grandes categorias: Relações Formais e Relações Materiais. Relações Formais
+
+ocorrem entre duas ou mais entidades diretamente, sem e intervenção de nenhum indivíduo. Re-
+
+lações Materiais possuem suas próprias estruturas materiais, como por exemplo um emprego,
+
+um beijo. As relações materiais são mediadas por relators.
+
+Neste capítulo, foi apresentado o conceito de ontologia e detalhada a ontologia de fun-
+
+damentação (UFO) utilizada para a análise ontológica realizada neste trabalho. A seguir, serão
+
+apresentados trabalhos já existentes utilizados pelo framework aqui proposto.
+
+
+
+39
+
+4 TRABALHOS RELACIONADOS
+
+O framework proposto por este trabalho considera o reuso e a extensão de trabalhos
+
+já existentes. Para o leitor compreender o funcionamento de nosso framework, é necessário
+
+primeiro que sejam apresentados estes trabalhos. Por esta razão, detalharemos o funcionamento
+
+original de um algoritmo e um framework já existentes no contexto da computação aplicada à
+
+Geologia.
+
+Na seção 4.1, será detalhado um algoritmo para detecção de planos de acamadamento
+
+através da utilização da técnica de médias móveis, proposto em (GRACIOLLI, 2014). Na seção
+
+4.2, será apresentado um framework para a correlação litológica, baseado em algoritmos de se-
+
+quenciamento e técnicas de aprendizado de máquina, proposto em (GARCIA; CARBONERA;
+
+ABEL, 2014).
+
+4.1 Detecção de planos de acamadamento: Uma abordagem com médias móveis
+
+Em (GRACIOLLI, 2014), os autores propõem um novo método para derivar a posição
+
+de contatos de perfis geofísicos que pode ser utilizado para realizar o ajuste de profundidade
+
+de testemunhos. Este método é baseado em médias móveis, e trabalha detectando planos de
+
+heterogeneidades litológicas em múltiplos perfis. O método das médias móveis analisa os dados
+
+criando uma série de médias aritméticas de diferentes subconjuntos do conjunto total de dados.
+
+Após a detecção dos planos, esta informação é unificada através de uma avaliação total dos
+
+limites entre todos os perfis, que pode então ser comparada às camadas de rochas descritas no
+
+testemunho. A seguir, detalharemos o funcionamento do método.
+
+Segundo Graciolli, a forma mais intuitiva para detectar os planos de heterogeneidades é
+
+segmentar o log em regiões que possuam amostras (valores das medições das ferramentas em
+
+cada profundidade) com valores semelhantes.Inicialmente, é preciso lidar com o problema de
+
+ruído de sinal dos logs. Para isto, os autores aplicam uma média móvel centrada aos dados de
+
+log. O valor da média central do ponto dp com uma janela de tamanho n é definido como o valor
+
+médio (média aritmética) dos valores dos n pontos mais próximos ao ponto dp (este incluso).
+
+O próximo passo é aplicar uma média móvel com uma janela muito maior do que a
+
+anterior ao log original, com o objetivo de derivar a curva que apresenta a tendência geral do
+
+log. Comparado os dois logs filtrados, é possível verificar em que pontos existem mudanças
+
+súbitas nos valores de log apenas verificando em que posições das curvas destes logs existe uma
+
+intersecção, ou seja, onde o log cresce ou decresce mais do que sua tendência geral.
+
+
+
+40
+
+Este processo resulta em um conjunto de pontos de quebras para um único log. Uma vez
+
+que o processo tenha sido realizado para todos logs disponíveis, é possível integrar os resultados
+
+em um conjunto único. Dois problemas que surgem durante este passo é o de logs possuírem
+
+graus de representatividade variados para avaliação de litologias e a possibilidade do mesmo
+
+contato de camada não ser detectado exatamente na mesma profundidade ao longo de múltiplos
+
+logs.
+
+O primeiro problema é resolvido designando um peso W para cada log, o qual é verifi-
+
+cado contra um limiar T definido pelo usuário quando da declaração de pontos de quebra. Se
+
+a soma dos pesos de todos os logs que detectam uma quebra em uma profundidade d é igual
+
+ou maior do que o limitar T , então existe uma quebra na profundidade d. O segundo problema
+
+é resolvido com a definição de uma janela W T nas proximidades das quebras detectadas por
+
+cada log, e então verificando quais logs possuem uma janela sobrepondo d, ao invés de apenas
+
+considerar os logs que possuem uma quebra exatamente na profundidade d.
+
+Uma vez que os resultados individuais são comparados, e profundidades que encontram-
+
+se dentro dos limiares são declaradas como contatos de camadas, temos então um conjunto
+
+unificado e automatizado de heterogeneidades na formação rochosa. Estes intervalos entre ca-
+
+madas podem então ter suas litologias definidas através de comparação com valores de logs que
+
+possuam litologias prototípicas previamente definidas.
+
+4.2 Sistema para Correlação Litológica Baseado em Ontologias
+
+Em (GARCIA; CARBONERA; ABEL, 2014), os autores propõem uma abordagem
+
+computacional para a tarefa de correlação litológica de poços, no domínio da Geologia do Pe-
+
+tróleo. Neste contexto, uma ontologia de domínio é utilizada para impor uma estrutura rica e
+
+homogênea às descrições visuais dos objetos de domínio que são o foco desta tarefa. Além
+
+da ontologia de domínio, a abordagem utilizada combinou também técnicas de clustering e
+
+algoritmos de alinhamento de sequências, que são tipicamente utilizados no domínio da Bioin-
+
+formática para realizar o pareamento de DNA (SMITH; WATERMAN, 1981).
+
+Em linhas gerais, a tarefa da correlação litológica é reconhecer uma mesma camada
+
+estratigráfica, em duas ou mais colunas estratigráficas (figura 4.1). Uma camada estratigráfica
+
+é aquela que teve seus sedimentos depositados por um mesmo processo geológico. As camadas
+
+estratigráficas são representadas por descrições de fácies sedimentares neste trabalho. Uma
+
+fácies sedimentar é uma porção de rocha distinguível de outras porções adjacentes. O problema
+
+
+
+41
+
+Figura 4.1 – Exemplo de três colunas estratigráficas correlacionadas.
+
+Fonte: do autor.
+
+da correlação é importante porque auxilia o engenheiro de reservatório de petróleo a definir sua
+
+geometria e seu volume, subsidiando a avaliação da economicidade do reservatório.
+
+A abordagem é representada esquematicamente na Figura 4.2 e compreende às seguintes
+
+etapas:
+
+1. Geólogos descrevem um conjunto testemunhos de rocha, adquiridos durante a perfuração
+
+de poços, utilizando o sistema Strataledge®1.
+
+2. Os dados são convertidos para um dataset de entrada para um algoritmo de agrupamento.
+
+3. O agrupador é treinado e então um modelo de agrupamento é criado, o qual será utilizado
+
+para comparar as instâncias de fácies sedimentares.
+
+4. Os poços a serem correlacionados são escolhidos e, junto com o modelo agrupador, são
+
+utilizados como entrada para o algoritmo.
+
+5. O resultado é um alinhamento equivalente a uma proposta de correlação litológica para
+
+estes poços.
+
+O algoritmo utilizado para realizar o alinhamento é o de Smith-Waterman (SMITH;
+
+WATERMAN, 1981), e seu funcionamento é como segue.
+
+Dadas duas sequências A ={a1,a2...an} e B ={b1,b2...bm}, com n e m sendo o número
+
+de elementos das sequências A e B, pesos Wk para gaps de tamanho k, e alguma função de simi-
+
+laridade s(a,b) entre os elementos a e b. Esta função tem como retorno valores pré-definidos
+
+para matchs e mismatchs. Para encontrar subsequências com alto valor de similaridade uma
+
+matriz H é construída:
+1Strataledge é um sistema para descrição de amostras de rocha construído baseado em uma ontologia de domí-
+
+nio
+
+
+
+42
+
+Figura 4.2 – Workflow de nossa abordagem.
+
+Fonte: do autor.
+
+Hk0 = H0l = 0 para 0 ? k ? n e 0 ? l ? m
+
+O restante da matriz é preenchida obedecendo as seguintes regras:
+
+Hi j = max
+
+?????????
+????????
+
+Hi?1, j?1 + s(ai,b j)
+
+{Hi?k, j ?Wk} onde k ? 1
+
+{Hi, j?l ?Wl } onde l ? 1
+
+0
+
+(4.1)
+
+para 1 ? i ? n e 1 ? j ? m.
+
+Cada posição Hi j da matriz corresponde ao alinhamento com pontuação máxima das
+
+sequências terminadas em ai e b j. A primeira regra se aplica quando ai e b j são matchs, a
+
+segunda regra quando ai está no final de um gap de tamanho k, a terceira quando bi está no
+
+final de um gap de tamanho l e o valor zero é incluído apenas para garantir que não sejam
+
+incluídos valores negativos na matriz. A posição da matriz Hi j com maior valor representa os
+
+elementos finais do alinhamento de maior valor entre as sequências. A partir desta posição uma
+
+operação de traceback é realizada. Nesta operação, a posição anterior da matriz que resultou
+
+no maior valor para a posição atual é a posição a ser percorrida. Este procedimento é realizado
+
+recursivamente até que se alcance uma posição de valor zero obtemos o alinhamento.
+
+
+
+43
+
+5 ONTOLOGIA PARA REPRESENTAÇÃO DE PETROFÁCIES DE RESERVATÓRIO
+
+Neste capítulo, apresentamos uma ontologia do domínio da Petrografia para a descrição
+
+de petrofácies de reservatório. Na Petrografia, o objetivo é a descrição das rochas e a análise das
+
+suas características estruturais, mineralógicas e químicas. Esta ontologia é um aperfeiçoamento
+
+da ontologia previamente descrita em (ABEL, 2001). O seu objetivo é formalizar o conheci-
+
+mento necessário para suportar a descrição e interpretação de lâminas delgadas, a definição de
+
+petrofácies de reservatório e o rastreamento dos conceitos envolvidos no domínio ao longo da
+
+modelagem de reservatório.
+
+O refinamento do conhecimento aqui representado é fruto de uma extensa pesquisa na
+
+literatura do domínio, além de entrevistas com profissionais atuantes em alguma etapa da mo-
+
+delagem de reservatório (descritas em 2.3). Abel (ABEL, 2001) define que no domínio da
+
+Petrografia Sedimentar, um novato é um estudante geólogo que recebeu, ao menos, 100 horas
+
+de treinamento em descrições de amostras de rochas sedimentares. Um profissional considerado
+
+intermediário é aquele que utiliza a Petrografia Sedimentar como uma ferramenta adicional e
+
+ocasional de coleta de informações para a solução de problemas, ou seja, ele tem familiaridade
+
+com o domínio, embora não seja sua atividade fim. Já um especialista deve ser aceito como tal
+
+por seus pares, deve possuir a capacidade de armazenar grande quantidade de conhecimento de
+
+forma organizada, milhares de horas de treinamento solucionado problemas do seu domínio e
+
+uma grande capacidade analítica para resolver novos problemas. Considerando o trabalho de
+
+Abel, classificamos os profissionais entrevistados da seguinte forma no contexto do domínio da
+
+Petrografia Sedimentar: um especialista; três intermediários; e um novato.
+
+Os conceitos da ontologia foram classificados de acordo com os meta-tipos fornecidos
+
+pela UFO, Unified Foundational Ontology (GUIZZARDI, 2005). Por esta razão, utilizamos a
+
+linguagem OntoUML para representação dos conceitos e suas relações. OntoUML é uma ex-
+
+tensão da linguagem UML e incorpora alguns dos axiomas da UFO como restrições sintáticas
+
+em seu metamodelo. A vantagem de tal abordagem consiste na possibilidade de utilizar fer-
+
+ramentas de modelagem para fazer a verificação e validação do modelo (ALBUQUERQUE;
+
+GUIZZARDI, 2013).
+
+A OntoUML é composta por retângulos nomeados, representado conceitos, e linhas,
+
+representando relações. Acima do nome do conceito, encontra-se o estereótipo do meta-tipo
+
+correspondente na UFO para este conceito. Linhas podem representar relações diversas. Linhas
+
+simples entre dois sortal universals representam uma relação formal definida, enquanto linhas
+
+simples entre sortal univerals e moments podem significar duas coisas: relação de caracteri-
+
+
+
+44
+
+zação, onde um quality universal caracteriza um sortal universal, ou relação de mediação, de
+
+um relator entre dois ou mais sortal universals. A relação de caracterização ocorre sempre
+
+que um quality universal qualifica algum universal, enquanto a relação de mediação é a relação
+
+existente na UFO entre qualquer relator e todas outras entidades que se relacionam com ele.
+
+Linhas que terminam em um triângulo não preenchido significam uma relação de subsunção.
+
+Na relação de subsunção, uma entidade mais específica subsume outra entidade mais genérica
+
+quando a especializa. Por exemplo, o conceitos Homem e Mulher subsumem o conceito Pessoa.
+
+Um triângulo preenchido em preto no meio de uma linha indica a direção da relação.
+
+A seguir, detalharemos o significado de cada conceito e suas relações.
+
+5.1 Apresentação da Ontologia de Domínio
+
+De acordo com (ABEL; PERRIN; CARBONERA, 2015), para se criar um modelo de
+
+conhecimento que facilite a integração com modelos legados ou que venham a ser construídos,
+
+o modelador deve iniciar seu modelo pelas entidades que não variam sua identidade na sua
+
+existência especial e temporal, isto é, as entidades rígidas. As principais entidades rígidas de
+
+nossa ontologia são os conceitos de Rocha e Mineral (Figura 5.1).
+
+Figura 5.1 – Rocha, Mineral e suas relações.
+
+Fonte: do autor.
+
+Mineral: Sólido homogêneo, com composição química definida, mas que pode variar dentro
+
+de intervalos restritos, formado por processos naturais inorgânicos, cujos átomos se en-
+
+contram organizados em um arranjo periódico tridimensional (TEIXEIRA et al., 2003).
+
+
+
+45
+
+Rocha: Um agregado de minerais (PRESS et al., 2004). Pode ser divida em três classes: Rocha
+
+Ígnea; Rocha Metamórfica; e Rocha Sedimentar.
+
+Rocha Ígnea: Formada pelo resfriamento de magma derretido (HYNE, 2012).
+
+Rocha Metamórfica: Qualquer tipo de rocha de que tenha sido alterada por altas temperaturas
+
+e pressões (HYNE, 2012).
+
+Rocha Sedimentar: São aquelas compostas por sedimentos de três tipos: clásticos, orgânicos
+
+e cristalinos (HYNE, 2012).
+
+Rocha Evaporítica: Depósitos de rocha sedimentar que são compostos por minerais que ori-
+
+ginariamente precipitaram de soluções salinas concentradas através da evaporação solar
+
+(BOGGS, 2006).
+
+Rocha Carbonática: Rocha sedimentar formada pela acumulação de minerais carbonáticos
+
+precipitados organicamente ou não-organicamente (PRESS et al., 2004).
+
+Rocha Siliciclástica: Rocha sedimentar compostas principalmente por partículas de silicato
+
+derivadas do intemperismo de rochas mais antigas (BOGGS, 2006).
+
+Rocha e Mineral são classificados pelo meta-tipo da UFO Quantity, ou seja, são quanti-
+
+dades de matéria que possuem existência concreta, mas não possuem unicidade. Sua existência
+
+pode ser observada em outras entidades que são complexos funcionais (kinds), como Porção de
+
+Rocha e Cristal (Figura 5.2).
+
+Cristal: Sólido cujo as moléculas estão organizadas em um padrão tridimensional bem defi-
+
+nido, que se repete no espaço, formando uma estrutura com uma geometria específica.
+
+Porção de Rocha: Porção de matéria homogeneamente constituída por rocha. Pode ser um
+
+testemunho, uma lâmina delgada, uma amostra de calha ou uma amostra lateral.
+
+Testemunho: Seção cilíndrica de rocha, retirada durante a perfuração de um poço (PERRIN;
+
+RAINAUD, 2013).
+
+Lâmina Delgada: Uma fatia de rocha de cerda de três centímetros de comprimento e trinta
+
+micrômetros de espessura, montada sobre uma lamínula de vidro que permite a passagem
+
+da luz, preparada para ser observada em um microscópio ótico de luz polarizada.
+
+
+
+46
+
+Figura 5.2 – Ocorrência de rocha em Porção de Rocha e de Mineral em Cristal.
+
+Fonte: do autor.
+
+Amostra de Calha: Pequenas porções de rochas cortadas por uma ferramenta de perfuração e
+
+que são trazidas à superfície pelo fluxo da lama utilizada na perfuração (PERRIN; RAI-
+
+NAUD, 2013).
+
+Amostra Lateral: Pequenas porções de rochas que são retiradas da lateral de um poço (PER-
+
+RIN; RAINAUD, 2013).
+
+Uma Porção de Rocha é formada por um agregado de constituintes, que podem ser cons-
+
+tituintes primários, quando são cristalizados ou agregados à rocha no momento de sua formação,
+
+ou constituintes secundários, quando formados depois da geração da rocha, por intemperismo
+
+ou diagêneses. Os constituintes primários das rochas sedimentares são cristal, grão, bioconsti-
+
+tuinte e poro. A figura 5.3 apresenta a relação entre eles.
+
+Figura 5.3 – Constituintes primários de uma porção de rocha sedimentar.
+
+Fonte: do autor.
+
+
+
+47
+
+Composição Primária: Constituintes existentes durante a deposição da rocha.
+
+Grão: Cristal de um mineral ou massa sólida de partículas cristalinas transportado por vento
+
+ou água.
+
+Bioconstituinte: Constituinte da rocha oriundo de seres orgânicos, como pequenos animais ou
+
+plantas.
+
+Poro: Espaços vazios com forma e distribuição específica no interior da rocha.
+
+Entidades ontológicas rígidas podem possuir qualificadores que o descrevem, chamados
+
+de universal qualities na UFO. Porção de rocha possui apenas qualificadores não-perceptíveis,
+
+pois são medidas indiretas quantificadas por ferramentas, como porosidade efetiva e porosi-
+
+dade petrofísica, pressão capilar de entrada, densidade e permeabilidade absoluta horizontal
+
+e vertical.
+
+Figura 5.4 – Qualificadores de uma Porção de Rocha.
+
+Fonte: do autor.
+
+Porosidade Efetiva: Percentagem de espaços vazios interconectados em relação ao volume
+
+total.
+
+Porosidade Petrofísica: Porosidade medida através de experimentos em laboratório na porção
+
+de rocha.
+
+Pressão Capilar de Entrada: Pressão necessária para que um fluido que não molha as super-
+
+fícies dos constituintes - geralmente mercúrio - penetre nos poros da amostra.
+
+Densidade: Densidade da rocha.
+
+
+
+48
+
+Permeabilidade Absoluta Horizontal: Permeabilidade da rocha no sentido horizontal para
+
+um tipo de fluído apenas.
+
+Permeabilidade Absoluta Vertical: Permeabilidade da rocha no sentido vertical para um tipo
+
+de fluído apenas.
+
+Abaixo listamos os atributos que qualificam rochas evaporíticas, carbonáticas e silici-
+
+clásticas. Estes são qualificadores perceptíveis, pois seus valores são definidos de acordo com
+
+a percepção humana sobre seus componentes. Para as rochas carbonáticas e evaporíticas, te-
+
+mos como qualificadores tamanho de cristal, hábito, localização e modificador, referentes aos
+
+cristais que as compõem.
+
+Figura 5.5 – Qualificadores de Rochas Carbonáticas e Evaporíticas.
+
+Fonte: do autor.
+
+Tamanho de Cristal: Tamanho médio de cristal encontrado na rocha.
+
+Hábito: Forma dos agregados de cristais que formam os constituintes.
+
+Localização: Distribuição espacial dos constituintes.
+
+Modificador: Descrição do processo que alterou o formato original do grão ou cristal. Sua
+
+quality structure é composta pelos valores: deformação, dissolução por pressão, corro-
+
+são, substituição, crescimento.
+
+
+
+49
+
+Figura 5.6 – Qualificadores de Rochas Siliciclásticas.
+
+Fonte: do autor.
+
+Rochas Siliciclásticas possuem qualificadores que dizem respeito quanto ao seus grãos.
+
+São eles tamanho modal, variação de tamanho e seleção de grão, arredondamento, esferici-
+
+dade, empacotamento, suporte e orientação.
+
+Tamanho Modal de Grão: O tamanho de grão mais frequente na rocha.
+
+Variação de Tamanho de Grão: Variação entre o menor e o maior grão da rocha.
+
+Seleção de Grão: Refere-se à segregação dos sedimentos conforme seu tamanho. Uma rocha
+
+com partículas de tamanho uniforme é bem selecionada, indicando um processo mais
+
+longo de deposição, enquanto uma rocha que possua partículas de tamanhos variados é
+
+dita pobremente selecionada, e tipicamente resultante de um processo deposicional rápido
+
+(PRESS et al., 2004).
+
+Arredondamento: O quanto os grãos são lisos em função da abrasão durante seu transporte.
+
+Esfericidade: Refere-se ao quanto uma partícula assemelha-se a uma esfera.
+
+Empacotamento: Proximidade da distribuição dos grãos em uma rocha, ou quanto os grãos
+
+estão apertados uns contra os outros.
+
+Suporte: Identifica qual componente da rocha dá sustentação ao seu volume ou forma o arca-
+
+bouço da rocha. Normalmente são os grãos, mas pode ser o cimento ou matriz.
+
+
+
+50
+
+Orientação: Indica se existe alguma direção preferencial de alinhamento dos grãos na rocha.
+
+A ontologia que apresentamos compreende os principais conceitos necessários para a
+
+descrição de petrofácies de reservatório. Entretanto, uma análise mais detalhada se faz neces-
+
+sária para a definição dos processos diagenéticos - ocorrentes após a deposição da rocha - e sua
+
+relação com os conceitos aqui apresentados.
+
+
+
+51
+
+6 ENRIQUECENDO MODELOS DE GRID DE RESERVATÓRIO COM DADOS DE
+
+ROCHA
+
+Um problema bastante presente em modelos de grid de reservatório é o de não contem-
+
+plarem dados diretos de rocha. Isto é um problema porque dados que são estudados diretamente
+
+das rochas existentes em um reservatório de petróleo fornecem maior detalhamento das proprie-
+
+dades internas das rochas exigidas pelos modelos de simulação, propiciando assim uma melhor
+
+avaliação da qualidade do reservatório.
+
+Em (DE ROS; GOLDBERG, 2007), os autores propõem o uso de petrofácies de reserva-
+
+tório como forma de enriquecer a caracterização e predição de reservatórios de óleo e gás. Elas
+
+são definidas pela combinação de estruturas deposicionais específicas que controlam significati-
+
+vamente a porosidade, textura e composição primária da rocha, além dos processos diagenéticos
+
+dominantes. Estes aspectos combinados correspondem a uma variação definida de valores de
+
+porosidade e permeabilidade, bem como assinaturas de log características. Assinaturas de log
+
+são intervalos de logs característicos que representam determinados tipos ou características de
+
+porções de rochas.
+
+A figura 6.1, extraída de (DE ROS; GOLDBERG, 2007), contém a definição de três pe-
+
+trofácies distintas, dispostas em um gráfico de volume intergranular pelo volume de cimentos de
+
+sílica, demonstrando diferentes variações de porosidade e permeabilidade, além de parâmetros
+
+de logs.
+
+Neste trabalho, propomos um framework conceitual que possibilita a calibragem de logs
+
+de poço com dados diretos de rocha de forma semi-automatizada através do conceito geológico
+
+de petrofácies de reservatório. Logs de poço são constantemente utilizados para preencher
+
+as propriedades de modelos de grid de reservatório. Este framework beneficia-se do uso de
+
+ontologias como forma de explicitar e formalizar o conhecimento utilizado e também integrar
+
+suas diversas etapas, bem como um algoritmo para a detecção de contatos entre camadas de
+
+rocha e a adaptação de um framework já existente para a extrapolação de petrofácies para poços
+
+onde não existam dados diretos de rocha.
+
+A seguir, descreveremos as principais etapas do workflow deste trabalho. Na figura 6.2,
+
+o representamos graficamente.
+
+
+
+52
+
+Figura 6.1 – Petrofácies dispostas em um gráfico de volume intergranular pelo volume de cimentos de
+sílica.
+
+Fonte: (DE ROS; GOLDBERG, 2007).
+
+1. O geólogo descreve lâminas delgadas, extraídas do reservatório em avaliação, com o
+
+suporte de um sistema de conhecimento baseado na ontologia descrita no capítulo 5.
+
+Apesar deste suporte, esta etapa é majoritariamente manual. A ontologia é necessária para
+
+padronizar e formalizar as características das rochas descritas por diferentes profissionais,
+
+permitindo, desta forma, que os dados possam ser processados por computador. Estas
+
+lâminas podem pertencer a diversos poços de petróleo.
+
+2. O geólogo seleciona as descrições que apresentam claramente os processos diagenéticos
+
+que afetaram a porosidade e permeabilidade do reservatório, que serão utilizadas para
+
+definir as petrofácies de reservatório, bem como os logs dos poços do qual estas lâminas
+
+foram extraídas. Nesta etapa, também se faz necessário o conhecimento do especialista.
+
+3. Os logs escolhidos são utilizados como entrada do algoritmo proposto por Graciolli. Para
+
+cada poço selecionado, o algoritmo analisa os logs e detecta mudanças bruscas nos va-
+
+lores de suas amostras, que correspondem a planos de heterogeneidades da rocha. Estas
+
+mudanças podem corresponder à contatos entre diferentes litologias. Sendo assim, pode-
+
+mos considerar o intervalo existente entre duas quebras detectadas pelo algoritmo como
+
+uma camada de mesma litologia em subsuperfície. Embora esta etapa seja automática, o
+
+geólogo pode redefinir manualmente os intervalos.
+
+4. O Geólogo analisa os intervalos propostos para cada poço, avaliando a assinatura de log
+
+existente no intervalo, bem como os valores de permeabilidade e porosidade e as demais
+
+
+
+53
+
+Figura 6.2 – Framework conceitual para a inserção de dados de rocha em modelos de reservatório.
+
+Fonte: do autor.
+
+
+
+54
+
+características de rocha descritas através da observação das lâminas, e define, manual-
+
+mente, no máximo uma Petrofácies de Reservatório para cada intervalo, podendo existir
+
+intervalos sem Petrofácies definidas.
+
+5. As petrofácies já existentes são generalizadas de forma automatizada para os demais in-
+
+tervalos encontrados no conjunto dos poços utilizados para suas definições. Para isto,
+
+uma distribuição normal multivariada é utilizada para representar a assinatura de log de
+
+cada petrofácies e comparar com estes intervalos.
+
+6. O algoritmo de Graciolli é executado nos poços em que petrofácies ainda não foram
+
+definidas e uma adaptação do framework proposto em (GARCIA; CARBONERA; ABEL,
+
+2014) é utilizada para encontrar sequências correlacionáveis (seção 4.2) entre estes poços
+
+e poços que já possuam petrofácies definidas.
+
+7. Os intervalos que ainda não possuam uma petrofácies definida e tenham sido correla-
+
+cionados com um intervalo que já possua uma petrofácies definida terão esta mesma
+
+petrofácies definida para si.
+
+A extrapolação (processo de estimar dados onde os resultados de uma função não sejam
+
+conhecidos) de Petrofácies em um mesmo poço pode ser feita de diversas maneiras, porém,
+
+propomos neste trabalho a utilização de uma Distribuição Normal Multivariada - uma gene-
+
+ralização de uma Distribuição Normal para diversas dimensões -, como forma de representar
+
+uma assinatura de log de uma Petrofácies, de forma que seja possível comparar as assinaturas
+
+dos intervalos com Petrofácies definidas com assinaturas de intervalos que não possuam uma
+
+Petrofácies. A atratividade do uso da distribuição normal se dá pela facilidade de tratamento
+
+matemático, além da tendência de valores randômicos tenderam a possuir um comportamento
+
+em forma de distribuição normal (FERREIRA, 1996). A representação das petrofácies é como
+
+segue.
+
+Para cada Petrofácies P, com um conjunto de amostras An×k pertencentes aos intervalos
+
+para os quais a Petrofácies P foi definida, e onde cada uma das n amostras é composta de k
+
+valores de logs distintos:
+
+1. Calculamos a média µ de cada log k no conjunto de amostras An×k para a Petrofácies P.
+
+2. Calculamos os valores covariância para cada tupla de logs ki e k j presentes no conjunto de
+
+amostras An×k, construindo assim uma matriz de covariância ? de tamanho k×k. Temos
+
+assim um protótipo equivalente a assinatura de logs da Petrofácies P definida em termos
+
+de um vetor de médias µ e de uma matriz de covariância ?.
+
+
+
+55
+
+Após calcularmos as assinaturas para cada petrofácies P, podemos extrapolá-las para o
+
+restante dos intervalos I, onde cada intervalo compreende um conjunto de amostras AIn×k, e
+
+cada uma das n amostras é composta de k valores de logs distintos nos poços em que foram
+
+definidas. Para isto, o seguintes passos são necessários:
+
+1. Para cada intervalo I:
+
+1.1. Para cada Petrofácies P e seus respectivos µ e ?:
+
+1.1.1. Calcula-se a média dos resultados de uma função de densidade probabilística,
+
+que toma como parâmetros uma amostra AIn, µ e ? para todas as amostras
+
+contidas em AI.
+
+2. Escolhemos como petrofácies do intervalo I, aquela que possuir a maior média encontrada
+
+no passo anterior.
+
+Utilizamos este tipo de distribuição para representar as assinaturas de logs porque per-
+
+mite representar um número arbitrário de dimensões, equivalente ao número de logs disponíveis,
+
+além de ser amplamente utilizada na literatura e de fácil tratamento matemático. Entretanto, é
+
+possível utilizar outras formas para a comparação de assinaturas de logs, como por exemplo al-
+
+goritmos para comparação de sinais, ou algoritmos de processamentos de imagens, sem prejuízo
+
+ao funcionamento geral do framework.
+
+Existem problemas durante a extrapolação das petrofácies para poços que não tenham
+
+amostras de rocha disponíveis. Primeiramente, não é possível extrapolar petrofácies para poços
+
+que não façam parte de uma mesma bacia sedimentar. Isto é, petrofácies devem ser definidas
+
+para cada bacia em estudo, não é possível generalizá-las para bacias distintas. Outro ponto
+
+é que assinaturas de logs semelhantes, quando comparadas entre poços distintos, podem não
+
+corresponder a mesma petrofácies. A razão é que podem ocorrer assinaturas semelhantes em
+
+rochas diferentes, por presença de óleo, água ou cimento, além de efeitos de leitura distorcida
+
+de dados.
+
+O segundo problema pode ser superado utilizando o framework proposto em (GARCIA;
+
+CARBONERA; ABEL, 2014). O objetivo é encontrar assinaturas de log dos intervalos seme-
+
+lhantes entre poços distintos levando em consideração uma noção de sequência de intervalos, e
+
+não apenas intervalos individuais. Com isto, é possível diminuir a incerteza da extrapolação de
+
+petrofácies entre poços distintos. Entretanto, para utilizarmos este framework, é necessária uma
+
+adaptação quanto à comparação dos elementos das sequências. Ao invés de comparar as Fácies
+
+Sedimentares, objetos complexos e com diversos atributos qualitativos, comparamos intervalos
+
+de logs, objetos compostos apenas de valores quantitativos.
+
+
+
+56
+
+A adaptação do framework proposto em (GARCIA; CARBONERA; ABEL, 2014) pode
+
+ser realiza utilizando Distribuições Normais Multivariadas, de forma semelhante à realizada
+
+para comparação dos intervalos encontrados anteriormente.
+
+Para a comparação de dois intervalos I1 e I2, com um conjunto de amostras A j,n×k, onde
+
+cada uma das n amostras é composta de k valores de logs distintos pertencentes ao intervalo j:
+
+1. Calculamos a media µ de cada log k no conjunto de amostras An×k para o intervalo I1.
+
+2. Calculamos os valores de variância para cada log k e covariância para cada tupla de logs ki
+
+e k j presentes no conjunto de amostras An×k do intervalo I1, construindo assim uma matriz
+
+de covariância ? de tamanho k×k. Temos assim um protótipo equivalente a assinatura
+
+de logs do intervalo I1 definida em termos de um vetor de médias µ e de uma matriz de
+
+covariância ?.
+
+3. Calcula-se a média dos resultados de uma função de densidade probabilística, que toma
+
+como parâmetros uma amostra AIn do intervalo I2, µ e ?, do intervalo I1 para todas as
+
+amostras contidas em AI do intervalo I2.
+
+4. Esta média corresponde ao quão semelhante os intervalos I1 e I2 são, e pode ser utilizada
+
+como parâmetro para a construção da matriz utilizada no algoritmo de alinhamentos de
+
+sequência, descrito em 4.2.
+
+As etapas do framework que apresentamos permitem segmentar logs de diversos poços
+
+com critérios geológicos bem definidos, observados e avaliados diretamente da rocha. Com
+
+isto, quando o geólogo de reservatório utilizar estes logs para preencher as propriedades para
+
+cada célula do modelo de grid, representará a heterogeneidade de forma mais precisa em seu
+
+modelo. De acordo com (ADAMSON et al., 1996), o preenchimento das células de um modelo
+
+de grid de reservatório a partir dos logs é realizada utilizando métodos estatísticos. Os métodos
+
+a serem utilizados variam de acordo com a geometria das células em que o grid foi construído
+
+- uma geometria bloco-centrada ou do tipo corner-point, por exemplo -, e a propriedade que
+
+está sendo preenchida - porosidade ou permeabilidade, por exemplo -. O funcionamento do
+
+framework proposto independe da geometria de célula ou método estatístico utilizados, uma
+
+vez que o conhecimento é incorporado na interpretação dos dados de log.
+
+É importante salientar que cada módulo deste framework pode ser aperfeiçoada indivi-
+
+dualmente, ou seja, é possível que pequenos módulos do framework sejam alterados sem que
+
+o seu funcionamento geral seja alterado. Por exemplo, é possível utilizar algoritmos de com-
+
+parações de sinais como forma de comparar intervalos, ao invés de utilizarmos distribuições
+
+normais multivariadas.
+
+
+
+57
+
+Este framework foi parcialmente realizado através de entrevistas não estruturadas com
+
+especialistas, porém ainda carece de uma implementação completa e validação com dados
+
+oriundos de um estudo integrado de petrografia, descrição de testemunhos e lâminas, logs de
+
+poços, modelos geológicos e modelos 3D.
+
+No próximo capítulo, apresentamos as principais conclusões deste trabalho, bem como
+
+os possíveis trabalhos futuros.
+
+
+
+58
+
+
+
+59
+
+7 CONCLUSÃO
+
+Apresentamos neste trabalho um Framework Conceitual para suportar a inserção de da-
+
+dos diretos de rocha na calibragem de logs de poço, que são utilizados para popular modelos
+
+de grid de Reservatório. Apresentamos também o aperfeiçoamento de uma ontologia de domí-
+
+nio para a a descrição e interpretação de petrofácies de reservatório. O framework tem como
+
+característica um alto grau de modularização e faz uso de trabalhos já existentes, de forma que
+
+possamos aproveitar um conhecimento já consolidado.
+
+Ao longo desta pesquisa, pudemos constatar a importância dos dados diretos de rochas
+
+para a modelagem de reservatório. Todos os profissionais entrevistados evidenciaram o seu
+
+desuso, apesar de constatarem o papel chave que podem cumprir na modelagem. Muitas vezes,
+
+a má predição do comportamento do reservatório pode ocasionar perdas irreversíveis do óleo e
+
+gás ali contidos.
+
+Este tipo de dado ainda é ignorado em grande parte pela dificuldade de seu tratamento.
+
+Acreditamos que ontologias são o caminho para a padronização e formalização da área, o que
+
+permitirá a interoperabilidade de dados entre os sistemas existentes.
+
+A validação deste trabalho se deu em entrevistas com especialistas da área, que mostraram-
+
+se entusiasmados com os possíveis resultados deste trabalho. porém a validação de sua imple-
+
+mentação carece ainda de um estudo integrado de um reservatório. Os dados necessários são
+
+dados geralmente sigilosos, ou quando disponíveis, extremamente caros.
+
+Como trabalhos futuros, podem ser avaliadas formas distintas de representações para
+
+petrofácies de reservatório. Em especial, algoritmos para a comparação de sinais e algoritmos
+
+de casamento de padrões mostram-se promissores. É possível também avaliar diferentes algo-
+
+ritmos de alinhamentos de sequência para tarefa de extrapolação de Petrofácies de Reservatório
+
+para poços que não contenham dados diretos de rocha.
+
+Atualmente, o geólogo possui papel crucial na definição de petrofácies de reservatório,
+
+porém, acreditamos que seja possível investigar metodologias para a extração automática de
+
+petrofácies de reservatório, através de técnicas de aprendizado de máquina.
+
+O modelo de processos proposto na seção 2.1 é um passo inicial para um mapeamento
+
+formal de uma área extensa e multidisciplinar. A expansão das tarefas e subprocessos identifi-
+
+cados será de grande benefício, pois facilitará o rastreamento dos dados existentes ao longo de
+
+toda modelagem de reservatório.
+
+
+
+60
+
+
+
+61
+
+REFERÊNCIAS
+
+ABEL, M. Estudo da Pericia em Petrografia Sedimentar e sua Importancia para a
+Engenharia do Conhecimento. Thesis (PhD) — Universidade do Rio Grande do Sul
+(UFRGS), 2001.
+
+ABEL, M.; PERRIN, M.; CARBONERA, J. L. Ontological analysis for information integration
+in geomodeling. Earth Science Informatics, Springer, v. 8, n. 1, p. 21–36, 2015.
+
+ADAMSON, G. et al. Simulation throughout the life of a reservoir. Oilfield Review, v. 2, n. 8,
+p. 16–27, 1996.
+
+ALBUQUERQUE, A.; GUIZZARDI, G. An ontological foundation for conceptual modeling
+datatypes based on semantic reference spaces. In: IEEE. Research Challenges in Information
+Science (RCIS), 2013 IEEE Seventh International Conference on. [S.l.], 2013. p. 1–12.
+
+BITTNER, T.; DONNELLY, M.; WINTER, S. Ontology and semantic interoperability.
+Large-scale 3D data integration: Challenges and Opportunities, p. 139–160, 2005.
+
+BJORLYKKE, K. Petroleum geoscience: From sedimentary environments to rock physics.
+[S.l.]: Springer Science &amp;amp; Business Media, 2010.
+
+BOGGS, S. Principles of sedimentology and stratigraphy. [S.l.]: Pearson Prentice Hall,
+2006.
+
+BORST, W. N. Construction of Engineering Ontologies for knowledge sharing and reuse.
+Thesis (PhD) — University of Twente, Enschede, The Netherlands, 1997.
+
+CHANDRASEKARAN, B.; JOSEPHSON, J. R.; BENJAMINS, V. R. What are ontologies,
+and why do we need them? IEEE Intelligent systems, IEEE, n. 1, p. 20–26, 1999.
+
+DE ROS, L. F.; GOLDBERG, K. Reservoir petrofacies: a tool for quality characterization
+and prediction. In: AAPG, Annual Convention and Exhibition, Long Beach, Abstracts
+Volume. [S.l.: s.n.], 2007. p. 1.
+
+EDISON, L. S.; BRANTLEY, J. D.; EDWARDS, S. The value of smarter oil and gas fields.
+IBM Center for Applied Insights, 2011.
+
+FERREIRA, D. F. Análise multivariada. Lavras: UFLA, v. 22, 1996.
+
+GARCIA, L. F.; CARBONERA, J.; ABEL, M. An ontology-based automatic approach for
+lithologic correlation. In: IEEE. Tools with Artificial Intelligence (ICTAI), 2014 IEEE 26th
+International Conference on. [S.l.], 2014. p. 130–137.
+
+GLUYAS, J.; SWARBRICK, R. Petroleum geoscience. [S.l.]: Wiley. com, 2009.
+
+GÓMES-PÉREZ, A.; FERNÁNDEZ-LÓPEZ, M.; CORCHO, O. Ontological Engineering:
+with examples from the areas of knowledge management, e-commerce and the semantic
+web. Londres: Springer, 2004. 403 p.
+
+GRACIOLLI, V. M. Bedding contact detection: a moving mean-based approach. 2014.
+
+GRUBER, T. R. A translation approach to portable ontology specifications. Knowledge
+Acquisition, v. 5, p. 199–220, 1993.
+
+
+
+62
+
+GUARINO, N. Formal ontology and information systems. In: Proceedings of the
+International Conference on Formal Ontology and Information Systems (FOIS). Trento,
+Italy: IOS Press, 1998. p. 3–15.
+
+GUIZZARDI, G. Ontological Foundations for Structural Conceptual Models. Enschede,
+The Netherlands: Universal Press, 2005. 410 p. (CTIT PhD Thesis Series, v. 05-74).
+
+GUIZZARDI, G.; WAGNER, G. Theory and application of ontologies. In: . [S.l.]:
+Springer-Verlag, 2010. chp. Using the Unified Foundational Ontology (UFO) as a Foundation
+for General Conceptual Modeling Languages.
+
+HYNE, N. J. Nontechnical guide to petroleum geology, exploration, drilling, and
+production. [S.l.]: PennWell Books, 2012.
+
+MA, X. Ontology Spectrum For Geological Data Interoperability. Thesis (PhD) —
+University of Twnte, Faculty of Geo-Information Science and Earth Observation, 2011.
+
+OBRST, L. Ontologies for semantically interoperable systems. In: ACM. Proceedings of the
+twelfth international conference on Information and knowledge management. [S.l.], 2003.
+p. 366–369.
+
+PERRIN, M.; RAINAUD, J.-F. Shared Earth Modeling: Knowledge Driven Solutions for
+Building and Managing Subsurface 3D Geological Models. [S.l.]: TECHNIP OPHRYS
+EDITIONS, 2013.
+
+PRESS, F. et al. Para entender aTerra. 4.ed. [S.l.]: Bookman„ 2004.
+
+PRESTES, E. et al. Towards a core ontology for robotics and automation. Robotics and
+Autonomous Systems, Elsevier, v. 61, n. 11, p. 1193–1204, 2013.
+
+SELLEY, R. C. Elements of petroleum geology. [S.l.]: San Diego:. Academic Press„ 1998.
+
+SMITH, T. F.; WATERMAN, M. S. Identification of common molecular subsequences.
+Journal of molecular biology, Academic Press, v. 147, n. 1, p. 195–197, 1981.
+
+STUDER, R.; BENJAMINS, V. R.; FENSEL, D. Knowledge engineering: Principles and
+methods. Data and Knowledge Engineering, v. 25, n. 1-2, p. 161–197, March 1998.
+
+TEIXEIRA, W. et al. Decifrando a terra. [S.l.]: Oficina de textos, 2003.
+
+USCHOLD, M.; GRUNINGER, M. Ontologies: Principles, methods and applications. The
+knowledge engineering review, Cambridge Univ Press, v. 11, n. 02, p. 93–136, 1996.
+
+USCHOLD, M.; GRUNINGER, M. Ontologies and semantics for seamless connectivity. ACM
+SIGMod Record, ACM, v. 33, n. 4, p. 58–64, 2004.
+
+WACHE, H. et al. Ontology-based integration of information-a survey of existing approaches.
+In: CITESEER. IJCAI-01 workshop: ontologies and information sharing. [S.l.], 2001.
+v. 2001, p. 108–117.
+
+WERLANG, R. et al. Ontological foundations for petroleum application modeling. In: 18th
+International Conference on Petroleum Data, Integration and Data Management. [S.l.:
+s.n.], 2014.
+
+
+
+63
+
+APÊNDICE A — ENTREVISTA COM GEOFÍSICO ESPECIALISTA EM MODELOS
+
+3D
+
+Entrevistador: A ideia desta primeira conversa é para você explicar o que você quer dizer
+
+quando fala que precisa inserir dados de rocha em modelos de reservatório, e quais tipos
+
+de modelos 3D, ou Earth Models, que podem ser alimentados com dados de rocha.
+
+Especialista: Tipicamente, o que é interessante primeiramente para as pessoas de reservatório
+
+é porosidade e permeabilidade. Na realidade, nós determinamos para cada estudo descri-
+
+ções de litofácies, e quantificamos estas litofácies comparando as descrições das litofácies
+
+à porosidade e permeabilidade que você tem por aferições.
+
+Entrevistador: Quando você fala litofácies, você está se referindo a log facies, eletrofacies,
+
+não a fácies de rochas reais, de testemunhos?
+
+Especialista: Não, são ambas informações, elotrofácies e fácies de testemunhos.
+
+Entrevistador: Então você chama genericamente ambas de litofácies?
+
+Especialista: Sim.
+
+Especialsita: Na realidade, o que é feito é um estudo preliminar para associar e classificar, mas
+
+muitas vezes a classificação é feita para cada reservatório diferente.
+
+Entrevistador: A classificação de litofácies?
+
+Especialista: A classificação em tipos de rochas, que são respostas nos logs de porosidades ou
+
+permeabilidades específicas. O primeiro trabalho é tornar possível caracterizar o tipo da
+
+rocha, e quando temos esta caracterização, podemos iniciar a distribuição deste tipo de
+
+rocha em modelos 3D.
+
+Entrevistador: O que você quer dizer por caracterização, que tipos de características?
+
+Especialista: Você pode caracterizar a curva de porosidade com a localização de profundi-
+
+dade no modelo, a permeabilidade da rocha, e, além disso, algo que estamos trabalho no
+
+momento é a permeabilidade relativa.
+
+Entrevistador: O que é a permeabilidade relativa?
+
+
+
+64
+
+Especialista: Permeabilidade relativa é o fato de que você pode ter fluidos que vem de uma
+
+celular para outra, e este fluido esta em forma de um ponto permeável a ou b, e a perme-
+
+abilidade relativa é uma derivação entre os pontos a e b. É como um vetor de permeabili-
+
+dade.
+
+Entrevistador: É um vetor de distribuição de permeabilidade de um ponto ao outro ao longo
+
+do reservatório?
+
+Especialista: Sim.
+
+Entrevistador: Porque permeabilidade algumas vezes não é a mesma na horizontal e vertical.
+
+Entrevistador: Quais outras características relacionadas?
+
+Especialista: Depois que podemos ter também todas informações que correspondem a pressão,
+
+mas eu não sei como relacionar a pressão com a própria rocha.
+
+Entrevistador: Você precisa saber a pressão do reservatório.
+
+Especialista: Sim. Neste nível, eu acho que começamos a trabalhar com propriedades dinâmi-
+
+cas, e propriedades dinâmicas são propriedades muito "físicas"e nem sempre relacionadas
+
+a Geologia.
+
+Entrevistador: Quando você fala de modelo de reservatório, você está querendo dizer o mesmo
+
+do que um modelo de fluxo ou não?
+
+Especialista: Você tem duas coisas diferentes, você tem uma representação estática do reser-
+
+vatório, a qual você tem uma descrição de cada célula do reservatório e, dentro de cada
+
+célula, distribuição de porosidade e permeabilidade, e no limite entre duas células você
+
+tem a permeabilidade relativa. Este é o modelo estático e é utilizado para ser a base de
+
+uma simulação de fluxo. Depois você tem que adicionar a isto algumas medidas que você
+
+fez no nível de produção, das quais você tem primeiro que estabelecer a pressão no reser-
+
+vatório, e etão depois estabelecer a permeabilidade no reservatório. Os únicos elementos
+
+que estamos trabalhando no reservatório é a permeabilidade relativa e a pressão. Mas,
+
+para obter este resultado devemos passar por diferentes estágios no qual estamos simu-
+
+lando a geologia, a deposição ao longo da estratificação geológica e estabelecer o limite
+
+entre esta deposição de estratificação, a porosidade e a permeabilidade. Porque, neste
+
+caso, nós primeiramente achatamos todas unidades geológicas e então utilizamos o fato
+
+de que as tenhamos achatado para espalhar esta informação, distribuir esta informação ao
+
+longo do modelo deposicional.
+
+
+
+65
+
+Entrevistador: Tem algo que você falou que é bastante óbvio para você, mas não para nós.
+
+Quando você fala modelo de reservatório, você está falando de modelos 3D, feitos de
+
+células, e para cada célula você anexa algumas propriedades? Este é um modelo 3D de
+
+células no espaço?
+
+Especialista: Sim, exatamente isto.
+
+Entrevistador: Quando um geólogo fala sobre um modelo geológico, ele não está pensando
+
+em um modelo como em um modelo de implementação de células 3D em um espaço. Ele
+
+está pensando sobre um deposição genérica, ou organização estrutural, mas não relacio-
+
+nada a uma representação dentro de um sistema como quando você fala sobre distribuição
+
+de células. Quando você fala sobre reservatórios é sempre um modelo 3D de células que
+
+estão localizadas no espaço, com um suporte cartesiano, e onde eu posso anexar proprie-
+
+dades em uma posição no espaço.
+
+Especialista: Esta é a maneira que estamos dando a informação para o engenheiro de reserva-
+
+tório. Esta informação é preparada para ser utilizada pelo engenheiro de reservatório.
+
+Entrevistador: Mas existe uma outra maneira da qual eu possa falar sobre modelos de reser-
+
+vatório que não é um grid 3D ou não?
+
+Especialista: Eles se misturam muitas vezes, mas eu acho que eles estão apenas trabalhando
+
+sobre isto. Se estamos falando de modelos matemáticos, estes modelos matemáticos
+
+não são aplicados a este estágio de avaliação, é depois. Depois os modelos físicos e
+
+matemáticos e definimos algumas equações que serão aplicadas ao modelo de grid.
+
+Entrevistador: Está certo, então um reservatório é sempre um grid?
+
+Especialista: Sim. É também onde temos alguns problemas com pessoas da engenharia de
+
+reservatório, porque o que eles consideram um modelo, para nós, é apenas uma represen-
+
+tação. Não é tão evidente para explicar para eles que isto não é um modelo.
+
+Entrevistador: O problema é que as pessoas não estão falando sobe a mesma coisa. Eu acho
+
+que para a maioria um modelo de reservatório é de fato um grid. Mas não é o mesmo
+
+quando você fala sobre um modelo estratigráfico, ou um modelo geológico. Não é neces-
+
+sariamente um grid. Pode ser apenas um modelo conceitual no qual tentamos entender a
+
+forma como as coisas acontecem na natureza. Mas a maneira que consideramos é como
+
+um grid, porque eu acho que é mais útil como um grid.
+
+
+
+66
+
+Especialista: O problema é que quando você quer introduzir, a qual estágio do trabalho você
+
+quer introduzir algo. Se você quer introduzir a informação no nível da modelagem geo-
+
+lógica, este não é o modelo de reservatório. Na realidade, neste caso você precisa lidar
+
+com estratigrafia e a extensão de fácies ou coisas como isto. É muito diferente.
+
+Entrevistador: De fato quando você fala sobre modelagem geológica você precisa escolher
+
+que informação precisa ser adaptada para migrar para o modelo de reservatório.
+
+Especialista: Eu acredito que o que estamos fazendo aqui em nossa organização é mais esta
+
+parte, interpretar testemunhos e eletrofácies para construir o tipo da rocha, e depois adici-
+
+onar informações físicas e químicas neste tipo de rocha e trabalhar com ele para construir
+
+a geologia dentro do prospecto.
+
+
+
+67
+
+APÊNDICE B — ENTREVISTA COM GEÓLOGO ESPECIALISTA EM
+
+PETROGRAFIA
+
+Entrevistador: É papel do Geólogo definir unidades de fluxo?
+
+Especialista: O geólogo não cria a unidade de fluxo, ele cria o modelo geológico. O modelo
+
+geológico tem as diferentes fácies dispostas no espaço como volumes. Quem cria a uni-
+
+dade de fluxo é o engenheiro. Ele pega este modelo, ela pega as pressões dos fluídos,
+
+que são lidas com ferramentas, outros tipos de testes feitos e a petrofísica e simplifica,
+
+modifica para um modelo de fluxo.
+
+Entrevistador: Mas o geólogo chega a fazer um grid também?
+
+Especialista: O que eles fazem é um modelo de volumes 3D, mas não é o grid que vai ser
+
+usado para a simulação de fluxo.
+
+Entrevistador: Mas a diferença entre eles é grande?
+
+Especialista: É grande. Em termos de precisão, em termos de significado. Muitas vezes o
+
+significado geológico é ignorado. Nada disso é passado para o engenheiro. Ele define
+
+classes que combinam geralmente mais de uma fácies deposicional. Digamos, ele vai
+
+colocar todos arenitos em um classe, mas tem diferentes arenitos ali. Tem arenito grosso,
+
+arenito fino, mas naquele caso ele coloca todos em um única classe: arenito E todos os
+
+outros em outra classe. Ou então ele vai colocar os arenitos que ele está chamando de
+
+porosos, os arenitos que ele está chamando de fechados e outras rochas. Os arenitos em
+
+15 e 25 ele vai chamar de abertos, os arenitos menor do que 15 de fechados. Nesse caso,
+
+ele está passando uma informação que é mais quantificada, mais fácil de representar, para
+
+o engenheiro.
+
+Entrevistador: Certo. E como ele faz isso? Existe uma maneira de por exemplo, se eu tenho
+
+uma estrutura específica, com uma granulometria específica e uma litologia específica, eu
+
+consigo traduzir isto para uma porosidade?
+
+Especialista: : Em alguns casos sim, em muitos casos a definição pode ser até mais simples do
+
+que essa. A estrutura que é tão importante para a definição da fácies deposicional, nem
+
+interessa. O que é considerado realmente é o tipo de litologia e a composição.
+
+Entrevistador: Mas por que descreve-se uma estrutura deposicional então?
+
+
+
+68
+
+Especialista: Porque a estrutura deposicional dá a informação realmente do processo que de-
+
+positou aquela rocha. Então se você consegue entender o processo que depositou a rocha,
+
+você consegue entender como ocorreu a formação daquele depósito. O seu modelo geo-
+
+lógico se torna muito melhor.
+
+Entrevistador: Mas e como o geólogo reflete isto? Como ele cria um modelo melhor? O que
+
+tem nesse modelo dele de diferente de um outro modelo?
+
+Especialista: A pergunta é qual a diferença entre um bom e um mau modelo geológico? O bom
+
+modelo geológico é o que está considerando tantos os aspectos da ocorrência que está ali
+
+de fato, com o conhecimento. E conhecimento vem de uma longa linha de aquisição de
+
+conhecimento, com base em ambientes recentes, onde está acontecendo agora a deposi-
+
+ção, para ver o processo deposicional acontecendo, com base em sistemas antigos vistos
+
+em afloramento, e daí indo para subsuperfície, com base em diversos casos diferentes de
+
+subsuperfície, usando a sísmica. Isto tudo é o conhecimento sobre este tipo de sedimen-
+
+tação. Se você pega um livro de ambientes de sedimentação atualmente, cada ambiente
+
+desses reproduz conhecimento de muitas décadas, com base em diferentes ferramentas.
+
+Sísmica, sequências estratigráficas. A visão de um geólogo de reservatório é no meio do
+
+caminho, fica entre o sedimentólogo, estratígrafo, o cara que estuda a rocha realmente, e o
+
+engenheiro. O geólogo de reservatório tem que traduzir de uma forma mais simplificada
+
+e mais quantitativa o modelo geológico para dentro de alguma coisa que o engenheiro
+
+possa simular.
+
+
+
+69
+
+APÊNDICE C — ENTREVISTA COM GEÓLOGO DE RESERVATÓRIO
+
+Entrevistador: Defina modelo de reservatório.
+
+Especialista: Modelos de reservatórios possuem várias entradas de dados que são incorporadas
+
+nesses modelos normalmente tridimensionais, mas existem modelos bidimensionais tam-
+
+bém. Utilizamos informações de poço, zoneamento, estratigráfico, perfis elétricos, perfis
+
+acústicos, amostragem de rocha (amostragem lateral). É um modelo tridimensional nu-
+
+mérico, celular, um grid. Existem grids não estruturados, que representa um modelo que
+
+não deforma o modelo, nem horizontalmente nem verticalmente. Quando você deforma
+
+um grid isto implica que você está alterando seu cálculo geoestatístico. Suas premissas
+
+estatísticas não foram obedecidas. Porém ele gera outros problemas, cria um número de
+
+células maior, na simulação de fluxo ele cria muitos layers (apesar de que muitos layers
+
+não possuem valor). Ele cria uma caixa imensa com muitas células, e, muitas destas cé-
+
+lulas não terão valor. Só que quando o engenheiro carrega este grid para a simulação de
+
+fluxo ele importa este arquivo inteiro. Um grid normal é um grid deformado, como os do
+
+Petrel1, com x, y, z, com propriedades numéricas simuladas de reservatório, como porosi-
+
+dade, permeabilidade horizontal e vertical (a permeabilidade medida, a relativa é gerada
+
+pelo engenheiro). O geólogo passa a permeabilidade de rocha, é tudo estático. Atual-
+
+mente os principais modelos são 3D. Normalmente do tipo corner point, antigamente era
+
+bloco centrado.
+
+Especialista: Algumas vezes não se tem amostra de rocha para todos os poços, a tendência é
+
+que à medida que o trabalho vá evoluindo você tenha muito mais poços dos que amostras
+
+de rocha. Existem reservatórios que quase não se tem amostra de rochas. São modelos
+
+apenas com o perfil elétrico.
+
+Especialista: No modelo geológico tridimensional algumas vezes existe o modelo de fácies.
+
+Obrigatoriamente para chegar no engenheiro de simulação tem que ter porosidade, per-
+
+meabilidade horizontal e vertical e o ntg, que é a relação entre o volume e o volume do
+
+reservatório, as células que tem fluxo e as células que não tem fluxo. Define-se uma por-
+
+centagem de porosidade no poço, e acima desse valor tem fluxo e abaixo é selo, ntg é a
+
+razão dessas duas coisas. O engenheiro consegue gerar o ntg, caso o geólogo não passe.
+
+Especialista: Para gerar os modelos entre os poços existem outras ferramentas, como dados
+1Petrel é um sistema da empresa Schlumberger utilizado para a integração de informação da exploração à
+
+produção de Petróleo.
+
+
+
+70
+
+geofísicos - impedância, acústicas, sísmica -, modelo análogo, de outros poços ou de
+
+afloramentos.
+
+Especialista: No modelo de reservatório, se usa muitas ferramentas de geoestatística como va-
+
+riograma, correlação entre variáveis como permeabilidade. Porém, os inputs para esta
+
+ferramenta geoestatística são geológicos, como quantidade de corpo na vertical e na ho-
+
+rizontal, disposição da porosidade (como ela se comporta).
+
+Especialista: A entrada da unidade de rocha no modelo funciona da seguinte forma. Tiramos
+
+de um testemunho ou de um plugue, parâmetros petrofísicos, porque o engenheiro vai
+
+precisar de uma curva de permeabilidade relativa, como o fluxo se comporta no reserva-
+
+tório, compressabilidade, geomecânica. Medidas mecânicas de rocha, e também fácies.
+
+Da mesma forma que a porosidade, o modelo de fácies vem das amostras de rocha (plu-
+
+gue ou testemunho) do poço, também pode gerar uma curva de eletrofácies, ou tentar
+
+associar aquela fácies com um perfil elétrico para replicar ao longo dos poços.
+
+Especialista: Eletrofácies é quando o dado de rocha direto é associado à um conjunto de dados
+
+indiretos de perfis e assim extrapolado. A litofácies é a descrita/interpretada direto da
+
+rocha.
+
+Especialista: Petrofácies é modelado a partir de parâmetros petrofísicos. Interessa as proprie-
+
+dades dinâmicas atuais da fácies, e não como foi formada, etc. Isso é devido à aleatorie-
+
+dade possível na evolução dessas rochas, como diagênese e etc.
+
+Especialista: O modelo de fácies é o mais trabalhoso no modelo de reservatório, pois é preciso
+
+muito dado de rocha para poder amarrar, para calibrar o modelo, para entender o concei-
+
+tual, tem que ser bem estudado. Geralmente demora anos para chegar a um bom modelo
+
+de fácies, pois não se possui todos esses dados no início da modelagem. O modelo é im-
+
+portante porque contém a heterogeneidade do reservatório. Quando não se tem o modelo
+
+de fácies a tendência é que o modelo de reservatório seja mais homogêneo.
+
+Especialista: Nas etapas da modelagem de reservatório, existem diversas escalas. Passa-se
+
+da escala de plugue ou perfil elétrico, de centímetros, para uma célula no modelo de
+
+reservatório na ordem de meio metro até 2 ou 3 metros de altura e de 25 metros até 200
+
+metros de largura. Existe ainda uma segunda mudança de escala que não é sempre que
+
+ocorre, mas algumas vezes é necessária, que é o modelo geológico de reservatório para o
+
+modelo de fluxo de reservatório. Porque o custo para simular é alto, então muitas vezes o
+
+modelo geológico é “piorado” em prol da complexidade. O geólogo sempre visa refinar
+
+
+
+71
+
+o máximo possível. O modelo de fluxo pode ter células até 4 vezes maiores do que o
+
+modelo geológico.
+
+Entrevistador: Quando vocês colocam os dados no modelo de reservatório, é só aquela uni-
+
+dade litológica que é o reservatório ou também a área de entorno?
+
+Especialista: Normalmente o modelo de reservatório é da unidade de interesse, podendo até
+
+ter mais de uma unidade litológica ou de fluxo. A área de entorno não é incorporada.
+
+Inclusive, existe um problema que as vezes dois reservatórios são modelados indepen-
+
+dentes, e após um tempo se descobre que eles são na realidade interligados. Como não há
+
+células de entorno, fica difícil unir estes dois modelos já prontos. Existe ainda o modelo
+
+geomecânico, onde a área de entorno também é modelada para modelar escape de fluido
+
+por alguma falha, como a compressibilidade vai atuar, rompimento de selo. Neste modelo
+
+as células são muito maiores.
+
+Entrevistador: Como saber se um modelo é bom?
+
+Especialista: Existem alguns testes para ver o quão refinado o modelo geológico pode ser.
+
+Cria-se um modelo menor, porém bem refinado e a partir dele geram-se vários modelos
+
+de fluxo com uma qualidade pior. Com isso, gera-se um gráfico da perda de qualidade à
+
+medida que o detalhamento baixa. As vezes é melhor um modelo menos refinado, mas
+
+que sua complexidade seja menor.
+
+Entrevistador: Você sai dos dados que foram capturados de campo e de laboratório, ou seja,
+
+eu tenho poço, log de poço, gamma-ray, sísmica de perfil e sísmica 3D. Digamos que
+
+este seja seu input de dados. Eu queria que tu caminhasse do início ao fim até chegar ao
+
+modelo de fluxo, a sucessão deste modelos.
+
+Especialista: São duas linhas, uma da parte geofísica e outra da parte de poço. A linha de
+
+poço vem tanto indireto quanto o dado direto, onde tem a questão da fácies. Fácies e
+
+petrofísica são os dados diretos da rocha e os perfis elétricos são os indiretos. Então você
+
+tem os dados de poço e os dados sísmicos, que seriam a sísmica 3D e perfis sísmicos. O
+
+geofísico amarra o horizonte dele com os perfis de poço sísmicos. O geofísico interpreta
+
+os horizontes, os envoltórios do modelo que ele tá mapeando e as propriedades que podem
+
+ter ali dentro daquele modelo geofísico.
+
+Entrevistador: Quando o geofísico interpreta a sísmica o que ele está interpretando? Ele está
+
+
+
+72
+
+tentando determinar os horizontes marcados na sísmica que correspondem à heterogenei-
+
+dades de rocha, o que é falha, o que é limite entre camadas, variações litológicas.
+
+Especialista: Isto, que estão registradas no dado sísmico. Nem todos ficam registrados e tem
+
+coisas registradas que não tem relevância no trabalho dele. Ele foca nos refletores que
+
+de alguma forma terão algum impacto no trabalho dele. Mas, em algumas situações, o
+
+geofísico tem um volume sísmico em tempo, então ele precisa fazer uma conversão de
+
+tempo para profundidade. Nesta situação, ele precisa mapear mais horizontes.
+
+Entrevistador: O objetivo final dele é pegar limites de camada e falhas?
+
+Especialista: Isto, limites verticais e horizontais. E também propriedades que de alguma forma
+
+possam indicar qualidade de rocha dentro daquele reservatório. Impedância acústica,
+
+amplitude sísmica, máxima amplitude.
+
+Entrevistador: São propriedades da rocha que impactam na leitura do dado sísmico?
+
+Especialista: Sim, refletem no dado sísmico. Tem impedância acústica, tem impedância elás-
+
+tica, também tem 11S. Propriedades que estão ali na rocha ou no fluido e que te dê alguma
+
+informação cobre a qualidade dos corpos ou dos fluidos que estão ali dentro.
+
+Entrevistador: Ele consegue identificar na sísmica também limite de fluidos, o limite entre
+
+água e o óleo?
+
+Especialista: As vezes ele consegue enxergar até o contato entre gás e óleo, óleo e água. Nor-
+
+malmente óleo e água, gás é muito difícil. E mesmo assim é um atributo, ele gera um
+
+mapa.
+
+Especialista: Então esse é o sísmico, que mapeia essas continuidades verticais e horizontais,
+
+vales e horizontes, relacionados ao reservatório ou ao todo, e se precisar faz a conversão
+
+de tempo em profundidade. O dado de rocha 1D, os perfis elétricos, as fácies, a estrati-
+
+grafia, o zoneamento, tudo relacionado ao poço. Com isso o geólogo consegue construir
+
+o esqueleto do modelo, com estes horizontes da sísmica, e colocar propriedades dentro.
+
+Entrevistador: Uma célula pode ter quantas propriedades? Quantas medidas tu pode colocar
+
+na célula?
+
+Especialista: Varia muito, pode-se colocar muitas. Normalmente é na casa de dezenas, 10 ou
+
+20, mas nada impede que sejam mais. Mas é como falei, o que tem que chegar num grid
+
+de simulação de fluxo, que é o que vai gerar a curva de produção, ou seja, o trabalho final,
+
+
+
+73
+
+tem que ter as porosidades vertical e horizontal e o ntg, que é a relação reservatório sob
+
+não reservatório. Isto é o que tem que chegar no final. Se o geólogo para chegar nestes 4
+
+finais precisar gerar o modelo de fácies – que normalmente ele quer -, ele faz no trabalho
+
+dele, mas isto é invisível para o engenheiro. Está representado, mas ele não está vendo a
+
+relação direta.
+
+Entrevistador: As variáveis vão agregando muitas informações e são traduzidas em um nú-
+
+mero. Elas incorporam informações que vem de diferentes fontes, mas ela são traduzidas
+
+em um número que vai pro grid.
+
+Especialista: A porosidade que vai pro engenheiro tem a fácies embutida, de forma indireta ela
+
+está ali. Quando se gera o modelo de fácies, você normalmente faz este modelo primeiro
+
+e depois faz o modelo de porosidade relacionado com a fácies. Por exemplo, uma fácies
+
+A tem um comportamento de porosidade específico.
+
+Entrevistador: Quando tu fala uma fácies , é um arenito, um siltito.
+
+Especialista: Isto, um arenito, um siltito, grainstone, etc.
+
+Entrevistador: Sem ter um nível de detalhamento de classe litológica. Eu não sei se é um
+
+grauvaque, se é um litoarenito, neste nível não?
+
+Especialista: Não.
+
+Entrevistador: Então é uma classificação mais textural do que composicional?
+
+Especialista: Nesta parte de laboratório, de inspeção de rocha, de análise de testemunho, é feito
+
+assim, detalhadamente. São duzentas fácies, cada uma tem um detalhe. Já o geólogo de
+
+reservatório faz uma simplificação, normalmente ele faz um agrupamento de fácies, ou
+
+eletrofácies. Ele agrupa, dez podem virar uma. Se os arenitos contém feldspato, quartzo,
+
+etc, viram todos arenito.
+
+Entrevistador: Ele faz um agrupamento textural naqueles que na interpretação dele responde
+
+com a mesma porosidade e permeabilidade?
+
+Especialista: Sim, mas isto se pensando em comportamento dinâmico.
+
+Especialista: Quando você pega um log que está de 20 em 20 centímetros, ou mesmo em um
+
+testemunho, as mudanças as vezes são centimétricas, para transferir isto para uma célula
+
+de reservatório existe uma mudança de escala, uma perda de resolução. Existem métodos
+
+
+
+74
+
+estatísticos para fazer isto, pode-se usar por exemplo a que ocorre com maior frequência,
+
+a que ocorre no meio da célula, ou até mesmo aleatório. Existem vários métodos para
+
+popular as células. A tendência é que as propriedades tenham valor da média quando
+
+chegam ao simulador de fluxo. Isto é um problema, pois algumas anomalias que são
+
+relevantes para a produção podem ser perdidas na modelagem.
+
+Entrevistador: Quando tu faz uma classificação e um agrupamento textural, por exemplo, tu
+
+pega um arenito limpo, um médio, um fino, um grosseiro e agrupa em uma fácies. O
+
+que acontece com a informação de diagênese, que altera este comportamento textural
+
+deposicional? Onde ela entra?
+
+Especialista: Eu raramente vi modelos diagenéticos. É muito raro. Se você tem um modelo
+
+em que a diagênese não afeta tanto as propriedades, onde o que domina é o deposicional,
+
+as litofácies irão responder de forma satisfatória e você modela até o final. Caso você
+
+tenha um modelo em que a diagênese impacta muito nas propriedades (em carbonatos isto
+
+ocorre muito), que esta relação deposicional original é muito difícil de ser separada, você
+
+irá partir para petrofácies desde o início. Agrupa-se de forma dinâmica as petrofácies,
+
+pelo comportamento mecânico. Mesmo que tenham sido fácies diferenciados, pelo fato
+
+da diagênese ter atuado, agora elas possuem um comportamento único.
+
+Entrevistador: Mas na hora que tu vai fazer a extrapolação entre os dois pontos, em que você
+
+precisa de um modelo geológico, existe um buraco, uma falta de informação.
+
+Especialista: Este é um ponto crítico. Ou você não extrapola a fácies, esquecendo o modelo
+
+deposicional e extrapolando diretamente a propriedade. Por exemplo, a minha porosi-
+
+dade neste poço é X, então o geofísico possui um mapa de impedância que mostra que a
+
+porosidade melhora para tal parte, então um modelo de porosidade é construído.
+
+Entrevistador: Mas tu não tenta fazer uma “fácies diagenética”?
+
+Especialista: Poderia, mas se faz isto muito pouco porque é muito complexo.
+
+Especialista: Tem também um problema que é o tempo de projeto. Tem a questão do “time”
+
+econômico, não podemos levar 10 anos pra construir um modelo. Precisamos gerar um
+
+modelo, por exemplo, em 2 meses. Você não vai ter todos os poços. Na prática, muitas
+
+vezes, acaba-se modelando o que está impresso no reservatório, o resultado final, que é a
+
+petrofácies. Se aquilo algum dia deposicionalmente correspondeu de uma forma diferente
+
+do que está hoje lá dinamicamente, no futuro quando tivermos muito mais poços talvez
+
+
+
+75
+
+modelemos isto. O que normalmente acontece é que isto será importante em algum mo-
+
+mento. Quando você começar a produzir seu campo e tiver seu modelo de reservatório,
+
+em um determinado momento, quando você tiver uma produção maior, com muitos po-
+
+ços, ele não irá responder como o esperado. Vão ter poços com comportamento anômalo,
+
+que deveriam produzir mais, mas produzem menos. Outros com comportamento inverso.
+
+Ou seja, o modelo de reservatório simplificado já não satisfaz, será necessário entender
+
+a diagênese, o comportamento dela, quais os controles, fazer um modelo deposicional
+
+sedimentológico, um modelo diagenético, etc.
+
+Entrevistador: Isto também é o geólogo que faz, não é o engenheiro de produção. O enge-
+
+nheiro está produzindo e reporta que não está satisfatório.
+
+Especialista: Tem várias interfaces. Entre estes dois grid que são passados, tem uma parte
+
+de interface de rocha muito grande. O engenheiro precisa também de alguns parâmetros
+
+dinâmicos para colocar simulador. Por exemplo, a curva de permeabilidade relativa da
+
+rocha, uma rocha que tem uma saturação de óleo maior ou menor, uma água que vai
+
+ficar mais em uma fácies do que na outra, ou seja, existe um comportamento dinâmico
+
+diferente entre as fácies. Isto é a rocha que responde. Ou a litofácies ou a petrofácies.
+
+Quando se tem pouca informação para os primeiros modelos, quando se tende a fazer
+
+estas petrofácies, o engenheiro precisa associar estas petrofácies a algum parâmetro de
+
+fluxo, então ele precisa conversar com o geólogo para ver como agrupar estas curvas de
+
+permeabilidade relativa, qual considerar.
+
+Entrevistador: Quando tu fala litofácies tu está falando em fácies de rocha? Ou seja, tu olhou
+
+as propriedades petrográficas e aí disse que isto aqui tem esta composição e esta textura.
+
+Quando tu fala em petrofácies tu já está falando em propriedades mecânicas.
+
+Especialista: Isto, e petrofísica.
+
+Entrevistador: Sim, petrofísica mede mecânica também. Ou seja, simplesmente qual é o fluxo
+
+que aquele meio permite independente de qual é sua composição ou textura.
+
+Entrevistador: Quando tu faz a interpretação e a separação das petrofácies tu já está fazendo
+
+com o olhar da mecânica que aquilo vai responder para o fluxo.
+
+Especialista: Isto.
+
+Entrevistador: Ou seja, teu critério de isolamento não é exatamente geológico ou petrológico,
+
+ele é realmente uma resposta para fluxo.
+
+
+
+76
+
+Entrevistador: Tentamos entender o que está causando aquele comportamento. As vezes você
+
+separa uma petrofácies, mas mesmo assim ela ainda não resolve o problema, porque as
+
+vezes pode ser que a questão é só matemática, você separa um valor de permeabilidade e
+
+porosidade mais alto, mas se você for olhar não faz muito sentido a rocha. Então é muito
+
+difícil, quando você mais mostrar para outro geólogo a pessoa também não entende qual
+
+a relação disto. Então tentamos buscar esta correlação. É uma combinação da parte
+
+deposicional e a parte diagenética que acarretou nesta petrofácies.
+
+
+	Agradecimentos
+	Resumo
+	Abstract
+	Lista de Figuras
+	Sumário
+	1 Introdução
+	2 Geologia do Petróleo
+	2.1 Modelos Geológicos
+	2.2 Principais Dados Utilizados para Modelagem de Reservatórios
+	2.2.1 Mapas
+	2.2.2 Sísmica
+	2.2.3 Perfis de Poço
+	2.2.4 Amostras de Rocha
+
+	2.3 Aquisição de Conhecimento Geológico
+
+	3 Ontologias
+	3.1 Unified Foundational Ontology
+
+	4 Trabalhos Relacionados
+	4.1 Detecção de planos de acamadamento: Uma abordagem com médias móveis
+	4.2 Sistema para Correlação Litológica Baseado em Ontologias
+
+	5 Ontologia para Representação de Petrofácies de Reservatório
+	5.1 Apresentação da Ontologia de Domínio
+
+	6 Enriquecendo Modelos de Grid de Reservatório com Dados de Rocha
+	7 Conclusão
+	Referências
+	Apêndice A — Entrevista com Geofísico especialista em modelos 3D
+	Apêndice B — Entrevista com Geólogo especialista em Petrografia
+	Apêndice C — Entrevista com Geólogo de Reservatório
+
+
+
+</field>
+	</doc>
+</add>

@@ -1,0 +1,8120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.19334</field>
+		<field name="filename">2658_323178.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+UNIVERSIDADE FEDERAL DE SANTA CATARINA
+PROGRAMA DE PÓS-GRADUAÇÃO EM ENGENHARIA MECÂNICA
+
+Arthur Besen Soprano
+
+ESTUDO E IMPLEMENTAÇÃO DE UM MODELO COMPOSICIONAL
+PARA A SIMULAÇÃO DE RESERVATÓRIOS DE PETRÓLEO
+
+Florianópolis
+
+2013
+
+
+
+
+
+Arthur Besen Soprano
+
+ESTUDO E IMPLEMENTAÇÃO DE UM MODELO COMPOSICIONAL
+PARA A SIMULAÇÃO DE RESERVATÓRIOS DE PETRÓLEO
+
+Dissertação submetida ao Programa de
+Pós-Graduação em Engenharia Mecânica
+da Universidade Federal de Santa Cata-
+rina para a obtenção do grau de Mestre
+em Engenharia Mecânica.
+
+Orientador: Prof. António Fábio Carva-
+lho da Silva
+
+Florianópolis
+
+2013
+
+
+
+Ficha de identificação da obra elaborada pelo autor,
+ através do Programa de Geração Automática da Biblioteca Universitária da UFSC.
+
+Soprano, Arthur
+   Estudo e implementação de um modelo composicional para a
+simulação de reservatórios de petróleo / Arthur Soprano ;
+orientador, António Fábio Carvalho da Silva - Florianópolis,
+SC, 2013.
+   144 p.
+
+   Dissertação (mestrado) - Universidade Federal de Santa
+Catarina, Centro Tecnológico. Programa de Pós-Graduação em
+Engenharia Mecânica.
+
+   Inclui referências 
+
+   1. Engenharia Mecânica. 2. Simulação de reservatórios de
+petróleo. 3. Modelo composicional. 4. Método de newton. 5.
+Equilíbrio de fases. I. Carvalho da Silva, António Fábio.
+II. Universidade Federal de Santa Catarina. Programa de Pós-
+Graduação em Engenharia Mecânica. III. Título.
+
+
+
+Arthur Besen Soprano
+
+ESTUDO E IMPLEMENTAÇÃO DE UM MODELO COMPOSICIONAL
+PARA A SIMULAÇÃO DE RESERVATÓRIOS DE PETRÓLEO
+
+Esta dissertação foi julgada adequada para a obtenção do título de
+“Mestre em Engenharia Mecânica”, e aprovada em sua forma final pelo
+Programa de Pós-Graduação em Engenharia Mecânica.
+
+Florianópolis, 16 de Agosto 2013.
+
+Prof. Armando Albertazzi Gonçalves Júnior, Dr. Eng.
+Coordenador do Curso
+
+BANCA EXAMINADORA
+
+Prof. António Fábio Carvalho da Silva, Dr. Eng.
+Orientador
+
+Prof.a Selene Maria de Arruda Guelli Ulson de Souza, Dr.a Eng.
+
+Prof. Celso Peres Fernandes, Dr. Eng.
+
+Prof. Clovis Raimundo Maliska, Ph.D.
+
+
+
+
+
+Agradecimentos
+
+Agradeço ao professor António Fábio Carvalho da Silva, orientador,
+pela confiança na realização deste trabalho e que, além da amizade e
+de conselhos preciosos, ajudou imensamente na elaboração e orientação
+desta dissertação desde seu início.
+
+Também gostaria de agradecer muito ao professor Clovis R. Maliska,
+pelos conselhos, amizade e por me permitir fazer parte do laboratório
+SINMEC, um ambiente de pesquisa com uma equipe de altíssima qua-
+lidade e características únicas, que são difíceis de ser encontradas em
+qualquer lugar.
+
+Gostaria de agradecer muito à minha companheira, Nayara Santos
+Pinto Pauperio, pelo apoio e parceria em todos os momentos desta traje-
+tória. Os momentos que passamos juntos serviram como uma forma de
+recuperar as energias e forças para dar continuidade ao trabalho.
+
+Eu estou demasiadamente grato à minha família, meus pais, Eliseo
+Soprano e Arlete Terezinha Besen Soprano, pelo apoio, educação e cari-
+nho que sempre me deram ao longo de minha vida, resultando na pessoa
+que sou hoje. Ao meu irmão, Pedro Besen Soprano, pela companhia e
+amizade durante todos estes anos.
+
+Minha imensa gratidão é dada aos colegas de trabalho do labora-
+tório SINMEC, onde passei a maioria do tempo durante este percurso,
+com momentos de descontração e amizade de todos, sempre dispostos
+a ajudar e que são os responsáveis pelo ótimo ambiente de pesquisa e
+desenvolvimento que o SINMEC possui.
+
+À empresa Engineering Simulation and Scientific Software - ESSS,
+por fornecer licenças para a utilização do aplicativo Kraken, que permitiu
+o pós-processamento e visualização de resultados.
+
+Finalmente, gostaria de agradecer à Petrobras, CNPq e ANP, pela
+ajuda financeira durante boa parte de minha formação e ao longo do curso
+de mestrado.
+
+
+
+
+
+Resumo
+
+Este trabalho apresenta o estudo e a implementação de um modelo com-
+posicional para a simulação do escoamento isotérmico em reservatórios de
+petróleo com malhas não-estruturadas e utilizando o método dos volumes
+finitos baseado em elementos (EbFVM). O modelo utilizado consiste em
+uma formulação totalmente implícita com a solução simultânea das equa-
+ções de conservação e das equações de equilíbrio químico pelo método
+de Newton-Raphson. O modelo considera reservatórios com propriedades
+heterogêneas e anisotrópicas, efeitos da pressão capilar e gravitacionais,
+entre outros fatores físicos relevantes. A formulação assume um número
+arbitrário de componentes, distribuídos nas fases óleo e gás, além do
+componente água presente apenas na fase água. Trata-se portanto de um
+modelo trifásico, mas com solução do equilíbrio químico apenas nas fases
+óleo e gás. No modelo, são feitos cálculos de flash e teste de estabilidade
+baseado na minimização da energia livre de Gibbs utilizando métodos de
+solução mais avançados e robustos, combinando o método de Newton-
+Raphson com o procedimento de substituições sucessivas. Para valida-
+ção do modelo, os resultados são comparados com os de simuladores
+composicional e black oil comerciais apresentando boa concordância. A
+implementação do modelo e de todos os módulos numéricos utilizados no
+trabalho foi feita através de uma programação avançada em C++, permi-
+tindo a reutilização do código para solução de problemas termodinâmicos
+multicomponentes, que exigem a utilização de uma equação de estado
+cúbica. Para exemplificar esta característica do código, um procedimento
+para calcular propriedades do modelo black oil a partir de uma análise
+composicional também é apresentada.
+Palavras-chave: modelo composicional, simulação de reservatórios, equi-
+líbrio de fases, malhas não-estruturadas, método de Newton-Raphson.
+
+
+
+
+
+Abstract
+
+This dissertation presents the study and implementation of a composi-
+tional model for the simulation of the isothermal flow in oil reservoirs
+with unstructured meshes using the element-based finite volume method
+(EbFVM). The model consists of a fully implicit formulation with a fully
+coupled solution of mass balance and chemical equilibrium equations
+using the Newton-Raphson method. The model considers reservoirs with
+heterogeneous and anisotropic properties, effects of capillary pressure and
+gravity, among other relevant physical factors. The formulation assumes
+an arbitrary number of components distributed in the oil and gas phases,
+and the component water is present only in the water phase. It is therefore
+a three-phase model but with the chemical equilibrium being solved only
+in oil and gas phases. In the model, flash calculations and the stability test
+based on the minimization of Gibbs free energy are solved using a more
+advanced and robust procedure, combining the Newton-Raphson method
+with a successive substitution procedure. To validate the model, compa-
+risons are made with the results obtained with comercial compositional
+and black oil simulators and the results showed good agreement. The
+implementation of the model and all the numerical modules used in this
+work were done with advanced programming techniques in C++, allowing
+code reuse for solving multicomponent thermodynamic problems, which
+require the use of a cubic equation of state. To illustrate this feature of
+the code, a procedure for calculating black oil model properties from a
+compositional analysis is also presented.
+Keywords: compositional model, reservoir simulation, phase equilibra,
+unstructured meshes, Newton-Raphson method.
+
+
+
+
+
+Lista de Figuras
+
+Figura 1 Comportamento de fases de um componente puro. . . . . . . 34
+
+Figura 2 Diagrama de fases pressão-composição para uma mis-
+tura binária. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+
+Figura 3 Diagrama de fases pressão-composição para uma mis-
+tura binária com T &gt; Tc1. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+
+Figura 4 Diagrama pressão-temperatura de uma mistura multi-
+componentes de composição fixa. . . . . . . . . . . . . . . . . . . . . . . . 36
+
+Figura 5 Energia de Gibbs da mistura de C O2/tolueno a 38, 1
+?C e
+
+1379 kPa. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+
+Figura 6 Conjunto de equações do problema. . . . . . . . . . . . . . . . . . . . . 48
+
+Figura 7 Esquema de um separador de 3 estágios. . . . . . . . . . . . . . . . . 56
+
+Figura 8 Representação gráfica da energia de Gibbs e da função F
+com seus pontos estacionários. . . . . . . . . . . . . . . . . . . . . . . . . . 64
+
+Figura 9 Construção do volume de controle a partir de uma malha
+não-estruturada e suas respectivas entidades. . . . . . . . . . . . 68
+
+Figura 10 Nós à frente e atrás de uma face f do elemento. . . . . . . . . 71
+
+Figura 11 Estrutura da matriz Jacobiana para uma geometria sim-
+ples com 2 poços. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 74
+
+Figura 12 Diagrama computacional do algoritmo utilizado neste
+trabalho. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+
+Figura 13 Diagrama P-T para o fluido com composição dada pela
+tabela 7. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 83
+
+
+
+Figura 14 Comparação dos resultados para a fração molar de cada
+fase. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 85
+
+Figura 15 Comparação dos resultados para o fator de compressibi-
+lidade. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 86
+
+Figura 16 Geometria e características do reservatório. . . . . . . . . . . . . . 88
+
+Figura 17 Diagrama P-T para o fluido com composição dada pela
+tabela 12, mostrando curvas de fração volumétrica de
+gás constante. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 88
+
+Figura 18 Volumes de controle utilizados para o EbFVM e para o
+GEM com base na geometria da figura 16. . . . . . . . . . . . . . . 89
+
+Figura 19 Propriedades médias no reservatório. . . . . . . . . . . . . . . . . . . . 90
+
+Figura 20 Propriedades médias no reservatório. . . . . . . . . . . . . . . . . . . . 91
+
+Figura 21 Campo de pressão no reservatório para t = 2500 dias. . . 92
+
+Figura 22 Campo de saturação de gás e saturação de gás no plano
+z =?5m para t = 2500 dias. . . . . . . . . . . . . . . . . . . . . . . . . . . . 92
+
+Figura 23 Curva razão gás-óleo. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 93
+
+Figura 24 Geometria e características do reservatório. . . . . . . . . . . . . . 95
+
+Figura 25 Comparação dos resultados de produção instantânea para
+o processo de injeção de água. . . . . . . . . . . . . . . . . . . . . . . . . . . 96
+
+Figura 26 Comparação dos resultados de produção acumulada para
+o processo de injeção de água. . . . . . . . . . . . . . . . . . . . . . . . . . . 97
+
+Figura 27 Comparação dos resultados de produção para o processo
+de injeção de C O2. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 99
+
+Figura 28 Malha não-estruturada utilizada no problema. . . . . . . . . . . 100
+
+Figura 29 Campo de saturação de gás em quatro instantes de tempo.101
+
+Figura 30 Campo de fração molar de C O2 na fase óleo (xC O2 o) em
+quatro instantes de tempo. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 102
+
+Figura 31 Campo de fração molar de C O2 na fase gás (xC O2 g ) em
+quatro instantes de tempo. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 103
+
+Figura 32 Campo de fração molar global de C O2 (zC O2 ) em quatro
+instantes de tempo. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 104
+
+
+
+Figura 33 Pressão média no reservatório ao longo do tempo. . . . . . . 104
+
+Figura 34 Pressão no calcanhar e pressão do volume de controle
+do reservatório. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 105
+
+Figura 35 Volume total de cada fase nas condições de reservatório. 106
+
+Figura 36 Taxa de produção de gás nos poços produtores. . . . . . . . . . 106
+
+Figura 37 Esquema para determinação das propriedades do mo-
+delo black oil. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 109
+
+Figura 38 Curva razão de solubilidade Rs. . . . . . . . . . . . . . . . . . . . . . . . . . 112
+
+Figura 39 Fator volume de formação de cada fase. . . . . . . . . . . . . . . . . . 113
+
+Figura 40 Viscosidades de cada fase. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 114
+
+Figura 41 Razão de solubilidade em função da pressão e tempera-
+tura. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 115
+
+Figura 42 Fator volume de formação de cada fase em função da
+pressão e temperatura. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 116
+
+Figura 43 Viscosidade de cada fase em função da pressão e tempe-
+ratura. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 117
+
+Figura 44 Classes e estruturas principais implementadas neste tra-
+balho. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 132
+
+Figura 45 Estrutura dos separadores. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 132
+
+Figura 46 Classes relacionadas à equação de estado. . . . . . . . . . . . . . . . 132
+
+Figura 47 Dois agrupamentos diferentes em subconjuntos estrutu-
+ralmente ortogonais para a matriz J. . . . . . . . . . . . . . . . . . . . . 139
+
+Figura 48 Estrutura da matriz Jacobiana e seu formato agrupado
+através do matrix coloring. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 140
+
+
+
+
+
+Lista de Tabelas
+
+Tabela 1 Tipos de variáveis para o modelo composicional. . . . . . . . . 28
+
+Tabela 2 Conjunto de equações e incógnitas do problema. . . . . . . . . 52
+
+Tabela 3 Condições para determinação de estabilidade . . . . . . . . . . . 66
+
+Tabela 4 Tabelas de permeabilidade relativa. . . . . . . . . . . . . . . . . . . . . . 80
+
+Tabela 5 Propriedades dos componentes. . . . . . . . . . . . . . . . . . . . . . . . . . 81
+
+Tabela 6 Matriz de interação binária. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 82
+
+Tabela 7 Composição molar do fluido. . . . . . . . . . . . . . . . . . . . . . . . . . . . 82
+
+Tabela 8 Comparações entre as frações molares do componente
+na fase líquido (xi L ) para P = 15000 kPa. . . . . . . . . . . . . . . . 82
+
+Tabela 9 Comparações entre as frações molares do componente
+na fase vapor (xiV ) para P = 15000 kPa. . . . . . . . . . . . . . . . . 83
+
+Tabela 10 Comparações entre os coeficientes de equilíbrio (Ki ) para
+P = 15000 kPa. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 84
+
+Tabela 11 Propriedades dos componentes. . . . . . . . . . . . . . . . . . . . . . . . . . 87
+
+Tabela 12 Composição molar global do fluido. . . . . . . . . . . . . . . . . . . . . . 87
+
+Tabela 13 Propriedades dos componentes. . . . . . . . . . . . . . . . . . . . . . . . . . 94
+
+Tabela 14 Matriz de interação binária. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 94
+
+Tabela 15 Dados referentes à malha não-estruturada. . . . . . . . . . . . . . . 100
+
+Tabela 16 Propriedades dos componentes. . . . . . . . . . . . . . . . . . . . . . . . . . 110
+
+Tabela 17 Matriz de interação binária. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 111
+
+Tabela 18 Composição molar do fluido. . . . . . . . . . . . . . . . . . . . . . . . . . . . 111
+
+
+
+
+
+Nomenclatura
+
+Símbolos Romanos
+D matriz de derivadas parciais das funções de forma
+
+Jt matriz Jacobiana da transformação de coordenadas
+
+J matriz Jacobiana do método de Newton-Raphson
+
+K tensor permeabilidade absoluta [mD]
+
+T transmissibilidade [m]
+
+~A vetor área da face [m2]
+
+~up velocidade da fase p [m/s]
+
+Bg fator volume de formação do gás
+
+Bo fator volume de formação do óleo
+
+cR compressibilidade da rocha [Pa
+?1]
+
+cw compressibilidade da água [Pa
+?1]
+
+Fp fração molar da fase p
+
+fi p fugacidade do componente i na fase p [Pa]
+
+g aceleração da gravidade [m/s2]
+
+g? energia de gibbs normalizada
+
+Ki coeficiente de equilíbrio
+
+kr p permeabilidade relativa da fase p
+
+Mp massa molar da fase p [kg/mol]
+
+N número de nós da malha
+
+n número de mols [mol]
+
+Nc número de componentes
+
+
+
+Np número de fases
+
+Ns número de segmentos
+
+P pressão [Pa]
+
+Pb pressão no ponto de bolha [Pa]
+
+Pc pressão crítica [Pa]
+
+Pcpq pressão capilar entre as fases p e q [Pa]
+
+Qi vazão do componente i [m
+3/s]
+
+qi taxa de geração molar do componente i [mol/(m
+3 s)]
+
+qi vazão molar do componente i [mol/s]
+
+R constante universal dos gases [J/(mol K)]
+
+Rs razão de solubilidade
+
+Sp saturação da fase p
+
+T temperatura [K]
+
+Tc temperatura crítica [K]
+
+V volume [m3]
+
+v volume molar [m3/mol]
+
+x , y, z coordenadas cartesianas globais [m]
+
+xi p fração molar do componente i na fase p
+
+Z fator de compressibilidade
+
+zi fração molar global do componente i
+
+np número de mols da fase p [mol]
+
+ni p número de mols do componente i na fase p [mol]
+
+WI well index [m3]
+
+Abreviações
+EbFVM Element-based Finite Volume Method
+
+GI gás ideal
+
+inj injetor
+
+mix mixture ou mistura
+
+
+
+ref referência
+
+rel relativo
+
+res reservatório
+
+std, STD standard ou padrão
+
+VC volume de controle
+
+VPI volume poroso injetado
+
+Símbolos Gregos
+?p fração volumétrica da fase p
+
+?t passo de tempo [s]
+
+?p peso específico da fase p [N/m
+3]
+
+?i j componente da matriz interação binária
+
+?p mobilidade da fase p [1/(Pa s)]
+
+µp viscosidade da fase p [Pa s]
+
+µi p potencial químico do componente i na fase p
+
+? fator acêntrico
+
+? porosidade
+
+?i coeficiente de fugacidade do componente i
+
+?p potencial da fase p [Pa]
+
+?p densidade da fase p [kg/m
+3]
+
+~?ep vetor do potencial da fase p para o elemento e
+
+?,?,? coordenadas locais do elemeto
+
+?p densidade molar da fase p [mol/m
+3]
+
+Sobrescritos e Subscritos
+e elemento
+
+f face
+
+g gás
+
+L líquido
+
+
+
+o óleo
+
+R reservatório
+
+s segmento
+
+V vapor
+
+W poço
+
+w água
+
+
+
+Sumário
+
+1 Introdução 23
+1.1 O meio poroso . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+1.2 Equilíbrio de fases . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+1.3 O modelo composicional . . . . . . . . . . . . . . . . . . . . . . 27
+1.4 O método dos volumes finitos baseado em elementos . . . . 29
+1.5 Organização do trabalho . . . . . . . . . . . . . . . . . . . . . . 29
+
+2 Noções de Termodinâmica de Misturas 31
+2.1 Definições preliminares . . . . . . . . . . . . . . . . . . . . . . 32
+2.2 Diagrama de fases . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+
+2.2.1 Diagramas de fluidos de reservatório . . . . . . . . . 36
+2.3 Equações de estado . . . . . . . . . . . . . . . . . . . . . . . . . 37
+2.4 Equilíbrio de fases . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+
+2.4.1 Rotina de flash . . . . . . . . . . . . . . . . . . . . . . . 42
+2.4.2 Cálculo de estabilidade . . . . . . . . . . . . . . . . . . 44
+
+3 Modelo Composicional 47
+3.1 Equações governantes . . . . . . . . . . . . . . . . . . . . . . . 47
+3.2 Condições de contorno . . . . . . . . . . . . . . . . . . . . . . . 53
+
+3.2.1 Separadores com múltiplos estágios . . . . . . . . . . 56
+
+4 Formulação Numérica 59
+4.1 Rotina de flash . . . . . . . . . . . . . . . . . . . . . . . . . . . . 61
+
+4.1.1 Substituições sucessivas . . . . . . . . . . . . . . . . . . 61
+4.1.2 Método de Newton . . . . . . . . . . . . . . . . . . . . 62
+
+4.2 Teste de estabilidade . . . . . . . . . . . . . . . . . . . . . . . . 63
+4.2.1 Substituições sucessivas . . . . . . . . . . . . . . . . . . 66
+4.2.2 Método de Newton . . . . . . . . . . . . . . . . . . . . 67
+
+4.3 Discretização das equações de conservação . . . . . . . . . . 68
+
+
+
+4.4 Método de solução das equações . . . . . . . . . . . . . . . . . 72
+4.5 Inicialização . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 74
+4.6 Controle do passo de tempo . . . . . . . . . . . . . . . . . . . . 75
+4.7 Algoritmo geral . . . . . . . . . . . . . . . . . . . . . . . . . . . 76
+
+5 Resultados 79
+5.1 Validação da rotina de flash . . . . . . . . . . . . . . . . . . . . 81
+5.2 Validação com o GEM . . . . . . . . . . . . . . . . . . . . . . . 87
+5.3 Simulação de um processo de injeção de água . . . . . . . . 94
+5.4 Simulação de um processo de injeção de C O2 . . . . . . . . . 98
+5.5 Simulação composicional com malha híbrida . . . . . . . . . 100
+5.6 Cálculo das propriedades para o modelo black oil . . . . . . 107
+
+5.6.1 Propriedades do modelo black oil em função da pres-
+são e temperatura . . . . . . . . . . . . . . . . . . . . . 111
+
+6 Conclusões 119
+6.1 Sugestões para trabalhos futuros . . . . . . . . . . . . . . . . . 121
+
+Referências 123
+
+Apêndice A Visão geral do código 129
+A.1 Arquivos de configuração, entrada e saída de dados . . . . . 129
+A.2 Arquivos de definição das entidades do modelo . . . . . . . . 130
+A.3 Arquivos de definição das entidades do equilíbrio de fases . 130
+A.4 Arquivos com o simulador e solver não-linear . . . . . . . . . 131
+A.5 Arquivos de definição da entidades com as variáveis do
+
+problema . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 131
+A.6 Arquivo de testes . . . . . . . . . . . . . . . . . . . . . . . . . . 131
+
+Apêndice B Determinação das raízes da equação de estado 133
+
+Apêndice C ”Matrix Coloring” 137
+
+Apêndice D Cálculo das viscosidades 143
+
+
+
+CAPÍTULO
+
+1
+Introdução
+
+O Brasil hoje se encontra em uma posição privilegiada na área de
+petróleo. Após a descoberta das reservas gigantes do pré-sal, o país se
+tornou o foco das atenções em âmbito mundial. Os reservatórios do
+pré-sal mostram-se extremamente desafiadores, pois estão localizados em
+águas ultra-profundas e apresentam características físicas que requerem
+novos desenvolvimentos tecnológicos.
+
+Durante o processo de recuperação de óleo, a despressurização do
+reservatório faz com que a produção se torne cada vez mais difícil. Para
+manter a produção, são necessários processos tecnológicos de recuperação
+cada vez mais avançados ao longo do tempo. A recuperação primária,
+que é a forma inicial e mais fácil de produção, é feita através do uso da
+energia armazenada no reservatório, ou seja, a alta pressão sob a qual
+os fluidos estão inicialmente. Quando esta pressão diminui, dá-se início
+ao processo de recuperação secundária, que consiste em injetar água em
+pontos específicos do reservatório, tentando ”varrer” o óleo do mesmo.
+
+Segundo Rosa et al. (2006), todos os campos em que a injeção de
+água foi iniciada há algum tempo acabam atingindo estágios avançados
+de recuperação, podendo chegar a um limite econômico onde os poços
+precisam ser tamponados e abandonados. Neste contexto, a fim de au-
+mentar o aproveitamento destes poços antes de seu abandono, métodos
+mais avançados de recuperação também devem ser levados em conta, já
+
+23
+
+
+
+24 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+que todas as instalações estão prontas e os custos associados à perfuração
+de poços, especialmente em águas ultra-profundas, é bastante alto.
+
+A recuperação dos hidrocarbonetos que não podem mais ser extraí-
+dos através dos métodos convencionais de recuperação primária ou secun-
+dária é feita através dos chamados métodos de recuperação terciária ou
+recuperação avançada. Estes métodos podem apresentar reações químicas
+e térmicas complexas dentro do reservatório. Um dos objetivos dessas
+técnicas é conseguir miscibilidade do fluido injetado com o óleo residual e
+assim recuperar o óleo que não pôde ser recuperado através dos métodos
+convencionais. Existem várias formas de alcançar a miscibilidade, dentre
+elas podem-se destacar o aumento de temperatura no reservatório (e.g.,
+combustão in situ) ou a injeção de outras espécies químicas, como o C O2,
+por exemplo.
+
+Para modelar o escoamento que ocorre em processos de recuperação
+avançada, utiliza-se o modelo composicional (AZIZ, 1993), em que apenas
+o número de espécies químicas é dado a priori. O número de fases (água,
+óleo, gás) e a composição de cada uma destas fases são determinados
+a partir de condições termodinâmicas e da concentração total de cada
+espécie.
+
+Há muitos anos o Laboratório de Simulação Numérica em Mecânica
+dos Fluidos e Transferência de Calor - SINMEC - desenvolve metodologias
+numéricas aplicadas à simulação numérica de reservatórios. Dentre os
+modelos existentes, alguns trabalhos foram feitos utilizando escoamentos
+monofásicos, escoamentos bifásicos imiscíveis (HURTADO, 2005, 2011) e
+também o modelo black oil (DA CUNHA, 1996; CORDAZZO, 2006; MALISKA
+et al., 2012).
+
+O presente trabalho tem como objetivo promover um avanço nas
+técnicas de modelagem do escoamento em meios porosos dominadas pelo
+SINMEC, a partir do estudo do modelo composicional e seus conceitos
+aplicados à simulação de reservatórios de petróleo. Já com uma funda-
+mentação numérica bastante forte, através do domínio da tecnologia de
+malhas não-estruturadas, o conhecimento de modelos mais avançados no
+SINMEC irá possibilitar uma abrangência muito maior de processos ou
+fenômenos que poderão ser estudados e resolvidos na área de engenharia
+de petróleo. A recuperação avançada é um dos processos que merece
+destaque e, portanto, justifica a importância do modelo composicional.
+
+
+
+CAPÍTULO 1 – INTRODUÇÃO 25
+
+Para modelar o escoamento composicional em reservatórios de pe-
+tróleo, alguns conceitos devem ser introduzidos. Primeiramente, o escoa-
+mento ocorre em um meio poroso, o que resulta em uma forma não con-
+vencional de escoamento e suas características devem ser apresentadas.
+Além disso, no modelo será necessário compreender alguns fenômenos
+relacionados ao equilíbrio de fases, tais como reaparecimento e desapare-
+cimento das fases óleo e gás. Portanto, é importante o conhecimento dos
+princípios termodinâmicos envolvidos no equilíbrio de fases. Finalmente,
+como o tratamento numérico das equações será feito utilizando malhas
+não-estruturadas, o Método dos Volumes Finitos baseado em Elementos será
+utilizado e apresentado.
+
+1.1 O meio poroso
+A modelagem matemática de reservatórios de petróleo tem sido rea-
+
+lizada desde o final do século XIX. Esta consiste em um conjunto de equa-
+ções que representam o comportamento dos fluidos que escoam através de
+uma rocha porosa, com condições de contorno e iniciais apropriadas. A
+principal diferença que existe no escoamento em um meio poroso é devido
+ao comportamento físico que, quando visto de forma macroscópica, é
+bastante diferente dos escoamentos comumente encontrados em outras
+áreas (e.g., aeronáutica, escoamentos em dutos, etc.). É claro que, em
+princípio, qualquer processo envolvendo o escoamento de fluidos pode
+ser modelado a partir das equações de Navier-Stokes, juntamente com
+a equação da conservação da massa e outras equações de conservação.
+Entretanto, no reservatório, o fluido está escoando através de poros com
+tamanhos de ordem muito menor do que o tamanho do próprio volume
+de controle que é utilizado para discretizar o domínio do problema de
+interesse. Sendo assim, é fácil ver que se algum método de discretização
+das equações de Navier-Stokes for empregado, malhas suficientemente
+pequenas (refinadas) deverão ser utilizadas para que o problema seja re-
+presentado de forma correta. Isso faz com que a obtenção de uma solução
+do escoamento em meio poroso utilizando as equações de Navier-Stokes
+seja inviável devido ao tamanho do domínio em relação ao tamanho da
+malha, mesmo com a capacidade computacional que existe atualmente.
+
+Para resolver o escoamento em um meio poroso em escala macros-
+cópica, a equação da conservação da quantidade de movimento é repre-
+
+
+
+26 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+sentada pela Lei de Darcy (DARCY, 1856). Esta é uma equação derivada
+empiricamente, a qual considera uma relação linear entre a velocidade
+relativa do fluido e o gradiente de pressões. Essa hipótese simplifica con-
+sideravelmente o problema do acoplamento pressão-velocidade (MALISKA,
+2004). Todavia, o escoamento em meio poroso geralmente possui outras
+complicações, associadas às propriedades físicas do reservatório, que são
+altamente heterogêneas e anisotrópicas. Isso implica na necessidade de
+técnicas diferentes e avançadas para a solução do problema.
+
+1.2 Equilíbrio de fases
+Para compreender como as fases de um fluido se comportam, é
+
+necessário um estudo termodinâmico, ou seja, o estudo da energia e suas
+transformações. Um grande avanço na termodinâmica foi feito por J. W.
+Gibbs entre a metade e o fim do século XIX. A termodinâmica permite
+descrever as variações de energia que ocorrem em mudanças de fase e
+pode ser usada para prever separação de fases (JOHNS, 2004).
+
+Estudar o comportamento e o equilíbrio de fases tem um papel im-
+portante em uma variedade de problemas de engenharia, desde manuten-
+ção da pressão em um separador, até processos de recuperação avançada
+de petróleo.
+
+O processo de extração de petróleo nunca ocorre em equilíbrio, já
+que os poços injetores e produtores são os agentes que alteram as con-
+dições de pressão e temperatura nos reservatórios. Isso faz com que a
+hipótese de equilíbrio termodinâmico não seja válida para o reservatório
+como um todo. Entretanto, o conceito de equilíbrio termodinâmico local é
+utilizado para contrapor esse problema. Este conceito é razoável se for le-
+vado em consideração que, em um ponto no reservatório, as mudanças in-
+ternas entre os fluidos confinados nos poros da rocha são rápidas quando
+comparadas à velocidade com que as condições de contorno (e.g., poços
+injetores e produtores) afetam o sistema. Desta forma, pode-se assumir
+equilíbrio termodinâmico local em volumes menores do reservatório que,
+para a área de simulação de reservatórios, são essencialmente os volumes
+de controle. A validade desta hipótese estará diretamente relacionada ao
+tamanho dos volumes de controle empregados na simulação.
+
+Para a determinação do equilíbrio de fases, a rotina de flash e o
+teste de estabilidade têm papel importante para o cálculo das variáveis
+
+
+
+CAPÍTULO 1 – INTRODUÇÃO 27
+
+envolvidas no problema. O termo flash é decorrente da língua inglesa a
+partir do fato de que um líquido, estando a uma pressão igual ou maior
+que a pressão do ponto de bolha, sofre uma rápida evaporação parcial
+quando a sua pressão é reduzida abaixo da pressão do ponto de bolha
+(i.e. flash-vaporize), produzindo um sistema bifásico de vapor e líquido
+em equilíbrio (SMITH et al., 1996; SANDLER, 2006).
+
+1.3 O modelo composicional
+
+Em geral, o estudo de processos de recuperação de hidrocarbonetos
+em reservatórios de petróleo exige que o escoamento multifásico de vários
+componentes em um meio poroso e heterogêneo seja levado em conta.
+Os processos físicos envolvidos são de transferência de calor e massa por
+advecção e difusão. Além disso, também é possível que ocorram reações
+químicas durante o processo. Devido à complexidade dos fenômenos, a
+simplificação do modelo sempre deve ser feita com o intuito de atender a
+um conjunto de problemas específicos, com características semelhantes.
+
+De um modo geral, existem basicamente dois grandes grupos de
+modelos para representar os vários tipos de petróleo existentes: o modelo
+black oil e o modelo composicional, sendo outros modelos derivados de um
+destes. A escolha do modelo é geralmente baseada na volatilidade do óleo
+(AZIZ, 1993). Um óleo com razão de solubilidade de gás, representado
+por Rs, menor que 750 scf/stb (pés cubicos nas condições padrão por
+barril nas condições padrão), fator volume de formação (Bo) menor que
+1.4 bbl/stb e grau API menor que 30 é usualmente definido como black oil.
+Neste caso, o comportamento de cada fase é simplificado. Existem apenas
+dois pseudocomponentes: óleo (de estocagem) e gás (de superfície), com
+propriedades físicas em função do fator volume de formação do óleo e
+do gás (Bo e Bg ), e da razão de solubilidade (Rs). Essas propriedades
+dependem apenas da pressão e não é necessário executar a rotina de flash,
+ou melhor, ela se reduz a um simples cálculo de propriedades físicas para
+cada fase. No modelo black oil, está implícita a hipótese de que a com-
+posição dos dois pseudocomponentes (óleo e gás) permanece constante
+durante todo o processo de depleção do reservatório. Isso raramente
+ocorre na prática, portanto, o modelo black oil deve ser utilizado com
+cautela.
+
+
+
+28 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+A variedade de reservatórios que existem no mundo é tão grande
+que inúmeros modelos foram sendo desenvolvidos ao longo do tempo.
+Segundo Chen et al. (2006a), dentre os modelos para simulação em reser-
+vatórios de petróleo, tem-se:
+
+• Escoamento monofásico;
+
+• Escoamento bifásico imiscível;
+
+• Modelo black oil;
+
+• Modelo de óleo volátil;
+
+• Modelo composicional;
+
+• Escoamento não-isotérmico;
+
+• Modelo composicional com reações químicas.
+
+Cada um dos modelos citados acima possui características diferentes em
+sua modelagem, permitindo resolver problemas específicos da forma mais
+eficiente possível. Em geral, a generalidade do modelo está diretamente
+relacionada com a complexidade da solução numérica do problema. O
+detalhamento dos modelos citados acima pode ser encontrado em Chen
+et al. (2006a).
+
+É bastante extensa a variação de formulações para o modelo com-
+posicional. Segundo Aziz (1993), dois tipos de formulações utilizadas
+na indústria são baseadas na escolha das variáveis primárias (tabela 1).
+Modelos do tipo 1 são normalmente (mas não sempre) empregados em
+
+Tabela 1 – Tipos de variáveis para o modelo composicional.
+P (pressão de uma das fases)
+
+Modelos do tipo 1:
+zi (Nc ?1 frações globais molares ou mássicas)
+P (pressão de uma das fases)
+Sp (Np ?1 saturações)Modelos do tipo 2:
+xi p (Nc ? Np frações molares ou mássicas de cada fase)
+
+formulações do tipo IMPES (implicit pressure, explicit saturation) que,
+para o caso de modelos composicionais, são chamadas de IMPEC (implicit
+pressure, explicit compositions), i.e., são formulações implícitas na pressão
+e explícitas na composição. Este tipo de formulação trata o cálculo das
+
+
+
+CAPÍTULO 1 – INTRODUÇÃO 29
+
+composições de cada fase de maneira explícita e requer a execução da ro-
+tina de flash durante cada iteração de Newton-Raphson para determinação
+das composições. Já os modelos do tipo 2 são normalmente empregados
+em formulações totalmente implícitas. Neste caso, um número maior
+de equações é necessário para cada volume de controle, mas a rotina
+de flash só é necessária para a determinação do desaparecimento ou
+reaparecimento de fases, já que as equações de equilíbrio fazem parte
+do sistema linear resultante do método de Newton-Raphson.
+
+1.4 O método dos volumes finitos baseado em elemen-
+tos
+
+O Método dos Volumes Finitos baseado em Elementos, ou Element based
+Finite Volume Method - EbFVM, foi um método que surgiu inicialmente a
+partir do trabalho de Baliga &amp;amp; Patankar (1983), aplicado para a solução
+das equações de Navier-Stokes. Um grande avanço ocorreu ao longo de
+décadas pelo fato deste ser um método bastante versátil, consistente e, o
+mais importante, que satisfaz a característica fundamental do Método dos
+Volumes Finitos: a conservação em cada volume de controle. A aplicação
+deste método na área de simulação de reservatórios de petróleo ocorreu
+mais tarde, porém não se conhece os simuladores comerciais que utilizam
+esta metodologia atualmente.
+
+A generalidade do EbFVM, através do uso de malhas não-estrutura-
+das, permite a solução em geometrias complexas, podendo representar
+o problema real da forma mais fiel possível. Os avanços do método nos
+últimos anos fizeram com que o mesmo tenha se tornado uma referência
+na área de mecânica dos fluidos computacional. Neste trabalho, será
+feita apenas uma revisão geral do método. Para uma referência completa
+e detalhada, sugere-se ao leitor uma consulta ao trabalho de Hurtado
+(2011).
+
+1.5 Organização do trabalho
+A organização deste trabalho foi feita de forma a apresentar, no
+
+capítulo 2, os conceitos termodinâmicos para sistemas multifásicos e mul-
+ticomponentes, além de mostrar os critérios necessários para estabelecer
+
+
+
+30 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+o equilíbrio de fases. Esta parte é a base requerida para começar a
+compreender o modelo composicional. Apenas uma revisão geral e os
+conceitos básicos são apresentados neste capítulo. Portanto, para um
+maior detalhamento dos conceitos que serão apresentados, aconselha-se
+uma consulta a Sandler (2006) e Smith et al. (1996).
+
+No capítulo 3, todas as equações que governam o problema são
+apresentadas, desde as relações constitutivas até as equações diferenciais
+parciais governantes. Nesta etapa faz-se o fechamento do problema, com-
+parando o número de incógnitas com o número de equações existentes.
+
+O capítulo 4 apresenta os algoritmos utilizados para resolver os três
+problemas fundamentais: a rotina de flash, o teste de estabilidade e a
+solução do sistema de equações diferenciais parciais do modelo compo-
+sicional. Todos os problemas possuem características fortemente não-
+lineares, portanto serão apresentadas alternativas numéricas para resolver
+tais questões, utilizando ou o princípio de substituições sucessivas ou o mé-
+todo de Newton-Raphson. No mesmo capítulo, o processo de discretização
+das equações por meio do EbFVM também é apresentado.
+
+No capítulo 5 os resultados são apresentados, desde a validação do
+cálculo de equilíbrio de fases, até os resultados de simulação de proces-
+sos de recuperação avançada. Todos os resultados são comparados com
+simuladores comerciais, que são amplamente utilizados na indústria e
+considerados como referências na área de simulação de reservatórios de
+petróleo. Finalmente, no capítulo 6, são feitas as conclusões e sugestões
+para trabalhos futuros.
+
+
+
+CAPÍTULO
+
+2
+Noções de Termodinâmica
+de Misturas
+
+Fluidos de reservatórios são misturas complexas de milhares de com-
+ponentes sob condições de pressão e temperatura bastante elevadas e que
+sofrem grandes variações no processo de extração desde a formação até
+a superfície. Portanto, torna-se fundamental compreender as interações
+físicas e químicas entre componentes e fases que possam existir neste
+sistema.
+
+Uma fase pode ser definida como uma porção homogênea de um
+sistema, delimitada por uma superfície e fisicamente separável das outras
+fases presentes. Em uma mistura água-óleo, existirão duas fases, pois
+existe uma superfície física que as separa. Os componentes são as espé-
+cies químicas que compõem as fases e, dependendo das características
+destes componentes, as propriedades (densidade, viscosidade, etc.) das
+fases terão comportamentos diferentes. Uma mistura multicomponente
+em equilíbrio à pressão e temperatura fixas irá formar um sistema de
+uma ou mais fases, com componentes distribuídos de acordo com suas
+características moleculares.
+
+31
+
+
+
+32 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+2.1 Definições preliminares
+
+Considere um sistema contendo uma mistura de Nc componentes
+que, no equilíbrio, estão distribuídos em alguma proporção nas fases óleo
+ou gás. Supondo, por hipótese neste trabalho, que o componente água
+está presente apenas em uma fase aquosa e não participa dos processos de
+equilíbrio químico pode-se, sem perda de generalidade, trabalhar apenas
+com conceitos aplicados ao sistema gás-óleo. A fração molar global do
+componente i para este sistema é expressa por
+
+zi =
+ni
+n
+
+, (1)
+
+onde ni é o número total de mols do componente i e n o número de mols
+total do sistema. De uma forma similar, a fração molar do componente i
+na fase p é
+
+xi p =
+ni p
+np
+
+, (2)
+
+onde,
+ni p: número de mols do componente i presente na fase p,
+np: número de mols total da fase p.
+Como n =
+
+?
+
+ni e np =
+?
+
+ni p, então
+
+Nc
+?
+
+i=1
+
+zi = 1, (3)
+
+e
+Nc
+?
+
+i=1
+
+xi p = 1. (4)
+
+Define-se a fração molar da fase como
+
+Fp =
+np
+n
+
+, (5)
+
+e
+Np
+?
+
+p=1
+
+Fp = 1. (6)
+
+
+
+CAPÍTULO 2 – NOÇÕES DE TERMODINÂMICA DE MISTURAS 33
+
+A saturação da fase é a razão entre o volume ocupado pela fase e o volume
+poroso disponível,
+
+Sp =
+Vp
+V
+
+, (7)
+
+com
+Np+1
+?
+
+p=1
+
+Sp = 1, (8)
+
+onde o somatório estende-se até Np = 2 (óleo e gás) mais a fase água. O
+volume molar é definido como
+
+v =
+V
+
+n
+, (9)
+
+o qual está diretamente relacionado à densidade molar ?,
+
+?=
+1
+
+v
+. (10)
+
+2.2 Diagrama de fases
+Para compreender as interações entre componentes em função da
+
+composição, pressão e temperatura do sistema, faz-se uso de diagramas
+de fases, os quais permitem determinar o estado de alguns sistemas parti-
+culares. A figura 1 mostra um exemplo do comportamento de fases de um
+componente puro.
+
+As curvas de sublimação, fusão e vaporização correspondem às re-
+giões na qual o fluido encontra-se em um estado com mais de uma fase. A
+fase é chamada de sólido, líquido ou vapor caso ela esteja em alguma das
+regiões delimitadas pelas curvas de transição indicadas na figura 1. Em
+temperaturas acima da temperatura crítica, Tc , existe apenas uma única
+fase para qualquer que seja a pressão do sistema. Desta forma, para um
+único componente, a temperatura crítica é a maior temperatura na qual
+duas fases podem existir. Além disso, no ponto crítico, as fases possuem
+propriedades idênticas.
+
+Para sistemas de dois componentes ou misturas binárias, a figura
+2 mostra as regiões de líquido, vapor e regiões bifásicas em função da
+pressão e composição. Este diagrama é um exemplo no caso em que a
+temperatura do sistema está abaixo da temperatura crítica de ambos os
+
+
+
+34 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Figura 1 – Comportamento de fases de um componente puro.
+
+componentes. Nos extremos do gráfico (z = 0 e z = 1) estão as pressões
+de vapor dos componentes puros (Pv2 e Pv1).
+
+Para explicar os fenômenos físicos que estão representados no dia-
+grama da figura 2, realiza-se um experimento em um recipiente fechado
+contendo uma mistura binária com composição z do componente 1. Este
+
+Figura 2 – Diagrama de fases pressão-composição para uma mistura biná-
+ria.
+
+recipiente está acoplado a uma bomba de mercúrio, a qual permite variar
+o volume do mesmo sem interferir na composição original do sistema. O
+processo consiste em comprimir o fluido a partir de uma pressão abaixo
+
+
+
+CAPÍTULO 2 – NOÇÕES DE TERMODINÂMICA DE MISTURAS 35
+
+do ponto de orvalho (P &amp;lt;Pd , figura 2), na qual o fluido está na fase
+vapor, até ultrapassar a pressão do ponto de bolha (fase líquida). Quando
+a pressão ultrapassa a pressão do ponto de orvalho (P &gt; Pd ), a fração
+de vapor do sistema vai diminuindo. No ponto A indicado na figura 2,
+a fração do componente 1 no líquido é x L e xV na fase vapor. Quando a
+pressão atinge P = Pb, a fase vapor desaparece. Este é um comportamento
+típico que ocorre na maioria das situações.
+
+Nos casos em que a temperatura do sistema é maior do que a tem-
+peratura crítica de um dos componentes, o comportamento é diferente.
+A figura 3 mostra como é o diagrama pressão-composição neste caso.
+Note que a região bifásica não existe para todos os valores de z, pois a
+temperatura do sistema está acima da temperatura crítica do componente
+1. Como é esperado, se z = 1, o sistema possui apenas uma fase, em
+condições supercríticas. O ponto crítico da figura 3 é o ponto na qual
+as fases vapor e líquido são idênticas, ou seja, ambas as fases possuem
+a mesma composição e as mesmas propriedades. Para frações molares
+acima do valor do ponto crítico na figura 3, existem duas pressões de
+orvalho para cada composição.
+
+Figura 3 – Diagrama de fases pressão-composição para uma mistura biná-
+ria com T &gt; Tc1.
+
+Através de um procedimento experimental semelhante, porém com o
+sistema a uma temperatura acima da temperatura crítica do componente
+1, é possível observar o seguinte. Em P = Pd1, a primeira gota de líquido
+se forma. Com o aumento da pressão do sistema, aumenta a fração
+de líquido, porém ao aumentar mais a pressão, atinge-se um ponto no
+
+
+
+36 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+qual a fração de líquido começa a diminuir até que o líquido desaparece
+na pressão Pd2. Como foi realizado um processo de compressão, esse
+fenômeno é conhecido como vaporização retrógrada. Para o caso em que
+a pressão é reduzida, ele é chamado de condensação retrógrada (ORR &amp;amp;
+TABER, 1987). Por ser um problema em condições acima das condições
+críticas, raramente tal fenômeno é observado. Porém ele pode ocorrer em
+alguns reservatórios de petróleo, que podem estar sob condições acima
+das condições críticas de alguns hidrocarbonetos e esses fenômenos preci-
+sam ser previstos durante o processo de extração.
+
+2.2.1 Diagramas de fluidos de reservatório
+Um exemplo de diagrama de fases utilizado em fluidos de reserva-
+
+tório é mostrado na figura 4, que corresponde a um diagrama pressão vs
+temperatura do sistema fluido. Nesta figura, existem dois pontos limites
+
+Figura 4 – Diagrama pressão-temperatura de uma mistura multicompo-
+nentes de composição fixa.
+
+de pressão e temperatura, a cricondenbárica e a cricondenterma, respec-
+tivamente. Para temperaturas acima da cricondenterma, existe apenas
+
+
+
+CAPÍTULO 2 – NOÇÕES DE TERMODINÂMICA DE MISTURAS 37
+
+uma fase para qualquer valor de pressão. Analogamente, para pressões
+acima da cricondenbárica, existe apenas uma fase para qualquer valor de
+temperatura.
+
+Os reservatórios são classificados de forma diferente de acordo com
+suas condições iniciais. Reservatórios sob temperaturas abaixo da tem-
+peratura crítica são classificados como reservatórios de óleo. Para esse
+tipo de reservatório, ainda é possível classificá-lo dependendo da pressão
+inicial. Ele é chamado de subsaturado, quando a pressão inicial está acima
+da curva de ponto de bolha (ponto A da figura 4) e de saturado, para
+pressões abaixo da região de pressão de bolha (região bifásica, ponto
+B). Reservatórios com temperatura acima da crítica são chamados de
+reservatórios de gás. Se a temperatura está abaixo da cricondenterma
+(ponto C), este é um reservatório com condensação retrógrada, já que a
+condensação retrógrada de óleo irá ocorrer a medida que a pressão da
+formação vai diminuindo devido a extração dos fluidos. Se a temperatura
+estiver acima da cricondenterma (ponto D), o reservatório é monofásico
+para qualquer pressão.
+
+É importante ressaltar que as definições apresentadas são basea-
+das nas condições iniciais da formação. À medida que os fluidos de
+reservatórios são extraídos, a composição do reservatório se altera e,
+consequentemente, o diagrama da figura 4 muda. Considere um re-
+servatório de gás com temperatura abaixo da cricondenterma. Com a
+remoção do gás da formação, óleo vai se formando no reservatório com
+maiores concentrações dos componentes mais pesados. Quanto mais gás
+é removido, mais a concentração de componentes leves no reservatório
+diminui, já que estes estão preferencialmente na fase gás e, portanto,
+o reservatório fica com uma maior concentração de componentes mais
+pesados, fazendo com que a região bifásica da figura 4 se desloque para
+temperaturas mais altas. Isso resulta em uma maior condensação de óleo
+no reservatório. Este tipo de reservatório é um forte candidato a processos
+de manutenção de pressão por injeção de gás ou gás ciclado a fim de
+aumentar a recuperação dos hidrocarbonetos (BRADLEY, 1987).
+
+2.3 Equações de estado
+As equações de estado relacionam de forma relativamente simples
+
+pressão, volume e temperatura. A partir de propriedades críticas e fator
+
+
+
+38 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+acêntrico de cada componente, é possível prever de maneira razoável o
+comportamento de misturas e componentes puros. A precisão de cada
+equação de estado está associada à capacidade da mesma em representar
+de forma correta as forças de atração e repulsão das moléculas de cada
+componente do sistema.
+
+A equação de estado mais simples conhecida é a equação dos gases
+perfeitos, a qual estabelece
+
+P V = nRT, (11)
+
+onde n é o número de mols, P, V e T são pressão, volume e temperatura,
+respectivamente. A variável R é a constante universal dos gases, com
+
+R ? 8, 314
+J
+
+mol K
+.
+
+Esta equação não é adequada para representar os fluidos de reservatório,
+já que estes possuem moléculas e interações intermoleculares mais com-
+plexas.
+
+Idealmente, procura-se representar as fases líquido e vapor de uma
+forma contínua, com uma única equação. Portanto, torna-se necessário o
+uso de equações mais avançadas, como as equações cúbicas. A primeira
+equação cúbica desenvolvida foi a equação de van der Waals, mas sua
+aplicação é restrita a problemas teóricos, pelo fato de não representar tão
+bem os fluidos existentes na natureza. Isso não diminui a importância
+desta equação pois, de fato, as equações de estado mais utilizadas são
+equações cúbicas derivadas da equação de van der Waals. Algumas das
+equações de estado mais utilizadas na área de petróleo são (WHITSON &amp;amp;
+BRULÉ, 2000):
+
+• Equação de estado de Redlich e Kwong;
+
+• Equação de estado de Peng e Robinson;
+
+• Equação de estado de Soave, Redlich e Kwong.
+
+A equação de estado que será adotada para representar o compor-
+tamento de fases do presente trabalho será a equação de Peng-Robsinson,
+dada por
+
+P =
+RT
+
+v ? b
+?
+
+a?
+
+v(v + b)+ b(v ? b)
+, (12)
+
+
+
+CAPÍTULO 2 – NOÇÕES DE TERMODINÂMICA DE MISTURAS 39
+
+onde v é o volume molar e os parâmetros a e b são dados em função da
+temperatura e pressão crítica do componente,
+
+a =
+?a
+?
+
+RTc
+?2
+
+Pc
+?, (13)
+
+onde ?a = 0, 45724 e,
+
+b =
+?bRTc
+
+Pc
+, (14)
+
+com ?b = 0, 07780. O coeficiente ? é função da temperatura,
+
+?=
+
+?
+
+?1+ m
+
+ 
+
+1?
+
+r
+
+T
+
+Tc
+
+!?
+
+? , (15)
+
+e
+m = 0, 37464+1, 54226??0, 26992?2, (16)
+
+quando ? &amp;lt;0, 49 e, para componentes mais pesados (? &gt; 0, 49), m é
+dado por
+
+m = 0, 3796+1, 485??0, 1644?2 ?0, 01667?3. (17)
+
+As propriedades críticas de componentes puros utilizadas nas defi-
+nições acima são: pressão crítica (Pc ), temperatura crítica (Tc ) e fator
+acêntrico (?). No caso de uma fase com vários componentes, utiliza-se a
+regra de mistura quadrática para a e linear para b,
+
+a = amix =
+Nc
+?
+
+i=1
+
+Nc
+?
+
+j=1
+
+xi x j ai j , (18)
+
+b = bmix =
+Nc
+?
+
+i=1
+
+xi bi = 1, (19)
+
+ai j = a ji =
+p
+
+ai a j
+?
+
+1??i j
+?
+
+, (20)
+
+onde ai e bi são parâmetros para o componente puro e ?i j é o coeficiente de
+interação binária, que são as componentes da matriz de interação binária.
+Esta é uma matriz simétrica com ?i j = ?ji e, além disso, ?ii = 0. Os
+parâmetros ?a e ?b das equações (13) e (14) possuem os valores padrão
+indicados, mas podem variar para cada componente em casos onde o
+
+
+
+40 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+ajuste da equação de estado a dados experimentais é necessário. Isso
+ocorre principalmente quando se faz o agrupamento de componentes em
+pseudocomponentes, com o intuito de reduzir o número de incógnitas do
+problema.
+
+Definindo,
+
+A=
+aP
+
+(RT)2
+, (21)
+
+B =
+bP
+
+RT
+, (22)
+
+Z =
+P v
+
+RT
+, (23)
+
+a eq. (12) resulta em
+
+Z 3 ?(1? B)Z 2 +(A?3B2 ?2B)Z ?(AB ? B2 ? B3)= 0, (24)
+
+que é uma equação cúbica na qual suas raízes podem ser facilmente
+encontradas. Um procedimento analítico e numericamente robusto para
+obtenção das raízes é mostrado no apêndice B.
+
+A fugacidade, fi , é uma medida da quantidade que um fluido desvia-
+se do comportamento de gás ideal e pode ser calculada através de
+
+ln
+?
+
+fi
+xi P
+
+?
+
+=
+1
+
+RT
+
+V=Z nRT/P
+?
+
+V??
+
+ 
+
+RT
+
+V
+?
+?
+
+? P
+
+? ni
+
+?
+
+T,V,n j 6=i
+
+!
+
+d V ? ln Z , (25)
+
+A partir do uso da equação de estado, pode-se calcular a integral associada
+à eq. (25). Para a equação de estado de Peng-Robinson, a expressão é dada
+por
+
+ln?i = ln
+?
+
+fi
+xi P
+
+?
+
+=
+Bi
+B
+(Z ?1)? ln(Z ? B)
+
++
+A
+
+2
+p
+
+2B
+
+?
+
+?
+
+Bi
+B
+?
+
+2
+
+A
+
+?
+
+j
+
+Ai j x j
+
+?
+
+?ln
+
+ 
+
+Z +
+?
+
+1+
+p
+
+2
+?
+
+B
+
+Z +
+?
+
+1?
+p
+
+2
+?
+
+B
+
+!
+
+. (26)
+
+Na equação acima, ?i é chamado de coeficiente de fugacidade. É impor-
+tante salientar que a eq. (26) depende fundamentalmente da escolha
+correta do fator de compressibilidade Z , raiz da eq. (24). Como esta é
+
+
+
+CAPÍTULO 2 – NOÇÕES DE TERMODINÂMICA DE MISTURAS 41
+
+uma equação cúbica, pode-se ter até três raízes, mas a solução correta
+é aquela em que a energia livre de Gibbs é mínima. A energia de Gibbs
+normalizada (JOHNS, 2004) pode ser calculada através de
+
+g? =
+nc
+?
+
+i=1
+
+xi ln fi . (27)
+
+Caso a eq. (24) possua três raízes reais, a raiz do meio é descartada
+e calcula-se fi com as raízes restantes. A raiz que resultar no menor
+valor para g? é a raiz correta. Em geral, quando o sistema está na fase
+líquida, Z = Zmin, e quando o sistema estiver na fase vapor, Z = Zmax.
+Este princípio é válido para a maioria dos casos, porém a garantia da
+escolha correta é obtida apenas quando calculada a energia de Gibbs.
+Neste trabalho, o fator de compressibilidade escolhido é sempre aquele
+que resulta no menor valor de g?.
+
+2.4 Equilíbrio de fases
+Resolver o equilíbrio de fases significa determinar o estado de um
+
+sistema sob dadas condições de pressão e temperatura. Como o mo-
+delo composicional trata de sistemas multicomponentes, nesta etapa serão
+apresentadas as metodologias para resolver o equilíbrio de fases nesse tipo
+de sistema.
+
+Uma das principais contribuições de Gibbs foi a introdução do con-
+ceito de potencial químico. A partir deste conceito determinou-se que,
+no equilíbrio, o potencial químico de cada componente deve ser o mesmo
+para todas as fases, ou seja, para um sistema líquido/vapor tem-se
+
+µi L =µiV . (28)
+
+A demonstração deste critério pode ser vista em Sandler (2006) ou em
+Gomes (1990). O conceito de potencial químico está diretamente rela-
+cionado com o conceito de fugacidade apresentado na seção anterior. A
+relação entre fugacidade e potencial químico pode ser expressa por
+
+µi = RT ln fi +?i(T), (29)
+
+onde ?i é função apenas da temperatura. Combinando as equações (28)
+
+
+
+42 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+e (29), chega-se a
+fi L = fiV . (30)
+
+A expressão acima é uma condição necessária para que o sistema esteja
+em equilíbrio. Entretanto, não é uma condição suficiente, pois também
+é necessário que a energia livre de Gibbs seja mínima, o que implica na
+escolha correta dos fatores de compressibilidade para cada fase, ZL e ZV .
+
+2.4.1 Rotina de flash
+
+A rotina de flash isotérmica é parte principal da maioria das apli-
+cações que envolvem cálculos com equação de estado. Ela é a base
+para resolver o problema fundamental da modelagem composicional de
+reservatórios de petróleo:
+
+Dados valores constantes de pressão, temperatura e frações
+molares (ou mássicas) globais de cada componente, determinar
+as frações molares dos componentes para cada fase (xi p), além
+das frações molares de cada fase (Fp), i.e., a quantidade que
+cada fase ocupa no sistema.
+
+O balanço molar de um sistema bifásico pode ser escrito como,
+
+n = nV + nL , (31)
+
+e,
+nzi = nV xiV + nL xi L . (32)
+
+De acordo com a eq. (5), a fração molar de vapor é
+
+FV =
+nV
+n
+
+. (33)
+
+Logo,
+zi = FV xiV +(1? FV)xi L . (34)
+
+Como as somas das frações molares globais e de cada fase para cada
+componente deve ser igual à unidade tem-se,
+
+Nc
+?
+
+i=1
+
+xiV =
+Nc
+?
+
+i=1
+
+xi L =
+Nc
+?
+
+i=1
+
+zi = 1. (35)
+
+
+
+CAPÍTULO 2 – NOÇÕES DE TERMODINÂMICA DE MISTURAS 43
+
+Então,
+Nc
+?
+
+i=1
+
+(xiV ? xi L)= 0. (36)
+
+O coeficiente de equilíbrio, Ki , é definido como
+
+Ki =
+xiV
+xi L
+
+. (37)
+
+De acordo com Smith et al. (1996), o coeficiente de equilíbrio serve como
+uma medida de ”leveza” de um componente, i.e., a sua tendência de se
+concentrar na fase vapor. Quando Ki &gt; 1, o componente i está mais
+concentrado na fase vapor, se Ki &amp;lt;1, então ele está mais concentrado na
+fase líquido e é considerado um componente pesado. Este coeficiente é
+computacionalmente conveniente pelo fato de eliminar um conjunto de
+frações molares de uma das fases, já que as frações podem ser calculadas
+a partir de Ki . Com este novo conceito, é possível obter uma equação que
+depende apenas de FV e Ki a partir das equações (34) e (36). Se Ki é
+conhecido, pode-se definir uma função h = h(FV) tal que
+
+h(FV)=
+Nc
+?
+
+i=1
+
+(xiV ? xi L)=
+Nc
+?
+
+i=1
+
+zi(Ki ?1)
+1+ FV(Ki ?1)
+
+= 0. (38)
+
+Resolvendo a equação acima a partir de algum método iterativo de ob-
+tenção das raízes (e.g., Método da Bisseção, Newton-Raphson, etc.), as
+composições de cada fase podem ser calculadas por
+
+xi L =
+zi
+
+FV(Ki ?1)+1
+e xiV =
+
+zi Ki
+FV(Ki ?1)+1
+
+= Ki xi L . (39)
+
+As equações (38) e (39) fornecem uma maneira de calcular a distribuição
+de um sistema bifásico quando as constantes de equilíbrio são conhecidas.
+O processo de solução destas equações é conhecido como procedimento
+de Rachford-Rice (RACHFORD &amp;amp; RICE, 1952).
+
+A rotina de flash requer a solução da eq. (30), para i = 1, . . . , Nc e
+da eq. (38), tendo como incógnitas Ki e FV . Quando o problema envolve
+apenas uma fase líquida e a fase vapor, o processo também é conhecido
+como flash bifásico.
+
+
+
+44 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+A solução da rotina de flash pode ser obtida a partir de um proce-
+dimento iterativo de substituições sucessivas ou utilizando o método de
+Newton-Raphson. Assume-se que a solução matemática deste problema
+existe, sendo ela uma solução que representa as composições de equilíbrio
+de cada fase ou a solução trivial. Note que, quando Ki = 1, a eq. (38) é
+satisfeita e resulta em xi L = xiV = zi , a qual é chamada de solução trivial.
+
+Uma estimativa comumente utilizada para o valor de Ki é obtida a
+partir da equação de Wilson (1969),
+
+Ki =
+Pci
+P
+
+exp
+?
+
+5, 37
+?
+
+1+?i
+
+?
+
+1?
+Tci
+T
+
+???
+
+. (40)
+
+As estimativas dos coeficientes de equilíbrio obtidos a partir desta equação
+não são boas em pressões muito altas, o que pode levar a rotina de
+flash a convergir para uma solução trivial. A forma mais adequada para
+determinar estimativas para os valores de Ki é a partir de um cálculo de
+estabilidade antes de inicializar a rotina de flash. No presente trabalho,
+a solução da rotina de flash é feita por meio de uma combinação do
+método de substituições sucessivas proposto em Michelsen (1982b) e uma
+solução totalmente acoplada utilizando o método de Newton-Raphson.
+Este algoritmo será mostrado no capítulo 4.
+
+2.4.2 Cálculo de estabilidade
+
+Mesmo que o resultado obtido pela rotina de flash aparente ser
+fisicamente consistente, deve-se fazer uma verificação cuidadosa da so-
+lução através de um teste de estabilidade. Alternativamente, pode-se
+realizar o cálculo de estabilidade antes de resolver a rotina de flash.
+Este procedimento requer mais cálculos, porém a solução do teste de
+estabilidade fornece boas estimativas dos coeficientes de equilíbrio para
+a rotina de flash.
+
+O teste de estabilidade consiste em determinar se um sistema mono-
+fásico a uma dada pressão e temperatura irá se separar em duas fases. Esta
+é uma tarefa muito importante e até mais complexa que a solução de flash.
+Os trabalhos de Michelsen (1982a) e Baker et al. (1982) apresentaram
+uma maneira de determinar a estabilidade termodinâmica de uma mistura
+a partir do critério do plano tangente de Gibbs. O objetivo é determinar se
+uma mistura possui uma energia de Gibbs menor permanecendo monofá-
+
+
+
+CAPÍTULO 2 – NOÇÕES DE TERMODINÂMICA DE MISTURAS 45
+
+sica ou se ela será menor caso a mistura se separe em duas fases ou mais
+(JOHNS, 2004).
+
+Para ilustrar o critério do plano tangente, considere um dos casos
+exemplificados em Baker et al. (1982), no qual calcula-se a energia de
+Gibbs da mistura de C O2 e tolueno a 38, 1
+
+?C e 1379 kPa. A figura 5
+mostra a energia de Gibbs da mistura em função da fração molar de C O2.
+
+-500
+
+0
+
+500
+
+1000
+
+1500
+
+2000
+
+0 0.2 0.4 0.6 0.8 1
+
+E
+n
+e
+rg
+
+ia
+ d
+
+e
+ G
+ib
+b
+s
+
+[
+J
+/
+m
+
+o
+l]
+
+Fração Molar de CO
+2
+
+x
+V
+
+x
+L
+
+z
+
+g
+L
+
+g
+Vg
+
+mix
+
+g
+z
+
+Figura 5 – Energia de Gibbs da mistura de C O2/tolueno a 38, 1
+?C e
+
+1379 kPa.
+
+Essa curva é calculada assumindo que a mistura seja sempre monofásica,
+mesmo que este não seja o estado real da mistura. Na região entre xV e
+x L , a linha sólida não é a energia de Gibbs de equilíbrio, mas sim a linha
+tracejada e a mistura é dividida em duas fases. Se a composição global de
+C O2 é z, então a energia de Gibbs de equilíbrio será gmix e a fração molar
+de vapor deste novo sistema será dada por
+
+FV =
+z ? xV
+x L ? xV
+
+, (41)
+
+com uma composição de C O2 igual a xV na fase vapor e x L na fase líquido.
+Note que a partir da reta tangente aos dois mínimos da energia de Gibbs
+para a mistura monofásica, pode-se concluir quais são as regiões nas quais
+a mistura é estável ou não. Para casos com mais de 2 componentes, tem-se
+planos tangentes aos mínimos da função energia de Gibbs.
+
+
+
+46 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Na prática, um algoritmo para este método do plano tangente é
+de difícil implementação. Portanto, no capítulo 4 será apresentado um
+método prático proposto por Michelsen (1982a), que foi utilizado neste
+trabalho.
+
+
+
+CAPÍTULO
+
+3
+Modelo Composicional
+
+Reservatórios de petróleo possuem propriedades físicas bastante he-
+terogêneas e anisotrópicas e os fluidos são compostos por milhares de
+hidrocarbonetos. Portanto, um grande número de relações constitutivas é
+necessário para a modelagem matemática representar o fenômeno físico
+da melhor forma possível. Um esquema geral do conjunto de equações
+que permite representar o escoamento em reservatórios de petróleo é
+dado na figura 6.
+
+3.1 Equações governantes
+As equações de conservação que são utilizadas para modelar o pro-
+
+blema são as equações de conservação da massa de cada componente.
+Assume-se que o componente água está presente apenas na fase aquosa,
+enquanto que os componentes de hidrocarbonetos estão presentes apenas
+nas fases óleo e gás, distribuídos em função das condições de pressão,
+temperatura e composição global. Nas fases óleo e gás, também podem
+existir outros componentes que não são hidrocarbonetos, tais como N2,
+C O2, etc.
+
+Nas equações que seguem, serão assumidas as seguintes hipóteses:
+
+• O escoamento é trifásico (água, óleo e gás), isotérmico e descrito
+pela lei de Darcy;
+
+47
+
+
+
+48 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Equações de Conservação Equação de conservação da energia
+
+Equação de conservação da massa de
+cada componente
+
+Equação de conservação da quantidade
+de movimento de cada fase
+
+Relações Constitutivas Relações para as propriedades físicas
+
+Relações para as pressões capilares
+
+Relações de equilíbrio de fases
+
+Equações de Restrição
+
+Restrição das saturações
+
+Restrição das frações molares
+
+Figura 6 – Conjunto de equações do problema.
+
+• A rocha é levemente compressível;
+
+• As fases óleo e gás são compostas de Nc componentes, podendo
+conter componentes que não são hidrocarbonetos, e.g., N2, C O2,
+etc;
+
+• A fase água é composta apenas pelo componente água;
+
+• Existe equilíbrio termodinâmico local entre as fases.
+
+As equações governantes são dadas por
+
+?
+
+? t
+?
+
+?w Sw
+?
+
++ ~?·
+?
+
+?w~uw
+?
+
+= q?w , (42)
+
+para o componente água e, para os componentes hidrocarbonetos,
+
+?
+
+? t
+
+?
+
+?
+?
+
+xio?oSo + xi g?g Sg
+??
+
++ ~?·
+?
+
+xio?o~uo + xi g?g~ug
+?
+
+?~?·
+?
+
+?oDio ~?xio +?g Di g ~?xi g
+?
+
+= q?i , (43)
+
+onde ?p é a densidade molar da fase p, ~up a velocidade da fase p, Di p
+é o tensor de dispersão e difusão efetiva do componente i na fase p e
+
+
+
+CAPÍTULO 3 – MODELO COMPOSICIONAL 49
+
+q?i é o termo fonte. A primeira parcela do termo de fluxo está associada
+ao transporte advectivo do fluido através do meio poroso e a segunda é
+uma combinação dos efeitos de dispersão e difusão molecular. O tensor
+Di p depende da porosidade do meio, da tortuosidade, da distribuição
+dos tamanhos de poro, da heterogeneidade da rocha e da velocidade do
+fluido. Embora o termo de dispersão e difusão tenha efeito significativo
+em casos de reinjeção de gás em reservatórios de gás condensado e em
+processos envolvendo deslocamento miscível, a maioria dos simuladores
+comerciais não o considera. Isso é feito pelo fato de que a inclusão do
+tensor Di p faz com que o stencil da matriz Jacobiana seja muito maior
+quando comparado aos modelos sem este termo. Um estudo sobre a
+influência do tensor de dispersão em modelos composicionais pode ser
+encontrado em dos Santos (2013). No presente trabalho, esta parcela não
+será considerada. Portanto, a equação simplificada torna-se,
+
+?
+
+? t
+
+?
+
+?
+?
+
+xio?oSo + xi g?g Sg
+??
+
++ ~?·
+?
+
+xio?o~uo + xi g?g~ug
+?
+
+= q?i , (44)
+
+A velocidade ~up é obtida pela lei de Darcy
+
+~up =?K
+kr p
+µp
+
+?
+
+~?Pp ??p ~?z
+?
+
+, (45)
+
+onde K é o tensor permeabilidade absoluta, kr p a permeabilidade relativa
+da fase p, ?p é o peso específico e z é a profundidade medida em relação
+a uma dada referência.
+
+O problema acima forma um sistema de Nc + 1 equações. Substi-
+tuindo a eq. (45) nas eqs. (42) e (44), obtém-se
+
+?
+
+? t
+?
+
+?w Sw
+?
+
+? ~?·
+?
+
+?w?w K~??w
+?
+
+= q?w , (46)
+
+e
+
+?
+
+? t
+
+?
+
+?
+?
+
+xio?oSo + xi g?g Sg
+??
+
+?~?·
+?
+
+xio?o?oK~??o + xi g?g?g K~??g
+?
+
+= q?i , (47)
+
+
+
+50 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+onde ? é a mobilidade, dada por
+
+?p =
+kr p
+µp
+
+, (48)
+
+e ? é o potencial e está relacionado com a pressão através da expressão
+
+~??p = ~?Pp ??p ~?z. (49)
+
+Em geral, as propriedades físicas das fases óleo e gás são função da
+pressão, temperatura e composição, ou seja,
+
+?p =?p(P, T, x1p, x2p, . . . , xNc p), (50)
+
+?p =?p(P, T, x1p, x2p, . . . , xNc p), (51)
+
+µp =µp(P, T, x1p, x2p, . . . , xNc p). (52)
+
+A densidade molar ?p e a densidade ?p podem ser obtidas por meio de
+
+?p =
+1
+
+vp
+=
+
+P
+
+ZpRT
+, (53)
+
+e
+?p = Mp?p, (54)
+
+onde Zp e Mp são o fator de compressibilidade e a massa molar da fase
+p, respectivamente. Mp é calculado em função da massa molar de cada
+componente (Mi ),
+
+Mp =
+Nc
+?
+
+i
+
+xi p Mi . (55)
+
+Para o cálculo da viscosidade da fase, µp, existem vários modelos. Este
+trabalho empregará o modelo proposto por Lohrenz et al. (1964), que
+está descrito no apêndice D.
+
+Para a determinação das propriedades da fase água, expressões re-
+lativamente mais simples podem ser utilizadas, já que neste modelo ela
+é composta de apenas um componente com composição constante. As
+
+
+
+CAPÍTULO 3 – MODELO COMPOSICIONAL 51
+
+propriedades da água são obtidas através das seguintes expressões,
+
+?w =?
+ref
+w
+
+?
+
+1+ cw
+?
+
+P ? P ref
+??
+
+, (56)
+
+?w =
+?w
+
+Mw
+, (57)
+
+µw =µ
+ref
+w
+
+?
+
+1+ cµw
+?
+
+P ? P ref
+??
+
+, (58)
+
+onde ?ref e µref são os valores na pressão de referência P ref , cw é a
+compressibilidade da água e cµw a viscosibilidade da água.
+
+A porosidade é, em geral, apenas função da pressão e, para uma
+rocha levemente compressível, pode ser aproximada por
+
+? =?(P)??ref
+?
+
+1+ cR
+?
+
+P ? P ref
+??
+
+, (59)
+
+onde ?ref é a porosidade na pressão de referência P ref e cR é a compressi-
+bilidade da rocha.
+
+A permeabilidade relativa da fase p depende das saturações das fases
+
+kr p = kr p(Sq), (60)
+
+onde p e q podem ser fases diferentes. As pressões das fases estão relacio-
+nadas por meio da pressão capilar Pcpq . Esta é função da saturação da fase
+molhante
+
+Pcpq(Sq)= Pp ? Pq. (61)
+
+Com a equação de conservação de mols (massa) de cada componente
+mais o componente água, tem-se Nc + 1 equações. Utilizando a eq. (4),
+tem-se
+
+Nc
+?
+
+i=1
+
+xio = 1, (62)
+
+Nc
+?
+
+i=1
+
+xi g = 1, (63)
+
+e a condição de restrição volumétrica resulta em
+
+So +Sg +Sw = 1. (64)
+
+Desta forma, o problema precisa de Nc equações adicionais. A condição
+
+
+
+52 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+de equilíbrio termodinâmico local estabelece que a eq. (28) deve ser
+satisfeita. Isso tem como consequência a eq. (30), i.e., a fugacidade de
+cada componente deve ser igual para todas as fases que, por hipótese,
+trocam componentes. Reescrevendo a expressão
+
+fi p(P, x1p, x2p, . . . , xNc p)= fiq(P, x1q, x2q, . . . , xNc q), (65)
+
+pode-se perceber que a fugacidade é função das variáveis principais do
+problema. Para resolver a eq. (65), utiliza-se a equação de Peng-Robinson,
+eq. (12), para cada fase e a fugacidade, fi p, é calculada através da eq.
+(26). Para Np = 2, o sistema acima fornece Nc equações de equilíbrio
+adicionais.
+
+Em resumo, se o sistema é composto por Nc componentes mais um
+componente água, com até Np fases de hidrocarbonetos mais uma fase
+água (Np + 1 fases no total), a tabela 2 mostra o conjunto de todas
+as variáveis que são diretamente dependentes das variáveis espaciais e
+temporais (x , y, z e t), bem como o conjunto de equações para o fe-
+chamento do problema. Todos os outros parâmetros constitutivos, tais
+como densidade, viscosidade, etc., são funções explícitas ou implícitas das
+variáveis dependentes.
+
+Tabela 2 – Conjunto de equações e incógnitas do problema.
+Incógnita no de incógnitas
+
+pressão Pp = Pp(x , y, z, t) Np +1
+saturação Sp = Sp(x , y, z, t) Np +1
+fração molar da fase xi p = xi p(x , y, z, t) Nc Np
+
+TOTAL (Nc +2)Np +2
+
+Equação no de equações
+balanço de massa eq. (46) e (47) Nc +1
+relações de capilaridade eq. (61) Np
+equilíbrio de fases eq. (65) Nc(Np ?1)
+restrição das saturações eq. (64) 1
+restrição das frações molares eq. (62) e (63) Np
+
+TOTAL (Nc +2)Np +2
+
+
+
+CAPÍTULO 3 – MODELO COMPOSICIONAL 53
+
+3.2 Condições de contorno
+
+As equações (46) e (47) necessitam de condições de contorno para
+serem propriamente resolvidas. Em simulação de reservatórios, é geral-
+mente assumido que as fronteiras do reservatório possuem fluxo nulo.
+Isto significa que é necessária a discretização dos fluxos apenas nas faces
+internas.
+
+Embora não sejam propriamente condições de contorno, os termos
+fonte q?i e q?w das equações de conservação incorporam as condições de
+contorno associadas aos poços injetores e produtores. São estes termos
+que perturbam as condições iniciais do sistema e fazem com que a mo-
+delagem seja necessária. Poços injetores têm como objetivo aumentar a
+pressão através da injeção de um fluido (água ou gás, em geral) para
+dentro do reservatório. O objetivo é sempre a maximização da produção,
+que se dá a partir dos poços produtores.
+
+O escoamento no interior dos poços é modelado de forma diferente
+do escoamento no reservatório, utilizando as equações de Navier-Stokes
+para a conservação da quantidade de movimento. É um escoamento no
+qual as mudanças ocorrem em uma ordem de tempo muito menor do que
+o escoamento no reservatório. Neste trabalho o escoamento no interior
+dos poços não será resolvido, sendo considerada apenas a variação de
+pressão no poço devido ao campo gravitacional. A solução do escoamento
+multifásico em poços de petróleo pode ser encontrada em Soprano (2010)
+e Soprano et al. (2012).
+
+Os poços podem possuir condições de pressão prescrita, na qual a
+pressão em um ponto do poço é fixada (em geral no calcanhar) ao longo
+de toda a simulação. Se a pressão fixada for maior que a pressão inicial do
+reservatório, este será um poço injetor, caso contrário, ele será um poço
+produtor. Também existem os poços de vazão prescrita. Para este tipo
+de poço, a vazão de alguma das fases é fixada e, dependendo do sinal
+desta vazão, o poço será injetor ou produtor. Isso tem como resultado
+uma pressão no poço que irá variar ao longo do tempo, de acordo com as
+saturações de cada fase no reservatório. As seguintes condições de vazão
+prescrita são possíveis: vazão total (água + óleo + gás), vazão de líquido
+(água + óleo), vazão de gás, vazão de óleo e vazão de água.
+
+Também é comum a utilização da combinação de ambas as condições
+como, por exemplo, prescrever a vazão de água de um poço injetor com
+
+
+
+54 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+limitação na pressão. Sendo assim, o poço possui inicialmente a condição
+de vazão de água prescrita e, caso a pressão deste poço ultrapasse a
+pressão máxima, ele passa a operar com pressão prescrita.
+
+Em geral as equações para qi = q?i?V e qw = q?w?V são escritas como
+
+qi = WI ·
+Np
+?
+
+p=1
+
+?p?p xi p(P
+R
+p ? P
+
+W), (66)
+
+qw = WI ·?w?w(P
+R
+w ? P
+
+W), (67)
+
+onde WI é o well index, P Rp e P
+R
+w são as pressões de cada fase do volume
+
+de controle atravessado pelo poço e P W é a pressão do poço. Caso o
+poço seja completado em várias camadas, a pressão PW do poço em uma
+camada mais profunda s pode ser calculada a partir da pressão da camada
+anterior s ?1 considerando a variação hidrostática da pressão, isto é,
+
+P Ws = P
+W
+s?1 +
+
+(?Ws +?
+W
+s?1)
+
+2
+g(zs ?zs?1), (68)
+
+com,
+
+?Ws =
+
+?Np+1
+p=1 ?p,s?p,s
+?Np+1
+
+p=1 ?p,s
+. (69)
+
+O well index (WI), presente nas equações (66) e (67), também conhe-
+cido como índice de poço, é um coeficiente que tem como objetivo melhor
+descrever a grande variação de pressão que ocorre quando os fluidos se
+deslocam do reservatório para o poço, ou vice-versa. O gradiente que
+surge geralmente não é captado devido ao tamanho das malhas que são
+utilizadas para a discretização do reservatório em relação ao tamanho
+do poço. Existem inúmeros modelos que permitem calcular o índice
+de poço em situações diferentes. Provavelmente, o mais conhecido e
+utilizado é o modelo de Peaceman (1983), desenvolvido a partir de uma
+solução analítica de um poço totalmente penetrante. Para as malhas não-
+estruturadas com formato cartesiano e poços verticais consideradas neste
+trabalho, utilizou-se o modelo de Peaceman (1983), enquanto que para
+as malhas não-estruturadas mais complexas, com poços de trajetória arbi-
+trária, fez-se uso do modelo apresentado no trabalho de Hurtado (2011).
+Este modelo é baseado no trabalho de Aavatsmark &amp;amp; Klausen (2003), o
+qual apresenta uma forma de calcular o índice de poço independente do
+
+
+
+CAPÍTULO 3 – MODELO COMPOSICIONAL 55
+
+tipo de malha.
+Quando os poços estão operando sob a condição de pressão prescrita,
+
+tem-se P Ws=0 = cte. Se o poço estiver operando a uma condição de vazão
+prescrita, é necessária a utilização de mais uma equação no sistema para
+determinar o valor de P Ws=0, que agora é uma incógnita do problema. Esta
+nova equação resulta da condição de conservação da massa ao longo do
+poço, a qual estabelece que a vazão prescrita na cabeça do poço deve ser
+igual à soma das vazões ao longo do mesmo. Suponha que a condição de
+um poço produtor com Ns completações seja de vazão de óleo prescrita
+nas condições de superfície Qstdo . Então a equação de restrição será dada
+por
+
+Qstdo =
+F stdo
+?stdo
+
+Ns
+?
+
+s=0
+
+?
+
+?
+
+?
+WIs ·
+
+Np
+?
+
+p=1
+
+?p,s?p,s(P
+R
+p ? P
+
+W)s
+
+?
+
+?
+
+?
+, (70)
+
+onde F stdo e ?
+std
+o são obtidos a partir de um cálculo de equilíbrio de fases
+
+na superfície, com uma composição molar global calculada por
+
+zi =
+qi
+
+?Nc
+j=1 q j
+
+. (71)
+
+A condição de superfície utilizada neste trabalho é de P = 1 atm e T =
+15?C. Como não existe mistura entre água e as outras fases, para condição
+de vazão de água prescrita a equação é simplesmente
+
+Qstdw =
+1
+
+?stdw
+
+Ns
+?
+
+s=0
+
+WIs ·?w,s?w,s(P
+R
+w ? P
+
+W)s. (72)
+
+Para o caso de poços injetores, outro detalhe está associado aos
+termos ?p e ?p. Como será visto mais adiante, a partir do princípio de
+interpolação upwind, ?p deve ser calculado com as propriedades do fluido
+injetado. Já a mobilidade (?p) possui algumas formas diferentes para seu
+cálculo. Uma delas, como apresentado em Cao (2002) e Almehaideb et al.
+(1989), consiste em considerar a mobilidade injetada como o produto da
+fração volumétrica do fluido injetado (?p) e a mobilidade total, ?T =
+?Np+1
+
+p=1 ?p,
+
+?injp =?p?T . (73)
+
+
+
+56 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+3.2.1 Separadores com múltiplos estágios
+
+Muitas vezes a mistura de fluidos produzida é tratada por meio de
+um separador com vários estágios, como mostra a figura 7. Neste caso,
+o fluido produzido é levado a estágios graduais de pressão e temperatura
+até as condições de estocagem, i.e., condições atmosféricas. Com isso, gás
+desprende-se da fase óleo e é separado gravitacionalmente a cada estágio.
+A água também é separada, mas em geral é descartada. O objetivo deste
+processo é minimizar a quantidade de gás que se desprende do óleo até o
+processo de armazenamento.
+
+Figura 7 – Esquema de um separador de 3 estágios.
+
+Na simulação de um separador, as frações de gás e óleo que surgem a
+cada estágio são resultantes dos cálculos de flash, sempre assumindo uma
+composição global do sistema conhecida na entrada do separador. Para o
+caso da figura 7, tem-se um separador de 3 estágios. O fluido produzido
+entra no estágio 1, no qual uma parcela de gás irá se desprender do
+óleo. O óleo remanescente é levado ao segundo estágio, a uma pressão
+e temperatura menores que as anteriores e, novamente, o gás irá se
+desprender. Após o estágio 2, o óleo é levado às condições de estocagem e
+a última separação é feita. Apenas no primeiro estágio, a composição
+global é calculada através da eq. (71). Nos estágios subsequentes, a
+composição global de entrada é, na verdade, a composição do óleo. Esta
+composição é resultado da rotina de flash feita no estágio anterior.
+
+
+
+CAPÍTULO 3 – MODELO COMPOSICIONAL 57
+
+No separador da figura 7, tem-se
+
+P1 ? P2 ? Pstd,
+
+T1 ? T2 ? Tstd,
+
+sendo que a condição acima também é valida para os casos de separadores
+com múltiplos estágios. O gás separado é armazenado e, dependo das
+condições do reservatório, pode ser vendido ou reinjetado. Se a vazão
+prescrita for ao final do separador (Qo = 50 m
+
+3/d, por exemplo) deve-se
+resolver cada estágio através da rotina de flash e fazer com que a vazão
+calculada na saída do separador seja igual à vazão prescrita. A vazão
+calculada irá depender diretamente da pressão do calcanhar, P Ws=0, que é
+uma das incógnitas para o caso de poços de vazão prescrita.
+
+
+
+
+
+CAPÍTULO
+
+4
+Formulação Numérica
+
+Neste capítulo serão apresentados todos os procedimentos numéricos
+utilizados para resolver desde a solução do equilíbrio de fases até a solu-
+ção das equações de conservação. Devido à característica fortemente não-
+linear da maioria das equações, o método de Newton-Raphson (EDWARDS,
+1994) foi amplamente utilizado para linearização do problema. O método
+de Newton-Raphson foi inicialmente desenvolvido para o caso de funções
+escalares de apenas uma variável, mas foi estendido para casos mais gerais
+com funções vetoriais de várias variáveis. Dada uma função ~f : Rn ? Rn
+
+não linear, sua expansão em Série de Taylor em um ponto x0 é
+
+~f
+?
+
+~x0 +?~x
+?
+
+= ~f
+?
+
+~x0
+?
+
++J
+?
+
+~x0
+?
+
+·?~x + o
+?
+
+??~x?2
+?
+
+, (74)
+
+em que J
+?
+
+~x0
+?
+
+é a matriz Jacobiana da função no ponto ~x0. Desprezando
+os termos de ordem superior (o
+
+?
+
+??~x?2
+?
+
+) a equação torna-se
+
+~f
+?
+
+~x0 +?~x
+?
+
+= ~f
+?
+
+~x0
+?
+
++J
+?
+
+~x0
+?
+
+·?~x . (75)
+
+Como o objetivo é obter a solução de ~f (~x)= 0, então deve ser estabele-
+cido que,
+
+~f (~x0 +?~x)= 0,
+
+J
+?
+
+~x0
+?
+
+·?~x =?~f (~x0). (76)
+
+59
+
+
+
+60 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Desta forma, em princípio, é possível obter uma solução para a equação
+vetorial ~f (~x)= 0 resolvendo o sistema linear da eq. (76). Contudo, sabe-
+se que, com a eliminação dos termos de ordem superior da expansão em
+Série de Taylor, o ponto ~x = ~x0 +?~x não é necessariamente a raiz da
+equação. Mas empregando um processo iterativo em que
+
+~xk+1 = ~xk ?J
+?1(~xk)~f (~xk), (77)
+
+é possível mostrar que, sob certas condições, a sequência de pontos ~xk
+converge para a raiz do sistema (LUCIANET TI, 2000). Portanto a eq. (77)
+fornece um algoritmo de solução para o problema. A grande dificuldade
+deste método está associada ao cálculo da matriz Jacobiana (J), também
+chamada de matriz tangente, pois ela é composta por derivadas das incóg-
+nitas do problema. Além do método não garantir convergência para todos
+os casos, qualquer erro nestas derivadas pode acarretar em divergência do
+método.
+
+A fim de evitar erros com cálculos analíticos, foi utilizado um proce-
+dimento de aproximação numérica das derivadas. A coluna i da matriz
+Jacobiana (~Ji ) é aproximada pela seguinte fórmula (BALAY et al., 2008),
+
+~Ji ?
+~f
+?
+
+~x +h?~xi
+?
+
+? ~f (~x)
+h
+
+, (78)
+
+onde,
+
+h =
+
+?
+
+?
+
+?
+
+?rel xi , se |xi|&gt; xmin,
+?rel xmin
+
+xi
+|xi|
+
+, caso contrário.
+
+O vetor ?~xi é o vetor com componentes iguais a 1 onde a coluna da
+matriz possui valor, ?rel é o valor relativo do incremento. Desta forma, a
+matriz Jacobiana é calculada numericamente apenas informando a fun-
+ção resíduo ~f . Este procedimento torna o cálculo da matriz Jacobiana
+bastante lento, sendo um gargalo em problemas com muitas incógnitas.
+Para aumentar a eficiência do cálculo, um procedimento conhecido como
+matrix coloring (GEBREMEDHIN et al., 2005) é utilizado. Ele consiste em um
+agrupamento de colunas mutuamente ortogonais da matriz, reduzindo o
+número de cálculos da função resíduo. Este procedimento é descrito no
+apêndice C.
+
+Com o problema do cálculo da matriz Jacobiana, para os fins deste
+
+
+
+CAPÍTULO 4 – FORMULAÇÃO NUMÉRICA 61
+
+trabalho, resolvido, torna-se necessário apenas estudar e modelar a fun-
+ção ~f , composta pelas equações que governam o problema no formato
+residual. Para as equações de conservação, a função resíduo aparece após
+a discretização das equações. A discretização é feita utilizando o Método
+dos Volumes Finitos baseado em Elementos (EbFVM).
+
+O sistema linear da eq. (76) é resolvido através do método GMRES
+com precondicionamento por fatoração LU incompleta (ILU). Os procedi-
+mentos de solução dos sistemas lineares estão implementados na biblio-
+teca PETSc (BALAY et al., 2009), enquanto que a descrição dos métodos de
+precondicionamento e solução de sistemas lineares pode ser encontrada
+em Saad (2000).
+
+4.1 Rotina de flash
+Como apresentado no capítulo 2, a rotina de flash consiste na solução
+
+de um conjunto de equações não-lineares, a eq. (30) para i = 1, . . . , Nc e
+a eq. (38). Existem dois procedimentos tradicionais para a solução destas
+equações, utilizando o método de substituições sucessivas ou através do
+método de Newton-Raphson.
+
+4.1.1 Substituições sucessivas
+
+O procedimento para o método de substituições sucessivas é baseado
+nas relações para o coeficiente de fugacidade ?i L =
+
+fi L
+xi L P
+
+e ?iV =
+fiV
+
+xiV P
+. A
+
+razão entre eles é dada por
+
+?i L
+
+?iV
+=
+
+fi L
+fiV
+
+xiV
+xi L
+
+. (79)
+
+Como Ki =
+xiV
+xi L
+
+e no equilíbrio, fi L = fiV , então
+
+?i L
+
+?iV
+=
+
+xiV
+xi L
+= Ki ,
+
+portanto a eq. (79) define a seguinte relação iterativa
+
+K n+1i = K
+n
+i
+
+f ni L
+f niV
+
+. (80)
+
+
+
+62 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Desta forma, o cálculo de flash bifásico pode ser resolvido pelo seguinte
+procedimento:
+
+1. Estimar os valores para Ki , utilizando a eq. (40) ou a estimativa
+resultante do cálculo de estabilidade;
+
+2. Resolver a eq. (38), através do método de Newton-Raphson unidi-
+mensional, considerando FV como incógnita;
+
+3. Calcular xi L e xiV através das expressões da eq. (39);
+
+4. Calcular as fugacidades de cada fase para cada componente, fi L e
+fiV , eq. (26);
+
+5. Verificar se a solução está convergida, i.e.,
+?
+
+?fi L ? fiV
+?
+
+? &amp;lt;?. Em
+caso positivo, finalizar o procedimento;
+
+6. Atualizar os valores de Ki com a eq. (80);
+
+7. Retornar ao passo 2, até atingir convergência.
+
+4.1.2 Método de Newton
+
+A solução da rotina de flash através do método de Newton consiste
+em resolver as equações (30) e (38) apresentadas anteriormente que serão
+repetidas aqui no formato residual,
+
+R fi = fi L ? fiV , para i = 1 . . . Nc , (81)
+
+Rm =
+Nc
+?
+
+i=1
+
+zi(Ki ?1)
+1+ FV(Ki ?1)
+
+. (82)
+
+As incógnitas deste problema são os coeficientes de equilíbrio Ki e a fração
+molar de vapor FV . O objetivo é determinar a solução de
+
+~R =
+
+?
+
+R fi
+Rm
+
+?
+
+= 0,
+
+para ~x =
+?
+
+Ki FV
+?T
+
+. Este é um sistema de Nc + 1 variáveis que pode
+ser resolvido rapidamente através da aproximação da matriz Jacobiana
+apresentada anteriormente, eq. (78). Depois de obtida a solução, as
+
+
+
+CAPÍTULO 4 – FORMULAÇÃO NUMÉRICA 63
+
+saturações de óleo e de gás podem ser obtidas a partir de
+
+So =
+1?Sw
+
+1+ ZV
+ZL
+
+?
+
+1
+FL
+?1
+?, (83)
+
+Sg = 1?So ?Sw , (84)
+
+onde FL = 1 ? FV , para 0 &amp;lt;FV &amp;lt;1. Se FV &amp;lt;0 ou FV &gt; 1, então os
+hidrocarbonetos estão apenas em uma fase e as saturações são calculadas
+diretamente por So = 1?Sw , caso exista apenas óleo ou Sg = 1?Sw , caso
+exista apenas gás.
+
+Como levantado por Chen et al. (2006a), o método de substituições
+sucessivas é mais fácil de implementar e é mais confiável, até mesmo
+próximo de pontos críticos. Entretanto, sua convergência é mais lenta
+em geral e podem ser necessárias muitas iterações até alcançar a precisão
+desejada. Já o método de Newton-Raphson é mais rápido, porém é neces-
+sário uma boa estimativa inicial das incógnitas a fim de evitar divergência.
+Mesmo assim, o método pode divergir próximo a pontos críticos.
+
+No presente trabalho, a rotina de flash é resolvida através de um
+procedimento misto entre substituições sucessivas e método de Newton-
+Raphson. Inicialmente, o método de substituições sucessivas é utilizado
+fazendo apenas algumas iterações. O objetivo é obter uma melhor aproxi-
+mação das incógnitas que serão utilizadas no método de Newton-Raphson,
+já que este depende fortemente da solução inicial. Este procedimento
+garante maior robustez ao método de Newton-Raphson para a solução da
+rotina de flash. Além disso, caso o método de Newton-Raphson não consiga
+convergir, o problema é reiniciado e resolvido através de substituições
+sucessivas.
+
+4.2 Teste de estabilidade
+Uma das maiores dificuldades nos cálculos de equilíbrio de fases
+
+é determinar se uma mistura irá de fato formar duas ou mais fases a
+uma dada pressão e temperatura. A metodologia vista no capítulo 2, em
+que o teste de estabilidade é interpretado graficamente a partir do plano
+tangente sobre a função energia de Gibbs, não é um procedimento de
+fácil implementação computacional. Em Michelsen (1982a) é apresentado
+um critério prático que determina se a mistura irá ou não permanecer
+
+
+
+64 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+monofásica ou se separar em mais de uma fase. O algoritmo resultante
+é similar a um cálculo de flash, porém é mais rápido e robusto (JOHNS,
+2004), já que boas estimativas para Ki não são necessárias. A eq. (40),
+por exemplo, já é suficiente para calcular os valores iniciais de Ki .
+
+Em resumo, o critério consiste em avaliar os valores da função defi-
+nida por
+
+F(x1, . . . , xNc)=
+Nc
+?
+
+i=1
+
+xi
+?
+
+µi(x1, . . . , xNc)?µi(z1, . . . , zNc)
+?
+
+,
+
+a qual mede a diferença entre o plano tangente de energia de Gibbs a
+uma composição original zi com relação à energia de Gibbs em uma nova
+composição xi (figura 8). O objetivo é determinar se a mistura com
+composição zi é estável. O sistema será estável se F(x1, . . . , xNc)? 0 para
+todas as composições xi .
+
+Considere uma mistura binária com energia de Gibbs representada
+pelo gráfico da figura 8. Para não ter que varrer todos os valores de
+x a fim de determinar se F(x) ? 0 para alguma nova composição x ,
+pode-se utilizar um procedimento gráfico. Ele consiste em ”passar uma
+régua” no gráfico para determinar a tangente da curva G ? Gref no ponto
+z (figura 8). Em seguida, procura-se encontrar outros pontos no gráfico
+
+Figura 8 – Representação gráfica da energia de Gibbs e da função F com
+seus pontos estacionários.
+
+
+
+CAPÍTULO 4 – FORMULAÇÃO NUMÉRICA 65
+
+no qual a ”régua” tangencia a curva e é, ao mesmo tempo, paralela à
+tangente em z. Se existir um ponto com estas propriedades e a distância
+entre essas retas for menor que zero, então F(x) &amp;lt;0 e o sistema é
+instável. Este procedimento gráfico é equivalente a avaliar a distância
+dos planos tangentes entre a composição inicial z e uma nova composição
+x nos pontos estacionários1. A explicação detalhada e dedução teórica do
+método pode ser encontrada em Michelsen (1982a).
+
+O problema também pode ser escrito em função do cálculo de fuga-
+cidades. Desta forma, o algoritmo tem como objetivo encontrar a com-
+posição de uma fase secundária com fugacidade igual à fugacidade de
+mistura, fi,z , vezes uma constante. O procedimento é realizado em duas
+etapas. Primeiro assumindo que a segunda fase possui características de
+vapor e, em seguida, realizando outro teste assumindo uma segunda fase
+com características de líquido. Após obter esta solução, os resultados são
+avaliados para determinar se o sistema é estável ou não.
+
+De forma mais detalhada, o objetivo é resolver a seguinte equação
+
+fi,z ? fi,x P SP = 0, (85)
+
+com fi,z = fi(P, z1, z2, . . . , zNc) e fi,x P = fi(P, x1P , x2P , . . . , xNc P) avaliados
+através da eq. (26) e P = L, V . Para o caso de uma fase secundária vapor
+V , xiV é dado por
+
+xiV =
+1
+
+SV
+
+?
+
+KiV zi
+?
+
+, (86)
+
+com,
+
+SV =
+Nc
+?
+
+i
+
+KiV zi , (87)
+
+e, quando a fase secundária for líquida (P = L),
+
+xi L =
+1
+
+SL
+
+?
+
+zi
+Ki L
+
+?
+
+, (88)
+
+1Em matemática, um ponto estacionário, também chamado de ponto crítico é um ponto
+no domínio de uma função onde a primeira derivada é nula. Os pontos estacionários
+serão sempre pontos de máximos ou mínimos relativos ou pontos de inflexão, podendo-
+se descobrir em que categoria o ponto cai analisando a sua segunda derivada (a curvatura)
+da função.
+
+
+
+66 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+com,
+
+SL =
+Nc
+?
+
+i
+
+zi
+Ki L
+
+. (89)
+
+O problema tem como incógnitas KiV e Ki L para as fases vapor e líquido,
+respectivamente. A estimativa inicial destas incógnitas é obtida através
+da eq. (40). Com a solução do problema para as fases líquido e vapor, o
+sistema é instável se SV &gt; 1 ou SL &gt; 1. Em caso de um sistema instável, a
+estimativa de Ki é calculada por
+
+Ki = KiV Ki L , (90)
+
+o qual é um bom valor inicial para a rotina de flash. Na tabela 3 são
+mostradas as situações em que o sistema é instável ou estável, de acordo
+com os valores de SV e SL . Os casos de obtenção da solução trivial (KiV ?
+1 ou Ki L ? 1) também são mostrados nesta tabela.
+
+Tabela 3 – Condições para determinação de estabilidade
+
+Vapor Líquido
+Sistema
+
+(KiV , SV ) (Ki L , SL )
+Sol. trivial Sol. trivial
+SV ? 1 Sol. trivial
+Sol. trivial SL ? 1
+
+Estável
+
+SV ? 1 SL ? 1
+SV &gt; 1 Sol. trivial
+Sol. trivial SL &gt; 1
+SV &gt; 1 SL &gt; 1
+SV &gt; 1 SL ? 1
+
+Instável
+
+SV ? 1 SL &gt; 1
+
+Nas subseções seguintes serão expostos os algoritmos que permitem
+resolver a eq. (85).
+
+4.2.1 Substituições sucessivas
+O teste de estabilidade é resolvido em duas etapas, mudando apenas
+
+as equações que são utilizadas (P = V e P = L). O procedimento é:
+
+
+
+CAPÍTULO 4 – FORMULAÇÃO NUMÉRICA 67
+
+1. Calcular a fugacidade fzi , eq. (26);
+
+2. Estimar os valores para KiV ou Ki L , utilizando a eq. (40);
+
+3. Calcular SV pela eq. (87) ou SL pela eq. (89);
+
+4. Calcular xiV pela eq. (86) ou xi L pela eq. (88);
+
+5. Calcular a fugacidade fi,x P , eq. (26);
+
+6. Verificar se a solução está convergida, i.e.,
+?
+
+?fi,z ? fi,x P SP
+?
+
+?&lt;?, para
+P = V ou P = L. Em caso positivo, finalizar o procedimento.
+
+7. Atualizar os valores de Ki através da expressão
+
+K n+1iV = K
+n
+iV
+
+?
+
+fi,z
+fi,xV SV
+
+?
+
+, (91)
+
+se a fase secundária for vapor e,
+
+K n+1i L = K
+n
+i L
+
+?
+
+fi,x L SL
+fi,z
+
+?
+
+, (92)
+
+quando a fase secundária for líquido;
+
+8. Retornar ao passo 3, até atingir convergência;
+
+9. Após os testes para vapor (V ) e líquido (L) terem sido feitos,
+verificar estabilidade a partir da tabela 3.
+
+4.2.2 Método de Newton
+A solução através do método de Newton-Raphson consiste em resol-
+
+ver a eq. (85), considerando como incógnitas os coeficientes de equilíbrio
+Ki P . A matriz Jacobiana é calculada pelo procedimento visto anterior-
+mente, a partir da eq. (78). O processo é bastante parecido com a solução
+da rotina de flash, mas o sistema possui uma incógnita e uma equação
+a menos, pois resolve-se apenas as equações para a fugacidade de cada
+componente. Neste caso, a função resíduo é
+
+~R =
+?
+
+R fi P
+?
+
+= 0,
+
+onde R fi P = fi,z ? fi,x P SP , para i = 1, . . . , Nc , e o vetor de incógnitas é, por
+sua vez,
+
+~x =
+?
+
+Ki P
+?
+
+,
+
+
+
+68 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+No presente trabalho, o teste de estabilidade também é resolvido através
+de um procedimento misto entre substituições sucessivas e método de
+Newton-Raphson por um procedimento análogo ao processo de solução
+da rotina de flash.
+
+4.3 Discretização das equações de conservação
+Para discretizar as equações (46) e (47), fez-se uso de um método de
+
+volumes finitos com formulação para malhas não-estruturadas, conhecido
+como Método dos Volumes Finitos baseado em Elementos (Element-based
+Finite Volume Method - EbFVM). Conforme já comentado, os detalhes
+do método não serão descritos neste trabalho, que procurou apenas fa-
+zer uso da biblioteca EFVLib (MALISKA et al., 2008, 2009, 2010, 2011)
+desenvolvida no laboratório SINMEC. Esta biblioteca fornece todas as
+ferramentas necessárias para trabalhar com o EbFVM em malhas 2D e
+3D. Para uma revisão detalhada do EbFVM, sugere-se uma consulta ao
+trabalho de Hurtado (2011).
+
+O EbFVM é um método cell-vertex que utiliza o conceito de elementos
+para construir os volumes de controle. Para a malha de elementos da
+figura 9, as faces de cada volume de controle são construídas através da
+
+Figura 9 – Construção do volume de controle a partir de uma malha não-
+estruturada e suas respectivas entidades.
+
+união dos pontos definidos pelo centro de cada elemento e pelo centro de
+cada uma das faces deste elemento. Portanto, em cada elemento existirão
+
+
+
+CAPÍTULO 4 – FORMULAÇÃO NUMÉRICA 69
+
+subvolumes de controle que irão formar um volume de controle para cada
+nó da malha.
+
+A construção dos volumes de controle a partir dos elementos pos-
+sibilita que propriedades físicas sejam armazenadas para cada elemento.
+Sendo assim, para estas propriedades não é necessário o uso de técnicas
+de interpolação para avaliar o valor da propriedade na face do volume de
+controle (MALISKA, 2004), já que o valor da propriedade será o mesmo em
+qualquer ponto do elemento.
+
+Considerando o volume de controle mostrado na figura 9, as equa-
+ções (46) e (47) podem ser discretizadas, respectivamente, como
+
+V??w Sw ?
+?
+
+V??w Sw
+?old
+
+?t
+?
+?
+
+f
+
+?
+
+?w?w K~??w ·~A
+?
+
+f
+??wQw = 0, (93)
+
+V?
+?
+
+xio?oSo + xi g?g Sg
+?
+
+?
+?
+
+V?
+?
+
+xio?oSo + xi g?g Sg
+??old
+
+?t
+?
+?
+
+f
+
+?
+
+xio?o?oK~??o ·~A+ xi g?g?g K~??g ·~A
+?
+
+f
+(94)
+
+?
+?
+
+xio?oQo + xi g?g Q g
+?
+
+= 0.
+
+Embora a figura 9 se refira a um problema 2D, as equações discretizadas
+tem a mesma forma para um problema 3D. O somatório que aparece nas
+equações está associado ao cálculo dos fluxos nas faces do volume de
+controle.
+
+O termo
+K~??p ·~A
+
+precisa ser aproximado numericamente. Esta aproximação é feita a partir
+do uso de funções de forma, que dependem de cada tipo de elemento.
+A explicação dos tipos de funções de formas e suas derivadas podem
+ser vistas em Hurtado (2011). De maneira geral, o termo K~??p · ~A é
+aproximado por
+
+K~??p ·~A
+?
+
+?
+
+f
+= K J?Tt D
+
+T ~?ep ·~A
+?
+
+?
+
+?
+
+f
+. (95)
+
+A eq. (95) resulta em um valor escalar que corresponde ao termo de fluxo
+na face do volume de controle. A matriz Jt é a matriz Jacobiana da trans-
+
+
+
+70 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+formação de coordenadas e D é a matriz derivada das funções de forma
+em relação às coordenadas locais (?,?,?). Estas duas matrizes dependem
+apenas da geometria e dos elementos da malha, portanto são calculadas
+apenas uma única vez e armazenadas no início de cada simulação. O vetor
+~?ep é o vetor cujas componentes são os valores de ?p nos nós do elemento
+que contém a face f ,
+
+~?ep =
+
+?
+
+?
+
+?
+
+?
+
+?1p
+...
+?Nn p
+
+?
+
+?
+
+?
+
+?
+
+, (96)
+
+onde Nn é o número de nós do elemento. O vetor ~A é o vetor área da face,
+i.e., o vetor normal à face do volume de controle (figura 9). A matriz K é
+o tensor permeabilidade absoluta,
+
+K =
+
+?
+
+?
+
+?
+
+kx x kx y kx z
+k y x k y y k y z
+kz x kz y kzz
+
+?
+
+?
+
+?
+, (97)
+
+podendo ser um tensor cheio em problemas anisotrópicos. Note que
+ele pode ser diferente para cada elemento, possibilitando desta forma,
+a solução em um meio heterogêneo.
+
+Como todas as variáveis do problema são armazenadas nos nós dos
+elementos, torna-se necessário definir uma forma de interpolar as va-
+riáveis avaliadas nas faces do volume de controle, mais precisamente
+os termos ?w?w , xio?o?o e xi g?g?g . A interpolação é feita através de
+um esquema upwind (PATANKAR, 1980). Considerando uma propriedade
+de uma fase p avaliada na face de um volume de controle (?p
+
+?
+
+?
+
+f
+), a
+
+interpolação upwind é dada por
+
+?p
+?
+
+?
+
+f
+=
+
+?
+
+?
+
+?
+
+?nB(f )p, se K~??p ·~A
+?
+
+?
+
+f
+&gt; 0,
+
+?nF(f )p, se K~??p ·~A
+?
+
+?
+
+f
+? 0,
+
+(98)
+
+onde o subíndice nB(f ) representa o nó do elemento que está atrás da
+face e nF(f ) que está a frente da face, utilizando como referência o vetor
+área da face (~A f ), como mostrado na figura 10. Esta interpolação evita
+problemas com soluções não físicas que podem surgir com o refino de
+malha em certos casos (AZIZ &amp;amp; SET TARI, 1979). Por ser um esquema
+
+
+
+CAPÍTULO 4 – FORMULAÇÃO NUMÉRICA 71
+
+Figura 10 – Nós à frente e atrás de uma face f do elemento.
+
+baseado na física do escoamento, é bastante robusto e adequado para
+simulação em reservatórios. Todavia, um dos pontos negativos deste
+método de interpolação está relacionado ao efeito de orientação da malha
+(HURTADO et al., 2007; HURTADO, 2005).
+
+Os termos fonte das equações, (xio?oQo+xi g?g Q g) e (?wQw), quando
+comparados com as equações (66) e (67), estão relacionados por
+
+qi = xio?oQo + xi g?g Q g , (99)
+
+qw =?wQw . (100)
+
+Definindo nw = V??w Sw e ni = V?
+?
+
+xio?oSo + xi g?g Sg
+?
+
+, note que estes
+termos correspondem ao número de mols dos componentes água e hidro-
+carboneto i, respectivamente. Utilizando o conceito de transmissibilidade
+T = K J?Tt D
+
+T, as equações (93) e (94) podem ser reescritas como
+
+Rw =
+nw ? n
+
+old
+w
+
+?t
+?
+?
+
+f
+
+?
+
+?w?w T ~?
+e
+w ·~A
+
+?
+
+f
+?qw = 0, (101)
+
+Ri =
+ni ? n
+
+old
+i
+
+?t
+?
+?
+
+f
+
+?
+
+p
+
+?
+
+xi p?p?pT ~?
+e
+p ·~A
+
+?
+
+f
+?qi = 0. (102)
+
+Também é possível utilizar, ao invés de Rw , o somatório das equações de
+resíduo da conservação do número de mols
+
+RT = Rw +
+Nc
+?
+
+i=1
+
+Ri . (103)
+
+
+
+72 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Reescrevendo a equação de restrição das fugacidades na forma residual,
+eq. (65), tem-se
+
+R fi = fio ? fi g = 0. (104)
+
+No EbFVM, uma das formas de construir os termos de fluxo das
+equações consiste em visitar todos elementos da malha, percorrer cada
+face deste elemento e adicionar os fluxos na equação de cada nó associado
+a esta face. Isso evita cálculos redundantes dos termos de fluxo, já que o
+fluxo que entra em um volume de controle é o mesmo fluxo que sai do
+volume de controle adjacente. Para os termos fonte e de acumulação isso
+não ocorre já que estes termos dependem apenas das variáveis do próprio
+nó (com exceção da porosidade).
+
+O procedimento ilustrado abaixo mostra a sequência de iterações
+que são realizadas para o cálculo dos termos de fluxo das equações de
+conservação:
+
+1. Percorrer todos os elementos da malha;
+
+2. Percorrer todas as faces do elemento e;
+
+3. Avaliar o termo de fluxo na face f , eq. (95);
+
+4. Avaliar as propriedades através da interpolação upwind, eq. (98);
+
+5. Avaliar o fluxo na face;
+
+6. Adicionar o fluxo nos respectivos volumes de controle, i.e., em
+nB(f ) e nF(f );
+
+4.4 Método de solução das equações
+As equações (101) e (102) são construídas para cada um dos nós
+
+da malha, com i = 1, . . . , Nc . Se o número de nós da malha é N , essas
+equações formam um conjunto de (Nc + 1)N equações e, juntamente
+com a eq. (104), tem-se mais Nc N equações. A escolha das incógnitas
+para o modelo composicional deste trabalho é baseada no trabalho de
+Coats (1980), também conhecida como escolha das variáveis naturais do
+problema (modelo do tipo 2, de acordo com a tabela 1), já que são as
+variáveis que surgem explicitamente nas equações de conservação. Para
+um volume de controle que possua todas as fases (água, óleo e gás) as
+
+
+
+CAPÍTULO 4 – FORMULAÇÃO NUMÉRICA 73
+
+incógnitas são
+
+P, So, Sg , x1o, . . . , x(Nc?1)o, x1g , . . . , x(Nc?1)g ,
+
+e o tamanho do sistema não-linear é (2Nc +1)N . Se o volume de controle
+possuir apenas óleo (e água, possivelmente), as incógnitas são
+
+P, So, x1o, . . . , x(Nc?1)o,
+
+e, se for apenas gás tem-se
+
+P, Sg , x1g , . . . , x(Nc?1)g ,
+
+como incógnitas.
+Para um volume de controle, os resíduos e incógnitas foram ordena-
+
+dos como mostra a equação abaixo
+
+~R =
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+Rw ou RT
+RNc
+R fNc
+R1
+...
+
+RNc?1
+R f1
+...
+
+R fNc?1
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+e ~x =
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+P
+So
+Sg
+x1o
+...
+
+x(Nc?1)o
+x1g
+...
+
+x(Nc?1)g
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+. (105)
+
+A matriz Jacobiana pode ser construída a partir da eq. (78), porém deve-
+se aproveitar a esparsidade do problema a fim de aumentar a eficiência
+do processo. Portanto, é fundamental realizar o agrupamento (matrix
+coloring) citado anteriormente e descrito no apêndice C. A figura 11 mos-
+tra um reservatório com dois poços e a estrutura da matriz Jacobiana
+resultante. Este problema possui 4×4×4 elementos hexaédricos regulares
+e 125 nós, mas mesmo assim possui uma quantidade significativa de
+elementos na matriz, já que existe um grande número de incógnitas por
+nó.
+
+
+
+74 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Figura 11 – Estrutura da matriz Jacobiana para uma geometria simples
+com 2 poços.
+
+4.5 Inicialização
+
+Para a inicialização do reservatório, além de informar a localização
+e condição de operação dos poços injetores e produtores, também é ne-
+cessário caracterizar inicialmente os fluidos de reservatório. Para isso,
+deve-se informar a pressão, temperatura e saturação de água inicial, além
+da composição global em cada volume de controle. Tendo estabelecido
+tais condições, torna-se possível determinar as saturações iniciais de óleo
+e gás. Isso pode ser feito a partir da realização, em cada volume de
+controle, de um teste de estabilidade seguido de uma rotina de flash
+(caso o resultado do teste seja de um sistema instável). Desta forma,
+
+
+
+CAPÍTULO 4 – FORMULAÇÃO NUMÉRICA 75
+
+determinam-se as frações molares de cada componente nas fases óleo e
+gás, além das saturações de óleo e gás através das equações (83) e (84).
+
+4.6 Controle do passo de tempo
+
+Para o processo de simulação de reservatórios, é importante utilizar
+alguma forma de controle do passo de tempo a fim de acelerar o processo
+de solução do problema sem comprometer os resultados.
+
+Neste trabalho, fez-se uso de duas formas de controle do passo de
+tempo. Primeiramente, caso o método de Newton-Raphson não atinja a
+convergência para um número máximo de iterações, o passo de tempo
+é reduzido a metade e o processo de solução para o presente passo de
+tempo é reiniciado. Caso o processo convirja, a solução é aceita, mas
+faz-se uma verificação da solução para atualizar o passo de tempo. O
+procedimento é baseado em um controle empírico proposto por Aziz &amp;amp;
+Settari (1979). Definem-se valores desejados para a variação de pressão e
+saturação, ?Pdesejado e ?Sdesejado. Desta forma, novos passos de tempo são
+calculados para a pressão e saturação
+
+?t P =?told
+?Pdesejado
+?Pmax
+
+, (106)
+
+?tS =?told
+?Sdesejado
+?Smax
+
+, (107)
+
+onde ?Pmax é a máxima variação de pressão em todos os volumes de
+controle e ?Smax é a máxima variação de saturação de todas as fases em
+todos os volumes de controle. Portanto, o novo passo de tempo é avaliado
+através de
+
+?t = min
+?
+
+?tmax, max
+?
+
+?tmin, min
+?
+
+?tS ,?t P , 5?told
+???
+
+, (108)
+
+em que ?tmax é o passo de tempo máximo permitido e ?tmin é o passo
+de tempo mínimo permitido durante a simulação. O controle do passo de
+tempo também poderia ser feito sobre as variáveis de fração molar de cada
+fase. Todavia, neste trabalho optou-se por não considerar a influência já
+que sua variação foi menor que as outras variáveis nos casos testados. A
+inclusão da fração molar no controle do passo de tempo é direta e segue
+
+
+
+76 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+o mesmo procedimento aqui apresentado. Na eq. (108), está prevista a
+possibilidade que o intervalo de tempo aumente no máximo 5 vezes em
+relação ao passo de tempo anterior.
+
+4.7 Algoritmo geral
+Todos os procedimentos apresentados anteriormente devem ser co-
+
+nectados de maneira adequada a fim de produzir resultados consistentes
+e físicos. Uma das questões fundamentais está relacionada à verificação
+do desaparecimento ou reaparecimento das fases óleo ou gás, pois isso
+influencia diretamente nas equações e incógnitas que serão resolvidas.
+
+Suponha um problema que inicialmente contenha apenas a fase óleo.
+É possível que, durante as iterações de Newton-Raphson, em algum volume
+de controle sejam alcançadas condições em que o fluido se separe em
+duas fases. Isso faria com que a estrutura da matriz Jacobiana mudasse
+durante as iterações de Newton-Raphson, o que poderia causar vários
+problemas de convergência. Para evitar essa dificuldade, a verificação do
+desaparecimento ou reaparecimento de uma fase é feita apenas após ter
+sido obtida a solução convergida. Caso tenha ocorrido uma mudança de
+condição, o passo de tempo é reiniciado sob essa nova condição. A figura
+12 mostra o diagrama do algoritmo utilizado para a simulação compo-
+sicional deste trabalho. Neste diagrama estão mostrados os passos para
+solução do método de Newton-Raphson, o procedimento para determinar
+o desaparecimento/reaparecimento de fases e solução ao longo do tempo.
+
+
+
+CAPÍTULO 4 – FORMULAÇÃO NUMÉRICA 77
+
+Figura 12 – Diagrama computacional do algoritmo utilizado neste traba-
+lho.
+
+
+
+
+
+CAPÍTULO
+
+5
+Resultados
+
+Os resultados que serão mostrados doravante correspondem a testes
+e validações das rotinas e modelos implementados neste trabalho. Primei-
+ramente, faz-se uma validação da rotina de flash com um simulador ter-
+modinâmico comercial. Em seguida, simulações de diferentes casos com
+uma quantidade variada de componentes são feitas. Estas são comparadas
+com simuladores comerciais de reservatórios de petróleo.
+
+Os reservatórios utilizados neste trabalho possuem algumas propri-
+edades em comum, tais como compressibilidade de rocha, porosidade,
+permeabilidade relativa, etc. A densidade da água adotada foi de ?w =
+1009, 2 kg/m3, com compressibilidade (cw ) nula. Por simplicidade, a
+pressão capilar foi considerada nula, as curvas de permeabilidade relativa
+são as mesmas para todos os casos e estão apresentadas na tabela 4. A
+saturação de líquido utilizada nas tabelas de permeabilidade relativa, Sl ,
+é calculada por
+
+Sl = 1?Sg . (109)
+
+As permeabilidades relativas das fases água e gás são obtidas diretamente
+da tabela 4. Já o cálculo da permeabilidade relativa da fase óleo é feito
+através do modelo de Stone II (STONE, 1973). A expressão para o cálculo
+de kr o é dada por
+
+kr o =(kr ow + kr w)(kr l + kr g)?(kr w + kr g). (110)
+
+79
+
+
+
+80 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Tabela 4 – Tabelas de permeabilidade relativa.
+Sw kr w kr ow
+0, 2 0 1
+
+0, 2899 0, 0022 0, 6769
+0, 3778 0, 018 0, 4153
+0, 4667 0, 0607 0, 2178
+0, 5556 0, 1138 0, 0835
+0, 6444 0, 2809 0, 0123
+
+0, 7 0, 4009 0
+0, 7333 0, 4855 0
+0, 8222 0, 7709 0
+0, 9111 1 0
+
+1 1 0
+
+Sl kr l kr g
+0, 2 0 1
+
+0, 2899 0 0, 56
+0, 3778 0 0, 39
+0, 4667 0, 011 0, 35
+0, 5556 0, 037 0, 2
+0, 6444 0, 0878 0, 1
+
+0, 7 0, 1715 0, 05
+0, 7333 0, 2963 0, 03
+0, 8222 0, 4705 0, 01
+0, 9111 0, 88 0, 001
+
+1 1 0
+
+Caso a equação acima tenha como resultado kr o &amp;lt;0, então a fase está
+imóvel e faz-se kr o = 0.
+
+A porosidade de referência utilizada foi de ?ref = 0, 13 e a compres-
+sibilidade da rocha, utilizada na eq. (59), foi cR = 5, 8 × 10
+
+?10Pa?1, com
+P ref = 101, 325kPa.
+
+
+
+CAPÍTULO 5 – RESULTADOS 81
+
+5.1 Validação da rotina de flash
+
+Inicialmente serão validados os métodos implementados para os cál-
+culos da rotina de flash. Esta é uma etapa importante do processo de simu-
+lação em um modelo composicional, pois ela permite a determinação do
+reaparecimento de uma fase em um volume de controle, além de permitir
+determinar as condições iniciais do problema a partir do conhecimento da
+pressão, temperatura e composição global do sistema.
+
+Esta validação será feita através de comparações com um aplicativo
+de determinação de propriedades termodinâmicas de fluidos, o WinProp
+(CMG, 2011C). O fluido original é composto por 22 componentes, com
+propriedades e características físicas descritas em Kenyon &amp;amp; Behie (1987).
+Entretanto, fez-se uso de um procedimento bastante comum na área de
+simulação composicional de reservatórios: a redução do número de com-
+ponentes do problema a partir de um agrupamento em pseudocompo-
+nentes. A partir deste processo, o conjunto resultante adotado consiste
+em 7 pseudocomponentes e foi gerado por Chen et al. (2006a), com as
+propriedades ajustadas de tal forma que possam representar de maneira
+adequada o sistema original. O processo de redução do número de compo-
+nentes através do ajuste das propriedades moleculares usadas na equação
+de estado não está no escopo deste trabalho e pode ser encontrado em
+Whitson &amp;amp; Brulé (2000).
+
+As propriedades de cada pseudocomponente são mostradas na tabela
+5 e os valores (?i j ) da matriz de interação binária, utilizados na eq. (20),
+são mostrados na tabela 6. A composição do fluido é mostrada na ta-
+
+Tabela 5 – Propriedades dos componentes.
+Comp. Pc (atm) Tc (K) ? Mi ?a ?b
+
+P1 45, 45 189, 2 0, 00891 16, 38 0, 344772 0.063282
+P2 51, 29 305, 4 0, 11352 31, 77 0, 521974 0.099825
+P3 39, 89 395, 8 0, 17113 50, 64 0, 514972 0.107479
+P4 31, 95 485, 1 0, 26910 77, 78 0, 419169 0.093455
+P5 27, 91 592, 0 0, 34196 118, 44 0, 485943 0.074860
+P6 17, 71 697, 1 0, 51730 193, 95 0, 570583 0.101206
+P7 12, 52 804, 4 0, 72755 295, 30 0, 457236 0.077796
+
+bela 7. Os componentes foram agrupados em pseudocomponentes (CHEN
+et al., 2006B) da seguinte forma: (C H4,N2),(C2 H6,C O2), (C3 H8,C4 H10),
+(C5 H12,C6 H14), (C
+
+1
+7+), (C
+
+2
+7+), (C
+
+3
+7+), onde os três últimos correspondem a
+
+
+
+82 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+uma distribuição de hidrocarbonetos pesados com mais de 7 moléculas de
+carbono.
+
+Tabela 6 – Matriz de interação binária.
+Comp. P1 P2 P3 P4 P5 P6 P7
+
+P1 0
+P2 0, 000622 0
+P3 ?0, 002471 ?0, 001540 0
+P4 0, 011418 0, 010046 0, 002246 0
+P5 ?0, 028367 0, 010046 0, 002246 0 0
+P6 ?0, 1 0, 010046 0, 002246 0 0 0
+P7 0, 206868 0, 010046 0, 002246 0 0 0 0
+
+Tabela 7 – Composição molar do fluido.
+Pseudocomponente Componentes zi
+
+P1 C H4,N2 0, 6793
+P2 C2 H6,C O2 0, 099
+P3 C3 H8,C4 H10 0, 1108
+P4 C5 H12,C6 H14 0, 045
+P5 C
+
+1
+7+ 0, 05011
+
+P6 C
+2
+7+ 0, 0134
+
+P7 C
+3
+7+ 0, 00239
+
+Primeiramente, comparam-se as frações molares de cada fase e os
+coeficientes de equilíbrio para um ponto no gráfico. O ponto escolhido
+corresponde a T = 366, 5 K e P = 15000 kPa (ponto A, indicado no
+diagrama da figura 13). A tabela 8 mostra os valores para as frações
+molares de líquido obtidas através da rotina de flash feita neste trabalho e
+os valores obtidos através do WinProp. Já na tabela 9 tem-se comparações
+
+Tabela 8 – Comparações entre as frações molares do componente na fase
+líquido (xi L ) para P = 15000 kPa.
+
+Propriedade WinProp Presente trabalho Diferença
+x P1 L 0, 41237 0, 41272 3, 4×10
+
+?4
+
+x P2 L 0, 08802 0, 08804 2, 0×10
+?5
+
+x P3 L 0, 13263 0, 13226 3, 7×10
+?4
+
+x P4 L 0, 07581 0, 07578 3, 2×10
+?5
+
+x P5 L 0, 21340 0, 21342 1, 6×10
+?5
+
+x P6 L 0, 06412 0, 06413 7, 2×10
+?6
+
+x P7 L 0, 01364 0, 01366 1, 3×10
+?5
+
+similares porém para as frações molares de vapor e, por último, na tabela
+10 estão comparados os coeficiente de equilíbrio (Ki ). Note uma diferença
+muito pequena entre os resultados.
+
+
+
+CAPÍTULO 5 – RESULTADOS 83
+
+10000
+
+15000
+
+20000
+
+25000
+
+P
+r
+e
+s
+s
+ã
+o
+ [
+
+k
+P
+a
+]
+
+70% molar de vapor
+
+80% molar de vapor
+
+90% molar de vapor
+
+Ponto de orvalho
+
+A
+
+0
+
+5000
+
+250 300 350 400 450 500 550
+
+Temperatura [K]
+
+366,5
+
+Figura 13 – Diagrama P-T para o fluido com composição dada pela tabela
+7.
+
+Tabela 9 – Comparações entre as frações molares do componente na fase
+vapor (xiV ) para P = 15000 kPa.
+
+Propriedade WinProp Presente trabalho Diferença
+x P1 V 0, 73532 0, 73518 1, 4×10
+
+?4
+
+x P2 V 0, 10131 0, 10130 7, 0×10
+?6
+
+x P3 V 0, 10622 0, 10630 8, 3×10
+?5
+
+x P4 V 0, 03853 0, 03855 1, 5×10
+?5
+
+x P5 V 0, 01584 0, 01588 3, 9×10
+?5
+
+x P6 V 0, 00275 0, 00277 1, 2×10
+?5
+
+x P7 V 0, 00003 0, 00003 2, 1×10
+?7
+
+Para uma validação mais completa da rotina de flash, fez-se um
+procedimento que consiste em uma redução de pressão à temperatura
+constante. O processo é indicado no diagrama P-T mostrado na figura 13
+para os 7 pseudocomponentes. O problema ocorre a uma temperatura
+constante de 366, 5 K, com uma pressão inicial de 25 MPa que decresce
+até aproximadamente 11 MPa. Como pode ser percebido pelo diagrama
+da figura 13, este é um caso típico de um reservatório de gás retrógrado.
+Inicialmente, existe apenas a fase gás e a medida que a pressão diminui,
+óleo começa a aparecer. Entretanto, ao continuar a redução de pressão, a
+fração molar de óleo começa a diminuir novamente.
+
+
+
+84 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Tabela 10 – Comparações entre os coeficientes de equilíbrio (Ki ) para P =
+15000 kPa.
+
+Coeficiente WinProp Presente trabalho Diferença
+KP1 1, 78315 1, 78132 1, 8×10
+
+?3
+
+KP2 1, 15096 1, 15061 3, 5×10
+?4
+
+KP3 0, 80089 0, 80374 2, 9×10
+?3
+
+KP4 0, 50827 0, 50869 4, 1×10
+?4
+
+KP5 0, 07421 0, 07438 1, 8×10
+?4
+
+KP6 0, 04295 0, 04313 1, 8×10
+?4
+
+KP7 0, 00207 0, 00209 1, 3×10
+?5
+
+Os resultados são mostrados nas figuras 14 e 15. A boa concordância
+dos resultados sugere que a metodologia utilizada para solução da rotina
+de flash é adequada. Como a rotina de flash é apenas um módulo inserido
+em uma estrutura computacional mais geral (correspondente ao modelo
+composicional), é importante que a mesma seja resolvida corretamente.
+A solução das equações de conservação não deve ser influenciada por
+possíveis erros decorrentes de uma solução de flash incorreta.
+
+
+
+CAPÍTULO 5 – RESULTADOS 85
+
+0.08
+
+0.1
+
+0.12
+
+0.14
+
+0.16
+
+0.18
+
+0.2
+
+F
+ra
+
+ç
+ã
+o
+ m
+
+o
+la
+
+r 
+d
+e
+ l
+íq
+
+u
+id
+
+o
+ [
+
+-]
+
+WinProp
+
+Presente Trabalho
+
+0
+
+0.02
+
+0.04
+
+0.06
+
+10000 12500 15000 17500 20000 22500 25000
+
+F
+ra
+
+ç
+ã
+o
+ m
+
+o
+la
+
+r 
+d
+e
+ l
+íq
+
+u
+id
+
+o
+ [
+
+Pressão [kPa]
+
+(a) Fração molar de líquido (FL ).
+
+0.88
+
+0.9
+
+0.92
+
+0.94
+
+0.96
+
+0.98
+
+1
+
+F
+ra
+
+ç
+ã
+o
+ m
+
+o
+la
+
+r 
+d
+e
+ v
+
+a
+p
+o
+r 
+[
+-]
+
+WinProp
+
+Presente Trabalho
+
+0.8
+
+0.82
+
+0.84
+
+0.86
+
+10000 12500 15000 17500 20000 22500 25000
+
+F
+ra
+
+ç
+ã
+o
+ m
+
+o
+la
+
+r 
+d
+e
+ v
+
+a
+p
+o
+r 
+[
+
+Pressão [kPa]
+
+(b) Fração molar de vapor (FV ).
+
+Figura 14 – Comparação dos resultados para a fração molar de cada fase.
+
+
+
+86 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+Z
+L
+[
+-]
+
+WinProp
+
+Presente Trabalho
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+10000 12500 15000 17500 20000 22500 25000
+
+Pressão [kPa]
+
+(a) Fator de compressibilidade do líquido (ZL ).
+
+0.815
+
+0.825
+
+0.835
+
+0.845
+
+Z
+V
+[
+-]
+
+WinProp
+
+Presente Trabalho
+
+0.795
+
+0.805
+
+10000 12500 15000 17500 20000 22500 25000
+
+Pressão [kPa]
+
+(b) Fator de compressibilidade do vapor (ZV ).
+
+Figura 15 – Comparação dos resultados para o fator de compressibilidade.
+
+
+
+CAPÍTULO 5 – RESULTADOS 87
+
+5.2 Validação com o GEM
+Nesta seção um problema foi criado e a solução é comparada com
+
+a do software comercial GEM (CMG, 2011A). O GEM é um simulador
+composicional em malhas corner-point com uma solução desacoplada das
+equações de equilíbrio. É um aplicativo bastante robusto e amplamente
+utilizado na área de simulação de processos de recuperação avançada de
+petróleo. Trata-se portanto de uma ferramenta útil para validar a solução
+do modelo composicional estudado neste trabalho.
+
+O problema consiste em um reservatório de óleo com quatro compo-
+nentes: C H4, C2 H6, C4 H10 e um pseudocomponente F C7. As propriedades
+utilizadas na equação de estado são: pressão crítica (Pc ), temperatura
+crítica (Tc ), fator acêntrico (?) e massa molar (Mi ). Os valores destas
+propriedades para cada componente são dadas na tabela 11. A matriz de
+interação binária foi considerada nula.
+
+Tabela 11 – Propriedades dos componentes.
+Comp. Pc (atm) Tc (K) ? Mi Zc
+C H4 45, 40 190, 6 0, 008 16, 04 0, 3074
+C2 H6 48, 20 305, 4 0, 098 30, 07 0, 3074
+C4 H10 37, 50 425, 2 0, 193 58, 12 0, 3074
+F C7 30, 97 543, 2 0, 308 96, 00 0, 3074
+
+A geometria deste problema é mostrada na figura 16. Trata-se de
+um reservatório heterogêneo e anisotrópico, com quatro camadas. A
+saturação inicial de água é Sw = 0, 01 e a composição inicial dos hidrocar-
+bonetos presentes no reservatório é dada na tabela 12. O reservatório está
+
+Tabela 12 – Composição molar global do fluido.
+Componente zi
+
+C H4 0, 1
+C2 H6 0, 4
+C4 H10 0, 4
+F C7 0, 1
+
+inicialmente a uma pressão de 6894, 8 kPa e na temperatura de 366, 5 K.
+A temperatura é considerada constante durante o processo de extração
+de óleo. Sob estas condições, o diagrama P-T deste fluido é mostrado na
+figura 17. As curvas deste diagrama correspondem às linhas de fração
+volumétrica de gás constante. Como é possível perceber no diagrama,
+
+
+
+88 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Figura 16 – Geometria e características do reservatório.
+
+inicialmente (ponto vermelho) o reservatório possui apenas óleo, além de
+uma quantidade mínima de água (Sw = 0, 01). Com o início da produção
+de óleo, a pressão no reservatório se reduz e a fase gás surge quando a
+pressão atinge a pressão de bolha.
+
+3000.00
+
+4000.00
+
+5000.00
+
+6000.00
+
+7000.00
+
+8000.00
+
+P
+r
+e
+s
+s
+ã
+o
+ [
+k
+P
+a
+]
+
+Ponto de Bolha (0% de gás)
+
+10% de gás
+
+20% de gás
+
+30% de gás
+
+40% de gás
+
+50% de gás
+
+60% de gás
+
+70% de gás
+
+80% de gás
+
+90% de gás
+
+Ponto de Orvalho (100% de gás)
+
+Ponto Crítico
+
+0.00
+
+1000.00
+
+2000.00
+
+3000.00
+
+200.00 250.00 300.00 350.00 400.00 450.00
+
+Temperatura [K]
+
+366,5
+
+Figura 17 – Diagrama P-T para o fluido com composição dada pela tabela
+12, mostrando curvas de fração volumétrica de gás constante.
+
+O problema é simulado durante 2500 dias, com passo de tempo má-
+ximo de 50 dias. O reservatório possui dois poços nas posições indicadas
+na figura 16. O poço injetor está operando com uma condição de vazão
+
+
+
+CAPÍTULO 5 – RESULTADOS 89
+
+de água constante de 79, 5 m3/d e restrição na pressão máxima igual a
+Pmax = 13, 8 MPa. O poço produtor opera com vazão constante de óleo
+de 23, 8 m3/d com restrição na pressão mínima igual a Pmin = 3, 4 MPa.
+Ambas as vazões são prescritas nas condições de superfície. Portanto, para
+o caso do poço produtor, torna-se necessário o uso dos separadores descri-
+tos na seção 3.2.1 para verificar a vazão de óleo e calcular a vazão gás nas
+condições de superfície. Neste problema, foi considerado um separador de
+apenas um estágio com pressão de 101, 325 kPa e temperatura de 15 ?C,
+ou seja, um estágio em condições de estocagem. Como a vazão de óleo é
+prescrita no separador, a pressão no calcanhar é resultado da simulação.
+O raio dos poços é 0, 3048m.
+
+Note que a malha de volumes de controle utilizada no o simulador
+GEM é diferente da malha do presente trabalho (figura 18). Isso foi feito
+para tentar fazer com que o volume dos volumes de controle dos dois
+métodos fosse o mais próximo possível para a comparação dos resultados.
+No EbFVM, os volumes de controle são construídos a partir da malha
+de elementos mostrada na figura 16, onde o centro de cada volume de
+controle é cada um dos vértices da malha, como esquematizado na figura
+9.
+
+Figura 18 – Volumes de controle utilizados para o EbFVM e para o GEM
+com base na geometria da figura 16.
+
+Na figura 5.19(a) é mostrada a pressão média no reservatório e nas
+figuras 5.19(b), 5.20(a) e 5.20(b) estão mostradas as saturações médias
+do reservatório durante a simulação e sua respectiva comparação com
+os resultados do GEM. Estas variáveis foram escolhidas para comparação
+pelo fato de que, como as metodologias numéricas para a solução do
+problema são diferentes, dificilmente os resultados seriam iguais ponto
+
+
+
+90 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+a ponto, somente quando um refino bastante grande das malhas fosse
+utilizado. Ambos os métodos são conservativos e baseados no balanço de
+propriedades em volumes de controle (variações do Método dos Volumes
+Finitos), portanto, as propriedades globais devem ser iguais, não impor-
+tando o tipo de malha utilizada.
+
+6300
+
+6400
+
+6500
+
+6600
+
+6700
+
+6800
+
+6900
+
+P
+r
+e
+s
+s
+ã
+o
+ M
+
+é
+d
+ia
+
+ [
+k
+P
+a
+]
+
+GEM
+
+Presente Trabalho
+
+5900
+
+6000
+
+6100
+
+6200
+
+0 500 1000 1500 2000 2500
+
+P
+r
+e
+s
+s
+ã
+o
+ M
+
+é
+d
+ia
+
+ [
+k
+P
+a
+]
+
+Tempo [dias]
+
+(a) Pressão média no reservatório.
+
+0.85
+
+0.9
+
+0.95
+
+1
+
+S
+a
+tu
+
+ra
+ç
+ã
+o
+ [
+
+-]
+
+GEM
+
+Presente Trabalho
+
+0.75
+
+0.8
+
+0 500 1000 1500 2000 2500
+
+S
+a
+tu
+
+ra
+ç
+ã
+o
+ [
+
+Tempo [dias]
+
+(b) Saturação média de óleo.
+
+Figura 19 – Propriedades médias no reservatório.
+
+O campo de pressão para o tempo t = 2500 d é mostrado na figura
+21. Já na figura 22, tem-se o campo de saturação de gás para o mesmo
+
+
+
+CAPÍTULO 5 – RESULTADOS 91
+
+0.06
+
+0.08
+
+0.1
+
+0.12
+
+0.14
+
+0.16
+
+S
+a
+tu
+
+ra
+ç
+ã
+o
+ [
+
+-]
+
+GEM
+
+Presente Trabalho
+
+0
+
+0.02
+
+0.04
+
+0 500 1000 1500 2000 2500
+
+S
+a
+tu
+
+ra
+ç
+ã
+o
+ [
+
+Tempo [dias]
+
+(a) Saturação média de gás.
+
+0.03
+
+0.04
+
+0.05
+
+0.06
+
+0.07
+
+S
+a
+tu
+
+ra
+ç
+ã
+o
+ [
+
+-]
+
+GEM
+
+Presente Trabalho
+
+0
+
+0.01
+
+0.02
+
+0 500 1000 1500 2000 2500
+
+S
+a
+tu
+
+ra
+ç
+ã
+o
+ [
+
+Tempo [dias]
+
+(b) Saturação média de água.
+
+Figura 20 – Propriedades médias no reservatório.
+
+instante de tempo. Visualmente e analisando a escala de valores, os resul-
+tados são semelhantes. É importante notar que as variáveis no modelo do
+GEM estão armazenadas no centro dos blocos da malha, enquanto que no
+presente trabalho elas estão localizadas nos vértices. Na figura 22, consta
+também o campo de saturação de gás para o plano z = ?5m em ambas
+as malhas. Note que o campo de saturação de gás é bastante semelhante,
+lembrando que inicialmente a saturação de gás é nula.
+
+A figura 23 mostra a curva de razão gás-óleo, comumente utilizada
+
+
+
+92 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Figura 21 – Campo de pressão no reservatório para t = 2500 dias.
+
+Figura 22 – Campo de saturação de gás e saturação de gás no plano z =
+?5m para t = 2500 dias.
+
+
+
+CAPÍTULO 5 – RESULTADOS 93
+
+2000
+
+2040
+
+2080
+
+2120
+
+R
+a
+zã
+
+o
+ G
+
+á
+s-
+Ó
+le
+
+o
+ [
+
+m
+3
+/
+m
+
+3
+]
+
+GEM
+
+Presente Trabalho
+
+1920
+
+1960
+
+0 500 1000 1500 2000 2500 3000
+
+R
+a
+zã
+
+o
+ G
+
+á
+s
+
+Tempo [dias]
+
+Figura 23 – Curva razão gás-óleo.
+
+na área de petróleo, definida como a razão entre a vazão produzida de
+gás e vazão produzida de óleo, em condições de superfície. As diferenças
+são visíveis. Há duas hipóteses para explicar essa discrepância. Primei-
+ramente, tem-se o fato das variáveis do EbFVM estarem armazenadas
+nos vértices da malha e, consequentemente, a pressão no calcanhar do
+poço é menor no presente trabalho, pois a profundidade é menor e o
+aparecimento de gás nos volumes de controle nos quais o poço produtor
+passa ocorre antes, afetando a forma da curva da figura 23. Outra razão
+diz respeito ao tamanho dos volumes de controle. Como pode ser obser-
+vado na figura 18, o volume dos volumes de controle nas proximidades
+do poço no presente trabalho é menor do que no simulador GEM. Como
+a vazão de óleo é constante, a adoção de volumes de controle menores
+dará origem a pressões mais baixas nas redondezas do poço produtor no
+presente trabalho. Este fato pode contribuir para as diferenças mostradas
+na figura 23.
+
+
+
+94 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+5.3 Simulação de um processo de injeção de água
+Este caso ilustra um processo de injeção de água em um reservatório
+
+com 2 componentes: C O2 e F C10, sendo o último um pseudocompo-
+nente. As tabelas 13 e 14 mostram as propriedades de cada componente
+e a matriz de interação binária associada. O conjunto de componentes
+
+Tabela 13 – Propriedades dos componentes.
+Comp. Pc (atm) Tc (K) ? Mi Zc
+C O2 72, 8 304, 2 0, 225 44, 01 0, 274159
+F C10 25, 01 622, 1 0, 443774 134, 00 0, 25527
+
+possuem características bastante diferentes entre si, com o C O2 sendo
+um componente leve de maior tendência em permanecer na fase gasosa,
+enquanto que o F C10 é um componente pesado, de características comple-
+tamente opostas. As frações molares globais inicialmente são zC O2 = 0, 4
+e zF C10 = 0, 6. A ideia é fazer a comparação do modelo implementado
+no presente trabalho com os simuladores IMEX (CMG, 2011B) e GEM
+(CMG, 2011A). O primeiro é um simulador black oil e o segundo um
+simulador composicional, ambos em malhas corner-point. É esperado que,
+pelo fato de ser um processo de injeção de água, o modelo black oil possa
+representar bem o problema, pois as variações na composição global do
+sistema não devem ser muito significativas.
+
+Tabela 14 – Matriz de interação binária.
+Comp. C O2 F C10
+C O2 0
+F C10 0, 15 0
+
+Os dados necessários para a simulação black oil são obtidos através
+do aplicativo já comentado WinProp, por meio de um procedimento si-
+milar ao que será mostrado na seção 5.6, que apresenta uma forma de
+calcular as propriedades básicas dos fluidos do modelo black oil a partir
+de uma análise composicional do problema.
+
+A malha utilizada para este problema, bem como as permeabilidades
+de cada camada são mostradas nas figuras 24. As condições de opera-
+ção dos poços são (figura 24): vazão máxima de óleo de 31, 8 m3/d e
+pressão mínima de 4250 kPa no poço produtor e vazão máxima de água
+de 23, 8 m3/d com pressão máxima de 19000 kPa no poço injetor. Estas
+
+
+
+CAPÍTULO 5 – RESULTADOS 95
+
+vazões são prescritas nas condições de superfície. O raio dos poços é de
+0, 3m.
+
+Figura 24 – Geometria e características do reservatório.
+
+As condições iniciais são Sw = 0, 2 e So = 0, 8, portanto sem a
+presença de gás livre. Mesmo com a injeção de água, a pressão do
+reservatório diminui e gás se forma neste reservatório ao longo do tempo.
+Os resultados para as curvas de produção são mostrados nas figuras 25 e
+26. Na figura 25, tem-se as taxas de produção instantânea de óleo e gás
+para os três simuladores. Existe uma defasagem dos resultados obtidos no
+presente trabalho em relação aos resultados obtidos pelo GEM. Isso pode
+estar relacionado às questões de armazenamento das variáveis (no centro
+ou nos vértices da malha) e ao tamanho dos volumes de controle. Os
+resultados do simulador IMEX são próximos, mas os perfis são diferentes.
+Uma razão provável para esta diferença é que, inicialmente, a compo-
+sição global em todos os volumes de controle é a mesma para todos os
+simuladores. Ao longo da simulação, essa composição vai mudando e,
+consequentemente, afetando as propriedades físicas das fases óleo e gás
+(densidade, viscosidade, etc.). Como o IMEX utiliza um modelo black oil,
+a composição global não se altera e o valor das propriedades físicas irá se
+distanciar dos valores obtidos nos simuladores composicionais.
+
+Na figura 26, verifica-se que os resultados obtidos no presente traba-
+lho e pelo GEM são próximos. Nota-se entretanto uma grande discrepân-
+cia nos resultados obtidos para a produção acumulada de gás pelo IMEX.
+
+
+
+96 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+15
+
+20
+
+25
+
+30
+
+35
+
+T
+a
+x
+a
+ d
+
+e
+ p
+
+rd
+u
+ç
+ã
+o
+ d
+
+e
+ ó
+
+le
+o
+ [
+
+m
+3
+/
+d
+]
+
+GEM
+
+Presente Trabalho
+
+IMEX
+
+0
+
+5
+
+10
+
+0 10000 20000 30000 40000
+
+T
+a
+x
+a
+ d
+
+e
+ p
+
+rd
+u
+ç
+ã
+o
+ d
+
+e
+ ó
+
+le
+o
+ [
+
+m
+
+Tempo [dias]
+
+(a) Taxa de produção de óleo.
+
+3000
+
+4000
+
+5000
+
+6000
+
+7000
+
+T
+a
+x
+a
+ d
+
+e
+ p
+
+ro
+d
+u
+ç
+ã
+o
+ d
+
+e
+ g
+
+á
+s 
+
+[
+m
+
+3
+/
+d
+]
+
+GEM
+
+Presente Trabalho
+
+IMEX
+
+0
+
+1000
+
+2000
+
+0 10000 20000 30000 40000
+
+T
+a
+x
+a
+ d
+
+e
+ p
+
+ro
+d
+u
+ç
+ã
+o
+ d
+
+e
+ g
+
+á
+s 
+
+[
+m
+
+Tempo [dias]
+
+(b) Taxa de produção de gás.
+
+Figura 25 – Comparação dos resultados de produção instantânea para o
+processo de injeção de água.
+
+
+
+CAPÍTULO 5 – RESULTADOS 97
+
+4.E+05
+
+5.E+05
+
+6.E+05
+
+7.E+05
+
+8.E+05
+
+9.E+05
+
+1.E+06
+
+P
+rd
+
+u
+ç
+ã
+o
+ a
+
+c
+u
+m
+
+u
+la
+
+d
+a
+ d
+
+e
+ ó
+
+le
+o
+ [
+
+m
+3
+]
+
+GEM
+
+Presente Trabalho
+
+IMEX
+
+0.E+00
+
+1.E+05
+
+2.E+05
+
+3.E+05
+
+0 10000 20000 30000 40000
+
+P
+rd
+
+u
+ç
+ã
+o
+ a
+
+c
+u
+m
+
+u
+la
+
+d
+a
+ d
+
+e
+ ó
+
+le
+o
+ [
+
+m
+
+Tempo [dias]
+
+(a) Produção acumulada de óleo.
+
+4.E+07
+
+5.E+07
+
+6.E+07
+
+7.E+07
+
+8.E+07
+
+9.E+07
+
+1.E+08
+
+P
+ro
+
+d
+u
+ç
+ã
+o
+ a
+
+c
+u
+m
+
+u
+la
+
+d
+a
+ d
+
+e
+ g
+
+á
+s 
+
+[
+m
+
+3
+] GEM
+
+Presente Trabalho
+
+IMEX
+
+0.E+00
+
+1.E+07
+
+2.E+07
+
+3.E+07
+
+0 10000 20000 30000 40000
+
+P
+ro
+
+d
+u
+ç
+ã
+o
+ a
+
+c
+u
+m
+
+u
+la
+
+d
+a
+ d
+
+e
+ g
+
+á
+s 
+
+[
+m
+
+Tempo [dias]
+
+(b) Produção acumulada de gás.
+
+Figura 26 – Comparação dos resultados de produção acumulada para o
+processo de injeção de água.
+
+
+
+98 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+5.4 Simulação de um processo de injeção de C O2
+Esta simulação utiliza todas as propriedades e condições iniciais do
+
+caso anterior, porém altera-se o fluido de injeção. Agora se tem uma
+injeção de gás composto de 0, 99 molar de C O2 e 0, 01 molar de F C10. Este
+caso tem como objetivo mostrar a generalidade do modelo composicional
+em termos de solução de problemas. Um fluido de composição diferente
+pode ser injetado no reservatório, o que causa uma alteração considerável
+na composição global do sistema ao longo do tempo.
+
+As condições de operação dos poços são de vazão máxima de óleo
+de 31, 8 m3/d e pressão mínima de 4250 kPa no poço produtor e vazão
+máxima de gás de 23850 m3/d e pressão máxima de 19000 kPa no poço
+injetor. Estas vazões são prescritas nas condições de superfície. A vazão
+maior no poço injetor para o caso de injeção de gás se deve ao fato da
+densidade do gás ser muito menor do que a densidade da água. O raio
+dos poços também é de 0, 3m.
+
+Os resultados de produção de gás são mostrados na figura 27. Como
+durante esta simulação a vazão produzida de óleo foi sempre constante
+(Qo = 31, 8 m
+
+3/d), as curvas de produção de óleo foram omitidas, já que
+seriam todas idênticas. Note que neste caso, os resultados do simulador
+IMEX apresentam uma diferença maior em relação aos resultados do GEM
+e do presente trabalho desde o início da simulação, pois um gás de com-
+posição diferente (0, 99 molar de C O2) é injetado durante a simulação.
+Conforme já comentado, no modelo black oil não é possível prescrever a
+composição do fluido injetado e, portanto, o gás injetado no modelo black
+oil possui a mesma composição (é o mesmo gás) do gás do reservatório.
+
+
+
+CAPÍTULO 5 – RESULTADOS 99
+
+2100
+
+2300
+
+2500
+
+2700
+T
+a
+x
+a
+ d
+
+e
+ p
+
+ro
+d
+u
+ç
+ã
+o
+ d
+
+e
+ g
+
+á
+s 
+
+[
+m
+
+3
+/
+d
+]
+
+GEM
+
+Presente Trabalho
+
+IMEX
+
+1700
+
+1900
+
+0 1000 2000 3000 4000
+
+T
+a
+x
+a
+ d
+
+e
+ p
+
+ro
+d
+u
+ç
+ã
+o
+ d
+
+e
+ g
+
+á
+s 
+
+[
+m
+
+Tempo [dias]
+
+(a) Taxa de produção de gás.
+
+4.E+06
+
+5.E+06
+
+6.E+06
+
+7.E+06
+
+8.E+06
+
+9.E+06
+
+1.E+07
+
+P
+ro
+
+d
+u
+ç
+ã
+o
+ a
+
+c
+u
+m
+
+u
+la
+
+d
+a
+ d
+
+e
+ g
+
+á
+s 
+
+[
+m
+
+3
+]
+
+GEM
+
+Presente Trabalho
+
+IMEX
+
+0.E+00
+
+1.E+06
+
+2.E+06
+
+3.E+06
+
+0 500 1000 1500 2000 2500 3000 3500 4000
+
+P
+ro
+
+d
+u
+ç
+ã
+o
+ a
+
+c
+u
+m
+
+u
+la
+
+d
+a
+ d
+
+e
+ g
+
+á
+s 
+
+[
+m
+
+Tempo [dias]
+
+(b) Produção acumulada de gás.
+
+Figura 27 – Comparação dos resultados de produção para o processo de
+injeção de C O2.
+
+
+
+100 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+5.5 Simulação composicional com malha híbrida
+O objetivo deste caso é apresentar um exemplo para a simulação de
+
+um processo de injeção de gás rico em C O2 utilizando um reservatório
+de geometria mais complexa, com uma malha não-estruturada composta
+de mais de um tipo de elemento. Esta malha é composta de tetraedros,
+hexaedros, prismas e pirâmides. Na tabela 15, os dados relativos a esta
+malha são mostrados. Os componentes presentes neste reservatório são
+
+Tabela 15 – Dados referentes à malha não-estruturada.
+Elemento Quantidade
+tetraedro 35286
+hexaedro 544
+prisma 544
+
+pirâmide 576
+
+Domínio Valores
+total de vértices 8073
+
+dimensão máxima em x 200m
+dimensão máxima em y 200m
+dimensão máxima em z 130m
+
+os mesmos utilizados nas seções 5.3 e 5.4, isto é, C O2 e F C10. Portanto,
+as propriedades de cada componente estão mostradas nas tabelas 13 e
+14. A composição global inicial dos fluidos presentes neste reservatório é
+zC O2 = 0, 4 e zF C10 = 0, 6.
+
+A geometria da malha, além da disposição dos poços, é mostrada na
+figura 28. Os poços injetores estão indicados em azul, enquanto que os
+produtores em vermelho. O raio dos poços é de 0, 1 m. Os poços injetores
+
+Figura 28 – Malha não-estruturada utilizada no problema.
+
+estão injetando gás com uma vazão prescrita de 8640 m3/d composto
+de 0, 99 molar de C O2 e 0, 01 molar de F C10. Já os poços produtores
+
+
+
+CAPÍTULO 5 – RESULTADOS 101
+
+operam em vazão de óleo prescrita de 47, 7 m3/d. Todas as condições
+de operação são prescritas na superfície. A pressão inicial é de 7000 kPa,
+aproximadamente 69 atmosferas, logo a vazão de gás injetada é muito
+menor nas condições de reservatório, devido a alta pressão que lá existe.
+
+A variável tempo foi adimensionalizada resultando em um valor adi-
+mensional conhecido como Volume Poroso Injetado - VPI, que corresponde
+à razão entre vazão total injetada até um instante de tempo e o volume
+poroso total do reservatório. O VPI pode ser obtido a partir da seguinte
+expressão
+
+VPI =
+
+?Ninj
+i=1
+
+? t
+
+0
+QiT(t)d t
+
+?
+
+?
+?d V
+
+, (111)
+
+onde QiT é a vazão total do poço injetor i em um dado instante de tempo e
+Ninj o número de poços injetores. O termo
+
+?
+
+?
+?d V corresponde ao volume
+
+poroso do reservatório.
+O campo de saturação de gás é mostrado na figura 29 para quatro
+
+instantes de tempo distintos. A geometria foi cortada de forma a passar
+pelos poços injetores e evidenciar o processo de injeção de gás. As frações
+
+Figura 29 – Campo de saturação de gás em quatro instantes de tempo.
+
+
+
+102 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+de C O2 nas fases óleo e gás estão mostradas nas figuras 30 e 31. Já a
+fração global de C O2 pode ser vista na figura 32. Pode-se observar que a
+concentração de C O2 é maior na fase gás, já que é um componente mais
+leve. Este processo de injeção de gás resultou em um aumento de pressão
+
+Figura 30 – Campo de fração molar de C O2 na fase óleo (xC O2 o ) em quatro
+instantes de tempo.
+
+no reservatório até VPI = 0, 25. Após este tempo a pressão média começa
+a decrescer, como ilustrado na figura 33.
+
+A figura 34 mostra as pressões no calcanhar dos poços produtores,
+ou seja, a pressão da primeira completação do poço (P Ws=0) e a respectiva
+pressão do volume de controle do reservatório ao qual o calcanhar está
+associado. Note que, para o poço horizontal 1, a diferença de pressão
+entre poço e reservatório aumenta ao longo do tempo de forma mais
+rápida que o poço horizontal 2. Como a condição de contorno dos poços
+produtores é de vazão de óleo prescrita, isso pode indicar que a saturação
+de óleo nas proximidades do poço horizontal 1 diminuiu de maneira mais
+rápida, exigindo que o poço tenha uma pressão cada vez mais baixa a fim
+de manter a mesma vazão de óleo. As pressões dos poços possuem um
+comportamento similar à pressão média do reservatório (figura 33).
+
+
+
+CAPÍTULO 5 – RESULTADOS 103
+
+Figura 31 – Campo de fração molar de C O2 na fase gás (xC O2 g ) em quatro
+instantes de tempo.
+
+A quantidade volumétrica de cada fluido no reservatório ao longo do
+tempo é mostrada na figura 35. A injeção progressiva de gás aumenta
+sua quantidade dentro do reservatório e o volume óleo, por sua vez, é
+reduzido. Devido às condições de permeabilidade relativa da tabela 4, a
+água permanece imóvel (kr w = 0) durante todo o processo (Sw &amp;lt;0, 2),
+resultando em um volume constante de água no reservatório durante toda
+a simulação.
+
+Na figura 36 tem-se a taxa de produção de gás dos poços produtores,
+identificados na figura 28. Neste problema, a taxa de produção de gás
+fornece uma importante informação com relação ao tempo que leva para
+o gás que está sendo injetado nos poços injetores chegar até os poços
+produtores. Pode-se perceber que, para o poço horizontal 1, a produção
+de gás aumenta mais rapidamente, logo o gás injetado chega mais rápido
+ao poço horizontal 1. Isso também está de acordo com a figura 34, a qual
+está indicando que a saturação de óleo está menor na proximidade deste
+poço e, portanto, a saturação de gás está maior.
+
+
+
+104 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Figura 32 – Campo de fração molar global de C O2 (zC O2 ) em quatro
+instantes de tempo.
+
+7400
+
+7500
+
+7600
+
+7700
+
+7800
+
+7900
+
+8000
+
+P
+r
+e
+s
+s
+ã
+o
+ [
+
+k
+P
+a
+]
+
+7000
+
+7100
+
+7200
+
+7300
+
+0 0.05 0.1 0.15 0.2 0.25 0.3 0.35
+
+P
+r
+e
+s
+s
+ã
+o
+ [
+
+k
+P
+a
+]
+
+VPI [-]
+
+Pressão média
+
+Figura 33 – Pressão média no reservatório ao longo do tempo.
+
+
+
+CAPÍTULO 5 – RESULTADOS 105
+
+7200
+
+7300
+
+7400
+
+7500
+
+7600
+
+7700
+
+7800
+
+P
+r
+e
+s
+s
+ã
+o
+ [
+
+k
+P
+a
+]
+
+6900
+
+7000
+
+7100
+
+7200
+
+0 0.05 0.1 0.15 0.2 0.25 0.3 0.35
+
+P
+r
+e
+s
+s
+ã
+o
+ [
+
+k
+P
+a
+]
+
+VPI [-]
+
+Poço
+
+Reservatório
+
+(a) Poço horizontal 1.
+
+7200
+
+7300
+
+7400
+
+7500
+
+7600
+
+7700
+
+7800
+
+P
+r
+e
+s
+s
+ã
+o
+ [
+
+k
+P
+a
+]
+
+6800
+
+6900
+
+7000
+
+7100
+
+0 0.05 0.1 0.15 0.2 0.25 0.3 0.35
+
+P
+r
+e
+s
+s
+ã
+o
+ [
+
+k
+P
+a
+]
+
+VPI [-]
+
+Poço
+
+Reservatório
+
+(b) Poço horizontal 2.
+
+Figura 34 – Pressão no calcanhar e pressão do volume de controle do
+reservatório.
+
+
+
+106 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+30000
+
+40000
+
+50000
+
+60000
+
+70000
+
+80000
+
+90000
+V
+o
+lu
+
+m
+e
+ [
+
+m
+3
+]
+
+Volume total de óleo
+
+Volume total de gás
+
+Volume total de água
+
+0
+
+10000
+
+20000
+
+30000
+
+0 0.05 0.1 0.15 0.2 0.25 0.3 0.35
+
+V
+o
+lu
+
+m
+e
+ [
+
+m
+
+VPI [-]
+
+Figura 35 – Volume total de cada fase nas condições de reservatório.
+
+10000
+
+15000
+
+20000
+
+25000
+
+T
+a
+x
+a
+ d
+
+e
+ p
+
+ro
+d
+u
+ç
+ã
+o
+ d
+
+e
+ g
+
+á
+s 
+
+[
+m
+
+3
+/
+d
+]
+
+Poço horizontal 1
+
+Poço horizontal 2
+
+0
+
+5000
+
+0 0.05 0.1 0.15 0.2 0.25 0.3 0.35
+
+T
+a
+x
+a
+ d
+
+e
+ p
+
+ro
+d
+u
+ç
+ã
+o
+ d
+
+e
+ g
+
+á
+s 
+
+[
+m
+
+VPI [-]
+
+Figura 36 – Taxa de produção de gás nos poços produtores.
+
+
+
+CAPÍTULO 5 – RESULTADOS 107
+
+5.6 Cálculo das propriedades para o modelo black oil
+O objetivo desta seção é apresentar outra aplicação existente para
+
+o modelo composicional desenvolvido neste trabalho. Conforme já co-
+mentado, as simplificações feitas no modelo black oil resultam em uma
+redução considerável no número de incógnitas do problema. Embora
+elas substituam o complexo fluido real por um fluido muito mais simples,
+fazem com que o modelo black oil seja bastante vantajoso na aplicação em
+casos reais de larga escala.
+
+Uma das dificuldades do modelo black oil diz respeito à obtenção das
+propriedades físicas do modelo, as chamadas tabelas PVT. Esta seção apre-
+senta uma forma simples de obter estas tabelas para qualquer situação na
+qual se conheça o número de componentes e sua composição global, a
+partir das rotinas de equilíbrio de fases implementadas neste trabalho.
+
+Os resultados das expressões deduzidas neste trabalho serão valida-
+dos por meio do aplicativo WinProp, que também permite a determina-
+ção das propriedades do modelo black oil a partir de um procedimento
+semelhante. Em seguida, serão apresentados alguns resultados para o
+cálculo de propriedades em um modelo black oil térmico, i.e., em que as
+propriedades dependem da pressão e da temperatura.
+
+Os três parâmetros principais do modelo black oil (DAKE, 1978),
+que relacionam volumes dos fluidos nas condições de reservatório com
+volumes nas condições de superfície, são:
+
+Rs - Razão gás-óleo ou razão de solubilidade, que é o volume de gás
+nas condições de superfície que irá dissolver em um dado volume
+de óleo quando ambos são levados para as condições de pressão e
+temperatura do reservatório.
+
+Bo - Fator volume de formação do óleo, é o volume de óleo ocupado no
+reservatório, a uma pressão e temperatura, dividido pelo volume
+deste óleo nas condições de superfície.
+
+Bg - Fator volume de formação do gás, é o volume de gás livre ocupado
+no reservatório, a uma pressão e temperatura, dividido pelo volume
+deste gás nas condições de superfície.
+
+Em geral, espera-se que o volume de um fluido com composição
+constante aumente com a redução da pressão. Entretanto, o compor-
+
+
+
+108 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+tamento do óleo é mais complexo, pois é uma mistura de vários hidro-
+carbonetos que pode sofrer variação em sua composição a partir das
+variações na pressão e temperatura. Um barril de óleo nas condições
+de reservatório, ao ser trazido à superfície, pode sofrer uma redução no
+volume, mesmo com a redução da pressão. Isso ocorre pois, ao ser trazido
+à superfície, o gás que estava dissolvido no óleo é liberado (FANCHI, 2000).
+
+As propriedades definidas anteriormente (Rs, Bo e Bg ) são funções
+explícitas da pressão, temperatura e composição global do fluido. Con-
+forme já comentado, no modelo black oil está assumido que esta compo-
+sição permanece constante. A seguinte expressão matemática pode ser
+utilizada para determinar a razão gás-óleo ou razão de solubilidade (Rs),
+
+Rs(P, T)=
+Vg,STD
+Vo,STD
+
+. (112)
+
+O fator volume de formação do óleo é definido matematicamente como,
+
+Bo(P, T)=
+Vo(P, T)
+Vo,STD
+
+. (113)
+
+Já o fator volume de formação do gás pode ser calculado com precisão
+razoável (AHMED, 2006) a partir da razão entre o volume de gás nas
+condições de reservatório e o volume nas condições padrão como se este
+tivesse um comportamento de gás ideal, em que a expressão P v = RT é
+válida. Ou seja,
+
+Bg(P, T)=
+Vg(P, T)
+
+V GIg,STD
+. (114)
+
+As propriedades do modelo black oil podem ser obtidas numerica-
+mente com as equações (112)-(114), a partir de uma caracterização ade-
+quada dos fluidos. Também é possível utilizar correlações (AHMED, 2006;
+JOHNS, 2004) para determiná-las ou realizar experimentos para medir os
+volumes e calcular estas propriedades com as mesmas expressões.
+
+Para fins didáticos, um experimento será apresentado utilizando uma
+amostra de óleo de reservatório em um recipiente (figura 37) conectado
+a uma bomba de mercúrio que permite alterar o volume deste sistema.
+Esta amostra é levada à pressão de ponto de bolha e mesma temperatura
+do reservatório do qual o fluido utilizado foi obtido. A pressão é reduzida
+aumentando o volume do recipiente através da redução da quantidade
+
+
+
+CAPÍTULO 5 – RESULTADOS 109
+
+Figura 37 – Esquema para determinação das propriedades do modelo
+black oil.
+
+de mercúrio. Com isto, ocorre o aparecimento de gás, o qual é então
+removido através de uma válvula mantendo-se a pressão constante. Este
+gás é levado a outro recipiente que também possui o volume controlado.
+Sua composição e volume são medidos nas condições do experimento (P e
+T ) e nas condições padrão (Pstd e Tstd), calculando-se assim o fator volume
+de formação do gás (Bg ). Nesta etapa, a viscosidade do gás também é
+medida.
+
+Ao separar o gás, o óleo remanescente tem sua viscosidade medida e
+em seguida é levado até as condições padrão para obter o fator volume de
+formação e a razão gás-óleo, a partir das frações de óleo e gás que surgem
+neste processo.
+
+A partir de um procedimento numérico que simula o experimento de
+laboratório esquematizado na figura 37, pode-se calcular Rs, Bo e Bg . O
+processo numérico utilizado neste trabalho considera a seguinte relação
+
+P v = Z RT, (115)
+
+
+
+110 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+a qual, por sua vez, permite obter as seguintes expressões
+
+Bg(P, T)=
+Zg T
+
+P
+
+?
+
+P
+
+T
+
+?
+
+STD
+,
+
+Bo(P, T)=
+Zo T
+
+P
+
+?
+
+P
+
+Fo Zo T
+
+?
+
+STD
+, (116)
+
+Rs(P, T)=
+?
+
+Fg Zg
+Fo Zo
+
+?
+
+STD
+,
+
+onde Fo e Fg são as frações molares das fases óleo e gás resultantes do
+cálculo de flash. Vale ressaltar que, para o cálculo de Rs e Bo, o cálculo
+do equilíbrio de fases nas condições padrão é feito considerando como
+composição global do sistema a composição da fase óleo nas condições
+de reservatório (sistema destacado em vermelho na figura 37). Ela pode
+ser diferente da composição original caso exista gás livre nas condições
+de reservatório. As viscosidades de cada fase são calculadas utilizando o
+modelo proposto em Lohrenz et al. (1964), descrito no apêndice D.
+
+Os resultados são comparados com as soluções obtidas através do
+aplicativo WinProp (CMG, 2011C), o qual também permite calcular pro-
+priedades para o modelo black oil a partir de uma análise composicional.
+Os fluidos que serão utilizados nesta seção são compostos de seis com-
+ponentes: C H4, C3 H8, F C6, F C10, F C15, F C20, sendo os quatro últimos
+pseudocomponentes obtidos da biblioteca de componentes que existe no
+WinProp.
+
+As propriedades moleculares dos componentes que serão utilizadas
+na equação de estado para o cálculo das propriedades de cada fase são
+dadas na tabela 16 e a matriz de interação binária é mostrada na tabela
+
+Tabela 16 – Propriedades dos componentes.
+Comp. Pc (atm) Tc (K) ? Mi Zc
+C H4 45, 40 190, 6 0, 008 16, 04 0, 2876
+C3 H8 41, 90 369, 8 0, 152 44, 10 0, 2805
+F C6 32, 46 507, 5 0, 27504 86, 0 0, 2682
+F C10 25, 01 622, 1 0, 443774 134, 0 0, 25527
+F C15 18, 25 718, 6 0, 651235 206, 0 0, 2405
+F C20 14, 36 782, 9 0, 816053 275, 0 0, 2296
+
+17. A composição molar deste fluido é mostrada na tabela 18. A descrição
+deste fluido é baseada no trabalho de Killough &amp;amp; Kossack (1987), conhe-
+
+
+
+CAPÍTULO 5 – RESULTADOS 111
+
+cido como o quinto projeto da SPE, um problema benchmark na área de
+simulação de reservatórios de petróleo.
+
+Tabela 17 – Matriz de interação binária.
+Comp. C H4 C3 H8 F C6 F C10 F C15 F C20
+C H4 0
+C3 H8 0, 008537 0
+F C6 0, 025345 0, 004620 0
+F C10 0, 044372 0, 014638 0, 002866 0
+F C15 0, 067047 0, 029340 0, 010971 0, 002657 0
+F C20 0, 085139 0, 042358 0, 019634 0, 007631 0, 001296 0
+
+Tabela 18 – Composição molar do fluido.
+Componente zi
+
+C H4 0, 5
+C3 H8 0, 03
+F C6 0, 07
+F C10 0, 2
+F C15 0, 15
+F C20 0, 05
+
+Nas comparações feitas com o WinProp, considera-se um reservatório
+com uma temperatura de 70?C e a pressão é reduzida a partir do ponto
+de bolha (Pb = 23043, 5 kPa) até a pressão de P = 16000 kPa. Nas figuras
+38, 39 e 40 tem-se a comparação dos resultados. A boa concordância
+dos resultados sugere que o método para obtenção das propriedades do
+modelo black oil utilizado neste trabalho é adequado.
+
+É importante notar que o procedimento proposto pode ser feito para
+quaisquer valores de pressão e temperatura. No caso de um modelo
+black oil térmico, por exemplo, estas curvas seriam necessárias para vários
+pontos de pressão e temperatura. Isto pode ser facilmente obtido com a
+implementação feita neste trabalho e será descrito a seguir.
+
+5.6.1 Propriedades do modelo black oil em função da pressão e
+temperatura
+
+Para ilustrar o procedimento, fez-se o cálculo das propriedades para
+um intervalo de 300 a 400 K para a temperatura e 5000 a 20000 kPa para
+a pressão, para a mesma composição da tabela 18. Nas figuras 41, 42
+e 43 pode-se observar o comportamento destas propriedades em função
+
+
+
+112 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+100
+
+110
+
+120
+
+130
+
+R
+s
+[
+m
+
+3
+/
+m
+
+3
+]
+
+WinProp
+
+Presente Trabalho
+
+80
+
+90
+
+15000 17000 19000 21000 23000 25000
+
+R
+
+Pressão [kPa]
+
+Figura 38 – Curva razão de solubilidade Rs .
+
+da pressão e temperatura. Os resultados são superfícies que possuem um
+comportamento relativamente suave.
+
+Com as tabelas que deram origem às superfícies das figuras 41, 42
+e 43, o cálculo de derivadas das propriedades do modelo black oil em
+relação às variáveis dependentes torna-se uma tarefa mais simples, já que
+aproximações numéricas destas derivadas são facilmente obtidas.
+
+Não existem muitas referências na literatura sobre a utilização de
+modelos black oil térmicos. Em geral, utilizam-se modelos pseudocompo-
+sicionais ou composicionais para uma modelagem térmica. Todavia, exis-
+tem vantagens de utilizar um modelo black oil devido à sua simplicidade,
+estabilidade e menor número de incógnitas.
+
+
+
+CAPÍTULO 5 – RESULTADOS 113
+
+1.26
+
+1.28
+
+1.3
+
+1.32
+
+1.34
+
+B
+o
+[
+m
+
+3
+/
+m
+
+3
+]
+
+WinProp
+
+Presente Trabalho
+
+1.2
+
+1.22
+
+1.24
+
+15000 17000 19000 21000 23000 25000
+
+B
+
+Pressão [kPa]
+
+0.005
+
+0.0055
+
+0.006
+
+0.0065
+
+0.007
+
+B
+g
+[
+m
+
+3
+/
+m
+
+3
+]
+
+WinProp
+
+Presente Trabalho
+
+0.004
+
+0.0045
+
+0.005
+
+15000 17000 19000 21000 23000 25000
+
+B
+
+Pressão [kPa]
+
+Figura 39 – Fator volume de formação de cada fase.
+
+
+
+114 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+0.22
+
+0.225
+
+0.23
+
+0.235
+
+0.24
+
+V
+is
+c
+o
+s
+id
+
+a
+d
+e
+ d
+
+o
+ ó
+
+le
+o
+  
+[
+c
+P
+] WinProp
+
+Presente Trabalho
+
+0.21
+
+0.215
+
+0.22
+
+15000 17000 19000 21000 23000 25000
+
+V
+is
+c
+o
+s
+id
+
+a
+d
+e
+ d
+
+o
+ ó
+
+le
+o
+  
+[
+c
+P
+]
+
+Pressão [kPa]
+
+0.019
+
+0.02
+
+0.021
+
+0.022
+
+V
+is
+c
+o
+si
+d
+a
+d
+e
+ d
+
+o
+ g
+
+á
+s 
+ [
+
+c
+P
+]
+
+WinProp
+
+Presente Trabalho
+
+0.017
+
+0.018
+
+15000 17000 19000 21000 23000 25000
+
+V
+is
+c
+o
+si
+d
+a
+d
+e
+ d
+
+o
+ g
+
+á
+s 
+ [
+
+c
+P
+]
+
+Pressão [kPa]
+
+Figura 40 – Viscosidades de cada fase.
+
+
+
+CAPÍTULO 5 – RESULTADOS 115
+
+Figura 41 – Razão de solubilidade em função da pressão e temperatura.
+
+
+
+116 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Figura 42 – Fator volume de formação de cada fase em função da pressão
+e temperatura.
+
+
+
+CAPÍTULO 5 – RESULTADOS 117
+
+Figura 43 – Viscosidade de cada fase em função da pressão e temperatura.
+
+
+
+
+
+CAPÍTULO
+
+6
+Conclusões
+
+Este trabalho apresentou o estudo e a implementação de um modelo
+composicional trifásico e multicomponente para a simulação de reserva-
+tórios de petróleo em malhas não-estruturadas. Dentre todas as carac-
+terísticas do modelo e do código implementado, pode-se destacar um
+modelo composicional com formulação totalmente implícita em malhas
+não-estruturadas, um procedimento para a solução da rotina de flash
+utilizando o método de Newton-Raphson combinado com substituições
+sucessivas e um procedimento para a solução do teste de estabilidade
+através da minimização da energia livre de Gibbs que também utilizou
+o método de Newton-Raphson combinado com substituições sucessivas.
+
+Através de um esquema de cálculo automático por diferenças finitas
+da matriz Jacobiana utilizando o conceito de matrix coloring, o modelo
+utilizado foi bastante geral. Portanto, quaisquer tabelas ou correlações
+poderiam ser utilizadas para determinar as propriedades de cada fase, da
+rocha, curvas de permeabilidade relativa e pressão capilar. Vale lembrar
+que a equação de estado utilizada foi a equação de Peng-Robinson, porém
+não existe nenhuma restrição no modelo ou no código em utilizar outra
+equação de estado. O procedimento para calcular a matriz Jacobiana
+através do matrix coloring não é tão direto, muitos estudos e testes foram
+feitos em diferentes problemas a fim de garantir que o cálculo da matriz
+estava correto.
+
+119
+
+
+
+120 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Para os processos de recuperação avançada, que englobam a injeção
+de gás, notou-se que o modelo composicional permite uma maior flexibi-
+lidade do processo de injeção quando comparado ao modelo black oil, já
+que o gás injetado pode possuir uma composição arbitrária. Essa diferença
+pôde ser observada nos resultados do modelo black oil em relação ao
+modelo composicional, principalmente para a fase gás (figura 27, por
+exemplo). Portanto, a utilização deste modelo deve ser feita com cuidado
+e sempre com uma boa compreensão das hipóteses assumidas, pois a
+validade das hipóteses do modelo black oil está garantida apenas para
+certos processos de recuperação.
+
+Para trabalhar com as malhas não-estruturadas, a EFVLib (MALISKA
+et al., 2008, 2009, 2010, 2011) foi utilizada a fim de tratar todos os
+detalhes do EbFVM. O cálculo de gradientes, interpolações de proprie-
+dades para cada tipo de elemento e cálculo do índice de poço, todos esses
+procedimentos tiveram seus esforços reduzidos através da utilização da
+biblioteca. Desta forma, foi possível resolver problemas para reservatórios
+com poços de trajetória arbitrária, desde que adequadamente configura-
+dos durante o processo de geração da malha. Dentre as dificuldades desta
+metodologia, pode-se detacar o aumento considerável do stencil da matriz
+Jacobiana. Isso está associado ao fato de que o fluxo para uma face de um
+volume de controle depende de variáveis que estão em todos os vértices do
+elemento. Por este motivo, o processo de solução utilizando malhas não-
+estruturadas torna-se mais lento, tanto para construir a matriz, quanto
+para resolver o sistema linear resultante.
+
+O procedimento apresentado para calcular as propriedades do mo-
+delo black oil a partir de uma análise composicional não foi encontrado
+com uma descrição clara na literatura e, portanto, foi deduzido neste
+trabalho e validado com um software comercial de referência (WinProp).
+Além disso, não foi possível encontrar trabalhos que tratem sobre as
+propriedades do modelo black oil em função da pressão e temperatura
+(modelo térmico). Este assunto foi tratado no último tópico do capítulo
+de resultados deste trabalho e permitiu uma maior compreesão sobre as
+propriedades envolvidas no modelo. Espera-se utilizar este tópico como
+referência para futuros estudos relacionados à modelos térmicos do tipo
+black oil.
+
+O código desenvolvido neste trabalho mostrou-se uma ferramenta
+interessante para testar novas metodologias, formulações, etc. Como não
+
+
+
+CAPÍTULO 6 – CONCLUSÕES 121
+
+existe cálculo manual de derivadas, os esforços concentram-se apenas em
+modelar e discretizar adequadamente as equações de resíduo, que são
+essencialmente as equações de conservação que governam o problema,
+juntamente com as equações constitutivas que fecham o problema.
+
+6.1 Sugestões para trabalhos futuros
+Dentre as possibilidades de evoluir os estudos de modelos composi-
+
+cionais, algumas linhas de pesquisa serão sugeridas por possuir um forte
+interesse da comunidade científica e industrial na área de simulação de
+reservatórios de petróleo. São elas:
+
+• Inclusão da equação da energia no modelo composicional;
+
+• Modelos composicionais com um número arbitrário de fases, pois
+existem situações em que duas fases oleosas podem existir;
+
+• Estudo da ocorrência de troca de massa entre a fase água e as
+demais fases;
+
+• Acoplamento de modelos de geomecânica com o modelo composi-
+cional;
+
+• Cálculo manual da matriz Jacobiana caso uma solução mais rápida
+do problema seja requerida.
+
+
+
+
+
+Referências
+
+AAVATSMARK, I.; KLAUSEN, R. Well Index in Reservoir Simulation for
+Slanted and Slightly Curved Wells in 3D Grids. SPE Journal, v. 8, n.
+1, pp. 41–48, 2003.
+
+AHMED, T. Reservoir Engineering Handbook, 3rd edition. Elsevier
+Science, 2006.
+
+ALMEHAIDEB, R. A.; AZIZ, K.; PEDROSA, O. A. A Reservoir/Wellbore Model
+for Multiphase Injection and Pressure Transient Analysis. SPE -
+Society of Petroleum Engineers, n. SPE 17941, 1989.
+
+AZIZ, K. Notes for Petroleum Reservoir Simulation. Stanford University,
+1993.
+
+AZIZ, K.; SET TARI, A. Petroleum Reservoir Simulation, 1st edition.
+Applied Science Publishers, 1979.
+
+BAKER, L. E.; PIERCE, A. C.; LUKS, K. D. Gibbs Energy Analysis of Phase
+Equilibria. SPE Journal, 1982.
+
+BALAY, S.; BROWN, J.; ; BUSCHELMAN, K.; EIJKHOUT, V.; GROPP, W. D.;
+KAUSHIK, D.; KNEPLEY, M. G.; MCINNES, L. C.; SMITH, B. F.; ZHANG, H.
+PETSc User’s Manual. Relatório Técnico, Argonne National Laboratory,
+2008.
+
+BALAY, S.; BROWN, J.; BUSCHELMAN, K.; GROPP, W. D.; KAUSHIK, D.; KNEPLEY,
+M. G.; MCINNES, L. C.; SMITH, B. F.; ZHANG, H., 2009. PETSc Web page.
+http://www.mcs.anl.gov/petsc.
+
+BALIGA, B. R.; PATANKAR, S. V. A control-volume finite-element method
+for two-dimensional fluid flow and heat transfer. Numerical Heat
+Transfer, v. 6, pp. 245–261, 1983.
+
+123
+
+
+
+124 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+BRADLEY, H. B. Petroleum Engineering Handbook. Society of Petroleum
+Engineers Richardson, TX, U.S.A, 1987.
+
+CAO, H. Development of Techniques for General Purpose Simulators.
+Tese de Doutorado, Stanford University, 2002.
+
+CHEN, Z.; HUAN, G.; MA, Y. Computational Methods for Multiphase
+Flows in Porous Media. Computational Science &amp;amp; Enginnering. Society
+fo Industrial and Applied Mathematics - SIAM, 2006.
+
+CHEN, Z.; HUAN, G.; WANG, H. Computer Simulation of Compositional
+Flow Using Unstructured Control Volume Finite Element Methods.
+Computing, v. 78, pp. 31–53, 2006.
+
+CMG. GEM User’s Guide - Advanced Compositional and GHG Reser-
+voir Simulator. Computer Modelling Group Ltd., 2011.
+
+CMG. IMEX User’s Guide - Advanced Oil/Gas Reservor Simulator.
+Computer Modelling Group Ltd., 2011.
+
+CMG. WinProp User’s Guide - Phase Property Program. Computer
+Modelling Group Ltd., 2011.
+
+COATS, K. H. An Equation of State Compositional Model. Society of
+Petroleum Engineers Journal, v. 20, n. 5, pp. 363–376, 1980.
+
+CORDAZZO, J. Simulação de Reservatórios de Petróleo Utilizando o Mé-
+todo EbFVM e Multigrid Algébrico. Tese de Doutorado, Universidade
+Federal de Santa Catarina, 2006.
+
+DA CUNHA, A. R. Uma metodologia para simulação numérica tridi-
+mensional de reservatórios de petróleo utilizando modelo black-
+oil e formulação em frações mássicas. Dissertação de Mestrado,
+Universidade Federal de Santa Catarina - UFSC, 1996.
+
+DAKE, L. P. Fundamentals of reservoir engineering. Elsevier Science,
+1978.
+
+DARCY, H. Les Fontaines Publiques de la Ville de Dijon, Victor
+Dalmond, Paris. 1856.
+
+
+
+REFERÊNCIAS 125
+
+DOS SANTOS, L. O. S. Development of a Multi-Formulation Compositio-
+nal Simulator. Tese de Doutorado, The University of Texas at Austin,
+2013.
+
+EDWARDS, C. H. Advanced Calculus of Several Variables. Dover, 1994.
+
+FANCHI, J. R. Integrated Flow Modeling, vol. 49 of Developments in
+Petroleum Science. Elsevier Science, 2000.
+
+GEBREMEDHIN, A. H.; MANNE, F.; POTHEN, A. What Color Is Your
+Jacobian? Graph Coloring for Computing Derivatives. SIAM - Society
+for Industrial and Applied Mathematics, v. 47, pp. 629–705, 2005.
+
+GOMES, H. P. Modelo Composicional de Reservatórios com Formulação
+Totalmente Implícita. Dissertação de Mestrado, Universidade Estadual
+de Campinas, 1990.
+
+HURTADO, F. S. V. Uma Formulação de Volumes Finitos Baseada em
+Elementos para a Simulação do Deslocamento Bifásico Imiscível
+em Meios Porosos. Dissertação de Mestrado, Universidade Federal de
+Santa Catarina, 2005.
+
+HURTADO, F. S. V. Formulação tridimensional de volumes finitos
+para simulação de reservatórios de petróleo com malhas não-
+estruturadas híbridas. Tese de Doutorado, Universidade Federal de
+Santa Catarina, 2011.
+
+HURTADO, F. S. V.; MALISKA, C. R.; DA SILVA, A. F. C. Application of
+Flux-Corrected Transport to an Unstructured-Grid Finite-Volume
+Formulation for Reservoir Simulation. Proceedings of the XXVIII Ibe-
+rian Latin-American Congress on Computational Methods in Engineering
+CMNE/CILAMCE, 2007.
+
+JOHNS, R. T. Oil Recovery. In: Encyclopedia of Energy, vol. 4, pp. 701–713.
+Elsevier Science, 2004.
+
+KENYON, D. E.; BEHIE, O. A. Third Comparative Solution Project
+Gas Cycling of Retrograde Condensate Reservoirs. SPE - Society of
+Petroleum Engineers, 1987.
+
+KILLOUGH, J. E.; KOSSACK, C. A. Fifth Comparative Solution Project:
+Evaluation of Miscible Flood Simulators. SPE - Society of Petroleum
+Engineers, n. 16000, 1987.
+
+
+
+126 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+LOHRENZ, J.; BRAY, B. G.; CLARK, C. R. Calculating Viscosities of
+Reservoir Fluids From Their Compositions. Society of Petroleum
+Engineers Journal, 1964.
+
+LUCIANET TI, R. M. Métodos de Krylov-Newton Aplicados à Simulação
+Numérica de Reservatórios de Petróleo. Dissertação de Mestrado,
+Universidade Federal de Santa Catarina - UFSC, 2000.
+
+MALISKA, C. R. Transferência de Calor e Mecânica dos Fluidos
+Computacional, 2a edition. LTC - Livros Técnicos e Científicos Editora,
+2004.
+
+MALISKA, C. R.; SILVA, A. F. C.; HURTADO, F. S. V.; DONAT TI, C. N.; AMBRUS,
+J. Especificação e planejamento da biblioteca EFVLib. Relatório
+Técnico, Departamento de Engenharia Mecânica, Universidade Federal
+de Santa Catarina, 2008.
+
+MALISKA, C. R.; SILVA, A. F. C.; HURTADO, F. S. V.; DONAT TI, C. N.; PESCA-
+DOR JR., A. V. B. Desenvolvimento e implementação da biblioteca
+EFVLib. Relatório Técnico, Departamento de Engenharia Mecânica,
+Universidade Federal de Santa Catarina, 2009.
+
+MALISKA, C. R.; SILVA, A. F. C.; HURTADO, F. S. V.; DONAT TI, C. N.;
+PESCADOR JR., A. V. B. Testes e exemplos de aplicação da biblioteca
+EFVLib. Relatório Técnico, Departamento de Engenharia Mecânica,
+Universidade Federal de Santa Catarina, 2010.
+
+MALISKA, C. R.; SILVA, A. F. C.; HURTADO, F. S. V.; DONAT TI, C. N.;
+PESCADOR JR., A. V. B.; RIBEIRO, G. G. Manual de classes da biblioteca
+EFVLib. Relatório Técnico, Departamento de Engenharia Mecânica,
+Universidade Federal de Santa Catarina, 2011.
+
+MALISKA, C. R.; SILVA, A. F. C.; TADA, M. P.; KARPINSKI, L.; PESCADOR, JR.,
+A. A. V. B.; SOPRANO, A. B.; MAGRI, V. A. P. WellRes: Simulador Poço-
+Reservatório-Relatório Técnico Final. Relatório Técnico, Laboratório
+SINMEC/UFSC, Laboratório SINMEC/UFSC, Fevereiro, 2012.
+
+MICHELSEN, M. L. The Isothermal Flash Problem - Part I - Stability.
+Fluid Phase Equilibria, v. 9, pp. 1–19, 1982.
+
+MICHELSEN, M. L. The Isothermal Flash Problem - Part II - Phase-Split
+Calculation. Fluid Phase Equilibria, v. 9, pp. 21–40, 1982.
+
+
+
+REFERÊNCIAS 127
+
+ORR, JR., F. M.; TABER, J. J., 1987. Phase Diagrams, ch. 23. Petroleum
+Engineering Handbook. Society of Petroleum Engineers, Richardson,
+TX.
+
+PATANKAR, S. V. Numerical Heat Transfer and Fluid Flow. Hemisphere
+Publishing Corporation, 1980.
+
+PEACEMAN, D. W. Interpretation of Well-Block Pressures in Numerical
+Reservoir Simulation With Nonsquare Grid Blocks and Anisotropic
+Permeability. SPE Journal, v. 23, pp. 531–543, 1983.
+
+RACHFORD, H. H.; RICE, J. D. Procedure for Use of Electronic Digital
+Computers in Calculating Flash Vaporization Hydrocarbon Equili-
+brium. Petroleum Transactions - AIME, v. 195, 1952.
+
+ROSA, A. J.; DE SOUZA CARVALHO, R.; XAVIER, J. A. D. Engenharia de
+Reservatórios de Petróleo. Interciência, 2006.
+
+SAAD, Y. Iterative Methods for Sparse Linear Systems, second edition
+edition. 2000.
+
+SANDLER, S. I. Chemical, Biochemical, and Engineering Thermodyna-
+mics, 4th edition. John Wiley &amp;amp; Sons, Inc, 2006.
+
+SMITH, J. M.; NESS, H. C. V.; ABB OT T, M. M. Introduction to Chemical
+Engineering Thermodynamics. McGraw Hill, 1996.
+
+SOPRANO, A. B. Modelagem Matemática e Solução Numérica do Escoa-
+mento Multifásico Unidimensional em Poços Horizontais. Trabalho
+de Conclusão de Curso - Universidade Federal de Santa Catarina, 2010.
+
+SOPRANO, A. B.; DA SILVA, A. F. C.; MALISKA, C. R., 2012. Numerical
+Solution of the Multiphase Flow of Oil, Water and Gas in Horizontal
+Well in Natural Petroleum Reservoirs. In: Mecánica Computacional,
+vol. XXXI, p. 683–693. Asociación Argentina de Mecánica Computacio-
+nal.
+
+STIEL, L. I.; THODOS, G. The Viscosity of Nonpolar Gases at Normal
+Pressures. AIChE, v. 7, n. 4, 1961.
+
+STONE, H. L. Estimation of Three-Phase Relative Permeability And
+Residual Oil Data. Journal of Canadian Petroleum Technology, v. 12,
+n. 4, 1973.
+
+
+
+128 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+WHITSON, C. H.; BRULÉ, M. R. Phase Behaviour, Monograph, vol. 20 of
+Henry L. Doherty Series. Society of Petroleum Engineers - SPE, 2000.
+
+WILSON, G. M. A Modified Redlich-Kwong Equation of State, Applica-
+tion to General Physical Data Calculations. AIChE, 1969.
+
+
+
+APÊNDICE
+
+A
+Visão geral do código
+
+A seguir serão apresentados os arquivos criados para o código im-
+plementado neste trabalho, seguidos de uma breve descrição das funci-
+onalidades de cada um. A implementação foi feita de maneira a seguir
+um padrão conhecido como TDD - Test Driven Development, ou progra-
+mação orientada a testes. Desta forma, o arquivo de entrada é o arquivo
+test_CompositionalSimulator.cpp, que realiza todos os testes implemen-
+tados. As classes e rotinas são testadas na medida em que são implemen-
+tadas. Todos os testes sempre são rodados a fim de garantir que alguma
+mudança posterior em uma classe que foi previamente desenvolvida não
+cause alterações nos resultados inicialmente obtidos e validados. Isso
+garante maior robustez ao código e permite alterações que podem ser
+rapidamente validadas.
+
+A.1 Arquivos de configuração, entrada e saída de da-
+dos
+
+Utils.h Arquivo de cabeçalho para configuração das classes básicas do
+modelo.
+
+Config.h Arquivo de cabeçalho para configuração das classes utilizadas
+no problema.
+
+129
+
+
+
+130 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+ConfigBoost.h Arquivo de cabeçalho para configuração da biblioteca Bo-
+ost.
+
+ConfigPhaseBehaviour.h Arquivo de cabeçalho para configuração das
+classes utilizadas para o cálculo do equilíbrio de fases.
+
+ConfigSTL.h Arquivo de cabeçalho para configuração das classes da Stan-
+dard Template Library - STL.
+
+ConversionFactors.h/cpp Funções utilizadas para conversão de unida-
+des.
+
+MultiTable.h/cpp Classe com a implementação de uma estrutura de ta-
+bela com várias colunas e interpolação das propriedades.
+
+SaveFileClass.h Classe para salvar os resultados da simulação.
+
+A.2 Arquivos de definição das entidades do modelo
+BinaryInteractionMatrix.h Classe da matriz de interação binária.
+
+Component.h Classe componente, com informação sobre propriedades
+físicas.
+
+Phase.h Classe para a estrutura de uma fase, possuindo as rotinas que
+permitem calcular suas propriedades físicas.
+
+A.3 Arquivos de definição das entidades do equilíbrio
+de fases
+
+EquationOfState.h/cpp Classe com a implementação das equações de
+estado, interface e equações especializadas.
+
+RachfordRice.h/cpp Rotina para solução do procedimento de Rachford
+&amp;amp; Rice (1952).
+
+PhaseEquilibriaAnalyzer.h/cpp Estrutura que realiza o cálculo do equi-
+líbrio de fases, desde a determinação do teste de estabilidade até o
+cálculo de flash.
+
+
+
+APÊNDICE A – VISÃO GERAL DO CÓDIGO 131
+
+A.4 Arquivos com o simulador e solver não-linear
+PETScNonLinearSolver.h Classe base abstrata com a implementação de
+
+um solver não-linear genérico que realiza a interface com a PETSc.
+
+NonLinearFlashSolver.h Classe derivada da PETScNonLinearSolver con-
+figurada para resolver a rotina de flash.
+
+NonLinearStabilityTestSolver.h Classe derivada da PETScNonLinearSol-
+ver configurada para resolver o teste de estabilidade.
+
+CompositionalSimulator.h Classe base do simulador composicional de-
+rivada de PETScNonLinearSolver.
+
+A.5 Arquivos de definição da entidades com as variá-
+veis do problema
+
+PhysicalSystem.h Estrutura com informações do sistema físico de um
+volume de controle do reservatório.
+
+ReservoirProperties.h Estruturas com as propriedades físicas e campos
+do reservatório.
+
+SimulationInfo.h Estrutura com informações ao longo da simulação.
+
+WellProperties.h Estrutura com informações das propriedades do poço.
+
+Separator.h Classe com a implementação de separadores.
+
+Models.h Classes com os modelos utilizados para cálculo das proprieda-
+des físicas.
+
+A.6 Arquivo de testes
+test_CompositionalSimulator.cpp Arquivo de testes do métodos imple-
+
+mentados neste trabalho.
+
+
+
+132 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+Figura 44 – Classes e estruturas principais implementadas neste trabalho.
+
+Figura 45 – Estrutura dos separadores.
+
+Figura 46 – Classes relacionadas à equação de estado.
+
+
+
+APÊNDICE
+
+B
+Determinação das raízes da
+equação de estado
+
+Existem várias maneiras de calcular as raízes de uma equação cúbica:
+analiticamente ou através de métodos iterativos. Os métodos analíti-
+cos são mais atraentes para utilizar em códigos de simulação, pois eles
+permitem a determinação de todas as raízes e evitam a possibilidade
+de que o método itere para a raiz errada. O procedimento analítico de
+determinação das raízes é mostrado a seguir:
+
+Seja uma equação cúbica na forma,
+
+Z 3 + B Z 2 + C Z + D = 0, (117)
+
+onde B, C , e D são constantes. Definindo,
+
+?=
+3C ? B2
+
+3
+, (118)
+
+e,
+
+? =
+2B3 ?9B C +27D
+
+27
+, (119)
+
+133
+
+
+
+134 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+o determinante ? é definido como,
+
+?=
+?2
+
+4
++
+?3
+
+27
+. (120)
+
+Desta forma, o seguinte teste pode ser feito:
+
+• Se ?&gt; 0, então 1 raiz é real e 2 raízes são imaginárias;
+
+• Se ?= 0, então 3 raízes são reais, sendo 2 raízes iguais;
+
+• Se ?&amp;lt;0, então 3 raízes são reais.
+
+Na prática, para obter as soluções da equação de estado cúbica, basta
+fazer dois testes: ?&gt; 0 e ?? 0.
+
+Se ?&gt; 0, a raiz real é calculada por
+
+Z =?A +?B ?
+B
+
+3
+, (121)
+
+onde,
+
+?A =
+?
+
+?
+?
+
+2
++
+p
+?
+?
+
+1
+3
+
+, (122)
+
+?B =
+?
+
+?
+?
+
+2
+?
+p
+?
+?
+
+1
+3
+
+. (123)
+
+Se ?? 0, as três raízes são calculadas através de
+
+Z1 = 2
+Ç
+
+?
+?
+
+3
+cos
+?
+
+?
+
+3
+
+?
+
+?
+B
+
+3
+, (124)
+
+Z2 = 2
+Ç
+
+?
+?
+
+3
+cos
+?
+
+?
+
+3
++
+
+2?
+
+3
+
+?
+
+?
+B
+
+3
+, (125)
+
+Z3 = 2
+Ç
+
+?
+?
+
+3
+cos
+?
+
+?
+
+3
++
+
+4?
+
+3
+
+?
+
+?
+B
+
+3
+, (126)
+
+com,
+
+?= arccos
+
+?
+
+?
+
+?
+
+?
+
+?
+?
+
+2
+q
+
+??
+3
+
+27
+
+?
+
+?
+
+?
+
+?
+
+. (127)
+
+
+
+APÊNDICE B – DETERMINAÇÃO DAS RAÍZES DA EQUAÇÃO DE ESTADO 135
+
+A escolha da raiz correta da equação de estado irá depender do problema.
+A raiz do meio sempre é descartada, pois é uma solução que não possui
+interpretação física. Na maioria dos casos, a menor das raízes é a raiz
+correta se a fase for líquida e a maior das raízes é a solução correta para
+a fase vapor. Todavia, a fim de garantir a escolha correta da raiz Z , o
+procedimento correto consiste em descartar a raiz do meio e calcular a
+energia de Gibbs com Zmin e Zmax. A raiz que fornecer a menor energia de
+Gibbs é a raiz correta.
+
+
+
+
+
+APÊNDICE
+
+C
+”Matrix Coloring”
+
+O processo de cálculo da matriz Jacobiana é parte mais complexa
+de qualquer solução não-linear, especialmente em problemas de muitas
+variáveis. O procedimento descrito neste apêndice é baseado na aproxi-
+mação das derivadas de uma coluna inteira da matriz Jacobiana, J. Seja
+~f : Rn ? Rn uma função resíduo. Se ~ek é o vetor com valor 1 na k-ésima
+linha e 0 nas demais, então a partir da aproximação
+
+J(~x) ·~ek ?
+1
+
+?
+
+?
+
+~f (~x +?~ek)? ~f (~x)
+?
+
+, (128)
+
+a qual corresponde à derivada ao longo da direção ~ek, pode-se determinar
+a k-ésima coluna de J a partir de um cálculo extra da função resíduo ~f
+em ~x +?~ek, assumindo que ~f (~x) já foi calculado e ? é um incremento
+pequeno. Note que, se a esparsidade da matriz não for explorada, o
+processo de cálculo de uma matriz Jacobiana com n colunas irá exigir
+n cálculos adicionais de função resíduo ~f .
+
+Se ~f =
+?
+
+f1 f2 f3 f4 f5
+?T
+
+e a matriz Jacobiana possui a seguinte
+estrutura
+
+J =
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+J11 J12 0 0 J15
+0 0 J23 0 0
+0 J32 J33 J34 0
+
+J41 0 0 0 0
+0 0 0 J54 J55
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+, (129)
+
+137
+
+
+
+138 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+então para calcular a coluna 1 da matriz J, de acordo com a eq. (128),
+faz-se
+
+J ·~e1 ?
+1
+
+?
+
+?
+
+~f (~x +?~e1)? ~f (~x)
+?
+
+=
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+f1(~x+?~e1)?f1(~x)
+?
+
+0
+0
+
+f4(~x+?~e1)?f4(~x)
+?
+
+0
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+, (130)
+
+e, para calcular a coluna 3,
+
+J ·~e3 ?
+1
+
+?
+
+?
+
+~f (~x +?~e3)? ~f (~x)
+?
+
+=
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+0
+f2(~x+?~e3)?f2(~x)
+
+?
+f3(~x+?~e3)?f3(~x)
+
+?
+
+0
+0
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+. (131)
+
+Este procedimento exigiu dois cálculos extras da função resíduo ~f .
+Agora considere um subconjunto da matriz Jacobiana no qual duas
+
+colunas diferentes não possuem qualquer elemento não-nulo na mesma
+linha. Este subconjunto é classificado como estruturalmente ortogonal, ou
+seja, dadas as colunas ~jk e ~jl de um mesmo conjunto estruturalmente
+ortogonal, então
+
+~jk ·~jl = 0. (132)
+
+Na figura 47, as colunas 1 e 3 da matriz são estruturalmente ortogonais
+entre si, enquanto que as colunas 1 e 2 não são.
+
+Define-se o vetor ~d como o vetor com valor 1 nas componentes em
+que o valor de todas as colunas de um subconjunto estruturalmente orto-
+gonal seja não-nulo e valor 0 nas demais componentes. Se for calculada
+a derivada de ~f ao longo da direção ~d, pode-se calcular simultaneamente
+todas as componentes não-nulas destas colunas a partir de um único
+cálculo de função resíduo ~f (~x +?~d). Considerando a matriz Jacobiana da
+eq. (129) e o subconjunto de colunas estruturalmente ortogonais
+
+¦
+
+~j1,~j3
+©
+
+,
+
+
+
+APÊNDICE C – ”MATRIX COLORING” 139
+
+Figura 47 – Dois agrupamentos diferentes em subconjuntos estrutural-
+mente ortogonais para a matriz J.
+
+se ~d =~e1 +~e3 =[1 0 1 0 0]
+T , então a expressão
+
+J ·~d ?
+1
+
+?
+
+?
+
+~f (~x +?~d)? ~f (~x)
+?
+
+=
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+f1(~x+?~d)?f1(~x)
+?
+
+f2(~x+?~d)?f2(~x)
+?
+
+f3(~x+?~d)?f3(~x)
+?
+
+f4(~x+?~d)?f4(~x)
+?
+
+0
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+, (133)
+
+permite calcular as componentes J11, J41, J23 e J33 da matriz Jacobiana J.
+As componentes 1 e 4 do vetor J ·~d correspondem às componentes 1 e 4
+da primeira coluna da matriz (~j1 = J·~e1), enquanto que as componentes 2
+e 3 do vetor J ·~d correspondem às componentes 2 e 3 da terceira coluna,
+~j3 = J ·~e3. Esse procedimento só foi possível a partir da condição que
+
+~j1 ·~j3 = 0.
+
+Neste caso, apenas um cálculo extra da função ~f foi necessário. Portanto,
+o exemplo acima fornece um procedimento para reduzir o número de
+cálculos da função resíduo para construção da matriz Jacobiana, desde
+que se conheça a estrutura da matriz a priori.
+
+O agrupamento das colunas da matriz Jacobiana em subconjuntos
+estruturalmente ortogonais pode ser feito de várias formas. Todavia, como
+mostrado na figura 47, existem casos em que o número de subconjuntos
+
+
+
+140 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+é menor, o que implica em um número menor de cálculos da função ~f .
+Nesta figura, o caso (a) resulta em 4 vetores ~d diferentes e, portanto, 4
+cálculos extras da função ~f . Já o caso (b) resulta em apenas 3 cálculos da
+função ~f . Desta forma, pode-se estabelecer o seguinte problema:
+
+Dado o padrão de esparsidade da matriz Jacobiana, partici-
+onar as colunas no menor número possível de grupos estrutural-
+mente ortogonais.
+
+Este problema é conhecido como matrix coloring. Alguns métodos para
+a otimização do agrupamento das colunas podem ser encontrados em
+Gebremedhin et al. (2005). A figura 48 mostra um exemplo de um
+processo de agrupamento de colunas estruturalmente ortogonais. Note
+que a redução no número de colunas da matriz é considerável, reduzindo
+bastante o número de cálculos da função ~f .
+
+Figura 48 – Estrutura da matriz Jacobiana e seu formato agrupado através
+do matrix coloring.
+
+Neste trabalho, fez-se uso dos algoritmos de agrupamento das co-
+lunas da matriz (matrix coloring) que estão implementados na biblioteca
+PETSc (BALAY et al., 2009). Entretanto, sua utilização não é tão direta. O
+processo que deve ser feito consiste em primeiro determinar o padrão de
+esparsidade da matriz Jacobiana. No modelo composicional, isso depende
+da malha utilizada e do número de componentes do problema. Desta
+
+
+
+APÊNDICE C – ”MATRIX COLORING” 141
+
+forma, a partir dessas informações a estrutura da matriz Jacobiana é
+montada informando quais são as componentes não-nulas da matriz, sim-
+plesmente colocando o valor 1 nas componentes da matriz que podem ser
+não-nulas ao longo da simulação. Neste trabalho, a função (em linguagem
+C++)
+
+v o i d B u i l d J a c o b i a n S t r u c t u r e ( . . . ) ;
+
+é utilizada para gerar esta estrutura. Em seguida, utiliza-se a seguinte
+sequência de funções da biblioteca PETSc (BALAY et al., 2009):
+
+v o i d S e t J a c o b i a n C o l o r i n g ( ) {
+I S C o l o r i n g i s c o l o r i n g ;
+M a t G e t C o l o r i n g ( m_ j a co b i an , MATCOLORINGID,&amp;amp; i s c o l o r i n g ) ;
+M a t F D C o l o r i n g C r e a t e ( m _j a c ob i a n , i s c o l o r i n g ,&amp;amp; m _ j a c o b i a n _ c o l o r ) ;
+I S C o l o r i n g D e s t r o y (&amp;amp; i s c o l o r i n g ) ;
+M a t F D C o l o r i n g S e t F u n c t i o n ( m _ j a c o b i a n _ c o l o r , s t a t i c _ R e s i d u a l F u n c t i o n , t h i s ) ;
+M a t F D C o l o r i n g S e t F r o m O p t i o n s ( m _ j a c o b i a n _ c o l o r ) ;
+
+}
+
+Este processo irá reduzir o tamanho da matriz Jacobiana a partir do
+procedimento ilustrado na figura 48. A aproximação da matriz Jacobiana
+é feita através da função
+
+S N E S D e f a u l t C o m p u t e J a c o b i a n C o l o r ( . . . ) ;
+
+também intrínseca da biblioteca PETSc. Com isso, basta implementar a
+função resíduo (~f ) para o problema e a matriz Jacobiana será calculada
+automaticamente. Se a estrutura da matriz Jacobiana e a função resíduo
+forem implementadas corretamente pelo usuário, a aproximação obtida
+por este procedimento estará correta.
+
+
+
+
+
+APÊNDICE
+
+D
+Cálculo das viscosidades
+
+O cálculo da viscosidade do óleo e do gás para o modelo composi-
+cional apresentado neste trabalho é feito utilizando o modelo proposto
+por Lohrenz et al. (1964). Os cálculos a seguir são feitos para cada fase
+(óleo e gás), assumindo que os fatores de compressibilidade (Zo e Zg ) já
+foram calculados. Isto significa que são conhecidos o volume molar da
+fase, densidade, etc.
+
+Primeiramente, calcula-se o parâmetro de viscosidade, ?i , do com-
+ponente a partir da seguinte expressão,
+
+?i =
+T
+
+1
+6
+
+ci
+
+M
+1
+2
+
+i P
+2
+3
+
+ci
+
+, (134)
+
+com Pci dado em atm. A equação de Stiel &amp;amp; Thodos (1961) permite
+calcular a viscosidade à baixa pressão para um componente puro, µ?i ,
+
+µ?i ?i = 10
+?4
+?
+
+4, 61T 0,618r i ?2, 04e
+?0,449Tr i +1, 94e?4,058Tr i +0, 1
+
+?
+
+, (135)
+
+onde,
+
+Tr i =
+T
+
+Tci
+. (136)
+
+O cálculo da viscosidade à baixa pressão da mistura é obtido através da
+
+143
+
+
+
+144 A. B. SOPRANO - DISSERTAÇÃO DE MESTRADO EM ENGENHARIA MECÂNICA
+
+seguinte interpolação
+
+µ? =
+
+?Nc
+i=1
+
+?
+
+xiµ
+?
+i
+
+p
+
+Mi
+?
+
+?Nc
+i=1
+
+?
+
+xi
+p
+
+Mi
+? , (137)
+
+e o parâmetro de viscosidade da mistura é
+
+?=
+
+h
+
+?Nc
+i=1
+
+?
+
+xi Tci
+?
+
+i
+1
+6
+
+h
+
+?Nc
+i=1
+
+?
+
+xi Mi
+?
+
+i
+1
+2
+h
+
+?Nc
+i=1
+
+?
+
+xi Pci
+?
+
+i
+2
+3
+
+. (138)
+
+O volume crítico pode ser obtido através de
+
+vc =
+Nc
+?
+
+i=1
+
+xi Zci RTci
+Pci
+
+=
+Nc
+?
+
+i=1
+
+xi vci , (139)
+
+A densidade reduzida é definida como,
+
+?r =
+vc
+v
+
+, (140)
+
+onde v é o volume molar da fase. Finalmente, a viscosidade da fase (em
+Pa.s) é dada por
+
+µ= 10?3 ×
+
+?
+
+?
+
+?
+
+?
+
+a0 + a1?r + a2?
+2
+r + a3?
+
+3
+r + a4?
+
+4
+r
+
+?4
+?10?4
+
+?
++µ?
+
+?
+
+?
+
+?
+, (141)
+
+com os coeficientes possuindo os valores padrão de
+
+a0 = 0, 1023 (142)
+
+a1 = 0, 023364 (143)
+
+a2 = 0, 058533 (144)
+
+a3 =?0, 040758 (145)
+
+a4 = 0, 0093324 (146)
+
+podendo ser alterados caso seja desejado ajustar a correlação com medi-
+ções experimentais.
+
+
+	Introdução
+	O meio poroso
+	Equilíbrio de fases
+	O modelo composicional
+	O método dos volumes finitos baseado em elementos
+	Organização do trabalho
+
+	Noções de Termodinâmica de Misturas
+	Definições preliminares
+	Diagrama de fases
+	Diagramas de fluidos de reservatório
+
+	Equações de estado
+	Equilíbrio de fases
+	Rotina de flash
+	Cálculo de estabilidade
+
+
+	Modelo Composicional
+	Equações governantes
+	Condições de contorno
+	Separadores com múltiplos estágios
+
+
+	Formulação Numérica
+	Rotina de flash
+	Substituições sucessivas
+	Método de Newton
+
+	Teste de estabilidade
+	Substituições sucessivas
+	Método de Newton
+
+	Discretização das equações de conservação
+	Método de solução das equações
+	Inicialização
+	Controle do passo de tempo
+	Algoritmo geral
+
+	Resultados
+	Validação da rotina de flash
+	Validação com o GEM
+	Simulação de um processo de injeção de água
+	Simulação de um processo de injeção de Lg
+	Simulação composicional com malha híbrida
+	Cálculo das propriedades para o modelo black oil
+	Propriedades do modelo black oil em função da pressão e temperatura
+
+
+	Conclusões
+	Sugestões para trabalhos futuros
+
+	Referências
+	Apêndice Visão geral do código
+	Arquivos de configuração, entrada e saída de dados
+	Arquivos de definição das entidades do modelo
+	Arquivos de definição das entidades do equilíbrio de fases
+	Arquivos com o simulador e solver não-linear
+	Arquivos de definição da entidades com as variáveis do problema
+	Arquivo de testes
+
+	Apêndice Determinação das raízes da equação de estado
+	Apêndice ''Matrix Coloring''
+	Apêndice Cálculo das viscosidades
+
+</field>
+	</doc>
+</add>

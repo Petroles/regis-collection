@@ -1,0 +1,1788 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.20462</field>
+		<field name="filename">4019_001059750.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL
+
+ESCOLA DE ENGENHARIA
+
+TRABALHO DE CONCLUSÃO EM ENGENHARIA DE
+CONTROLE E AUTOMAÇÃO
+
+C o n t r o l e I M C d e E s c o a m e n t o s
+M u l t i f á s i c o s e m P l a t a f o r m a s d e
+P e t r ó l e o B a s e a d o e m u m M o d e l o
+
+S i m p l i f i c a d o
+
+Autor: Gabriel Agnischock da Silveira
+
+Orientador: Jorge Otávio Trierweiler
+
+Porto Alegre, 4 de janeiro de 2018
+
+
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira i
+
+Sumário
+
+Agradecimentos iii
+
+Resumo v
+
+Abstract vii
+
+Lista de Figuras ix
+
+Lista de Tabelas xi
+
+Lista de Abreviaturas e Siglas xii
+
+1 Introdução 1
+1.1 Objetivo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+
+2 Revisão bibliográfica 3
+2.1 Sistemas de extração de petróleo offshore . . . . . . . . . . . . . . . . . . . . . . 3
+
+2.1.1 Gas-lift . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+2.2 Comportamento dinâmico de sistemas com gas-lift: golfadas, bifurcação . . . . . . 5
+2.3 Controle de produção . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+
+2.3.1 Controle ativo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+2.4 Projeto de controle pelo método IMC . . . . . . . . . . . . . . . . . . . . . . . . 9
+2.5 Aplicação de controle IMC anti-golfadas - Jahanshahi, 2013 . . . . . . . . . . . . 11
+
+3 Metodologia 15
+3.1 Modelo utilizado como planta a ser controlada - Di Meglio, 2009 . . . . . . . . . . 15
+3.2 Visão Geral do modelo simplificado proposto . . . . . . . . . . . . . . . . . . . . 19
+3.3 Projeto de controlador pelo método IMC . . . . . . . . . . . . . . . . . . . . . . . 20
+
+3.3.1 Projeto de controle pelo método IMC para o modelo linear simplificado . . 20
+3.3.2 Aplicação da metodologia Jahanshahi e Skogestad, 2013 para controlar o
+
+sistema de Di Meglio et al., 2009 . . . . . . . . . . . . . . . . . . . . . . 21
+
+4 Estudo de caso - Controle do modelo de Di Meglio et al., 2009 23
+4.1 Identificação do ponto de bifurcação do sistema . . . . . . . . . . . . . . . . . . . 23
+4.2 Projeto de controle IMC com o modelo linear simplificado . . . . . . . . . . . . . 23
+4.3 Aplicação da metodologia de Jahanshahi e Skogestad, 2013 . . . . . . . . . . . . . 26
+
+5 Conclusões 29
+
+
+
+ii Trabalho de Conclusão de Curso
+
+6 Referências 31
+
+Apêndices 33
+A Procedimento para projeto de controladores IMC pela metodologia de Jahanshahi e
+
+Skogestad, 2013 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+
+Anexos 35
+A Identificação em Python . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+B s-function do modelo de Di Meglio et al., 2012 . . . . . . . . . . . . . . . . . . . 38
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira iii
+
+Agradecimentos
+
+Agradeço a todas as pessoas que fazem positivamente parte da minha vida, dentre as quais me
+orgulho de citar: minha mãe e o amor da minha vida, Yasmin.
+
+Obrigado aos desenvolvedores do AutomaTEX.
+
+
+
+iv Trabalho de Conclusão de Curso
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira v
+
+Resumo
+
+Neste trabalho foram estudadas duas metodologias de projeto de controle IMC(Internal Model
+Control) para um sistema de extração de petróleo offshore. Foi realizado controle de pressão
+utilizando como planta o modelo do tipo caixa cinza de um sistema de extração, com o objetivo
+de fazer com que o sistema operasse em regimes livres de oscilações características desse tipo de
+sistema.
+
+A primeira metodologia é baseada em um modelo linear simplificado identificado a partir de
+dados de operação da planta a ser controlada. O modelo simplificado consiste em duas plantas de
+ordem baixa em paralelo, uma estável, e outra que apresenta ciclo-limite quando opera em malha
+aberta.
+
+A segunda metodologia consiste em identificar um modelo localmente instável da planta, no
+entorno de um ponto de operação que apresenta ciclo limite, através de um teste em malha fechada,
+e utilizá-lo para projetar um controlador pelo método IMC para sistemas instáveis.
+
+
+
+vi Trabalho de Conclusão de Curso
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira vii
+
+Abstract
+
+Two IMC(Internal Model Control) control strategies for an offshore oil extraction system were
+studied. Both methods yielded controllers, which were used to control a first principle based model
+of an oil extraction system.
+
+The first strategy is based on a simplified linear model, which is identified from system data. The
+model consists of two parallel low-order plants, one that is stable, and one that presents open-loop
+limit-cycle behaviour.
+
+The second strategy is based on the identification of a locally unstable model of the extraction
+system, around an operation point which has a limit cycle. To identify this model, a closed-loop
+stabilizing controller is used. The unstable model is then used to design a controller using the
+unstable model IMC design procedure.
+
+
+
+viii Trabalho de Conclusão de Curso
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira ix
+
+Lista de Figuras
+
+1 Produção mensal de petróleo no pré-sal e no pós-sal . . . . . . . . . . . . . . . . 1
+2 Ilustração de um sistema de extração típico . . . . . . . . . . . . . . . . . . . . . 3
+3 Diagrama de um poço com o uso de gas-lift . . . . . . . . . . . . . . . . . . . . . 4
+4 Tipos de escoamento multifásico. . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+5 Dados reais de pressão de um poço no Mar do Norte. O gráfico mostra as pressões
+
+no topo e no fundo do poço em regime golfante. . . . . . . . . . . . . . . . . . . . 6
+6 Diagrama de bifurcação mostrando o impacto da golfada na taxa de produção. . . . 7
+7 Ciclo de golfadas severas ocasionadas pela inflexão do riser . . . . . . . . . . . . 8
+8 Sistema em malha aberta, no qual há seguimento de referência perfeito . . . . . . . 9
+9 Estrutura IMC . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+10 Sistema de riser com um ponto baixo modelado por Jahanshahi e Skogestad, 2011. 11
+11 Ensaio em malha fechada com controlador P de ganho Kc0, usado para identificar o
+
+modelo. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+12 Diagrama do riser modelado, ilustrando o princípio da válvula virtual . . . . . . . 16
+13 Malha de feedback utilizada. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+14 Plantas G1 e G2 em paralelo. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+15 Sistema de controle de pressão de fundo pr,b controlando a abertura da válvula
+
+choke de produção. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+16 Variação da pressão de fundo para diferentes valores de abertura da válvula choke
+
+de produção. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+17 Identificação do modelo baseado em dados do modelo de Di Meglio et al., 2012,
+
+para uma troca de abertura de válvula de 15% para 25%. . . . . . . . . . . . . . . 24
+18 Controle do sistema para ? = 500. . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+19 Controle do sistema para ? = 500. Para estes setpoints, o sistema apresentou golfadas. 26
+20 Abertura de válvula média no ensaio em malha fechada usado para identificação do
+
+modelo. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+21 Ensaio em malha fechada para identificação do modelo instável de segunda ordem. 27
+22 Controle do sistema para ? = 500. . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+23 Controle do sistema para ? = 500. . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+
+
+
+x Trabalho de Conclusão de Curso
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira xi
+
+Lista de Tabelas
+
+1 Parâmetros do modelo de Di Meglio et al., 2009 . . . . . . . . . . . . . . . . . . . 18
+
+
+
+xii Trabalho de Conclusão de Curso
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira xiii
+
+Lista de Abreviaturas e Siglas
+
+ANP Agência Nacional do Petróleo. 1
+
+IMC Internal Model Control. 2
+
+
+
+xiv Trabalho de Conclusão de Curso
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 1
+
+1 Introdução
+
+Grande parte do interesse das companhias de óleo e gás é focado nas operações de E&amp;amp;P(exploração
+e produção) de poços de petróleo e gás em plataformas offshore. Segundo dados da Agência Nacio-
+nal do Petróleo (ANP), no ano de 2017 a produção de petróleo no pré-sal brasileiro ultrapassou a
+produção do pós-sal (ANP, 2017), como pode ser visto na Figura 1. Como a produção de petróleo
+no pré-sal tem um custo mais elevado do que no pós-sal e no continente, esforços no intuito de
+otimizar a produção das plataformas se tornam necessários para justificar esses gastos.
+
+Figura 1: Produção mensal de petróleo no pré-sal e no pós-sal
+
+Fonte: ANP, 2017
+
+Um desafio enfrentado nas operações de extração de petróleo em plataformas offshore é o de
+oscilações das variáveis de processo, como vazão e pressão, chamada de golfada. A golfada ocorre
+devido à interação entre a disposição física das instalações, como ondulações nos riser, poços
+de extração e válvulas, e o fluxo de produtos em regime multifásico. De acordo com Pedersen
+et al., 2017, em um dos padrões de golfadas mais comuns, a fase líquida se acumula na base do
+riser, e bloqueia o fluxo de gás vindo do poço. À medida que esse acúmulo aumenta, a pressão
+de gás se torna suficiente para mover o líquido acumulado, descarregando-o do riser em direção à
+plataforma, e assim dando início novamente ao ciclo da golfada, que pode ser caracterizado como
+um ciclo-limite.
+
+Em diversos sistemas dinâmicos há a ocorrência de comportamentos cíclicos, nos quais uma ou
+mais variáveis de estado apresentam comportamento periódico. Um comportamento de ciclo limite
+
+
+
+2 Trabalho de Conclusão de Curso
+
+pode ser definido como uma trajetória fechada, não constante das variáveis de estado do sistema no
+plano de fase (Khalil, 1996). De maneira geral, a análise de sistemas desse tipo apresenta diversas
+complicações, como por exemplo a não-convexidade de problemas de otimização associados à
+identificação de modelos(Apio, 2017).
+
+A ocorrência de comportamentos que podem ser classificados como ciclos limite pode ser
+observada em diversos sistemas que ocorrem na natureza, como por exemplo o sistema presa-
+predador descrito pelas equações de Lotka-Volterra, no qual ocorrem alternâncias entre os tamanhos
+das populações de presas e predadores em um sistema fechado.
+
+Além do comportamento de ciclo limite, também é verificada a existência de bifurcação no
+processo de extração de petróleo, isto é, uma alteração de comportamento de equilíbrio para um
+comportamento cíclico do sistema quando há variação do ponto de operação. Uma das variáveis
+que podem ser manipuladas no processo é a abertura da válvula choke de produção. De acordo com
+Gerevini et al., 2017, quando a válvula está com aberturas muito baixas, não ocorrem golfadas, isto
+é, o fluxo de petróleo e gás chegando na plataforma é praticamente constante. No entanto, a partir
+de uma certa abertura da válvula choke, começam a ocorrer oscilações na vazão, caracterizando
+assim a bifurcação no processo.
+
+Esses comportamentos são, de maneira geral, indesejados, e a aplicação de malhas de controle
+automático pode gerar ganhos econômicos consideráveis no processo. Para muitas aplicações de
+controle é importante a obtenção de modelos que descrevam o comportamento do sistema. Esses
+modelos se dividem em três subtipos básicos: modelos fenomenológicos, em que o sistema é
+descrito com seus princípios físicos fundamentais, chamados caixa branca; modelos com base no
+sistema estudado, mas com simplificações de ordem prática e parâmetros desconhecidos que devem
+ser obtidos interagindo com o sistema real, chamados de caixa cinza; e modelos em que as leis
+e princípios físicos não são levados em conta, apenas o funcionamento geral do processo, sendo
+necessária uma identificação completa dos parâmetros do modelo, chamados assim de caixa preta.
+
+1.1 Objetivo
+
+O objetivo deste trabalho é estudar duas metodologias de projeto de controle Internal Model
+Control (IMC), com o intuito de suprimir a ocorrência de golfadas em sistemas de extração de
+petróleo. Para tal foi utilizado um modelo do tipo caixa cinza do processo, descrito por Di Meglio
+et al., 2012, como planta a ser controlada. O intuito de estudar essas duas metodologias é comparar
+duas abordagens distintas ao sistema com ciclo limite: usar um modelo que apresenta ciclo limite
+por construção, sendo ele oscilatório por natureza, ou usar um modelo instável no entorno de um
+ponto de operação que apresenta ciclo limite, mesmo que o sistema como um todo não seja instável.
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 3
+
+2 Revisão bibliográfica
+
+2.1 Sistemas de extração de petróleo offshore
+
+Sistemas de extração e produção de petróleo offshore, como os encontrados no pré-sal brasileiro,
+consistem em poços de extração perfurados no leito marinho, tubulações de transporte, e plataformas
+que recebem e processam os produtos extraídos do reservatório. De acordo com Pedersen et al.,
+2017, o sistema de extração, do reservatório à plataforma, pode ser separado em três subsistemas
+conectados, como pode-se ver na Figura 2:
+
+1. Seção 1: poço de extração, no qual compostos gasosos, líquidos e sólidos são extraídos do
+reservatório abaixo do leito do mar através de um poço vertical. O poço de extração de
+sistemas que utilizam a técnica de gas-lift geralmente consiste em dois tubos concêntricos,
+sendo: o tubo interior por onde fluem os produtos do reservatório, chamado de tubing; e o
+tubo exterior por onde se faz a injeção de gás natural na base do poço, chamado de casing.
+Em muitos poços existe uma válvula de controle no topo do poço chamada topside choke,
+que pode ser utilizada para controlar o fluxo vindo do reservatório.
+
+2. Seção 2: linha de transporte submarino, também chamado de flowline ou pipeline, que em
+geral consiste na maior extensão de tubulação entre o poço de extração e a plataforma. Como
+esta tubulação fica em contato com o leito do mar, que possui irregularidades em seu relevo,
+ela sofre inflexões, que podem fazer com que ocorram acúmulos localizados do fluxo de
+produtos.
+
+3. Seção 3: seção vertical de tubulação, chamada de riser, que leva os produtos do flowline até a
+plataforma.
+
+Figura 2: Ilustração de um sistema de extração típico
+
+Fonte: Pedersen et al., 2017
+
+
+
+4 Trabalho de Conclusão de Curso
+
+2.1.1 Gas-lift
+
+Em poços maduros, nos quais a pressão natural do reservatório não é suficiente para garantir a
+produção, ou em poços de alta profundidade, nos quais a coluna de líquido é muito grande para ser
+vencida pela pressão do poço, há a necessidade do uso de elevação artificial do petróleo. Dentre
+outras técnicas de elevação, como bombeio hidráulico dos produtos, e injeção de água para aumento
+da pressão dos reservatórios, destaca-se a técnica de elevação chamada de gas-lift.
+
+O gas-lift é feito injetando-se gás natural (GN), previamente extraído do reservatório e separado
+no equipamento de separação da plataforma, no poço de extração. Essa injeção de gás é realizada
+com o intuito de diminuir a densidade do líquido fluindo verticalmente, e assim facilitar a sua
+elevação através da diminuição do gradiente de pressão do ponto de injeção de gás até a plataforma.
+O gas-lift geralmente é feito no poço de extração, conforme a Figura 3, podendo também ser feito
+na base do riser (Pedersen et al., 2017).
+
+Figura 3: Diagrama de um poço com o uso de gas-lift
+
+Fonte: Pedersen et al., 2017
+
+Gás natural comprimido é injetado no poço de extração através da válvula de controle de gas-lift.
+O gás entra pelo casing, no qual o fluxo é monofásico, composto apenas de gás. Através de uma
+válvula unidirecional, próxima do fundo da tubulação, o gás presente no casing penetra o tubing,
+misturando-se com o fluxo multifásico proveniente do reservatório. Essa injeção de gás tem dois
+efeitos principais:
+
+1. Pressão de expansão do gás impulsiona a fase líquida em direção à superfície;
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 5
+
+2. Criação de bolhas de gás no meio do líquido diminui a densidade da mistura multifásica,
+fazendo com que a pressão hidrostática da coluna de produtos acima do ponto de injeção
+diminua, facilitando o escoamento.
+
+O uso de gas-lift pode gerar aumentos de produção de óleo e gás, que justificam o seu uso, mas
+também gera contrapontos operacionais, como aumento da complexidade de controle, distúrbios na
+produção, e o aumento do fenômeno chamado de golfada.
+
+2.2 Comportamento dinâmico de sistemas com gas-lift: golfadas, bifurcação
+
+O fluxo multifásico proveniente do poço de extração pode tomar diversas formas no interior
+das tubulações, dependendo das características de temperatura, pressão, velocidade de escoamento,
+disposição física das tubulações, entre outros fatores. Taitel et al 1980 descreve diversos tipos de
+escoamento, mostrados na Figura 4.
+
+Figura 4: Tipos de escoamento multifásico.
+
+Fonte: Adaptado de Taitel et al., 1980
+
+Dentre os formatos possíveis de fluxo multifásico, destaca-se o regime de golfada, no qual
+grandes volumes de gás fluem de maneira isolada da fase líquida (Biltoft et al., 2013). A Figura 5
+mostra dados reais de pressão de fundo e de topo de um poço localizado no Mar do Norte, ilustrando
+o comportamento cíclico das golfadas.
+
+O regime de golfadas pode causar diversos problemas operacionais, como:
+
+• altas pressões, e possivelmente excesso de líquidos nos separadores;
+
+
+
+6 Trabalho de Conclusão de Curso
+
+Figura 5: Dados reais de pressão de um poço no Mar do Norte. O gráfico mostra as pressões no
+topo e no fundo do poço em regime golfante.
+
+Fonte: Adaptado de Pedersen et al., 2017
+
+• alta pressão nos compressores;
+
+• fadiga nos equipamentos e tubulações, devido às constantes oscilações de pressão de alta
+amplitude;
+
+• diminuição de produção, devido às restrições de segurança impostas pelos operadores sobre
+os picos de pressão;
+
+• perda de produtos por uso de flare em caso de excesso de gás.
+
+Dentre os fatores citados, o de maior impacto é a diminuição de produção, que ocorre pelo valor
+médio da produção no regime de golfadas ser menor do que em um regime estável correspondente.
+Este fato pode ser observado no diagrama de bifurcação do processo, na Figura 6. Para aberturas da
+válvula de produção acima do ponto de bifurcação, o sistema apresenta comportamento oscilatório
+
+A diminuição da produção também é decorrente do fato de que muitas vezes os poços são
+operados em uma faixa de abertura suficientemente baixa das válvulas de controle de produção, que
+suprima o regime oscilatório das golfadas. Esta faixa de operação é a mostrada na parte esquerda da
+Figura 6.
+
+Um possível mecanismo de golfada, quando esta ocorre devido à inflexão existente da base do
+riser, pode ser visto na Figura 7.
+
+Inicialmente forma-se um bloqueio de líquido na inflexão da tubulação(1), fazendo com que o
+gás não avance, e comece a se acumular na base do riser, aumentando sua pressão. À medida que a
+fase líquida avança pela tubulação, e a pressão de gás aumenta, também aumenta a coluna de líquido
+na seção vertical do riser, aumentando a pressão hidrostática na base(2). Quando uma quantidade
+suficiente de gás se acumulou, de modo que a pressão de gás seja maior do que a necessária para
+mover a coluna de líquido, o líquido escoa rapidamente para fora do riser(3). Com a tubulação livre,
+o gás pressurizado também escoa para fora do riser(4), permitindo que a fase líquida novamente se
+acumule na base, reiniciando o ciclo da golfada (Pedersen et al., 2017).
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 7
+
+Figura 6: Diagrama de bifurcação mostrando o impacto da golfada na taxa de produção.
+
+Fonte: Gerevini, 2017
+
+Outro possível mecanismo de golfada é o de casing-heading, que ocorre no poço de extração.
+Nesse tipo de golfada, à medida que o gás de elevação é injetado na coluna de produção, a pressão
+na mesma diminui. Com a diminuição da pressão da coluna de fluido no poço, a taxa de descarga
+de gás do casing para a coluna de produção aumenta, diminuindo assim a pressão de gás no casing.
+À medida que o gás do casing é descarregado, sua pressão baixa, diminuindo a taxa de descarga,
+culminando numa diminuição do fluxo de produtos saindo do poço.
+
+2.3 Controle de produção
+
+De acordo com Pedersen et al., 2017, de modo a operar em um regime livre de golfadas, podem
+ser utilizadas diversas técnicas, incluindo:
+
+• eliminação passiva: mantendo as válvulas de controle de produção, chamadas de choke
+permanentemente em aberturas baixas, operando assim à esquerda do ponto de bifurcação,
+em um regime de baixa produção mas livre de golfadas;
+
+• eliminação passiva: com implementos nas tubulações, como homogeneizadores de fluxo,
+tubulações helicoidais, entre outros, que servem para alterar a disposição física do fluxo
+multifásico no interior da tubulação;
+
+• eliminação passiva: slug catchers, são os dispositivos mais comuns para eliminação passiva
+de golfadas, funcionando como tanques buffer no processo. Localizados no topo dos poços,
+são uma opção cara, pois requerem múltiplas tubulações submarinas, e sua manutenção é
+difícil;
+
+• eliminação ativa: controlando a vazão de gas-lift;
+
+
+
+8 Trabalho de Conclusão de Curso
+
+Figura 7: Ciclo de golfadas severas ocasionadas pela inflexão do riser
+
+Fonte: Biltoft et al., 2013
+
+• eliminação ativa: controlando a abertura de válvulas de controle de produção.
+
+Como o objetivo principal deste trabalho é estudar estratégias de controle automático, somente
+estas serão apresentadas.
+
+2.3.1 Controle ativo
+
+Duas principais variáveis são estudadas como variáveis manipuladas do sistema de controle
+automático do escoamento: a abertura de válvulas choke e a alteração da taxa de injeção de gás
+de elevação. Com maiores taxas de injeção de gás de elevação, pode-se mais facilmente alcançar
+regimes de escoamento livres de golfadas, ao custo de maior uso dos compressores. Assim, a opção
+menos custosa é a de controlar válvulas choke (Pedersen et al., 2017).
+
+Storkaas e Skogestad, 2007 estudaram a controlabilidade de sistemas pipeline-riser com relação
+às medições disponíveis, e identificaram que o desempenho de controladores é piorado com
+medições de pressão de topo à medida que a frequência das golfadas aumenta, sendo assim mais
+indicado utilizar medições de pressão em pontos inferiores do sistema, mais próximas ao poço.
+Como nem sempre há disponibilidade de sensores em pontos inferiores do sistema, por dificuldades
+de manutenção e custo elevado, diversos estudos, como o de Barbosa et al., 2015, desenvolveram
+estratégias de estimação da pressão da parte inferior do sistema, com o objetivo de utilizá-la para
+controle.
+
+Estratégias de controle linear, utilizando controle PID, foram desenvolvidas e testadas para
+evitar a ocorrência de golfadas, como Sivertsen et al., 2010, que estudaram a eliminação de golfadas
+por casing-heading, e Di Meglio et al., 2012 e Jahanshahi et al., 2014, que estudaram a eliminação
+da golfada causada pela ondulação do riser.
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 9
+
+Como sistemas de extração de óleo e gás apresentam comportamentos altamente não-lineares,
+pode-se também utilizar estratégias de controle não linear. Hussein et al., 2015 propuseram uma
+estratégia de gain-scheduling, onde o controlador é reparametrizado de acordo com a região de
+operação, em combinação com um teste do tipo relé para identificar um modelo linear do sistema.
+Gerevini, 2017 estudou a utilização de controle preditivo não-linear para atenuação de golfadas,
+utilizando como modelo não-linear o modelo Fast Offshore Wells Model (FOWM), desenvolvido
+por Diehl et al., 2017.
+
+De maneira mais próxima à abordagem deste trabalho, em Jahanshahi et al., 2014 e Jahanshahi
+et al., 2015 foram realizadas comparações entre o desempenho do controle baseado no projeto IMC
+com outras técnicas, como o projeto de controladores PIDF-ótimos, baseados na minimização de
+uma função custo, controle robusto do tipo loop-shaping baseado na norma H?, controle não-linear
+baseado em linearização por realimentação, entre outros. O projeto IMC se destacou por apresentar
+resultados muito bons, apresentando performance tão robusta quanto o controlador loop-shaping
+H?, com a vantagem de que o projeto é consideravelmente mais fácil de ser realizado.
+
+2.4 Projeto de controle pelo método IMC
+
+A estrutura de controle IMC(Internal Model Control) e o projeto de controladores IMC foi
+inicialmente descrito por Garcia e Morari, 1982. Como o nome indica, é utilizado um modelo do
+processo como parte integrante do controlador. Ao se utilizar a estrutura IMC, a complexidade
+do controlador depende exclusivamente de dois fatores: a complexidade do modelo utilizado, e as
+especificações de desempenho em malha fechada (Rivera et al., 1986).
+
+O controle IMC se baseia inicialmente na ideia de que se possui um modelo perfeito do processo
+a ser controlado. Se colocamos em série uma planta G um controlador Gc = G?1, em malha aberta,
+como na Figura 8, considerando ausência de ruído, pode-se esperar que a saída seja exatamente
+igual à entrada.
+
+Figura 8: Sistema em malha aberta, no qual há seguimento de referência perfeito
+
+No entanto, este sistema é suscetível a ruídos, e outros distúrbios não medidos, e baseia-se
+fortemente no fato de que G é um modelo perfeito do processo, o que não existe na realidade. Além
+disso caso G seja uma função de transferência própria, Gc não o será. O uso da estrutura IMC, que
+pode ser observada na Figura 9, soluciona esses problemas.
+
+Nesta estrutura utiliza-se um modelo G(s) da planta a ser controlada, que pode apresentar erros
+de modelagem.
+
+É também necessária a inclusão de um um elemento f (s) na malha, de modo a fazer com que
+o controlador Gc(s) = f (s)Q(s) seja próprio e causal. Além disso, esse filtro tem como função
+
+
+
+10 Trabalho de Conclusão de Curso
+
+Figura 9: Estrutura IMC
+
+determinar o equilíbrio entre robustez e desempenho. O procedimento tradicional de projeto IMC,
+conforme descrito em Morari e Zafiriou, 1989 consiste em:
+
+1. Fatorizar a planta G(s) = G+(s)G?(s), no qual G+(s) contém todos os zeros de fase não
+mínima e atrasos;
+
+2. Alternativamente, fatorizar G(s) = G+(s)G?(s), onde G?(s) é um filtro do tipo all-pass com o
+zero de fase não-mínima ? da planta:
+
+G+(s) =
+??s + 1
+?s + 1
+
+, (1)
+
+e em G?(s) é adicionada a reflexão pelo eixo imaginário desse zero de fase não-mínima;
+
+3. Nessa fatorização, garantir que G+(0) = 1, de modo a respeitar o seguimento de referência
+com erro nulo;
+
+4. Fazer Q(s) = G?(s)?1;
+
+5. Projetar o filtro f (s), garantindo que f (0) = 1, do modo a a respeitar o seguimento de
+referência com erro nulo.
+
+A escolha mais usual para a estrutura do filtro f (s) que faz com que Gc(s) seja próprio e causal
+é:
+
+f (s) =
+1
+
+(?s + 1)n
+, (2)
+
+onde ? é a constante de tempo desejada para o sistema em malha fechada, e é parâmetro de escolha
+do projetista. O índice n indica a ordem do filtro, e deve ser escolhido de modo a fazer com que
+Gc(s) seja próprio, isto é, tenha o número de zeros igual ao de polos, ou estritamente próprio, isto é,
+o número de zeros menor que o de polos.
+
+Normalmente escolhe-se ? da mesma ordem de grandeza da constante de tempo do sistema em
+malha aberta. De maneira mais geral:
+
+? ? ? ? ?, (3)
+onde ? é um possível atraso de transporte do sistema e ? é a constante de tempo dominante do
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 11
+
+sistema. O valor de ? determina o balanço entre robustez e desempenho desejados do sistema em
+malha fechada, sendo que valores mais baixos fazem com que o desempenho seja melhor, mas a
+robustez menor, e valores maiores aumentam a robustez, mas diminuem o desempenho(Morari e
+Zafiriou, 1989).
+
+De modo a projetar controladores PID, que são os mais comumente disponíveis em equipamentos
+industriais, numa estrutura de feedback tradicional, é possível converter a estrutura IMC na estrutura
+tradicional, fazendo:
+
+C(s) =
+Gc(s)
+
+1 ? G(s)Gc(s)
+. (4)
+
+2.5 Aplicação de controle IMC anti-golfadas - Jahanshahi, 2013
+
+Jahanshahi e Skogestad, 2013 estudaram o uso de uma estrutura IMC(Internal Model Control)
+para realizar o controle de golfadas, baseando-se em um modelo instável linearizado a partir do
+modelo de fenomenológico desenvolvido em Jahanshahi e Skogestad, 2011. O sistema modelado
+pode ser observado na Figura 10.
+
+Figura 10: Sistema de riser com um ponto baixo modelado por Jahanshahi e Skogestad, 2011.
+
+Fonte: Jahanshahi e Skogestad, 2011
+
+O modelo fenomenológico consiste em balanços de massa das fases gasosa e líquida presentes
+no sistema pipeline-riser para modelar golfadas severas. A partir de uma linearização do sistema,
+Jahanshahi e Skogestad, 2013 obtiveram um modelo linear de quarta ordem na forma
+
+G(s) =
+?1(s + ?2)(s + ?3)
+
+(s2 ? ?4 s + ?5)(s2 + ?6 s + ?7)
+, (5)
+
+relacionando a pressão no topo do riser, Prt, com a abertura da válvula choke de saída, Z. Este
+modelo possui dois polos instáveis, dois polos estáveis e dois zeros, totalizando sete parâmetros que
+
+
+
+12 Trabalho de Conclusão de Curso
+
+devem ser estimados para identificá-lo.
+
+Analisando os valores singulares de Hankel do sistema, que determinam, através de uma medida
+de energia dos estados, quais são as dinâmicas mais importantes do sistema, Jahanshahi e Skogestad,
+2013 concluíram que a dinâmica dos polos estáveis é negligenciável, chegando-se a um modelo
+instável de segunda ordem, conforme a Equação 6, com dois pólos instáveis e um zero estável, que
+é suficiente para realizar o projeto de controladores.
+
+G(s) =
+b1 s + b0
+
+s2 ? a1 s + a0
+=
+
+k(s + z)
+(s ? p1)(s ? p2)
+
+(6)
+
+Com a1 &gt; 0 e a0 &gt; 0. Deve-se salientar que o comportamento global do sistema não é instável,
+mesmo quando opera em uma condição que apresenta ciclo limite, e que o modelo instável obtido
+é uma representação das dinâmicas mais importantes no ponto de operação no entorno do qual o
+modelo é obtido.
+
+Como este modelo é instável, de modo a realizar a identificação do sistema, ele foi colocado em
+malha fechada com um controlador P de ganho Kc0 que o estabilizasse, tornando assim a função de
+transferência que relaciona o setpoint ys com a resposta do sistema y:
+
+y(s)
+ys(s)
+
+=
+Kc0(b1 s + b0)
+
+s2 + (?a1 + Kc0b1)s + (a0 + Kc0b0)
+. (7)
+
+Realizando um ensaio com o sistema nesta forma, identifica-se então seis parâmetros(?yp, ?yu,
+?ys, ?y?, tp e tu) na resposta temporal do sistema, conforme a Figura 11, e calcula-se os parâmetros
+do sistema em malha fechada na forma da Equação 7.
+
+O cálculo dos parâmetros do sistema em malha fechada é baseado no fato de que ele apresenta
+comportamento subamortecido, e é utilizado um equacionamento baseado na transformada de
+Laplace inversa de sistemas subamortecidos da forma da Equação 7. Com os parâmetros do sistema
+em malha fechada, e com o valor do ganho proporcional Kc0 utilizado, calcula-se os parâmetros do
+modelo instável da Equação 6.
+
+O procedimento utilizado, baseado no equacionamento descrito em Jahanshahi e Skogestad,
+2013, e implementado em um script no software MATLAB, está disponível no Apêndice A.
+
+O modelo identificado é válido no entorno do ponto de operação no qual foi realizado o
+experimento. De posse do modelo, Jahanshahi e Skogestad, 2013 implementou controladores IMC
+de acordo com o procedimento descrito por Morari e Zafiriou, 1989 para plantas instáveis. O projeto
+do controlador IMC utilizado difere do procedimento tradicional apenas na determinação da ordem
+do filtro f (s), e na sua forma. A inversa Q(s) da planta da Equação 6, e o filtro projetado são da
+forma
+
+Q(s) =
+(s ? p1)(s ? p2)
+
+k(s + z)
+, (8)
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 13
+
+Figura 11: Ensaio em malha fechada com controlador P de ganho Kc0, usado para identificar o
+modelo.
+
+Fonte: Jahanshahi e Skogestad, 2013
+
+f (s) =
+?2 s2 + ?1 s + ?0
+
+(?s + 1)3
+, (9)
+
+na qual os parâmetros ?2,?1 s e ?0 são determinados de modo a respeitar a condição de que f (0) = 1,
+fazendo assim com que ?0 = 1, e também que f (s)|s=p1,p2 = 1 (Morari e Zafiriou, 1989).
+
+Além disso, é importante ressaltar que para plantas instáveis não é possível utilizar a estrutura
+IMC, sendo necessária a conversão do controlador IMC projetado para a estrutura de feedback
+tradicional, como na Equação 4. Assim, o controlador projetado é:
+
+C(s) =
+1
+
+k?3
+(?2 s2 + ?1 s + ?0)
+
+s(s + z)
+. (10)
+
+
+
+14 Trabalho de Conclusão de Curso
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 15
+
+3 Metodologia
+
+A metodologia utilizada neste trabalho consiste na utilização de um modelo baseado em
+princípios físicos do sistema, desenvolvido por Di Meglio et al., 2009, como planta a ser controlada.
+Inicialmente é apresentado na Seção 3.1 o equacionamento do modelo, incluindo considerações
+sobre a modelagem utilizada. Este modelo é baseado em balanços de massa, e apresenta não-
+linearidades, o que dificulta o projeto de sistemas de controle.
+
+Com o intuito de facilitar o projeto de controladores e estruturas de controle, é apresentado um
+modelo linear simplificado na Seção 3.2. Este modelo tem como objetivo ser representativo para
+diversos tipos de golfadas, e diversas configurações físicas de sistemas de extração.
+
+Com o modelo simplificado identificado, foi utilizado o projeto de controladores IMC, descrito
+na Seção 2.4, para projetar controladores que pudessem eliminar o comportamento oscilatório das
+golfadas para aberturas de válvula maiores do que a abertura correspondente ao ponto de bifurcação
+do sistema em malha aberta.
+
+Além disso, foi aplicada a metodologia de projeto de controladores IMC desenvolvida por
+Jahanshahi e Skogestad, 2013, e descrita na Seção 2.5. Nessa metodologia, é identificado um
+modelo localmente instável do sistema em um ponto de operação que apresenta ciclo limite. Esse
+modelo é utilizado para projetar um controlador IMC estável, que por sua vez é aplicado para
+controlar o sistema de Di Meglio et al., 2009.
+
+Os resultados obtidos a partir das duas metodologias de projeto de controladores apresentadas,
+uma baseada em um modelo estável, que apresenta comportamento de ciclo limite por construção
+do modelo, e outra baseada em um modelo instável quando linearizado em um ponto de operação
+que apresenta ciclo limite, são comparadas ao final do trabalho.
+
+3.1 Modelo utilizado como planta a ser controlada - Di Meglio, 2009
+
+Di Meglio et al., 2009 propuseram um modelo baseado em um balanço de massa simplificado,
+que considera uma separação do escoamento multifásico na base do riser em três volumes de
+controle distintos, dois dos quais são compostos por gás,e o outro composto por líquido. Essa
+separação tem como base a hipótese de que há uma interface de líquido em algum ponto do riser, a
+qual é modelada por uma válvula virtual. A formação dessa interface leva a um acúmulo de gás
+a montante, em uma bolha alongada, fazendo com que ocorra aumento de pressão, o que leva a
+instabilidades no escoamento.
+
+A hipótese da válvula virtual é valida para inflexões na tubulação, e quando as velocidades de
+escoamento do fluxo multifásico são baixas. O diagrama do sistema modelado pode ser visto na
+Figura 12.
+
+No modelo as vazões de entrada no sistema das fases líquida e gasosa, wg,in e wl,in, respectiva-
+
+
+
+16 Trabalho de Conclusão de Curso
+
+Figura 12: Diagrama do riser modelado, ilustrando o princípio da válvula virtual
+
+Fonte: Adaptado de Di Meglio et al., 2009
+
+mente, são consideradas constantes. As equações de balanço de massa utilizadas são as seguintes:
+
+m?g,eb(t) = (1 ? ?)wg,in ? wg(t) (11)
+m?g,r(t) = ?wg,in + wg(t) ? wg,out(t) (12)
+
+m?l,r(t) = wl,in ? wl,out(t) (13)
+
+Nesses balanços de massa, m?g,eb(t), m?g,r(t) são, respectivamente, as taxas mássicas de acúmulo
+de gás na bolha e no riser, e m?l,r(t) é a taxa mássica de acúmulo de líquido no riser. É utilizado um
+parâmetro de ajuste fixo do modelo, ?, que determina a fração que passa diretamente para o volume
+de controle de saída, e a fração de gás que penetra diretamente a bolha alongada, de volume Veb. Os
+fluxos de saída de gás e líquido são dados por:
+
+wl,out ? wout (14)
+
+wg,out ?
+mg,r
+ml,r
+
+wout (15)
+
+É utilizada uma equação de válvula linear para descrever a injeção de gás da bolha para o
+volume de controle da saída:
+
+wg = Cg( peb ? pr,b), (16)
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 17
+
+em que peb e pr,b são as pressões da bolha, e da parte inferior do riser, respectivamente, e Cg é a
+constante da válvula virtual, que é um dos parâmetros de ajuste do modelo. O fluxo de saída é dado
+por
+
+wout = Kvz
+?
+?( pr,t ? ps), (17)
+
+onde Kv é a constante característica da válvula choke de saída, z é a abertura da válvula, de 0 a 1, ?
+é a densidade do líquido, que é considerada dominante, e portanto é aproximada como a densidade
+dos produtos na saída, pr,t é a pressão no topo do riser, e ps é a pressão do separador, após os
+produtos saírem da válvula choke de saída. Em ambas equações de válvula, é modelado que não há
+fluxo inverso, isto é, se a pressão à jusante é maior que a pressão à montante, não há fluxo através
+da válvula.
+
+As pressões do sistema são dadas pela lei de gases ideais. O volume da bolha alongada, Veb, é
+considerado constante, e assim:
+
+peb =
+mg,ebRTt
+MgVeb
+
+, (18)
+
+onde R é a constante universal dos gases, Tt é a temperatura no riser, e Mg a massa específica do
+gás. O gás a jusante da válvula virtual é considerado compressível. O volume de gás após a válvula,
+Vg,r, é dado por
+
+Vg,r = Vr ?
+ml,r + ml,still
+
+?
+, (19)
+
+na qual ml,still é o volume mínimo de líquido no sistema em todos os momentos, e Vr é o volume
+do riser,
+
+Vr =
+Lt?D2t
+
+4
+, (20)
+
+onde Lt é o comprimento da tubulação, e Dt é o diâmetro da tubulação. A pressão no topo do
+riser, antes da válvula choke de saída, é dada por
+
+pr,t =
+mg,rRTt
+MgVg,r
+
+. (21)
+
+A pressão na base do riser, a jusante da válvula virtual é então dada pela soma da pressão no
+topo do riser com a pressão da coluna de líquido,
+
+pr,b = pr,t +
+ml,rgsen(?)
+
+S bh
+, (22)
+
+onde g é a constante gravitacional, ? é a inclinação média do riser, e S bh é a área de seção da
+
+
+
+18 Trabalho de Conclusão de Curso
+
+tubulação.
+
+No total, são utilizados quatro parâmetros de ajuste do modelo, ?, Veb, Cg e mL,still de modo
+a adequá-lo às características do sistema de extração estudado. Estes valores são considerados
+parâmetros de ajuste pois não refletem diretamente valores físicos do sistema, sendo abstrações de
+comportamentos observados em operação, e podem ser determinados experimentalmente, como em
+Di Meglio et al., 2010. No caso deste trabalho, foram utilizados os mesmos valores de parâmetros
+físicos e parâmetros de ajuste utilizados no trabalho original de Di Meglio et al., 2010, conforme a
+Tabela 1.
+
+Tabela 1: Parâmetros do modelo de Di Meglio et al., 2009
+
+Variável Descrição Valor Unidade
+Dt Diâmetro da tubulação 0, 78 m
+? fator de injeção de gás no riser 0, 15 ?
+g gravidade 9, 81 ms?2
+
+Cg contante da válvula virtual 0, 0001 ms
+Kv contante da válvula choke de saída 0,0028 m2
+
+Lt comprimento da tubulação 5200 m
+Mg massa específica do gás 0, 022 kgmol?1
+
+ml,still massa mínima de líquido na coluna de produção 37300 kg
+Ps pressão de saída 660000 Pa
+R contante universal dos gases 8, 314 Jmol?1 K?1
+
+? densidade do líquido 900 kgm?3
+
+S bh área de seção 0, 0177 m2
+
+? angulação da tubulação ?/4 rad
+Tt temperatura no riser 363 K
+Veb volume da bolha alongada 48 m3
+
+wg,in taxa de injeção de gás no sistema 0, 8 kgs?1
+
+wl,in taxa de injeção de líquido no sistema 11, 75 kgs?1
+
+Neste trabalho foi utilizada uma implementação do modelo de Di Meglio et al., 2009 realizada
+por Gerevini, 2014, baseada em uma s-function do MATLAB/Simulink, simulada através do integrador
+ODE45.
+
+É importante observar que as vazões de entrada do sistema no modelo são consideradas constan-
+tes, e portanto a saída em regime permanente também é constante. Assim, não é possível observar
+na saída aumentos de vazão de produtos ao aumentar a abertura da válvula de produção. Outros
+modelos mais complexos, como o de Diehl et al., 2017 consideram a vazão de entrada dependente da
+pressão, podendo assim caracterizar aumentos de produtividade mensuráveis para maiores aberturas
+da válvula de saída. No entanto, de acordo com Di Meglio et al., 2009, a dinâmica modelada é
+suficiente para explicar a ocorrência das golfadas, e se estas forem eliminadas para maiores aberturas
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 19
+
+de válvula, isto é, se o ponto de bifurcação do sistema for levado para maiores aberturas de válvula,
+a produção em um sistema real aumentaria.
+
+Para os ensaios em malha fechada utilizou-se uma estrutura de realimentação como a da Figura
+13.
+
+Figura 13: Malha de feedback utilizada.
+
+Fonte: Gerevini, 2014
+
+3.2 Visão Geral do modelo simplificado proposto
+
+Com o intuito de obter um modelo linear que represente o comportamento dinâmico da golfada,
+que seja representativo para suas diversas formas, em diversas variáveis mensuradas, e a partir do
+qual se possa estabelecer estratégias de controle, propõe-se um modelo linear simplificado.
+
+O modelo é composto por duas funções de transferência em paralelo. Uma das funções de
+transferência, G1(s), tem o intuito de caracterizar o comportamento transiente após uma mudança
+de valor da variável manipulada. A segunda função de transferência, G2(s), é responsável por
+representar o comportamento de ciclo-limite, após o período transiente, característico da golfada.
+
+G1(s) =
+K1(?s + 1)
+
+(T1 s2 + 2T1?s + 1)(T2 s + 1)
+(23)
+
+G2(s) =
+A(sin (?)s + cos (?)?)s
+
+(s2 + ?2)(T3 s + 1)
+(24)
+
+A presença das dinâmicas de G1(s) e G2(s) tem o objetivo de fazer com que o modelo seja
+genérico o suficiente para se adequar a diversos sistemas diferentes, que podem apresentar diversos
+mecanismos de ocorrência de golfadas. Colocando-se essas duas funções de transferência em
+paralelo, como na Figura 14, temos que a resposta é um somatório das respostas individuais de cada
+sistema, isto é:
+
+y = uG1(s) + uG2(s) = u(G1(s) + G2(s)) (25)
+
+A função de transferência que relaciona a entrada e saída do sistema composto por G1 e G2 é:
+
+
+
+20 Trabalho de Conclusão de Curso
+
+Figura 14: Plantas G1 e G2 em paralelo.
+
+G3(s) =
+y(s)
+u(s)
+
+=
+K1(?s + 1)(s2 + ?2)(T3 s + 1) + A(sin (?)s + cos (?)?)s(T1 s2 + 2T1?s + 1)(T2 s + 1)
+
+(T1 s2 + 2T1?s + 1)(T2 s + 1)(s2 + ?2)(T3 s + 1)
+(26)
+
+Realizando-se a transformada inversa de Laplace, obtêm-se a resposta de G3(s) no domínio
+tempo, que então é utilizada para realizar a identificação. Foi utilizado um script em Python para
+essa identificação, disponível no Anexo A. Este script implementa uma prospecção inicial dos
+parâmetros do modelo através do método de Evolução Diferencial, e então, com os parâmetros
+encontrados, utiliza uma identificação por mínimos quadrados para realizar um ajuste fino dos
+parâmetros de G3(s).
+
+3.3 Projeto de controlador pelo método IMC
+
+Foi realizado o projeto de controladores para um sistema de controle de pressão, que tem o
+intuito de eliminar o comportamento cíclico da golfada para aberturas de válvula choke de produção
+maiores do que a do ponto de bifurcação do sistema em malha aberta. Para tal, são empregadas
+duas metodologias:
+
+• Projeto IMC tradicional, descrito na Seção 2.4, utilizando o modelo linear apresentado na
+Seção 3.2.
+
+• Aplicação da metodologia de Jahanshahi e Skogestad, 2013 para o modelo de Di Meglio
+et al., 2009.
+
+A malha de controle utilizada em ambas metodologias pode ser observada na Figura 15.
+
+3.3.1 Projeto de controle pelo método IMC para o modelo linear simplificado
+
+Com a função G3(s) da Equação 26 identificada, pode ser realizado o projeto do controlador,
+baseado no procedimento descrito na Seção 2.4.
+
+A partir do modelo de G3(s) identificado, projeta-se o controlador pelo método IMC, e então o
+controlador obtido é aplicado no sistema da Figura 15.
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 21
+
+Figura 15: Sistema de controle de pressão de fundo pr,b controlando a abertura da válvula choke de
+produção.
+
+3.3.2 Aplicação da metodologia Jahanshahi e Skogestad, 2013 para controlar o
+sistema de Di Meglio et al., 2009
+
+Foi também utilizada a metodologia desenvolvida por Jahanshahi e Skogestad, 2013, descrita
+na Seção 2.5, para identificar um modelo localmente instável, no ponto de operação ensaiado,
+do sistema de Di Meglio et al., 2009, e projetar um controlador pelo método IMC para modelos
+de processo instáveis que suprimisse o comportamento de golfadas do sistema para aberturas de
+válvula superiores à do ponto de bifurcação. O controlador obtido foi então aplicado no sistema da
+Figura 15.
+
+
+
+22 Trabalho de Conclusão de Curso
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 23
+
+4 Estudo de caso - Controle do modelo de Di Meglio et al., 2009
+
+4.1 Identificação do ponto de bifurcação do sistema
+
+Como a variável manipulada escolhida foi a abertura da válvula choke de produção, nos casos
+estudados a vazão de injeção de gás, wg,in, foi mantida em 0, 8kg/s. Como estados iniciais do
+modelo, foram considerados os valores de estado estacionário das variáveis de estado do modelo
+para uma abertura de 10% da válvula.
+
+Inicialmente realizou-se um ensaio em malha aberta com o modelo de Di Meglio et al., 2009,
+variando a abertura da válvula choke, no intuito de verificar a ocorrência de golfadas nesses pontos
+de operação, e assim identificar o ponto de bifurcação do sistema em malha aberta. Conforme a
+Figura 16, o modelo apresenta comportamento cíclico em regime permanente, caracterizando a
+golfada, a partir de 18% de abertura da válvula, sendo este o ponto de bifurcação do sistema.
+
+Figura 16: Variação da pressão de fundo para diferentes valores de abertura da válvula choke de
+produção.
+
+4.2 Projeto de controle IMC com o modelo linear simplificado
+
+Foi então realizado um ensaio em malha aberta variando a abertura da válvula de 15% para 25%,
+para identificar o modelo de G3 conforme descrito na Seção 3.2. Como no modelo a abertura da
+
+
+
+24 Trabalho de Conclusão de Curso
+
+válvula é dada como um valor entre 0 e 1, a variação de abertura de 10% corresponde a 0,1. Como
+a função de transferência identificada se baseia na resposta ao degrau unitário, é portanto necessário
+ajustar o ganho da planta encontrado pela identificação por um fator de 10. Com isso, o modelo
+identificado foi:
+
+G(s) =
+?1, 62.103(s + 1, 24.10?1)(s + 2, 00.10?3)(s + 5, 58.10?4)(s2 + 1, 87.10?4 s + 3, 18.10?6)
+
+(s + 2, 00.10?3)2(s2 + 4, 00.10?3 s + 4, 00.10?6)(s2 + 3, 35.10?6)
+(27)
+
+A comparação dos dados utilizados na identificação com a resposta do modelo completo de G3
+pode ser vista na Figura 17.
+
+Figura 17: Identificação do modelo baseado em dados do modelo de Di Meglio et al., 2012, para
+uma troca de abertura de válvula de 15% para 25%.
+
+De posse do modelo identificado da planta, pode então ser projetado o controlador IMC conforme
+mostrado na Seção 3.3.1.
+
+Observando a Figura 16, pode-se aproximar a constante de tempo do sistema para uma abertura
+de válvula z = 20% como ? ? 1000s. Escolhendo ? como um valor menor que a constante de tempo
+em malha aberta do sistema, conforme a Equação 3, escolheu-se ? = 500 s. Além disso, o filtro
+f (s) deve ser de ordem n = 1, para que Gc(s) = f (s)Q(s) seja própria. Deste modo, o filtro f (s) tem
+a forma
+
+f (s) =
+1
+
+(?s + 1)n
+=
+
+1
+(500s + 1)
+
+. (28)
+
+Fatorando a parte de fase mínima de G(s), e invertendo, encontra-se Q(s), e então adicionado o
+filtro f (s) que faz com que Gc(s) seja próprio, encontra-se o controlador na forma IMC, Gc(s):
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 25
+
+Gc(s) =
+?3, 7.10?6(s + 2.10?3)2(s2 + 4.10?3 s + 4.10?6)(s2 + 1, 4.10?3 s + 1, 3.10?6)(s2 + 3, 3.10?6)
+
+(s + 1, 2.10?1)(s + 2.10?3)4(s + 5, 6.10?4)(s2 + 1, 9.10?4 s + 3, 2.10?6)
+.
+
+(29)
+
+O controlador na forma de feedback tradicional pode ser encontrado de acordo com a Equação
+4:
+
+C(s) =
+?3, 7.10?6(s + 2.10?3)(s2 + 4.10?3 s + 4.10?6)(s2 + 1, 4.10?3 s + 1, 3.10?6)
+
+s(s + 1, 2.10?1)(s + 5, 6.10?4)(s2 + 1, 9.10?4 s + 3, 2.10?6)
+. (30)
+
+Com o controlador projetado, utiliza-se a estrutura de realimentação da Figura 15 para controlar
+o modelo de Di Meglio et al., 2009.
+
+A Figura 18(a) mostra a resposta do sistema para uma mudança de setpoint de pressão de
+1, 9.107 Pa para 1, 8.107 Pa. Esta troca de setpoint configura uma transição de um ponto de operação
+livre de golfadas, com baixas aberturas da válvula choke, para um ponto em que elas ocorrem, com
+maiores aberturas da válvula, como se pode observar na Figura 16. A abertura da válvula em regime
+permanente alcançada neste experimento foi de 20%, sem a ocorrência de golfadas. O sistema
+continua estável com o degrau aplicado, sendo notável uma melhora na performance transiente.
+
+Alterando o setpoint agora para um degrau de 1, 8.107 Pa para 1, 75.107 Pa obtemos o resultado
+da Figura 18(b).
+
+(a) Setpoint de 1, 9.107 Pa para 1, 8.107 Pa (b) Setpoint de 1, 8.107 Pa para 1, 75.107 Pa
+
+Figura 18: Controle do sistema para ? = 500.
+
+Alterando novamente o setpoint, agora para um degrau de 1, 75.107 Pa para 1, 7.107 Pa obtemos
+o resultado da Figura 19(a).
+
+Para essa alteração de setpoint o sistema entrou no regime de golfadas, apresentando compor-
+
+
+
+26 Trabalho de Conclusão de Curso
+
+(a) Setpoint de 1, 75.107 Pa para 1, 7.107 Pa (b) Setpoint de 1, 75.107 Pa para 1, 68.107 Pa
+
+Figura 19: Controle do sistema para ? = 500. Para estes setpoints, o sistema apresentou golfadas.
+
+tamento cíclico em regime permanente, o que é indesejável. No entanto, em comparação com a
+amplitude de oscilação observada em aberturas de válvula similares em malha aberta, ocorreu uma
+diminuição das oscilações.
+
+Utilizando o controlador projetado através da metodologia IMC, com base na planta simplificada
+G3, foi possível operar o sistema em regimes livres de golfadas para aberturas de válvula de até
+25%, conforme resultado mostrado na Figura 19.
+
+4.3 Aplicação da metodologia de Jahanshahi e Skogestad, 2013
+
+De modo a validar o projeto de controladores descrita em Jahanshahi e Skogestad, 2013,
+foi aplicada a metodologia descrita pelo autor, e pormenorizada na Seção 2.5. Para verificar a
+aplicabilidade da metodologia de projeto, ao invés de utilizar o mesmo modelo utilizado pelo autor,
+foi utilizado o modelo de Di Meglio et al., 2009. O procedimento de identificação parte de um
+ensaio em malha fechada com um controlador proporcional com ganho Kc0 que estabilize o sistema.
+
+De modo a identificar o sistema no entorno de um ponto de operação que gerasse um modelo
+que pudesse ser utilizado para controle, foi utilizado um degrau de pressão que resultasse em uma
+abertura média de válvula de aproximadamente 25%, conforme indica a Figura 20. O degrau
+utilizado foi de 1, 7.107 Pa para 1, 75.107 Pa.
+
+Utilizando a estrutura de realimentação da Figura 13, com um controlador proporcional, ajustou-
+se o ganho do controlador até que o mesmo estabilizasse o sistema. Com o valor de Kc0 = ?3.10?7,
+e fazendo uma alteração de setpoint de 1, 7.107 Pa para 1, 75.107 Pa, encontra-se a resposta em
+malha fechada conforme a Figura 21.
+
+Utilizando o procedimento de identificação da resposta do sistema estabilizado descrito por
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 27
+
+Figura 20: Abertura de válvula média no ensaio em malha fechada usado para identificação do
+modelo.
+
+Figura 21: Ensaio em malha fechada para identificação do modelo instável de segunda ordem.
+
+Jahanshahi e Skogestad, 2013, e implementado no script constante no Apêndice A, que usa como
+base as medidas de ?yp, ?yu, ?ys, ?y?, tp e tu, identificadas na Figura 21, identifica-se o modelo
+instável da planta, que por sua vez é estável, como na Equação 6:
+
+G(s) =
+?5, 16.104(s + 7, 06.10?4)
+
+(s ? 1, 02.10?2)(s ? 4, 58.10?4)
+. (31)
+
+O controlador projetado, conforme a Equação 10, utilizando ? = 500 s é:
+
+C(s) =
+?3, 23.10?7(s2 ? 4, 38.10?4 + 4, 79.10?7)
+
+s(s + 7, 62.10?4)
+. (32)
+
+Com o controlador projetado, foi aplicado um degrau de pressão no sistema em malha fechada
+de 1, 9.107 Pa para 1, 8.107 Pa, conforme a Figura 22(a). Também foi aplicado um degrau de
+1, 75.107 Pa para 1, 7.107 Pa, conforme a Figura 22(b).
+
+Em ambos os casos não ocorreram golfadas no sistema. O máximo valor de abertura de válvula
+obtido sem que o sistema apresentasse oscilações foi aplicando-se um setpoint de 1, 695.107 Pa,
+
+
+
+28 Trabalho de Conclusão de Curso
+
+(a) Setpoint de 1, 9.107 Pa para 1, 8.107 Pa (b) Setpoint de 1, 75.107 Pa para 1, 7.107 Pa
+
+Figura 22: Controle do sistema para ? = 500.
+
+no qual obteve-se uma abertura de válvula de 38%, como pode ser observado na Figura 23(a).
+Aplicando-se um degrau de 1, 75.107 Pa para 1, 68.107 Pa, o sistema passa a apresentar oscilação,
+caracterizando a ocorrência de golfadas, como pode se observar na Figura 23(b).
+
+(a) Setpoint de 1, 75.107 Pa para 1, 695.107 Pa (b) Setpoint de 1, 75.107 Pa para 1, 68.107 Pa
+
+Figura 23: Controle do sistema para ? = 500.
+
+Com este controlador foi possível operar o sistema em um regime livre de golfadas para
+aberturas de até 38%, caracterizando um aumento de mais de 100% em relação à abertura do ponto
+de bifurcação do sistema em malha aberta.
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 29
+
+5 Conclusões
+
+Neste trabalho foram estudadas duas metodologias de projeto de controle IMC, com o intuito
+de suprimir a ocorrência de golfadas em sistemas de extração de petróleo. Para tal foi utilizado
+um modelo do tipo caixa cinza do processo, descrito por Di Meglio et al., 2012 como planta, e
+a partir dele foram identificados modelos lineares que pudessem ser utilizados para o projeto de
+controladores. Os controladores projetados foram testados em uma malha feedback com o modelo
+caixa cinza, realizando-se controle de pressão.
+
+Foi possível estabilizar o sistema para aberturas da válvula choke maiores do que a abertura
+do ponto de bifurcação do sistema em malha aberta, que é de 18%. Esse aumento de abertura, no
+modelo utilizado, não apresenta aumentos de vazão de saída, pois as vazões de entrada do modelo
+são fixas. No entanto, de acordo com Di Meglio et al., 2009, o modelo representa corretamente o
+mecanismo de ocorrência de golfadas de sistemas reais, e se essas forem suprimidas com sucesso
+no modelo, é seguro afirmar que, em um sistema real, maiores aberturas de válvula em regimes
+livres de oscilações representariam ganhos de vazão de produtos.
+
+A primeira metodologia empregada foi o projeto de controladores pelo método IMC para plantas
+estáveis, a partir de um modelo linear simplificado. Com esta metodologia, foi possível atingir
+aberturas de válvula choke de saída de até 25%.
+
+Foi também reproduzida a metodologia desenvolvida em Jahanshahi e Skogestad, 2013, que
+consiste em identificar o sistema que apresenta golfadas como um modelo instável no ponto de
+operação utilizado, e realizar o projeto IMC para plantas instáveis como descrito em Morari
+e Zafiriou, 1989. Considerando os resultados apresentados em Jahanshahi e Skogestad, 2013,
+Jahanshahi et al., 2013 e Jahanshahi et al., 2015, o método é promissor, por apresentar ótimos
+resultados, e ser de fácil implementação. Esta afirmação foi corroborada pelos resultados obtidos ao
+aplicar a metodologia no modelo de Di Meglio et al., 2009. Foi possível operar o sistema em um
+regime livre de oscilações para aberturas de válvula de até 38%.
+
+Como trabalhos futuros, considerando o fato de que o projeto pelo método IMC baseia-se em
+um modelo que é valido no entorno do ponto de operação no qual ele foi identificado, e que o
+sistema é não-linear, sugere-se um estudo sobre o uso de alguma técnica de gain-scheduling em
+conjunto com a metodologia IMC, de modo a aliar a robustez que o IMC fornece à ampla faixa de
+operação que uma técnica de gain-scheduling adicionaria ao sistema controlado.
+
+
+
+30 Trabalho de Conclusão de Curso
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 31
+
+6 Referências
+
+ANP, 2017. http://www.anp.gov.br/wwwanp/noticias/anp-e-p/3912-producao-de-petroleo-no-pre-
+sal-ultrapassa-pela-primeira-vez-a-do-pos-sal. acessado em 25/10/2017 12.
+
+Apio, A., 2017. Estimação de parâmetros em modelos com ciclo limite. Dissertação de mestrado,
+PPGEQ-UFRGS.
+
+Barbosa, B. H., Gomes, L. P., Teixeira, A. F., Aguirre, L. A., 2015. Downhole pressure estimation
+using committee machines and neural networks. IFAC-PapersOnLine 48 (6), 286–291.
+
+Biltoft, J., Hansen, L., Pedersen, S., Yang, Z., 2013. Recreating riser slugging flow based on an
+economic lab-sized setup. IFAC Proceedings Volumes 46 (12), 47–52.
+
+Di Meglio, F., Kaasa, G.-O., Petit, N., 2009. A first principle model for multiphase slugging
+flow in vertical risers. In: Decision and Control, 2009 held jointly with the 2009 28th Chinese
+Control Conference. CDC/CCC 2009. Proceedings of the 48th IEEE Conference on. IEEE, pp.
+8244–8251.
+
+Di Meglio, F., Kaasa, G.-O., Petit, N., Alstad, V., 2010. Reproducing slugging oscillations of a real
+oil well. In: Decision and Control (CDC), 2010 49th IEEE Conference on. IEEE, pp. 4473–4479.
+
+Di Meglio, F., Kaasa, G.-O., Petit, N., Alstad, V., 2012. Model-based control of slugging: advances
+and challenges. IFAC Proceedings Volumes 45 (8), 109–115.
+
+Diehl, F. C., K. Anzai, T., S. Almeida, C., F. Von Meien, O., S. Neto, S., R. Rosa, V., C.M.M. Cam-
+pos, M., Reolon, F., Gerevini, G., Ranzan, C., Farenzena, M., Trierweiler, J., 01 2017. Fast
+offshore wells model (fowm): A practical dynamic model for multiphase oil production systems
+in deepwater and ultra-deepwater scenarios 99.
+
+Garcia, C. E., Morari, M., 1982. Internal model control. a unifying review and some new results.
+Industrial &amp;amp; Engineering Chemistry Process Design and Development 21 (2), 308–323.
+
+Gerevini, G. G., 2014. Análise e controle da dinâmica de escoamento em poços de petróleo por
+gas-lift. Trabalho de Conclusão de Curso, DEQUI-UFRGS.
+
+Gerevini, G. G., 2017. Atenuação de golfadas em sistemas de elevação de petróleo em ambiente
+offshore. Dissertação de mestrado, PPGEQ-UFRGS.
+
+Gerevini, G. G., Apio, A., Trierweiler, J. O., Farenzena, M., Diehl, F. C., 2017. Aumento da
+produção de petróleo em sistemas de produção offshore através de controle nmpc. International
+Journal of Multiphase Flow 88, 270–284.
+
+Hussein, H., Al-Durra, A., Boiko, I., 2015. Design of gain scheduling control strategy for artificial
+gas lift in oil production through modified relay feedback test. Journal of the Franklin Institute
+352 (11), 5122–5144.
+
+
+
+32 Trabalho de Conclusão de Curso
+
+Jahanshahi, E., De Oliveira, V., Grimholt, C., Skogestad, S., 2014. A comparison between internal
+model control, optimal pidf and robust controllers for unstable flow in risers. IFAC Proceedings
+Volumes 47 (3), 5752–5759.
+
+Jahanshahi, E., Skogestad, S., 2011. Simplified dynamical models for control of severe slugging in
+multiphase risers. IFAC proceedings volumes 44 (1), 1634–1639.
+
+Jahanshahi, E., Skogestad, S., 2013. Closed-loop model identification and pid/pi tuning for robust
+anti-slug control. IFAC Proceedings Volumes 46 (32), 233–240.
+
+Jahanshahi, E., Skogestad, S., Skogestad, S., 2013. Comparison between nonlinear model-based
+controllers and gain-scheduling internal model control based on identified model. In: Decision
+and Control (CDC), 2013 IEEE 52nd Annual Conference on. IEEE, pp. 853–860.
+
+Jahanshahi, E., Skogestad, S., Skogestad, S., 2015. Anti-slug control solutions based on identified
+model. Journal of Process Control 30, 58–68.
+
+Khalil, H. K., 1996. Nonlinear systems. Prentice-Hall, New Jersey 2 (5), 5–1.
+
+Morari, M., Zafiriou, E., 1989. Robust process control. Prentice hall Englewood Cliffs, NJ.
+
+Pedersen, S., Durdevic, P., Yang, Z., 2017. Challenges in slug modeling and control for offshore oil
+and gas productions: A review study. International Journal of Multiphase Flow 88, 270–284.
+
+Rivera, D. E., Morari, M., Skogestad, S., 1986. Internal model control: Pid controller design.
+Industrial &amp;amp; engineering chemistry process design and development 25 (1), 252–265.
+
+Sivertsen, H., Storkaas, E., Skogestad, S., 2010. Small-scale experiments on stabilizing riser slug
+flow. Chemical engineering research and design 88 (2), 213–228.
+
+Storkaas, E., Skogestad, S., 2007. Controllability analysis of two-phase pipeline-riser systems at
+riser slugging conditions. Control Engineering Practice 15 (5), 567–581.
+
+Taitel, Y., Bornea, D., Dukler, A. E., 1980. Modelling flow pattern transitions for steady upward
+gas-liquid flow in vertical tubes. AIChE Journal 26 (3), 345–354.
+URL http://dx.doi.org/10.1002/aic.690260304
+
+http://dx.doi.org/10.1002/aic.690260304
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 33
+
+Apêndices
+A Procedimento para projeto de controladores IMC pela metodologia de
+
+Jahanshahi e Skogestad, 2013
+
+O procedimento descrito é um script do MATLAB, e deve ser utilizado em conjunto com um
+gráfico de resposta temporal de um sistema realimentado com um controlador proporcional, ajustado
+para que o sistema apresente resposta subamortecida.
+
+%Cálculo da função de transferência instável a partir de um experimento
+%malha fechada
+
+%Medidas obtidas do gráfico
+tp=2e3
+tu=1.6e3
+yp=0.087e7
+yu=0.0686e7
+yinf=0.0701e7
+ys=0.1e7
+Kc0=-0.0000001
+
+%Cálculos intermediários
+v=(yinf-yu)/(yp-yinf)
+csi=-log(v)/(sqrt(pi^2+(log(v))^2))
+tau=tu*sqrt(1-csi^2)/pi
+K2=yinf/ys
+phi=atan((1-csi)/csi)-tp*sqrt(1-csi^2)/tau
+E=sqrt(1-csi^2)/tau
+D0=(yp-yinf)/yinf
+D=D0/(exp(-csi*tp/tau)*sin(E*tp+phi))
+tauz=csi*tau+sqrt(csi^2*tau^2-tau^2*(1-D^2*(1-csi^2)))
+
+%pra ver se os cálculos deram certo
+t=[0:1:1e5]
+
+y=ys*K2.*(1+D*exp(-csi.*t/tau).*sin(E.*t+phi))
+
+plot(t,y)
+
+%Parâmetros do modelo instável
+
+
+
+34 Trabalho de Conclusão de Curso
+
+K=yinf/(Kc0*abs(ys-yinf))
+a0=1/(tau^2*(1+Kc0*K))
+b0=K*a0
+b1=K2*tauz/(Kc0*tau^2)
+a1=-2*csi/tau+Kc0*b1
+
+%Planta instável linearizada
+num = [b1 b0]
+den = [1 -a1 a0]
+G=tf(num, den)
+step(G)
+[z,p,k]=zpkdata(G)
+Q=zpk(p,z,1/k)
+
+%Cálculo dos parâmetros do filtro f(s)
+p1=p{1,1}(1)
+p2=p{1,1}(2)
+lambda=6000
+alpha=linsolve([p1^2 p1 1;p2^2 p2 1;0 0 1],[(lambda*p1+1)^3;(lambda*p2+1)^3;1])
+alpha2=alpha(1)
+alpha1=alpha(2)
+alpha0=alpha(3)
+f=tf([alpha2 alpha1 alpha0],[lambda^3 3*lambda^2 3*lambda 1])
+Gc=Q*f %Mas não dá pra usar essa estrutura, pois G é instável
+
+%C=tf((1/(k*lambda^3))*[alpha2 alpha1 alpha0],[1 z{1,1}(1) 0])
+C=minreal(Gc/(1-Gc*G))
+pid(C)
+T=feedback(C*G,1)
+step(T)
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 35
+
+Anexos
+A Identificação em Python
+
+Script desenvolvido por Jorge O. Trierweiler, Gustavo Arndt, Bruno Éttori e Marcelo Farenzena
+– GISMCOP / DEQUI / UFRGS. Utilizado para identificação da função de transferência G3. Está no
+formato de um Jupyter Notebook.
+
+import numpy as np
+import lmfit as lf
+import matplotlib.pyplot as plt
+%matplotlib inline
+import pandas as pd
+
+Dados = pd.read_excel(’D:\\Desktop\\teste6.xlsx’,’DADOS’)
+
+plt.subplot(211)
+plt.plot(Dados[’Time’], Dados[’PDG’])
+plt.xlabel(’tempo[s]’, fontsize=14)
+plt.ylabel(’pressão[kPa]’, fontsize=14)
+plt.subplot(212)
+plt.plot(Dados[’Time’],Dados[’x’]);
+plt.xlabel(’tempo[s]’, fontsize=14)
+plt.ylabel(’abertura[%]’, fontsize=14)
+
+## Criando as variáveis desvios
+Dados[’y’]=Dados[’PDG’]-Dados[’PDG’][0]
+Dados[’u’]=Dados[’x’]-Dados[’x’][0]
+Dados.head()
+
+# Selecionando os dados
+i1=425; i2=5000
+plt.subplot(211)
+plt.plot(Dados[’Time’][i1:i2],Dados[’y’][i1:i2])
+plt.grid()
+plt.subplot(212)
+plt.plot(Dados[’Time’][i1:i2],Dados[’u’][i1:i2]);
+
+def G1 ( t, K1, B, Z, T1, T2):
+t1 = Z ** 2
+t3 = np.sqrt(-t1 + 1)
+
+
+
+36 Trabalho de Conclusão de Curso
+
+t5 = 0.1e1 / T1
+t6 = t3 * t * t5
+t7 = np.cos(t6)
+t8 = T1 * T2
+t10 = 2 * t8 * Z
+t11 = B * T2
+t12 = T1 ** 2
+t21 = np.exp(-t/T2)
+t17 = np.exp(-t * Z/T1)
+t26 = T2 ** 2
+t28 = 0.1e1 / (-t10 + t12 + t26)
+t31 = np.sin(t6)
+return(K1 * (0.1e1 + (t7 * (t10 - t11 - t12) * t17 + t21 * (B - T2) * T2) * t28 + 0.1e1 / t3 * t31 * t17 * (B * T1 - Z * t11 - Z * t12 + 2 * t1 * t8 - t8) * t28))
+
+# Versão otimizada da função
+def G2(t,A,omega,phi,T3):
+
+t1 = omega ** 2
+t2 = T3 ** 2
+t7 = omega * t
+t8 = np.sin(t7)
+t9 = np.cos(phi)
+t12 = np.sin(phi)
+t16 = np.exp(-t / T3)
+t17 = np.cos(t7)
+t18 = t16 - t17
+return((t9 * t8 + (t12 * t8 + t18 * t9) * omega * T3 - t12 * t18) / (t1 * t2 + 1) * A)
+
+# A seguir se faz um comparativo
+
+tt = np.linspace(0,1000,200)
+plt.plot(tt,G1(tt,-1,10,0.9,40,30)+G2(tt,0.2,0.1,np.pi,50))
+plt.grid()
+
+## Estimação de G3
+##Nessa seção iremos estimar os parâmetros de G3 diretamente usando todos os dados.
+
+##**Atenção:** Por ser um problema não convexo a qualidade da aproximação depende ##da inicialização dos parâmetros e fortemente do método de otimização empregado ##na resolução do problema de otimização.
+##Os seguintes métodos poderão ser testados, bastando se atribuir a parâmetro ##’method’ na da função ’minimize’:
+##* **‘leastsq’**: Levenberg-Marquardt (default)
+##* **‘least_squares’**: Least-Squares minimization, using Trust Region ##Reflective method by default
+##* **‘differential_evolution’**: differential evolution
+##* **‘brute’**: brute force method
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 37
+
+##* **‘nelder‘**: Nelder-Mead
+##* **‘lbfgsb’**: L-BFGS-B
+##* **‘powell’**: Powell
+##* **‘cg’**: Conjugate-Gradient
+##* **‘newton’**: Newton-Congugate-Gradient
+##* **‘cobyla’**: Cobyla
+##* **‘tnc’**: Truncate Newton
+##* **‘trust-ncg’**: Trust Newton-Congugate-Gradient
+##* **‘dogleg’**: Dogleg’’
+##* **‘slsqp’**: Sequential Linear Squares Programming
+
+##Quando não se tem ideia dos parâmetros, o método **‘differential_evolution’** é ##uma ótima alternativa. Depois que se tiver bons parâmetros, se pode retornar ao ##default para se obter uma estimativa da correlação entre os parâmetros do modelo
+
+from lmfit import minimize, Minimizer, Parameters, Parameter, report_fit
+
+# create data to be fitted
+i1=425; i2=5000
+t = Dados[’Time’][i1:i2]-Dados[’Time’][i1]
+YY = Dados[’y’][i1:i2]
+
+# define objective function: returns the array to be minimized
+def fcn2min(p,t,YY):
+
+return (G1(t,p[’K1’],p[’B’],p[’Z’],p[’T1’],p[’T2’])+G2(t,p[’A’],p[’omega’],p[’phi’],p[’T3’])-YY)
+
+# create a set of Parameters
+p = Parameters()
+p.add(’K1’, value= -3.5e+06, min=-2000000,max=-1000000)
+p.add(’T1’, value= 2000.27062,min=500,max=3000)
+p.add(’Z’, value= 0.95, min=0.0, max=0.9999)
+p.add(’B’,value = 100,min=0,max=3000)
+p.add(’A’,value = 300000, min = 0.0,max=300000)
+p.add(’omega’, value= 0.1,min=0.001,max=0.15)
+p.add(’phi’,value= 1., min=0.0, max=np.pi*2)
+p.add(’T2’, value= 1000,min=500,max=3000)
+p.add(’T3’, value= 1000,min=500,max=3000)
+
+# do fit, here with leastsq model
+minner = Minimizer(fcn2min, p, fcn_args=(t,YY))
+result = minner.minimize(method=’differential_evolution’)
+
+
+
+38 Trabalho de Conclusão de Curso
+
+# calculate final result
+final = YY + result.residual
+
+# write error report
+report_fit(result)
+
+plt.figure(figsize=(7, 5))
+plt.plot(t, YY, ’k--’)
+plt.plot(t, final, ’r’)
+plt.xlabel(’tempo[s]’, fontsize=14)
+plt.ylabel(’pressão[kPa]’, fontsize=14)
+plt.show()
+
+# Agora vamos resolver o problema com os mínimos quadrados tendo como parâmetros iniciais
+# os obtidos anteriormente -- assim teremos uma estimativa da confiabilidade dos parâmtros
+result2 = minner.minimize(method=’leastsq’,params=result.params)
+
+# calculate final result
+final = YY + result2.residual
+
+# write error report
+report_fit(result2)
+
+plt.figure(figsize=(15, 10))
+plt.plot(t, YY, ’k--’)
+plt.plot(t, final, ’r’)
+plt.show()
+
+B s-function do modelo de Di Meglio et al., 2012
+
+Esta implementação foi realizada por Gerevini, 2014. Os parâmetros do modelo são os mesmos
+utilizados pelo autor original.
+
+function [sys,x0] = sfmeglio(t,x,u,flag)
+
+Rol = 900 ;
+Ps = 6.6e5 ;
+R = 8.314 ;
+T = 363 ;
+M = 2.2e-2 ;
+
+
+
+Escola de Engenharia/UFRGS – Gabriel Agnischock da Silveira 39
+
+g = 9.81 ;
+teta = pi/4 ;
+A = 1.77e-2;
+mlstill= 3.73e4 ;
+Cg = 1e-4 ;
+Cout = 2.8e-3 ;
+Veb = 48 ;
+E = 0.78 ;
+L = 5200 ;
+D = 1.5e-1 ;
+Wlin = 11.75 ; % fluxo mássico de líquido entrando no riser
+
+switch flag
+case 0
+
+sys = [3 0 5 2 0 0]’;
+x0 = [5.7467 0.2518 3.3356]*1000;
+% u = [0.7 0.8];
+
+case 1
+Ck = u(1);
+Wgin = u(2);
+
+%Algebrismo
+Vr = L * pi * D * D/4 ;
+Peb = x(1).* R * T / ( M * Veb ) ;
+Prt = x(2).* R * T / ( M* ( Vr - ( x(3) + mlstill ) / Rol ) ) ;
+Prb = Prt + ( x(3) + mlstill ) * g * sin(teta) / A ;
+assignin(’base’,’Prb’,Prb);
+if Prt &gt; Ps
+
+Wout = Cout * Ck * sqrt( Rol * ( Prt - Ps ) ) ;
+else
+
+Wout = 0;
+end
+assignin(’base’,’Wout’,Wout) ;
+Wlout= Wout;
+Wgout= x(2).* Wout / x(3) ;
+Wg = Cg * max( 0 , (Peb-Prb) ) ;
+
+%ODE
+sys(1) = ( 1 - E ) * Wgin - Wg ; % massa de gas na bolha
+sys(2) = E * Wgin + Wg - Wgout ; % massa gas no riser
+sys(3) = Wlin - Wlout ; % massa de líquido no riser
+
+
+
+40 Trabalho de Conclusão de Curso
+
+sys = sys’;
+
+case 3
+sys = x;
+sys(4,1) = evalin(’base’,’Wout’);
+sys(5,1) = evalin(’base’,’Prb’);
+
+otherwise
+sys = [];
+
+end
+
+
+	Agradecimentos
+	Resumo
+	Abstract
+	Lista de Figuras
+	Lista de Tabelas
+	Lista de Abreviaturas e Siglas
+	Introdução
+	Objetivo
+
+	Revisão bibliográfica
+	Sistemas de extração de petróleo offshore
+	Gas-lift
+
+	Comportamento dinâmico de sistemas com gas-lift: golfadas, bifurcação
+	Controle de produção
+	Controle ativo
+
+	Projeto de controle pelo método IMC
+	Aplicação de controle IMC anti-golfadas - Jahanshahi, 2013
+
+	Metodologia
+	Modelo utilizado como planta a ser controlada - Di Meglio, 2009
+	Visão Geral do modelo simplificado proposto
+	Projeto de controlador pelo método IMC
+	Projeto de controle pelo método IMC para o modelo linear simplificado
+	Aplicação da metodologia jahanshahi2013closed para controlar o sistema de di2009first
+
+
+	Estudo de caso - Controle do modelo de di2009first
+	Identificação do ponto de bifurcação do sistema
+	Projeto de controle IMC com o modelo linear simplificado
+	Aplicação da metodologia de jahanshahi2013closed
+
+	Conclusões
+	Referências
+	Apêndices
+	Procedimento para projeto de controladores IMC pela metodologia de jahanshahi2013closed
+	Anexos
+	Identificação em Python
+	s-function do modelo de di2012model
+
+
+
+
+
+</field>
+	</doc>
+</add>

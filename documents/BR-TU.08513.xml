@@ -1,0 +1,4760 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.08513</field>
+		<field name="filename">13352_000317124.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+MINISTÉRIO DA EDUCAÇÃO
+
+UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL
+
+PROGRAMA DE PÓS-GRADUAÇÃO EM ENGENHARIA MECÂNICA
+
+SIMULAÇÃO NUMÉRICA DE UM SISTEMA DE ARMAZENAMENTO DE CALOR EM
+
+ESTUFAS DE PLASTICULTURA
+
+por
+
+Mauro César Rabuski Garcia
+
+Dissertação para obtenção do Título de
+
+Mestre em Engenharia
+
+Porto Alegre, Março de 2001
+
+
+
+SIMULAÇÃO NUMÉRICA DE UM SISTEMA DE ARMAZENAMENTO DE CALOR EM
+
+ESTUFAS DE PLASTICULTURA
+
+por
+
+Mauro César Rabuski Garcia
+
+Eng. Mecânico
+
+Dissertação submetida ao Corpo Docente do Programa de Pós-Graduação em Engenharia
+
+Mecânica, PROMEC, da Escola de Engenharia da Universidade Federal do Rio Grande do Sul,
+
+como parte dos requisitos necessários para a obtenção do Título de
+
+Mestre em Engenharia
+
+Área de Concentração: Fenômenos de Transporte
+
+Orientador: Prof. Dr. Horácio Antonio Vielmo
+
+Comissão de Avaliação:
+
+Prof. Dr. Paulo S. Schneider (PROMEC / UFRGS)
+
+Prof. Dr. Arno Krenzinger (PROMEC / UFRGS)
+
+Prof. Dr. Lígia D. F. Marczak (PPGEQ / UFRGS)
+
+Prof. Dr. Alberto Tamagna
+
+Coordenador do PROMEC
+
+
+
+iii
+
+AGRADECIMENTOS
+
+Agradeço a todos os amigos que me incentivaram na realização deste trabalho, em especial
+
+ao Prof. Dr. Horácio Antonio Vielmo pela orientação deste trabalho e constante auxílio neste
+
+período. Agradeço também ao apoio financeiro da CAPES, aos professores e funcionários do
+
+PROMEC pela cordial convivência desenvolvida ao longo destes anos.
+
+
+
+iv
+
+RESUMO
+
+Apresentar um modelo para simular um sistema de armazenamento de calor no solo em
+
+estufas para plasticultura é o objetivo do presente trabalho.
+
+O sistema consiste num feixe de tubos enterrados no solo. A convecção forçada de ar no seu
+
+interior realiza a troca térmica necessária para manter as estufas sob faixas desejadas de temperatura.
+
+O objetivo do modelo é investigar os efeitos no calor armazenado e a influência das
+
+variáveis, tais como diâmetro, comprimento, espaçamento entre os tubos e a velocidade de ar no
+
+canal provocam no sistema.
+
+O solo é tratado como um meio difusivo e avalia-se a contribuição do termo de condensação
+
+e evaporação da água contida no ar em escoamento nos tubos.
+
+A equação da energia é resolvida para o solo e para o ar. Os tubos de seção transversal
+
+circular são modelados como tubos de seção transversal quadrada com o objetivo de que as
+
+simulações possam ser processadas em coordenadas cartesianas.
+
+O programa resolve situações tridimensionais, transientes e emprega o Método dos Volumes
+
+Finitos para integrar as equações diferenciais governantes.
+
+O modelo original é baseado no modelo de Gauthier et al., 1997, tendo sido os resultados do
+
+mesmo foram usados para a validação do presente estudo.
+
+Um circuito de água quente é também projetado e apresentado para o aquecimento das
+
+estufas. A água circula através de mangueiras sobre o solo e é aquecida por um sistema de
+
+queimadores a gás liqüefeito de petróleo ou óleo combustível, transferindo assim calor para o
+
+interior da mesma. O projeto de aquecimento foi realizado através de um programa de parceria entre
+
+a Ufrgs, Sebrae, Fapergs e a Agropecuária Clarice.
+
+
+
+v
+
+ABSTRACT
+
+A computacional model to simulate a heat storage system in the soil of greenhouses for
+
+plasticulture is the objective of the present work.
+
+The system consists of an array of tubes buried in the soil. The forced convection of air in its
+
+interior accomplishes the necessary heat transfer to maintain the greenhouses under the desired
+
+range of temperature.
+
+The objective of the model is to investigate the effects and the influence of the variables,
+
+such as diameter, length, spacing between the tubes and the air velocity in the channel.
+
+The soil is treated as a diffusive medium and the contribution of the condensation and
+
+evaporation term of the water contained in the air flowing in the tubes is evaluated.
+
+The energy equation is solved for the soil and for the air. The tubes of circular shape are
+
+modeled as square tubes, in order to permit simulations in Cartesian Coordinates.
+
+The program solves three-dimensional situations, unsteady and making use of the Finite
+
+Volumes Method for the integration of the governing differential equations.
+
+The original model is based on the model of Gauthier et al., 1997, having the results of the
+
+same been used for the validation of the present study.
+
+A hot water circuit is also designed and presented for the heating of greenhouses. The water
+
+circulates through hoses on the soil and it is heated by a system of burners of petroleum liquefied
+
+gas or fuel oil, transferring this heat to the interior of the greenhouse. The heating project was
+
+accomplished through a program of partnership among Ufrgs, Sebrae, Fapergs and Clarice
+
+Agricultural.
+
+
+
+vi
+
+ÍNDICE
+
+    Pág.
+1. Introdução...............................................................................................................................1
+
+1.1 Motivação...............................................................................................................................1
+
+1.2 Revisão bibliográfica..............................................................................................................3
+
+1.3 Escopo da dissertação...........................................................................................................11
+
+2. Estufas passivas....................................................................................................................12
+
+2.1 Classificação das estufas solares passivas............................................................................13
+
+2.1.1 Estufas solares passivas com armazenamento em água .......................................................14
+
+2.1.2 Estufas solares passivas com material de mudança de fase .................................................14
+
+2.1.3 Estufas solares passivas com leito de pedras .......................................................................15
+
+2.1.4 Estufas solares passivas com tubos enterrados ....................................................................15
+
+2.1.5 Outros meios armazenadores de calor para estufas passivas ...............................................15
+
+3. Sistema de aquecimento aplicado a estufas na Serra Gaúcha ..............................................17
+
+4. Apresentação do modelo de Carol Gauthier ........................................................................22
+
+4.1 Estudo paramétrico...............................................................................................................29
+
+5. Implementação do modelo de Gauthier et al........................................................................31
+
+6. Resultados e discussões........................................................................................................38
+
+7. Conclusões e sugestões ........................................................................................................50
+
+Apêndice ........................................................................................................................................52
+
+Referências bibliográficas .............................................................................................................60
+
+
+
+vii
+
+LISTA DE SÍMBOLOS
+
+AQ área do quadrado [m2]
+
+AC área da cirfunferência [m2]
+
+A1 área do corpo 1 [m2]
+
+A2 área do corpo 2 [m2]
+
+As área da seção transversal do duto [m2]
+
+aE coeficiente leste [W/m K, W/m2 K]
+
+aW coeficiente oeste [W/m K, W/m2 K]
+
+aN coeficiente norte [W/m K, W/m2 K]
+
+aS coeficiente sul [W/m K, W/m2 K]
+
+aP coeficiente no ponto em questão [W/m K, W/m2 K]
+
+aB coeficiente anterior [W/mK,W/m2K]
+
+aT coeficiente posterior [W/mK,W/m2K]
+o
+Pa coeficiente para o termo transiente [W/m K]
+
+bP termo fonte [W/m3]
+
+C capacidade volumétrica de calor [J/m3K]
+
+C1 constante que representa o termo AVc p?  e VBC
+Dxh
+
+Par?
+4
+
+[W/K]
+
+C2 constante que representa o termo 
+p
+
+L
+
+c
+h
+
+[K]
+
+CCte capacidade volumétrica de calor do ar seco [J/m3K]
+
+C? constante de proporcionalidade entre a capacidade volumétrica de calor e o conteúdo de
+
+umidade do solo [J/m3K]
+
+cp calor específico a pressão constante [J/kg K]
+
+D espaçamento entre os tubos e diâmetro do duto [m]
+
+E ponto vizinho ao leste
+
+g aceleração da gravidade [m/s2]
+
+hL calor latente de vaporização da água [MJ/kg]
+
+h coeficiente de troca de calor por convecção [W/m2 K]
+
+hi coeficiente de transferência de calor no interior da estufa e tubos [W/m2 K]
+
+hs coeficiente de transferência de calor entre a sup. solo e a estufa [W/m2 K]
+
+H entalpia volumétrica do ar úmido [J/m3]
+
+
+
+viii
+
+HT entalpia no volume posterior [J/m3]
+
+HB entalpia no volume anterior [J/m3]
+
+Hin entalpia na entrada do duto e do volume de controle do duto [J/m3]
+
+Hout entalpia na saída do volume de controle do duto [J/m3]
+
+k condutividade térmica [W/m K]
+
+kE condutividade térmica na interface oeste [W/m K]
+
+kW condutividade térmica na interface leste [W/m K]
+
+kP condutividade térmica no volume P para o ar e do polietileno [W/m K]
+
+kPS condutividade térmica no volume para o solo [W/m K]
+
+kS condutividade térmica na interface sul [W/m K]
+
+kN condutividade térmica na interface norte [W/m K]
+
+kB condutividade térmica na interface anterior [W/m K]
+
+kT condutividade térmica na interface posterior [W/m K]
+
+kCte condutividade térmica do solo seco [W/m K]
+
+k? constante de proporcionalidade entre a condutividade térmica e o conteúdo de umidade
+
+[W/m K]
+
+l lado do quadrado [m]
+
+L comprimento do duto [m]
+.
+
+m fluxo de massa [kg/s]
+
+N ponto vizinho ao norte
+
+NuD número de Nusselt em relação ao diâmetro
+
+NuL número de Nusselt em relação a altura da estufa
+
+n vetor unitário normal as superfícies
+
+P perímetro da seção transversal do canal, ponto de estudo [m]
+
+PQ perímetro do quadrado [m]
+
+PC perímetro da circunferência [m]
+
+Pr número de Prandtl
+
+patm pressão atmosférica [Pa]
+
+pv Pressão parcial do vapor na mistura [Pa]
+
+pg Pressão de saturação do vapor na mistura [Pa]
+
+q fluxo de calor [W]
+
+q’ fluxo de calor entre o solo e o ar [W/m]
+
+
+
+ix
+
+q” fluxo de calor entre o solo e o ar [W/m2]
+
+qP fluxo de calor entre o solo e o ar [W/m]
+
+qCV calor perdido por convecção [W]
+
+q1-2 calor perdido do corpo 1 para o corpo 2 [W]
+
+Q calor armazenado no solo por m3 [MJ/m3]
+
+ri raio interno do tubo [m]
+
+re raio externo do tubo [m]
+
+RaD número de Rayleigh em relação ao diâmetro
+
+RaL número de Rayleigh em relação a altura
+
+Re número de Reynolds
+
+S termo fonte [W/m3]
+
+S ponto vizinho ao sul
+
+T temperatura [°C]
+
+TP temperatura no centro do volume de controle para o ar [°C]
+
+TPS temperatura do solo [°C]
+
+Tvizinhançatemperatura da vizinhança [°C]
+
+t tempo [s]
+
+T1 temperatura do corpo 1 [°C]
+
+T2 temperatura do corpo 2 [°C]
+
+Te temperatura na entrada do tubo [°C]
+
+Ts temperatura na saída do tubo [°C]
+
+Text temperatura externa ao tubo [°C]
+
+TE temperatura no ponto leste [°C]
+
+TW temperatura no ponto oeste [°C]
+
+TN temperatura no ponto norte [°C]
+
+TS temperatura no ponto sul [°C]
+
+TB temperatura no ponto anterior [°C]
+
+TT temperatura no ponto posterior / temperatura somente térmico      [°C]
+
+TL temperatura considerando termo latente [ºC]
+
+TW temperatura no ponto oeste/temperatura da parede [°C]
+
+TPo temperatura do tempo anterior [°C]
+
+Tar temperatura do ar [°C]
+
+
+
+x
+
+Ti temperatura num ponto qualquer e temperatura interna no tubo [°C]
+
+U coeficiente global de troca de calor [W/m2K]
+
+V velocidade  no duto [m/s]
+
+V velocidade média do ar no duto [m/s]
+
+W ponto vizinho ao oeste
+
+x coordenada espacial [m]
+
+y coordenada espacial [m]
+
+z coordenada espacial [m]
+
+SUPERÍNDICES
+
+
+
+xi
+
+o tempo anterior
+
+'
+fluxo de calor por m
+
+” fluxo de calor por m2
+
+SUBÍNDICES
+
+B ponto anterior
+
+Cte solo seco
+
+c coeficiente
+
+D diâmetro
+
+E ponto leste 
+
+g saturação
+
+i ponto genérico
+
+in entrada
+
+L latente
+
+N ponto norte
+
+P ponto de estudo
+
+S ponto sul
+
+s seção transversal
+
+t transiente
+
+T ponto anterior
+
+v vapor
+
+W ponto oeste
+
+1 número de constante / corpo 1
+
+2 número de constante / corpo 2
+
+LETRAS GREGAS
+
+
+
+xii
+
+? distância da malha [m]
+
+?z comprimento do volume controle em z [m]
+
+? umidade relativa
+
+? massa específica [kg/m3]
+
+? conteúdo volumétrico de umidade do solo [m3água/m3solo]
+
+? umidade absoluta
+
+µ viscosidade absoluta [Ns/m2]
+
+? volume específico e viscosidade cinemática [m3/kg] e [m2/s]
+
+? difusividade térmica [m2/s]
+
+? coeficiente de expansão térmica [K-1]
+
+? transmissividade do plástico
+
+? constante de Stefan-Boltzmann [W/m2K4]
+
+? emissividade dos vegetais
+
+
+
+xiii
+
+ÍNDICE DE FIGURAS
+
+    Pág.
+
+3.1 Posicionamento das mangueiras sobre o solo no pé das roseiras.........................................18
+
+3.2 Circuitos de distribuição de água quente..............................................................................19
+
+3.3 Vista da plataforma contendo aquecedores, tanque de expansão e bomba ..........................20
+
+3.4 Mangueiras de plástico sobre os canteiros de roseiras .........................................................21
+
+4.1 Sistema trocador-armazenador de calor no solo ..................................................................22
+
+4.2 Balanço de energia para a equação 4.6.................................................................................24
+
+4.3 Representação do plano x-y da discretização do volume de controle do solo .....................26
+
+4.4 Volume de controle do tubo no solo ....................................................................................27
+
+4.5 Representação esquemática de um arranjo infinito de tubos no plano x-y ..........................30
+
+5.1 Esquema mostrando os parâmetros geométricos do problema ............................................31
+
+5.2 Volume de controle na direção z para dedução da equação para o ar ..................................32
+
+5.3 Volumes de controle no plano x-y .......................................................................................32
+
+5.4 Volumes de interface entre o solo e o ar ..............................................................................34
+
+6.1 Variação da tempertura do ar com o tempo para D=0,25m, L=5m, situação A...................40
+
+6.2 Variação da tempertura do ar com o coomprimento do duto para D=0,25m, L=5m, A .....40
+
+6.3 Variação da tempertura do ar com o tempo para D=0,40m, L=10m, situação B .................41
+
+6.4 Variação da tempertura do ar com o comprimento do duto para D=0,40m, L=10m, B.......42
+
+6.5 Variação da tempertura do ar com o tempo para D=0,40m, L=20m, situação C .................43
+
+6.6 Variação da tempertura do ar com o comprimento do duto para D=0,40m e L=20m, C.....44
+
+6.7 Variação da tempertura do ar com o tempo para D=0,40m, L=10m, situação B .................44
+
+6.8 Variação da umidade relativa com o tempo para D=0,40m, L=10m, situação B.................45
+
+6.9 Variação da umidade absoluta com o tempo para D=0,40m, L=10m, situação B ...............46
+
+6.10 Campo de temperaturas na entrada do duto, D=0,40m, L=10m, t=13 horas .......................47
+
+6.11 Campo de temperaturas a 5m da entrada do duto, D=0,40m, L=10m, t=13horas ...............47
+
+6.12 Campo de temperaturas na entrada do duto, D=0,40m, L=10m, t=17horas .......................48
+
+6.13 Campo de temperaturas na entrada do duto, D=0,40m, L=10m, t=21horas ........................48
+
+Figura 1 Esquema mostrando o calor perdido por radiação da estufa para o meio ambiente........58
+
+
+
+xiv
+
+ÍNDICE DE TABELAS
+
+    Pág.
+
+6.1 Comparação entre os valores obtidos por Gauthier et. al. e pelo presente trabalho para três
+
+configurações do trocador de calor ................................................................................................38
+
+6.2 Presente solução com e sem os termos relativos a condensação do vapor d'água ...................39
+
+6.3 Comparação entre os valores obtidos por Gauthier et al.,1997 e pelo presente trabalho........49
+
+Tabela 1 Propriedades físicas da água a temperatura de 4°C........................................................52
+
+Tabela 2 Propriedades físicas do ar à temperatura de 0°C............................................................53
+
+
+
+Introdução 1
+
+1. INTRODUÇÃO
+
+1.1 MOTIVAÇÃO
+
+Estufas solares destinadas à agricultura obtiveram um crescimento em sua utilização no
+
+mercado de produção agrícola mundial nas últimas décadas. No Brasil, particularmente no Rio
+
+Grande do Sul, surgiu a necessidade da implementação e estudos mais aprofundados acerca de
+
+estufas solares destinadas à plasticultura de rosas.
+
+A qualidade e quantidade das rosas produzidas no interior de estufas estão intimamente
+
+ligadas ao manejo da estufa. Os cuidados com fatores ambientais como, temperatura, umidade
+
+relativa do ar, são importantes, uma vez que vão influenciar na velocidade de desenvolvimento da
+
+flor e na sanidade da roseira. A produção de rosas, no inverno de regiões frias do Brasil, como a
+
+serra gaúcha, pode ser limitada com o abaixamento da temperatura, principalmente quando se trata
+
+de variedades suscetíveis. Em certas situações e locais a produção pode ser interrompida, ou mesmo
+
+as roseiras podem ser destruídas, devido ao aumento de volume causado pelo congelamento de sua
+
+seiva.
+
+Basicamente a roseira é uma planta de dias longos e seu melhor desenvolvimento ocorre em
+
+zonas com altos níveis de insolação, associadas a temperaturas adequadas, podendo estas
+
+temperaturas ser variadas e elevadas [Kämpf, 2000]. Devido a estas características, a
+
+comercialização da rosa é pensada conforme sua escassez no inverno e seu excedente no verão, a
+
+condição de inverno provoca na roseira um estado de repouso, isto é, sua atividade vegetal é
+
+diminuída.
+
+A utilização de estufas climatizadas possibilita a continuidade da produção e, com a
+
+valorização da rosa no mercado, maior ganho. O aporte de calor no interior da estufa através da
+
+energia solar vem a ser uma solução sem impacto ambiental e, dependendo da maior ou menor
+
+sofisticação, de baixo custo.
+
+Diante desta problemática, o GESTE-UFRGS (Grupo de Estudos Térmicos e Energéticos)
+
+envolveu-se junto à Associação dos Produtores de Rosa da Serra Gaúcha para investigar soluções
+
+para o problema emergencial de congelamento de roseiras cultivadas em estufas, decorrente das
+
+freqüentes geadas que se formam na região. Dentre as várias soluções cogitadas por este grupo de
+
+pesquisadores está o objeto do presente trabalho, que ocupa-se das estufas passivas, ou seja, aquelas
+
+
+
+Introdução 2
+
+em que as condições internas são alcançadas com a energia disponível no próprio ambiente,
+
+especialmente a energia solar.
+
+Especialmente na meia estação, durante o dia o excesso de calor absorvido pela estufa deve
+
+ser ventilado para que a alta temperatura não prejudique as plantas, em contraste, à noite, com as
+
+temperaturas baixas, calor deve ser adicionado ao ambiente. Devido a esta perda de energia durante
+
+o dia e a necessária reutilização à noite, surge a idéia de usar o solo como meio armazenador de
+
+calor. Deve-se observar entretanto que a troca de calor entre o ar do interior da estufa e o solo é
+
+pobre uma vez que não há grandes massas associadas ao sistema e a sua inércia térmica é baixa,
+
+incorrendo nas grandes oscilações de temperatura citadas acima.
+
+A fim de aumentar a participação do solo no processo, desenvolveu-se trocadores de calor
+
+terra-ar, que são feixes de tubos enterrados no solo, onde o ar do ambiente interno da estufa é
+
+forçado a escoar através deles. Durante o dia o ar quente da estufa ao passar pelos dutos transfere
+
+calor para o solo. Essa energia fica armazenada para posterior utilização. Durante a noite o processo
+
+se inverte. O ar frio da estufas passa pelos dutos através do solo aquecido levando calor ao ambiente
+
+da estufa.
+
+A partir dessa realidade, vários estudos experimentais são realizados por pesquisadores em
+
+todo o mundo, a fim de verificar a sua viabilidade. Sendo assim, a simulação numérica entra em
+
+cena, permitindo a otimização e diminuição dos custos e tempos relativos a aquisições de dados das
+
+pesquisas experimentais. Percebe-se que vários fatores influenciam no rendimento dos sistemas e
+
+diversas variáveis de projeto podem ser avaliadas e melhor compreendidas através dessa poderosa
+
+ferramenta de auxílio ao pesquisador.
+
+Neste trabalho, desenvolve-se um programa computacional para simular um problema
+
+transiente, tridimensional, em coordenadas cartesianas, resolvendo-se a equação da conservação da
+
+energia para o solo e o ar no interior dos tubos, empregando o Método dos Volumes Finitos.
+
+Os resultados obtidos através deste programa são comparados ao modelo desenvolvido por
+
+Gauthier et al.,1997, mostrando-se através de gráficos a concordância dos resultados.
+
+
+
+Introdução 3
+
+1.2 REVISÃO BIBLIOGRÁFICA
+
+A idéia de usar o solo como armazenador de calor remonta aos tempos mais antigos. Há
+
+3000 A.C., arquitetos iranianos já usaram torres de vento e túneis subterrâneos como sistema
+
+passivo de resfriamento.
+
+Wilkinson, em 1845, usou uma passagem subterrânea para resfriamento de celeiros para a
+
+permanência de bovinos.
+
+Nas últimas décadas, devido ao desenvolvimento de novos sistemas de automação, a maior
+
+concorrência comercial entre produtores, à contenção ao desperdício de energia e uso do
+
+computador como auxiliar nas pesquisas, houve um incremento significativo no interesse por
+
+desenvolver sistemas que aumentem a produção sem aumentar significativamente os custos.
+
+Abrams e Benton, 1980, estudaram o desempenho de um modelo onde o fluxo de calor do ar
+
+no interior de um tubo enterrado no solo é modelado como uma série de três elementos: a
+
+transferência de calor do ar em escoamento através do tubo, a transferência de calor para a superfície
+
+interna do tubo e a transferência de calor através da parede do mesmo. O duto é tratado como uma
+
+fonte em linha e assumem-se serem desprezíveis os gradientes térmicos ao longo do tubo.
+
+Em 1981, Bharadwaj e Bansal apresentaram uma análise para o cálculo das variações diária e
+
+anual da distribuição de temperatura no solo para várias condições de superfície, tais como:
+
+superfície seca e úmida com sol incidente e superfície seca e úmida sem a incidência da luz do sol.
+
+Concluem que a temperatura torna-se constante à profundidade de 0,15m para variações diárias, e à
+
+profundidade de 4m, para variações anuais.
+
+Bansal et al., 1983, realizaram um estudo da variação anual da distribuição de temperatura no
+
+solo para diferentes condições da superfície, com um estudo paramétrico referente a um túnel
+
+escavado a determinada profundidade do solo o qual circula ar em seu interior. O objetivo é verificar
+
+as perdas ou ganhos de calor pelo ar em escoamento no túnel. Concluem que aumentando o
+
+comprimento do túnel em até 10 m, pouco aumenta a troca de calor com o ar, mas aumentando a
+
+razão perímetro-área há aumento significativo na troca de calor entre o ar e o solo.
+
+Sibley e Raghavan, 1984, determinaram experimentalmente coeficientes de transferência de
+
+calor para convecção forçada dentro de tubos de 10,2 e 15,2 cm de diâmetro, impermeáveis, de
+
+plástico corrugado, aplicáveis à drenagem, para vários escoamentos e condições de temperatura. Os
+
+resultados indicam que os coeficientes de transferência de calor para dutos de drenagem são
+
+similares, em magnitude, àqueles encontrados em tubos lisos de mesmo diâmetro nominal. Neste
+
+
+
+Introdução 4
+
+trabalho é obtido também um relacionamento experimental entre o número de Nusselt e o número de
+
+Reynolds, que pode ser usado em simulações.
+
+Em 1985, Goswani e Dhaliwal relataram a transferência de calor de um sistema de
+
+resfriamento para o verão e técnica de aquecimento para o inverno que utiliza temperaturas do
+
+subsolo a profundidade de 1,83m. Neste estudo apresentaram como solução um modelo
+
+computacional que calcula a temperatura do ar que circula no duto enterrado, em qualquer ponto e
+
+em qualquer tempo. Para a transferência de calor entre o ar e duto é realizado um balanço de energia
+
+para cada elemento. A transferência de calor do tubo para o solo é analisada considerando o fluxo de
+
+calor radial interno de um cilindro semi infinito, formado pelo solo em torno do tubo. Realizaram
+
+também experimentos para validar o modelo, obtendo resultados semelhantes.
+
+Lefas e Santamouris, 1985, descreveram as exigências de controle ambientais de estufas e as
+
+vantagens obtidas pelo uso de equipamentos de controle sofisticados. Essas vantagens são uma
+
+maior taxa de crescimento das plantas e economia de energia. No mesmo ano mostram um projeto
+
+de estufa solar com sensores para manter as condições ideais de desenvolvimento das plantas.
+
+Schneider, 1985, examinou o problema da perda de calor de um tubo enterrado no solo
+
+considerando condições de contorno convectivas, tanto na superfície do duto, quanto na superfície
+
+do solo. Resolveu a condução do calor permanente num meio de condutividade térmica uniforme,
+
+com geometria cartesiana. Empregou o Método dos Elementos Finitos para determinar a distribuição
+
+de temperatura no solo e o fluxo de calor através do sistema.
+
+No ano de 1986, Boulard e Baille apresentaram um modelo numérico de armazenamento de
+
+calor no solo através de tubos enterrados, para condições específicas de uma estufa. Quando a
+
+temperatura do dia excede 25°C o excesso de calor, através de um trocador ar-água, é transferido
+
+para o solo através da circulação da água. Consideraram que a transferência de calor no solo é
+
+condutiva. As condições de contorno variam com o tempo e foram medidas experimentalmente;
+
+temperatura da superfície do solo, temperatura da superfície do tubo e temperatura da água.
+
+Utilizaram o Método de Diferenças Finitas e validaram com dados experimentais. Os autores
+
+usaram este modelo para analisar a influência de certos parâmetros no rendimento e comportamento
+
+de dois sistemas de armazenamento de calor para estufas. Discutiram a influência das propriedades
+
+térmicas do solo e a geometria dos tubos para o sistema descrito acima, ou seja, troca de calor entre
+
+ar-água e posteriormente com o solo. Foi abordado também o sistema estudado por Takakura e
+
+Yamakawa, 1981, com troca direta de calor entre o ar e o solo. Concluíram que o sistema ar-solo
+
+induz menores perdas de eficiência do que o sistema ar-água.
+
+
+
+Introdução 5
+
+Em 1986, Mavroyanopoulos e Kyritsis estudaram um sistema trocador de calor terra-ar,
+
+consistindo de 20 tubos de alumínio de 15m de comprimento, 0,2m de diâmetro e 0,2mm de
+
+espessura, instalados a profundidade de 2m numa estufa de 150 m2. Comparam os resultados do
+
+consumo de energia deste sistema com a energia elétrica utilizada em outra estufa exposta as
+
+mesmas condições climáticas e de mesmo tamanho. Comparam também com uma estufa sem
+
+qualquer tipo de aquecimento. Concluem que o consumo de energia do ventilador do trocador de
+
+calor terra-ar, durante o inverno, é 20% da energia total recuperada pela estufa aquecida pelo solo.
+
+Durante o mesmo período, o excesso de calor na estufa devido a energia solar é menor, quando
+
+comparada com o calor fornecido pelo trocador de calor durante a noite. A situação se inverte
+
+durante o resto do ano, isto é, o excesso de calor durante o dia é maior do que o requerido e
+
+fornecido durante a noite. A conclusão direta desses resultados é que o sistema retira calor do
+
+subsolo durante o inverno. Este calor é devido ao armazenamento natural de calor no subsolo, do
+
+verão ao inverno, ao invés do dia para noite.
+
+Boulard et al., 1989, realizaram experimentos num sistema de armazenamento de calor no
+
+solo, incluindo transferência de calor sensível e latente, realizados durante duas estações do ano.
+
+Concluem que este tipo de trocador pode ser usado no sul da França para manter uma temperatura
+
+média à noite, dentro e fora, de 7 a 9°C em março e abril. Utilizaram as medições realizadas para
+
+validar um modelo dinâmico, tridimensional, de armazenamento de calor no solo, incluindo a
+
+transferência de calor sensível e latente dentro dos tubos (ar/parede dos dutos) e meio sólido
+
+(superfície dos tubos/solo ao redor dos mesmos). Obtiveram boa concordância entre os valores
+
+medidos com os simulados, podendo este modelo ser utilizado para estudar diversos parâmetros de
+
+projeto para trocadores solo-ar.
+
+Sodha et al., 1989, verificaram o rendimento térmico de um sistema de túnel terra-ar semi
+
+infinito (infinito na direção horizontal perpendicular ao fluxo de ar). O fluxo de calor no solo é
+
+considerado unidimensional, na direção vertical (perpendicular à superfície do túnel e do solo). As
+
+variações diurnas e anuais de parâmetros relevantes de entrada (temperatura ambiente, radiação
+
+solar e umidade relativa), parâmetros de resposta (temperatura do solo) e parâmetros de saída
+
+(temperatura do ar na saída do túnel), são obtidos de maneira mais realista. Consideram as variações
+
+nas propriedades termofísicas do solo (condutividade térmica, densidade e calor específico) e os
+
+parâmetros do túnel (comprimento, profundidade, largura, fluxo de ar e condições internas de
+
+superfície). Desenvolveram análises em termos de parâmetros adimensionais para que os resultados
+
+possam ser generalizados. Quatro condições de superfície são analisadas: seca e úmida, com e sem
+
+
+
+Introdução 6
+
+radiação solar, sendo que elas são consideradas separadamente para o cálculo das temperaturas no
+
+solo e rendimento do túnel.
+
+Em 1989, Bernier et al. apresentaram uma análise experimental do rendimento de um
+
+trocador-armazenador de calor no solo, baseado num balanço de energia e equações de transferência
+
+de calor. Consideram como simplificações no modelo: as propriedades físicas no solo são
+
+constantes, cada camada do solo é homogênea, apenas o conteúdo de umidade do solo pode afetar as
+
+propriedades térmicas do mesmo para o intervalo de temperaturas envolvidas, a transferência de
+
+calor no solo é simétrica ao longo do eixo perpendicular ao eixo longitudinal da estufa e o perfil de
+
+temperatura é idêntico em cada tubo. O sistema trocador usa eletricidade para sua operação, um
+
+coeficiente de rendimento, COP, é desenvolvido para a avaliação do sistema.
+
+O sistema recupera o calor armazenado por convecção na superfície do solo e por circulação
+
+forçada através dos dutos do trocador. Uma temperatura mínima diferencial de 2°C entre o ar e o
+
+solo é suficiente para a eficiência da operação. Os resultados indicaram um COP médio de 4,6
+
+durante o período de teste. No mesmo ano estudaram os aspectos de economia de um sistema
+
+trocador de calor solo-ar. Concluíram que a energia solar contribuiu com 58% dos requisitos de
+
+aquecimento de fevereiro à junho, e de setembro à dezembro de 1986. Esta contribuição representou
+
+33% de economia de energia. Com estes resultados concluíram que o sistema levaria de um a cinco
+
+anos para pagar o investimento inicial, dependendo dos custos para implantação e as melhorias da
+
+produtividade na colheita.
+
+Diener et al., 1989, realizaram estudos experimentais num aviário, utilizando trocador-
+
+armazenador de calor no solo, obtendo uma economia de energia de 42%. Concluíram ainda que
+
+este tipo de sistema serve para qualquer instalação de confinamento de animais, faltando realizar a
+
+sua otimização.
+
+Sodha et al., 1991, consideraram os efeitos do armazenamento de calor no solo, e as
+
+variações dos parâmetros meteorológicos na análise do rendimento térmico dos tubos usados para
+
+propostas de aquecimento/resfriamento de ambientes. Concluíram que há um comprimento ideal do
+
+tubo para que o potencial de aquecimento anual por unidade de comprimento seja o máximo.
+
+Analisaram para diferentes superfícies do solo (secos e úmidos, com e sem irradiação solar) para
+
+climas quente/seco, seco/frio e composto, buscando para cada situação o comprimento otimizado.
+
+Kurata e Takakura, 1991a e 1991b, apresentaram um estudo sobre um sistema composto de
+
+coletores, estufa, tubos conectados aos coletores e enterrados sob a estufa para circulação da água e
+
+outro conjunto de tubos enterrados no solo para a circulação de ar. O solo abaixo da estufa não foi
+
+
+
+Introdução 7
+
+isolado. A energia solar coletada pelos coletores do verão até o inverno é transferida do solo para a
+
+água circulante. Um modelo experimental em escala mostrou que a quantidade de calor recuperada é
+
+aproximadamente o dobro quando há a circulação de ar. Contudo, no experimento numérico, sob as
+
+condições testadas, a energia elétrica consumida nas circulações de água e ar no armazenamento
+
+sazonal é maior do que a energia recuperada, enquanto que a energia armazenada diária ocorre o
+
+contrário. Este rendimento pobre do armazenamento sazonal pode ser atribuído às perdas de calor
+
+através dos contornos da região de armazenamento de calor.
+
+Em 1992, Mihalakakou et al. desenvolveram um modelo simples, mas preciso, para as
+
+variações diária e anual da temperatura do solo para vários tipos de superfícies do solo, a várias
+
+profundidades. Compararam os resultados obtidos com os conjuntos e medições realizados em
+
+Atenas. Este trabalho é útil para verificar o desempenho em ambientes em contato direto com o solo
+
+e a eficiência de trocadores de calor terra-ar.
+
+Em 1992, Tzaferis et al. apresentaram oito algoritmos diferentes para determinar o
+
+rendimento de trocadores de calor terra-ar. São examinados a sensibilidade dos modelos para
+
+determinar a temperatura do ar na entrada, a sua velocidade, o comprimento do tubo, o seu raio e
+
+profundidade em que estão enterrados no solo. Foram comparados os resultados com dados
+
+experimentais.
+
+Em 1992, Bryan et al. publicaram um artigo onde desenvolvem correlações empíricas para a
+
+condutividade térmica de vários tipos de solo. Essas correlações foram desenvolvidas a partir de
+
+dados medidos obtidos na literatura pertinente ao assunto.
+
+Sodha et al., 1993, investigaram o efeito do comprimento, raio dos tubos e a vazão de ar num
+
+sistema de tubos enterrados, no seu potencial de resfriamento sazonal. Este estudo foi realizado para
+
+climas quente/seco, típico das regiões de Jodhpur e Delhi, na Índia.
+
+Em 1993, Santamouris apresentou o estado da arte na aplicação de sistemas solares ativos
+
+para o aquecimento de estufas. Cinqüenta e três estufas solares para agricultura em todo o mundo
+
+são revistas. Classificou os sistemas conforme o tipo de tecnologia utilizada. Analisou os vários
+
+sistemas coletores, tanto quanto os materiais utilizados para o armazenamento, bem como suas
+
+características. Apresentou o desempenho de vários sistemas de aquecimento, e os problemas
+
+relacionados às suas técnicas, bem como os respectivos aspectos econômicos.
+
+Baxter, em 1994, investigou o potencial do solo como armazenador de calor, utilizando-o
+
+abaixo de determinada profundidade, onde não há mais interferência das temperaturas da superfície.
+
+Estudou os parâmetros de trocas de energia, gradientes e níveis de temperatura longitudinais e
+
+
+
+Introdução 8
+
+laterais do sistema terra-tubo, equações polinomiais para gradientes longitudinais, condições
+
+psicrométricas, valores de troca de energia cumulativas mensal e sazonal, coeficientes de
+
+desempenho (COP) e avaliações de eficiência. Estes estudos mostraram o potencial de tais sistemas
+
+como forma de resfriamento de estufas.
+
+Em 1994, Trombe e Serres mostraram dois modelos simplificados de simulação numérica
+
+para um sistema trocador terra-ar. O primeiro modelo é usado para determinar a transferência de
+
+calor em regime transiente para as paredes de uma casa. O segundo calcula a transferência de calor
+
+ao longo do tubo enterrado no solo. Para o primeiro resolvem a equação da transferência de calor em
+
+coordenadas cartesianas, unidimensional, utilizando a técnica de Volumes Finitos. Para o segundo
+
+caso assumem as seguintes aproximações: 1) os cálculos de troca térmica são desenvolvidos em
+
+regime estacionário (a inércia do solo é alta se comparada com o escoamento do ar no tubo
+
+enterrado); 2) o solo foi considerado à temperatura constante durante a troca térmica; 3) o ar é
+
+considerado incompressível; 4) as propriedades do solo são constantes. Os resultados destes
+
+modelos foram comparados com dados experimentais obtendo boa concordância.
+
+Sodha et al., em 1993, analisaram o rendimento de um sistema de tubos paralelos enterrados
+
+no solo, com escoamento de ar, visando observar os aspectos do potencial anual de aquecimento e
+
+resfriamento de tais sistemas. Avaliam a influência entre os tubos, a variação sazonal dos
+
+parâmetros ambientais (temperatura ambiente, radiação solar, umidade relativa, temperatura da
+
+terra, etc.) além da condição de superfície do solo úmida sem radiação solar. O objetivo foi o de
+
+alcançar uma maior eficiência do sistema para um clima quente e seco, como o das cidades indianas
+
+de Jodhpur e Delhi. Dois casos são estudados. No primeiro a temperatura do ar na entrada do duto é
+
+a média diária da temperatura ambiente. No segundo caso, essa temperatura é obtida de uma sala
+
+condicionada
+
+Sawhney e Mahajan, em 1994, realizaram um estudo experimental para avaliar o potencial
+
+de aquecimento/ resfriamento de um sistema de tubos enterrados no solo, aplicado ao clima indiano.
+
+Na Grécia, em 1994, Mihalakakou et al. conduziram um estudo para avaliar o desempenho
+
+de trocadores terra-ar utilizando um tubo enterrado horizontalmente no solo. Este estudo é
+
+experimental e numérico, sendo este um modelo transiente que avalia a transferência de calor e
+
+massa no solo, usando para tanto coordenadas cilíndricas.
+
+Mihalakakou et al., 1994, descrevem um modelo numérico para calcular o rendimento de um
+
+sistema trocador de calor terra-ar de tubos múltiplos e paralelos. O modelo proposto é validado
+
+
+
+Introdução 9
+
+através de dados experimentais. Estudaram também a influência de vários parâmetros de projeto de
+
+tais sistemas.
+
+Em 1994, Santamouris et al. relataram um estudo completo sobre 95 estufas no mundo.
+
+Identificam relevantes informações técnicas utilizadas nos sistemas de aquecimento usando fontes
+
+de energia alternativas. Revisaram cinco categorias de estufas solares passivas, de acordo com as
+
+características dos sistemas de armazenamento de calor: água, material com mudança de fase, leito
+
+de pedras, tubos enterrados e outros tipos de sistemas. Incluem informações sobre o rendimento
+
+térmico de cada sistema.
+
+Mihalakakou et al., 1994, desenvolveram um novo modelo completo para determinar o
+
+rendimento térmico de trocadores de calor terra-ar. O modelo descreve a transferência simultânea de
+
+calor e massa no interior do tubo e solo, considerando a estratificação térmica natural do solo. O
+
+modelo é validado com dados experimentais. Ele foi desenvolvido em ambiente TRNSYS, e pode
+
+ser facilmente aplicado a quaisquer tipos de ambientes para o estudo de armazenamento de calor.
+
+Em 1994, Santamouris et al. apresentaram o projeto, construção e operação de um protótipo
+
+de estufa solar passiva de 1000 m2 para agricultura. O objetivo é reduzir as perdas de calor e
+
+aumentar os ganhos de energia solar diária e sazonal. Os elementos passivos das estufas são uma
+
+parede de armazenamento no lado norte e uma rede de tubos enterrados no solo da estufa, compondo
+
+um trocador de calor terra-ar. Monitorando a estufa, por dois anos, obtiveram o resultado de que os
+
+sistemas passivos oferecem energia que eqüivale a 35% dos requisitos de energia necessários para
+
+manter uma estufa convencional em funcionamento.
+
+No ano de 1995, Santamouris et al. apresentaram um método que permite calcular a carga de
+
+resfriamento de ambientes e avaliar a parcela de contribuição dos tubos enterrados. Utilizaram o
+
+TRNSYS na validação.
+
+Mihalakakou et al., em 1995a e 1995b, desenvolveram um modelo para estudar a influência
+
+das variáveis comprimento do tubo, raio do tubo, velocidade do ar que circula no interior do tubo e a
+
+profundidade em que os tubos estão enterrados abaixo da superfície do solo, em sistemas trocador
+
+de calor terra-ar. O algoritmo desenvolvido fornece a temperatura na saída do tubo e, portanto, o
+
+potencial de resfriamento do sistema.
+
+Em 1995, Mihalakakou et al. aperfeiçoaram o modelo descrito acima com o objetivo de
+
+determinar as temperaturas no solo abaixo de construções. O modelo foi desenvolvido para calcular
+
+o fluxo de calor do ambiente para o solo. As maiores dificuldades para obter o fluxo de calor são
+
+devidas ao processo térmico tridimensional, à forte variação temporal da temperatura ambiente e ao
+
+
+
+Introdução 10
+
+número elevado de parâmetros geométricos envolvidos. O modelo foi validado com dados
+
+experimentais.
+
+Bojic et al., 1997, avaliaram o desempenho econômico e térmico de um trocador de calor
+
+terra-ar, acoplado a um sistema de aquecimento ou resfriamento de uma construção que usa 100%
+
+de ar fresco como meio de aquecimento, ou resfriamento, durante o inverno e verão. O solo é
+
+dividido em camadas elementares. O problema resolvido é transiente, mas a equação da energia em
+
+regime permanente é usada para as camadas de solo em cada passo de tempo. Concluem que esse
+
+sistema cobre parte dos custos diários de aquecimento/resfriamento de um ambiente.
+
+Em 1997, Santamouris et al. publicaram um artigo que complementa o trabalho realizado por
+
+estes pesquisadores em 1995. Em adição aquele, calculam tanto a carga de resfriamento de
+
+construções, quanto as contribuição global do solo e as técnicas de ventilação à noite.
+
+Em 1997, Gauthier et al. conduziram um estudo numérico para compreender o
+
+comportamento térmico de sistemas trocadores de calor terra-ar, com o objetivo de reduzir o
+
+consumo de energia de estufas. O modelo desenvolvido para o estudo é tridimensional e transiente,
+
+resultante do acoplamento entre as equações da conservação da energia para o solo e o ar circulante.
+
+A validação ocorre com dados experimentais. Este modelo é utilizado para estudar o efeito de vários
+
+parâmetros de projeto no desempenho de tais sistemas.
+
+Brousseau e Lacroix, em 1998, apresentam um modelo computacional para determinar o
+
+comportamento térmico de uma unidade de armazenamento de calor latente, multi camada,
+
+compacto. O modelo é baseado nas equações de conservação da energia para um material com
+
+mudança de fase e transferência de calor num fluido. Fontes de energia elétrica embutidas no
+
+sistema são usadas para armazenar calor (fusão), enquanto que o escoamento de um fluido é
+
+empregado para recuperar o calor (solidificação). Estudos paramétricos são realizados para constatar
+
+o efeito de vários parâmetros de projeto e condições de operação. Os resultados indicam que a carga
+
+média do calor na saída durante o período de solidificação é fortemente dependente da temperatura
+
+mínima de operação, da difusividade térmica da fase líquida, da espessura da camada de material de
+
+mudança de fase, do fluxo de massa do fluido e da temperatura. Por outro lado é praticamente
+
+independente da difusividade térmica da parede e da temperatura máxima de operação. Os autores
+
+desenvolvem correlações para a energia total armazenada e carga térmica na saída, como funções
+
+dos parâmetros de projeto e condições de operação.
+
+
+
+Introdução 11
+
+1.3 ESCOPO DA DISSERTAÇÃO
+
+Há uma tendência cada vez maior em investir-se em pesquisas que possam solucionar
+
+problemas práticos de engenharia com custos baixos; portanto, a simulação numérica aliada ao
+
+computador pessoal vem ao encontro dessa aspiração.
+
+No capítulo 2 disserta-se sobre estufas solares passivas, o seu funcionamento e sua
+
+classificação e descreve-se sucintamente sobre cada tipo de sistema de aquecimento/resfriamento de
+
+estufas passivas.
+
+O capítulo 3 aborda um sistema de aquecimento aplicado às estufas da Serra Gaúcha.
+
+Discute-se o problema inicial das roseiras, as soluções encontradas pelo grupo GESTE-UFRGS
+
+relatando-se o projeto desenvolvido. Mostra-se circuitos de distribuição de água aquecida e
+
+fotografias do sistema implementado.
+
+No capítulo 4 apresenta-se o modelo dos canadenses Carol Gauthier et al., 1997, as hipóteses
+
+simplificativas, as equações governantes, as condições inicial e de contorno e o estudo paramétrico
+
+realizado
+
+Com referência ao capítulo 5, aborda-se a implementação do modelo descrito no capítulo
+
+anterior mostrando-se como foi realizada as adequações ao programa tridimensional de Patankar,
+
+1980, relatando-se as particularidades de implementação que o paper de Gauthier et al., 1997,
+
+negligencia.
+
+O capítulo 6 trata dos resultados das simulações numéricas em forma gráfica, discutindo-se
+
+as diferenças e semelhanças entre os vários casos. Apresentam-se resultados tanto para uma
+
+abordagem apenas térmica , quanto mássica pela consideração do termo latente na condensação e
+
+evaporação do conteúdo de umidade do ar.
+
+Finalmente no capítulo 7 são apresentadas conclusões gerais e sugestões para futuros
+
+trabalhos para a continuidade de pesquisas nesta área.
+
+No apêndice relata-se o memorial de cálculo do sistema de aquecimento desenvolvimento às
+
+estufas da serra gaúcha.
+
+
+
+Estufas Passivas 12
+
+2. ESTUFAS PASSIVAS
+
+Há basicamente dois tipos de estufas agrícolas que usam energia solar para aquecimento:
+
+estufas solares passivas e estufas solares ativas.
+
+Entende-se por estufas passivas aquelas em que as condições internas são alcançadas apenas
+
+com a energia disponível no próprio ambiente, o que na maior parte dos casos é a energia solar, mas
+
+também pode ser a energia armazenada no solo ou a produzida por um biodigestor. Em estufas
+
+solares passivas a própria estufa serve como coletor solar, por isso é projetada para absorver o
+
+máximo de energia.
+
+Contrariamente, as estufas ativas dispõem de equipamentos movidos por fontes externas de
+
+energia, como lenha, derivados de petróleo ou eletricidade. Estufas solares ativas são equipadas com
+
+sistemas com coletores solares e um sistema de armazenamento de calor independente da estufa.
+
+Essa diferenciação é importante quando se trata de levantar os custos de instalação e de operação de
+
+uma estufa [Kämpf, 2000].
+
+Para se obter condições ótimas para o desenvolvimento de plantas em ambientes
+
+climatizados, mais especificamente em estufas solares destinadas à plasticultura, necessita-se
+
+sistemas de aquecimento/resfriamento apropriados. Para isto é necessário um balanço externo das
+
+variações climáticas, especialmente durante as noites frias do inverno e os dias quentes do verão. O
+
+resfriamento pode ser obtido na maioria dos casos por simples técnicas de ventilação, tais como
+
+aberturas no telhado ou nas laterais da estufa. Mesmo nos dias ensolarados do inverno,
+
+especialmente nas regiões de baixa latitude, a temperatura no interior das estufas aumenta
+
+intensamente, requerendo ventilações naturais ou mecânicas apropriadas.
+
+De forma geral, as estufas para agricultura consomem aproximadamente 1,5% do orçamento
+
+de energia total da Europa para aquecimento e resfriamento. Os custos de combustíveis para manter
+
+o aquecimento de estufas chega a 30% do custo operacional total de uma estufa. Consequentemente,
+
+este custo torna inviável o uso de sistemas de aquecimento em muitas aplicações. Por exemplo, na
+
+Grécia, onde o custo de energia é relativamente alto, apenas 6,4% das estufas instaladas são
+
+equipadas com sistemas de aquecimento convencional [Santamouris, 1993]. Isto tem como resultado
+
+um impacto significante no tempo, qualidade, e quantidade de produtos, desde que o principal
+
+objetivo de uma estufa é produzir produtos agrícolas fora da estação tradicional de cultivo. Para
+
+superar esses problemas é de primordial importância utilizar tecnologias de aquecimento
+
+
+
+Estufas Passivas 13
+
+alternativas, com baixo custo, tais como o uso de materiais avançados para a cobertura das estufas e
+
+cortinas térmicas à noite.
+
+É imperativo a melhoria da eficiência dos sistemas de aquecimento, aumentando a
+
+exploração das fontes alternativas de energia para manter as condições internas ideais nas estufas,
+
+para cada diferente cultura durante os meses de inverno. Em particular, a substituição de
+
+combustíveis convencionais como propostas de aquecimento, como a energia solar, atraiu muito a
+
+atenção nos últimos anos. Pesquisas contínuas nesta área, e vários projetos demonstrativos de
+
+sucesso, resultaram em avanço rápido na comercialização dessas tecnologias com resultados
+
+técnicos satisfatórios.
+
+2.1 CLASSIFICAÇÃO DAS ESTUFAS SOLARES PASSIVAS
+
+Estufas solares passivas para a agricultura podem ser agrupadas de acordo com as
+
+características do sistema de armazenamento de calor. O meio de armazenamento de calor pode ser
+
+variado e utilizar diferentes materiais tais como água, material de mudança de fase, leito de rochas
+
+ou solo através de tubos enterrados.
+
+Neste caso várias técnicas solares passivas são usadas para satisfazer os requisitos de
+
+aquecimento da mesma. Por exemplo, algumas estufas utilizam a geometria de célula para obter
+
+maiores ganhos de energia solar. Outras isolam os lados sul, leste e oeste, e usam superfícies
+
+refletivas no solo do lado norte, para absorver mais radiação solar dentro da estufa durante os meses
+
+de inverno.
+
+A seguinte discussão revisa cinco categorias de estufas solares passivas, de acordo com o
+
+meio utilizado como armazenador, isto é:
+
+• Água,
+
+• Material de mudança de fase,
+
+• Leito de pedras,
+
+• Solo com tubos enterrados,
+
+• Outros tipos de armazenadores.
+
+Normalmente o desempenho de um sistema é influenciado por vários parâmetros
+
+interrelacionados, incluindo o tamanho da estufa, os materiais de cobertura, o tipo de cultivo (ou a
+
+temperatura do ar no interior da estufa desejada no dia e à noite) e a localização da mesma
+
+(condições externas). Com todas estas informações disponíveis, é possível realizar uma análise
+
+
+
+Estufas Passivas 14
+
+paramétrica detalhada ou a comparação entre os diferentes sistemas para definir o tipo mais
+
+adequado a determinadas situações.
+
+2.1.1 ESTUFAS SOLARES PASSIVAS COM ARMAZENAMENTO EM ÁGUA
+
+O meio de armazenamento de calor pode estar localizado fora da estufa, neste caso a
+
+transferência de calor ocorre através de um fluido. Ou pode estar localizado dentro da mesma, onde
+
+a troca de calor ocorre diretamente entre o sistema e o ar interno. O sistema armazenador pode ser
+
+colocado dentro da estufa, em sacos plásticos preenchidos com água sobre a superfície do solo, ao
+
+longo do caminho entre as filas de plantas ou em recipientes ao longo do lado norte da estufa que
+
+atuam como coletores solares armazenadores de calor.
+
+Um sistema que combina armazenamento de calor em água, em recipientes enterrados no
+
+solo, e trocadores de calor ar-água pode também ser utilizado.
+
+Outras variações destes sistemas podem ser utilizadas. Armazenamento de água no solo e
+
+tubos plásticos preenchidos com água que funcionam como coletores solares durante o dia, neste
+
+caso no interior da estufa.
+
+Ainda outra variante deste sistema é o armazenamento em água em tonéis colocados na
+
+posição vertical no lado sul da estufa. A radiação solar incidente, entrando pelo lado norte, é
+
+diretamente absorvida pelo meio armazenador. Este sistema também atua como isolamento térmico
+
+da face sul.
+
+2.1.2 ESTUFAS SOLARES PASSIVAS COM MATERIAL DE MUDANÇA DE FASE
+
+Materiais de mudança de fase são uma alternativa como meio armazenador de calor.
+
+Materiais como o CaCl26H2O (com temperatura de fusão de 25°C e um calor latente de fusão de
+
+154900 kJ/m3) são empregados em muitas instalações. O material para armazenamento de calor é
+
+usualmente colocado no solo, bem isolado, ou na parede do lado norte da estufa. O ar quente e
+
+úmido do interior da estufa circula através de tubos enterrados no material de calor latente durante o
+
+dia. O calor absorvido pelo material é armazenado para posterior uso. Ao receber calor estes
+
+materiais fundem a temperatura aproximadamente constante. A noite o ar frio do interior da estufa
+
+circula através do material armazenador e é aquecido antes de retornar a mesma. O material volta
+
+então a sua condição sólida inicial.
+
+
+
+Estufas Passivas 15
+
+2.1.3 ESTUFAS SOLARES PASSIVAS COM LEITO DE PEDRAS
+
+Um sistema armazenador de calor popular e econômico é o leito de pedras, que consiste em
+
+pedras com 20-100mm de diâmetro. A área de armazenamento é colocada abaixo da superfície do
+
+solo da estufa a profundidade de 40-50cm. As pedras podem ser colocadas numa cavidade de
+
+concreto isolada. Durante o dia, o excesso de calor transfere-se da estufa para as rochas. Um
+
+ventilador pode ser usado para transportar o ar da estufa para a área de armazenamento. À noite o
+
+processo se inverte; o ar frio circula através do material armazenador, onde o calor é transferido das
+
+rochas retornando para a estufa.
+
+2.1.4 ESTUFAS SOLARES PASSIVAS COM TUBOS ENTERRADOS
+
+O solo é visto como um meio facilmente acessível ao armazenamento de calor. Usando tubos
+
+enterrados plásticos ou de alumínio, o excesso de calor durante o dia é transferido do interior da
+
+estufa, através dos dutos, para o solo. Os tubos geralmente são colocados ao longo do comprimento
+
+da estufa, com entrada e saída do ar nos extremos.
+
+Durante o dia, o ar úmido aquecido é captado das regiões mais elevadas da estufa e forçado a
+
+circular pelos dutos no solo, a temperatura do solo na vizinhança tem um aumento. Durante a noite,
+
+o ar frio da estufa é forçado a circular na área de armazenamento composta pelos dutos enterrados.
+
+O calor é transferido do solo para o ar em escoamento e então retorna à estufa. O calor também é
+
+recuperado por condução através do solo e posteriormente por radiação e convecção dentro da
+
+estufa. A água eventualmente condensada no interior dos dutos é drenada ou evaporada pelo fluxo
+
+forçado de ar. Durante os dias de verão o mesmo sistema pode ser usado para resfriar o interior da
+
+estufa. A temperatura interior é substancialmente maior do que a temperatura do solo. Como
+
+resultado, a estufa é resfriada pela circulação do ar da mesma através da área de armazenagem,
+
+ocorrendo o processo inverso descrito acima.
+
+2.1.4 OUTROS MEIOS ARMAZENADORES DE CALOR PARA ESTUFAS PASSIVAS
+
+Insere-se nesta categoria sistemas mistos formados pela a associação entre diferentes
+
+materiais e técnicas de armazenamento.
+
+
+
+Estufas Passivas 16
+
+Variações com aplicação de coletores solares foram testadas, assim como várias outras
+
+associações. Dentre estas destaca-se a parede sul para armazenamento, com ou sem isolamento.
+
+
+
+Sistema de aquecimento aplicado a estufas na Serra Gaúcha 17
+
+3. SISTEMA DE AQUECIMENTO APLICADO A ESTUFAS NA SERRA GAÚCHA
+
+Como mencionado anteriormente, o GESTE (Grupo de Estudos Térmicos e Energéticos)
+
+utiliza-se de técnicas descritas no capítulo anterior para atender ao projeto dos produtores de rosas
+
+da serra gaúcha. Desenvolveu-se um sistema alternativo baseado no emprego da energia solar. As
+
+observações feitas sobre a arquitetura das estufas, juntamente com informações dos técnicos
+
+agrícolas responsáveis pelo seu manejo, levaram a concluir que estas construções se caracterizam
+
+por responder com rapidez aos estímulos externos, o que se traduz pelo pronunciado aumento de sua
+
+temperatura interna quando há incidência de radiação solar, bem como pelo rápido resfriamento
+
+noturno deste ambiente, praticamente seguindo o abaixamento da temperatura do ar exterior. Este
+
+comportamento denota que o ambiente tem baixa inércia térmica, o que sugere uma solução onde
+
+seria necessário aumentar a capacidade de armazenar calor desta estufa.
+
+A solução encontrada foi obtida com a instalação de reservatórios de água, com o duplo
+
+intuito de servir como coletor solar e de agregar mais massa ao ambiente. Outra solução estudada e
+
+implementada foi de um sistema térmico artificial para a calefação das estufas. Este sistema é
+
+composto de aquecedores a gás liqüefeito de petróleo e a óleo, onde são conectados sistemas de
+
+distribuição da água quente compostos por mangueiras plásticas sobre a superfície do solo. Estas
+
+mangueiras compõem um trocador de calor água-ar. Do lado da água tem-se convecção forçada por
+
+uma bomba. Do lado do ar a troca ocorre por convecção natural.
+
+A estufa solar foi adaptada a partir de uma estufa já existente na Agro Pecuária Clarice, cuja
+
+estrutura é feita em madeira e a cobertura é de plástico transparente. Sua forma é retangular,
+
+alongada no sentido leste-oeste, com área de 500 m2 (10m x 50m).
+
+A situação de projeto dos sistemas de aquecimento a gás e a óleo acima descritos é a uma
+
+madrugada típica de inverno da serra gaúcha, com temperatura interna da estufa de 0°C, temperatura
+
+externa de –5°C e temperatura aparente do céu de –20°C. A transmissividade do plástico a
+
+comprimentos de onda longos é de 0,6 , a emissividade das folhas das roseiras é de 0,94 , com fator
+
+de forma de corpo negro igual a 1.
+
+Considerando as perdas térmicas por convecção para o ambiente, radiação para o céu limpo e
+
+infiltrações, nas condições descritas acima, em regime permanente, a carga térmica é de
+
+aproximadamente 30 kW.
+
+No caso do emprego do gás, considerando que a potência total do aquecedor instantâneo
+
+comercializado por fabricante local especializado é da ordem de 15kW, necessita-se, portanto, de
+
+
+
+Sistema de aquecimento aplicado a estufas na Serra Gaúcha 18
+
+dois aquecedores por estufa. Optou-se por aquecedores de fabricação nacional, pouco
+
+automatizados, de forma que seu funcionamento é simples, são baratos e o fabricante possui um
+
+serviço de assistência técnica bem consolidado no interior do estado.
+
+As mangueiras plásticas que compõem o trocador de calor operam em circuito fechado,
+
+repousando sobre a terra junto à base das roseiras, entregando assim calor junto ao pé da planta,
+
+conforme pode ser visto na figura 3.1. Também aqui se aplica uma tecnologia simples, já dominada
+
+pelos plasticultores, uma vez que a irrigação das roseiras já é feita de forma semelhante.
+
+Figura 3.1 – Posicionamento das mangueiras sobre o solo no pé das roseiras
+
+O uso de dois aquecedores, com circuitos independentes e atendendo a toda a estufa, figura
+
+3.2, possibilita o escalonamento em duas potências. Na primeira delas, em situações menos críticas
+
+do que as do cálculo acima, seria ligado somente um queimador, tendo-se portanto 15 kW. Na
+
+segunda, em situações extremas, o segundo queimador seria ligado, tendo-se assim a potência total
+
+de 30 kW.
+
+
+
+Sistema de aquecimento aplicado a estufas na Serra Gaúcha 19
+
+Figura 3.2 – Circuitos de distribuição de água quente
+
+Devido ao tanque de expansão, bomba e aquecedores estarem localizados no centro da
+
+estufa, esta região teria temperaturas mais altas; a distribuição da água aquecida, portanto, deve ser
+
+das extremidades para o centro da mesma, possibilitando, assim, temperaturas mais homogêneas no
+
+ambiente interno da estufa.
+
+Outra observação importante quanto à segurança do sistema é o uso de tubos de aço
+
+galvanizado na parte do circuito central, pois este material oferece maior segurança do que o
+
+polietileno em regiões próximas dos aquecedores. Além disso, próximo à bomba, deve-se utilizar
+
+material que suporte vibrações e pressões mais elevadas.
+
+No detalhamento do projeto houve necessidade de verificar a resistência ao calor das
+
+mangueiras de polietileno. A temperatura da água que circula nas mangueiras está entre 40°C e
+
+50°C. Inicialmente, por economia, procurou-se usar um material de menor custo, mangueira com
+
+espessura de parede de 2,30mm. Através de contatos com fornecedores constatou-se a necessidade
+
+de usar uma mangueira com espessura de parede de 3mm, para que estas suportem as temperaturas
+
+
+
+Sistema de aquecimento aplicado a estufas na Serra Gaúcha 20
+
+mencionadas acima. Mesmo com esta espessura as mangueiras não devem ser utilizadas de forma
+
+suspensa, pois pode ocorrer a deformação plástica das mesmas.
+
+Na ocasião fez-se um detalhamento do material necessário à implantação do projeto
+
+informando o custo total do mesmo, bem como locais possíveis de serem adquiridos. Com uma
+
+pesquisa de mercado mais apurada, o custo total de implantação do sistema ficou em
+
+aproximadamente R$ 2.000,00 (jan / 98).
+
+Figura 3.3 – Vista da plataforma contendo aquecedores, tanque de expansão e bomba
+
+Posteriormente o layout do circuito de mangueiras de distribuição de água quente foi
+
+modificado por outros membros da equipe. Esta correção foi necessária em função do desequilíbrio
+
+dos fluxos de água quente causados pelos desnível do terreno, desnível este não previsto no projeto.
+
+Também foi implementado, por outros membros da equipe, o aquecedor a óleo, com maior
+
+potência.
+
+
+
+Sistema de aquecimento aplicado a estufas na Serra Gaúcha 21
+
+De um modo geral, pode-se reportar o sucesso destes sistemas de aquecimento, que são
+
+capazes de não somente evitar a perda das roseiras por congelamento, mas principalmente de
+
+aumentar a produtividade destas estufas.
+
+Figura 3.4 – Mangueiras de plástico sobre os canteiros de roseiras
+
+O memorial de cálculo da potência dos aquecedores necessária para manter as estufas na
+
+faixa desejada de temperatura encontra-se no apêndice.
+
+
+
+Apresentação do Modelo de Gauthier et al., 1997 22
+
+4. APRESENTAÇÃO DO MODELO DE GAUTHIER et al., 1997
+
+A proposta deste trabalho é o estudo de um modelo para a otimização de vários parâmetros
+
+de projetos de sistemas para armazenamento de calor através da circulação de ar no interior de tubos
+
+enterrados no solo. A figura 4.1 mostra o sistema em questão.
+
+Figura 4.1 – Sistema trocador-armazenador de calor no solo
+
+O modelo de transferência de calor é baseado nas seguintes suposições:
+
+(1) A transferência difusiva de calor no solo é tridimensional e transiente.
+
+(2) As propriedades térmicas do solo são constantes.
+
+(3) A transferência de calor causada por gradientes de umidade no solo é desprezível comparada
+
+aos gradientes de temperatura.
+
+(4) A transferência de calor nos tubos é radial e advectiva na direção axial. É, contudo acoplada
+
+com o campo de temperaturas no solo via condição de contorno na superfície dos tubos.
+
+
+
+Apresentação do Modelo de Gauthier et al., 1997 23
+
+(5) A condensação e a evaporação da água na mistura ar-vapor d´água é considerada.
+
+(6) Tubos de seção transversal circular são modelados como dutos de seção transversal quadrada
+
+de áreas equivalentes.
+
+A suposição (3) é justificada pelo fato de que o processo de transferência de calor no solo
+
+leva períodos de 24 horas e diferenças de temperatura menores do que 10 K, incorrendo assim em
+
+pequenos gradientes de umidade. A análise dimensional conduzida por Gauthier, 1994, revela que,
+
+embora para casos extremos, os gradientes de umidade respondem por valores menores do que 0,1%
+
+da transferência de calor no solo. Puri, 1986, também conclui que a umidade tem pouco efeito na
+
+transferência de calor no solo, porque a difusividade térmica do mesmo mostra pequena variação
+
+com o conteúdo de água. A condutividade térmica aumenta com o conteúdo de água, em proporção
+
+similar à capacidade volumétrica de armazenamento de calor.
+
+A suposição (6) foi adotada para que o sistema cartesiano pudesse ser usado. Esta suposição
+
+simplifica consideravelmente o modelo numérico sem sacrificar a precisão do mesmo. Contudo,
+
+para calcular corretamente a quantidade de calor transferida do tubo para o solo, o coeficiente de
+
+transferência de calor para tubo de seção transversal quadrada é igual ao coeficiente de transferência
+
+de calor multiplicado pelo fator de 
+2
+?
+
+. Este fator representa a razão entre o perímetro de uma
+
+circunferência e um quadrado de áreas iguais, portanto,
+
+AQ = AC (4.1)
+
+4
+
+2
+2 Dl
+
+?
+= (4.2)
+
+isolando-se l, tem-se:
+
+?
+2
+D
+
+l = (4.3)
+
+a razão entre os perímetros é,
+
+
+
+Apresentação do Modelo de Gauthier et al., 1997 24
+
+l
+D
+
+P
+P
+
+Q
+
+C
+
+4
+?
+
+= (4.4)
+
+substituindo 4.3 em 4.4, realizando simplificações e racionalizando o denominador, obtém-se o fator
+
+mencionado anteriormente.
+
+AC e AQ significam, respectivamente, a área de uma circunferência e a área de um quadrado; l
+
+é o lado do quadrado, D é o diâmetro da circunferência. PC e PQ são os perímetros da circunferência
+
+e do quadrado, respectivamente.
+
+A equação governante para a conservação da energia é:
+
+S
+z
+T
+
+k
+zy
+
+T
+k
+
+yx
+T
+
+k
+xt
+
+T
+C +?
+
+?
+?
+
+?
+?
+?
+
+?
+?
+
+?
+?
+
++??
+?
+
+?
+??
+?
+
+?
+?
+?
+
+?
+?
+
++?
+?
+?
+
+?
+?
+?
+
+?
+?
+
+?
+?
+
+=?
+?
+?
+
+?
+?
+?
+
+?
+?
+
+(4.5)
+
+aplicada no solo, concreto e isolamento, e
+
+L
+s
+
+h
+dz
+d
+
+VA
+q
+
+dz
+dH
+
+?
+?
+
+?=
+'
+
+(4.6)
+
+para os tubos.
+
+A figura 4.2 representa o balanço de energia para a equação 4.6.
+
+Figura 4.2 – Balanço de energia para a equação 4.6
+
+As
+H in H out
+
+q’
+
+V
+
+dz
+
+
+
+Apresentação do Modelo de Gauthier et al., 1997 25
+
+Onde C é a capacidade volumétrica de calor, T é a temperatura, t é o tempo, S é o temo fonte,
+
+k é a condutividade térmica do solo, x, y e z são as coordenadas espaciais, H é a entalpia volumétrica
+
+do ar úmido, q’.é o fluxo de calor entre o solo e o ar por metro na área lateral de troca térmica, V é a
+
+velocidade do ar no canal, As é a área da seção transversal do canal, ? é a umidade absoluta do ar, ?
+
+é a massa específica do ar e hL é o calor latente de vaporização da água.
+
+O segundo termo do lado direito da equação (4.6) considera a variação do conteúdo de
+
+umidade do ar ao escoar no tubo (condensação e evaporação).
+
+A capacidade volumétrica de calor C e a condutividade térmica k na equação (4.5)
+
+expressam-se em termos do conteúdo de umidade do solo, como:
+
+??CCC Cte += (4.7)
+
+??kkk Cte += (4.8)
+
+onde Ccte é a capacidade volumétrica de calor do solo seco, C? é a constante de proporcionalidade
+
+entre a capacidade volumétrica de calor e o conteúdo de umidade do solo, ? é o conteúdo de
+
+umidade volumétrico do solo, kcte condutividade térmica do solo seco e k? constante de
+
+proporcionalidade entre a condutividade térmica do solo e o conteúdo de umidade do solo.
+
+Os parâmetros CCte, C?, kCte e k? são determinados usando as relações de Vries, Gauthier et
+
+al., 1997, para a umidade. C? e k? são consideradas zero parra todos outros componentes como
+
+concreto e isolamento.
+
+As condições de contorno para as equações da conservação acima são as que seguem. Na
+
+entrada do tubo
+
+inHH =)0( (4.9)
+
+onde Hin é obtido de dados experimentais.
+
+As superfícies laterais externas do solo do domínio computacional são adiabáticas, isto é
+
+0=
+?
+?
+
+n
+T
+
+(4.10)
+
+
+
+Apresentação do Modelo de Gauthier et al., 1997 26
+
+onde n é um vetor unitário normal à superfície.
+
+Para um determinado plano horizontal a certa profundidade a temperatura é considerada
+
+constante. Na superfície do solo;
+
+( )vizinhançasolossolosolo TThy
+T
+
+k ?=
+?
+
+?
+(4.11)
+
+onde Tvizinhança é a temperatura da vizinhança e hs é o coeficiente de transferência na superfície do
+
+solo. As equações (4.5) e (4.6) são acopladas via fluxo de calor q’ dado pela condição de contorno
+
+na superfície do tubo, isto é;
+
+( )arsolo TTPhq ?=' (4.12)
+
+onde P é o perímetro da seção transversal do canal e h é o coeficiente de transferência de calor entre
+
+o solo e o ar que circula no canal.
+
+As figuras 4.3 e 4.4 mostram os parâmetros geométricos da discretização das equações (4.5)
+
+e (4.6).
+
+Figura 4.3 – Representação do plano x-y da discretização do volume de controle do solo
+
+?xP
+
+?yPP
+
+N
+
+S
+
+W E
+
+?zP
+
+?yPTB P
+
+N
+
+S
+
+y
+
+x
+
+y
+
+z
+
+
+
+Apresentação do Modelo de Gauthier et al., 1997 27
+
+Figura 4.4 – Volume de controle do tubo no solo
+
+As equações por diferenças finitas são obtidas pela integração das equações (4.5) sobre cada
+
+volume de controle nas direções x, y, z e a equação (4.6) na direção z para cada tubo. O esquema
+
+resultante das equações discretizadas tem a forma:
+
+PTTBBNNSSEEWWPP bTaTaTaTaTaTaTa ++++++= (4.13)
+
+( ) LTB
+S
+
+P
+BT hVA
+
+q
+HH ??? ?++= (4.14)
+
+HB
+TB
+?B
+
+HT
+TT
+?T
+
+qp
+
+?zP
+
+y
+
+z
+
+y
+
+x
+TP
+
+
+
+Apresentação do Modelo de Gauthier et al., 1997 28
+
+onde a são os coeficientes da equação, os subíndices P, W, E, S, N, B, T referem-se,
+
+respectivamente, ao centro do volume de controle, volume a leste, oeste, sul, norte , anterior e
+
+posterior, b é o termo fonte.
+
+1
+
+2
+?
+
+?
+?
+
+?
+?
+?
+
+?
++=
+
+P
+
+P
+
+W
+
+W
+PPW k
+
+x
+k
+x
+
+zya
+??
+
+??
+
+1
+
+2
+?
+
+?
+?
+
+?
+?
+?
+
+?
++=
+
+P
+
+P
+
+E
+
+E
+PPB k
+
+x
+k
+x
+
+zya
+??
+
+??
+
+1
+
+2
+?
+
+?
+?
+
+?
+?
+?
+
+?
++=
+
+P
+
+P
+
+S
+
+S
+PPS k
+
+y
+k
+y
+
+zxa
+??
+
+??
+
+1
+
+2
+?
+
+?
+?
+
+?
+?
+?
+
+?
++=
+
+P
+
+P
+
+N
+
+N
+PPN k
+
+y
+k
+y
+
+zxa
+??
+
+??                                              (4.15)
+
+1
+
+2
+?
+
+?
+?
+
+?
+?
+?
+
+?
++=
+
+P
+
+P
+
+B
+
+B
+PPB k
+
+z
+k
+z
+
+yxa
+??
+
+??
+
+1
+
+2
+?
+
+?
+?
+
+?
+?
+?
+
+?
++=
+
+P
+
+P
+
+T
+
+T
+PPT k
+
+z
+k
+z
+
+yxa
+??
+
+??
+
+PPTBNSEW
+P
+
+PP VStaaaaaat
+V
+
+Ca ?
+?
+
+?
+?++++++= (4.16)
+
+??
+?
+
+?
+??
+?
+
+?
++= oP
+
+P
+PPP Tt
+
+C
+SCVb
+
+?
+? (4.17)
+
+
+
+Apresentação do Modelo de Gauthier et al., 1997 29
+
+As equações (4.13) e (4.14) são resolvidas iterativamente a cada passo de tempo até a
+
+convergência. Esta é declarada quando a maior diferença entre as temperaturas de duas iterações
+
+consecutivas é menor do que 0,001 K.
+
+O modelo foi validado comparando-se seus resultados com soluções analíticas para
+
+problemas de transferência de calor por condução em uma, duas e três dimensões, sujeitos as
+
+condições de contorno de Dirichlet, Neumann e Robin. O software comercial FLOW3D também foi
+
+utilizado na validação. O modelo foi validado ainda com dados experimentais obtidos de um sistema
+
+trocador-armazenador de calor no solo, instalado em estufa comercial localizada em La Pocatière,
+
+Québec, Canadá.
+
+4.1 ESTUDO PARAMÉTRICO
+
+Este estudo tem como objetivo examinar os efeitos de parâmetros de operação e projeto no
+
+comportamento térmico de um sistema trocador-armazenador de calor no solo, incluindo vários
+
+tubos igualmente espaçados enterrados no solo. Neste caso o sistema pode ser visto como um
+
+arranjo infinito de tubos, e conseqüentemente, as simulações se processam para apenas um duto
+
+sujeito às condições de contorno mostradas na figura 4.5. Os quatro parâmetros considerados neste
+
+estudo são a distância entre centros dos tubos D, o comprimento dos tubos L, a velocidade do ar no
+
+interior dos dutos V e o conteúdo de umidade do solo ?.
+
+Foram utilizados tubos de plástico corrugados e não perfurados de diâmetro de 10,8cm,
+
+porque são largamente usados e de baixo custo. A temperatura do ar na entrada do duto foi medida
+
+experimentalmente por um período de três dias para a validação do modelo. A umidade absoluta foi
+
+mantida constante em 0,0103 
+oar
+
+água
+
+kg
+kg
+
+sec
+
+ (umidade relativa de 70% à 20°C). As simulações foram
+
+realizadas com a malha de 26 x 26 x 15 volumes de controle e passos de tempo de 300s. As
+
+simulações foram processadas com ciclos de três dias, até atingir o regime periódico.
+
+Os resultados das simulações são melhor exemplificados em termos da quantidade de calor
+
+armazenado ou recuperado por volume do solo.
+
+
+
+Apresentação do Modelo de Gauthier et al., 1997 30
+
+Figura 4.5 – Representação esquemática de um arranjo infinito de tubos no plano x-y
+
+y
+
+x
+
+D
+
+D
+
+0,096m
+
+?T=0
+
+
+
+Implementação do Modelo de Gauthier et al., 1997 31
+
+5. IMPLEMENTAÇÃO DO MODELO DE GAUTHIER et al., 1997
+
+O programa desenvolvido neste trabalho, destina-se ao estudo paramétrico mostrado no
+
+capítulo anterior, portanto simula-se apenas um duto.
+
+A figura 5.1 ilustra o domínio computacional do problema resolvido.
+
+Figura 5.1 – Esquema mostrando os parâmetros geométricos do problema
+
+O duto é tridimensional, os eixos x e y compõem o plano perpendicular ao eixo z. Os
+
+parâmetros D e L, representam, respectivamente, o espaçamento entre os dutos e o comprimento do
+
+mesmo.
+
+Neste trabalho utiliza-se uma extensão tridimensional do algoritmo de propósitos gerais de
+
+Patankar, 1980, fazendo as alterações necessárias para adequá-lo à situação estudada.
+
+A equação governante para o solo é a equação da condução do calor (4.1) mostrada no
+
+capítulo anterior. Para o ar a equação (4.2) em termos de entalpia foi modificada para se trabalhar
+
+diretamente com a grandeza temperatura, ficando desta forma:
+
+( )
+BL
+
+p
+
+BT
+
+ps
+T ThccAV
+
+zq
+T +
+
+?
+?
+
+?
+=
+
+??
+?
+
+'
+(5.1)
+
+x
+
+y
+
+z
+
+D
+
+D
+
+0,096m
+
+0,096m
+L
+
+
+
+Implementação do Modelo de Gauthier et al., 1997 32
+
+onde TT e TB são, respectivamente, as temperaturas na saída e entrada do volume de controle, q’ é o
+
+fluxo de calor por unidade de comprimento através da interface entre o ar e o solo, ?z é o
+
+comprimento do volume na direção z, V  é a velocidade média do ar no interior do duto, As é a área
+
+da seção transversal do duto, ? é a massa específica do ar, cp é o seu calor específico a pressão
+
+constante, ?T e ?B são, respectivamente a umidade absoluta na saída e entrada do volume do
+
+controle e hL é o calor latente de vaporização da água.
+
+Para uma melhor compreensão da transformação da equação (4.2) em (5.1) mostra-se o
+
+esquema da figura 5.2, onde é representado um volume de controle na direção z.
+
+Figura 5.2 – Volume de controle na direção z para dedução da equação para o ar
+
+O termo q’ é a soma de todos os fluxos de calor entre cada volume de solo e o volume de ar,
+
+isto pode ser melhor entendido observando-se a figura 5.3 abaixo.
+
+Figura 5.3 – Volumes de controle no plano x-y
+
+TPTB TT
+
+?z
+
+Ar
+
+Solo
+
+Ar
+
+TP
+
+Volumes de solo
+
+y
+
+z
+
+x
+
+y
+
+
+
+Implementação do Modelo de Gauthier et al., 1997 33
+
+TP representa a temperatura no centro do volume de controle do ar.
+
+A equação para o termo q’ é:
+
+( )? ?=
+I
+
+i
+Pii TThPq' (5.2)
+
+onde P é o perímetro e h é o coeficiente de transferência de calor entre o ar e o solo
+
+Inserindo a equação (5.2) em (5.1), tem-se a equação final para o cálculo da temperatura do
+
+ar no duto, resultando na equação (5.3)
+
+( )[ ] ( )
+BL
+
+p
+
+BT
+
+sP
+
+I
+
+i
+Pii
+
+T ThcAVc
+
+zTThP
+T +?
+
+??
+=
+
+? ??
+?
+
+(5.3)
+
+O termo AVc p?  é representado pela constante C1 e o termo 
+p
+
+L
+
+c
+h
+
+ por C2, então a equação
+
+(5.3) passa a forma simplificada mostrada abaixo:
+
+( ) BBTT TCC
+zq
+
+T +??
+?
+
+= 2
+1
+
+'
+?? (5.4)
+
+Esta equação calcula a temperatura do ar na interface dos volumes de controle, portanto para
+
+obter-se a temperatura no centro dos volumes faz-se:
+
+2
+BT
+
+P
+TT
+
+T
++
+
+= (5.5)
+
+Como comentou-se no capítulo precedente, considerando um arranjo infinito de tubos, as
+
+condições de contorno para o solo são simétricas, ou seja,
+
+0=
+?
+?
+
+n
+T
+
+(5.6)
+
+
+
+Implementação do Modelo de Gauthier et al., 1997 34
+
+onde n é a normal das áreas perpendiculares às direções x, y e z.
+
+A temperatura na entrada do duto é obtida de dados experimentais fornecidos no trabalho de
+
+Gauthier et al., 1997.
+
+Para a temperatura na saída do duto é utilizada a condição de escoamento localmente
+
+parabólico.
+
+Na interface entre o ar e o solo usa-se a condição de terceira espécie com um coeficiente de
+
+troca de calor h igual a 23
+Km
+
+W
+2 , Gauthier et al., 1997. A figura 5.4 ilustra esta interface.
+
+Figura 5.4 – Volumes de interface entre o ar e o solo
+
+O fluxo de calor entre o ar e o solo é:
+
+( )
+W
+
+PSWPS
+WP x
+
+TTk
+TThq
+
+?
+?
+
+=?= )(" (5.7)
+
+Eliminando TW, tem-se:
+
+PS
+
+W
+
+PS
+
+W
+
+P
+
+k
+x
+
+hk
+x
+
+h
+
+T
+q
+
+??
++
+
+?
++
+
+=
+1
+
+1
+1
+
+" (5.8)
+
+Neste momento é importante lembrar que o duto de ar é tratado de forma discretizada na
+
+direção z (comprimento), e globalmente nas direções x e y. Portanto, a temperatura para cada
+
+h
+TP
+
+q”
+
+AR
+
+SOLO
+
+?xw
+
+TPSTw
+
+
+
+Implementação do Modelo de Gauthier et al., 1997 35
+
+volume de ar é obtida computando-se a soma dos fluxos de calor de cada volume de solo com este
+
+volume de ar, para cada nível de z.
+
+A malha utilizada é a mesma de Gauthier et al., 1997, ou seja 26 x 26 x 15 volumes.
+
+A condição inicial considera todo o domínio sob uma temperatura constante de 20°C,
+
+processa-se então ciclos de três dias até atingir-se um regime periódico. Esta passa a ser, então, a
+
+condição inicial para o cálculo do armazenamento de calor no solo, que é calculado para um dia.
+
+O termo que considera a evaporação e a condensação da água associada ao ar foi obtido a
+
+partir da teoria clássica de misturas binárias, apresentada nos textos de Termodinâmica.
+
+Com a obtenção das temperaturas em cada volume de controle do ar ao longo do
+
+comprimento do duto, obtém-se com um ajuste de curva a partir da tabela Termodinâmica de
+
+temperaturas, a pressão de saturação do vapor d’água da mistura de ar seco + vapor d’água. Como
+
+considera-se que a pressão total da mistura não se altera, ou seja, a pressão na entrada do duto e na
+
+saída são praticamente a mesma, pode-se obter a umidade relativa para cada volume de controle,
+
+pois
+
+g
+
+v
+
+p
+p
+
+=? (5.9)
+
+onde ? é a umidade relativa, pv é a pressão parcial de vapor e pg é a pressão de saturação do vapor
+
+d’água.
+
+Enquanto não ocorre a saturação do ar, ou seja, a umidade relativa é menor do que 100%, a
+
+constante C2 da eq. (5.4) é nula, a partir do momento em que a umidade relativa é 100%, a constante
+
+C2 é utilizada no cálculo, e então os termos de umidade absoluta são quantificados através da
+
+equação (5.10) descrita abaixo.
+
+( )gatm
+g
+
+pp
+p
+
+?
+=
+
+622,0
+? (5.10)
+
+onde ? é a umidade absoluta e patm é a pressão atmosférica.
+
+É importante salientar que quando a umidade relativa atinge 100% o termo latente é
+
+acionado, mas ele efetivamente é lançado na equação da temperatura quando satisfaz um critério de
+
+
+
+Implementação do Modelo de Gauthier et al., 1997 36
+
+convergência de 10-8, pois caso contrário gera uma descontinuidade na temperatura gerando uma
+
+instabilidade na solução.
+
+Com esta estrutura do equacionamento, pode-se estudar o efeito do termo latente na resposta
+
+final, ou seja, na quantidade de calor armazenada no solo.
+
+O cálculo de armazenamento do calor é resolvido apenas para um dia, segundo Gauthier et
+
+al., 1997. O calor armazenado é calculado a cada passo de tempo, após convergido, para cada
+
+volume de controle, ou seja, entre a temperatura atual e a temperatura do instante anterior, como
+
+mostra a equação 5.11 abaixo:
+
+( )oTTzyxCQ ?= (5.11)
+
+onde Q é o calor armazenado por m3 no solo em um dia, x, y e z representam as dimensões do
+
+volume de controle nas três direções, T é a temperatura do volume de controle no instante de tempo
+
+atual, assumindo ser TP para o duto e TPS para o solo, To é a temperatura no instante de tempo
+
+anterior.
+
+O algoritmo de cálculo é descrito abaixo:
+
+1. Leitura dos campos iniciais, campos em regime periódico e umidade relativa do ar de
+
+entrada no duto (inicialmente igual a 70%), Gauthier et al., 1997;
+
+2. Leitura da temperatura prescrita na entrada do duto, que varia com o tempo;
+
+3. Cálculo do fluxo de calor entre o solo e o ar para cada volume em z;
+
+4. Resolução da equação (5.4) para o ar, obtendo-se a temperatura no centro de cada volume
+
+em z;
+
+5. Cálculo da umidade relativa pela equação (5.9);
+
+6. Se a umidade relativa for menor do que 100%, a constante C2 é igual a zero, caso
+
+contrário calcula-se a umidade absoluta pela equação (5.10) e o valor da constante C2 é
+
+considerado;
+
+7. Cálculo das temperaturas para os volumes do solo, resolvendo a equação da energia;
+
+8. Retorna ao item 3 até atingir a convergência, esta é observada quando a variação relativa
+
+entre as temperaturas do instante de tempo atual e anterior é igual a 10-8;
+
+9. Cálculo da quantidade de calor armazenada no solo pela equação (5.11), retorna ao item
+
+2 com a leitura da temperatura prescrita de entrada no próximo passo de tempo, até
+
+atingir-se o último passo de tempo;
+
+
+
+Implementação do Modelo de Gauthier et al., 1997 37
+
+O programa computacional que foi elaborado com este algoritmo permite calcular o calor
+
+armazenado no solo considerando apenas a parte térmica do problema, pois as simulações
+
+processadas mostraram que a parte mássica representada pelo termo de umidade não influencia no
+
+calor armazenado no solo.
+
+Pode-se também variar diversos parâmetros que influenciam no projeto deste trocador de
+
+calor, como o espaçamento entre tubos, o diâmetro dos tubos, comprimento dos mesmos e
+
+velocidade de escoamento do ar no interior dos dutos.
+
+No próximo capítulo apresenta-se resultados e comparações entre os dados obtidos pelos
+
+autores canadenses, Gauthier et al., 1997.
+
+
+
+Resultados e Discussões 38
+
+6. RESULTADOS E DISCUSSÕES
+
+O objetivo deste trabalho é desenvolver uma ferramenta que possibilite dimensionar e
+
+estudar sistemas de armazenamento de calor no solo, facilitar a compreensão do fenômeno e
+
+permitir a tomada de decisões quanto ao projeto de estufas e sistemas de armazenamento de calor,
+
+baseadas em fundamentos palpáveis como a simulação numérica. Portanto, não investiga-se
+
+métodos numéricos, funções de interpolação e métodos de resoluções de equações.
+
+Utiliza-se o algoritmo de propósitos gerais de Patankar, 1980, estendido para 3 dimensões,
+
+que possibilita a simulação de transferência de calor e quantidade de movimento em coordenadas
+
+cartesianas e cilíndricas. Para a resolução do sistema de equações algébricas é utilizado o TDMA.
+
+Apresenta-se os resultados para três situações estudadas listadas na tabela 6.1 abaixo da
+
+comparação entre o presente trabalho e aqueles obtidos por Gauthier:
+
+Tabela 6.1 – Comparação entre os valores obtidos por Gauthier et al. e pelo presente trabalho,
+
+ para três configurações do trocador de calor para velocidade de 4m/s
+
+SITUAÇÃO A B C
+
+Distância entre os tubos (m) 0,25 0,40 0,40
+
+Comprimento do tubo (m) 5 10 20
+
+Calor armazenado: Gauthier et al., 1997 [MJ/m3] 14,40 4,50 3,00
+
+Calor armazenado: Presente trabalho, sem umidade [MJ/m3] 14,10 4,57 3,01
+
+Calor armazenado: Presente trabalho, com umidade [MJ/m3] 14,10 4,57 3,01
+
+Para que se possa analisar as diferenças entre as soluções com e sem os termos de
+
+condensação do vapor d´água, foi construída a tabela 6.2.
+
+
+
+Resultados e Discussões 39
+
+Tabela 6.2 – Presente solução com e sem os termos relativos à condensação do vapor d´água
+
+SITUAÇÃO A B C
+
+Calor armazenado sem umidade [J/m3] 14101040,38 4574925,48 3005260,41
+
+Calor armazenado com umidade [J/m3] 14101072,97 4574925,49 3005260,43
+
+Erro relativo percentual entre o calor armazenado
+
+sem umidade e o calor armazenado com umidade
+2,3.10-6 % 2,1.10-9 % 6,7.10-9 %
+
+Pode-se concluir destas tabelas que:
+
+a) Existe uma excelente concordância entre os resultados apresentados por Gauthier et al.,
+
+1997, e os gerados no presente trabalho, os quais validam a presente solução.
+
+b) Os resultados do presente trabalho, com e sem os termos de umidade, são praticamente
+
+idênticos, o que dispensa o uso destes termos nas otimizações a serem feitas variando os
+
+parâmetros do problema.
+
+As simulações foram realizadas em um Pentium III de 800 MHz. O tempo computacional
+
+médio, para obter-se o regime periódico, é de 40min, enquanto que para a simulação do calor
+
+armazenado em um dia é de 3min.
+
+As figuras 6.1 a 6.6 referem-se aos resultados obtidos para o problema térmico, ou seja, não
+
+se considerou a umidade, sendo que a figura 6.1 representa a variação da temperatura com o tempo
+
+para a situação onde D=0,25m, L=5m e V=4m/s e a figura 6.2 mostra a evolução da temperatura ao
+
+longo do comprimento do duto para os mesmos parâmetros geométricos.
+
+Observando a figura 6.1 pode-se observar o comportamento das curvas que representam a
+
+variação da temperatura do ar em três posições distintas no interior do duto; na entrada, metade e
+
+saída do mesmo. À medida que o ar escoa, os gradientes de temperatura tornam-se menos intensos,
+
+justificando a atenuação das curvas na proporção do deslocamento do ar. Na entrada como há uma
+
+diferença maior entre a temperatura do ar e a temperatura do solo, no decorrer de um dia, oscilam
+
+numa faixa mais ampla, variando de, aproximadamente, 14°C a 28°C, enquanto que para a saída do
+
+duto a faixa de variação da mesma é de 16°C a 25°C. É importante lembrar que estas simulações
+
+foram efetuadas considerando-se um período de 24 horas, ou seja, estas curvas representam a
+
+evolução da temperatura do ar para um dia.
+
+Na figura 6.2, acompanha-se uma partícula de ar que se desloca ao longo do duto, mostrando
+
+o comportamento térmico da mesma. Cada linha representa este acompanhamento em horários
+
+
+
+Resultados e Discussões 40
+
+diferentes, por exemplo, a linha cheia representa o comportamento térmico para o horário de 13
+
+horas e assim sucessivamente. Isto possibilita analisar quando o ar esta fornecendo calor ao solo ou
+
+retirando calor do mesmo.
+
+Figura 6.1– Variação da temperatura do ar com o tempo para D=0,25m, L=5m, situação A
+
+Figura 6.2 – Variação da temperatura do ar com o comprimento do duto para D=0,25m, L=5m,
+
+situação A
+
+0 2 4 6 8 10 12 14 16 18 20 22 24
+Tempo (h)
+
+12
+
+14
+
+16
+
+18
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+T
+em
+
+pe
+ra
+
+tu
+ra
+
+ (º
+C
+
+)
+
+entrada do duto
+
+metade do duto
+
+saída do duto
+
+0 1 2 3 4 5
+Comprimento do duto (m)
+
+12
+
+14
+
+16
+
+18
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+T
+em
+
+pe
+ra
+
+tu
+ra
+
+ (º
+C
+
+) 13 horas
+
+17 horas
+
+21 horas
+
+1 hora
+
+5 horas
+
+9 horas
+
+
+
+Resultados e Discussões 41
+
+Observando a linha que representa o horário das 13 horas na figura 6.2, nota-se que ao longo
+
+do duto, a temperatura da partícula diminui, portanto neste momento, a ar está fornecendo calor ao
+
+solo, aumentando sua temperatura. Por outro lado, para as 21 horas, a temperatura do ar aumenta,
+
+significa que o solo está fornecendo calor ao ar e a temperatura daquele está diminuindo.
+
+Nota-se que para o horário das 17 horas, a temperatura do ar quase não muda, isto ocorre
+
+porque as temperaturas do solo e do ar são praticamente a mesma neste momento.
+
+As figuras 6.3 e 6.4 ilustram os resultados para a situação B, ou seja, D=0,40m e L=10m.
+
+Além das observações que poder-se-ia fazer em relação a estas figuras, semelhantes às anteriores, é
+
+suficiente comentar que aumentando-se o comprimento do duto e o espaçamento entre os mesmos,
+
+as curvas da figura 6.3 mostram uma variação maior na sua amplitude, ou seja, os gradientes de
+
+temperatura são mais intensos e há uma diferença mais acentuada entre as temperaturas na entrada e
+
+saída do duto.
+
+Figura 6.3 – Variação da temperatura do ar com o tempo para D=0,40m, L=10m, situação B
+
+Análise semelhante pode ser conduzida para a figura 6.4, onde também observa-se o
+
+comportamento térmico de uma partícula da entrada do duto à saída em horários diferentes. Como o
+
+0 2 4 6 8 10 12 14 16 18 20 22 24
+Tempo (h)
+
+12
+
+14
+
+16
+
+18
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+T
+em
+
+pe
+ra
+
+tu
+ra
+
+ (º
+C
+
+)
+
+entrada do duto
+
+metade do duto
+
+saída do duto
+
+
+
+Resultados e Discussões 42
+
+comprimento do duto teve um acréscimo do dobro da situação A, ou seja, de 5m passou a 10 m,
+
+nota-se uma tendência de tornarem-se constantes a uma temperatura em torno de 20°C à 22°C,
+
+significando que a partir deste comprimento não há mais gradientes térmicos, ou seja, as
+
+temperaturas do solo e do ar seriam praticamente as mesmas.
+
+Na situação anterior com o comprimento de 5m não é evidenciada esta tendência, mostrando
+
+que há troca térmica significativa entre o solo e o ar até a saída do duto. Num processo de
+
+otimização, isto indica que se pode aumentar o seu comprimento.
+
+Figura 6.4 – Variação da temperatura do ar com o comprimento do duto para D=0,40m, L=10m,
+
+situação B
+
+As figuras 6.5 e .6.6 avaliam as condições para o espaçamento entre os tubos de 0,40 m e o
+
+comprimento do mesmo de 20 m, situação C.
+
+Os efeitos mencionados acima, o amortecimento entre as curvas de temperatura com o
+
+tempo, se acentuam mostrando que há fortes gradientes térmicos entre a entrada e saída do duto,
+
+salientando que das situações descritas neste trabalho, esta mostra a tendência mais nítida, figura
+
+6.5, das curvas tornarem-se retas.
+
+Quanto a figura 6.6, por si só, evidencia os efeitos do aumento do comprimento do duto,
+
+apontando para um limite no comprimento do mesmo, pois verifica-se que a partir de um
+
+comprimento de 10m quase não há troca de calor entre o solo e o ar.
+
+0 2 4 6 8 10
+Comprimento do duto (m)
+
+12
+
+14
+
+16
+
+18
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+T
+em
+
+pe
+ra
+
+tu
+ra
+
+ (º
+C
+
+) 13 horas
+
+17 horas
+
+21 horas
+
+1 hora
+
+5 horas
+
+9 horas
+
+
+
+Resultados e Discussões 43
+
+A partir destes resultados pode-se afirmar que existe uma relação direta entre os
+
+comprimentos dos dutos e a quantidade de calor armazenada no solo num dia, pois quanto maior o
+
+comprimento dos dutos menores serão os gradientes de temperatura na saída do mesmo.
+
+Fica evidente que é preferível operar-se com estufas cujos tubos estejam dispostos na direção
+
+de menor comprimento, a fim de que haja troca de calor ao longo de todo o duto e não seja
+
+desperdiçada áreas úteis dos tubos que poderia haver troca efetiva de energia.
+
+Figura 6.5 – Variação da temperatura do ar com o tempo para D=0,40m, L = 20m, situação C
+
+Das figuras de 6.7 a 6.9, mostram-se diagramas de simulações onde o conteúdo de umidade
+
+do ar foi considerado.
+
+Como pode-se observar esta consideração não altera as curvas que representa a variação da
+
+temperatura com o tempo, pois estas são coincidentes, mostrando que da forma como este modelo
+
+foi concebido, a consideração do termo que representa a umidade do ar não modifica a quantidade
+
+de calor armazenada.
+
+0 4 8 12 16 20 24
+Tempo (h)
+
+12
+
+14
+
+16
+
+18
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+T
+em
+
+pe
+ra
+
+tu
+ra
+
+ (º
+C
+
+)
+entrada do duto
+
+metade do duto
+
+saída do duto
+
+
+
+Resultados e Discussões 44
+
+Figura 6.6 – Variação da temperatura do ar com o comprimento do tubo para D=0,40m, L=20m,
+
+situação C
+
+Figura 6.7 - Variação da temperatura do ar com o tempo para D = 0,40m e L = 10m, situação B
+
+0 4 8 12 16 20
+Comprimento do duto (m)
+
+12
+
+14
+
+16
+
+18
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+T
+em
+
+pe
+ra
+
+tu
+ra
+
+ (º
+C
+
+) 13 horas
+
+17 horas
+
+21 horas
+
+1 hora
+
+5 horas
+
+9 horas
+
+0 4 8 12 16 20 24
+Tempo (h)
+
+12
+
+14
+
+16
+
+18
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+T
+em
+
+pe
+ra
+
+tu
+ra
+
+ (
+ºC
+
+)
+
+com umidade
+
+sem umidade
+
+
+
+Resultados e Discussões 45
+
+Ainda sobre a figura 6.7, esta foi obtida considerando a variação da temperatura com o
+
+tempo para a posição na metade do comprimento do duto.
+
+Na figura 6.8 tem-se a representação da umidade relativa em função do tempo, lembrando
+
+que a umidade relativa tem a forma inversa do gráfico das temperaturas, pois quando a temperatura
+
+aumenta a umidade relativa diminui. A medida em que a temperatura se eleva aumenta a pressão de
+
+saturação do vapor d´água, diminuindo a umidade relativa da mistura.
+
+A figura 6.8 mostra uma região constante na umidade relativa 100% para as curvas na
+
+entrada e metade do duto possibilitando a constatação de que nestes casos houve condensação de
+
+vapor d´água.
+
+Figura 6.8– Variação da umidade relativa com o tempo para D=0,40m, L=10m, situação B
+
+Na figura 6.9 temos uma representação da umidade absoluta calculada durante o tempo no
+
+qual há condensação.
+
+0 5 10 15 20 25
+Tempo (h)
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1.0
+
+U
+m
+
+id
+ad
+
+e 
+re
+
+la
+tiv
+
+a 
+
+entrada do duto
+
+metade do duto
+
+saída do duto
+
+
+
+Resultados e Discussões 46
+
+Figura 6.9 – Variação da umidade absoluta com o tempo para D=0,40m, L = 10m, situação B
+
+As figuras 6.10 a 6.13 mostram campos de temperaturas para diferentes posições ao longo do
+
+duto em tempos diferentes.
+
+A figura 6.10 mostra que o ar está a uma temperatura superior a temperatura do solo num
+
+plano na entrada do duto e a figura 6.11 representa o campo de temperaturas a uma distância de 5m
+
+da entrada do duto. Observa-se que as temperaturas envolvidas a distância de 5m são inferiores às
+
+temperaturas da entrada, mostrando que a troca os gradientes são mais intensos na entrada do duto.
+
+Para o horário de17 horas, como pode-se observar na figura 6.12, as temperaturas tornam-se
+
+mais homogêneas no duto e no solo.
+
+E finalmente na figura 6.13, a situação se inverte, onde o solo passa a fornecer calor ao duto,
+
+pois a temperatura deste é inferior às temperaturas do solo.
+
+0 4 8 12 16 20 24
+Tempo (h)
+
+0.0100
+
+0.0104
+
+0.0108
+
+0.0112
+
+0.0116
+
+0.0120
+
+U
+m
+
+id
+ad
+
+e 
+ab
+
+so
+lu
+
+ta
+ 
+
+entrada do duto
+
+metade do duto
+
+
+
+Resultados e Discussões 47
+
+Figura 6.10 – Campo de temperaturas na entrada do duto, D=0,40m, L=10m, t=13 horas
+
+Figura 6.11 – Campo de temperaturas a 5m da entrada do duto, D=0,40m, L=10m, t=13 horas
+
+0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40
+
+Largura (m)
+
+0.00
+
+0.05
+
+0.10
+
+0.15
+
+0.20
+
+0.25
+
+0.30
+
+0.35
+
+0.40
+
+A
+ltu
+
+ra
+ (m
+
+)
+
+19.0
+19.5
+20.0
+20.5
+21.0
+21.5
+22.0
+22.5
+23.0
+23.5
+24.0
+
+0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40
+
+Largura (m)
+
+0.00
+
+0.05
+
+0.10
+
+0.15
+
+0.20
+
+0.25
+
+0.30
+
+0.35
+
+0.40
+
+A
+ltu
+
+ra
+ (m
+
+)
+
+18.5
+
+20.5
+
+21.5
+
+22.5
+
+23.5
+
+24.5
+
+25.5
+
+26.5
+
+27.5
+
+
+
+Resultados e Discussões 48
+
+Figura 6.12 – Campo de temperaturas na entrada do duto, D=0,40m, L=10m, t=17horas
+
+Figura 6.13 – Campo de temperaturas na entrada do duto, D=0,40m, L=10m, t=21horas
+
+0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40
+
+Largura (m)
+
+0.00
+
+0.05
+
+0.10
+
+0.15
+
+0.20
+
+0.25
+
+0.30
+
+0.35
+
+0.40
+
+A
+ltu
+
+ra
+ (m
+
+)
+
+16.5
+17.0
+17.5
+18.0
+18.5
+19.0
+19.5
+20.0
+20.5
+21.0
+21.5
+
+0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40
+
+Largura (m)
+
+0.00
+
+0.05
+
+0.10
+
+0.15
+
+0.20
+
+0.25
+
+0.30
+
+0.35
+
+0.40
+
+A
+ltu
+
+ra
+ (m
+
+)
+
+18.5
+19.0
+19.5
+20.0
+20.5
+21.0
+22.0
+22.5
+23.0
+23.5
+24.0
+
+
+
+Resultados e Discussões 49
+
+Também avalia-se a influência da velocidade do ar no armazenamento de calor no solo. A
+
+tabela 6.3 compara os resultados obtidos por Gauthier et al. 1997. Manteve-se o comprimento de
+
+10m, e o espaçamento entre os dutos de 0,40m.
+
+Tabela 6.3 - Comparação entre os valores obtidos por Gauthier et al.,1997 e pelo presente trabalho
+
+Velocidade (m/s) 4,0 6,0 8,0
+
+Calor armazenado presente trabalho (MJ/m3) 4,6 5,4 5,9
+
+Calor armazenado Gauthier et al., 1997 (MJ/m3) 4,6 5,4 6,0
+
+Nota-se que os resultados novamente apresentam excelente concordância com os de Gauthier
+
+et al., 1997.
+
+O valor do coeficiente de transferência de calor para o quadro de velocidades mostrado
+
+acima, é omesmo, pois objetiva-se comparar os resultados com Gauthier et al., 1997.
+
+A tabela 6.3 mostra que quanto maior a velocidade maior é o calor armazenado. Estes
+
+resultados são lógicos e esperados, uma vez que quanto maior velocidade se tem, maior é a energia
+
+transportada pelo escoamento. Desta forma a variação de temperatura será menor ao longo do duto,
+
+mantendo maiores gradientes de temperatura entre ar e solo, aumentando assim o calor transferido,
+
+ou armazenado.
+
+
+
+Conclusões e Sugestões 50
+
+7. CONCLUSÕES E SUGESTÕES
+
+É apresentada uma ferramenta numérica que possibilita o estudo do armazenamento de calor
+
+no solo através da circulação de ar no interior de dutos enterrados no solo.
+
+Este estudo é um problema prático que partiu da necessidade real de desenvolvimento de
+
+sistemas de aquecimento para estufas da Serra Gaúcha, abrindo-se em múltiplas opções para a
+
+continuidade e aperfeiçoamento desta ferramenta.
+
+Utiliza-se o modelamento desenvolvido por Gauthier et al., 1997, para efetuar as simulações
+
+e estudar os efeitos dos parâmetros geométricos de tais sistemas, como o espaçamento entre os
+
+tubos, o comprimento do duto e a velocidade do ar. É possível estudar-se o efeito do diâmetro ou
+
+outros parâmetros, na quantidade de calor armazenada no solo.
+
+Sob este panorama pode-se concluir que este trabalho possibilitou um melhor entendimento
+
+dos fenômenos que ocorrem na transferência de calor em sistemas de aquecimento alternativos.
+
+O primeiro objetivo foi disponibilizar uma ferramenta básica com a devida validação e
+
+aprofundar a discussão em torno de particularidades, como a questão das conseqüências da eventual
+
+condensação do vapor d´água contido na mistura. Ficou demonstrado que nas condições
+
+investigadas este fenômeno pode ser desprezado no modelamento.
+
+É importante mencionar as imensas possibilidades que este trabalho abre na investigação de
+
+armazenamento de calor, lembrando que em época de crise energética e financeira todo o estudo
+
+destinado a sanar ou melhorar o entendimento e a compreensão para qualquer sistema ou área são
+
+bem vindos.
+
+Outro aspecto de contribuição do presente trabalho é o ambiental, pois a tendência é o
+
+desenvolvimento e a prioridade a tecnologias limpas e simples, sem grandes impactos no meio
+
+ambiente, entre os quais o sistema estudado.
+
+Para futuros trabalhos tem-se as seguintes sugestões:
+
+• De posse do programa, realizar a otimização propriamente dita destas estufas. Poderão ser
+
+explorados vários parâmetros, compreendendo um universo mais abrangente do seu funcionamento.
+
+• Resolver a equação da quantidade de movimento para ar em escoamento através do cálculo
+
+das velocidades. Para isto haverá a necessidade de utilizar-se um modelo de turbulência no interior
+
+do canal.
+
+
+
+Conclusões e Sugestões 51
+
+• Considerar o solo como um meio poroso aproximando-se cada vez mais das condições reais.
+
+• Realizar estudos experimentais nas estufas para comprovação de resultados.
+
+• Desenvolver o programa para coordenadas polares para se utilizar geometrias cilíndricas.
+
+• Realizar trabalhos de custos em estufas envolvendo as diversas tecnologias existentes para
+
+armazenamento de calor no solo.
+
+• Desenvolver programas para outros tipos de armazenamento de calor no solo como os
+
+citados neste trabalho.
+
+
+
+Apêndice 52
+
+APÊNDICE
+
+MEMORIAL DE CÁLCULO DO SISTEMA DE AQUECIMENTO PARA ESTUFAS DA
+
+SERRA GAÚCHA
+
+Este memorial de cálculo refere-se ao projeto desenvolvido e implantado nas estufas para
+
+plasticultura de roseiras da serra gaúcha. Os cálculos apresentados são para o layout mostrado no
+
+capítulo 3.
+
+As propriedades físicas da água foram obtidas de tabelas, [Incropera e Witt, 1992], à
+
+temperatura de 40°C.
+
+Os valores são mostrados na tabela 1 abaixo:
+
+Tabela 1 – Propriedades físicas da água a temperatura de 40°C
+
+Propriedade física da água Símbolo Valor obtido da tabela
+
+Calor específico cp 4,18 kJ/kgK
+
+Viscosidade absoluta µ 654,68.10-6 Ns/m2
+
+Condutividade térmica k 631,78.10-3 W/mK
+
+Número de Prandtl Pr 4,33
+
+Volume específico v 1,01.10-3 m3/kg
+
+Massa específica ? 991,81 kg/m3
+
+CÁLCULO DO REYNOLDS NO DUTO DE DISTRIBUIÇÃO
+
+A vazão máxima do aquecedor é de 10 l/min e a vazão após a primeira bifurcação em T é de
+
+5 l/min. O fluxo de massa para esta vazão é 
+.
+
+m =0,08kg/s.
+
+O diâmetro do tubo é de 1” ou 0,0254m.
+
+A velocidade do tubo é calculada por
+
+
+
+Apêndice 53
+
+A
+m
+
+V
+?
+
+.
+
+= (1)
+
+onde A é a área da seção transversal do tubo.
+
+O número de Reynolds para este tubo é calculado por
+
+µ
+?DV
+
+=Re (2)
+
+Substituindo as propriedades físicas da tabela 1, o diâmetro do duto e a velocidade obtida da
+
+expressão (1), obtém-se um número de Reynolds de 6328, este Reynolds para um tubo caracteriza
+
+regime turbulento. Este regime é desejado porque a troca térmica é mais intensa do que o regime
+
+laminar.
+
+CÁLCULO DO REYNOLDS NO DUTO SECUNDÁRIO
+
+Para os dutos secundários 
+.
+
+m  é igual a 0,0044 kg/s, pois são 19 tubos. O diâmetro do tubo é o
+
+mesmo, ou seja, 1”. A velocidade e o número de Reynolds são, respectivamente, 0,0087m/s e 333,
+
+tem-se neste caso regime laminar.
+
+CÁLCULO DO COEFICIENTE DE TRANSFERÊNCIA DE CALOR NO INTERIOR DOS
+
+TUBOS SECUNDÁRIOS
+
+O cálculo do coeficiente de transferência de calor no interior dos dutos secundários é obtido
+
+através do número de Nusselt, para regime laminar tem-se,
+
+36,4=DNu (3)
+
+o coeficiente de transferência de calor é obtido pela fórmula
+
+D
+kNu
+
+h Di = (4)
+
+
+
+Apêndice 54
+
+que resulta no valor de hi=108,45 W/m2K.
+
+CÁLCULO DO COEFICIENTE DE TRANSFERÊNCIA DE CALOR EXTERNO AOS
+
+TUBOS SECUNDÁRIOS
+
+Na tabela 2 tem-se as propriedades físicas para o ar a temperatura de 0°C ou 273,15K,
+
+[Incropera e Witt, 1992].
+
+Tabela 2 – Propriedades físicas do ar à temperatura de 0°C
+
+Propriedade física do ar Símbolo Valor obtido da tabela
+
+Aceleração da gravidade g 9,81 m/s
+
+Viscosidade cinemática ? 13,50.10-6 m2/s
+
+Difusividade térmica ? 18,96.10-6 m2/s
+
+Condutividade térmica k 24,15.10-3 W/mK
+
+Número de Prandtl Pr 0,74
+
+O cálculo do coeficiente de troca de calor externo aos dutos secundários foi realizado através
+
+do número de Rayleigh.
+
+( )
+??
+
+? 3DTTg
+Ra SD
+
+??= (5)
+
+onde ? é o coeficiente de expansão térmica, 1/T, T é 273,15K, Ts é a temperatura da superfície igual
+
+a 40°C e T? é a temperatura ambiente de 0°C.
+
+Substituindo os dados conhecidos na expressão acima, tem-se o número de Rayleigh,
+
+RaD=91972,45.
+
+Para calcular o número de Nusselt médio utilizou-se a expressão (6)
+
+
+
+Apêndice 55
+
+2
+
+27
+8
+
+16
+9
+
+6
+1
+
+Pr
+559,0
+
+1
+
+387,0
+60,0
+
+?
+?
+?
+?
+
+?
+
+??
+?
+?
+
+?
+
+?
+
+?
+?
+?
+?
+
+?
+
+??
+?
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+?
+?
+?
+
+?
+?
+?+
+
++= DD
+Ra
+
+Nu (6)
+
+substituindo os dados na expressão anterior obtém-se um número de Nusselt médio de 7,61. Com
+
+este número de Nusselt é possível calcular o coeficiente de troca de calor médio pela expressão
+
+D
+kNu
+
+h De = (7)
+
+resultando num eh =7,24W/m
+2K.
+
+CÁLCULO DO COEFICIENTE GLOBAL DE TROCA TÉRMICA
+
+O coeficiente global de troca térmica foi obtido pela expressão (8)
+
+ei
+
+e
+
+p
+
+i
+
+i hr
+r
+
+k
+r
+
+h
+
+U
+1
+
+ln
+1
+
+1
+
+++
+= (8)
+
+com os valore de ri, raio interno do tubo e re, raio externo do tubo, obtidos de catálogo do fabricante
+
+dos tubos tem-se os valores, respectivamente, de 0,0127m e 0,0157m e kp é a condutividade térmica
+
+do polietileno de 0,5W/mK. O valor do coeficiente global de troca térmica é U=6,55 W/m2K.
+
+CÁLCULO DA PERDA DE CALOR PELOS TUBOS SECUNDÁRIOS
+
+Para o cálculo da perda de calor pelos tubos secundários utilizou-se as seguintes equações:
+
+
+
+Apêndice 56
+
+2
+se
+
+i
+TT
+
+T
++
+
+= (9)
+
+onde Ti é a temperatura interna, Te é a temperatura na entrada e Ts é a temperatura na saída do tubo
+
+)( exti TTUATUAq ?=?= (10)
+
+q é o fluxo de calor em W e Text é a temperatura externa
+
+( )se TTcpmTcpmq ?=?=
+..
+
+(11)
+
+considerando Te=40ºC e Ts=20ºC, obtém-se Ti , com Ti e Text=0ºC, calcula-se q, com este valor
+
+obtém-se a temperatura na saída de Ts. Com este valor de Ts retorna-se a expressão 9 num processo
+
+iterativo, até que obtém-se os resultados finais, que são Ti=29,46ºC, q=7313,19W e Ts=18,91ºC.
+
+Para um circuito completo ou aquecedor tem-se q=14,6kW.
+
+CÁLCULO DO COEFICIENTE DE TROCA DE CALOR NO INTERIOR E EXTERIOR DA
+
+ESTUFA
+
+As paredes da estufa são consideradas placas planas tanto no seu interior quanto no seu
+
+exterior, então, o roteiro de cálculo para ambas situações é o mesmo.
+
+Calcula-se o número de Rayleigh pela expressão,
+
+( )
+??
+
+? 3LTTg
+Ra sL
+
+?? (12)
+
+Ts e T? tem os valores de 0°C e 30°C para a situação interna e 0°C e –3°C para a situação externa.
+
+Os números de Rayleigh são RaL=44821453080 para o interior da estufa e RaL=4482145308
+
+para o exterior da estufa.
+
+Os números de Nusselt foram obtidos com a expressão
+
+
+
+Apêndice 57
+
+2
+
+27
+8
+
+16
+9
+
+6
+1
+
+Pr
+492,0
+
+1
+
+387,0
+825,0
+
+?
+?
+?
+?
+
+?
+
+??
+?
+?
+
+?
+
+?
+
+?
+?
+?
+?
+
+?
+
+??
+?
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+?
+?
+?
+
+?
+?
+?+
+
++= LL
+Ra
+
+Nu (13)
+
+os valores obtido são 
+iL
+
+Nu =408,85 e 
+eL
+
+Nu =196,10.
+
+Os coeficientes de troca respectivos, obtidos através da expressão
+
+L
+kNu
+
+h L= (14)
+
+são ih =4,49W/m
+2K e eh =2,15W/m
+
+2K.
+
+CÁLCULO DO COEFICIENTE GLOBAL DE TROCA DE CALOR ENTRE O INTERIOR
+
+E O EXTERIOR DA ESTUFA
+
+Com os coeficientes de troca de calor obtidos acima calcula-se o U da mesma forma que foi
+
+calculado para os tubos, o valor encontrado para U=1,45W/m2K.
+
+CÁLCULO DO CALOR PERDIDO POR CONVECÇÃO PARA MANTER A ESTUFA A
+
+TEMPERATURA INTERNA DE 0°C E EXTERIOR –3°C
+
+Sabendo que a área da estufa é de 772m2 aplicando-se a equação abaixo,
+
+)( eiCV TTUAq ?= (15)
+
+obtém-se que qcv é igual a qcv=4kW.
+
+
+
+Apêndice 58
+
+CÁLCULO DO CALOR PERDIDO POR RADIAÇÃO
+
+Para o cálculo do calor perdido por radiação fez-se as seguintes considerações:
+
+A1=500m2
+
+?=0,7, pior situação (céu limpo)
+
+?1=0,94, emissividade dos vegetais, tabelas Incropera e Witt, 1992.
+
+T1=1°C
+
+T2=-20°C
+
+Figura 1 – Esquema mostrando o calor perdido por radiação da estufa para o meio ambiente
+
+O calor perdido do corpo 1 para o corpo 2 é dado pela expressão:
+
+( )
+
+22
+
+2
+
+12111
+
+1
+
+4
+2
+
+4
+1
+
+21 111
+AFAA
+
+TT
+q
+
+?
+?
+
+?
+?
+??
+
+?
+++
+
+?
+?
+
+=? (16)
+
+sendo que A1&lt;&lt;A2 e F1-2=1, então a expressão anterior torna-se
+
+( )42411121 TTAq ?=? ??? (17)
+
+céu
+A2
+?2
+T2
+
+?
+
+F12
+
+?1, A1, T1
+
+
+
+Apêndice 59
+
+onde ? é a constante de Stefan-Boltzmann que tem valor numérico de 5,670x10-8W/m2K4.
+
+Realizando todas as substituições na fórmula acima, o calor perdido por radiação é 23kW.
+
+CALOR PERDIDO PELA ESTUFA MANTENDO A TEMPERATURA A 1°C
+
+O calor perdido pela estufa é a soma do calor perdido por convecção e o calor perdido por
+
+radiação, então,
+
+21?+= qqq CV (18)
+
+resultando num total de 26,4kW, considerando infiltrações, chega-se a 30kW.
+
+
+
+Referências Bibliográficas 60
+
+REFERÊNCIAS BIBLIOGRÁFICAS
+
+Abrams, D. W e Benton, C. C., 1980, “Simulated and measured performance of earth cooling
+
+tubes”, Proceedings of the 5th National Passive Solar Conference, Amherst, Mass., Oct. 19-26.
+
+Bansal, N. K., Sodha, M. S. e Bharadwaj, S. S.,1983, “Performance of earth air tunnels”,
+
+Energy Research, vol. 7, pp. 333-345.
+
+Baxter, D. O., 1994, “Energy exchanges and related temperatures of an earth-tube heat
+
+exchanger in the cooling mode”, Transactions of the ASAE, vol. 37, pp. 257-267.
+
+Becker, B. R., Misra, A. e Fricke, B. A., 1993, “Development of correlations for soil thermal
+
+condutivity”, Int. Comm. Heat Mass Transfer, vol. 19, pp. 59-68.
+
+Bejan, A, 1984. “Convection Heat Transfer”– John Wiley &amp;amp; Sons, Inc. New York
+
+Bernier, H., Raghavan G. S. V. e Paris, J., 1989a, “Evaluation of a soil heat exchanger-
+
+storage system fo a greenhouse. Part I: System performance”, Canadian Agricultural
+
+Engineering, vol. 33, pp. 93-98.
+
+Bernier, H., Raghavan G. S. V. e Paris, J., 1989b, “Evaluation of a soil heat exchanger-
+
+storage system fo a greenhouse. Part II: Saving aspects”, Canadian Agricultural Engineering, vol.
+
+33, pp. 99-105.
+
+Bharadwaj, S. S. e Bansal, N. K., 1981, “Temperature distribution inside ground for various
+
+surface conditions”, Building and Environment, vol. 16, nº 3, pp. 183-192.
+
+Bojic, M., Trifunovic, N., Papadakis, G. e Kyritsis, S., 1997, “Numerical simulation,
+
+technical and economic evaluation of air-to-earth exchanger coupled to a building”, Energy, vol. 22,
+
+nº 12, pp. 1151-1158.
+
+Boulard, T. e Baille, A., 1986a, “Simulation and Analysis of soil heat storage systems for a
+
+Solar Greenhouse. I-Analysis”, Energy in Agriculture, vol. 5, pp. 175-174.
+
+Boulard, T. e Baille, A., 1986b, “Simulation and Analysis of soil heat storage systems for a
+
+Solar Greenhouse. II-Simulation”, Energy in Agriculture, vol. 5, pp. 285-293.
+
+Boulard, T., Razafinjohany, E. e Baille, A., 1989a, “Heat and water vapour transfer in a
+
+greenhouse with an underground heat storage system. Part I – Experimental results”, Agricultural
+
+and Forest Meteorology, vol 45, pp. 175-184.
+
+Boulard, T., Razafinjohany, E. e Baille, A., 1989b, “Heat and water vapour transfer in a
+
+greenhouse with an underground heat storage system. Part II – Model”, Agricultural and Forest
+
+Meteorology, vol 45, pp. 185-194.
+
+
+
+Referências Bibliográficas 61
+
+Brousseau, P. e Lacroix, M., 1998, “Numerical simulation of a multi-layer latent heat
+
+thermal energy storage system”, International Journal of Energy Research, vol. 22, pp. 1-15.
+
+Bryan R. B., Anil M. e Brian A. F., 1992, “Development of correlations for soil, thermal
+
+conductivity”, Int. Comm. Heat Mass Transfer, vol. 19, pp. 59-68.
+
+Diener, R. G., Moseley, J. L., Peterson, R. A., Jones, W. T. e Pentrack, M. L., 1989,
+
+“Construction of an underground heat exchanger for broiler housing – with preliminary results”,
+
+Applied Engineering in Agriculture, ASAE nº NAR 87-407, pp. 82-86.
+
+Gauthier C., 1994, “Transfert de chaleur et d’humidité dans le sol.”, Internal report,
+
+Groupe de recherche THERMAUS, Département de génie mécanique, Université de Sherbrooke.
+
+Gauthier, C., Lacroix, M. e Bernier, H, 1997, “Numerical simulation of soil heat exchanger-
+
+storage systems for greenhouses”, Solar Energy, vol. 60, nº 6, pp. 333-346.
+
+Goswani, D. Y. e Dhaliwal, A. S., 1985, “Heat transfer analysis in Environmental control
+
+using na underground air tunnel”, Journal of Solar Energy Engineering, vol. 107, pp. 141-145.
+
+Incropera, F. P. e Witt, D. P., 1992, "Fundamentos de Transferência de Calor e Massa",
+
+LTC, RJ.
+
+Kämpf, A.N., 2000. “Produção Comercial de Plantas Ornamentais”, Livraria e Editora
+
+Agropecuária Ltda, ISBN 85-85347-44-9, Guaíba, RS.
+
+Kurata, K. e Takakura, T., 1991, “Underground storage of solar energy for greenhouses
+
+heating. I. Analysis of seasonal storage systems by scale and numerical models”, Transactions of
+
+the ASAE, vol. 34, pp. 563-569.
+
+Kurata, K. e Takakura, T., 1991, “Underground storage of solar energy for greenhouses
+
+heating. II. Comparison of seasonal and daily storage systems”, Transactions of the ASAE, vol. 34,
+
+pp. 2181-2186.
+
+Lefas, C. C. e Santamouris, M. J., 1985, “Application of microcomputers in optimal
+
+greenhouses environmental control and resources management”, Solar &amp;amp; Wind Technology, vol 1,
+
+nº 3, pp. 153-160
+
+Maliska, C.R., 1995. “Transferência de Calor e Mecânica dos Fluidos Computacional”,
+
+LTC – Livros Técnicos e Científicos Editora S.A., Rio de Janeiro.
+
+Mavroyanopoulos, G. N. e Kyritsis, S., 1986, “The performance of a greenhouse heated by
+
+an earth-air heat exchanger”, Agricultural and Forest Meteorology, vol. 36, pp. 263-268.
+
+Mihakakakou, G., Santamouris, M. e Asimakopoulos, D., 1994, “Modelling the
+
+thermal peformance of earth-to-air heat exchangers”, Solar Energy, vol. 53, nº 3, pp. 301-305.
+
+
+
+Referências Bibliográficas 62
+
+Mihalakakou, G., Lewis, J. O. e Santamouris, M., 1996, “On the potential of buried pipes
+
+techniques – application in Ireland”, Energy and Buildings, vol. 24, pp. 19-25.
+
+Mihalakakou, G., Santamouris, M. e Asimakopoulos, D., 1992, “Modelling the earth
+
+temperature using multiyear measurements”, Energy and Buildings, vol. 19, pp. 1-9.
+
+Mihalakakou, G., Santamouris, M. e Asimakopoulos, D., 1994, “On the cooling potential of
+
+earth to air heat exchangers”, Energy Convers. Mgmt, vol. 35, nº 5, pp. 395-402.
+
+Mihalakakou, G., Santamouris, M. e Asimakopoulos, D., 1994, “Use of the ground
+
+for heat dissipation”, Energy, vol. 19, nº 1, pp. 17-25.
+
+Mihalakakou, G., Santamouris, M., Asimakopoulos, D. e Argiriou, A., 1995, “On the ground
+
+temperature below buildings”, Solar Energy, vol. 55, nº 5, pp. 355-362.
+
+Mihalakakou, G., Santamouris, M., Asimakopoulos, D. e Tselepidaki, I., 1995, “Parametric
+
+prediction of the buried pipes cooling potential for passive cooling applicantions”, Solar Energy,
+
+vol. 55, nº 3, pp. 163-173.
+
+Patankar, S. V., 1980, “Numerical Heat Transfer and Fluid Flow”, McGraw-Hill, New
+
+York.
+
+Puri, V. M., 1986, Feasibility and performance curves for intermittent earth tube heat
+
+exchangers. Am. Soc.Agricul.. Eng., vol. 29, pp. 526-532.
+
+Santamouris, M. I., 1993, “Active solar agricultural greenhouses. The state of the art”, Int. J.
+
+Solar Energy, vol. 14, pp. 19-32.
+
+Santamouris, M., Argiriou, A. e Vallindras, M., 1994, “Design and operation of a low energy
+
+consumption passive solar agricultural greenhouse”, Solar Energy, vol. 52, nº 5, pp. 371-378.
+
+Santamouris, M., Balaras, C. A., Dascalaki, E. e Vallindras, M., 1994, “Passive solar
+
+agricultural greenhouses: a worldwide classification and evaluation of technologies and systems
+
+used for heating purposes”, Solar Energy, vol. 53, nº 5, pp. 411-426.
+
+Santamouris, M., Mihalakakou, A., Argiriou, A. e Asimakopoulos, D. N., 1995,“On the
+
+perfomance of buildings coupled with earth to air heat exchangers”, Solar Energy, vol. 54, nº 6, pp.
+
+375-380.
+
+Santamouris, M., Mihalakakou, G. e Asimakopoulos, D. N., 1997, “On the coupling of
+
+thermostatically controlled buildings with ground and night ventilation passive dissipation
+
+techniques”, Solar Energy, vol. 60, nº 3 e 4, pp. 191-197.
+
+
+
+Referências Bibliográficas 63
+
+Santamouris, M., Mihalakakou, G., Balaras, C. A. e Argiriou, A., 1995, “Use of buried pipes
+
+for energy conservation in cooling of agricultural greenhouses”, Solar Energy, vol. 55, nº 2, pp.
+
+111-124.
+
+Sawhney, R. L. and Mahajan, U., “Heating e cooling potential of na underground air-pipe
+
+system”, International Journal of Energy Research, vol. 18, pp. 509-524.
+
+Schneider, G. E., 1985, “An investigation into the heat loss characteristics of buried pipes”,
+
+Transactions of the ASME, vol. 107, pp. 696-699.
+
+Sibley, K. J. e Raghavan, G. S. V., 1984, “Heat transfer coeficients for air flow in plastic
+
+corrugated drainage tubes”, Canadian Agricultural Engineering, vol. 26, nº 2, pp. 177-180.
+
+Sodha, M. S., Buddhi, D. e Sawhney, R. L., 1991, “Thermal performance of underground air
+
+pipe: different earth surface treatments”, Energy Comvers. Mgmt, vol. 31, nº 1, pp. 95-104.
+
+Sodha, M. S., Buddhi, D. e Sawhney, R. L., 1993, “Optimization of pipe parameters of na
+
+underground air pipe cooling system”, Energy Comvers. Mgmt., vol. 34, nº 6, pp. 465-470.
+
+Sodha, M. S., Mahajan, U. e Sawhney, R. L., 1994, “Thermal performance of a parallel earth
+
+air-pipes system”, International Journal of Energy Research, vol. 18, pp. 437-447.
+
+Sodha, M. S., Sawhney, R. L. e Sharma, A. K., 1989, “Performance of earth-air tunnel
+
+system for different earth surface treatments”, International Journal of Energy Research, vol. 13,
+
+pp. 477-490.
+
+Takakura, T e Yamakawa, K., 1981, “Performance and evaluation of a greenhouse solar
+
+collection with underground heat storage system. 1, A steady state analysis by means of one
+
+dimensional models”, J. Agric. Meteorol., vol. 37, pp. 187-196.
+
+Trombe, A. e Serres, L., 1994, “Air-earth exchanger study in real site experimentation and
+
+simulation”, Energy and Buildings, vol. 21, pp. 155-162.
+
+Tzaferis, A., Liparakis, D., Santamouris, M. e Argiriou, A., 1992, “Analysis of the accuracy
+
+and sensitivity of eight models to predict the performance of earth-to-air heat exchangers”, Energy
+
+and Buildings, vol. 18, pp. 35-43.
+
+Van Wylen, G. J. e Sonnatag, R. E., 1976, “Fundamentos da Termodinâmica Clássica”,
+
+Editora Edgard Blücher Ltda., 2ª ed., São Paulo.
+
+Vielmo, H. A. e Schneider, P. S., “Melhoramentos e simulação numérica do comportamento
+
+térmico de estufas para plasticultura”, Departamento de Engenharia Mecânica, Escola de
+
+Engenharia, UFRGS
+
+
+
+Referências Bibliográficas 64
+
+Vielmo, H.A., 1998. Notas de Aula -  “Transferência de Calor e Mecânica dos Fluidos
+
+Computacional I e II”, Universidade Federal do Rio Grande do Sul-UFRGS, Porto Alegre,
+
+Brasil.
+
+
+</field>
+	</doc>
+</add>

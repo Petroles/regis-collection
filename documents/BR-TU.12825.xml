@@ -1,0 +1,6015 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.12825</field>
+		<field name="filename">18558_PFC_20131-MarcoAurelioSchmitzDeAguiar.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+Optimal oil production network
+control using Modelica
+
+Monografia submetida a? Universidade Federal de Santa Catarina
+
+como requisito para a aprovac?a?o da disciplina:
+
+DAS 5511: Projeto de Fim de Curso
+
+Marco Aure?lio Schmitz de Aguiar
+
+Floriano?polis, agosto de 2013
+
+
+
+Aknowlegment
+
+I would like to express my special thanks of gratitude to my supervisor at NTNU,
+
+Andres Codas Duarte, as well to my supervisor at UFSC, Professor Eduardo Campono-
+
+gara, who gave knowledge, advices and incentive to do this project.
+
+I would also like to thank my parents and friends who helped to keep cheerful
+
+and focused, even from distance.
+
+I would like to thank the NTNU, the Department of Engineering Cybernetics, and
+
+the IO Center for receiving me and giving me the support so I could have an nice stay
+
+and a good work environment.
+
+At last, I would like to thank to Brazilian Government and the CNPQ for giving
+
+me the opportunity for this exchange program called “Cie?ncia sem fronteiras” (Science
+
+without borders). Which I believe can be very beneficial to transform the country in one
+
+of the leading centers for scientific research.
+
+i
+
+
+
+Resumo
+
+Na ultima de?cada, diversos trabalhos desenvolveram te?cnicas para otimiza-
+
+c?a?o esta?tica da produc?a?o. Ao mesmo tempo, engenheiros de controle vem usando
+
+otimizac?a?o para controlar a dina?mica de poc?os, separadores e outro elementos da
+
+rede de produc?a?o. Este trabalho visa preencher o gap entre essas duas a?reas distin-
+
+tas. Ele tenta responder uma questa?o comum que surge ao desenvolver problemas
+
+de otimizac?a?o esta?tica, o que esta? ocorrendo com as dina?micas do sistema?
+
+Para esse propo?sito, um modelo dina?mico da rede de produc?a?o de petro?leo foi
+
+desenvolvido. Ele conte?m os principais elementos: poc?o, manifold, pipeline, sepa-
+
+rador, compressor de ga?s e linha de injec?a?o de gas-lift. Uma linguagem de mode-
+
+lagem de sistemas chamada Modelica foi usada para transcrever estes modelos para
+
+eles serem usados no ambiente computacional JModelica.org. Esse ambiente conecta
+
+ferramentas do estado da arte para simulac?a?o e otimizac?a?o de sistemas dina?micos.
+
+Ale?m de criar uma ferramenta que possibilite a compreensa?o do que esta? ocor-
+
+rendo com as dina?micas do sistema, este trabalho se propo?e a resolver um problema
+
+que na?o seja notado em outras formulac?o?es. Um problema no qual uma manutenc?a?o
+
+programada dos compressores reduzira? sua capacidade de fluxo, se na?o manejado
+
+de forma adequada, podera? levar a um transito?rio onde e? necessa?rio queimar parte da
+
+produc?a?o no flare.
+
+Tre?s problemas de otimizac?a?o sa?o formulados e comparados. O primeiro, uma
+
+formulac?a?o simplista que faz o tracking de um setpoint. Na seque?ncia, e? criado um
+
+problema de maximizac?a?o da produc?a?o. Por u?ltimo, e? formulada uma combinac?a?o de
+
+tracking com minimizac?a?o do uso do flare.
+
+Os problemas de otimizac?a?o sa?o discretizados usando o collocation method, um
+
+me?todo que faz a formulac?a?o expl??cita do problema e descarta o uso de simuladores. A
+
+otimizac?a?o e? realizada usando o nonlinear solver IPOPT. Os Jacobianos, as Hessianas
+
+e os gradientes sa?o obtidos com a ferramenta de diferenciac?a?o automa?tica CasADi.
+
+Apo?s a analise dos resultados, verificamos que e? necessa?rio o tratamento di-
+
+na?mico do problema e a ause?ncia desta abordagem leva a condic?o?es na qual o flare
+
+e? usado. Para evitar tal situac?a?o tanto a formulac?a?o de maximizac?a?o de produc?a?o,
+
+quanto a formulac?a?o de tracking com alta penalizac?a?o do flare podem ser usadas.
+
+ii
+
+
+
+Abstract
+
+In the last decade several works have developed techniques to solve the steady
+
+state production optimization problem. At the same time, control engineers have used
+
+optimization to control the dynamics of wells, separators and other production network
+
+elements. This work aims to fill the gap between this two distinct areas of study. It
+
+tries to answer a common question that arises when developing static optimization
+
+problems, what is happening with the system dynamics?
+
+For this, a dynamic model of an oil and gas production network was developed.
+
+It contains the main elements: wells, manifolds, pipelines, separators, gas compres-
+
+sors and gas-lift injection line. A system modelling language named Modelica was
+
+used to transcript these models, so they could be used in the computational environ-
+
+ment JModelica.org. This environment connects state-of-the-art tools to simulation and
+
+optimization of dynamic systems.
+
+Beside creating a tool that allows the understanding of what is happening in
+
+the dynamic domain, this works proposes to solve a dynamic problem that might be
+
+unnoticed in other formulations. A problem where a scheduled compressors mainte-
+
+nance will reduce the compressors flow capacity and if not well handled may lead to a
+
+temporary flare condition.
+
+Three optimization problems are formulated and compared. At first an naive
+
+approach that only tracks a setpoint is proposed. After, a production maximization
+
+problem is created. At last, a combination of tracking and flare minimization is sug-
+
+gested.
+
+Each optimization problem is discretized using the collocation method, a explicit
+
+formulation that discards the use of simulators. The optimization is solved using the
+
+IPOPT nonlinear solver. The Jacobians, Hessians, and gradients are obtained using
+
+the CasADi automatic differentiation tool.
+
+After the analysis of the results, it is seen that the an approach that treats the
+
+dynamics is necessary and the lack of such treatment leads to a flaring condition. Both,
+
+the production maximization and the tracking formulation with high penalization, were
+
+able to solve the problem without using the flare.
+
+iii
+
+
+
+Contents
+
+1 Introduction 1
+
+2 Model and Background 3
+
+2.1 Network . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+
+2.2 Well Model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+
+2.3 Manifold . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+
+2.4 Pipeline-Riser Model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+
+2.5 Separator . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+
+2.6 Compressor . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+
+2.7 Models Coupling . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+
+3 Modelica and JModelica.org 24
+
+3.1 Modelica . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+
+3.2 Optimica . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+
+3.3 JModelica.org . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+
+4 Nonlinear Model Predictive Control 28
+
+4.1 Problem Discretization . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+
+4.1.1 ODE Solvers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+
+4.1.2 Collocation Method . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+
+4.1.3 Collocation Method Example . . . . . . . . . . . . . . . . . . . . 33
+
+4.1.4 NLP Optimization Formulation . . . . . . . . . . . . . . . . . . . 34
+
+4.2 Objective Function . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 37
+
+4.2.1 Tracking Problem . . . . . . . . . . . . . . . . . . . . . . . . . . . 37
+
+4.2.2 Production Maximization Formulation . . . . . . . . . . . . . . . 37
+
+iv
+
+
+
+4.3 Test Case: Compressor Scheduled Maintenance . . . . . . . . . . . . . 38
+
+4.3.1 Solving Approaches . . . . . . . . . . . . . . . . . . . . . . . . . 39
+
+5 Results 41
+
+5.1 Instance definition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+
+5.2 Computational Setup . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+
+5.3 Maximization Problem . . . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+
+5.4 Tracking Problem . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+
+5.5 Compressor Maintenance Results . . . . . . . . . . . . . . . . . . . . . 49
+
+5.5.1 Naive Approach . . . . . . . . . . . . . . . . . . . . . . . . . . . 49
+
+5.5.2 Transient Optimization . . . . . . . . . . . . . . . . . . . . . . . . 51
+
+5.5.3 Hybrid Approach . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+
+5.6 Computation Analysis . . . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+
+6 Conclusion 55
+
+Bibliography 57
+
+Appendix A : Dynamic Models 61
+
+A.1 Well Model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 61
+
+A.2 Flowline Model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 64
+
+A.3 Manifold . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 66
+
+A.4 Separator . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 68
+
+A.5 Compressor . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 71
+
+A.6 Production Network . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 73
+
+A.7 Objective Functions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 74
+
+A.7.1 Tracking Problem . . . . . . . . . . . . . . . . . . . . . . . . . . . 74
+
+A.7.2 Maximization Problem . . . . . . . . . . . . . . . . . . . . . . . . 74
+
+A.8 Constraints . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 74
+
+v
+
+
+
+Appendix B : Modelica Examples 75
+
+B.1 Example 1: Van der Pol Oscillator . . . . . . . . . . . . . . . . . . . . . 75
+
+B.2 Example 2: The Quadruple-Tank Process . . . . . . . . . . . . . . . . . 76
+
+B.3 Example 1: Minimum time problem with Van der Pol Oscillator . . . . . . 78
+
+vi
+
+
+
+Chapter 1: Introduction
+
+A current trend in the science and society is the search for more efficient and
+
+effective means to explore the natural resources. This trend combined with a uprising
+
+demand for fossil energy culminated in the necessity of the oil industry to enhance the
+
+development of new technologies.
+
+Between these technologies, the “smart field” [24] contrasts among the others.
+
+This technology develops hardwares and softwares to allow the optimal operation of
+
+oilfields. The development became a challenge to the industry and the academic part-
+
+ners. In the software part, many works have been developing nonlinear [21, 2] and
+
+piecewise linear [14, 9, 30] formulations for maximize the static production of oil fields.
+
+Static models are easier to be formulated when compared to dynamic models, it
+
+can be done by interpolating simulators or field data. The optimization of a static can
+
+obtain results faster than dynamic models, but it ignores how the system is behaving in
+
+the continuous time.
+
+In the dynamic system area, several works model and control a single element
+
+of network, but hardly more than one element is treated per time. In this work, an oil
+
+production network is modeled but for this dynamic models are used. In such way, it
+
+aims to be able to solve problems that requires the whole network without missing the
+
+transitory characteristic.
+
+The production is composed by:
+
+• Gas-lift wells that extract oil, gas, and water from the reservoir.
+
+• Sub-sea manifolds that gathers the flow from different wells.
+
+• Pipelines and risers that transport the flow from the sea bed to the processing
+
+unit.
+
+• Separators that separate the incoming three phase flow to three different outlets,
+
+the separation efficiency may change depending on the conditions.
+
+• Compressors that increases the pressure from the separator gas outlet to the
+
+exportation line.
+
+1
+
+
+
+Gas-lift injection line and manifold that take part of the flow of the exportation line and
+
+redirect then to be inject in the wells.
+
+The models equations were coded using a system modeling language named
+
+Modelica, this language permit the description of systems in a intuitive way. The com-
+
+putational environment JModelica.org was used to compile the production network
+
+model, this environment also interface the model with state-of-the-art simulation and
+
+optimization tools.
+
+This work may be relevant to answer some of questions that may rise when
+
+doing static optimization, however the tool developed allows to go further create new
+
+formulations. A practical problem is created to explore the system model and it pos-
+
+sible applications it is created. A scheduled compressor maintenance will restrict the
+
+compressor flow capacity. In such condition, it might be necessary to flare part of the
+
+production if the problem is not well handled.
+
+To solve this problem three optimization formulations were created. At first, it
+
+is created a optimal tracking problem that follows the static production maximization
+
+solution. The second approach is a production maximization problem. The third for-
+
+mulation combines the track following of the first formulation with a flare minimization.
+
+Each formulation is compared qualitative using figures and qualitative using the solver
+
+report.
+
+The model is discretized using the collocation method, an explicit formulation
+
+for solving DAEs that discard the use of simulators. The open-source nonlinear solver
+
+IPOPT is used to solve the optimization problems. the CasADi automatic differentiation
+
+tool is used to obtain the Jacobians, Hessians, and gradients.
+
+Chapter 2 describes the models used and how they are coupled. Chapter 3
+
+discusses about the tools used to accomplish this work. Chapter 4 shows the dis-
+
+cretization method and the nonlinear formulation. Chapter 5 show and argument the
+
+results. Chapter 6 gives the final conclusions and the possibility for future works.
+
+2
+
+
+
+Chapter 2: Model and Background
+
+In this chapter, the models that were used to describe the oil network will be
+
+formulated.
+
+The chapter begins with an overview of the main elements of network and how
+
+they interact. Afterwards each of the models is specified based on literature references
+
+and considering some changes to fit the purpose of this work. At last it is given a
+
+description of how the models are connected to form the network.
+
+2.1: Network
+
+This works wishes to develop a model that is suitable for simulation, control, and
+
+optimization. For this, not only the component dynamics must be considered but also
+
+the interactions between them and the restrictions that it may lead.
+
+For instance, the literature usually assumes that there is unlimited lift-gas avail-
+
+ability or it is bounded by some arbitrary value. However, when analyzing the network
+
+as a compound system we can see that the limit on gas injection depends on the mass
+
+balance of how much is produced, exported, and injected. For these reasons a macro-
+
+scopic view of the system is necessary to rightfully control and optimize a network.
+
+The network starts with the producing elements, the well takes as input the lift-
+
+gas flow rate and as output, the production mass flow. Besides, it is related to the
+
+pressure with the gas-lift manifold and production manifold.
+
+The production manifold gathers the flow from many inlets and redirects to only
+
+one outlet. This is used to connect the wells to the pipeline.
+
+The pipeline and the riser are modeled together, since they have similar func-
+
+tionality and dynamics. As input it takes the flow coming from the well and delivers
+
+it to the separator. It shares the pressure with the manifold at the inlet and with the
+
+separator at the outlet. Between the inlet and outlet a pressure drop is created due to
+
+friction and gravitational effects.
+
+The separator takes the three phase flows coming from the riser and discharges
+
+in three outlets. If the separation is not perfect, oil and gas flows within water through
+
+3
+
+
+
+the water outlet. In the same way, part of the gas leaves through the oil outlet. The sep-
+
+aration efficiency is given by the mass flow through the separator and by the separator
+
+pressure, which is a free variable.
+
+The compressor is responsible for increasing the pressure so that the gas can be
+
+transported by the pipeline to the shore. Before the compressor there is a exhaustion
+
+valve that leads to the flare and in case the compressor can not process all the flow
+
+part can be burned.
+
+The system components and free variables of the network are presented in the
+
+Figure 2.1. The decision variables are highlighted with a circle and all other variables
+
+can be determined using the system equations.
+
+The free variables are:
+
+• wwgl is the lift-gas injection rate in the well w.
+
+• ps, the pressure of the separator s.
+
+• wcfl, the gas mass flow to be burned in the flare that is located before compressor
+
+c.
+
+• wcsl, the recirculation flow through the anti-surge line in compressor c.
+
+After this overview, each model will be specified in a different section, starting
+
+from the bottom until the export line.
+
+4
+
+
+
+Manifold 1
+
+Manifold 2
+
+Liquids
+
+Output
+
+Gas
+
+Output
+
+Separator 1
+
+Separator 2
+
+Well 1
+
+Lift-gas injection
+
+Injection
+
+F
+la
+
+re
+
+Export
+
+Compressor 1
+
+Gas-Lift 
+
+Manifold
+
+Liquids
+
+Output
+
+F
+la
+
+re
+
+Compressor 2
+
+Gas
+
+Output
+
+Pipeline &amp;amp; 
+
+Riser 1
+
+Pipeline &amp;amp; 
+
+Riser 2
+
+Well 4
+
+F
+ig
+u
+re
+
+2
+.1
+:
+N
+etw
+
+o
+rk
+
+S
+ch
+em
+
+a
+tic
+
+5
+
+
+
+2.2: Well Model
+
+The well is the main actuator of an oil reservoir, it is composed by several dif-
+
+ferent parts. In Figure 2.2 we summarize a gas-lifted well representing the following
+
+components: gas-lift choke, injection valve, annulus, tubing, casing, packer, and pro-
+
+duction choke.
+
+Tubing
+
+Annulus
+
+Reservoir
+
+Injection
+valve
+
+Production
+
+choke
+
+Gas Lift
+
+Choke
+
+Casing
+
+Packer
+
+Gas in
+
+Production
+
+out  
+
+Figure 2.2: Well schematic [11]
+
+The operation of a gas-lifted well can be described by the simple steps:
+
+1. The injected gas passes through the gas-lift choke and builds up the annulus
+
+pressure.
+
+2. As the pressure in the annulus exceeds the pressure in the tubing, gas starts to
+
+flow through the injection valve.
+
+6
+
+
+
+3. The injected gas mixes with the fluid emanating from the reservoir and reduces
+
+the overall density.
+
+4. With a lower density the counter-pressure induced by the fluid is reduced making
+
+easier for the fluid to flow to the surface.
+
+A gas-lifted well may operate in different regimes [17, 16]. Some of them with
+
+periodic dynamics as a consequence of an intermittent gas rate through the injection
+
+valve. This oscillatory behavior is not the aim of this work. Thus, it is assumed that
+
+casing-heading and density wave are avoided by a lower level control and operational
+
+constraints or are non existent.
+
+For the gas-lifted well dynamic model we searched in the literature for the most
+
+used models. A Hammerstein Model [28] was discarded because it is tuned to char-
+
+acterize the dynamics but not the nonlinearities and discontinuities that are intrinsic of
+
+the system, besides this model need to be fitted to simulator data.
+
+Plucenio’s Model [27] is based on Partial Derivatives Equations (PDEs) that
+
+might be good to represent the well alone, however it is dispendious to represent in
+
+a complex network once it generates a high number of states.
+
+Binder’s Model [8] is an extension of Eikrem’s Model, a model that has been
+
+developed and used in the last 10 years [11, 12, 1, 18]. An earlier version of the
+
+model was compared with OLGA simulator [18], even with the simplicity the results
+
+have considerable fidelity. The model has only 3 ODEs and some algebraic equations
+
+and still it can represent most of the characteristics and restrictions in the well. For
+
+these reasons, this is the model that it will be used.
+
+The main assumptions of the model are:
+
+• Oil Production is described by Vogel’s Equation [35].
+
+• The gas production and water production are given by the water-liquid ratio (wa-
+
+tercut) and gas-oil ratio (GOR).
+
+• The distribution of the masses of the three fluids happens without transport delay.
+
+• Friction between the fluids and the annulus/tubing wall is not considered.
+
+• Pressures are obtained by the ideal gas law and gravitational affect of liquids.
+
+7
+
+
+
+The model describes the dynamical system using 3 states and 3 inputs — wgl,
+
+upc, and pds:
+
+m? =
+
+?
+???
+
+m?ga = win ? wgi
+
+m?gt = wgr + wgi ? wgp
+
+m?lt = wlr ? wlp
+
+?
+???
+
+wout = fc(m,pds,upc)
+
+Mass of gas in the Annulus
+
+Mass of gas in the Tubing
+
+Mass of liquid in the Tubing
+
+Choke flow
+
+(2.1)
+
+In the annulus, the input of lift gas win increases the annulus gas mass mga, while the
+
+flow through the injection valve wgi reduces it. The gas coming from the reservoir wgr
+
+adds up to the gas coming from the annulus wgi and is reduced from the gas flowing
+
+through the production choke wgp giving the dynamic of gas mass in the tubing. The
+
+liquid mass in the tubing is the time integral of the liquid flowing from the reservoir wlr
+
+discounted by the outgoing liquid flow through the production choke wlp. The output
+
+vector of gas, oil, and water flows wout is as function of the states m = (mga,mgt,mlt)
+
+(Eq. 2.1), the opening in the production choke upc, and the choke downstream pressure
+
+pds, which depends on the pipeline states. The whole set of equations is presented in
+
+Appendix A.1.
+
+The main difference between Eikrem’s and Binder’s models is that the last one
+
+considers not only production of oil but also water.
+
+The main difference between Eikrem’s and Binder’s models is that, in Binder’s
+
+model, the reservoir produces not only oil and gas, but water as well. Therefore, some
+
+changes were made in the density and pressure equations as can be seen in [8].
+
+Both models consider the opening of the production choke upc as a controllable
+
+variable, however to reduce the complexity of the problem we assume that it is always
+
+fully open, since any other position of the choke would reduce the oil production which
+
+is against the objective of maximizing production.
+
+An additional modification to Binder’s model was necessary to fit the non-return
+
+characteristic in the gas-lift choke. There should be flow in the choke only if the pres-
+
+sure in the annulus is lower than the pressure before the choke, in the gas-lift manifold.
+
+Due to this limitation, the lift-gas injection must be within the bounds:
+
+0 ? wgl ? w
+max
+gl = fgv(pgm ? pta) (2.2)
+
+being wmaxgl the flow when the gas-lift choke is fully open. It can be found using the
+
+choke function, which is dependent of the pressure difference between the gas-lift
+
+8
+
+
+
+manifold (pgm) and the top of the annulus (pta).
+
+2.3: Manifold
+
+The manifold is a coupling element. It is modeled with no dynamics or complex
+
+equations. It is used to connect many components to a single one, Figure 2.3. It can
+
+be a three-phase flow manifold, as those in the production line, or a single-phase flow
+
+manifold, as the lift-gas manifold.
+
+Figure 2.3: Manifold Schematic
+
+The outlet flow, in the manifold, is the sum of all inlet flows. The flow is assumed
+
+to be perfectly mixed. The pressure at the inlet and outlet are considered the same.
+
+wout =
+?
+
+i?I
+
+?iwiin (2.3a)
+
+piin = pout, ?i ? I (2.3b)
+
+?i ? {0, 1}, ?i ? I (2.3c)
+
+where wout is the outlet flow and pout is outlet pressure. wiin is the inlet flow and p
+i
+in the
+
+inlet pressure of the input i. ?i is the opening of the inlet valve i, which can be either
+
+fully open (?i = 1) or fully closed (?i = 0). I is the set of manifold inputs. The model is
+
+also the Appendix A.3.
+
+2.4: Pipeline-Riser Model
+
+In this section it is modeled the pipeline and the riser, elements that connect the
+
+subsea manifold to the offshore platform. For the same reasons that were explained in
+
+the well modeling, we are not interested in oscillatory behaviors.
+
+9
+
+
+
+During the literature research several models were found, which focus on model-
+
+ing the turbulent regimes. Slug flow models are described by Taitel [34, 33], Di Meglio
+
+[10], Stasiak [31, 32], Masella [23], and Jahanshahi [19]. The last one presents a table
+
+(p. 1639 — Table 1) which compares his model with the state-of-the-art Multiphase
+
+Flow Simulator OLGA and other early proposed models. The conclusion that we can
+
+obtain from the table is that the model proposed by Jahanshahi [19] has a fair trade off
+
+in accuracy and complexity. It contains a reduced number of states when compared to
+
+models that use Partial Differential Equations (PDE).
+
+Jahanshahi [19] assumes that:
+
+• The system has two components: a horizontal flowline and a vertical riser.
+
+• Each component has two state variables, one for the liquid mass and another for
+
+the gas mass.
+
+• The connection is made by a virtual valve and the valve opening is given by a set
+
+of equations related to the height of liquid in the lowest part of the pipeline.
+
+• The boundary conditions are the constant inflow of gas wg and liquid wl (with
+
+constant watercut) and the static pressure ps at the end of the pipeline.
+
+• In both elements, the gas is assumed to be ideal and the pressure drop due to
+
+friction is disregarded.
+
+• The horizontal pipeline has a stratified flow, whereas a perfect mix is assume in
+
+the riser.
+
+L2
+
+L1
+
+Figure 2.4: Pipeline and Riser Schematic
+
+The flowline and riser have different flow regimes [37, 26]. As discussed in Sec-
+
+tion 2.2 regimes with oscillatory dynamics are out of the scope of this work. Therefore
+
+the model was simplified to avoid such conditions.
+
+10
+
+
+
+The assumption of constant watercut at the inlet will not hold if different produc-
+
+tion wells are connected to the same pipeline. For this reason, the states related to the
+
+liquid phase were split in 2, water and oil, in both sections.
+
+The final model has 6 states. In the pipeline mgp, mop, and mwp, are the mass
+
+of gas, oil, and water, respectively. In the riser mgr, mor, and mwr, once again, are the
+
+mass of gas, oil, water. Figure 2.4 sketches the system with the modifications.
+
+The set of equations of the model can be summarized as:
+
+m? =
+
+?
+???????????
+
+m?gp = wg,in ? wg,pr
+
+m?op = wo,in ? wo,pr
+
+m?wp = ww,in ? ww,pr
+
+m?gr = wg,pr ? wg,out
+
+m?or = wo,pr ? wo,out
+
+m?wr = wo,pr ? ww,out
+
+?
+???????????
+
+yp,out = f1(m)
+
+pds = f2(m)
+
+Gas mass in the pipeline
+
+Oil mass in the pipeline
+
+Water mass in the pipeline
+
+Gas mass in the riser
+
+Oil mass in the riser
+
+Water mass in the riser
+
+Outflow
+
+Pressure at the entrance
+
+(2.4)
+
+The vector of states m = (mgp,mop,mwp,mgr,mor,mwr) do the balance of mass in the
+
+system. The system inputs are the inflow of gas wg,in, oil wo,in, and water ww,in. The
+
+flow through the virtual valve that connects the two elements are the gas flow wg,pr, the
+
+oil flow wo,pr, and the water flow ww,pr. The system outlet flow is composed by the gas
+
+flow wg,out, oil flow wo,out, and water flow ww,out.
+
+The model equations including the changes can be found in Appendix A.2. For
+
+the original model it is suggested the reference [19].
+
+2.5: Separator
+
+The separator developed in this section is inspired by the Sayda’s physical-
+
+based model [29]. This model includes transient dynamics, but since its settling time is
+
+considerable faster than those in the wells and pipelines they will be discard.
+
+This element will determine how much hydrocarbons are flowing along the water
+
+through the water outlet and how much gas within the oil goes through the oil outlet.
+
+The separator is basically a tank with fluid flowing through it. It has a three-phase
+
+flow inlet and three outlets: a water outlet — that may discharge gas and oil as well, an
+
+oil outlet — that can discharge gas also, and a gas outlet. The separator is divided in
+
+11
+
+
+
+four volumes: the mixture, the water phase, the oil phase, and the gas phase. Figure
+
+2.5 shows a schematic.
+
+Figure 2.5: Separator Schematic
+
+The separator pressure can be determined by the mass and volume of gas inside
+
+of the separator using the ideal gas equation. Since the separator length is relatively
+
+short when compared to pipelines, the pressure drop due to the friction through the
+
+separator is so small that it is negligible and pressure of all outlets are equal to the inlet
+
+pressure:
+
+pin = pout (2.5)
+
+Being pin the inlet pressure and pout the pressure in all outlets.
+
+The separator outlet pressure is defined as a controlled variable and it is as-
+
+sumed that a lower-level control loop controls the outlet gas valve to keep the pressure
+
+in the determined reference. This regulation dynamic is faster than other dynamics,
+
+therefore it is not considered in this model. In addition, two level controllers for the
+
+water-mixture level and the oil level are assumed to keep them in a predetermined
+
+reference. Since the heights and pressures have no dynamics, there is no mass accu-
+
+mulation inside the separator, therefore we can assure that all the inlet flow is leaving
+
+by one of the outlets.
+
+qin =
+?
+
+p?P
+
+q
+p
+out (2.6)
+
+12
+
+
+
+where qin is a three-phase mass flow and each q
+p
+out is an outlet mass flow. P is the set
+
+of the outlets, they can be g, o or w, standing for the gas, oil, and water outlet.
+
+What determines the separation efficiency between water and the mixture is the
+
+angle ? of the interface between this two elements. This angle is the same as the angle
+
+formed by the movement of water droplets inside of the mixture. The droplets speed
+
+vector is composed by the speed of water flowing through the separator (horizontal
+
+component) and gravitational effect (vertical component), which is given by Stoke’s law
+
+[22]:
+
+? = tan?1
+(
+vv
+vh
+
+)
+(2.7)
+
+where ? is the surface angle, vh is the horizontal component of the water flow, and vv
+
+is the vertical component induced by the gravitational effect.
+
+The separation is perfect if the surface touches the oil phase, as it happens
+
+in Figure 2.5. Otherwise we need to virtually extend the separator to have perfect
+
+separation, as it happens in Figure 2.6. The perfect separation happens when the
+
+water and oil phases meet. It does not happen in L anymore, but the perfect separation
+
+happens on L1. The ratio of the volumes of the mixture inside and virtually outside of
+
+the separator gives the water-mixture separation index. If the separation is not perfect,
+
+oil and gas flow through the water outlet.
+
+Figure 2.6: Virtual Separator Schematic
+
+The oil-gas separation efficiency is based on Raoult’s law and Dalton’s law of
+
+partial pressures [25], which basically says that the composition of a fluid at equilib-
+
+rium depends on the fluid pressure and the vapor pressure of the components. In
+
+mathematical format:
+
+xi = yi
+Pv,i
+P
+
+(2.8)
+
+13
+
+
+
+where xi is the mole fraction of the component in the liquid phase. yi is the mole
+
+fraction of the component in the vapor phase. We assume that the gas has only one
+
+component and the oil will not vaporize to the gas phase, in which case yi = 1. Pv,i
+
+is the vapor pressure of the component i, and P is the mixture pressure. Let g be the
+
+only the gas component, then:
+
+xg =
+Pv,g
+P
+
+(2.9)
+
+Using Eq. 2.9 we can find the amount of gas that flows out through the oil
+
+outlet and how much flow through the gas outlet. The whole equations set appears in
+
+Appendix A.4.
+
+2.6: Compressor
+
+Three compressor models in the study of Grong [13] were examined to find one
+
+that suits this work. However, a new model was elaborated and it might fit better our
+
+purposes.
+
+The first of the three models is a physical-based model which describes very well
+
+the dynamics of the compressor in the simulations as is shown in [13]. Nevertheless,
+
+the performance relies on physical design parameters which are difficult to measure
+
+and non-existent in the commercial compressor data sheets. For this reason, it is very
+
+difficult to implement.
+
+To overcome the lack of information to build a physical model, the following mod-
+
+els will only use typical data given by manufacturers. The compressor map, Figure 2.7,
+
+is given in the compressor data sheet and contains the compressor static behavior. On
+
+its abscissa axis there is the compressor volumetric inlet flow and on the ordinate axis
+
+there is the pressure gain through the compressor. Moreover, the chart is composed
+
+by several lines. Each line represents the compressor characteristic for a given com-
+
+pressor speed. Figure 2.7 presents two boundaries with dashed lines. The surge line
+
+is a limit which separate the map of the unstable flow region. The physical explanation
+
+is similar to the stall effect in airplanes wings. The other boundary is the choke line,
+
+this limit represent the maximum flow that the compressor can handle.
+
+The next model [13] uses a 4th order polynomial function to approximate all
+
+speed lines in the compressor map. The parameters of the polynomial function are
+
+speed dependent and are fitted in a least square way from experimental data. The
+
+14
+
+
+
+1 1.5 2 2.5 3 3.5 4 4.5 5 5.5 6
+1
+
+1.5
+
+2
+
+2.5
+
+3
+
+3.5
+
+4
+
+4.5
+
+5
+
+5.5
+
+6
+
+Inlet Flow rate (m
+3
+/s)
+
+P
+re
+
+s
+s
+u
+re
+
+ R
+a
+ti
+o
+
+10450 rpm
+
+9500 rpm
+
+8550 rpm
+
+7600 rpm
+
+Surge Line
+
+Choke line
+
+Figure 2.7: Compressor map
+
+fidelity is not very good if compared to the other models in the studies thereof, and the
+
+calculation time is very similar to the physical model [13].
+
+The third model of Grong, Table Lookup Model, creates a 4th order polynomial
+
+approximation for each speed line. The operation of the compressor must be done over
+
+the predetermined speed lines; however, new speed lines can be created by interpo-
+
+lating the compressor map data. The model fits more precisely than the prior models
+
+however it takes much longer to calculate [13].
+
+In a very similar way, the previous models use the information from the compres-
+
+sor map to define the dynamics of the compressor.
+
+The fourth model does not have states, since the dynamics of the compressor
+
+are much faster than those in the wells and pipelines. Figure 2.8 shows the basic
+
+representation of the model.
+
+This model has the objective to assure that the compressor is running within the
+
+map limits. For this, the map boundaries are approximated by polynomial and distance
+
+vectors from the operation point to each boundary are calculated. If all vectors have
+
+negative values it means that system is operating inside of the map. The boundaries,
+
+in Figure 2.8, are: 10450 rpm — the maximum speed (upward), 7600 rpm — the
+
+15
+
+
+
+FSSC
+
+FS
+
+Figure 2.8: Compressor model schematic
+
+minimum speed (downward), surge line (leftward), and choke line (rightward)
+
+It is assumed that there is a lower level controller for the speed of the compressor
+
+to ensure that it is keeping the output pressure constant and at its desired reference.
+
+Since it has no dynamics, all the mass flow that enters in the system compressor leaves
+
+it:
+
+win = wout (2.10)
+
+The compressor map is expressed in volumetric flow while the rest of the system
+
+is modeled with mass flow, so we convert the flow using the ideal gas equation and the
+
+conditions at the compressor inlet:
+
+qvol =
+winRT
+
+pinMg
+(2.11)
+
+where qvol is the volumetric flow, win is the mass flow, R is the ideal gas constant, T is
+
+the temperature at the entrance of the compressor, pin is the pressure upstream, pout
+
+is the pressure downstream, and Mg is the gas molar mass. And the pressure ratio
+
+16
+
+
+
+through the compressor is defined:
+
+rp =
+pout
+pin
+
+(2.12)
+
+The map is valid for normalized conditions of inlet pressure and temperature, so
+
+to be used in different conditions it need be adjusted:
+
+qvol = qvol
+T
+
+Tmap
+
+pmap
+pin
+
+(2.13a)
+
+rp = rp
+T
+
+Tmap
+(2.13b)
+
+The approximation of each of the four boundary lines of the compressor map is
+
+made by a second order equation. The upward boundary fu(q), the downward bound-
+
+ary fd(q), the leftward boundary fl(q), and rightward boundary fr(q) are defined:
+
+fi(qvol) = aiq
+2
+vol + biqvol + ci, ?i ? {u,d, l,r} (2.14)
+
+The parameters ai, bi, and ci for each i are obtained by solving an unconstrained least
+
+squares problem with the compressor map data. The result of the approximation is
+
+shown in Figure 2.9.
+
+1 1.5 2 2.5 3 3.5 4 4.5 5 5.5 6
+1
+
+1.5
+
+2
+
+2.5
+
+3
+
+3.5
+
+4
+
+4.5
+
+5
+
+5.5
+
+6
+
+Inlet flow rate (m
+3
+/s)
+
+P
+re
+
+s
+s
+u
+re
+
+ r
+a
+ti
+o
+
+f
+l
+(q)
+
+f
+r
+(q)
+
+f
+u
+(q)
+
+f
+d
+(q)
+
+10450 rpm
+
+9500 rpm
+
+8550 rpm
+
+7600 rpm
+
+Figure 2.9: Compressor map approximation
+
+Given a pressure ratio rp we can find projection of the leftward and rightward
+
+17
+
+
+
+boundaries in the flow rate axis is solving the second order equation:
+
+ql,vol =
+?bl +
+
+?
+b2
+l
+? 4al(cl ? rp)
+
+2al
+(2.15a)
+
+qr,vol =
+?br +
+
+?
+b2r ? 4ar(cr ? rp)
+
+2ar
+(2.15b)
+
+To measure the distance from the current operating point to the boundaries it
+
+was created four variables:
+
+?u = rp ? fu(qvol) (2.16a)
+
+?d = fd(qvol) ? rp (2.16b)
+
+?l = ql,vol ? qvol (2.16c)
+
+?r = qvol ? qr,vol (2.16d)
+
+(2.16e)
+
+The inequalities in Eq. 2.17 ensure that the compressor is operating inside of
+
+the map.
+
+?b ? 0, ?b ? {u,d, l,r} (2.17)
+
+We can increase the operation region using a recirculation line. The recirculation
+
+line redirects part of the outlet flow to the inlet. In this way we can increase the inflow
+
+of the compressor to avoid the operation before the surge line. For this we write:
+
+w?in = win + wsl (2.18a)
+
+wout = w?out ? wsl (2.18b)
+
+where wsl is the flow through the surge control line, w?in is the new compressor inflow
+
+and w?out is the new outflow. Look in Figure 2.8 for a better understanding.
+
+If we replace win in the Eq. 2.11 by w?in, then we can move to the right, parallel
+
+to the abscissa axis in the compressor map, making it possible to leave the infeasible
+
+region.
+
+The whole set of equations of this model is shown in a compact format in Ap-
+
+pendix A.5.
+
+18
+
+
+
+2.7: Models Coupling
+
+In this section we will discuss how we can connect all the subsystems to form
+
+the oil production network with the lift-gas injection loop.
+
+The network inputs are the vector lift-gas injection in the wells wgl, the vector
+
+separator pressure p, the vector of exhaustion flare valve flow wfl, and vector of surge
+
+control line flow in the compressor wsc.
+
+wgl = [w
+1
+gl, . . . ,w
+
+Nw
+gl ]
+
+T (2.19a)
+
+p = [p1, . . . ,pNs]T (2.19b)
+
+wfl = [w
+1
+fl, . . . ,w
+
+Nc
+fl ]
+
+T (2.19c)
+
+wsc = [w
+1
+sc, . . . ,w
+
+Nc
+sc ]
+
+T (2.19d)
+
+where:
+
+• Nw is the number of wells in the network,
+
+• Np is the number of pipelines,
+
+• Ns is the number of separators,
+
+• Nc is the number of compressors.
+
+With these parameters the following sets can be defined:
+
+• W = {1, . . . ,Nw} is the set of wells in the network,
+
+• P = {1, . . . ,Np} is the set of pipelines,
+
+• S = {1, . . . ,Ns} is the set of separators,
+
+• C = {1, . . . ,Nc} is the set of compressors.
+
+Besides, we have the sets the connects two elements:
+
+• the set SP that have pairs of separators and pipelines that are connected ((p,s) ?
+
+Sp ? p ? P,s ? S),
+
+• the set CS contains pairs of compressors and separators that are connected
+
+((s,c) ? CS ? s ? S,c ? C).
+
+19
+
+
+
+Let the subscripts be a reference to the model, being: w a well model, m a
+
+manifold, p a pipeline mode, s a separator model, and c a compressor model. The
+
+superscript is the index for a specific element of a set. Let x be a vector of state
+
+variables of a specific model, f the state derivative function, the vector y be the model
+
+algebraic variables, and g be the algebraic function that defines y. In y there are all
+
+variables that are not states. For instance xww has the well state variables of well w in
+
+the set W. We have the system states:
+
+x?ww = fw(x
+w
+w,y
+
+w
+w) ?w ? W (2.20a)
+
+x?pp = fp(x
+p
+p,y
+
+p
+p) ?p ? P (2.20b)
+
+and the system algebraic equations:
+
+gw(x
+w
+w,z
+
+w
+w) = 0 w ? W (2.21a)
+
+gp(x
+p
+p,z
+
+p
+p) = 0 p ? P (2.21b)
+
+gs(y
+s
+s) = 0 s ? S (2.21c)
+
+gc(y
+c
+c) = 0 c ? C (2.21d)
+
+The following equations connect the system free variables with the respective
+
+element variables. The variables and components can be localized using Figure 2.10.
+
+wwin = w
+w
+gl ?w ? W (2.22a)
+
+psout = p
+s ?(s) ? S (2.22b)
+
+wcin = w
+s
+out ? w
+
+c
+fl ?(c,s) ? Cs (2.22c)
+
+wcsl = w
+c
+sc ?c ? C (2.22d)
+
+where wwin is the well model flow input, p
+s
+out is the separator model pressure output, w
+
+c
+in
+
+is the compressor model flow input, wsout is the separator model flow output, and w
+c
+sl is
+
+the compressor model anti-surge line flow.
+
+The equation that connects the well with the gas-lift manifold is:
+
+pwin = pgm ?w ? W (2.23)
+
+where pgm is the gas-lift manifold pressure, and p
+w
+in is the well input pressure of the well
+
+w.
+
+20
+
+
+
+Manifold 1
+
+Manifold 2
+
+Liquids
+
+Output
+
+Gas
+
+Output
+
+Separator 1
+
+Separator 2
+
+Well 1
+
+Lift-gas injection
+
+Injection
+
+F
+la
+
+re
+
+Export
+
+Compressor 1
+
+Gas-Lift 
+
+Manifold
+
+Liquids
+
+Output
+
+F
+la
+
+re
+
+Compressor 2
+
+Gas
+
+Output
+
+Pipeline &amp;amp; 
+
+Riser 1
+
+Pipeline &amp;amp; 
+
+Riser 2
+
+Well 4
+
+F
+ig
+u
+re
+
+2
+.1
+0
+:
+N
+etw
+
+o
+rk
+
+S
+ch
+em
+
+a
+tic
+
+2
+1
+
+
+
+The manifold equations that connect wells and pipelines are:
+
+w
+p
+in =
+
+?
+
+w?W
+
+?w,pw
+w
+out ?p ? P (2.24a)
+
+pwout =
+?
+
+p?P
+
+?w,pp
+p
+in ?w ? W (2.24b)
+
+where wpin is the pipeline input pressure, ?w,p is the manifold routing binary variable,
+
+wwout is the well outlet flow, p
+w
+out is the well pressure at the outlet, and p
+
+p
+in is the pipeline
+
+inlet pressure.
+
+The set of equations that connect the pipeline and the separator are:
+
+wsin = w
+p
+out ?(s,p) ? Sp (2.25a)
+
+psin = p
+p
+out ?(s,p) ? Sp (2.25b)
+
+where wsin is the separator inlet flow, and p
+s
+in is the separator inlet pressure.
+
+The connection of the separators and the compressors is made by Eq. 2.22c
+
+and by:
+
+pcin = p
+s
+out ?(c,s) ? Cs (2.26a)
+
+pcout = pexp ?c ? C (2.26b)
+
+where pcin is the compressor inlet pressure, p
+s
+out is the separator outlet pressure, p
+
+c
+out is
+
+the compressor outlet pressure, and pexp is the exportation line pressure.
+
+The exportation line equations are given by:
+
+wgexp =
+?
+
+c?C
+
+wcout ? wgm (2.27a)
+
+woexp =
+?
+
+s?S
+
+w
+s,o
+o,out (2.27b)
+
+wwexp =
+?
+
+s?S
+
+w
+s,w
+w,out (2.27c)
+
+where wgexp is the amount of gas that is exported, w
+c
+out is the compressor outlet flow,
+
+wgm is the flow to the gas-lift manifold, woexp is the amount of oil that is exported, w
+s,o
+o,out
+
+is the oil flow through the separator oil outlet, wwexp is the exported water, and w
+s,w
+w,out is
+
+the water flow through the separator water outlet.
+
+22
+
+
+
+The gas-lift manifold equations are:
+
+pgm = pexp (2.28a)
+
+wgm =
+?
+
+w?W
+
+wwgl (2.28b)
+
+The whole set of equations is in Appendix A.6.
+
+23
+
+
+
+Chapter 3: Modelica and JModelica.org
+
+In this chapter it is presented the tools used to model the system and solve the
+
+optimization problem.
+
+First the Modelica language is presented, commenting its uses and applications.
+
+After, it is given a brief explanation about the Modelica extension named Optimica.
+
+And at last it is discussed JModelica.org, a toolbox that implements a Modelica and
+
+Optimica compiler and gathers several important tools for solving optimal problems.
+
+3.1: Modelica
+
+Modelica is a non-proprietary object-oriented language developed to model dy-
+
+namic behavior of technical systems in a simple way. The models are described using
+
+differential, algebraic, and discrete equations. Models can also be composed by other
+
+models in a hierarchical structure.
+
+Unlike other languages, as MATLAB or C++, Modelica has a syntax very close
+
+to the mathematical formulation. The focus of this language is to spare the user from
+
+programming repetitive routines and leaving him time to focus on the development of
+
+the model itself.
+
+Modelica is a textual language, however there are several environments that pro-
+
+vide a graphical user interface. Some implementations are free and others commercial.
+
+Free environments are: OpenModelica (Linko?ping University) and JModelica.org (Lund
+
+University). Commercial environments are: CATIA Systems (Dassault Systemes), Dy-
+
+mola (Dynasim), MapleSim (MapleSoft), MathModelica (Wolfram Research), and oth-
+
+ers.
+
+The language has academic and industrial applications in many areas e.g.: ve-
+
+hicle dynamics, hydraulics, combustion, air conditioning, electrical and electronic sys-
+
+tems, and control. Industrial partners are essentially automotive companies such as
+
+Audi, BMW, Daimler, Ford, Toyota, and VolksWagen. Conferences on this language
+
+have been happening almost every year since 2000 in Europe and North America,
+
+with more than 600 papers published in these conferences.
+
+Some examples of the usage of the language can be found in Appendix B.
+
+24
+
+
+
+3.2: Optimica
+
+Modelica does not support natively formulations of optimization problems, since
+
+it was developed for simulation purposes only. Some of the main elements for op-
+
+timization are not present, as the objective function, constraints, or the optimization
+
+horizon.
+
+The objective of Optimica [4] is to offer the user a way to express optimization
+
+problems using Modelica models. Optimica is a Modelica extension designed to permit
+
+a high-level specification of dynamic optimization problems based on Modelica models.
+
+It was first defined in [20].
+
+Dynamic optimization problem presents three levels of information. In the first
+
+level the canonical description of the optimization problem. This contains the cost func-
+
+tion, free variables and parameters, the optimization interval, and the constraints. In
+
+the second level it is specified the transcription method for discretization of the problem
+
+from the continuous time to a discrete time mesh. The third level is the algorithm level,
+
+where the tolerances and algorithm tuning parameters are specified.
+
+The Optimica fits in the first level, giving an easy way to represent such kind of
+
+information. The remaining levels are usually dealt by the Optimica implementation,
+
+because this task is critical and very error prone. Although, the implementation gives
+
+you options to define the way it is done.
+
+Optimica introduces three main features in Modelica standard:
+
+• Optimization class, a new class of objects can be instantiated. It represents the
+
+optimization problem. Necessarily it needs an objective function and optimization
+
+variables. It is important to note that the prediction horizon can be an optimization
+
+variable.
+
+• A constraint section inside of optimization elements. In this section we can de-
+
+clare equality and inequality variable constraints.
+
+• Access variables in time. With the Modelica standard we can not access variables
+
+in a specific time. With Optimica we are able to make constraints like: x(tf) = 0
+
+(variable x at the final time tf must be equal to 0) or y(5) ? 1 (variable y at time 5
+
+must be less than 1)
+
+25
+
+
+
+3.3: JModelica.org
+
+JModelica.org [4, 5, 3] is an open-source Modelica-based platform for optimiza-
+
+tion and simulation of dynamic systems. It aims to be a viable and stable platform for
+
+industrial applications, at the same time that it has flexibility for the academia develop
+
+new algorithms and studies.
+
+The JModelica environment consists of a collection of software modules, includ-
+
+ing compilers for Modelica and Optimica, a code generator for C, a run-time library in
+
+C, a simultaneous optimization algorithm, and a library for integration with the scripting
+
+language Python. Also internally it connects with three other very used tools: Sundials,
+
+CasADi and IPOPT.
+
+Sundials [15] is a package of ODE and DAE solvers that was developed to be
+
+a robust time integrator and nonlinear solver. The most used solver is CVODE an
+
+ODE solver with the ability to solve some special types of DAE that can automatically
+
+calculate sensibilities.
+
+CasADi [6] is s symbolic framework for automatic differentiation and numeric
+
+optimization. It applies both symbolic and numeric differentiation in low-level for quick
+
+and efficient calculations. It has an important use for ODE and DAE systems where
+
+the solvers need the system Jacobian for simulation and sensibility calculation.
+
+IPOPT [36] is a package for large-scale nonlinear optimization. It is based on
+
+the Interior-Point Method. Being more specific, it is a primal-dual interior-point algo-
+
+rithm with a filter line-search method. Although, we can simplify this by saying that is
+
+an algorithm that can robustly find local minima for non-convex problems and global
+
+minima for convex problems [36]. It also has an automatic problem scaling function,
+
+some heuristics for speeding up convergence, and some techniques to increase the
+
+robustness.
+
+Together, these software form a complete tool for formulating and solving dy-
+
+namic optimization problems based on Modelica models. The data flow of the JModel-
+
+ica.org is illustrated in Figure 3.1. It is typical that the solution of dynamic optimization
+
+problems require multiple iterations, where the cost function, the constraints, the tran-
+
+scription method, and even the model are refined in order to obtain satisfactory results.
+
+The result then typically needs to be analyzed and the optimization formulation param-
+
+eters adjusted. The use of high-level description languages then relieves the user of
+
+the costly and error-prone task of encoding the model and optimization formulations
+
+26
+
+
+
+in less suitable languages. In effect, the focus of the design process is shifted from
+
+encoding of the problem into formulation of the problem, which translates into more
+
+efficient design processes.
+
+Modelica
+
+Code
+
+JModelica.org
+
+Optimica
+
+Code
+
+Python
+
+Code
+
+Code
+
+Compiler
+
+Python
+
+Interface
+
+ODE
+
+Solver
+
+Automatic
+
+Differ.
+
+Tool
+
+Nonlinear
+
+Solver
+
+Figure 3.1: Network Schematic
+
+27
+
+
+
+Chapter 4: Nonlinear Model Predictive Control
+
+In this chapter we present a method to discretize the continuous model proposed
+
+in Chapter 2, afterward it is shown several optimization problems that uses the network
+
+model.
+
+4.1: Problem Discretization
+
+This section was based on [7], it starts with a recapitulation of techniques for
+
+solving ODEs, after, the collocation method is presented followed by an example of
+
+use, and at last it is shown how to formulate optimization problems using the collocation
+
+method.
+
+4.1.1: ODE Solvers
+
+The representation made in Chapter 2 uses DAEs to describe the system, there-
+
+fore to obtain the system answer over time a Initial Value Problem (IVP) need to be
+
+solved. This means that we have an initial condition and DAEs, by integrating the
+
+system a system time-dependent solution is obtained.
+
+Let Eq. 4.1a define the system in the time interval t ? [0,T ], the analytical
+
+solution of this ODE is given by 4.1b.
+
+x? = f(x,t) (4.1a)
+
+x(t) = x(0) +
+
+? t
+
+0
+
+f(x,t) dt (4.1b)
+
+where x is a vector of states, f(·) is nonlinear time variant function. Due to the size and
+
+the complexity of the systems such analytical integral is usually very dispendious to
+
+find, becoming impractical to use. To overcome this problem numerical approximation
+
+are used.
+
+Numerical methods approximates the continuous time dynamic system by a dis-
+
+crete time dynamic system. They divide the time interval [0,T ] into sub-intervals [ti?1, ti]
+
+with i ? [1, . . . ,N], assuming a stepsize hi for each i interval. Being ti = ti?1 + hi, the
+
+states approximation zi ? x(ti), where x(ti) is the exact solution Eq. 4.1b in the time ti.
+
+28
+
+
+
+In the interval endpoints, the current and the subsequent states approximation must be
+
+equal to maintain the continuity. Figure 4.1 shows a comparison between the analytical
+
+solution and a numerical approximation using the Euler method and how the time grid
+
+is created. The system is a simple linear system x? = ?x
+2
+, with x(0) = 1. The analytical
+
+solution (blue line) is x(t) = e?
+t
+2 .
+
+0 1 2 3 4 5 6
+
+0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1
+
+k
+
+V
+a
+
+lu
+e
+
+ 
+
+ 
+x(t)
+s
+
+k
+
+Figure 4.1: Example using Euler Method, h = 1 and N=6
+
+Numerical methods can be categorized in two big groups: explicit or implicit
+
+methods.
+
+The explicit methods uses the information of the current states and it derivative
+
+to find the next state. It is easier to implement and faster to compute, however a
+
+bad tuning can lead to instabilities in the solver. A very common explicit method is the
+
+Euler method (Eq. 4.2), it uses only the prior state and it derivative to find the next step.
+
+Figure 4.1 shows an application of this method for a linear system, where hi = 1 ?i.
+
+zi = zi?1 + hif(zi?1, ti?1) (4.2)
+
+A more complex method, but widely used is the explicit fourth order Runge-
+
+Kutta (ERK) method. The ERK uses not only one evaluation per time interval but it
+
+combines the derivative of four points inside of the time interval to obtain the next state
+
+approximation, as Eq. 4.3 shows. This method have a higher accuracy compared
+
+to the Euler method. But still, as explicit method it may have some stability issues
+
+29
+
+
+
+depending on the system convergence rate.
+
+zi = zi?1 +
+1
+
+6
+h(k1 + 2k2 + 2k3 + k4) (4.3a)
+
+k1 = f(ti?1,zi?1) (4.3b)
+
+k2 = f(ti?1 +
+1
+
+2
+h,zi?1 +
+
+h
+
+2
+k1) (4.3c)
+
+k3 = f(ti?1 +
+1
+
+2
+h,zi?1 +
+
+h
+
+2
+k2) (4.3d)
+
+k4 = f(ti?1 + h,zi?1 + hk3) (4.3e)
+
+where k1 is the derivative at the start of the interval. k2 is the derivative at the middle of
+
+the interval using the state calculated using k1. k3 is the derivative at the middle of the
+
+interval, again, but using k2. k4 is the derivative at the end of the interval, calculated
+
+using k3. It is clearly notable that dependencies are progressive, k2 depends on k1, but
+
+not the other way around.
+
+The implicit methods use not only the current state but the next state and it
+
+derivative to solve the DAEs. It has a greater improvement in the stability, however it is
+
+necessary to solve an equation to find the next state at each time interval. Among the
+
+implicit methods the most commons are backward Euler method, implicit Runge-Kutta
+
+(IRK), and collocation method.
+
+The backward Euler allows us to clearly see that the state calculation is not
+
+straight forward and a equation need to be solved, usually using some iterative algo-
+
+rithm. Eq. 4.4 shows the Backward Euler method, to calculate the next state it uses the
+
+current state and the derivative of the next state. This dependency of the next state on
+
+it derivative makes necessary the use of a iterative solver. Usually a Newton-Raphson
+
+method is used, but for more complex systems a nonlinear solvers is necessary.
+
+zi = zi?1 + hif(zi, ti) (4.4)
+
+In the same way that explicit Runge-Kutta enhances the accuracy of the forward
+
+Euler, the implicit Runge-Kutta (IRK) makes the backward Euler method more precise.
+
+Different from the ERK, the IRK have a crossed relation in calculation of k values, for
+
+instance the value of k1 is dependent of k4. This cross dependence makes necessary
+
+to solve equations.
+
+The collocation method can be formulated as a IRK, it has some properties that
+
+makes it interesting for dynamic optimization. This topic will be cover in the following
+
+30
+
+
+
+subsection.
+
+4.1.2: Collocation Method
+
+The Collocation method is a special case of IRK where the interval are approxi-
+
+mated by a n-th order polynomial.
+
+The time is divided in N intervals, each i ? [1, . . . ,N] intervals have a timestep
+
+hi. For every timestep a polynomial of K + 1 order approximates the state. We denom-
+
+inate this polynomial by zK(t), it can be represented in several ways i.e. power series,
+
+Newton divided difference, or B-splines. However to develop the collocation method it
+
+is preferred the Lagrangian interpolation polynomials, the reason is that this class of
+
+polynomial have stability properties, null error for some kind of problems and the formu-
+
+lation is easier because polynomial coefficients have the same bounds as the states,
+
+which means that a state constraint can be applied to the approximation coefficients
+
+directly.
+
+The approximation with K +1 interpolation points in the sub-interval i is defined:
+
+t = ti?1 + hi? (4.5a)
+
+zK(t) =
+
+K?
+
+j=0
+
+?j(?)zij (4.5b)
+
+where:
+
+t ? [ti?1, ti], (4.6a)
+
+? ? [0, 1] (4.6b)
+
+?j(?) =
+K?
+
+k=0, 6=j
+
+(? ? ?k)
+
+(?j ? ?k)
+(4.6c)
+
+with ?0 = 0, ?j &amp;lt;?j+1, j = 0, . . . ,K ? 1. In which the variables represent:
+
+• ? is the variable that select a specific time in the interval, being 0 the beginning of
+
+the interval and 1 the end.
+
+• ?k and ?j are collocation points, these values are taken from tables.
+
+• ?j(·) is the Lagrangian interpolation base.
+
+• zij is the state value ate the collocation point j in the interval j, this is the free
+
+variable that should be adjusted.
+
+31
+
+
+
+Differentiating Eq. 4.5a:
+
+dt = hi d? (4.7)
+
+Taking the the derivative of the Eq. 4.5b we have
+
+dzK(t)
+
+d?
+=
+
+K?
+
+j=0
+
+d?j(?)
+
+d?
+zij (4.8)
+
+In the collocation points tik = ti?1 + hi?k, it is desired that the model and the
+
+polynomial approximation have the same derivative, so we state:
+
+dzK(tik)
+
+dt
+= f(zK(tik), tik), k = 1, . . . ,K (4.9)
+
+Using the derivative in Eq. 4.7, the derivative in Eq. 4.9, and the state derivative
+
+define in Eq. 4.8 we have:
+
+K?
+
+j=0
+
+zij
+d?j(?k)
+
+d?
+= hif(zik, tik), k = 1, . . . ,K (4.10)
+
+This is the definition for a single sub-interval i. In the case that we have N &gt; 1,
+
+we need to ensure the continuity of the system stating:
+
+z1,0 = z0 (4.11a)
+
+zi+1,0 =
+
+K?
+
+j=0
+
+?j(1)zij, i = 1, . . . ,N ? 1 (4.11b)
+
+zf =
+K?
+
+j=0
+
+?j(1)zNj (4.11c)
+
+where z1,0 is the first state value at the begin of the first sub-interval, zi+1,0 is the value
+
+of the state at the begin of the interval i, and zf is the value of the state at the end of
+
+the simulation period.
+
+Summarizing, this method creates a time mesh, each time interval is approx-
+
+imated by a polynomial of K + 1 order represented in the Langrangrian base. The
+
+polynomials are differentiated and forced to be equal to the system derivative. The
+
+value of the state at the beginning of the sub-interval is equal to the value at the end of
+
+the prior sub-interval. To clarify the understanding, in the next subsection an example
+
+will be explained.
+
+32
+
+
+
+4.1.3: Collocation Method Example
+
+For this example, we define the system:
+
+dz
+
+dt
+= z2 ? 2z + 1, z(0) = ?3 (4.12)
+
+with t ? [0, 1]. This system has an analytical solution given by z(t) = (4t ? 3)/(4t + 1).
+
+However we are going to calculate the numerical approximation using the collocation
+
+method in the Radau collocation points with K = 3 the collocation points are ?0 = 0,
+
+?1 = 0.155051, ?2 = 0.644949, and ?3 = 1.
+
+Using the Eq. 4.10 with N = 1 elements, and h = 1/N we have
+
+3?
+
+j=0
+
+zij
+d?j(?k)
+
+d?
+= h(z2ij ? 2zik), k = 1, . . . , 3, i = 1 (4.13)
+
+Developing the Lagrangian base described in the Eq. 4.6c and taking it derivative we
+
+find:
+
+d?0(?k)
+
+d?
+= ?30?2k + 36?k ? 9 (4.14a)
+
+d?1(?k)
+
+d?
+= 46.7423?2k ? 51.2392?k ? 10.0488 (4.14b)
+
+d?2(?k)
+
+d?
+= ?23.7423?2k + 20.5925?k ? 1.38214 (4.14c)
+
+d?3(?k)
+
+d?
+= 10?2k ?
+
+16
+
+3
+?k +
+
+1
+
+3
+(4.14d)
+
+(4.14e)
+
+Substituting Eq. 4.14 in Eq. 4.13 we find:
+
+z0(?30?
+2
+k + 36?k ? 9) + z1(46.7423?
+
+2
+k ? 51.2392?k + 10.0488)
+
+z2(?23.7423?
+2
+k + 20.5925?k ? 1.38214) + z3
+
+(
+10?2k ?
+
+16
+
+3
+?k +
+
+1
+
+3
+
+)
+
+= (z2k ? 2zk + 1), k = 1, . . . , 3
+
+(4.15)
+
+Solving this equations system we have z1 = ?1.65701, z2 = 0.032053, z3 =
+
+0.207272 with z0 = ?3. Figure 4.2 compares the solution using the collocation method
+
+and the analytical solution. To increase the fidelity of the approximation we could in-
+
+crease the number of time discretizations N or the number of collocation point K.
+
+33
+
+
+
+0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+?3
+
+?2.5
+
+?2
+
+?1.5
+
+?1
+
+?0.5
+
+0
+
+0.5
+
+?
+
+z
+(?
+
+)
+
+Analytical Solution
+
+Collocation (N=1, K=3)
+
+Collocation Points
+
+Figure 4.2: Example analytical and approximation solution
+
+4.1.4: NLP Optimization Formulation
+
+Assuming a continuous time dynamic optimization problem in the format:
+
+min ?(t,x(t),y(t),u(t)) (4.16a)
+
+s.t.: x? = f(t,x(t),y(t),u(t)) (4.16b)
+
+g(t,x(t),z(t),u(t)) = 0 (4.16c)
+
+xL ? x(t) ? xU (4.16d)
+
+yL ? y(t) ? yU (4.16e)
+
+uL ? u(t) ? uU (4.16f)
+
+t0 ? t ? tf (4.16g)
+
+where:
+
+• ? is objective function, usually a time integral.
+
+• x(t), z(t), and u(t) are states, algebraic variables, and controls, respectively.
+
+• f(·) and g(·) are states function and algebraic variables function, respectively.
+
+• The states boundaries are xL and xU .
+
+• The algebraic variables boundaries are xL and xU .
+
+34
+
+
+
+• The controls boundaries are xL and xU .
+
+The state variables can be discretized using the collocation method show in
+
+Subsection 4.1.2, but the control profiles and the algebraic variables can also be repre-
+
+sented using the Lagrangian interpolation polynomials. Being u(t) the control profiles
+
+and the algebraic variables y(t). Using the Lagrangian base inside of the i sub-interval
+
+they are defined as:
+
+u(t) =
+
+K?
+
+j=1
+
+??j(?)uij (4.17a)
+
+y(t) =
+K?
+
+j=1
+
+??j(?)yij (4.17b)
+
+(4.17c)
+
+where:
+
+??j(?) =
+K?
+
+k=1, 6=j
+
+(? ? ?k)
+
+(?j ? ?k)
+(4.18)
+
+In the case that the objective function is a time integral, in the format:
+
+?(x(t),y(t),u(t)) =
+
+? tf
+
+t0
+
+h(x(t),y(t),u(t)) dt (4.19)
+
+we can transform this in a state ?(t):
+
+?? = h(x(t),y(t),u(t)) (4.20)
+
+And replace the objective function by min?(tf), and use the collocation method to
+
+approximate ?(t) like the other state variables.
+
+35
+
+
+
+Using this approximation we can transform the optimization problem in Eq. 4.16
+
+in to the finite element problem:
+
+min ?(tf) (4.21a)
+
+s.t.:
+
+K?
+
+j=0
+
+zij
+d?j(?k)
+
+d?
+? hif(t,zik,yik,uik, tik) = 0, k ? {1, . . . ,K}, i ? {1, . . . ,N}
+
+(4.21b)
+
+g(t,zik,yik,uik, tik) = 0, k ? {1, . . . ,K}, i ? {1, . . . ,N} (4.21c)
+
+zi+1,0 =
+
+K?
+
+j=0
+
+?j(1)zij, i ? {1, . . . ,N ? 1} (4.21d)
+
+zf =
+
+K?
+
+j=0
+
+?j(1)zNj (4.21e)
+
+xL ? zik ? x
+U (4.21f)
+
+yL ? yik ? y
+U (4.21g)
+
+uL ? uik ? u
+U (4.21h)
+
+z1,0 = z0 (4.21i)
+
+Note that the variable bounds are same of the continuous time formulation, they are
+
+applied straight to the collocation points, this ease of application of constraints are
+
+one of the reasons that the Lagrangian interpolation polynomial is chosen. However,
+
+such constraints can only me ensured at the collocation points and not in the interval
+
+between them.
+
+Assuming that z approximates the oil network states, y is the algebraic variable,
+
+and f(·) and g(·) their functions as defined in Subsection 2.7 we can optimize the sys-
+
+tem over a objective function. The objective function will be define in the next section.
+
+An important remark about optimizing using Modelica and Optimica is that the
+
+optimization problem that we need to state should follow the format in Eq. 4.16 (con-
+
+tinuous time) and the computational environment, in this case JModelica.org, will auto-
+
+matically discretize the problem to the problem in Eq.4.21.
+
+36
+
+
+
+4.2: Objective Function
+
+4.2.1: Tracking Problem
+
+The objective of this formulation is to bring the system from the initial conditions
+
+to given reference.
+
+Defined a reference for some of the states, algebraic variables, or inputs, we can
+
+formulate a minimization problem to obtain the optimal transient using a quadratic ob-
+
+jective function. This objective function integrates the weighted quadratic error between
+
+the states, algebraic variables, and controls, and their references.
+
+min? =
+
+? tf
+
+t0
+
+(z ? zref)
+TQz(z ? zref) + (y ? yref)
+
+TQy(y ? yref)
+
++ (u ? uref)
+TRu(u ? uref) dt
+
+(4.22)
+
+where Qz is the states weighting factor, Qy is the algebraic variables weighting factor,
+
+and Ru is the inputs weighting factor.
+
+This formulation is very common and very flexible allowing the control of different
+
+variables of the system. Such objective function could be used to make field production
+
+follow a production planing, make the wells to follow production references, or make the
+
+system try at most to follow input reference.
+
+4.2.2: Production Maximization Formulation
+
+In this formulation, the developed dynamic model is used to maximize the oil
+
+production. This formulation aims to replace the traditional static optimization. Even if
+
+it calculation is more costly, it can be more effective for treating events that occurs in a
+
+minute or hourly timescale, i.e. temporary constraints.
+
+The objective function will maximize the integral of the profit function, which is
+
+composed by the gains with oil and gas exportation, and the cost of water treatment,
+
+flaring, and gas-lift injection.
+
+max? =
+
+? tf
+
+t0
+
+kgq
+g
+exp + koq
+
+o
+exp + kwq
+
+w
+exp + kflwfl + kglwgm dt (4.23)
+
+where kg is the gas profit, ko is the oil production profit, kw is the water treatment cost,
+
+kfl is the flaring cost, kgl the gas-lift injection cost.
+
+37
+
+
+
+4.3: Test Case: Compressor Scheduled Maintenance
+
+To show the potential of the developed model, a test case that goes beyond the
+
+system normal operational condition is generated.
+
+The production maximization can be achieved by static optimization, however it
+
+may be inefficient for the case that the system is no constant for all the optimization
+
+period.
+
+For test purpose, it is suggested that a scheduled compressor maintenance will
+
+change the operational condition of the compressor map. It makes the compressor
+
+unable to handle the flow at the static production maximum.
+
+To emulate the reduction of the compressor flow capacity the equations that
+
+approximate the left and right border of the compressor map that in Section 2.6 were
+
+defined as
+
+ql,vol =
+?bl +
+
+?
+b2
+l
+? 4al(cl ? rp)
+
+2al
+(4.24a)
+
+qr,vol =
+?br +
+
+?
+b2r ? 4ar(cr ? rp)
+
+2ar
+(4.24b)
+
+are redefined as:
+
+ql,vol = fc(t)
+?bl +
+
+?
+b2
+l
+? 4al(cl ? rp)
+
+2al
+(4.25a)
+
+qr,vol = fc(t)
+?br +
+
+?
+b2r ? 4ar(cr ? rp)
+
+2ar
+(4.25b)
+
+with:
+
+fc(t) = 1 ? kcm?(t ? tt) (4.26)
+
+where kcm is a scaling factor that says how much the compressor capability were re-
+
+duced and ?(t ? tt) is a Heaviside function (also known as unit step function), and tt is
+
+the event triggering time.
+
+The ?(t ? tt) is a discontinuous function and it may lead to problems when opti-
+
+mizing the system because the automatic differentiation tool CasADi can not handle it,
+
+thus it is approximated by sigmoid function:
+
+?(t ? tt) ?
+1
+
+1 + e?2(t?tt)
+(4.27)
+
+The Figure 4.3 shows the approximation in a time range of 20 seconds, with the
+
+38
+
+
+
+trigger at 10 seconds.
+
+0 5 10 15 20
+
+0
+
+0.25
+
+0.5
+
+0.75
+
+1
+
+Time (s)
+
+F
+u
+
+n
+ct
+
+io
+n
+
+ V
+a
+
+lu
+e
+
+ 
+
+ 
+
+Step function
+
+Approximation function
+
+Figure 4.3: Step function approximation
+
+The approximation takes about five seconds to change from zero to one. If we
+
+consider that the system dynamics are about thousand seconds, then we can say that
+
+this approximation is good enough.
+
+4.3.1: Solving Approaches
+
+Using the formulations defined in Section 4.2 three different approaches are
+
+suggested, two of them requires a statical optimal solution for production maximization
+
+problem. As the static optimization is out of the scope of this work, an heuristic is
+
+proposed.
+
+The heuristic used to find the statical optimal solution uses the the production
+
+maximization formulation defined in Subsection 4.2.2 to obtain a control profile. After
+
+at transitory moment, the control remains steady for a long period, this steady value is
+
+assumed to be the static optimal control. For example, in the Figure 5.4 the optimal
+
+control can be obtained at 15000 seconds.
+
+The three approaches are:
+
+39
+
+
+
+1. Naive Approach: using the tracking formulation (Eq. 4.22) makes the system
+
+to follow the static optimal control at any cost, the intention of this approach is
+
+to simulate the conditions in which no dynamic optimization is used. The injec-
+
+tion rates reference and separator pressures reference are defined by the static
+
+production maximization solution.
+
+2. Optimal Transient: Obtained solving the production maximization problem in Eq.
+
+4.23. This formulation changes the values of gas-lift injection, separator pressure,
+
+anti-surge flow rate, and flare flow rate to obtain the best transient. A high cost
+
+on flaring is used to make the algorithm to avoid flaring conditions.
+
+3. Hybrid Approach: use the tracking formulation, as the naive approach, although
+
+with a much higher weighting at the flare penalization to avoid situations with
+
+flaring.
+
+The naive approach represents the simple application of the static optimiza-
+
+tion result. The parametrization of Eq. 4.22 have Qz = Qy = 0 and the quadratic
+
+terms related surge control (wsl) are nulls (Ru,wsl = 0). As the flaring amount (wfl) is
+
+a system input, if we do not define how it should be assigned the optimal solution
+
+may have a unnecessary flaring, so a weighting must be given for the flaring. How-
+
+ever the objective of this formulation is tracking not flaring reduction, the terms related
+
+to tracking should be much larger than those related to the flaring ((wfl)
+TRu,wflwfl ?
+
+(wgl ? wgl,ref)
+TRu,wgl(wgl ? wgl,ref) + (p
+
+s ? psref)
+TRu,ps(p
+
+s ? psref)).
+
+Meanwhile, the Hybrid Approach tries to reach the static optimal at same time
+
+that it void to use the flare. Compared to the first approach in which the objective is to
+
+follow the optimal static control settings using as less flaring as possible, this approach
+
+balance tracking with flaring reduction. The reason is that the using of flaring can be
+
+really costly and might be more important to avoid it than to maximize the production.
+
+To make this approach an higher value for kfl is adopted, ensuring that the term related
+
+to the flare have about the same magnitude than tracking term ((wfl)TRu,wflwfl ? (wgl ?
+
+wgl,ref)
+TRu,wgl(wgl ? wgl,ref) + (p
+
+s ? psref)
+TRu,ps(p
+
+s ? psref))
+
+40
+
+
+
+Chapter 5: Results
+
+In this chapter, the results of the optimizations using the model and the formu-
+
+lations presented in this work are shown. First, an oil production network instance is
+
+formulated. Afterwards, it is presented the computation setup used to run the opti-
+
+mization problems. The results of the tracking problem, maximization problem, and the
+
+compressor problem approaches are analysed qualitatively. At last, the computational
+
+results are reviewed.
+
+5.1: Instance definition
+
+The synthetic oil network was create. It has 8 wells, grouped in two clusters,
+
+each group is connected to one of the two subsea manifold, those are connected to
+
+two pipeline-risers that brings to production to the surface. At the processing unit, two
+
+separators separates the income flow, at the gas outlet of each separator a flare valve
+
+is preceded by a compressor. Compressors outflow are divided in two, part goes to
+
+the exportation line and part goes to the gas-lift manifold and is reinjected in the wells.
+
+The Figure 5.1 illustrates the network.
+
+The parametrization of the wells are displayed in Table 5.1. Besides those pa-
+
+rameters, all wells have the same value for reservoir pressure (25 × 106 Pa) and the
+
+valve coefficients: gas-lift choke (1.6×104), injection valve (1.6×104), production choke
+
+(1.4 × 103).
+
+Table 5.1: Wells parameters
+
+Well Annular Vol. Tubing. vol Tubing inj. point Watercut GOR Qmax
+m3 m3 m kg/kg
+
+kg/kg
+m3/s
+
+1 30 18 400 0.35 0.08 0.025
+2 30 18 400 0.80 0.12 0.050
+3 25 15 800 0.30 0.10 0.035
+4 30 18 600 0.50 0.09 0.010
+5 25 15 500 0.25 0.09 0.020
+6 30 18 400 0.35 0.08 0.025
+7 30 18 400 0.80 0.12 0.050
+8 25 15 800 0.30 0.10 0.035
+
+The pipelines have 13 km of horizontal length and 600 m of vertical length, both
+
+41
+
+
+
+parts with 20 cm of diameter, the roughness is 2.8 × 10?5 m The temperature of fluid
+
+inside of the pipeline is assumed to be at 330 K.
+
+The separator has 2.62 m of the horizontal length and 1.46 m of diameter. The
+
+water droplets have an average diameter of 500 µm. The water-mixture level is fixed at
+
+0.73 m and the oil level is fixed at 1.02 m.
+
+The gas injection must be at least 1 kg/s and not higher than 3 kg/s in each
+
+well. At the separators, the minimum pressure is 50 × 105 Pa and maximum pressure
+
+is 60 × 105 Pa.
+
+The compressor map before the scheduled maintenance have the boundaries
+
+as in Figure 5.2, after a reduction of 35% it turns in the map shown in Figure 5.3.
+
+42
+
+
+
+Gas-lift
+
+Manifold
+Well 1 Well 2
+
+Manifold
+
+1
+
+Separator
+
+1
+
+Flare 1 Flare 2
+
+Manifold
+
+2
+
+Separator
+
+2
+
+Pipeline-
+
+Riser 1
+
+Pipeline-
+
+Riser 2
+
+Compressor
+
+1
+
+Compressor
+
+2
+
+Gas
+
+Export
+
+Oil
+
+Export
+
+Water
+
+Export
+
+F
+ig
+u
+re
+
+5
+.1
+:
+N
+etw
+
+o
+rk
+
+in
+sta
+
+n
+ce
+
+sch
+em
+
+a
+tic
+
+4
+3
+
+
+
+0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8
+1.5
+
+2
+
+2.5
+
+3
+
+3.5
+
+4
+
+4.5
+
+Inlet flow rate (m3/s)
+
+P
+re
+
+ss
+u
+
+re
+ r
+
+a
+tio
+
+ 
+
+ 
+
+f
+l
+ (q)
+
+f
+r
+ (q)
+
+f
+u
+ (q)
+
+f
+d
+ (q)
+
+Figure 5.2: Compressor map before maintenance
+
+0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8
+1.5
+
+2
+
+2.5
+
+3
+
+3.5
+
+4
+
+4.5
+
+Inlet flow rate (m3/s)
+
+P
+re
+
+ss
+u
+
+re
+ r
+
+a
+tio
+
+ 
+
+ 
+
+f
+l
+ (q)
+
+f
+r
+ (q)
+
+f
+u
+ (q)
+
+f
+d
+ (q)
+
+Figure 5.3: Compressor map after maintenance
+
+44
+
+
+
+5.2: Computational Setup
+
+To solve this problems it was used an Asus notebook model N76V, equipped
+
+with a processor Intel i7-3610QM @ 2.30 GHz, 8GB of RAM, and a SAMSUNG 830
+
+solid state disk.
+
+This machine is running Windows 7 64 bits. The JModelica.org is version 1.9,
+
+which comes with Python 2.8, Sundials package version 2.4, and CasaADi 1.6. The
+
+IPOPT general tolerance was set to 10?4, the maximum number of iterations was 100,
+
+and the MUMPS parameter “mumps mem percent” was 50...
+
+5.3: Maximization Problem
+
+The parameters of Table 5.2 were used to test the objective function defined
+
+in Section 4.2.2. The system at the initial condition have already reached the steady
+
+state after the application of the control lower bounds: the gas injections of 1kg/s and
+
+separators pressure of 50 × 105. The system initial guess assumes a gas injections of
+
+1.5kg/s in all wells and pressure of 50 × 105 in both separators.
+
+Table 5.2: Flow values
+
+Coefficient Value
+kg 1
+ko 10
+kw -1
+kfl -1000
+kgl -1
+
+Figure 5.4 shows the control setup for the production maximization. The algo-
+
+rithm gives an initial blow at the beginning to rise the mass states, since the system
+
+was operating in the lower condition. After about 4000 seconds the system settle and
+
+remains constant until the last 5000 seconds. At the end of the simulation, the algo-
+
+rithm gives a final blow in the compressor and turns all injections to the minimum, this
+
+happens because it increases the derivative of the objective function, as it can be seen
+
+in Figure 5.5. To avoid this kind of behavior, some techniques can be used e.g. input
+
+blocking. The flare values obtained by the solver are so small that can be considered
+
+zero.
+
+45
+
+
+
+0 5000 10000 15000 20000 25000 30000
+Time (s)
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+3.5 Gas Inj W1
+Gas Inj W2
+Gas Inj W3
+Gas Inj W4
+
+0 5000 10000 15000 20000 25000 30000
+Time (s)
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+3.5
+Gas Inj W5
+Gas Inj W6
+Gas Inj W7
+Gas Inj W8
+
+0 5000 10000 15000 20000 25000 30000
+Time (s)
+
+5084000
+
+5086000
+
+5088000
+
+5090000
+
+5092000
+
+5094000
+
+5096000
+
+Sep. Pres. 1
+Sep. Pres. 2
+
+Figure 5.4: Maximization optimal controls
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+Flare 1
+Flare 2
+
+0 5000 10000 15000 20000 25000 30000
+Time (s)
+
+245
+
+250
+
+255
+
+260
+
+265
+
+270
+
+275
+
+280
+
+285
+
+|d cost/dt|
+
+Figure 5.5: Maximization flare and derivative of cost function
+
+46
+
+
+
+5.4: Tracking Problem
+
+The tracking problem was solved using the formulation in Eq. 4.22 with the
+
+parameters:
+
+Qz,wout =
+
+?
+???
+
+1 0 0
+
+0 1 0
+
+0 0 0.001
+
+?
+??? (5.1a)
+
+Ru,wgl = 0.1 (5.1b)
+
+Ru,wfl = 1000 (5.1c)
+
+The system reference to be tracked are the the gas production of 5 kg/s and the oil
+
+production of 25 kg/s. All the other parameters were set to zero.
+
+The system initial conditions was the inputs lower bounds: gas injections at
+
+1 kg/s and separator pressure at 50 × 105 Pa. The algorithm first guess is obtained
+
+using injections at 1.5 kg/s and separators pressure at 50 × 105 Pa.
+
+Figure 5.6 shows that after 50000 seconds the controls settle and remain in con-
+
+stant until the end of the prediction window, were the the same behavior that happens
+
+in the maximization happens in this formulation.
+
+Figure 5.7 shows that the flaring is null. The gas, oil, and water exportation are
+
+kept constant for the all the prediction window after a transitory in the start.
+
+47
+
+
+
+0 5000 10000 15000 20000 25000 30000
+Time (s)
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+3.5 Gas Inj W1
+Gas Inj W2
+Gas Inj W3
+Gas Inj W4
+
+0 5000 10000 15000 20000 25000 30000
+Time (s)
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+Gas Inj W5
+Gas Inj W6
+Gas Inj W7
+Gas Inj W8
+
+0 5000 10000 15000 20000 25000 30000
+Time (s)
+
+5200000
+
+5400000
+
+5600000
+
+5800000
+
+6000000
+Sep. Pres. 1
+Sep. Pres. 2
+
+Figure 5.6: Tracking optimal control profiles
+
+0 5000 10000 15000 20000 25000 30000
+Time (s)
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+Flare 1
+Flare 2
+
+0 5000 10000 15000 20000 25000 30000
+Time (s)
+
+0
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+Gas Exp
+Oil Exp
+Water Exp
+
+0 5000 10000 15000 20000 25000 30000
+Time (s)
+
+0
+
+5
+
+10
+
+15
+
+20
+
+25
+
+|d cost/dt|
+
+Figure 5.7: Tracking flare, flow exportation, and derivative of cost function
+
+48
+
+
+
+5.5: Compressor Maintenance Results
+
+In this section we show the results of the methods discussed in Section 4.3. In
+
+all the cases the system is operating at the static maximum point, which was obtained
+
+using the heuristic explained in Subsection 4.3.1. First, the naive approach results are
+
+shown and discussed, followed by the transient optimization, and at last, the hybrid
+
+approach is reviewed.
+
+The initial guess for the algorithm are 1.5 kg/s of gas injection for all wells and
+
+a pressure of 50 × 105Pa in both separators. The plots in this section were chopped
+
+in the last 5000 seconds since the “final blow” effect that happens at the end of pre-
+
+diction window, as seen in the last sections, are not interesting for the analysis of the
+
+approaches.
+
+5.5.1: Naive Approach
+
+As explained in Section 4.3, this approach requires a steady state optimal solu-
+
+tion and an heuristic is used to obtain it. The control assumed to be optimal at steady
+
+state are those at 15000 seconds in the Figure 5.4. For the tracking problem the pa-
+
+rameters are Ru,wgl = 10, Ru,ps = 10
+?11, and Ru,wFl = 0.1. The reason for such small
+
+value for the separator pressure tracking is that the pressure is around 5.5 MPa, while
+
+the mass flow is in the range from 1 to 3 kg/s.
+
+In Figure 5.8, we can see that the inputs are almost all constant during the first
+
+period, showing that the system manage to keep on the reference. A small change in
+
+the pressure happens as the system foresee the changes.
+
+After the compressor maintenance, the system is not able to keep the injections
+
+reference anymore because there is no gas to feed the wells freely. The solver tries
+
+to distribute the available gas, so the injections get as closer as possible to their refer-
+
+ences. The separator pressure could not remain at the reference since the compressor
+
+map changes makes that the static optimal operation point become unfeasible. Figure
+
+5.9, shows that as a reflex of the restraint of the compressor flow capability, the flare
+
+needed to be used.
+
+49
+
+
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+Gas Inj W1
+Gas Inj W2
+Gas Inj W3
+Gas Inj W4
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+Gas Inj W5
+Gas Inj W6
+Gas Inj W7
+Gas Inj W8
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+5050000
+
+5100000
+
+5150000
+
+5200000
+
+5250000
+
+5300000
+
+5350000
+
+5400000
+
+5450000
+
+Sep. Pres. 1
+Sep. Pres. 2
+
+Figure 5.8: Naive approach control settings
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+Flare 1
+Flare 2
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+3.5
+
+4.0
+
+|d cost/dt|
+
+Figure 5.9: Naive approach flare and cost derivative
+
+50
+
+
+
+5.5.2: Transient Optimization
+
+For the transient optimization approach, the coefficients needed in the formula-
+
+tion Eq. 4.23 are given in Table 5.2.
+
+Figure 5.10 shows the control profiles for the maximization problem. We can see
+
+that the algorithm foresee the reduction in the compression capability and reduces the
+
+flow right before the compressor constraint. As the in the naive approach, the changes
+
+forces to increase the pressure in both separators to keep the feasibility. But differently,
+
+this formulation can completely suppress the flaring during the transition, as shown in
+
+Figure 5.11.
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+Gas Inj W1
+Gas Inj W2
+Gas Inj W3
+Gas Inj W4
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+Gas Inj W5
+Gas Inj W6
+Gas Inj W7
+Gas Inj W8
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+5050000
+
+5100000
+
+5150000
+
+5200000
+
+5250000
+
+5300000
+
+5350000
+
+5400000
+
+5450000
+
+Sep. Pres. 1
+Sep. Pres. 2
+
+Figure 5.10: Optimal transient control settings
+
+5.5.3: Hybrid Approach
+
+For the hybrid approach, the coefficients of the objective function in Eq. 4.22
+
+were set as Ru,wgl = 10, Ru,ps = 10
+?11, and kfl = 10000.
+
+The consequence of this changes, in relation to the naive approach, is a control
+
+action much similar to the production maximization approach. As it can be seen in
+
+Figure 5.12, the algorithm reduces injection foreseeing the compressor changes, as in
+
+51
+
+
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+Flare 1
+Flare 2
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+250
+
+251
+
+252
+
+253
+
+254
+
+255
+
+256
+
+257
+
+258
+
+259
+
+|d cost/dt|
+
+Figure 5.11: Optimal transient flare and cost derivative
+
+the production maximization. However, the separator pressures behaves like the naive
+
+approach having some a movement before the compressor capacity reduction.
+
+As shown in Figure 5.13, this formulation can also completely operate during the
+
+transition without using the flare, which can not be achieved by the simple application
+
+of the static optimal control.
+
+52
+
+
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+Gas Inj W1
+Gas Inj W2
+Gas Inj W3
+Gas Inj W4
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+Gas Inj W5
+Gas Inj W6
+Gas Inj W7
+Gas Inj W8
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+5050000
+
+5100000
+
+5150000
+
+5200000
+
+5250000
+
+5300000
+
+5350000
+
+5400000
+
+5450000
+
+Sep. Pres. 1
+Sep. Pres. 2
+
+Figure 5.12: Hybrid approach control settings
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+Flare 1
+Flare 2
+
+0 5000 10000 15000 20000 25000
+Time (s)
+
+0
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+|d cost/dt|
+
+Figure 5.13: Hybrid approach flare and cost derivative
+
+53
+
+
+
+5.6: Computation Analysis
+
+The computational analysis of the methods describe in this section were made
+
+based in 5 items: solving time, number of iterations, number of variables, number of
+
+equality constraints, and number of inequality constraints.
+
+The first part of the Table 5.3 presents the test of the formulations. We can see
+
+that both perform very similarly, even taking an extra iteration the tracking problem have
+
+a faster solving time, when compared to the production maximization. The tracking
+
+formulation have a slightly higher number of variables and equality constraints, while
+
+both have the same number of inequality constraints.
+
+Table 5.3: Formulations and Approaches computational indicators
+
+Method Solving Time Iter. Variables Eq. Constr. Ineq. Constr.
+Tracking Problem 21.64 22 63216 60976 1288
+Production Max. 22.72 21 62493 60253 1288
+Naive Approach 24.05 24 63216 60976 1288
+Transient Opt. 24.15 27 62332 60092 1288
+Hybrid Approach 21.79 23 63216 60976 1288
+
+The second part of the Table 5.3 have the three approaches for the compressor
+
+problem. Their solving time do not have a big difference, however the hybrid approach
+
+have a faster computing time. While the transient optimization takes more iterations to
+
+solve the problem, each iteration is faster if compared to the naive approach, since they
+
+have about the same solving time. The transient optimization have a greater number
+
+of variables, but this difference may not be the reason for the an increased number of
+
+iterations. The number of equality constraint for all there cases are also very similar.
+
+The author points that the comparison of the computational performance can be
+
+a little bit subjective, since the methods performance have a big dependence on the
+
+algorithm’s first guess and the in the problem formulation, and some times they need
+
+to be tuned to get the results in the reasonable time.
+
+54
+
+
+
+Chapter 6: Conclusion
+
+In this work, we followed the construction of an dynamic model of network con-
+
+taining models were developed and taken references. This network were composed
+
+by the most common elements: wells, manifolds, pipelines, separators, and compres-
+
+sor. However, due to the simplicity and flexibility of the tool that was used, this network
+
+could be expanded or have your elements replaced to other studies.
+
+An interesting tool was presented in this work, the JModelica.org which imple-
+
+ments compiler for Modelica and Optimica, and gather tools for simulation and opti-
+
+mization. Modelica and Optimica allows to model and create dynamic optimization
+
+problems with easiness.
+
+The optimization of this network was made using sophisticated method for dy-
+
+namic optimization, the collocation method. This is one the preferred methods when a
+
+simulator is not desired. The method was shown, after a quick review of ODE solving
+
+techniques, followed by and explanatory example and demonstration of how it can be
+
+used to formulate nonlinear optimization problems.
+
+An problem was created in order to demonstrate the application of the developed
+
+model, the optimization method, and the computational tools. A situation in which the a
+
+compressor scheduled maintenance reduces compressor capability. For this problem,
+
+three formulations are proposed.
+
+An synthetic oil production network is created to test and compare the methods.
+
+The methods have their performance evaluated quantitatively and qualitatively.
+
+As result, we can see that the simple application of the static optimal solution,
+
+naive approach, may lead to undesirable conditions. The transient optimization and the
+
+hybrid approach were able to operate without creating undesirable flaring conditions.
+
+Both were able to leave an maximum operation point and move to another condition
+
+without using the flare to relive the gas overflow. Due to system dynamic this problem
+
+is not trivial to solve.
+
+Thinking in an application of this work for production maximization, we can have
+
+either a dynamic production maximization approach or an layered approach, in which
+
+a static production maximization and tracking problem that handles the real time prob-
+
+lems. Such layered would have the advantage of allowing more complex problems in
+
+55
+
+
+
+the static optimization layer, possibly including an the wells routing problem.
+
+As continuation of this work, some points can be highlighted:
+
+• in the case in which an static optimization problem define a optimal well-pipeline
+
+routing, using the model developed in this work formulate an optimization problem
+
+that finds the best time and order to the rerouting be made.
+
+• Make the Modelica codes for the developed model more user friendly and release
+
+then, so other researchers can use and extend it for new oil-related researches.
+
+• The JModelica.org passes to CasADi all the states and algebraic equations, how-
+
+ever some special type of algebraic equations can be ease simplified. The appli-
+
+cation some algorithm that simplify the model equations reducing the number of
+
+variables and equations could lead to a better computational performance.
+
+56
+
+
+
+Bibliography
+
+[1] Ole M. Aamo, G.O. Eikrem, H.B. Siahaan, and Bjarne A. Foss. Observer Design
+
+for Multiphase Flow in Vertical Pipes with Gas Lift - Theory and Experiments.
+
+Modeling, Identification and Control: A Norwegian Research Bulletin, 26(2):65–
+
+80, 2005.
+
+[2] Marco Aurelio Schmitz Aguiar, Thiago Lima Silva, and Eduardo Camponogara. A
+
+Mixed-Integer Convex Formulation for Optimal Operation of Gas-Lifted Oil Fields
+
+with Facility, Routing, and Pressure Constraints. In EngOpt 2012 - International
+
+Conference on Engineering Optimization, pages 1–10, Rio de Janeiro - Brazil,
+
+2012.
+
+[3] J. A?kesson, K.-E. A?rze?n, M. Ga?fvert, T. Bergdahl, and H. Tummescheit. Mod-
+
+eling and optimization with Optimica and JModelica.org – Languages and tools
+
+for solving large-scale dynamic optimization problems. Computers &amp;amp; Chemical
+
+Engineering, 34(11):1737–1749, November 2010.
+
+[4] Johan A?kesson, M. Ga?fvert, and T. Tummescheit. JModelica – an Open
+
+Source Platform for Optimization of Modelica Models. 6th Vienna International
+
+Conference on Mathematical Modelling, 2009.
+
+[5] Joel Andersson, J. A?kesson, F Casella, and Moritz Diehl. Integration of CasADi
+
+and JModelica.org. In 8th International Modelica Conference, 2011.
+
+[6] Joel Andersson, Johan A?kesson, and Moritz Diehl. CasADi – A symbolic pack-
+
+age for automatic differentiation and optimal control. In Recent Advances in
+
+Algorithmic Differentiation, volume 87, pages 297–307. Springer Berlin Heidel-
+
+berg, 2012.
+
+[7] L.T. Biegler. Nonlinear Programming: Concepts, Algorithms, and Applications to
+
+Chemical Processes. SIAM e-books. Society for Industrial and Applied Mathe-
+
+matics (SIAM, 3600 Market Street, Floor 6, Philadelphia, PA 19104), 2010.
+
+[8] Benjamin Julian Tø mte Binder. Production Optimization in a Cluster of Gas-Lift
+
+Wells. Master’s thesis, Norwegian University of Science and Technology, 2012.
+
+57
+
+
+
+[9] Andre?s Codas and Eduardo Camponogara. Mixed-integer linear optimization
+
+for optimal lift-gas allocation with well-separator routing. European Journal of
+
+Operational Research, 217(1):222–231, February 2012.
+
+[10] Florent Di Meglio, Glenn-Ole Kaasa, and Nicolas Petit. A first principle model
+
+for multiphase slugging flow in vertical risers. In Proceedings of the 48h IEEE
+
+Conference on Decision and Control (CDC) held jointly with 2009 28th Chinese
+
+Control Conference, pages 8244–8251. IEEE, December 2009.
+
+[11] Gisle Eikrem, Ole Aamo, and Bjarne Foss. On Instability in Gas Lift Wells and
+
+Schemes for Stabilization by Automatic Control. SPE Production &amp;amp; Operations,
+
+2008.
+
+[12] Gisle Eikrem, Lars Imsland, and Bjarne Foss. Stabilization of gas-lifted wells
+
+based on state estimation. In IFAC Symposium Adchem, pages 1–6, 2004.
+
+[13] Torbjørn Sønstebø Grong. Modeling of Compressor Characterisics and Active
+
+Surge Control. Master’s thesis, Norwegian University of Science and Technology,
+
+2009.
+
+[14] Vidar Gunnerud and Bjarne Foss. Oil production optimization – A piecewise lin-
+
+ear model, solved with two decomposition strategies. Computers &amp;amp; Chemical
+
+Engineering, 34(11):1803–1812, November 2010.
+
+[15] AC Hindmarsh, PN Brown, and KE Grant. SUNDIALS: Suite of nonlinear and dif-
+
+ferential/algebraic equation solvers. ACM Transactions on Mathematical Software,
+
+31(3):363–396, 2005.
+
+[16] Bin Hu. Characterizing gas-lift instabilities. PhD thesis, Norwegian University of
+
+Science and Technology, 2004.
+
+[17] Bin Hu and Michael Golan. Gas-lift Instability Resulted Production Loss and Its
+
+Remedy by Feedback Control: Dynamical Simulation Results. In Proceedings of
+
+SPE International Improved Oil Recovery Conference in Asia Pacific. Society of
+
+Petroleum Engineers, October 2003.
+
+[18] Lars Imsland. Topics in Nonlinear Control: Outpit Feedback Stabilization and
+
+Control of Positive Systems. PhD thesis, Norwegian University of Science and
+
+Technology, 2002.
+
+58
+
+
+
+[19] Esmaeil Jahanshahi and Sigurd Skogestad. Simplified Dynamical Models for Con-
+
+trol of Severe Slugging in Multiphase Risers. In Bittanti Sergio, editor, 8th IFAC
+
+World Congress, pages 1634–1639, August 2011.
+
+[20] A?kesson. Johan. Optimica – An Extension of Modelica Supporting Dynamic Op-
+
+timization. In 6th International Modelica Conference 2008, volume 312, Bielefeld,
+
+Germany, January 2008.
+
+[21] Vassileios D. Kosmidis, John D. Perkins, and Efstratios N. Pistikopoulos. Opti-
+
+mization of Well Oil Rate Allocations in Petroleum Fields. Industrial &amp;amp; Engineering
+
+Chemistry Research, 43(14):3513–3527, July 2004.
+
+[22] Horace Lamb. Hydrodynamics. Cambridge University Press, 1994.
+
+[23] JM Masella, QH Tran, D Ferre, and C Pauchon. Transient simulation of two-phase
+
+flows in pipes. International Journal of Multiphase Flow, 24:739–755, 1998.
+
+[24] Gustavo Moises, Tuerte Rolim, and Jose Formigli. GeDIg: Petrobras Corporate
+
+Program for Digital Integrated Field Management. In Proceedings of Intelligent
+
+Energy Conference and Exhibition, pages 1–7. Society of Petroleum Engineers,
+
+February 2008.
+
+[25] Pierre Perrot. A to Z of Thermodynamics. Oxford University Press, 1998.
+
+[26] PF Pickering, GF Hewitt, MJ Watson, and CP Hale. The prediction of flows in
+
+production risers-truth &amp;amp; myth. IIR Conference, pages 1–16, 2001.
+
+[27] Agustinho Plucenio, C. A. Ganzaroli, and Daniel J. Pagano. Stabilizing gas-lift well
+
+dynamics with free operating point. In 2012 IFAC Workshop on Automatic Control
+
+in Offshore Oil and Gas Production, pages 95–100, 2012.
+
+[28] Agustinho Plucenio and Daniel J. Pagano. Gas-lift optimization and control with
+
+nonlinear MPC. Advanced Control of Chemical Processes, 7(1), 2009.
+
+[29] AF Sayda and JH Taylor. Modeling and Control of Three-Phase Gravilty Separa-
+
+tors in Oil Production Facilities. In American Control Conference ACC ’07, 2007.
+
+[30] Thiago Lima Silva, Andres Codas, and Eduardo Camponogara. A Computational
+
+Analysis of Convex Combination Models for Multidimensional Piecewise-Linear
+
+Approximation in Oil Production Optimization. 2012 IFAC Workshop on Automatic,
+
+pages 292–298, 2012.
+
+59
+
+
+
+[31] Marina Stasiak. Tecnica de controle para supressa?o de golfadas em risers de
+
+produc?a?o de petroleo. Master’s thesis, Universidade Federal de Santa Catarina,
+
+2012.
+
+[32] Marina Stasiak, Daniel J. Pagano, and Agustinho Plucenio. A new discrete slug-
+
+flow controller for production pipeline risers. In 2012 IFAC Workshop on Automatic
+
+Control in Offshore Oil and Gas Production, pages 122–127, Trondheim, Norway,
+
+2012.
+
+[33] Y Taitel and D Barnea. Simplified transient simulation of two phase flow using
+
+quasi-equilibrium momentum balances. International Journal of Multiphase Flow,
+
+23(3):493–501, June 1997.
+
+[34] Yehuda Taitel, Ovadia Shoham, and JP Brill. Simplified transient solution
+
+and simulation of two-phase flow in pipelines. Chemical Engineering Science,
+
+44(6):1353–1359, January 1989.
+
+[35] J.V. Vogel. Inflow Performance Relationships for Solution-Gas Drive Wells.
+
+Journal of Petroleum Technology, 20(1), January 1968.
+
+[36] Andreas Wa?chter and Lorenz T. Biegler. On the implementation of an interior-point
+
+filter line-search algorithm for large-scale nonlinear programming. Mathematical
+
+Programming, 106(1):25–57, April 2005.
+
+[37] MJ Watson. Flow regime transitions and associated phenomena. PhD thesis,
+
+London University, 1999.
+
+60
+
+
+
+Appendix A : Dynamic Models
+
+A.1: Well Model
+
+These are the equations of the model described in 2.2.
+
+Mass balances:
+
+m?ga = wgl ? wgi (A.1a)
+
+m?gt = wgr + wgi ? wgp (A.1b)
+
+m?lt = wgl ? wgi (A.1c)
+
+Mass flows:
+
+wgi = Civ
+
+?
+?gi max(0,pai ? pti) (A.2a)
+
+wp = Cpc
+
+?
+?p max(0,pai ? pti) (A.2b)
+
+wgp =
+mgt
+mt
+
+wp (A.2c)
+
+wlp =
+mlt
+mt
+
+wp (A.2d)
+
+wop = (1 ? rwc)wlp (A.2e)
+
+wwp = rwcwlp (A.2f)
+
+wlr = ?lQmax
+
+(
+1 ? (1 ? C)
+
+(
+pbh
+pr
+
+)
+? C
+
+(
+pbh
+pr
+
+)2)
+(A.2g)
+
+wgr = rglrwlr (A.2h)
+
+wmaxgl = Cgl
+
+?
+?gl max(0,pgm ? pta) (A.2i)
+
+61
+
+
+
+Pressures
+
+pai =
+
+?
+?
+
+RTa
+
+VaMg
++
+
+g
+
+2Aa
+
+?
+?mga (A.3a)
+
+pp =
+RTtmgt
+
+MgVt ? Mg?
+?1
+l mlt
+
+?
+gmt
+
+2At
+(A.3b)
+
+pti = pp +
+gmt
+
+At
+(A.3c)
+
+pbh =
+
+?
+?1 + rglr +
+
+rglrgMgLw
+
+2RTt
+
+?
+?pti + ?lgLw
+
+1 + rglr ?
+rglrgMgLw
+
+2RTt
+
+(A.3d)
+
+pta =
+
+?
+?
+
+RTa
+
+VaMg
+?
+
+g
+
+2Aa
+
+?
+?mga (A.3e)
+
+Densities:
+
+?gi =
+Mg
+RTa
+
+pai (A.4a)
+
+?p =
+?lMgppmt
+
+?lRTtmlt + Mgppmgt
+(A.4b)
+
+?l = rwc?w + (1 ? rwc)?o (A.4c)
+
+?gl =
+Mg
+RTa
+
+pgm (A.4d)
+
+62
+
+
+
+Table A.1: Well model variables
+
+Name Type Explanation
+m?ga State Mass of gas in the annulus
+m?gt State Mass of gas in the tubing
+m?lr State Mass of liquid in the tubing
+wgi Algebraic Mass flow through the injection valve
+wp Algebraic Mass flow through production choke
+wgp Algebraic Gas production
+wlp Algebraic Liquid production
+wop Algebraic Oil production
+wwp Algebraic Water production
+wlr Algebraic Liquid extracted from reservoir
+wgr Algebraic Gas extracted from the reservoir
+?gi Algebraic Gas density upstream of the injection valve
+?p Algebraic Production density upstream of the production choke
+pai Algebraic Pressure upstream of the injection valve
+pp Algebraic Pressure upstream of the production valve
+pti Algebraic Pressure downstream of the injection
+pbh Algebraic Pressure at the bottom hole
+pai Algebraic Pressure upstream of the injection valve
+
+Table A.2: Well model variables
+
+Name Type Explanation
+Civ Tunning Injection valve coefficient
+Cpc Tunning Production Choke
+rwc Reservoir Reservoir watercut
+Qmax Reservoir Reservoir theoretical maximum flow
+C Constant Voegel’s constant
+pr Reservoir Reservoir pressure
+rgor Reservoir Gas-oil ratio
+R Constant Ideal gas constant
+Ta Well Annulus temperature
+g Constant Gravity
+Va Well Annulus Volume
+Mg Parameter Gas molar mass
+Aa Well Annulus section area
+Tt Well Tubing temperature
+Vt Well Tubing Volume
+At Well Tubing section area
+rglr Reservoir Gas-liquid ratio
+Lw Well Tubing length from reservoir to injection point
+?l Parameter Liquid mass density
+?w Parameter Water mass density
+?o Parameter Oil mass density
+
+63
+
+
+
+A.2: Flowline Model
+
+These are the equations of the model described in 2.4.
+
+Mass balances:
+
+m?g,p = wg,in ? wg,lp (A.5a)
+
+m?o,p = wo,in ? wo,lp (A.5b)
+
+m?w,p = ww,in ? ww,lp (A.5c)
+
+m?g,r = wg,lp ? wg,out (A.6a)
+
+m?o,r = wo,lp ? wo,out (A.6b)
+
+m?w,r = ww,lp ? ww,out (A.6c)
+
+Horizontal pipeline:
+
+Vg,p = Vp ?
+mo,p
+?o
+
+?
+mw,p
+?w
+
+(A.7a)
+
+pin =
+mg,pRTp
+Vg,pMg
+
+(A.7b)
+
+?g,p =
+mg,p
+Vg,p
+
+(A.7c)
+
+?l,p =
+?o?w
+
+?wmo,p + ?omw,p
+(mo,p + mw,p) (A.7d)
+
+?l,p =
+?wmo,p + ?omw,p
+
+?o?wVp
+(A.7e)
+
+Us,l,p =
+?wwo,in + ?oww,in
+
+?o?w?r2p
+(A.7f)
+
+µl,p =
+mo,p
+
+mo,p + mw,p
+µo +
+
+mw,p
+mo,p + mw,p
+
+µw (A.7g)
+
+Rep =
+2?l,pUs,l,prp
+
+µl,p
+(A.7h)
+
+fp =
+
+{
+?1.8 log10
+
+[(
+?p
+
+3.7Dp
+
+)1.11
++
+
+6.9
+
+Rep
+
+]}?2
+(A.7i)
+
+?Pf,p =
+?l,pLp?l,pfpU
+
+2
+s,l,p
+
+4rp
+(A.7j)
+
+64
+
+
+
+Vertical riser:
+
+Vg,r = Vr ?
+mo,r
+?o
+
+?
+mw,r
+?w
+
+(A.8a)
+
+pr,t =
+?g,rRTr
+Mg
+
+(A.8b)
+
+?g,r =
+mg,r
+Vg,r
+
+(A.8c)
+
+?l,r =
+?o?w
+
+?wmo,r + ?omw,r
+(mo,r + mw,p) (A.8d)
+
+?m,r =
+mg,r + mo,r + mw,r
+
+Vr
+(A.8e)
+
+?l,r =
+?wmo,r + ?omw,r
+
+?o?wVr
+(A.8f)
+
+Us,l,r =
+wo,in?w + ww,in?o
+
+?o?wAr
+(A.8g)
+
+Us,g,r =
+wg,in
+?g,rAr
+
+(A.8h)
+
+Um,r = Us,l,r + Us,g,r (A.8i)
+
+µl,r =
+mo,r
+
+mo,r + mw,r
+µo +
+
+mw,r
+mo,r + mw,r
+
+µw (A.8j)
+
+Rer =
+2?m,rUm,rrr
+
+µl,r
+(A.8k)
+
+fr =
+
+{
+?1.8 log10
+
+[(
+?p
+
+3.7Dr
+
+)1.11
++
+
+6.9
+
+Rer
+
+]}?2
+(A.8l)
+
+?Pf,r =
+?l,rLr?l,rfrU
+
+2
+s,l,p
+
+4rr
+(A.8m)
+
+65
+
+
+
+Connection between pipeline and riser:
+
+pl,p = pin ? ?Pf,p (A.9a)
+
+pl,r = pr,t + ?Pf,r + ?m,rgLr (A.9b)
+
+Ag,p =
+Vg,p
+Vp
+
+Ap (A.9c)
+
+Al,p = Ap ? Ag,p (A.9d)
+
+?l,t =
+2(mo,r + mw,r)
+
+Vr?l,r
+?
+Al,p
+Ap
+
+(A.9e)
+
+?t,m = ?l,t?l,r + (1 ? ?l,t)?g,r (A.9f)
+
+wg,lp = Kg,pAg,p
+
+?
+?g,p max{0,plp,p ? plp,r} (A.9g)
+
+wo,lp = Kl,pAO,p
+
+?
+?o max{0,plp,p ? plp,r}zo,p
+
+mo,r
+
+mg,r + mo,r + mw,r
+(A.9h)
+
+ww,lp = Kl,pAW,p
+
+?
+?w,p max{0,plp,p ? plp,r}zw,p
+
+mw,r
+
+mg,r + mo,r + mw,r
+(A.9i)
+
+wg,out = Kg,r
+
+?
+?t,m max{0,pr,t ? pout}
+
+mg,r
+
+mg,r + mo,r + mw,r
+(A.9j)
+
+wo,out = Kl,r
+
+?
+?t,m max{0,pr,t ? pout}
+
+mo,r
+
+mg,r + mo,r + mw,r
+(A.9k)
+
+ww,out = Kl,r
+
+?
+?t,m max{0,pr,t ? pout}
+
+mw,r
+
+mg,r + mo,r + mw,r
+(A.9l)
+
+A.3: Manifold
+
+These are the equations of the model described in 2.3.
+
+wout =
+?
+
+i?I
+
+?iwiin (A.10a)
+
+piin = pout, ?i ? I (A.10b)
+
+?i ? {0, 1} ?i ? I (A.10c)
+
+66
+
+
+
+Table A.3: Manifold model variables
+
+Name Type Explanation
+wiin Variable Manifold i-th inlet flow
+piin Variable Manifold i-th inlet pressure
+wout Variable Manifold outlet flow
+pout Variable Manifold outlet pressure
+?i Binary Variable Opens/Closes the inlet
+
+67
+
+
+
+A.4: Separator
+
+These are the equations of the model described in 2.5.
+
+Separator:
+
+vv =
+2
+
+9
+
+(?h ? ?w)gd
+2
+d
+
+µw
+(A.11a)
+
+vh =
+L
+
+?
+(A.11b)
+
+? =
+mw
+www,out
+
+(A.11c)
+
+? = cos?1
+(
+R ? h
+
+R
+
+)
+(A.11d)
+
+? = tan?1
+(
+hw
+L
+
+)
+(A.11e)
+
+?1 = tan
+?1
+
+(
+vv
+vh
+
+)
+(A.11f)
+
+L1 = hcot
+[
+min (?, ?1)
+
+]
+(A.11g)
+
+h1 = Ltan
+[
+min (?, ?1)
+
+]
+(A.11h)
+
+?1 = cos
+?1
+
+(
+1 ?
+
+h1
+R
+
+)
+(A.11i)
+
+VS1 = R
+2L1
+
+{
+? ? 0.5 sin(2?) ?
+
+3 sin? ? 3? cos? ? sin3 ?
+
+3(1 ? cos?)
+
+}
+(A.11j)
+
+VS2 = R
+2L
+
+{
+? ? 0.5 sin(2?) ?
+
+3 sin?1 ? 3?1 cos?1 ? sin
+3 ?1
+
+3(1 ? cos ?1)
+
+}
+(A.11k)
+
+Water phase:
+
+? =
+VS2
+VS1
+
+(A.12a)
+
+w
+g
+w,out = (1 ? ?)w
+
+g
+in (A.12b)
+
+wow,out = (1 ? ?)w
+o
+in (A.12c)
+
+www,out = w
+w
+in (A.12d)
+
+Oil Phase:
+
+x =
+Pin
+Pv
+
+(A.13a)
+
+w
+g
+o,out = x?w
+
+g
+in (A.13b)
+
+woo,out = ?w
+o
+in (A.13c)
+
+68
+
+
+
+Gas Phase:
+
+w
+g
+g,out = (1 ? x)?w
+
+g
+in (A.14a)
+
+69
+
+
+
+Table A.4: Well model variables
+
+Name Type Explanation
+vh Algebraic Droplets’ horizontal velocity
+? Algebraic Time for water cross the separator
+mw Algebraic Water mass in separator
+wgi Algebraic Mass flow through the injection valve
+wp Algebraic Mass flow through production choke
+wgp Algebraic Gas production
+wlp Algebraic Liquid production
+wop Algebraic Oil production
+wwp Algebraic Water production
+wlr Algebraic Liquid extracted from reservoir
+wgr Algebraic Gas extracted from the reservoir
+?gi Algebraic Gas density upstream of the injection valve
+?p Algebraic Production density upstream of the production choke
+pai Algebraic Pressure upstream of the injection valve
+pp Algebraic Pressure upstream of the production valve
+pti Algebraic Pressure downstream of the injection
+pbh Algebraic Pressure at the bottom hole
+pai Algebraic Pressure upstream of the injection valve
+
+70
+
+
+
+A.5: Compressor
+
+These are the equations of the model described in 2.6.
+
+Flows:
+
+wout = win (A.15a)
+
+w?in = win + wsl (A.15b)
+
+wout = w?out ? wsl (A.15c)
+
+qvol =
+w?inRT
+
+pinMg
+(A.15d)
+
+qvol = qvol
+Tmap
+T
+
+pin
+pmap
+
+(A.15e)
+
+Pressures:
+
+rp =
+pout
+pin
+
+(A.16a)
+
+rp = rp
+T
+
+Tmap
+(A.16b)
+
+Quadratic approximations:
+
+fi(qvol) = aiq
+2
+vol + biqvol + ci, ?i ? {u,d, l,r} (A.17a)
+
+ql,vol =
+?bl +
+
+?
+b2l ? 4al(cl ? qvol)
+
+2al
+(A.17b)
+
+qr,vol =
+?br +
+
+?
+b2r ? 4ar(cr ? qvol)
+
+2ar
+(A.17c)
+
+Slack variables:
+
+?u = rp ? fu(qvol) (A.18a)
+
+?d = fd(qvol) ? rp (A.18b)
+
+?l = ql,vol ? rp (A.18c)
+
+?r = qvol ? rr,p (A.18d)
+
+?b ? 0, ?b ? {u,d, l,r} (A.18e)
+
+71
+
+
+
+Table A.5: Compressor model variables
+
+Name Type Explanation
+win Input Inlet flow
+pin Input Inlet pressure
+wout Variable Outlet flow
+pout Variable Outlet pressure
+wsl Input Flow through surge control line
+rp Variable Pressure ratio
+qvol Variable Volumetric flow at the map conditions
+rp Variable Pressure ratio at the map conditions
+
+fu(qvol) Functions Quadratic functions approximating the map upper bound
+fd(qvol) Functions Quadratic functions approximating the map lower bound
+fl(qvol) Functions Quadratic functions approximating the map left bound
+fr(qvol) Functions Quadratic functions approximating the map right bound
+ql,vol Variable Projection of the left bound in the flow axis at the operation point
+qr,vol Variable Projection of the right bound in the flow axis at the operation point
+
+72
+
+
+
+A.6: Production Network
+
+Wells:
+
+wwin = w
+w
+gl ?w ? W (A.19a)
+
+pwin = p
+g
+exp ?w ? W (A.19b)
+
+Manifold:
+
+w
+p
+in =
+
+?
+
+w?W
+
+?w,pw
+w
+out ?p ? P (A.20a)
+
+pwout =
+?
+
+p?P
+
+?w,pp
+p
+in ?w ? W (A.20b)
+
+Separator
+
+wsin = w
+p
+out ?(s,p) ? Sp (A.21a)
+
+psin = p
+p
+out ?(s,p) ? Sp (A.21b)
+
+psin = p
+s ?(s) ? S (A.21c)
+
+Compressor:
+
+wcin = w
+s
+out ? w
+
+c
+fl ?(c,s) ? Cs (A.22a)
+
+pcin = p
+s
+out ?(c,s) ? Cs (A.22b)
+
+pcout = pexp ?c ? C (A.22c)
+
+Export Line:
+
+wgexp =
+?
+
+c?C
+
+wcout ? wgm (A.23a)
+
+woexp =
+?
+
+s?S
+
+w
+s,o
+o,out (A.23b)
+
+wwexp =
+?
+
+s?S
+
+w
+s,w
+w,out (A.23c)
+
+Lift gas manifold:
+
+pgm = pexp (A.24a)
+
+wgm =
+?
+
+w?W
+
+wwgl (A.24b)
+
+73
+
+
+
+A.7: Objective Functions
+
+A.7.1: Tracking Problem
+
+min? =
+
+? tf
+
+t0
+
+(z ? zref)
+TQz(z ? zref) + (y ? yref)
+
+TQy(y ? yref)
+
++ (u ? uref)
+TRu(u ? uref) dt
+
+(A.25)
+
+A.7.2: Maximization Problem
+
+max? =
+
+? tf
+
+t0
+
+kgq
+g
+exp + koq
+
+o
+exp + kwq
+
+w
+exp + kflwfl + kglwgm dt (A.26)
+
+A.8: Constraints
+
+1. All masses should be non-negative,
+
+2. All flows should be non-negative,
+
+3. Injection should be smaller than the maximum determined in the well (wwgl ?
+
+w
+w,max
+gl , ?w ? W),
+
+4. The compressor map violation variables must be non-positive.
+
+74
+
+
+
+Appendix B : Modelica Examples
+
+B.1: Example 1: Van der Pol Oscillator
+
+To show how simple it is to describe a model using Modelica language in this
+
+subsection we will model the Van der Pol oscillator.
+
+The Van der Pol oscillator is a non-linear system composed by two states and
+
+one input. The state equations are:
+
+x?1 = x2 (B.1a)
+
+x?2 = (1 ? x
+2
+1)x2 ? x1 + u (B.1b)
+
+y = x1 (B.1c)
+
+where x1 and x2 are the states, u is the system input, and y is the system output.
+
+Further, x1,0 and x2,0 are the system initial conditions. Transcribing it to Modelica we
+
+have:
+
+1 model VanDerPol
+
+2 parameter Real x1_0 = 0; // x_1 initial cond
+
+3 parameter Real x2_0 = 1; // x_2 initial cond
+
+4
+
+5 Real x1(start = x1_0); // x_1 state
+
+6 Real x2(start = x2_0); // x_2 state
+
+7
+
+8 input Real u; // control signal
+
+9 output Real y; // system output
+
+10 equation
+
+11 der(x1) = x2;
+
+12 der(x2) = (1 - x1^2) * x2 - x1 + u;
+
+13 x1 = y;
+
+14 end VanDerPol;
+
+In line 1, we initiate a component declaration saying the type of element it is followed
+
+by its name. Line 2 and 3, the initial conditions are declared, parameter means that
+
+this variable is not time dependent and Real means that it is in real domain. Line 5
+
+and 6, states are declared and using start we indicate the initial conditions. Line 8
+
+and 9, system input and output are declared using the respective keywords. Line 10
+
+75
+
+
+
+indicates that the equating starts. Line 11 and 12, der indicates that we are defining
+
+the derivative of x1 and x2 Line 13, we define the that the output of the system is x1,
+
+note that as Modelica describe mathematically the model y = x1 and x1 = y are the
+
+same.
+
+B.2: Example 2: The Quadruple-Tank Process
+
+Other very recurrent model for control is the four tank process. It have four
+
+cylindrical tanks, two pumps, and two valves. Tanks 3 and 4 leak in tanks 1 and 2,
+
+respectively. The pump 1 sends the flow to tank 1 and 4, whilst the pump 2 sends the
+
+flow to tank 2 and 3. The configuration is shown in B.1.
+
+Figure B.1: Quadruple-tank process
+
+76
+
+
+
+The system dynamics are:
+
+dh1
+dt
+
+= ?
+a1
+A1
+
+?
+2gh1 +
+
+a3
+A1
+
+?
+2gh3 +
+
+?1k1
+A1
+
+v1 (B.2a)
+
+dh2
+dt
+
+= ?
+a2
+A2
+
+?
+2gh2 +
+
+a4
+A2
+
+?
+2gh4 +
+
+?2k2
+A2
+
+v2 (B.2b)
+
+dh3
+dt
+
+= ?
+a3
+A3
+
+?
+2gh3 +
+
+(1 ? ?2)k2
+A3
+
+v2 (B.2c)
+
+dh4
+dt
+
+= ?
+a4
+A4
+
+?
+2gh4 +
+
+(1 ? ?1)k1
+A1
+
+v1 (B.2d)
+
+We can see that this problem is composed by four identical subsystems. To
+
+make the coding simpler we will exploit this. Each tank have one state, one inlet flow,
+
+and one outlet flow.
+
+Listing B.1: Tank Modelica model
+
+1 model Tank
+
+2 import SI = Modelica.SIUnits;
+
+3 import g = Modelica.Constants.g_n;
+
+4
+
+5 parameter SI.Area A = 4.9e-4;
+
+6 parameter SI.Area a = 0.03e-4;
+
+7
+
+8 SI.Height h(start=0.05);
+
+9 input SI.VolumeFlowRate q_in;
+
+10 output SI.VolumeFlowRate q_out;
+
+11 equation
+
+12 A*der(h) = q_in - q_out;
+
+13 q_out = a*sqrt(2*g*h);
+
+14 end Tank;
+
+Line 1 starts the model declaration. Line 2 imports the SI units library from Modelica
+
+standard library. Line 3 imports the gravitational acceleration from Modelica library.
+
+Line 5 defines the tank area, which is a parameter for the model. It could be used Real
+
+as the example before, however declare the unit of variables and parameters is a good
+
+practice in Modelica. Line 6, declaration of the tank orifice area. Line 8, define the
+
+state h with initial value of 5 cm. Line 9, the inlet flow is the tank input. Line 10, the
+
+outlet flow is tank output. Line 11, we integrate the volume in the tank using the height
+
+and the inlet and outlet flow (Ah? = qin ? qout). Line 12, define the outlet flow.
+
+Now to compose the system we will create four tanks and add two pumps.
+
+77
+
+
+
+Listing B.2: Four Tank Modelica model
+
+1 model fourTanks
+
+2 import SI = Modelica.SIunits;
+
+3
+
+4 Tank t1, t2 , t3 , t4;
+
+5
+
+6 parameter Real k1 = 0.56e-6;
+
+7 parameter Real k2 = 0.56e-6;
+
+8 parameter Real gama1 = 0.30;
+
+9 parameter Real gama2 = 0.50;
+
+10
+
+11 input SI.Voltage v1 , v2;
+
+12 output SI.Height y1 , y2;
+
+13 equation
+
+14 t1.q_in = t3.q_out + k1*gama1*v1;
+
+15 t2.q_in = t4.q_out + k2*gama2*v2;
+
+16 t3.q_in = k1*(1-gama1)*v1;
+
+17 t4.q_in = k2*(1-gama2)*v2;
+
+18 y1 = t1.h;
+
+19 y2 = t2.h;
+
+20 end fourTanks;
+
+Line 4, as Tank was defined we can use it to instantiate objects. Lines 6-9 define the
+
+pump parameters. Lines 14-17 define the input of each system. Lines 18-19 indicates
+
+the system output.
+
+Using this structure we can ease change the tank model, use a conic tank for
+
+instance. The routing of tanks or even the number of tanks can be changed without
+
+any effort.
+
+B.3: Example 1: Minimum time problem with Van der Pol Oscillator
+
+Using the model stated in B.1 we are going to develop a optimization problem
+
+that the objective is to reach a specific condition in a less time as possible subject to
+
+constraints.
+
+Consider that we want to bring to oscillator to origin as fast as possible, but
+
+having the control between the bounds ?1 ? u ? 1. For this we state the optimization
+
+78
+
+
+
+problem
+
+min tf (B.3a)
+
+s.t.: x? = f(x,u) (B.3b)
+
+x1(tf) = 0 (B.3c)
+
+x2(tf) = 0 (B.3d)
+
+? 1 ? u ? 1 (B.3e)
+
+where x is the Van der Pol oscillator states, u is the control input, f(x,u) is the state
+
+function, and tf is the final time. This system can be transcribed to Optimica as:
+
+Listing B.3: Tank Modelica model
+
+1 optimization VDP_Opt(objective = finalTime ,
+
+2 startTime = 0,
+
+3 finalTime(free=true ,min=0.2,initialGuess=1))
+
+4
+
+5 extends VanDerPol;
+
+6 constraint
+
+7 x1(finalTime)=0;
+
+8 x2(finalTime)=0;
+
+9 u &gt;= -1;
+
+10 u&amp;lt;= 1;
+
+11 end VDP_Opt;
+
+At line 1, the optimization class indicates that this is a optimization problem, the ob-
+
+jective function is the finalTime, simulation starts at 0, and final time is an optimization
+
+(free) variable with the minimum value of 0.2 and the initial guess of 1. Line 5 say that
+
+this problem will use the definitions of the Van der Pol model. Line 6 indicates the begin
+
+of the declaration of constraints. Lines 7-10 implement the system constraints.
+
+lxxix
+
+
+	Introduction
+	Model and Background
+	Network
+	Well Model
+	Manifold
+	Pipeline-Riser Model
+	Separator
+	Compressor
+	Models Coupling
+
+	Modelica and JModelica.org
+	Modelica
+	Optimica
+	JModelica.org
+
+	Nonlinear Model Predictive Control
+	Problem Discretization
+	ODE Solvers
+	Collocation Method
+	Collocation Method Example
+	NLP Optimization Formulation
+
+	Objective Function
+	Tracking Problem
+	Production Maximization Formulation
+
+	Test Case: Compressor Scheduled Maintenance
+	Solving Approaches
+
+
+	Results
+	Instance definition
+	Computational Setup
+	Maximization Problem
+	Tracking Problem
+	Compressor Maintenance Results
+	Naive Approach
+	Transient Optimization
+	Hybrid Approach
+
+	Computation Analysis
+
+	Conclusion
+	Bibliography
+	Appendix A : Dynamic Models
+	Well Model
+	Flowline Model
+	Manifold
+	Separator
+	Compressor
+	Production Network
+	Objective Functions
+	Tracking Problem
+	Maximization Problem
+
+	Constraints
+
+	Appendix B : Modelica Examples
+	Example 1: Van der Pol Oscillator
+	Example 2: The Quadruple-Tank Process
+	Example 1: Minimum time problem with Van der Pol Oscillator
+
+
+</field>
+	</doc>
+</add>

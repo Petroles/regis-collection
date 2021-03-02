@@ -1,0 +1,912 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.20548</field>
+		<field name="filename">4125_Amado_LuizCarlosNascimento_M.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">UNIVERSIDADE ESTADUAL DE CAMPINAS FACULDADE DE ENGENHARIA MECÂNICA DEPARTAMENTO DE ENGENHARIA DE PETRÓLEO
+Dissertação apresentada, à Faculdade de Engenharia Mecânica Como Requisito Parcial à Obtenção do Título de Mestre em Engenharia de Petróleo
+APLICAÇÃO DO MÉTODO DAS DIFERENÇAS FINITAS COM MALHA TRIANGULAR EM SIMULAÇÃO DE RESERVATÓRIOS
+;i\. ■*	Autor Orientador	:Luiz Carlos Nascimento Amado ;Oswaldo Antunes Pedrosa Jr,
+		novembro de 1990
+■5V ] To		
+		
+
+UNIVERSIDADE ESTADUAL DE CAMPINAS FACULDADE DE ENGENHARIA MECÂNICA DEPARTAMENTO DE ENGENHARIA DE PETRÓLEO
+A dissertação “ Aplicação do Método das Diferenças Finitas com Malha Triangular ern Simulação de Reservatórios elaborada por Luiz Carlos Nascimento Amado e aprovada por todos os membros da Banca Examinadora, foi aceita pela Sub-Comissão de Pós Graduação em Engenharia de Petróleo como requisito parcial a obtenção do Título de Mestre em Engenharia de Petróleo.
+Campinas,26 de novembro de 1990
+Banca Examinadora
+Ph. D,
+Fernando Rodríguez de la Garza, Ph. D.
+AGRADECIMENTOS ESPECIAIS
+.1 minha esposa Stmone. ¡ior mia pacitincid, aom-preensào. ince atiro. apoio (■ carinho duram.ta o de-■çf-nvolrirncnto de.stn trabalho, çfmprt ao iiif.it lado tm todos os momentos.
+.4os meus pais. pela, irnulin formação eduracional. carinho e estímulo durante o curso.
+o meu muito obrigado.
+ni
+AGRADECIMENTOS
+Ao Dr. Oswaldo .4. Pedrosa Jr.. pela interesse em orientar esse trabalho, pela definição de diretrizes e objetivos a serem alcançados, pela experiencia e conhecimentos cientícos transmitidos t pela amizade e constante boa vontade durante o desenvolvimento dos trabalhos ,
+Aos professores do curso, indistintamente, abnegados na arte de ensinar e do aperfeiçoamento científico ,
+Aos funcionários da Uhicamp, pela cooperação e atenção rn iodos os mornt nios.
+A Petrobrás, pelo suporte financeiro e técnico tm todas as etapas.
+/los colegas de curso . pela amizade . consideração e descontração com que sempre me trataram, reservo um profundo agradecimento.
+Sumario
+Este trabalho tem a finalidade de apresentar o sistema de malha triangular como urna alternativa viável para, utilização em simulação numérica de reservatórios e a sua aplicação a reservatórios com geometrias complexas e descontinuidades internas, como falhas ou formações heterogéneas,
+A vantagem da malha composta de triángulos se prende à sua flexibilidade na modelagem de contornos curvilínios irregulares, facilitando assim o tratamento das condições de contorno das equações diferenciais de escoamento. Além disso. pela forma de construção dos blocos de malha, através do método das mediatrizes, conseguem-se células hexagonais que reproduzem melhor a configuração do escoamento e contribuem assim para a redução do efeito de orientação de malha, muito comum nas malhas de coordenadas cartesianas,
+Para a geração da malha triangular, foi desenvolvido um algoritmo numérico que se adapta simultaneamente às fronteiras externas do reservatório e aos contornos de regiões heterogêneas, porventura existentes.
+0 modelo matemático é desenvolvido a partir da formulação integral das equações de balanço de massa., integrando-se em relação ao volume de cada bloco de malha e discretizando-se a.s equações resultantes através do método das diferenças finitas, considerando-se a malha triangular gerada, Um simulador " black-oil ” bidimensional foi implementado, segundo esse modelo, para o estudo do escoamento bifásico de óleo e água e foi aplicado para a simulação de dois reservatórios anisotrópicos, onde é vantajosa a utilização da malha triangular.
+Os resultados obtidos foram validados para os casos mais simples, através de comparação com soluções analíticas. Os casos mais complexos, que não apresentam soluções analíticas , são comparados com os resultados de um simulador comercial que utiliza malha cartesiana convencional.
+Abstract
+the main purpose of this work is to show that the triangular grid system is a feasible one for the numerical simulation of reservoirs with complex geometry and with discontinuities such as fractures and heterogeneous formations.
+The advantage of the triangular grid is due to the modelling flexibility when dealing with irregular curvelinear boundaries and the associated differential equation boundary conditions. Moreover, in the assembling process of the grid blocks, by the " Perpendicular Bissector method ", it is possible to build hexagonal ceils that reproduces a. better flow configuration and with a reduced mesh orientation effect, a very usual behaviour presented by Cartesian coordinates grids.
+A numerical algorithm was developed for the triangular mesh generation. The proposed scheme takes into account, the external reservoir boundaries and the boundaries of heterogeneous internal domains.
+The mathematical model is developed using an integral equation formulation for the mass balance in each triangular grid block and a finite difference scheme was applied to the resulting differential equations. A two dimensional " black - oil “ simulator was implemented in order to study the oil-water two-phase flow and applied in the simulation of two different anisotropic reservoirs where it is shown the advantages of the triangular grid scheme.
+Examples of problems with analytical solutions were simulated in order to validate the computer program. Simulations of more complex problems with no available analytical solutions were compared with the results obtained with a comercial simulator that uses a classical Cartesian grid scheme.
+Conteúdo
+1	Introdução	1
+1.1	Identificação do Problema................................... 1
+1.2	Discussão das Limitações dos Principais Métodos Utilizados
+em Simulação de Reservatórios .............................. 3
+1.3	Descrição Sucinta do Método e Características mais Relevantes 5
+2	Modelo Numérico	7
+2.1	Formulação Integral das Equações de Escoamento .......	7
+2.2	Construção dos Blocos de Malha . .......................... 10
+2.2.1	Construção segundo o Método das	Mediatrizes........ H
+2.2.2	Construção segundo o Método das	Medianas	...... 12
+2.3	Discretização das Equações - Método das Mediatrizes........ 13
+2.3.1	Discretização do termo de fluxo..................... 13
+2.3.2	Discretização do termo de acumulação................ 15
+2.4	Equações de Balanço de Massa .............................. 16
+3	Solução do Modelo	H
+3.1	Características do Simulador................................ N
+3.2	Resolução pelo Método Iterativo de Newton.................. 19
+3.3	Aproximação para o modelo de	poço .........................24
+4	Construção Numérica da Malha	Triangular	29
+4.1	Desenvolvimento Matemático
+30
+4.2	Exemplos para a Utilização do Algoritmo.................... 34
+4.2.1	Região	irregular	com fronteira interna............. 34
+4.2.2	Região	irregular	sem fronteira interna . ...........36
+4.2.3	Região	irregular	com muitas fronteiras internas .... 38
+5	Análise, Aplicação e Discussão dos Resultados	39
+5.1	Validação do Modelo........................................ 39
+5.1.1	Validação utilizando solução analítica.............. 39
+5.2	Aplicações * Problemas Típicos..............................47
+5.2.1	Reservatório com grandes contrastes de permeabilidade 47
+5.2.2	Reservatório com Falha Selante e sujeito a Influxo de
+Agua..............................................   50
+5.3	Comparação com Simulador Comercial..........................53
+5.4	Análise e Discussão dos resultados......................... 56
+6	Conclusões e Recomendações	68
+7	Referências Bibliográficas	70
+Lista de Figuras
+L	Rede assimétrica de triângulos................................. 10
+2	Bloco	triangular i zaçào pelo método	das	mediatrizes.......... 11
+3	Bloco	triangularização pelo método	das	medianas	....... .12
+4	Modelo de poço................................................  26
+5	Plano	físico e plano transformado..............................30
+6	Plano	transformado com linhas \e	r	......................33
+7	Região irregular sem fronteira interna......................... 37
+8	Reservatório Hexagonal - contorno selado -	poço central	....	40
+9	Reservatório Quadrado - contorno selado ~	poço central	....	4.1
+10	Reservatório Quadrado - Pressão no poço x	Tempo - Validação
+por Solução Analítica........................................   44
+11	Reservatório Quadrado * Pressão no vértice x Tempo - Va-
+li dação por Solução Analítica................................. 45
+12	Reservatório Hexagonal - Pressão no poço x Tempo - Validação
+por Solução Analítica  ........................................ 46
+13	Caso 1 : Reservatório com Canal interno de permeabilidade
+elevada .....................................................   48
+.14 Malha de simulação para, o caso 1................................50
+15	Caso 2 * Reservatório com Falha Selante sujeito a Influxo de
+Agua........................................................... 51
+16	Malha de simulação para o caso 2............................... 52
+17	Caso 1 - Malha cartesiana utilizada pelo simulador	comercial .	54
+18	Caso 2 - Malha cartesiana paralela à falha geológica............55
+19	Caso 2 - Malha cartesiana paralela às fronteiras................56
+20	Estudo comparativo - pressão no poço 1	 57
+21	Estudo comparativo - pressão no poço 2	 57
+22	Estudo comparativo -	pressão no poço	3	 58
+23	Estudo comparativo -	pressão no poço	4	 58
+24	Estudo comparativo -	pressão no poço	5	 59
+25	Estudo comparativo -	pressão no poço	1	   61
+26	Estudo comparativo - rao no poço 1........................... 62
+'27	Estudo comparativo *	pressão no poço	2	  62
+28	Estudo comparativo - rao no poço 2........................... 63
+29	Estudo comparativo -	pressão no poço	3 .......................63
+30	Estudo comparativo * rao no poço 3............................64
+31	Estudo comparativo -	pressão no poço	4	  64
+32	Estudo comparativo - rao no poço 1........................... 65
+33	Estudo comparativo -	pressão no poço	5	 65
+34	Estudo comparativo - rao no poço 5........................66
+35	Mapa de Saturação - Malha	Triangular....................66
+36	Mapa de Saturação - Malha	Cartesiana	paralela	à	falha	....	67
+37	Mapa de Saturação - Malha	Cartesiana	paralela	ao contorno	.	67
+Lista de Tabelas
+1	Propriedades P V T .......................................... 41
+2	Reservatório Quadrado - Pressão no poço - Validação por
+Solução Analítica . , , ...................................   42
+3	Reservatório Quadrado - Pressão no vértice - Validação por
+Solução Analítica..........................................   43
+4	Reservatório Hexagonal - Pressão no poço - Validação por
+Solução Analítica............................................ 43
+5	Propriedades P V T - óleo e água............................. 53
+6	Permeabilidades Relativas - óleo e água.......................53
+N omenciat ura
+A	área do reservatório, m2
+B-..	fator volume de formação	do	óleo, yy
+Ba	fator volume de formação	do	água.
+D	profundidade, m
+dj distância entre blocos de malha, m fg	fator geométrico, m?
+h	espessura do reservatório,	m
+k	permeabilidade absoluta,	m2
+ára	permeabilidade relativa ao óleo
+fcrtí	permeabilidade relativa a água
+J	índice de produtividade do aquífero,
+lado comum a dois blocos de malha, m
+P	pressão, Pa
+P({	pressão adímensional
+Plvj	pressão de fluxo no poço, Pa
+Ps	pressão de saturação , Pa
+q vazão volumétrica por unidade de área, nP/d/m1' Q	vazão volumétrica, m3/d
+ru,	raio do poço, m
+rrj	raio equivalente de drenagem, m
+Sa	saturação de água
+S„	saturação de óleo
+S^i	saturação de água irredutível
+T.i,.	tempo adímensional
+T	transmissibilidade, m3/(P«.s)
+t	tempo, dias
+u	velocidade, m/s
+V volume do bloco de malha, m3
+x	coordenada do ponto de malha (plano real), m
+y	coordenada do ponto de malha (plano real), m
+xu
+Letras Gregas
+A mobilidade
+p viscosidade. Pa.s
+p massa específica,kgjm3
+&amp;amp; porosidade
+V coordenada do ponto de malha, (plano transformado), m X coordenada do ponto de malha (plano transformado), m $ potencial de fluxo. Pa
+Subscritos
+f fase (óleo ou água.)
+a água
+i índice do ponto de malha de um determinado bloco
+j índice dos pontos de malha vizinhos a um determinado bloco o óleo
+X incógnitas (P ou 5,;)
+1	Introdução
+1.1	Identificação do Problema
+Os modelos numéricos de simulação . largamente utilizados na engenharia de reservatórios, fazem uso do rnétodo das diferenças finitas para a discretização das equações diferenciais de escoamento de fluidos em meios porosos, considerando, com frequência, uma malha de coordenadas cartesianas disposta sobre o domínio do reservatório.
+Os reservatórios de petróleo, na realidade, possuem geometrías altamente complexas e. em geral, apresentam uma série de heterogeneidades resultantes da evolução geológica pela qual passaram no decorrer do tempo,
+A malha de coordenadas cartesianas é uma malha retangular, de grande simplicidade de construção e tem uso consagrado em estudos de simulação de reservatórios. No entanto, para o caso de geometrias irregulares, apresenta pouca flexibilidade, pois não se adapta muito bem. geometricamente falando, às fronteiras curvilíneas, representando-as incorretamente, necessitando-se assim de esquemas muito refinados, com um número elevado de pontos de malha, para a simulação de reservatórios que apresentem essas características.
+Ocorre ainda, para o caso de simulação com malhas cartesianas, o chamado efeito de orientação de malha, que conduz a resultados distintos, dependendo da direção em que se aplica a malha de simulação sobre o reservatório. Esse efeito é mais pronunciado na determinação da distribuição de
+saturações . principalmente quando se tem altas razões de mobilidade.
+Assim, o estudo das malhas mais flexíveis representa uma significativa contribuição , dentre outras, para o aperfeiçoamento das potencialidades dos atuais simuladores.
+0 presente trabalho tem como finalidade apresentar a malha triangular como uma alternativa viável e de grande atratividade para a utilização em simulação de reservatórios.
+A malha composta de triângulos é especialmente indicada para os reservatórios que apresentem geometria complexa ou irregular, ou ainda , aqueles que porventura venham a exibir anisotropias internas, tais como falhas selantes, formações heterogêneas ou impermeáveis, canais com elevadas permeabilidades ou outras particularidades geo morfológicas. Além disso, pela própria forma como são construídos, os esquemas triangulares permitem reduzir significativamente os efeitos de orientação de malha, comuns na malha de coordenadas cartesianas, pois é possível considerar um maior número de direções de escoamento, devido à geometria hexagonal dos blocos de malha formados, conseguindo-se assim uma configuração mais real, sem direções preferenciais de escoamento.
+Deste modo, pode-se então construir sobre o domínio do reservatório, uma malha triangular que se uniformiza com os contornos externos e também internos, conseguindo-se assim, modelar com muito mais flexibilidade as características geométricas e geológicas do reservatório em exame. Além disso, a malha triangular apresenta, como vantagem adicional, a possibilidade de utilização de um número de células bem inferior ao empregado no
+caso de malhas cartesianas, quando se objetiva a simulação de reservatórios heterogéneos.
+1.2	Discussão das Limitações dos Principais Métodos Utilizados em Simulação de Reservatórios
+A simulação eficiente e precisa do escoamento de fluidos em reservatórios é dependente da escolha do tipo e forma da malha sobre a qual são discretizadas as equações diferenciais de escoamento.
+Conforme mencionado anteriormente, embora o sistema rígido de coordenadas cartesianas nao reproduza fielmente a geometria real do reservatório e nem a configuração correta de escoamento, essa técnica vem sendo aplicada correntemente nos estudos de simulação em engenharia de petróleo, devido à facilidade na construção da malha.
+Como principais limitações e desvantagens desta técnica estão:
+•	Inflexibilidade na descrição da geometria, falhas, acunhamentos e des-continuidades nos parâmetros do reservatório, a não ser que haja coincidência com as direções dos eixos coordenados.
+•	Dificuldade na representação do poço como condição de contorno.
+•	Influência do efeito de orientação de malha.
+Para aumentar a resolução em determinadas regiões do reservatório, diversos autores ( [15], [14] ) desenvolveram técnicas de refinamento localizado de malha em sistemas de coordenadas cartesianas. Pedros a e Aziz
+[12] introduziram o conceito de malha híbrida para melhorar o tratamento de poços em simuladores de reservatórios.
+Apesar de terem contribuído para, dar maior flexibilidade aos modelos clássicos de diferenças finitas, as técnicas de refinamento localizado de malha ainda sofrem limitações quanto ao tratamento adequado do fluxo nas interfaces das malhas refinadas e grosseiras.
+A mimmização do efeito de orientação de malha foi conseguida através do emprego de esquemas de discretizaçào de ordem superior ou de nove pontos. Essa técnica foi inídalmente introduzida por Yanosik e McCrac-ken [21] para malhas cartesianas regulares e posteriormente melhoradas por outros autores, dentre eles, Coats e Modine [3] e Bertiger e Padmanabhan [2].
+Embora contribuam efet.ivamente para reduzir o efeito de orientação de malha, os esquemas de diferenças finitas de nove pontos tornam mais difícil o tratamento dos contornos e também das heterogeneidades, além do aumento do esforço computacional.
+A utilização de sistemas de coordenadas curvilíneas ortogonais foi proposta por Hirasaki e 0’DelI [18] e investigada por Sonnier e Chaumet [17], Robertson e Woo [16] e também por Fleming [4], com o objetivo de aperfeiçoar a técnica de simulação . reduzindo as principais desvantagens introduzidas pela malha cartesiana.
+A utilização de malhas curvilíneas se baseia em uma transformação de coordenadas e posterior discretizaçào das equações transformadas. As
+relações de transformação são obtidas através da solução da equação de La-place, aplicada ao escoamento monofásico em reservatórios fechados. Em outras palavras, as linhas de fluxo e as linhas equipotenciais obtidas formam um sistema ortogonal de coordenadas ,
+Esta técnica contribuiu bastante para um melhor modelamento da geometria do fluxo de fluidos em reservatório.^, contudo, esses sistemas estritamente ortogonais não são flexíveis o bastante para descrever reservatórios de formato complexo, porque a obrigatoriedade imposta pela ortogonal: d ade da malha pode dificultar o ajuste com as fronteiras, tanto do reservatório, quanto das heterogeneidades, A ausência de ortogonalidade nesses sistemas de coordenadas introduz termos com derivadas cruzadas, o que altera estrutura das equações matriciais, exigindo a utilização de rotinas específicas para a resolução dos sistemas de equações lineares. Por essa razão, a utilização de malhas curvilíneas tem se concentrado na solução de problemas com sistemas padronizados de arranjos de poços ( “ five-spot nine-spot ” e outros).
+1.3	Descrição Sucinta do Método e Características mais Relevantes
+Este trabalho tem como objetivo o desenvolvimento de um modelo numérico bifásico, bidimensional, utilizando o clássico método das diferenças finitas acoplado a uma malha triangular, para aplicação em simulação de reservatórios.
+0 método combina as vantagens de uma melhor adequação da malha triangular à geometrias irregulares, com a discretização das equações
+pelo método das diferenças finitas. A partir de um algoritmo de triangula-rização , que posteriormente será detalhado, é investigado um esquema de bloco triangularizaçáo . conhecido como método das mediatrizes ou Perpendicular Bissector Method 11. Este método foi introduzido na engenharia de reservatórios por Heinemann et al. [6] em 1989, contudo, a utilização do método das diferenças finitas com malhas triangulares foi inicialmente apresentado por Me Neah em 1952, para a resolução de problemas mag-netostáticos em circuitos elétricos. Heinrich [7], em 1987. deu importante contribuição ao método de diferenças finitas, ao assegurar a convergencia e estabilidade desta técnica em redes irregulares de triângulos e quadriláteros.
+A geração automática da malha triangular e a relativa simplicidade da construção dos blocos de malha pelo método das mediatrizes, fornecem as características mais relevantes da técnica em estudo, ou seja:
+•	Flexibilidade no tratamento de geometria irregulares de reservatórios;
+•	Facilidade para o refinamento localizado em qualquer região desejada;
+•	Flexibilidade para a modelagem de macros heterogeneidades internas :
+•	Significativa redução do efeito de orientação de malha.
+A partir da construção dos blocos de malha, o método usa a formulação integral das equações de escoamento mult ¡fásico para obter, através de integração numérica sobre o dominio de cada bloco de malha, um conjunto de equações de balanço de materiais. Estas equações são fortemente não lineares e podem ser discret izadas termo a termo, por intermédio de diferenças finitas, sendo resolvidas numericamente pelo método de Newton.
+2	Modelo Numérico
+2.1	Formulação Integral das Equações de Escoamento
+0 modelo matemático utilizado é obtido através da formulação das equações de escoamento de fluidos em meios porosos, na forma integral, partindo-se da equação de conservação da massa, combinada com a equação de Darcy, que representa a lei de conservação da quantidade de movimento.
+Assim, 3: lei de conservação da massa pode ser escrita na forma integral como:
+- £ V.fpp.UpldV ~	A ^(pPqp)dV. p = o. a (1)
+onde:
+pp é a massa específica da fase p,
+up a velocidade de fluxo da fase p,
+d a porosidade da formação ,
+qp a vazão mássica da fase p,
+5P a saturação da fase p e
+V o volume de controle.
+Esta equação representa um balanço de massa em um determinado volume de controle V, considerando-se um modelo Li black oil ”, sem transferência de massa entre as fases. O fluxo líquido de massa que atravessa as fronteiras do volume de controle V deve ser igual a taxa de variação de
+massa mais a vazão mássíca produzida ou injetada no interior desse mesmo volume, para cada uma das fases existentes.
+Aplicando o teorema da divergência, transforma-se a integral de volume do fluxo de massa no lado esquerdo da equação 1, em uma integral superfície. Essa equação torna-se. então:
+- ^pp(up.n)dA = ^(éppSpjdV + j (ppqp)dV, p~ o,a (2)
+onde:
+A é a área da superfície de contorno do volume de controle V e
+n é o vetor normal a esta superfície.
+Da lei de Darcy, o vetor velocidade up pode ser expresso como :
+up = -k.—V#p, p = o, a	(3)
+Pp
+onde:
+K é a permeabilidade absoluta do meio poroso e
+éo gradiente do potencial de fluxo, definido como:
+VSP = VPp-pp.ff.VZ), p = o„a	(4)
+Efetuando-se a substituição da equação 3 em 2, obtém -se ;
+/ kpp“£(V$p.fí)d/l = [ ~UppSp)dV + [ (ppq^dV, p~o,a (5) Ja pp '	Jvot	Jv
+Nesta equação , o lado esquerdo representa a vazão mássíca de fluxo da fase p que atravessa a superfície de contorno do volume de controle V, podendo ser indicada por :
+onde a mobilidade Xp da fase p é definida por: Xr, pp~^.
+Na equação 5. a primeira parcela do lado direito representa o termo de acumulação , enquanto que a segunda parcela corresponde ao termo fonte.
+Na engenharia de reservatórios, é comum se expressar a equação de balanço de materiais em termos de volume em condições padronizadas. Para isso, divide-se todos os termos da equação 5 por pp — p.pstli (massa especifica nas condições padronizadas ou de superficie) e aplica-se diretamente a definição do fator volume de formação ,	obtendo-se, assim, a
+seguinte equação :
+p = o, a
+(7)
+Esta equação representa o modelo matemático para o escoamento de fluidos em reservatórios e será resolvida, neste trabalho, através de um modelo numérico de discretização que utiliza, diferenças finitas em uma malha triangular, em um sistema bidimensional bifásico (óleo - agua).
+2.2	Construção dos Blocos de Malha
+Como afirmado antes, as malhas triangulares fornecem uma maneira muito atrativa para se obter altas resoluções em áreas particulares do reservatório e para simular o escoamento em geometrias irregulares e interfaces complicadas.
+Figura 1: Rede assimétrica de triângulos
+A figura 1 ilustra uma rede assimétrica de triângulos, gerada por um algoritmo qualquer de triangulanzaçào .
+Cada ponto dessa malha precisa ser associado a um bloco de malha. Para isso, regras especiais devem ser seguidas para se construir as fronteiras (faces) desses blocos. Diferentes métodos podem ser usados, resultando com isso diferentes expressões para o cálculo dos coeficientes de fluxos entre
+blocos (transmíssibilidades!. Dentre esses métodos, destacaremos, a seguir, os dois principais, relacionados com determinadas cevianas do triângulo.
+2.2.1	Construção segundo o Método das Mediatrizes
+Ern 1 inhas gerais, o método das mediatrizes é simplesmente uma diretriz de como se construir, para cada ponto da malha triangular, os blocos de malha correspondentes, através das mediatrizes dos lados dos triângulos gerados. Dessa forma, as linhas de malha atravessam ortogonalmente os lados dos blocos, formando urna linha de escoamento para cada um dos seis lados do bloco hexagonal formado.
+Para, cada triângulo da malha, forma-se o bloco a partir das me-
+diatrizes dos lados dos triângulos. A linha poligonal formada por essas me-diatrizes, ao redor de cada ponto de malha, são os contornos dos blocos de malha, sendo os circuncentros dos triângulos adjacentes (ponto de encontro das mediatrizes de cada lado) os vértices do bloco. Dessa forma, cria- se um bloco hexagonal, cujos lados ficam ortogonais às linhas de malha que o atravessam. \Teste trabalho, será adotado o método de bloco triangularização , ilustrado na figura 2.
+2.2.2	Construção segundo o Método das Medianas
+linhas que unem os baricentros e os pontos médios dos lados dos triângulos,
+como mostra a figura 3 . Este método foi apresentado inicialmente por Wís-low, em 1967, para a resolução de problemas magnetost áticos .
+Uma vez construídas as células da malha (blocos), as equações
+numéricas de balanço de materiais podem ser obtidas, usando-se integrações numéricas e aproximação por diferenças finitas para as equações integrais de escoamento, anteriormente desenvolvidas.
+2.3	Discretização das Equações - Método das Media-trizes
+Considerando-se os blocos de malha formados através do método
+das medi atrizes, as discretizaçòes dos termos de fluxo e do termo de acumulação da equação integral do modelo matemático é feita a seguir, conforme o procedimento sugerido por Pedrosa [12].
+2.3.1	Discretização do termo de fluxo
+A vazão mássica através do contorno de um determinado bloco i
+pode ser expressa como:
+(8)
+onde j = 1,2,. ..,6 representa os pontos de malha vizinhos ao ponto de malha i considerado.
+A vazão mássica de uma determinada fase p que atravessa a face i + de um bloco de malha , como visto anteriormente, pode ser expressa
+como:
+Q?t^L = í kÀp(V$p.n)íM. p = o,a	(9)
+í' 2 J/t $
+t+| j
+A equação 9 pode ser discretizada através de dois passos de integração , Primeiro, integra-se numericamente ao longo da área perpendicular ao escoamento, no ponto i +
+Para a primeira integração . utiliza-se a regra de quadratura Gaus-siana de um ponto, transformando-se a equação 9 em:
+Qr,^ = [kAp(V4I,.í)],+ èj4!Hj + 0(/‘p)	(10)
+onde, segundo Heinemann [6], a = 1, seo ponto de malha i + ~.j está no meio do lado do bloco /¿^ ou então a = 0, se de outro modo.
+Substituindo V#p.n por onde s é a variável espacial ao longo
+da linha i-j, encontra-se:
+(11)
+Integrando-se agora ao longo da linha de malha i-j, a equação 11
+fica:
+J7
+(12)
+ou ainda:
+onde é o tamanho da linha de malha compreendido entre os pontos de
+(13.)
+malha i e j .
+Pode-se também obter a equação 1.3 diretamente da equação 11, susbritumdo-se a derivada primeira por uma aproximação através de derivadas centrais e empregando-se uma média harmônica para o termo Li
+A discretização do termo de fluxo pode ser finalmente expressa pelo produto de uma transmissibilidade por uma diferença de potencial, ou seja:
+(14)
+onde Tv .
+é a transmissibilidade da fase p através da interface i + do
+bloco i, e é expressa por Tp = fg-XP , ou
+(15)
+onde o termo entre colchetes é conhecido como o fator geométrico de trans-
+missibilidades Fg. Para cada método de bloco triangularizaçâo , uma expressão diferente para o fator geométrico é conseguida.
+2.3.2	Discretização do termo de acumulação
+A derivada temporal do termo de acumulação é aproximada
+através de diferenças finitas em atraso, nos passos de tempo n+1. e n, corno
+a seguir:
+(16)
+Substituindo-se a aproximação da derivada temporal da equação
+16 na integral de volume correspondente ao termo de acumulação da equação
+2, e efetuando-se a integração sobre o volume V) do bloco (considerado como o volume de controle), obtém-se:
+2.4	Equações de Balanço de Massa
+A discretização das equações integrais anteriores conduzem à um conjunto de equações de balanço de massa para cada um dos blocos da malha triangular, Desse modo, substituindo-se na equação Õ as expressões discreti-zadas e integradas, relativas às parcelas de escoamento, acumulação e fonte, encontra-se a equação representativa do modelo numérico correspondente ao modelo matemático proposto,
+Este conjunto de equações não lineares pode ser expresso então
+como:
+En,
+p ~ o, a
+(18)
+u
+onde o último termo, QPt, representa a vazão volumétrica da fase p, produzida
+ou injetada no bloco de malha, em condições de superfície, resultante da
+integração , sobre o volume de controle Vj, da parcela correspondente ao termo fonte Jy^-.
+3	Solução do Modelo
+3.1	Características do Simulador
+As equações de balanço de massa, desenvolvidas anteriormente, são aqui aplicadas para o desenvolvimento de um simulador, considerando-se um modelo de reservatório formulado com as seguintes características:
+•	Escoamento bifásico com dois componentes: óleo e água, sem transferência de massa entre as fases.
+» Sistema bidimensional, com uma malha triangular disposta sobre o domínio do reservatório.
+« Sistema de equações discretizadas resolvido implícitamente através do método de Newton.
+•	Efeitos gravitacionais e capilares desprezíveis.
+•	Fronteiras externas do reservatório totalmente seladas ou com possibilidade de consideração de influxo proveniente de aquífero, atuando em regime permanente de escoamento.
+•	Aplicabilidade do modelo à reservatórios com formas irregulares, apresentando algumas anisotropias internas, tais como falhas selantes e regiões com contrastes de permeabilidade.
+• Condições de produção : poços produtores produzindo com vazão total constante (óleo + água) até atingirem uma pressão de fi.uxo no poço mínima.
+Considerando o modelo de reservatório com essas características, as equações numéricas anteriores podem ser escritas também através de :
+Para a fase óleo:
+Para a fase água:
+sendo que j expressa cada um dos seis blocos vizinhos ao bloco i.
+Além das equações de escoamento, existem ainda relações adicio-
+nais:
+•	S„ + 5’a = 1.0 (Sistema bifásico óleo - água)
+•	Pcoa = Po ~ Pa ” 0-0 (sem pressão capilar)
+«	= p0 = pa = p (sem efeitos gravitacionais)
+As propriedades P. V. T. dos fluidos e as curvas de permeabilidade relativa para o sistema óleo - água estão relacionadas com as variáveis pressão e saturação e são introduzidas da forma usual em simulação , através de tabelas de análise experimental, ou seja:
+•	- f(P)
+•	Ba = f(P)
+•	= /(P)
+•	~ f(P)
+•	kT0 = f(Sa)
+•	kra ~ f(&amp;amp;a)
+Considerando-se a malha triangular, com a bloco triangulanzaçao efetuada por intermédio do método das medíatrizes, e as relações anteriores, as equações 19 e 20 podem ser expandidas como:
+P, , (P,-P¡)~	+	(21)
+*-'■ i v ‘	At	Bo
+£Ta|+Íj(PJ-P,) = -^A&lt;(Al),-K3.	(22)
+Pelas equações anteriores, verifica-se que, para cada bloco i dessa malha, surge um conjunto de duas equações não lineares, com sete grupos de incógnitas no total: (P, Sa)¿, (P, Sa)j com j =1, .... 6.
+3.2	Resolução pelo Método Iterativo de Newton
+O conjunto de equações anteriores, em razão da nao linearidade, deve ser resolvido por um método numérico iterativo. Neste trabalho, optou-se pelo tratamento totalmente implícito, empregando-se o método de Newton,
+que será descrito a seguir.
+Expressando-se os termos das equações 21 e 22 no passo de tempo
+n-H, pode-se escrevê-las na forma residual, como se segue.
+Para a fase óleo:
+J- rJ \ ¡x+1 __
+Vj 2'
+—í (■— Xt H Bü
+(23)
+Para a fase água:
+A ' Ba
+|TÍ-H
+n
+As funções de resíduos Fn devem ser aproximadas iterativamente.
+F^+i , onde i/ representa o nível de iteração . Isto pode ser obtido utilizando-
+se uma série de Taylor truncada ao redor de m. do seguinte modo:
+c:+i = ^+i:(|í;)"í.¥=o
+y\r Í7A
+(25)
+com n = o, a ,
+6X = X^ - e
+X representando as incógnitas P e Sa no bloco i e nos vizinhos j.
+Então, substituindo-se a equação 25 na equação 23 e na equação
+24, encontra-se uma aproximação iterativa para Fa e Fa , respectivamente,
+dada através de:
+Para a função resíduo do óleo :
+(26)
+ou aínda:
+
+
+(27)
+E similarmente para a função resíduo da água:
+Hh-i) _ pív) . fâixMtn
+a&gt;	ÒPl+{dSR
+ou ainda:
+
+flj
+
+O conjunto de equações anteriores pode também ser expresso em
+notação matricial como:
+
+com X = [(A,5ai)t..., (Pf, 50i),...,(Pn,Sa„)]T MVJv.u(W--(VJ]T e
+*
+J uma matriz heptadiagonal por blocos 2x2, denominada Jacobiano, cuja
+estrutura é representada por:
+,r
+Bi
+a.
+Dt Ei+l
+t’i+m + l
+X
+TO_ i
+Z z
+z z
+
+X X X
+
+
+X X
+X
+X X
+X	X
+X	X )
+onde m representa o número de blocos numa direção no plano
+transformado, conforme será explicado na próxima seção . Os termos A, B,
+.,.. G representam sub-matrizes 2 x 2 com a seguinte estrutura:
+[&amp;lt;=
+QPk
+:;&gt;pa! ■
+As derivadas em relação às variáveis pressão e saturação na matriz
+Jacobiano são apresentadas a seguir.
+Derivadas em relação à pressão :
+dFo dP}
+(30)
+ar. v,,ad+ÍJ,n	w, (i~sjaB„, ao,
+ãp =	—BTw^dp ('J1
+3Toi+, .
+As derivadas anteriores ■ -P-*—- , para k = i. j , são dadas por :
+dPk
+(32)
+Derivadas em relação à saturação :
+= V	/ p v\_ hir
+ds,2,	az bJ dsa,
+(34)
+3T„ x As derivadas anteriores — '■bak
+. para k ~ i,j , são dadas por:
+_AL1a — __ f A?	■&gt;	/ar\
+ÔSak [p0B0 dSaJ1+i'3
+Analogamente se deânem os termos corresponentes às derivadas da função resíduo da fase água.
+Para o cálculo das traasmissibilidades e respectivas derivadas que ocorrem, no ponto de interface i + | é adotada a ponderação de um ponto a frente ( single point upstream ''), definida como:
+Se o sentido de escoamento for do ponto j para o ponto i, as propriedades no ponto i + - são avaliadas em j.
+Se o sentido de escoamento for do ponto de malha i para o ponto j=l,2, .. .ou 6, as propriedades no ponto i + ~ sào avaliadas em i.
+Dessa forma, dependendo do sentido de escoamento, algumas das derivadas dos termos de transmissibílidade se anularão, caso se derive em relação a uma variável atuante no ponto j e se avalie a função em um outro ponto, como por exemplo, em i .
+Outra consideração importante que deve ser mencionada é que o cálculo das derivadas correspondentes aos termos que apresentam parâmetros P.V.T. ou permeabilidades relativas, tais como dKro,dKra,dBo,dBa,dfic, e âpa, é feito numericamente, utilizando-se a tabela de propriedades P.V.T. e as curvas de permeabilidades relativas, através de rotinas comuns de interpolação .
+Para a inicialização do processo iterativo de solução das incógnitas Pn+I,S”+1 é necessário uma estimativa inicial para essas incógnitas. E recomendável que se adote Pü = Pn eS° = 5’1, ou seja, atribui-se o valor no tempo n=0 como estimativa inicial. Dessa forma, inicializa-se o processo com os valores da pressão inicial no reservatório e da saturação de água inicial em todos os pontos de malha. Com isso, se calculam as derivadas da matriz Jacobiano [,/]° e as funções de resíduos F°. Resolvendo-se o sistema de equações formado, obtém-se òx1 e consequentemente .r1 ~ 3o + êx\ 0 processo iterativo se repete até que	1 &amp;lt;tolerância especificada ou j F^p1 j&amp;lt;
+tolerância especificada.
+Todas as etapas descritas anteriormente foram seguidas no desenvolvimento do simulador em questão.
+3.3	Aproximação para o modelo de poço
+Na modelagem de um reservatório através de métodos numéricos, a utilização de blocos de malha com dimensões muito superiores ao diâmetro do poço, faz com que a pressão calculada para o bloco produtor, seja diferente
+da pressão de fluxo no poço.
+E através do modelo de poço que se consegue, então, a relação entre essas duas pressões, acoplando-se o bloco de produção com o poço produtor.
+Em virtude das características peculiares da malha triangular e do método de bloco triangularizaçao , faz-se necessário o desenvolvimento adicional de um modelo de poço específico para esse tipo de malha, que leve em consideração principalmente:
+•	a geometria dos blocos de malha hexagonais formados;
+•	a posição relativa do poço nesse sistema;
+•	as particularidades do escoamento na região ao redor do poço .
+O modelo proposto se baseia na derivação analítica feita por Pe-aceman [10]. Esse modelo considera que a pressão em blocos adajacentes ao bioco produtor satisfaz aproximadamente a equação para escoamento radial no regime permanente, dada por;
+P^P0 +
+QBp r
+2xKh
+(36)
+Em outras palavras, admite-se um perfil logarítmico para a queda de pressão na região em torno do poço, caracterizando um escoamento radial nessa região, como de fato ocorre. O termo r0 ê conhecido como o raio equivalente do bloco produtor e é definido como o ponto no qual a pressão
+Figura 4: Modelo de poço
+do bloco produtor, fornecida peio simulador, se iguala à pressão dada peia distribuição radial em regime permanente.
+0 modelo consiste em se determinar uma expressão para r0, considerando o formato geométrico dos blocos de malha, a posição do poço no bloco e o perfil logarítmico de pressões.
+A figura 4 ilustra o problema.
+Assim, partindo-se de um perfil logarítmico de pressões na região
+em torno do poço, tem-se:
+ln — ra
+ln~
+(37)
+(38)
+[P3~P.} =
+(A-PJ-
+(P3 - PJ =
+Q.Bfi	ln	d-3
+2tt Kh		ra
+Q.Bv	ln	d±
+2yrKh		r»
+Q-Bp,	ln	
+2nKh		
+Q.Bp	ln	de
+2 tf Kh		
+(39)
+(40)
+(41)
+(42)
+onde d],d2,-.-.dg são as distâncias entre o ponto o situado no centro do
+bloco produtor e os pontos de malha dos blocos vizinhos.
+Por outro lado, a equação de diferenças finitas, em regime perma-
+nente, para o bloco que contém o poço, pode ser expressa por:
+« = Èr;(pi-a)	(«)
+3=1
+Substituindo-se as equações 37 a 42 em 43, encontra-se:
+QBp. A „ , d, =	- &gt; T, ln —
+2tt A h “í r0
+o lado comum entre os blocos o e j, tem-se:
++	+	(44)
+¿vKh	r0	ra
+ou
+Q
+Como Pj =	• sendo Zj
+
+(4-5)
+QBfi
+2xKh
+JU Kh j dj
+/.iB dj r0
+(46)
+Eliminando-se os termos semelhantes na equação 46, e resolvendo
+para ro , obtém-se:
+Para malha regular e uniforme, tem-se que ~ ~
+
+■A ~ exp (
+7T ).d
+(48)
+3
+OU
+ro = 0.163 d
+A pressão de fluxo no poço é obtida através de:
+(49)
+Pwf = P0~
+QBp, , A
+...In —
+2tr A h r\,
+(30)
+4	Construção Numérica da Malha Triangular
+Neste capítulo, são comentadas as diretrizes que nortearam o desenvolvimento do algoritmo numérico de geração da malha triangular e o escopo básico de sua formulação matemática. Um estudo mais detalhado a respeito do assunto pode ser encontrado em Thompson [19] ou Winslow [20], que serviram de literatura básica para este desenvolvimento.
+Uma malha não uniforme de triângulos para um contorno poligonal arbitrário, composto de regiões com formatos variados, é mais facilmente construída através de algoritmos numéricos,
+O algoritmo de geração da malha triangular, aqui utilizado, tem como objetivos principais:
+♦	Construir uma rede de triângulos sobre o domínio do reservatório e que acompanhe simultáneamente o contorno externo e o contorno de regiões que apresentam macro heterogeneidades específicas.
+♦	Permitir refinamentos localizados,
+♦	Permitir geração parcial da malha para o caso de reservatórios com múltiplas regiões ou muito complexos.
+O método utilizado se baseia na formulação de um problema potencial, a partir da da solução numérica da equação de Laplace em um campo transformado retangular, conforme descrito por Winslow em [20] .
+4*1 Desenvolvimento Matemático
+Trabalha-se em um campo retangular transformado de coorde-
+nadas x e ú!, com a configuração dada pela figura 5.
+X
+Figura 5: Plano físico e plano transformado
+Passando-se do plano físico para o plano transformado consegue-se uma ordenação para as variáveis no sistema matricial e uma simplicação , através de uma retificação , para os contornos curvilíneos reais, facilitando o tratamento das condições de fronteira. Os triângulos no plano transformado são formados a partir das diagonais dos quadriláteros formados neste plano.
+Associa-se a cada \ ™ constante ev = constante desse campo um contorno curvilínio do campo real, através de uma função \(x,y) e outra
+as quais satisfazem as seguintes equações de Laplace;
+í V'2y = o ( W - I.)
+Estipulando-se valores arbitrários de y e v nos contornos, e resolvendo as equações 51, as soluções y = constante e ip = constante definem uma malha não cartesiana, de formato coerente com as fronteiras ou heterogeneidades.
+Para a resolução do sistema dado pelas equações 51, um procedimento teórico de tranformação de coordenadas deve ser utilizado. Assim, invertendo e escrevendo as equações em termos de ;r( y, y) e y{ y, 71), obtém-se
+AA = -jtd, e = jys
+Xj; ~ e 4’y = “ jXy onde o jacobiano J é dado por ;
+Usando as relações acima, o sistema mencionado se transforma no
+que se poderia chamar de equações de Laplace inversas, sendo expressas por:
+ax -	A -yxwy = 0
+oy —	A	0
+(52)
+onde os termos&amp;lt;a, ¿3
+e 7 são chamados de funções quadráticas e definidos
+como :
+« =	+ 4
+,¡3 x xx,¡. A 3x3 v
+As soluções do novo sistema representado pelas equações 52 fornecem diretamente as coordenadas (x.y) das linhas de malha. As coordenadas (x.y) nas fronteiras definem as condições de contorno do problema.
+Para a solução desse sistema se faz necessário ainda uma discre-tização por diferenças finitas para os termos correspondentes às derivadas primeira e segunda, ou seja, x, xXI¿,	e y, yXy,ytiw-
+As expressões de diferenças finitas para essas derivadas podem ser obtidas pelo método da linha integral usando o teorema de Gauss. Dessa forma, consegue-se uma aproximação para as derivadas em um ponto de malha qualquer em função dos pontos de malha vizinhos. Atribuindo-se, no plano transformado, valores para \ e ií’ em incrementos unitários em linhas adjacentes, e que variam linearmente com a posição no espaço (y&lt;0), conforme ilustrado na figura 6, consegue-se obter:
+xx ~ |[ (12 + 2xi A x6) ~ (x3 A 2x4 + A?) ] ™ |[(xi A 2x6 a xs) - (x-2 A 2x3 A a»)]
+&amp;lt;x = xs A 2x A	(53)
+~ A le A 13 + 14) - (12 A A 2x) j
+, XtW ™	“ 2x A .7’3
+Analogamente, sao definidas as derivadas da coordenada y. Os valores calculados para xey dão as coordenadas do ponto de malha situado no bloco eii,..,,i6 e yí,...,y(i definem as coordenadas dos pontoa de malha vizinhos.
+Substituindo o conjunto de equações 53 nas equações de Laplace
+Fígura 6: Plano transformado com linhas y e c;
+inversas, dado pelo sistema 52, obtém-se um conjunto de equações , dado
+por:
+EL ~ x) = 0	,,4)
+onde q = c4 — o — ,d, c2 = cs = d e c3 = Cg = 7 — ¿3.
+Explicitando o valor de x e y no sistema de equações acima, tem-
+se:
+(55)
+Esse conjunto de equações forma um sistema de equações não lineares, pois cada Cj depende dos valores Sí e y; dos pontos vizinhos, mas não dos valores x e y do ponto central. Para a resolução desse sistema, é
+utilizado o processo iterativo de Gauss - Seidel, de acordo com as seguintes etapas:
+•	Consideração de uma estimativa inicial para as coordenadas x e y de todos os pontos de malha,
+•	A partir dos valores iniciais, calculam-se os termos correspondentes para cada ponto de malha, a partir das coordenadas dos pontos vizinhos,
+•	Com os valores de e as equações 55, acham-se os novos valores de x e y para cada um dos pontos de malha.
+•	Comparam-se os valores novos com os anteriores.
+•	Repete-se o processo até se obter convergência.
+Como estimativa inicial para o processo iterativo, as coordenadas xe y dos pontos interiores são consideradas nulas, procedimento sugerido por Wínslow [20], o que resultou em boa convergência para, todos os casos estudados.
+4,2	Exemplos para a Utilização do Algoritmo
+4.2.1	Região irregular com fronteira interna
+Uma região bidimensional apresentando fronteira externa arbitrária e uma fronteira interna qualquer (por ex: um corpo impermeável)
+pode ser transformada em um retângulo no campo transformado, comforme mostrado anteriormente na figura 6.
+A transformação básica faz com que o contorno externo e o contorno mais interno sejam transformados, respectivamente, em duas linhas com x ~ constante, formando o lado superior e inferior do retângulo transformado ou vice - versa. Cada linha de malha situada entre esses dois contornos (externo e interno) se transforma em uma linha com \ — constante no plano transformado, situando-se entre os lados superior e inferior do retângulo do campo transformado. Assim é formada uma família de linhas paralelas a esses esses dois lados.
+Do mesmo modo, os outros dois lados do retângulo no campo transformado (esquerdo e direito) corresponderão a duas linhas coincidentes que unem os dois contornos externo e interno, mencionados anteriormente. Cada urna das linhas de malha paralela a essa linha de ligação se transforma em uma linha intermediaria, paralela aos lados esquerdo e direito do retângulo.
+Assim, o algoritmo necessita apenas que sejam fornecidas as coordenadas de pontos distribuidos ao longo dos contornos externo e interno e também ao longo de uma linha qualquer unindo esses dois contornos. De acordo com o espaçamento entre os pontos ao longo do contorno, serão geradas linhas de malha com espaçamentos variados, mais próximas umas das outras, em determinadas regiões, e mais distantes em outras, acarretando, assim, grande flexibilidade para o refinamento localizado da malha. Para os pontos ao longo dos contornos onde se deseja refinar, o espaçamento deve ser
+bem pequeno e vice - versa nas regiões onde não seja necessário o refinamento.
+Na distribuição dos pontos, deve-se observar uma correspondência entre os pontos dos contornos externo e interno, no intuito de se manter uma única linha de malha ligando um ponto de um contorno com um ponto de outro, gerando-se, com isso, uma malha mais uniforme.
+Com as coordenadas fornecidas como dados de entrada para o algoritmo, é obtido um conjunto de linhas de malha de formato coincidente com as fronteiras e um outro conjunto de linhas de malha que acompanhará o formato da linha de ligação entre as duas fronteiras, cujas coordenadas também foram fornecidas como dados de entrada. Assim, formam-se quadriláteros irregulares sobre o domínio do reservatório. Dividindo-se esses quadriláteros por intermédio de uma de suas diagonais, obtém-se a triangularizaçao desejada.
+Este caso de geração de malha é exemplificado no capítulo das aplicações para a confecção da malha triangular em um reservatório irregular, que apresenta uma fronteira interna (falha geológica).
+4.2.2	Região irregular sem fronteira interna
+Esse é o caso mais simples e esta esquematizado na figura 7. Se não existe fronteira interna não há necessidade de se ciar uma linha de malha unindo as duas fronteiras . Para a geração da malha, é necessário apenas que se divida o contorno externo (único) em 4 segmentos da forma desejada.
+Cada segmento se transforma em um dos lados do retângulo no campo transformado. A malha gerada, neste caso, tem o formato dos segmentos em que foi dividido o contorno externo. Um grupo de linhas de malha apresenta a forma aproximada de dois dos segmentos (como se ambos representassem duas fronteiras) e um outro grupo de linhas se aproxima da forma dos outros dois segmentos (com se ambos definissem duas novas fronteiras).
+1.2.3	Região irregular com muitas fronteiras internas
+Este é o caso mais complicado. 0 sistema deve ser gerado por partes, dividindo-se o reservatório por regiões simples (sem fronteiras internas) e por regiões com apenas um ou dois corpos (fronteiras) internas. Aplica-se o algoritmo por partes em cada uma dessas regiões e constroe-se a malha final pela superposição das malhas anteriores geradas. Este foi o procedimento adotado para a geração da malha de um reservatório composto a ser estudado neste trabalho, no capítulo referente às aplicações .
+5	Análise, Aplicação e Discussão dos Resultados
+Neste capítulo, é apresentada a validação para o modelo numérico desenvolvido e a sua aplicação a problemas típicos em que seja vantajosa a utilização de uma malha triangular, analisando-se a eficiência, funcionalidade e operacionalidade de um simulador desse tipo aos estudos realizados em engenharia de reservatórios.
+5.1	Validação do Modelo
+Para a sua validação , o modelo numérico é empregado para, se obter a solução de um problema monofásico, cuja solução analítica é conhecida, tornando possível a comparação dos resultados numéricos obtidos com os fornecidos por essa solução analítica.
+Uma outra forma possível para a validação do modelo consistiria em se realizar um teste de fluxo para um determinado reservatório e, partir dos resultados obtidos, inferir parâmetros que tornassem possível a caracterização de determinadas propriedades, conhecidas “ a priori
+Neste trabalho utilizou-se validação através de soluções analíticas.
+5.1.1	Validação utilizando solução analítica
+Foram consideradas as soluções analíticas correspondentes a dois tipos de reservatórios:
+•	Reservatório de geometria hexagonal. com fronteiras seladas e produzindo através de um poço central com vazão constante, conforme ilustrado pela figura 8,
+•	Reservatório de geometria quadrada, com fronteiras seladas e produzindo através de um poço central com vazão constante, conforme ilustrado pela figura 9.
+Figura 8: Reservatório Hexagonal - contorno selado - poço central
+Nas figuras 8 e 9, pode ser observada também a malha triangular de simulação . No reservatório hexagonal foi aplicada uma malha com um total de 91 blocos (cada ponto pertence a. um bloco) enquanto que no reservatório quadrado a malha apresenta um total de 100 blocos.
+A utilização de modelo bifásico (óleo - água) para um problema monofásico é conseguida através das seguintes modificações nos dados de
+entrada:
+Figura 9: Reservatório Quadrado - contorno selado - poço central
+• Curvas de permeabilidade relativa dadas por	e kro = 1 —
+• Propriedades físicas iguais para óleo e água.
+Nos problemas estudados, as propriedades P.V.T. do óleo são da-
+das pela 1.
+Pressão	Viscosidade	F. V. F.
+P (MPa)	p(Pu.s)	B (m3/m3)
+0.0	1.0400 . 10~3	1.0620
+1.724	0.9750 . 10"3	1.1500
+3.447	0.9100 . 10"3	1.2070
+6.895	0.8300 . 10"3	1.2950
+13,790	0.6950 . 10~3	1.4350
+17,237	0.6410 . 10~5	1.5000
+18,960	0.6175 . 10"3	1.5325
+20,684	0.6290 . 10~3	1.5267
+27,579	0.6750 . 10”3	1.5035
+Tabela 1: Propriedades P V T
+As tabelas 2, 3 e 4 apresentam os resultados numéricos da simulação para os dois tipos de reservatórios e as respectivas soluções analíticas, obtidas da literatura clássica, como por exemplo em Ramey - Gas Well Test Analysís Under Water Drive Conditions.
+Os parâmetros de comparação são os seguintes:
+• Para o reservatório hexagonal: pressão no poço ao longo do tempo.
+• Para o reservatório quadrado : pressão no poço e em um dos vértices
+(fronteira) ao longo do tempo.
+Tda	Pd,,, (analítico)	Pd,,, (numérico)
+0.0700	6.6888	6.651
+0.1000	6.9063	6.935
+0.2000	7.5468	7.599
+0.3000	8.1753	8.226
+0.4000	8.8036	8.853
+0.5000	9.4320	9.480
+0.6000	10.0603	10.108
+0.8000	11.3169	11.365
+1.0000	12.5735	12.625
+2.0000	18.8667	18.856
+4.0000	31.4230	31.395
+8.0000	56.5557	56.107
+10.000	69.1220	68.484
+Tabela 2: Reservatório Quadrado - Pressão no poço - Validação por Solução Analítica
+Os resultados da validação são também apresentados nos gráficos 10. 11 e 12, logo a seguir. Pode-se observar que o modelo desenvolvido apresentou uma concordancia muito boa com as soluções analíticas empregadas, para os casos estudados.
+Tda	Pd (analítico)	Pd (numérico)
+0.0700	0.1321	0.1319
+0,1000	0.2939	0.2965
+0.2000	0.9103	0.9141
+0.3000	1.5384	1,5371
+0.4000	2.1667	2.1610
+0.5000	2.7950	2.7960
+0.6000	3.4233	3.421.2
+0.8000	4.6800	4.6310
+1.0000	5.9366 ■	5.9900
+2.0000	12.2198	12.1970
+4.0000	24.7861	24.6850
+8.0000	49.9188	49.5200
+10.000	62.4851	61.8490
+Tabela 3: Reservatório Quadrado - Pressão no vértice - Validação por Solução Analítica
+Tda	(analítico)	Pdtí, (numérico)
+0.0025	5.0097	4.546
+0.0050	5.3562	5.058
+0,0080	5.5912	5.387
+0.0150	5.9055	5.773
+0.0300	6,2521	6.211
+0.0600	6,6030	6.580
+0.0900	6,8316	6.820
+0.2000	7,5363	7.530
+0.4000	8,7930	8.780
+0.7000	10.6780	10.650
+1.0000	12.5630	12.540
+2.5000	21.9870	21.900
+5.0000	37.6950	37.500
+8.0000	56.5450	56.210
+9.0000	62.8200	62.457
+Tabela 4: Reservatório Hexagonai - Pressão no poço - Validação por Solução Analítica
+' o s s a o no p o c o adí me n s l o n c* t
+Pd í p r © s s a o adi me n s lona ! )
+Pd w ( Pr* esssD no poco adi ma n s l,on a I )
+Td a í Te mp o adi ma n s l o n a I )
+Foram utilizadas para a validação variáveis adimensionais P¿ e
+Tdti. definidas como;
+(56)
+e
+0.000264/77
+ida = ---:----7—
+óftCfA
+Em ambos os casos, foi considerada ainda uma relação entre a área do reser-
+vatório e o raio do poço produtor, dada por:	= 2000.
+5.2	Aplicações - Problemas Típicos
+As aplicações aqui apresentadas foram escolhidas com o objetivo de representar reservatórios em que é vantajosa a utilização da malha triangular, ou seja, aqueles que apresentam geometrias irregulares e macro-heterogeneidades internas, como, por exemplo, falhas selantes ou canais com elevada permeabilidade.
+Em todos os casos estudados, posteriormente, foi feita uma comparação dos resultados com os obtidos através de um simulador comercial, que utiliza malha cartesiana, convencional.
+5.2.1	Reservatório com grandes contrastes de permeabilidade
+Este caso consiste de um reservatório com geometria irregular,
+10000 -1
+0 Prodntar £ Injetar
+8000-
+2000 -
+6000 -
+4000 -
+—i—i—i—i—i—i—i—»—i—|—i—I—[—i—i—( 2000	4000	6000	6000	10000	12000
+o 4 o
+Figura 13: Caso 1 : Reservatório com Canal interno de permeabilidade elevada
+cuja área tem dimensões aproximadas de 3500,00 m por 2440,00 m, apresentando duas zonas com grandes contrastes de permeabilidades, Procurou-se caracterizar um modelo deposicional deltaico formado por dois corpos internos impermeáveis, circundados por uma região com forma de canal , apresentando permeabilidade de 1000 mD, e uma outra região mais externa, com uma permeabilidade de 100 mD, conforme apresentado na figura 13.
+Neste reservatório foram alocados 5 poços produtores, cada um produzindo com uma vazão total de líquido constante e igual à 63,60m3 por dia e um poço injetor de água, com vazão de 318,00m3 por dia.
+A finalidade desta aplicação foi de estudar a resposta de pressão dada pelo simulador bifásico desenvolvido neste reservatório altamente heterogêneo. para uma posterior comparação com a resposta fornecido por um simulador comercial convencional (malha cartesiana).
+A malha de simulação utilizada foi uma malha triangular composta por 13 x 15 blocos de malha. A malha foi gerada em conformidade com os contornos geométricos externos e internos, como apresentado na figura 14.
+Os resultados do simulador desenvolvido serão apresentados posteriormente, juntamente com aqueles obtidos por um simulador comercial.
+Figura 14: Malha de simulação para o caso 1.
+5.2.2
+Reservatório com Falha Selante e sujeito a Influxo de Água
+Neste caso é considerado um reservatório com geometria irregular, com dimensões máximas de 2134,00 m x 914,00 m, apresentando falha selante interna. O reservatório apresenta ainda permeabilidade constante e igual a 100 mD, com influxo de água, proveniente de um aquífero adjacente a uma das fronteiras.
+Foram distribuídos ao longo do reservatório um total de 5 poços produtores produzindo com vazões totais constantes e indicadas na figura 15
+A finalidade desta aplicação foi a de verificar, principalmente,
+o efeito de orientação de malha, comparando-se os resultados desta desta
+Figura 15: Caso 2 - Reservatório com Falha Selante sujeito a Influxo de Agua simulação com os obtidos utilizando-se um simulador comercial com malha cartesiana , onde esse efeito é mais pronunciado.
+A malha utilizada neste caso foi composta de 15 x 8 blocos, acompanhando a geometria externa e a da falha (internamente), conforme pode ser observado na figura 16.
+Os resultados da simulação são apresentados da seguinte forma:
+•	gráficos de pressão no poço x tempo (para os 5 poços).
+•	gráficos de rao no poço x tempo (para os 5 poços).
+•	mapa de saturação de água ao longo do reservatório para o tempo de
+1000 dias.
+Figura 16: Malha de simulação para o caso 2
+Esses resultados são apresentados e discutidos na seção seguinte juntamente corn aqueles fornecidos pelo simulador comercial para esse caso.
+Em ambos os casos, foram considerados os seguintes parâmetros adicionais utilizados na simulação ;
+• Pressão inicial do reservatório P = 24,ÜO MPa.
+•	saturação de água, inicia] ~ 0,22 .
+•	porosidade constante da formação — 0.30 .
+•	Modelo bifásico - bidimensional com espessura constante h = 15.0 m.
+• Pressão de saturação Ps = 19,00MFu .
+• Propriedades P. V. T. dadas peia tabela 5 .
+• Curvas de permeabilidades relativas dadas pela tabela 6.
+P (MPa)	¡i0(Pa.s}		j.tw(Pa.s)	
+0.0	52.000 10~3	1.0620	0.500 10"3	1.019
+1,724	48.750 10~3	1.1500	0.501 IO"3	1.019
+3,447	45.500 10~3	1.2070	0.501 10"3	1.019
+6,895	41.500 10"3	1.2950	0.501 10"3	1.016
+13,790	34.750 10~3	1.4350	0.502 10"3	1.013
+17,237	32.050 10"3	1.5000	0.502 10“3	1.013
+18,961	30.880 10“3	1.5325	0.502 10“3	1.013
+20,684	31.450 10~3	1.5267	0.502 10"3	1.013
+27,579	33.750 10~3	1,5035	0.505 10“3	1.007
+Tabela 5: Propriedades P V T - óleo e água
+Sw	L	Á-ítnu
+0.000	1.000	0.00
+0.220	1.000	0.00
+0.300	0.100	0.07
+0.400	0.031	0.15
+0.500	0.015	0.24
+0.600	0.001	0.33
+0.800	0.000	0.65
+0.900	0.000	0.83
+1.000	0.000	1.00
+Tabela 6: Permeabilidades Relativas - óleo e água
+5.3	Comparação com Simulador Comercial
+Com a finalidade de se realizar um estudo comparativo, os dois
+casos anteriormente estudados foram novamente simulados por intermédio
+de um simulador comercial, com malha, cartesiana convencional.
+No primeiro caso, para o perfeito modelamento do reservatório foi necessária uma malha cartesiana composta de 993 blocos. Esse número foi utilizado para se conseguir acompanhar a geometria e o contorno das heterogeneidades, conforme apresentado na figura 17.
+Figura 17: Caso 1 - Malha cartesiana utilizada pelo simulador comercial
+Para o segundo caso, foi efetuada uma simulação com uma malha cartesiana composta de 120 blocos e disposta em duas direções , com o objetivo principal de se estudar o efeito de orientação de malha e comparar com o resultado fornecido pela malha triangular.
+Assim, uma primeira malha foi lançada em uma direção paralela à direção da falha selante e inclinada em relação às fronteiras externas.
+conforme exemplificado na figura 18.
+Figura 18: Caso 2 - Malha cartesiana paralela à falha geológica
+A segunda malha foi lançada em uma direção mais concordante com as fronteiras externas e consequentemente inclinada em relação a falha, conforme apresentado na figura 19.
+I-igura .1.9: Caso 2 - Malha cartesiana paralela às fronteiras
+5.4	Análise e Discussão dos resultados
+A seguir são apresentados os resultados do estudo comparativo
+entre os dois simuladores, para os dois casos estudados.
+Para o primeiro problema tipo pode-se constatar pela análise dos gráficos anteriores que o simulador desenvolvido apresenta resultados praticamente idênticos aos fornecidos pelo simulador comercial para todos os poços produtores.
+A utilização da malha triangular permitiu um modelamento com um número de blocos bem menor (195 blocos contra 993 do simulador comercial) de todo o reservatório e um tratamento mais adequado para as heterogeneidades internas, acompanhando a sua geometria irregular. Além
+Pwf (psla)
+Tempo (dia)
+Figura 20: Estudo comparativo - pressão no poço 1
+10 :00 ’000
+Tempo (dia)
+Figura 21: Estudo comparativo - pressão no poço 2
+Poço n®3
+Pwf
+•JV/ "■
+Tempo (día)
+Pwf
+(psia)
+Figura 23: Estudo comparativo - pressão no poço 4
+Pwf
+(psi aJ
+Poço na5
+;00	•0G0
+Tempo (dia)
+Figura 24: Estudo comparativo - pressão no poço 5
+disso, pela própria forma de geração da malha, os únicos dados requisitados foram as coordenadas de pontos quaisquer dos contornos curvilíneos.
+A utilização do simulador comercial exigiu um pré lançamento de uma malha cartesiana retangular ao longo de todo o reservatório, com escalonamentos nas regiões fronteiriças e com a utilização da técnica, de células desativadas nas regiões impermeáveis ou fora da geometria do reservatório.
+A malha triangular- permitiu também uma grande flexibilidade na locação dos poços pois o algoritmo numérico de geração de malha fixa o ponto correspondente ao poço como um ponto de malha, rearranjando a malha gerada na região do poço, de tal fornia que o poço fique situado no centro do bloco hexagonal.
+A malha cartesiana convencional não permite uma flexibilidade tão grande para o tratamento dos poços, pois sempre se enfrenta o problema de se associar o poço (termo fonte) com a sua posição em relação ao bloco, necessitando-se assim da utilização de modelos de poços específicos de acordo com a locação de cada poço.
+Dessa forma, este estudo comparativo mostrou que a malha triangular representa uma boa alternativa em simulação de reservatórios complexos, irregulares e anisotrópicos.
+Para o segundo problema, pode-se constatar, através do estudo comparativo, o efeito de orientação de malha. Pelos gráficos de pressão no poço x tempo, observa-se uma diferença entre os resultados fornecidos pelos dois simuladores para os poços mais distantes em relação ao aquífero, ou seja, os poços 4 e 5, Nesses poços pode-se observar também que o crescimento de pressão ocorre em instantes diferentes dos fornecidos pelo simulador comercial, donde se conclui que o avanço da frente de saturação é mais rápida que o determinado através da malha cartesiana. Quanto ao poços 1,2 e 3 os efeitos são menores devido à proximidade do forte influxo de água.
+Existe um avanço maior da frente de saturação na simulação com malha triangular, como observado também pelo mapa de saturação .
+Para a malha cartesiana, as diferenças entre os dois tipos de malha (paralela e inclinada) são mais pronunciadas também para os poços mais distantes do aquífero.
+Pela análise dos gráficos de Rao x tempo pode-se visualizar melhor
+o que foi afirmado anteriormente, encontrando-se rao diferentes fornecidas pelos simuladores, evidenciando o efeito da orientação dos tipos de malha empregados, principalmente em poços situados eni regiões particulares do reservatório, como por exemplo, ao lado de uma falha selante.
+Este caso sugere que, utilizando-se uma malha do tipo triangular, é possível detectar uma configuração de escoamento diferente da fornecida pela malha convencional, talvez mais real, sem efeitos de orientação de ma
+lha, principalmente para reservatórios com fluidos apresentando razoes de
+mobilidade alta e sob a influência de forte influxo de água.
+Pwf
+(psia)
+Figura 26: Estudo comparativo - rao no poço 1
+500	1000	1500	2000
+Tempo (día)
+PAO
+Poço n»2
+.. !
+"00	;000	'500	200&gt;
+Tempo (dia)
+Figura 28: Estudo comparativo - rao no poço 2
+Pwf (psia)
+Poço n-3
+if
+■T iV
+
+i 1
+: T
+.d ' j O
+«
+
+2-400
+t"
+•*
+*
+*
+■» -
+-i ••■
+
+•■y 'V
+ÓOC	500
+Tempo (dia)
+RAO
+Figura 30; Estudo comparativo - rao no poço 3
+Pwf (psla)
+2.5 T
+i
+RWO J
+Poço n*4
+2 0i
+- Rí anquí ar O— Simúest
+SímoestD
+u
+800
+! 200
+'500
+Tempo (día)
+w
+Figura 32: Estudo comparativo - rao no poço 4
+Pwf
+(psia)
+RWO
+Poço n95
+■1
+0 “1
+A
+? jl
+Tempo (día)
+0
+'!3nguí3r mt¡est mbesíD
+
+Figura 34: Estudo comparativo - rao no poço ,5
+Figura 35: Mapa de Saturação - Malha Triangular
+Figura 36: Mapa de Saturação - Malha Cartesiana paralela à falha
+Figura 37: Mapa de Saturação - Malha Cartesiana paralela ao contorno
+6	Conclusões e Recomendações
+Foi desenvolvido um simulador numérico bifásico - bidimensional utilizando malha triangular, para análise de reservatórios com geometrias quaisquer e com heterogeneidades variadas,
+A formulação do modelo matemático foi realizada a partir das equações integrais de balanço de massa, integradas sobre o volume de cada bloco da malha triangular e discretizada. por diferenças finitas, considerando bloco triangularização pelo método das mediatrizes.
+Dm modelo de poço específico para essa malha também foi estudado. em função da geometria das células hexagonais.
+Os resultados obtidos com o simulador desenvolvido foram validados através de comparações com soluções analíticas conhecidas para um problema monofásico em um reservatório com características bem definidas . 0 comportamento da queda de pressão reproduziu os valores teóricos em todos os pontos observados.
+Objetivando-se estudar o comportamento de pressão e também o efeito da orientação de malha em casos mais complexos, o simulador foi aplicado a. dois tipos de reservatórios com geometria irregular e anísotro-pias internas. Os resultados foram comparados com os fornecidos por um simulador comercial de malha cartesiana convencional.
+Para problemas onde o efeito de orientação de malha é reduzido, como no caso 1 estudado, devido à grande extensão do reservatório e à baixa
+vazão de injeção , o inodelamento com malha triangular mostrou-se muito favorável, pois foi conseguido resultados idênticos aos fornecidos com o simulador comercial com uma redução muito grande considerando-se o número de blocos de malha empregado.
+0 efeito de orientação de malha pode ser bem detectado através do simulador com malhas triangulares, o qual apresentou um mapa de saturação intermediário entre os resultados obtidos com o simulador comercial para diferentes posições de malha.
+Como uma extensão desse trabalho, é recomendável que se investigue bloco triangularía ação através do método das medianas e posteriormente se realize uma comparação entre esse método e o das mediatrízes para vários tipos de reservatórios.
+Pode-se analisar também a extensão do método para modelos tridimensionais e escoamento trifásico e analisar o comportamento do modelo em comparação com os simuladores convencionais correspondentes.
+7	Referências Bibliográficas
+[1]	AZIZ, K., SETTARI,A.( 1979). " Petroleum Reservoir Simulation ”. Applied Science Publishers.
+[2]	BERTINGER, W. L e PADMANA.BHAN, L.( 1983). “ Finite Difference Solutions to Orientation Problems Using Impes". Paper SPE 12250 apresentado no SPE - AIME, Simpoósio de Simulação de Reservatório, São Francisco, Novembro 15-18 .
+[3]	COATS, K. H. (1974). Reservoir Simulation State o] Art ". JPT, No. 8, p. 1633.
+[4]	FLEMING, G. C. (1979). Modelling the Performance of Fractured Wells in Pattern Floods Using Orthogonal, Curvilinear Grids ", Paper SPE 16973 apresentado na 62a. Conferência Técnica Anual, Dallas, Setembro 27-30.
+[5]	HEINEMMN, Z., BRAND, C. (1988). “ Grid Construction for Reservoir Simulation ”, Trabalho apresentado no primeiro Forum Internacional de Simulação de Reservatórios, Alpbach, Áustria, Setembro 12-16.
+[6]	HEINEMMAN, Z., BRAND, ('..MI NEA. M. e CHEN. Y. M. (1989). “ Modelling Reservoir Geometry with Irregular Grids Paper SPE 18412 apresentado no 10a. Simpósio de Simulação de Reservatórios, Houston, Texas, Fevereiro.
+[7]	HEINRICH, B. (1987). “ Finite Difference Methods on Irregular Networks '’.Birkhauser Verlag, Basel, Boston , Stuttgart.
+[8]	McNEAL, R. H. (1953), “ An Asymmetrical Finite Difference Network ’’.Quart. Appl. Math 11.
+[9]	PEACEMAN, D. W. (1977). " Fundamentais of Numerical Simulation ”. Developments in Petroleum Science 6.
+[10} PEACEMAN, D. W. (1982). Ài Interpretation of Well-Block Pressures in Numerical Reservoir Simulation with Nonsquare Grid Blocks and Anisotropic Permeability ”, Paper SPE 10528 apresentado no Simpósio SPE de Simulação de Reservatórios, Nova Orleans, Janeiro 31 - Fevereiro 3.
+[11]	PEDROSA, 0. A. (1986), “ Use of Hybrid Grid in Reservoir Simulation ”, Paper SPE 13507 - publicado no SPEJ ( Novembro).
+[12]	PEDROSA, O. A. (1989), “ Notes on the Finite Difference Balance Approach Using Triangular Gnd. Stanford University.
+[13]	PRUESS, K. eBODVARSSON, G, S. (1983). ” A Seven Point Finite Difference Method for Improved Grid Orientation Performance in Pattern Steamfloods Paper SPE 12252 apresentado no Simpósio de Simulação de Reservatório. São Francisco, Novembro 15-18.
+[14]	QUANDALLE, P. e BESSET, P. (1983). “ The Use of Flexible Gridding for Improved Reservoir Modelling Paper SPE 12239 apresentado no 7o. Simpósio SPE de Simulação de Reservatório , São Francisco, Novembro.
+[lõj ROSENBEQG von, D. U, (1982). " Local Grid Refinement for Finite Difference Methods Paper SPE 10974 apresentado na57a. Conferência lécnica Anual, Nova Orleans, Setembro.
+[16]	ROBERTSON. G. E. e WOO, P. T. (1976). " Grid Orientation Effects and the Vse of Orthogonal Curvilinear Coordinate in Reservoir Simulation ", Paper SPE 6100 apresentado no 51a. Encontro Anual, Nova Orleans.
+[17]	SONIER, F, e CHAUMET, P. (1974).	.4 Fully implicit Three Dimen-
+sional Model in Curvilinear Coordinates ”. Trans. SPE of AIME, 253, p. 361-370 SPE Journal.
+[18]	TODD, M. R., O’DELL, P. M. e HIRASAKL G. J. (1972). Method for Increased Accuracy in Numerical Reservoir Simulators . Trans. SPE of AIME. 253, p. 51.5-530 SPE Journal.
+[19]	THOMPSON, J. F., THAMES, F. C. e MASTIN, C. W. (1976)?’ Boundary-Fitted Curvilinear Coordinate Systems for Solution of Partial Differential Equations on Fields Containing Any Number of Arbitrary Two-Dimensional Bodies '’.Mississipi State University and Nasa Langley Research Center.
+[20]	WINSLOW, A. M. (1967). “ Numerical Solution of the Quasilinear Poisson Equation in a Nonuniform 'Triangle ¿Mesh ”. Journal Comp. Phiysics 2, p. 149-172.
+[21]	YANOSIK, J. L. e Mc CRACKEN. T.A.(1979). “ A Nine point, Finite
+Difference Reservoir Simulator for Realist Prediction of Adverse Mobility Ration Displacement SPE Journal, p. 253-262.</field>
+	</doc>
+</add>

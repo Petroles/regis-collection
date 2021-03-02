@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-BT.04871</field>
+		<field name="filename">BTP_2011_54_1_2_14_Simulation_of_three_fase.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">Simulation of a three-phase three-dimensional reacting flow in an FCC industrial riser
+Simulação de um fluxo reativo trifásico e tridimensional em um riser de uma unidade industrial de FCC
+Simulation de un flujo reaccionario tridimensional y trifásico en un riser en una unidad industrial de FCC
+Gabriela Cantarelli Lopes
+Leonardo Machado da Rosa
+Milton Mori
+José Roberto Nunhez
+Waldir Pedro Martignoni
+Abstract
+This study used a three-dimensional and three-phase flow model to predict the dynamic behavior of a Fluid Catalytic Cracking (FCC) industrial reactor. It took into account heat transfer, feedstock vaporization and cracking reactions. The Eulerian/Eulerian-Lagrangian approach was used to simulate the dynamic three-phase flow inside the riser. The catalytic cracking reactions were predicted using the 4-lump model. A commercial CFD code (Fluent) was used to obtain the numerical data, and appropriate user-defined functions were implemented to model the heterogeneous kinetics and the catalyst deactivation. Results show nonuniform tendencies inside the reactor, emphasizing the importance of a sophisticated model in FCC process predictions.
+keywords: ■ numerical simulation ■ three-phase flow ■ FCC ■ vaporization ■ cracking reactions
+Resumo
+Este estudo utilizou um modelo de fluxo tridimensional e trifásico para prever o comportamento dinâmico de um reator industrial de Craqueamento Catalítico Fluido (FCC). Ele levou em conta a transferência de calor, a vaporização de matéria-prima e as reações de craqueamento. As abordagens de Euler/Euler-Lagrange foram utilizadas para simular o fluxo de três fases dinâmicas dentro do riser. As reações de craqueamento catalítico foram preditas utilizando o modelo de 4-lumps. Um código comercial de CFD (Fluent) foi utilizado para obter os dados numéricos, e funções adequadas definidas pelo usuário foram implementadas para modelar as cinéticas heterogêneas e a desativação do catalisador. Os resultados mostram tendências não uniformes dentro do reator, enfatizando a importância de um modelo sofisticado nas predições do processo de FCC.
+palavras-chave: ■ simulação numérica ■ fluxo trifásico ■ FCC ■ vaporização ■ reações de craqueamento
+Resumen
+Este estudio utilizó un modelo de flujo tridimensional y trifásico para predecir el comportamiento dinámico de un reactor industrial de Craqueo Catalítico Fluido (FCC). Se tuvo en cuenta la transferencia de calor, la vaporización de la materia prima y las reacciones de craqueo. Los enfoques de Euler/Euler-Lagrange fueron utilizados para simular la dinámica de flujo de las tres fases dentro del riser. Las reacciones de craqueo catalítico se predijeron mediante el modelo de 4-lumps. Se utilizó un código comercial de CFD (Fluent) para obtener los datos numéricos, y fueron implementadas las funciones definidas por el usuario apropiadas para modelar la cinética heterogénea y la desactivación del catalizador. Los resultados muestran tendencias no-uniformes en el interior del reactor, haciendo hincapié en la importancia de un modelo sofisticado en las predicciones del proceso de FCC.
+palabras-clave: ■ simulación numérica ■ flujo trifásico ■ FCC ■ vaporización ■ reacciones de craqueo
+Introduction
+Fluid Catalytic Cracking (FCC) is an industrial process in which heavy petroleum fractions are converted into lighter and more valuable hydrocarbon products such as gasoline, middle distillates and light olefins. Although commercially established over half a century ago, this process is still under development. Changes in feedstock requirements as well as the need to improve the reaction performance have driven the advances in feed injection technology and the development of a highly active zeolite catalyst.
+Momentum transfer, heat transfer, catalytic cracking reaction and droplet vaporization are some of the many phenomena that occur simultaneously in commercial FCC riser reactors. These phenomena are interrelated and a disturbance in one will influence the others. Many studies involving simulations of the FCC process and focusing on reactor optimization have recently been developed. However, simplifications such as modeling the process occurring in plug-flow reactors or considering instantaneous feed vaporization, which can affect the reaction yields, were adopted in most of them.
+Experimental studies have shown that when a gas vertical riser transports solid particles, they are nonuniformly distributed throughout the reactor. In circulating fluidized beds, for example, there is a core-annular flow pattern. Furthermore the bed is axially divided into dense and dilute regions, because feed vaporization and cracking reactions expand the gas phase and accelerate the solids. Studies conducted by
+Zhang et al. (1991), Landeghem et al. (1996) and Parssinen and Zhu (2001), among others, were focused on determining solid concentration profiles for different flux conditions of solids, bed diameters and solid properties. These studies were very comprehensive in terms of gas-solid flows. However, their description of the flow hydrodynamic characteristics was not suitable for modeling an FCC riser, as feed vaporization and cracking reactions were not considered in these studies. The distribution of phases along the riser is an important aspect that should be carefully considered in an FCC reactor project. Since catalytic cracking reactions can only occur after the liquid hydrocarbon feedstock vaporization, mixing and feed vaporization must take place in the riser as quickly as possible.
+A common simplification used in the FCC process simulation is to assume the instantaneous vaporization of the feed, which can result in an incorrect prediction of reactor performance. Gao et al. (2001), however, presented three-phase simulations of FCC risers. Their model was based on the Eu-lerian multifluid approach, in which gas, liquid and solid phases were considered as a continuum. Although they assumed that both the vaporizing rate and temperature were constant, their results showed the impact of feed-spray vaporization on the overall cracking reactions. Other important work involving the modeling of the vaporization process associated with cracking reactions was developed by Nayak et al. (2005). They modeled the liquid droplets in a Lagrangian framework, providing a more accurate way to simulate the complex particle vaporization process. The emphasis in
+their work was not to develop a precise flow model, but on simultaneously simulating feed vaporization and reactions in an FCC reactor. Therefore they adopted one-dimensional models in their simulations.
+This study extends these contributions by considering a three-dimensional and three-phase model which takes into account vaporization of the liquid droplets, heterogeneous cracking reactions, catalyst deactivation and radial dispersions. For this purpose an Eulerian/Eulerian-Lagrangian approach was applied.
+Mathematical Model
+The three-phase model used in this work considers a three-dimensional gas-liquid-solid flow, including heat transfer, mass transfer and chemical reactions. Therefore the gas velocity is increased due to both the vaporization of the liquid droplets and the molar expansion caused by cracking reactions.
+The model used an Eulerian description of the gas and solid phases, while the Lagrangian approach was used to describe the liquid droplets. The liquid phase consists of spherical particles represented as droplets and dispersed in the continuous phase.
+Gas-solid Eulerian flow model
+The gas-solid flow model uses an Eulerian description of both phases, so the gases and the dispersed solid particles are treated as an interpenetrating continuum. The phases movement is estimated by solving a transport equation for each velocity and applying closure equations to predict the exchange between the phases. The momentum transfer was modeled using the Gidaspow drag model, which combines the Wen Yu and the Ergun correlations. When the flow is diluted (es &amp;lt;0.20), the Wen Yu correlation is applied:
+(1)
+Where:
+£s = volume fraction of the solids phase;
+CD = drag coefficient that depends on the Reynolds number.
+When Re &amp;lt;1000, CD is calculated according to the following equation:
+(2)
+Otherwise, CD = 0.44. For dense flows, the momentum transfer is calculated according to the Ergun correlation:
+/?	11.75	(3)
+The heat transfer between particles and gas phases is predicted using the Ranz-Marshall correlation for the Nusselt number:
+.Vr/ = — = 2-Q.6Re-:Pr- :	(4)
+Where:
+k. = thermal conductivity of the continuous phase;
+Pr = Prandtl number.
+The turbulence in the gas phase was modeled using the Reynolds Stress Model (RSM), which has a differential equation for each of the Reynolds stress tensor components. As it is an anisotropic model, it is able to predict with higher precision the flow characteristics in regions where sudden changes in flow direction are expected.
+Fluctuations in particle velocity are modeled using the kinetic theory of granular flow. This theory applies the concept of granular temperature (a quantity related to the kinetic energy due to particle movement) to provide closure terms for the solid phase stress terms, defining parameters such as particle viscosity and particle pressure. The proposed model assumes that the generation and dissipation of the granular temperature is in equilibrium.
+Lagrangian discrete phase model
+Heavy oil is injected into the reactor as liquid droplets, which are modeled using a Lagrangian discrete phase model. According to the heat balance equations these droplets are heated to the gas phase at higher temperatures, reducing their diameters until the liquid phase is completely vaporized. The Lagrangian approach is well suited to describe discrete phases as it solves a set of equations for each discrete particle.
+The trajectory of a discrete phase droplet is predicted solving the forces acting on each particle: the force of gravity and the drag force. The drag coefficient CdD is taken from:
+(5)
+Where:
+a;, a2 and a3 = empirical constants for smooth spherical particles over several ranges of Reynolds numbers (Morsi and Alexander, 1972).
+In the studied process while the droplet temperature is below its vaporization temperature, convective heat is transferred from the continuous phase to the discrete phase and the droplet temperature is predicted using a simple heat balance as follows:
+(6)
+Where:
+md, Cp and Ad = mass, the thermal capacity and the surface area of the droplets, respectively;
+I. = local temperature of the continuous phase.
+The heat transfer coefficient, h, was evaluated using the Ranz-Marshall correlation.
+When the droplet temperature reaches the vaporization temperature, mass is transferred from the droplet to the continuous phase at a rate given by:
+(7)
+In a temperature range of T &amp;lt;T, &amp;lt;T , the droplet temperature is increased according to a heat balance that relates the droplet sensible heat change to the convective and latent heat transfer between the droplet and the continuous phase. Equation 6 is then replaced by:
+(9)
+Where:
+L = specific latent heat.
+When the droplet temperature reaches boiling point, it is assumed to be constant, and then the diameter of the droplets begins to decrease. This variation is evaluated by the following equation:
+-J(rfd) _ 4^(1 + 0.237^7)
+(10)
+L
+Catalytic cracking reactions
+Hundreds of organic compounds are present in riser reactors. To simplify the reaction calculations, the 4-lump model was used. The lumping approach considers groups of chemical species with similar properties interacting among each other. The 4-lump model defines reactions between four groups of chemical species: gasoil, gasoline, gas and coke. The representative reactions of this kinetic model are shown in figure 1.
+Each reaction rate is calculated by:
+Where:
+M . = molecular weight of specie i;
+N = molar flux of droplet vapor into the gas phase, evaluated by:
+(11)
+(8)
+Where:
+k = mass transfer coefficient;
+c
+C. ,sup = vapor concentration at the droplet surface;
+= vapor concentration in the bulk of the gas phase.
+Figure 1 - 4-lump model.
+Figura 1 - Modelo de 4-lumps.
+Figura 1 - Modelo de 4-lumps.
+The gasoil cracking is assumed to be a second-order reaction (n=2) and the gasoline cracking a first-order reaction (n = 1). The dependence of kinetic constants on temperature is given by the Arrhenius equation:
+(12)
+The parameter p, in equation 11, is the deactivation function, which is related to the coke deposition on the catalyst surface. It is expressed by:
+/ = "	&amp;lt;T 1	(13)
+Where:
+Kc = deactivation constant estimated by Farag et al. (1994) as a function of catalyst type;
+q1 = specific coke concentration given by:
+sidered is illustrated in figure 2. The mesh used in this work consists of approximately one million hexahedrical volumes. A nonuniform grid is used in order to guarantee that smaller control volumes are present where variable gradients are steeper. In figure 3 are shown details of the mesh at the inlet and outlet regions. The distribution of the control volumes along the radius of the reactor is also shown.
+The simulation operating conditions used are shown in table 1. About 7wt% of the total vapor is fed in with the catalyst at the lateral entrance, while the remaining vapor is injected into the base of the reactor to help fluidize the bed. Twelve 1/2 inch ducts at 30° angles to the main duct are used to feed in the liquid droplets. Details about these entrances can be seen in figure 2. The physical properties of the reactive species and the catalyst were taken from the work of Martignoni and de Lasa (2001) and Landeghem et al.
+^CQ
+Ps£s
+(14)
+=
+Simulation
+The commercial code Ansys-Fluent 12.0 was used to solve the proposed model. Appropriate user-defined functions were developed to implement heterogeneous kinetics and catalyst deactivation into the software. Fluent applies the finite volume method to discretize the equations. In this numerical method, the calculation domain first needs to be divided into a finite number of control volumes in which discrete variables are calculated. The pressure field was determined using a pressure-based approach in which the continuity and momentum equations are manipulated to obtain a pressure equation. The diffusion and pressure gradient terms were evaluated using the least squares cell-based method. The convective terms were discretized through a first-order upwind difference scheme, and transient terms were approximated using a first-order implicit scheme. The set of algebraic approximate equations was solved in a segregated manner, using the Simple algorithm for the pressure-velocity coupling.
+Three-dimensional predictions were carried out in order to evaluate heat transfer, feed vaporization, chemical reaction and the effects of geometry, especially in the entrance area of the riser reactor. The riser reactor geometry con-
+Figura 2 - Geometria do riser analisado.
+Figura 2 - Geometria del riser analisado.
+Figure 2 - Analyzed riser geometry.
+Mass flow of feed oil	20kg/s
+Catalyst-to-oil ratio	
+Steam	7wt%
+Feed temperature	500K
+Catalyst inlet temperature	960K
+Droplet inlet diameter	100pm
+Table 1 - Simulation operating conditions.
+Tabela 1 - Condições de operação da simulação.
+Tabla 1 - Condiciones de operation de la simulación.
+Figura 3 - Detalhes da malha utilizada.
+Figura 3 - Detalles de la malla utilizada.
+Figure 3 - Details of the used mesh.
+(1996) and are listed in table 2. The nonslip condition at the walls was used for gas and solid phases.
+The kinetic constants for the 4-lump model were estimated in many studies (Blasetti and de Lasa, 1997; Juárez et al., 1997; Lee et al., 1989; Pitault et al.,1995). This study is based on the work of Farag etal. (1994), which evaluated the kinetic constants under several conditions and with different types of catalysts. The kinetic constant values used were those obtained for the FCC10 catalyst (sample free of metal traps, ni
+ckel and vanadium). Farag et al. (1994) concluded that overcracking of the formed gasoline was negligible because the kinetic constant values for the gasoline cracking to produce light gases and coke are very close to zero. As the activation energies and heats of reaction were not presented by Farag et al. (1994), these values were obtained from the work of Juárez et al. (1997) and Han and Chung (2001). The kinetic parameter values are listed in table 3. Farag et al. (1994) estimated both the kinetic data and the adsorption parameters individually. Given that the adsorption phenomenon was also
+Specie	Gasoil	Gasoline	Light gases	Coke	Catalyst	Table 2 - Physical proper-
+Density (kg nr)	6	1.5	0.8	1400	1400	ties of reactive species and catalyst.
+Specific heat (J kg-1 K-1)	2420	2420	2420	1090	1090	Tabela 2 - Propriedades físicas das espécies reativas e do catalisador.
+Thermal conductivity (W m-1 K-1)	0.025	0.025	0.025	0.045	0.045	
+Molecular weight (kg kmol-1)	400	100	50	400	-	Tabla 2 - Propiedades físicas de las especies
+Catalyst particle diameter ( )	-	-	-	-	65	reactivas y del catalizador.
+Table 3 - Kinetic parameters for the 4-lump model.
+Reaction	kr (m6 kmol-1 kgcat-1 s-1)	Er (kJ mol-1)	AHr (kJ kg-1)
+Gasoil Gasoline	20.4	57.36	195
+Gasoil Light gases	7.8	52.75	670
+Gasoil Coke	3.0	31.82	745
+Tabela 3 - Parâmetros cinéticos para o modelo de 4-lumps.
+Tabla 3 - Parâmetros cinéticos para el modelo de 4-lumps.
+accounted to estimate the parameters, the reaction rates depended on the concentration of reactant adsorbed on the catalyst. Consequently, assuming the concentration of species adsorbed on the catalyst surface is linearly proportional to its gas phase concentration, the gasoil concentration should be multiplied by the gas oil dimensionless adsorption constant at 530°C shown in equation 15.
+(15)
+The simulation was solved using a parallel code with 16 partitions. The time step for the solution was 10-3 seconds. About ten days of calculation were necessary to predict ten seconds of reactive flow. Computers provided with Xeon 3GHz quad-core processors were used.
+Figure 5 - Droplet residence time.
+Figura 5 - Tempo de residência das gotículas.
+Figura 5 - Tiempo de residencia de las gotitas.
+Results and Discussion
+These time-averaged results were obtained by simulating an unsteady-state case over a time period sufficient to show that variables had a cyclic behavior.
+The variation in droplet diameter along the riser is shown in figure 4. Vaporization was completed within the first 11m of the riser height. The maximum value for the droplet residence time is 0.217 seconds, as shown in figure 5. According to Gao et al. (2001), the feed vaporization achieved with typical commercial FCC nozzles is completed within
+Figure 4 - Variation in droplet diameter.
+Figura 4 - Variação no diâmetro das gotículas.
+Figura 4 - Variación en el diámetro de las gotitas.
+0.2 seconds, indicating the proposed model is appropriate to describe this phenomenon.
+The feedstock vaporization development through several axial sections and an axial plane located in the riser center is illustrated in figures 6 and 7. The nozzles used to feed the liquid droplets are located 3 and 3.5m from the bottom. After the upper set of nozzles, there is an increase in the liquid concentration, which decreases as vaporization progresses.
+The kinetic model used was confirmed by comparing the simulation results with the data reported by Ali etal. (1997). Their data refers to a 33m high industrial riser with a diameter of 0.8m, operating under the same conditions simulated in this study. The model results compared with published commercial data, both obtained at the riser outlet, are shown in table 4. The largest deviation was -10.14%, obtained for the gasoline yield. Considering the number of phenomena involved and the complexity of the studied case, these results represent well the FCC reactor performance. The discrepancies between these values could also be related to the determined kinetic parameters taken from the literature, which depend on many variables, such as the catalyst properties and the feed stock quality.
+The average cross-section values for the gas-phase density, gas-phase velocity and catalyst volume fraction along
+Figure 6 - Droplet concentration at different heights.
+Figura 6 - Concentração das gotículas em diferentes alturas.
+Figura 6 - Concentración de las gotitas en alturas diferentes.
+Figure 7 - Droplet concentration in an axial plane.
+Figura 7 - Concentração das gotículas em um plano axial.
+Figura 7 - Con-centración de las gotitas en un plano axial.
+the reactor height are shown in figure 8. The gas-phase density increases after vaporization of the heavy oil injected into the reactor and then decreases due to the formation of lighter products by the cracking reactions. The vaporization of the feedstock and the volumetric expansion due to the reactions raise the gas-phase velocity. The drag force between the phases accelerates the catalyst particles, decreasing their volume fraction and separating the bed into a dense region close to the bottom and a dilute region in the rest of the riser.
+It is known that the core-annulus structure is less pronounced when the superficial gas velocity increases, so it tends to vanish somewhere along the riser height with the expansion of the bed. In figure 9 the catalyst distribution in cross-sectional planes at different heights is shown. It indicates that 4m from the bottom there is a higher concentration of solids and the flow field is highly inhomogeneous. These inhomogeneities tend to decrease as the gas phase accelerates and the flow becomes more diluted.
+	Plant data (Ali et al., 1997)	Simulation	Deviation (%)
+Gasoil conversion (wt%)	72.47	67.13	-7.37
+Gasoline yield (wt%)	43.88	39.43	-10.14
+Coke yield (wt%)	5.83	5.97	2.40
+Temperature (K)	795	782	-1.64
+Table 4 - Comparison of model results with the plant data of Ali et al. (1997).
+Tabela 4 - Comparação dos resultados do modelo com os dados da planta de Ali et al. (1997).
+Tabla 4 - Comparación de los resultados del modelo con los datos de la planta de Ali et al. (1997).
+Height (m)
+The gas-phase temperature profile for an axial plane in the riser is shown in figure 10. When the gas is brought into contact with the hot catalyst, a rapid heat transfer occurs and the temperature near the entrance of the riser increases. The heated gas phase heats the liquid droplets, which are vaporized. This process and the endothermic cracking reactions cause a decrease in the overall temperature of the riser.
+Conclusions
+This study presented an extended model for an FCC industrial riser reactor. The heterogeneous kinetics and the ca-
+0.100
+0.090
+c 0.080
+□
+'u °'070 í 0-060
+I 0.050
+&gt; 0.040
+-S 0.030
+&lt;3 0.020
+0.010
+0.000
+Height (m)
+Figure 8 - Radial average gas density, gas velocity and catalyst volume fraction.
+0	5	10	15	20	25	30	35
+Figura 8 - Média radial da densidade do gás, da velocidade do gás e da fração volumétrica do catalisador.
+Figura 8 - Promedio radial de la densidad del gas, la velocidad del gas y la fracción volumétrica del catalizador.
+Figure 10 - Gasphase temperature profile.
+Figura 10 - Perfil de temperatura da fase gasosa.
+Figura 10 - Perfil de la temperatura de la fase gaseosa.
+Figure 9 - Cross-section profiles of catalyst volume fraction.
+Figura 9 - Perfis de seção transversal da fração do volume do catalisador.
+Figura 9 - Perfiles de la section transversal de la fraction del volumen del catalizador.
+talyst deactivation by coke deposition on its surface were implemented in the model by user-defined functions. The species concentrations predicted in the simulations using the 4-lump model showed good agreement with published commercial data.
+The Lagrangian approach was applied to represent the liquid droplets, and a model to predict their vaporization was used. The results presented, using this model, were consistent with those found for industrial equipment, emphasizing its importance in FCC simulations. Modeling the liquid droplets in a Lagrangian framework provides more accurate results, as witnessed in the diameter, concentration and temperature of the liquid droplets, which vary along the riser height. These characteristics would not be accounted for if the liquid phase was modeled using an Eulerian approach. Therefore the applied Lagrangian model can reveal details of the motion, temperature and vaporization of liquid droplets as well as their impact on cracking reactions.
+The obtained fluid dynamic results highlight the importance of three-dimensional simulations to correctly predict of reactor performance, particularly in the feed injection area. This region needs special attention, due to its strong momentum and temperature gradients, which influence the cracking reactions and can result in undesirable phenomena, such as thermal cracking.
+A suitable approach to predict the interaction between the phases is important, as it can change the way the heat is transferred and consequently the reaction yields. Therefore the proposed model is very practical to optimize the operation of FCC risers. Different geometric configurations could be tested in future studies to improve the reactor performance.
+Notations
+A = surface area [m2]
+ar a2 a3 = empirical constants for drag correlation [-]
+CD = drag coefficient [-]
+C. = molar concentration of component i [kmol m-3]
+Cisup = vapor concentration at the droplet surface [kmol m-3]
+C = gas phase bulk concentration [kmol m-3]
+Cp = thermal capacity [J kg-1 K-1]
+d = diameter [m]
+Er = energy activation [J mol-1]
+h = heat transfer coefficient [W m-2 K-1]
+Hr = static enthalpy [J mol-1]
+kc = mass transfer coefficient [m s-1]
+kr = kinetic constant of reaction [mol3 kmol-1 s-1]
+k0 = pre-exponential factor [mol3 kmol-1 s-1]
+k = thermal conductivity of the gas phase [W m-1 K-1]
+Kc = deactivation constant [kgcat kmol-1]
+L = latent heat [J kg-1]
+m = mass [kg]
+Mwj = molecular weight of specie i [kg kmol-1]
+n = reaction order [-]
+N = molar flux of vapor into the gas phase [kmol m-2 s-1]
+Pr = Prandtl number [-]
+q1 = specific coke concentration [kmol-1 kg-1 ]
+R = universal gas constant [J mol-1 K-1]
+R = reaction rate [kmol m-3 s-1]
+Re = Reynolds number [-]
+T = static temperature [K]
+U = velocity [m s-1]
+Greek letters
+£ = volume fraction [-]
+f = catalyst decay function [-]
+g = viscosity [kg m-3]
+p = density [kg m-1 s-1]
+Subscripts
+bp = boiling point
+CQ = coke
+d = droplet
+g = gas phase
+s = solid phase
+vap = vaporization
+= bulk of the gas phase
+Acknowledgements
+The authors are grateful for the financial support of Petrobras for this research.
+■ ■ ■
+Referências Bibliográficas
+■	ALI, H; ROHANI, S; CORRIOU, J. P Modelling and control of a riser type fluid catalytic cracking (FCC) unit. Chemical Engineering Research and Design, Melbourne, v. 75, n. 4, p. 401-412, May 1997.
+■	BLASETTI, A.; DE LASA, H. FCC riser unit operated in the heat-transfer mode: kinetic modeling. Industrial Engineering Chemistry Research, Melbourne, v. 36, n. 8, p. 3223-3229, Aug. 1997.
+■	FARAG, H.; BLASETTI, A.; DE LASA, H. Catalytic cracking with FCCT loaded with tin metal traps. Adsorption constants for gas oil, gasoline and light gases. Industrial Engineering Chemistry Research, Melbourne, v. 33, n. 12, p. 3131-3140, Dec. 1994.
+■	GAO, J.; XU, C.; LIN, S.; YANG, G.; GUO, Y Simulations of gas-liquid-solid 3-phase flow and reaction in FCC riser reactors. AIChE Journal, Malden, v. 47, n. 3, p. 677-692, Mar. 2001.
+■	HAN, I. S.; CHUNG, C. B. Dynamic modeling and simulation of a fluidized catalytic cracking process. Part II: Property estimation and simulation. Chemical Engineering Science, Amsterdam, v. 56, n. 5, p. 19731990, Mar. 2001.
+■	JUÁREZ, J. A.; ISUNZA, F L.; RODRÍGUEZ, E. A.; MAYORGA, J. C. M. A strategy for kinetic parameter estimation in the fluid catalytic cracking process. Industrial Engineering Chemistry Research, Melbourne, v. 36, n. 12, p. 5170-5174, Aug. 1997.
+■	LANDEGHEM, F V.; NEVICATO, D.; PITAULT, I.; FORISSIER, M.; TURLIER, Fl; DEROUIN, C.; BERNARD, J. R. Fluid catalytic cracking: modelling of an industrial riser. Applied Catalysis A: general, v. 138, n. 2, p. 381-405, May 1996.
+■	LEE, L. S.; CHEN, Y W.; HUANG, T. N.; PAN, W. Y Four-lump kinetic model for fluid catalytic cracking process. Canadian Journal of Chemical Engineering, Malden, v. 67, n. 4, p. 615-619, Aug. 1989.
+■	MARTIGNONI, W.; DE LASA, H. I. Heterogeneous reaction model for FCC riser units. Chemical Engineering Science, Amsterdam, v. 56, n. 2, p. 605-612, Jan. 2001.
+■	MORSI, S. A.; ALEXANDER, A. J. An investigation of particle trajectories in two-phase flow systems. Journal of Fluid Mechanics, Cambridge, v. 55, n. 2, p. 193-208, 1972.
+■	NAYAK, S. V.; JOSHI, S. L.; RANADE, V. V. Modeling of vaporization and cracking of liquid oil injected in a gas-solid riser. Chemical Engineering Science, Amsterdam, v. 60, n. 22, p. 6049-6066, Nov. 2005.
+■	PÀRSSINEN, J. H.; ZHU, J. X. Particle velocity and flow development in a long and high-flux circulating fluidized bed riser. Chemical Engineering Science, Amsterdam, v. 56, n. 18, p. 5295-5303, Sept. 2001.
+■	PITAULT, I.; FORISSIER, M.; BERNARD, J. R. Détermination de constantes cinétiques du craquage catalytique par la modélisation du test de microactivité (MAT). Canadian Journal of Chemical Engineering, Malden, v. 73, n. 4, p. 498-504, Aug. 1995.
+■	ZHANG, W.; TUNG, Y; JOHNSSON, F Radial voidage profiles in fast fluidized beds of different diameters. Chemical Engineering Science, Amsterdam, v. 46, n. 12, p. 3045-3052, 1991.
+Autores
+Gabriela Cantarelli Lopes
+Universidade Estadual de Campinas
+(Unicamp)
+Faculdade de Engenharia Química
+(FEQ)
+e-mail: gacleq@feq.unicamp.br
+Milton Mori
+Universidade Estadual de Campinas (Unicamp)
+Faculdade de Engenharia Química (FEQ)
+e-mail: mori@feq.unicamp.br
+Gabriela Cantarelli Lopes graduou-se em Engenharia Química pela Universidade Federal de São Carlos (UFSCar) em 2005. Fez mestrado no Laboratório de Fluido Dinâmica Computacional (L-CFD) na Unicamp, onde desenvolveu um programa próprio de CFD para simulação de características detalhadas de escoamentos em dutos. Atualmente é aluna de doutorado no Laboratório de Pesquisa em Processos Químicos e Gestão Empresarial (PQGe), onde atua em projeto firmado em parceria com a Petrobras. Seu trabalho de doutorado está voltado ao estudo de reatores de Craquea-mento Catalítico Fluido (FCC) em escala industrial, através de simulações em CFD, usando modelos sofisticados que possam representar com fidelidade o escoamento no interior desses reatores. Com esse trabalho, Gabriela ganhou a 5a edição do Prêmio Petrobras de Tecnologia Engenheiro Antônio Seabra Moggi na categoria Tecnologia de refino e Petroquímica.
+Milton Mori graduou-se em Engenharia Química pela Universidade Federal do Paraná, em 1972. Mestre em Engineering Science Nuclear pela University of Michigan (1979), PhD em Engenharia pela North Carolina State University (1983), EUA. Atuou como coordenador de Pós-Graduação (Unicamp, 19871988); coordenador do Laboratório de Pesquisa em Processos Químicos e Gestão Empresarial (PQGe - Unicamp) e chefe do Departamento de Processos Químicos (Unicamp, 1988-1989). Foi diretor da Faculdade de Emgemharia Química (Unicamp, 1990-1994 e 2002-2006); editor-chefe da revista Brazilian Journal of Chemical Engineering, da Associação Brasileira de Engenharia Química (ABEQ, 1994-2007) e presidente do Conselho Superior da ABEQ (2007-2008). Participou na orientação da vencedora da 5a edição do Prêmio Petrobras de Tecnologia Engenheiro Antônio Seabra Moggi, na categoria Tecnologia de refino e Petroquímica. É professor titular da Facvuldade de Engenharia Química (FEQ-Unicamp).
+Leonardo Machado da Rosa
+Universidade Estadual de Campinas (Unicamp)
+Faculdade de Engenharia Química (FEQ)
+e-mail: leorosa@feq.unicamp.br
+Leonardo Machado da Rosa graduou-se em Engenharia Química pela Universidade Federal de Santa Maria (UFSM), em 1999. Obteve o título de Mestre pela Universidade Estadual de Campinas (Unicamp), em 2002 e título de
+Doutor na mesma instituição, em 2008. Tem experiência na área de Fluidodinâmica Computacional (CFD), atuando na modelagem e simulações numéricas de escoamentos turbulentos reativos gás-sólido
+José Roberto Nunhez
+Universidade Estadual de Campinas (Unicamp)
+Faculdade de Engenharia Química
+(FEQ)
+e-mail: nunhez@feq.unicamp.br
+Waldir Pedro Martignoni
+Abastecimento - Refino
+Gerência de Otimização
+e-mail: martignoni@petrobras.com.br
+José Roberto Nunhez graduou-se em Engenharia Química pela Universidade Estadual de Campinas em 1985. Obteve o título de Mestre na mesma instituição, em 1990, enquanto trabalhava na Companhia de Desenvolvimento Tecnológico (Codetec, 1985-1987) e depois no Instituto de Química da Unicamp (1987-1990). Obteve seu doutorado em 1994 pela Universidade de Leeds, na Inglaterra. Desde 1990, quando iniciou seu doutorado, tem trabalhado com a Fluidodinâmi-ca Computacional (CFD) aplicados a tanques de mistura e processos Petroquímicos. Atua também em trabalhos experimentais com tanques de mistura. Possui inúmeras publicações, sendo coautor do único livro sobre tanques de mistura, em português, (Agitação e Mistura na Indústria) e diversos prêmios como um obtido no seu mestrado, em 1990. Participou na orientação da tese de doutorado do ganhador do prêmio principal do concurso Braskem/ABEQ., em 2006, e da vencedora da 5a edição do Prêmio Petrobras de Tecnologia Engenheiro Antonio Seabra Moggi, na categoria Tecnologia de refino e Petroquímica. Atua desde 1997 junto à Faculdade de Engenharia Química da Unicamp.
+Waldir Pedro Martignoni graduou-se em Engenharia Química pela Universidade Federal do Paraná (UFPr), em 1979. Obteve título de Mestre pela Coppe/UFRJ, em 1979. Possui PhD em Engineering Science pela The University of Western Ontario, Canadá (1998). É Engenheiro de Processamento Sênior na Petrobras, há 25 anos (Consultor Sênior).
+</field>
+	</doc>
+</add>

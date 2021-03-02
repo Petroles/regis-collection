@@ -1,0 +1,3700 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.20456</field>
+		<field name="filename">4013_000970321.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+ 
+
+UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL 
+
+ESCOLA DE ENGENHARIA 
+
+TRABALHO DE CONCLUSÃO EM ENGENHARIA DE 
+CONTROLE E AUTOMAÇÃO 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+C o n t r o l e  a d a p t a t i v o  d e  u m  
+p r o c e s s o  d e  t r a t a m e n t o  d e  
+
+p e t r ó l e o  a t r a v é s  d e  
+l i n e a r i z a ç ã o  p o r  
+
+r e a l i m e n t a ç ã o  d e  e s t a d o s  
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Autor: Matheus Perin 
+
+Orientador: Prof. Dr. Luís Fernando Alves Pereira 
+
+ 
+
+ 
+
+ 
+
+Porto Alegre, julho de 2015 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+ii 
+
+Sumário 
+
+ 
+
+Sumário ii 
+
+Resumo iii 
+
+Abstract iv 
+
+Lista de Figuras v 
+
+Lista de Tabelas vi 
+
+Lista de Símbolos vii 
+
+Lista de Abreviaturas e Siglas ix 
+
+1 Introdução 1 
+
+1.1 Motivação 1 
+
+1.2 Objetivos 2 
+
+1.3 Estrutura do trabalho 2 
+
+2 Revisão Bibliográfica 3 
+
+2.1 Linearização por realimentação de estados 3 
+
+2.1.1 Sistemas com uma entrada e uma saída 3 
+2.1.2 Sistemas com múltiplas entradas e múltiplas saídas 5 
+
+2.2 Controle adaptativo por modelo de referência (MRAC) 6 
+
+2.2.1 MRAC para sistemas SISO de grau relativo um 7 
+2.2.2 MRAC para sistemas MIMO de grau relativo um 9 
+
+3 Formulação do Problema ou Estudo de Caso 10 
+
+3.1 Modelo do processo utilizado 10 
+
+3.2 Considerações sobre o modelo e justificativa 13 
+
+3.3 Síntese do controlador não-linear 13 
+
+3.4 Simulação 20 
+
+4 Resultados 21 
+
+4.1 Simulação do sistema 21 
+
+4.2 Discussão 27 
+
+5 Conclusões 28 
+
+6 Referências 29 
+
+7 Apêndices 30 
+
+7.1 Apêndice A:  Modelagem do processo 30 
+
+7.2 Apêndice B: Valores numéricos das constantes 32 
+
+ 
+
+ 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+iii 
+
+Resumo 
+
+ 
+
+ O presente trabalho propõe o projeto e a simulação de um controlador não-
+linear multivariável adaptativo para um dado processo de uma plataforma de 
+petróleo offshore, cujo modelo dinâmico é não-linear. O controlador foi projetado 
+através da técnica de linearização por realimentação multivariável com adaptação 
+paramétrica por modelo de referência (MRAC) visando manter as variáveis de 
+interesse em valores adequados em regime permanente. A simulação do sistema 
+de controle composto pelo modelo do processo e o controlador projetado foi 
+realizada no ambiente Simulink® do software Matlab®, apresentando resultados 
+satisfatórios para o que foi proposto. 
+
+ 
+
+Palavras Chave: controle não-linear, linearização por realimentação, MRAC. 
+
+  
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+iv 
+
+Abstract 
+
+ 
+
+ The present work proposes the project and simulation of a non-linear 
+multivariable adaptive controller for an offshore oil treatment process, whose 
+mathematic model is non-linear. The control system was projected with a 
+multivariable feedback linearization approach with model reference parametric 
+adaptation (MRAC) to maintain all the interest variables in suitable values. The 
+control system was simulated at the Matlab® software’s Simulink® environment, 
+resulting in satisfactory results.  
+
+ 
+
+Keywords: non-linear control, feedback linearization, MRAC. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+v 
+
+Lista de Figuras  
+
+ 
+
+Figura 1 - Diagrama de blocos do sistema linearizado. ............................................... 4 
+
+Figura 2 - Planta de tratamento de óleo em uma plataforma .................................... 10 
+
+Figura 3 - Separador trifásico gravitacional .................................................................. 11 
+
+Figura 4 – Diagrama de blocos simplificado da simulação ........................................ 20 
+
+Figura 5 – Resultados para ?1 ....................................................................................... 21 
+
+Figura 6 - Resultados para ?2 ........................................................................................ 21 
+
+Figura 7 - Resultados para ?3 ........................................................................................ 22 
+
+Figura 8 - Resultados para ?4 ........................................................................................ 22 
+
+Figura 9 - Resultados para ?5 ........................................................................................ 23 
+
+Figura 10 - Resultados para ?6 ...................................................................................... 23 
+
+Figura 11 - Resultados para ?7 ...................................................................................... 24 
+
+Figura 12 - Resultados para ?8 ...................................................................................... 24 
+
+Figura 13 - Resultados para ?9 ...................................................................................... 25 
+
+Figura 14 - Resultados para ?? ? ??1 e ?? ? ??2 ................................................. 25 
+
+Figura 15 - Resultados para ?? ? ??1 e ?? ? ??2 ................................................... 26 
+
+Figura 16 - Resultados para ?? ? ??1 e ?? ? ??2 .................................................... 26 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+  
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+vi 
+
+Lista de Tabelas  
+
+ 
+
+Tabela 1 – Valores numéricos das constantes para SG-01 .................................................. 32 
+
+Tabela 2 - Valores numéricos das constantes para TO1 e V-TO1 ....................................... 33 
+
+Tabela 3 - Valores numéricos das constantes para TO2 e V-TO2 ....................................... 34 
+
+Tabela 4 – Valores numéricos das demais constantes ........................................................ 35 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+vii 
+
+Lista de Símbolos  
+
+ 
+
+ ?1- Vazão de água que entra no tanque; 
+
+ ?2- Vazão de óleo que entra no tanque; 
+
+ ?3- Vazão de gás que entra no tanque; 
+
+ ?4- Injeção de água para lavagem em TO2; 
+
+ ??- Abertura das válvulas de saída (óleo, água e gás); 
+
+ ??- Fatores constantes das válvulas de saída  (óleo, água e gás); 
+
+ ????- Pressão externa de saída dos tanques; 
+
+ ????- Pressão das  câmaras de gás; 
+
+ ???- Constante universal dos gases; 
+
+ ????01- Volume de SG-01; 
+
+ ?????1- Volume de V-TO1; 
+
+ ?????2- Volume de V-TO2; 
+
+ ?- Fator de compressibilidade; 
+
+ ????01- Temperatura interna de SG-01; 
+
+ ?????1- Temperatura interna de V-TO1; 
+
+ ?????2- Temperatura interna de V-TO2; 
+
+ MW- Peso molecular. 
+
+ ????01, ?????1, ???1, ?????2, ???2- Raios dos vasos dos tanques; 
+
+ ????01
+? , ????01
+
+? - Comprimentos do separador SG-01 à esquerda e à direita do 
+
+vertedouro; 
+
+ ?????1, ???1, ?????2, ???2- Comprimentos dos tanques V-TO1, TO1, V-TO2 e TO2; 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+viii 
+
+ WV?TO1, WV?TO2- Fração de água nas entradas de V-TO1 e V-TO2, 
+
+respectivamente; 
+
+OV?TO1, OV?TO2- Fração de óleo nas entradas de V-TO1 e V-TO2, 
+
+respectivamente; 
+
+ GV?TO1, GV?TO2- Fração de gás nas entradas de V-TO1 e V-TO2, 
+
+respectivamente; 
+
+????? – Massa específica da água; 
+
+????? – Massa específica do óleo. 
+
+ 
+
+  
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+ix 
+
+Lista de Abreviaturas e Siglas  
+
+ 
+
+UFRGS – Universidade Federal do Rio Grande do Sul 
+
+UFRN – Universidade Federal do Rio Grande do Norte 
+
+UFSC – Universidade Federal de Santa Catarina 
+
+UFBA – Universidade Federal da Bahia 
+
+UFPA – Universidade Federal do Pará 
+
+MRAC – Model Reference Adaptive Control 
+
+MRC -  Model Reference Control 
+
+SISO – Single-input and single-output 
+
+MIMO – Multiple-input and multiple-output
+
+
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+1 
+
+1 Introdução 
+
+ 
+
+Sistemas de controle considerados lineares e invariantes no tempo, mesmo 
+quando projetados corretamente, nem sempre apresentam resultados satisfatórios. 
+Isso pode ocorrer por diversos motivos, tais como a presença de parâmetros 
+desconhecidos e/ou variantes, sistemas com modelos não-lineares, entre outros. 
+Muitas vezes a linearização de modelos não-lineares para a aplicação de técnicas 
+de controle linear, geralmente mais simples e mais fáceis de utilizar, não apresenta 
+o desempenho esperado para determinadas aplicações. Já a presença de 
+parâmetros desconhecidos, ou até mesmo variantes com o tempo, pode levar um 
+sistema de controle previamente bem projetado a se comportar de forma 
+indesejada se não houver a atualização dos valores desses parâmetros conforme 
+eles forem variando. 
+
+Existem diversas técnicas de controle não-linear para resolver esses problemas, 
+sendo uma delas a linearização por realimentação de estados, que consiste na 
+transformação de um sistema não-linear em um sistema linear equivalente através 
+de mudança de variáveis e escolha adequada de entradas. Mesmo nesse caso, 
+quando possível aplicar a técnica, muitas vezes o resultado não é satisfatório pois 
+o problema da existência de parâmetros não conhecidos, variantes, etc. ainda não 
+é resolvido. Assim, para esse tipo de problema, se faz necessária a utilização de 
+técnicas de adaptação paramétrica em conjunto com as técnicas de controle não-
+linear. 
+
+ 
+
+1.1 Motivação 
+
+ 
+
+A principal motivação desse trabalho é dar sequência e aprofundamento aos 
+estudos desenvolvidos pelo autor no projeto REDIC (Redes de Instrumentação e 
+Controle) – Fase V na condição de bolsista de iniciação científica. Esse projeto, 
+composto por colaboradores das instituições UFRN (Universidade Federal do Rio 
+Grande do Norte), UFRGS (Universidade Federal do Rio Grande do Sul), UFSC 
+(Universidade Federal de Santa Catarina), UFBA (Universidade Federal da Bahia) 
+e UFPA (Universidade Federal do Pará), tinha como objetivo o estudo teórico e 
+validação de modelos de simulação, técnicas de controle adaptativo e de controle 
+preditivo não-linear aplicadas em refinarias e plataformas de petróleo, utilizadas em 
+conjunto com outras técnicas para a otimização dos seus processos. 
+
+Assim sendo, a proposta do trabalho é realizar o controle de um processo de 
+plataforma de petróleo utilizando-se técnicas de controle não-linear e de controle 
+adaptativo conjuntamente em nível de simulação. 
+
+ 
+
+ 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+2 
+
+1.2 Objetivos 
+
+ 
+
+O principal objetivo desse trabalho é o projeto e simulação de controladores 
+não-lineares via linearização por realimentação de estados com adaptação 
+paramétrica para o processo proposto. Se deseja que as variáveis de saída do 
+processo convirjam para os valores das referências e que os parâmetros adaptados 
+convirjam para seus valores reais.  
+
+ 
+
+ 
+
+1.3 Estrutura do trabalho 
+
+O presente trabalho está estruturado da seguinte maneira: na Seção 2, será 
+apresentada a revisão bibliográfica, onde a teoria de todas as técnicas e conceitos 
+utilizados para o projeto dos controladores é mostrada, junto com as devidas 
+referências. Na Seção 3, é apresentado o modelo do processo utilizado e é 
+realizada a síntese do controlador não-linear adaptativo. Na Seção 4, são 
+apresentados os resultados de simulação com posterior análise e discussão. Já na 
+Seção 5, são apresentadas as conclusões e trabalhos futuros, e por fim na Seção 
+6 estão as referências bibliográficas utilizadas no trabalho. 
+
+ 
+
+ 
+
+ 
+
+  
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+3 
+
+2 Revisão Bibliográfica  
+
+ 
+
+2.1 Linearização por realimentação de estados 
+
+2.1.1 Sistemas com uma entrada e uma saída 
+
+ 
+
+A linearização por realimentação de estados baseia-se na transformação da 
+dinâmica não-linear de um sistema em uma nova dinâmica linear imposta através 
+de uma lei de controle adequadamente escolhida. Considere-se o sistema de uma 
+entrada e uma saída 
+
+ 
+
+{
+??? = ?(?) + ?(?)?
+
+? = ?(?)                
+    (1) 
+
+ 
+
+onde ? ? ?? é o vetor de estados, ? ? ? é a entrada, ? ? ? a saída do sistema,              
+?(?) ? ?? e ?(?) ? ?? são vetores que descrevem a dinâmica do sistema e ?(?) ?
+?  representa a saída em função dos estados do sistema. 
+
+ Deseja-se que a variável de saída  ?(t) acompanhe uma trajetória de referência 
+dada por ??(t), assumindo ??(t) e suas derivadas de ordem superior variáveis 
+conhecidas e limitadas. O primeiro passo para resolver essa questão é o uso da 
+realimentação de estados (juntamente com a mudança de coordenadas no espaço 
+de estados), com o intuito de se obter a transformação da dinâmica do sistema não-
+linear do ponto de vista entrada-saída em uma dinâmica linear e controlável.  
+
+ Segundo ISIDORI (1995) e PEREIRA (1995), para um sistema não-linear da 
+
+forma de (1) cujo grau relativo ? = ? é igual a dimensão do espaço de estados em 
+um ponto ? = ?0, a mudança de coordenadas é dada exatamente por 
+
+ 
+
+?1(?) = ?(?)              
+
+?2(?) = ???(?)         
+
+?
+???1(?) = ??
+
+??2?(?)
+
+??(?) = ??
+??1?(?)    
+
+ 
+
+ 
+
+ Ou seja, por ?(?) e por ? ? 1 derivadas de Lie de ?(?) com relação a ?(?).  Não 
+havendo a necessidade de nenhuma função extra para completar a transformação, 
+o sistema representado pelas novas coordenadas 
+
+?? = ??(?) = ??
+??1?(?) 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+4 
+
+será da forma  
+
+???1 = ?2                                                                       
+???2 = ?3                                                                       
+?                                                                                    
+?????1 = ??                                                                   
+
+???? = ?(?) + ?(?)? = ??
+??(?) + ????
+
+??1?(?)?
+
+   (2) 
+
+ 
+
+onde ? = [?1, ?2, … , ??]. Admitindo ? um ponto qualquer próximo a ?
+0 com   
+
+????
+??1?(?) ? 0, a lei de controle 
+
+? =
+1
+
+????
+??1?(?)
+
+(???
+??1?(?) + ?)       (3) 
+
+resultará em um sistema em malha fechada governado pelas seguintes equações 
+
+ 
+
+???1 = ?2     
+???2 = ?3     
+?                 
+?????1 = ??
+???? = ?     .
+
+ 
+
+ 
+
+Assim, conclui-se que qualquer sistema não-linear de grau relativo ? 
+representável na forma (2) em um ponto  ? próximo a ?0 pode ser transformado em 
+um sistema ? = ?(?) representado pelo diagrama de blocos da figura 1. 
+
+ 
+
+ 
+
+Figura 1 - Diagrama de blocos do sistema linearizado. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+5 
+
+2.1.2 Sistemas com múltiplas entradas e múltiplas saídas 
+
+ 
+
+Para um sistema não-linear multivariável com o mesmo número de entradas e 
+saídas, da forma 
+
+ 
+
+{
+??? = ?(?) + ? ??(?)??
+
+?
+?=1             
+
+? = [?1(?) ?2(?) , … , ??(?)]
+?  
+
+      (4) 
+
+ 
+
+com ? ? ??, ? ? ??e ? ? ??, assumindo-se ?, ??, ?? suaves.  
+
+Ainda segundo ISIDORI (1995) e PEREIRA (1995), diferenciando a saída ?? 
+em relação ao tempo, obtém-se 
+
+ 
+
+???? = ????(?) + ? (?????(?))??
+?
+?=1  .  (5) 
+
+  
+
+Se cada um dos termos 
+
+?????(?) = 0, 
+
+então as entradas não aparecerão em (5). Definindo ?? como sendo o menor 
+
+inteiro tal que no mínimo uma das entradas apareçam em ?
+?
+
+??
+, ou seja 
+
+?
+?
+
+??
+= ?
+
+?
+
+??
+??(?) + ? ??? (??
+
+???1
+??(?)) ??
+
+?
+?=1   (6) 
+
+com no mínimo um dos termos 
+
+ 
+
+??? (??
+???1
+
+??(?)) ? 0 
+
+ 
+
+para todo ? pertencente a região onde a linearização é válida.  Definindo-se a matriz 
+?(?), conhecida como matriz de inversibilidade ou desacoplamento, como 
+
+ 
+
+?(?) = [
+
+??1??
+?1?1?1(?) ? ?????
+
+?1?1?1(?)
+
+? ? ?
+
+??1??
+???1??(?) ? ?????
+
+???1??(?)
+
+]  (7) 
+
+uma matriz quadrada de ordem ?, pode-se reescrever a equação (6) na forma 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+6 
+
+ 
+
+[
+?1
+
+?1
+
+?
+??
+
+??
+] = [
+
+??
+?1?1(?)
+
+?
+??
+????(?)
+
+] + ?(?) [
+
+?1
+ 
+
+?
+??
+
+ 
+].  (8) 
+
+ 
+
+ Se a matriz inversa ?(?)?1existir para todo ? pertencente a região de interesse, 
+a lei de controle por realimentação de estados 
+
+ 
+
+?(?) = ??(?)?1 [
+
+??
+?1?1(?)
+
+?
+??
+????(?)
+
+] + ?(?)?1?  (9) 
+
+resulta, em malha fechada, no seguinte sistema linear 
+
+ 
+
+[
+?1
+
+?1
+
+?
+??
+
+??
+] = [
+
+?1
+ 
+
+?
+??
+
+ 
+] .   (10) 
+
+ 
+
+ Assim, uma vez determinada a matriz ?(?)?1, determina-se o vetor ? de 
+entradas equivalentes, analogamente ao caso SISO (uma entrada e uma saída). 
+
+ 
+
+ 
+
+2.2 Controle adaptativo por modelo de referência (MRAC)  
+
+ 
+
+Em sistemas não-lineares de fase mínima, o objetivo do controlador é fazer a 
+variável de saída do sistema, ?(?), seguir a variável de saída de um modelo de 
+referência, ??(?). Essa abordagem é conhecida como Controle por Modelo de 
+Referência (MRC). Para a sequência deste trabalho, o(s) modelo(s) de referência 
+adotados, sejam SISO ou MIMO, serão representados pela seguinte equação no 
+espaço de estados 
+
+???? = ???? + ???
+?? = ????             
+
+  (11) 
+
+onde o subíndice “r” significa que as variáveis e constantes em questão são de 
+referência.  
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+7 
+
+2.2.1 MRAC para sistemas SISO de grau relativo um 
+
+ 
+
+Conforme visto em ISIDORI (1995) e SASTRY e ISIDORI (1989), pode-se 
+considerar um sistema não-linear SISO (uma entrada e uma saída) como em (1), 
+com ???(?) ? 0 (grau relativo um) e escrever ?(?) e ?(?) como 
+
+ 
+
+?(?) = ? ??
+1??(?)
+
+?1
+?=1   (12) 
+
+?(?) =  ? ??
+2??(?)
+
+?2
+?=1  (13) 
+
+com ??
+1 , ? = 1,2, … , ?1; ??
+
+2, ? = 1,2, … , ?2 parâmetros desconhecidos e  ??(?) e ??(?) 
+
+funções conhecidas. No instante de tempo t, as estimativas de ??(?) e ??(?) são 
+
+?(?) = ? ??
+1??(?)
+
+?1
+
+?=1
+
+ 
+
+???(?) =  ? ??
+2??(?)
+
+?2
+
+?=1
+
+ 
+
+com ??
+1 e ??
+
+2 sendo as estimativas de ??
+1 e ??
+
+2, respectivamente. Consequentemente, 
+
+a lei de controle definida em (3)  fica sendo 
+
+? =
+1
+
+?????(?)
+(??????(?) + ?)  (14) 
+
+onde ?????(?) e  ?????(?) são as estimativas de ???(?) e ???(?). 
+
+ Definindo-se ? ? ??1+?2 = (???, ???)? como o vetor dos parâmetros “reais” (ou 
+
+seja, o vetor que contém os valores exatos dos parâmetros estimados), ??? ? ??1+?2 
+o vetor de parâmetros estimados e ? = ? ? ???  o vetor de erro paramétrico, usando 
+a lei de controle de (14) na derivada em relação ao tempo de (1), após alguns 
+cálculos, obtém-se 
+
+ 
+
+??? = ? + ?1??? + ?
+2???, 
+
+com 
+
+?? ? ?
+?1 ?= [
+
+??1?(?)
+
+?
+???1
+
+?(?)
+]  (15) 
+
+e 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+8 
+
+?? ? ?
+?2 ?= [
+
+??1?(?)
+
+?
+???2
+
+?(?)
+]
+
+????(?)
+? +?
+
+???(?)
+?  . (16) 
+
+ 
+
+ A lei de controle usada para o rastreamento é 
+
+? = ???? + ?(?? ? ?) 
+
+que leva à equação dinâmica do erro, relacionando ? ? ?? ?= ? ao vetor de erro 
+paramétrico ? = (?1?, ???)?: 
+
+??? + ?? = ??? 
+
+sendo ? ? ??1+?2 a concatenação  de ?? e ??  e ? o ganho de rastreamento do 
+erro. 
+
+  
+
+ Após essas definições, é possível declarar o Teorema do Rastreamento 
+Adaptativo (Adaptative Tracking).  
+
+ Ao se considerar um sistema não-linear exponencialmente de fase mínima, 
+descrito na forma (1) , sendo ?(?) e ?(?) representadas por (12) e (13) e definindo-
+se a lei de controle 
+
+ 
+
+? =
+1
+
+?????(?)
+(??????(?) + ???? + ?(?? ? ?)),  (17) 
+
+ 
+
+se ??(?) for limitado, a lei de adaptação paramétrica 
+
+ 
+
+??? = ?(? ? ??)?   (18) 
+
+ 
+
+resulta em ?(?) limitado convergindo assintoticamente para ??(?), com todas as 
+variáveis do vetor de estados ?(?) do sistema (1) limitadas. 
+
+  A prova desse teorema e maiores detalhes sobre o que foi exposto nesta 
+seção podem ser encontrados em ISIDORI (1995) e SASTRY e ISIDORI (1989). 
+
+ 
+
+ 
+
+ 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+9 
+
+2.2.2 MRAC para sistemas MIMO de grau relativo um 
+
+ 
+
+Segundo SASTRY e ISIDORI (1989), para sistemas de fase mínima com o 
+mesmo número de entradas e saídas, i.e., sistemas quadrados, é possível obter 
+uma formulação semelhante à desenvolvida na subseção 2.2.1 simplesmente 
+substituindo a lei de controle (9) por 
+
+?(?) = ????(?)?1 [
+
+?
+?
+?1?1(?)
+?
+
+?
+
+?
+?
+????(?)
+
+?
+] + ???(?)?1? ,   (19) 
+
+ 
+
+onde o operador chapéu sobre as variáveis indica que são variáveis estimadas. Isto 
+implica em 
+
+? = [
+
+?
+?
+?1?1(?)
+?
+
+?
+
+?
+?
+????(?)
+
+?
+] + ?(?)? . 
+
+ 
+
+ Reescrevendo-se a equação (10), se obtém 
+
+ 
+
+??? = ? + [
+
+??
+?1?1(?)
+
+?
+??
+????(?)
+
+]
+
+?
+
+? [
+
+?
+?
+?1?1(?)
+?
+
+?
+
+?
+?
+????(?)
+
+?
+]
+
+?
+
++ ?(?)? ? ???(?)? , 
+
+ 
+
+onde ??? é o vetor de derivadas temporais das saídas do sistema. Esta equação 
+pode ser reescrita, de forma reduzida, como 
+
+??? = ? + ??  
+
+Analogamente ao caso SISO, a lei de adaptação paramétrica para este caso passa 
+a ser   
+
+ 
+
+??? = ??(? ? ??)  (20) 
+
+ 
+
+onde ? ? ?? é o vetor de erros paramétricos e ? ? ???? a matriz de regressão, 
+sendo ? o número de parâmetros a serem estimados e ? o número de saídas do 
+sistema.  
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+10 
+
+3 Formulação do Problema ou Estudo de Caso  
+
+ 
+
+3.1 Modelo do processo utilizado 
+
+ 
+
+Os conceitos apresentados na seção anterior foram utilizados para a síntese de 
+um controlador adaptativo multivariável com linearização por realimentação de 
+estados para a seguinte planta de tratamento de petróleo em uma plataforma 
+offshore. 
+
+ 
+
+ 
+
+Figura 2 - Planta de tratamento de óleo em uma plataforma 
+
+ 
+
+ O processo é constituído por um separador trifásico gravitacional (SG-01), dois 
+tratadores eletrostáticos para separação água-óleo (TO1 e TO2) e dois vasos 
+separadores bifásicos de óleo e gás (V-TO1 e V-TO2), conforme pode ser visto na 
+Figura 2. 
+
+ O objetivo de controle é manter em valores desejáveis os níveis de água, óleo 
+e pressão do gás em cada um dos vasos. São três níveis de água, três níveis de 
+óleo e três níveis de pressão de gás no total, totalizando 9 variáveis de estado. Para 
+tanto, se dispõe de 9 válvulas, uma para cada variável de estado, totalizando então 
+9 entradas no sistema, além de seis medidores de nível (LIC-01 a LIC 06) e três 
+medidores de pressão (PIC-01 a PIC-03). 
+
+ Existem algumas abordagens para a modelagem deste tipo de processo, 
+diferente da realizada neste trabalho, como feito por FILGUEIRAS (2005), porém 
+para esses casos o objetivo é o estudo da eficiência do processo de separação de 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+11 
+
+água, óleo e gás, não o controle de seus níveis. Para este trabalho, onde o objetivo 
+é manter em valores desejáveis os níveis de água, óleo e pressão de gás nos vasos 
+que constituem a planta, é proposta uma modelagem simplificada do processo, 
+semelhante à realizada por MENDES (2002) e UCHIYAMA (2013) e aos arquivos, 
+informações e dados fornecidos pela empresa PETROBRAS durante a realização 
+do projeto REDIC (Redes de Instrumentação e Controle) – Fase V. A modelagem 
+completa se encontra no Apêndice A. 
+
+ Iniciando com o separador trifásico SG-01, que servirá de base para os demais 
+tanques, a Figura 3 ilustra resumidamente seu funcionamento. 
+
+ 
+
+Figura 3 - Separador trifásico gravitacional 
+
+ 
+
+ A mistura proveniente dos poços 1 a 6 entra no tanque à montante, que possui 
+um anteparo que o divide para a separação de água e óleo. Como o óleo é menos 
+denso que a água, acaba ficando na superfície e sendo deslocado para a direita, 
+de onde sai através de uma válvula, enquanto a água fica à esquerda e também 
+sai através de uma válvula. No topo, há uma válvula para a saída do gás. No modelo 
+adotado, não existe interação entre o nível da interface de água e o nível do 
+compartimento de óleo, pois não foi modelada uma vazão pelo vertedouro. A 
+interação entre os controles de pressões e os níveis também só ocorre pela 
+influência que as pressões tem nas vazões pelas válvulas. 
+
+Conforme comentado anteriormente, não se deseja simular a eficiência de 
+separação, assim é considerado que cada corrente líquida do separador trifásico 
+terá uma composição conhecida. Assim, a corrente de óleo terá um percentual de 
+
+água (WV?TO1, WV?TO2) e um percentual de gás (GV?TO1, GV?TO2). Entretanto, para 
+efeitos de aplicabilidade do método de adaptação paramétrica exposto na Seção 2, 
+
+são consideradas também as frações de óleo na mistura, nesse caso OV?TO1 e 
+OV?TO2, que correspondem, respectivamente, a (1 ? WV?TO1 ? GV?TO1) e (1 ?
+WV?TO2 ? GV?TO2). 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+12 
+
+ As variáveis de estado foram definidas da seguinte maneira: para SG-01, o nível 
+
+de água é ?1, o nível de óleo é ?4 e a pressão do gás é ?7; para TO1, o nível de 
+água é ?2; para V-TO1, o nível de óleo é ?5 e a pressão de gás é ?8; para TO2, o 
+nível de água é ?3; e finalmente para V-TO2, o nível de óleo é ?6 e a pressão de 
+gás é ?9. A escolha foi feita de tal forma que os subíndices 1, 2 e 3 designem os 
+níveis de água, os subíndices 4, 5 e 6 os níveis de óleo e os subíndices 7, 8 e 9 as 
+pressões de gás para SG-01, TO1 e V-TO1, TO2 e V-TO2, respectivamente. As 
+demais variáveis e constantes com subíndice numerado de 1 a 9 seguem o mesmo 
+padrão. As equações dinâmicas dos estados do sistema são: 
+
+?1? =
+?1
+
+2??????????01
+2 ?(????01??1)
+
+2????01
+?
+
+ ?
+?1?1
+
+2??????????01
+2 ?(????01??1)
+
+2????01
+?
+
+   (21) 
+
+ 
+
+?2? =
+?4?4??7??8WV-TO1
+
+2?????????1
+2 ?(???1??2)
+
+2???1
+
+?
+?2?2
+
+2?????????1
+2 ?(???1??2)
+
+2???1
+
+      (22) 
+
+ 
+
+?3? =
+?5?5??8??9WV-TO2+?4
+
+2?????????2
+2 ?(???2??3)
+
+2
+?
+
+?3?3
+
+2?????????2
+2 ?(???2??3)
+
+2???2
+
+       (23) 
+
+ 
+
+?4? =
+?2
+
+2??????????01
+2 ?(????01??4)
+
+2????01
+?
+
+?
+?4?4??7??8
+
+2??????????01
+2 ?(????01??4)
+
+2????01
+?
+
+   (24) 
+
+ 
+
+?5? =
+?4?4??7??8 OV-TO1
+
+2???????????1
+2 ?(?????1??5)
+
+2?????1
+
+?
+?5?5??8??9
+
+2???????????1
+2 ?(?????1??5)
+
+2?????1
+
+  (25) 
+
+ 
+
+?6? =
+?5?5??8??9 OV-TO2
+
+2???????????2
+2 ?(?????2??6)
+
+2?????2
+
+?
+?6?6??9?????
+
+2???????????2
+2 ?(?????2??6)
+
+2?????2
+
+  (26) 
+
+ 
+
+?7? =
+?3????????01
+
+????01MW
+?
+
+?7?7??7?????????????01
+
+????01MW
+            (27) 
+
+ 
+
+?8? =
+?4?4??7??8 GV-TO1?????????1
+
+?????1MW
+?
+
+?8?8??8??????????????1
+
+?????1MW
+        (28) 
+
+ 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+13 
+
+?9? =
+?5?5??8??9 GV-TO2?????????2
+
+?????2MW
+?
+
+?9?9??9??????????????2
+
+?????2MW
+        (29) 
+
+ 
+
+ Recomenda-se a consulta à lista de símbolos para melhor entendimento das 
+equações. 
+
+ 
+
+3.2 Considerações sobre o modelo e justificativa 
+
+ 
+
+Conforme pode-se notar, o modelo apresenta não-linearidades em todas as 
+suas equações dinâmicas. Ele também pode ser escrito no formato de (4), o que é 
+conveniente para a síntese dos controladores desejados.  
+
+É importante ressaltar também que o modelo possui algumas constantes que 
+
+são baseadas em valores médios estimados de eficiência de separação: WV-TO1, 
+
+WV-TO2, OV-TO1, OV-TO2, GV-TO1 e GV-TO2. A realização de um controle com 
+linearização por realimentação de estados nesse caso pode ter sua efetividade e 
+até mesmo sua estabilidade comprometida, pois se o modelo possui parâmetros 
+cujos valores são estimativas médias, o cancelamento das não-linearidades com a 
+realimentação não é garantido.  
+
+ 
+
+ 
+
+ 
+
+3.3 Síntese do controlador não-linear 
+
+ 
+
+A síntese do controlador não-linear adaptativo para o modelo apresentado na 
+subseção anterior foi realizada com base no desenvolvimento mostrado na seção 
+2, em especial nas subseções 2.1.2 e 2.2.2.  
+
+Assim sendo, com base na Equação (8), tem-se a matriz de inversibilidade 
+
+ 
+
+?(?) =
+
+[
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ?1(?)
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+0
+?2(?)
+
+0
+0
+0
+0
+0
+0
+0
+
+0
+0
+
+?3(?)
+0
+0
+0
+0
+0
+0
+
+0
+?4(?)
+
+0
+?5(?)
+?6(?)
+
+0
+0
+
+?7(?)
+0
+
+0
+0
+
+?8(?)
+0
+
+?9(?)
+?10(?)
+
+0
+0
+
+?11(?)
+
+0
+0
+0
+0
+0
+
+?12(?)
+0
+0
+0
+
+0
+0
+0
+0
+0
+0
+
+?13(?)
+0
+0
+
+0
+0
+0
+0
+0
+0
+0
+
+?14(?)
+0
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+?15(?)]
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ (30) 
+
+ 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+14 
+
+onde 
+
+?1(?) = ??1???1(?) =
+??1
+
+2??????????01
+2 ?(????01??1)
+
+2????01
+?
+
+   (31) 
+
+?2(?) = ??2???2(?) =
+??2
+
+2?????????1
+2 ?(???1??2)
+
+2???1
+
+     (32) 
+
+?3(?) = ??3???3(?) =
+??3
+
+2?????????2
+2 ?(???2??3)
+
+2???2
+
+     (33) 
+
+?4(?) = ??4???2(?) =
+?4??7??8WV-TO1
+
+2?????????1
+2 ?(???1??2)
+
+2???1
+
+     (34) 
+
+?5(?) = ??4???4(?) =
+??4??7??8
+
+2??????????01
+2 ?(????01??4)
+
+2????01
+?
+
+    (35) 
+
+?6(?) = ??4???5(?) =
+?4??7??8 OV-TO1
+
+2???????????1
+2 ?(?????1??5)
+
+2?????1
+
+   (36) 
+
+?7(?) = ??4???8(?) =
+?4??7??8 GV-TO1?????????1
+
+?????1MW
+      (37) 
+
+?8(?) = ??5???3(?) =
+?5??8??9WV-TO2
+
+2?????????2
+2 ?(???2??3)
+
+2???2
+
+     (38) 
+
+?9(?) = ??5???5(?) =
+??5??8??9
+
+2???????????1
+2 ?(?????1??5)
+
+2?????1
+
+   (39) 
+
+?10(?) = ??5???6(?) =
+?5??8??9 OV-TO2
+
+2???????????2
+2 ?(?????2??6)
+
+2?????2
+
+   (40) 
+
+?11(?) = ??5???9(?) =
+?5??8??9 GV-TO2?????????2
+
+?????2MW
+      (41) 
+
+?12(?) = ??6???6(?) =
+??6??9?????
+
+2???????????2
+2 ?(?????2??6)
+
+2?????2
+
+   (42) 
+
+?13(?) = ??7???7(?) =
+??7??7?????????????01
+
+????01MW
+       (43) 
+
+?14(?) = ??8???8(?) =
+??8??8??????????????1
+
+?????1MW
+       (44) 
+
+?15(?) = ??9???9(?) =
+??9??9??????????????2
+
+?????2MW
+ .      (45) 
+
+ 
+
+ 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+15 
+
+e cuja inversa é 
+
+?(?)?1 =
+
+[
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ?16(?)
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+0
+?17(?)
+
+0
+0
+0
+0
+0
+0
+0
+
+0
+0
+
+?18(?)
+0
+0
+0
+0
+0
+0
+
+0
+?19(?)
+?20(?)
+?21(?)
+?22(?)
+?23(?)
+
+0
+?24(?)
+?25(?)
+
+0
+0
+
+?26(?)
+0
+
+?27(?)
+?28(?)
+
+0
+0
+
+?29(?)
+
+0
+0
+0
+0
+0
+
+?30(?)
+0
+0
+0
+
+0
+0
+0
+0
+0
+0
+
+?31(?)
+0
+0
+
+0
+0
+0
+0
+0
+0
+0
+
+?32(?)
+0
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+?33(?)]
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+, (46) 
+
+onde 
+
+?16(?) = ?
+2??????????01
+
+2 ?(????01??1)
+2????01
+
+?
+
+?1
+     (47) 
+
+?17(?) = ?
+2?????????1
+
+2 ?(???1??2)
+2???1
+
+?2
+      (48) 
+
+?18(?) = ?
+2?????????2
+
+2 ?(???2??3)
+2???2
+
+?3
+      (49) 
+
+?19(?) =
+2??????????01
+
+2 ?(????01??4)
+2????01
+
+?
+WV-TO1
+
+?1
+     (50) 
+
+?20(?) = ?
+2??????????01
+
+2 ?(????01??4)
+2????01
+
+?
+WV-TO2 OV-TO1
+
+?8
+ (51) 
+
+?21(?) = ?
+2??????????01
+
+2 ?(????01??4)
+2????01
+
+?
+
+?4??7??8
+     (52) 
+
+?22(?) = ?
+2??????????01
+
+2 ?(????01??4)
+2????01
+
+?
+OV-TO1
+
+??5??8??9
+   (53) 
+
+?23(?) = ?
+2???????????2
+
+2 ?(?????2??6)
+2?????2OV-TO1OV-TO2
+
+?6??9?????
+ (54) 
+
+?24(?) = ?
+2??????????01
+
+2 ?(????01??4)
+2????01
+
+?
+ GV-TO1
+
+?8??8?????
+   (55) 
+
+?25(?) = ?
+2??????????01
+
+2 ?(????01??4)
+2????01
+
+?
+OV-TO1 GV-TO2
+
+?9??9?????
+ (56) 
+
+?26(?) =
+2???????????1
+
+2 ?(?????1??5)
+2?????1WV-TO2
+
+?8
+   (57) 
+
+?27(?) = ?
+2???????????1
+
+2 ?(?????1??5)
+2?????1
+
+?5??8??9
+    (58) 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+16 
+
+?28(?) = ?
+2???????????1
+
+2 ?(?????1??5)
+2?????1OV-TO2
+
+?6??9?????
+   (59) 
+
+?29(?) = ?
+2???????????1
+
+2 ?(?????1??5)
+2?????1 GV-TO2
+
+?9??9?????
+   (60) 
+
+?30(?) = ?
+2???????????2
+
+2 ?(?????2??6)
+2?????2
+
+?6??9?????
+    (61) 
+
+?31(?) = ?
+????01MW
+
+?7??7?????????????01
+        (62) 
+
+?32(?) = ?
+?????1MW
+
+?8??8??????????????1
+        (63) 
+
+?33(?) = ?
+?????2MW
+
+?9??9??????????????2
+.        (64) 
+
+ 
+
+  Dessa forma, é possível escrever a lei de controle conforme descrita nas 
+equações (9) e (19). Assim, obtém-se 
+
+ 
+
+?1 =
+?1
+
+?1
+? ?1 (
+
+2??????????01
+2 ?(????01??1)
+
+2????01
+?
+
+?1
+)     (65) 
+
+?2 =
+?4?4??7??8???V-TO1
+
+?2
+? ?2 (
+
+2?????????1
+2 ?(???1??2)
+
+2???1
+
+?2
+)   (66) 
+
+?3 =
+?5?5??8??9 ???V-TO2+?4
+
+?3
+? ?3 (
+
+2?????????2
+2 ?(???2??3)
+
+2???2
+
+?3
+)  (67) 
+
+?4 =
+?2
+
+?4??7??8
+? ?4 (
+
+2??????????01
+2 ?(????01??4)
+
+2????01
+?
+
+?4??7??8
+)    (68) 
+
+?5 =
+?4?4??7??8 ???V-TO1
+
+?5??8??9
+? ?5 (
+
+2???????????1
+2 ?(?????1??5)
+
+2?????1
+
+?5??8??9
+)  (69) 
+
+?6 =
+?5?5??8??9 ???V-TO2
+
+?6??9?????
+? ?6 (
+
+2???????????2
+2 ?(?????2??6)
+
+2?????2
+
+?6??9?????
+)  (70) 
+
+?7 =
+?3
+
+?7??7?????
+? ?7 (
+
+????01MW
+
+?7??7?????????????01
+)       (71) 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+17 
+
+?8 =
+?4?4??7??8 ???V-TO1
+
+?8??8?????
+? ?8 (
+
+?????1MW
+
+?8??8??????????????1
+)     (72) 
+
+?9 =
+?5?5??8??9 ???V-TO2
+
+?9??9?????
+? ?9 (
+
+?????2MW
+
+?9??9??????????????2
+)     (73) 
+
+ 
+
+ 
+
+onde ? = [?1, … , ?9]
+?é o vetor de entradas do sistema e ? = [?1, … , ?9]
+
+? é o vetor 
+que contém as dinâmicas impostas a cada estado do vetor ?. 
+
+ 
+
+ O vetor de erros paramétricos foi definido como  
+
+ 
+
+? =
+
+[
+ 
+ 
+ 
+ 
+ 
+ 
+?????1 ? ???????1
+?????2 ? ???????2
+?????1 ? ???????1
+?????2 ? ???????2
+?????1 ? ???????1
+?????2 ? ???????2 ]
+
+ 
+ 
+ 
+ 
+ 
+ 
+
+ ,  (74) 
+
+ 
+
+e a matriz de erros paramétricos 
+
+? =
+
+[
+ 
+ 
+ 
+ 
+ 
+0
+0
+0
+0
+0
+0
+
+???2(?)?
+
+0
+0
+0
+0
+0
+
+0
+???3(?)?
+
+0
+0
+0
+0
+
+0
+0
+0
+0
+0
+0
+
+0
+0
+
+???5(?)?
+
+0
+0
+0
+
+0
+0
+0
+
+???6(?)?
+
+0
+0
+
+0
+0
+0
+0
+0
+0
+
+0
+0
+0
+0
+
+???8(?)?
+
+0
+
+0
+0
+0
+0
+0
+
+???9(?)? ]
+ 
+ 
+ 
+ 
+ 
+
+  (75) 
+
+ 
+
+ 
+
+onde 
+
+ 
+
+???2(?)? =
+?4?4??7??8???V-TO1
+
+2?????????1
+2 ?(???1??2)
+
+2???1
+
+   (76) 
+
+ 
+
+???3(?)? =
+?5?5??8??9???V-TO2+?4
+
+2?????????2
+2 ?(???2??3)
+
+2???2
+
+   (77) 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+18 
+
+ 
+
+???5(?)? =
+?4?4??7??8???V-TO1
+
+2?
+????
+
+??????1
+2
+
+?(?????1??5)
+2
+?????1
+
+   (78) 
+
+ 
+
+???6(?)? =
+?5?5??8??9???V-TO2
+
+2?
+????
+
+??????2
+2
+
+?(?????2??6)
+2
+?????2
+
+   (79) 
+
+ 
+
+???8(?)? =
+?4?4??7??8???V-TO1?????????1
+
+?????1MW
+    (80) 
+
+ 
+
+???9(?)? =
+?5?5??8??9???V-TO2?????????2
+
+?????2MW
+.    (81) 
+
+ 
+
+ 
+
+ Com base nas equações (76) a (81), é possível escrever a lei de adaptação 
+paramétrica nos moldes da Equação (20), resultando em 
+
+ 
+
+[
+ 
+ 
+ 
+ 
+ 
+ 
+ ?????????1
+
+?????????2
+
+?????????1
+
+?????????2
+
+?????????1
+
+?????????2 ]
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+= ??
+
+[
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+?1 ? ??1
+?2 ? ??2
+?3 ? ??3
+?4 ? ??4
+?5 ? ??5
+?6 ? ??6
+?7 ? ??7
+?8 ? ??8
+?9 ? ??9 ]
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ ,     (82) 
+
+ 
+
+com ?? = [??1, … , ??9]
+?
+definido como o vetor das saídas do modelo de referência. 
+
+  
+
+ Dessa forma, a partir da Equação (82), se obtém as equações dinâmicas da 
+adaptação paramétrica para cada parâmetro: 
+
+ 
+
+???????1 =
+? ?4?4??7??8???V-TO1
+
+2?????????1
+2 ?(???1??2)
+
+2???1
+
+ (?2 ? ??2)  (83) 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+19 
+
+ 
+
+???????2
+? =
+
+?5?5??8??9???V-TO2+?4
+
+2?????????2
+2 ?(???2??3)
+
+2???2
+
+ (?3 ? ??3)  (84) 
+
+ 
+
+???????1
+? =
+
+?4?4??7??8???V-TO1
+
+2?
+????
+
+??????1
+2
+
+?(?????1??5)
+2
+?????1
+
+ (?5 ? ??5)  (85) 
+
+ 
+
+???????2
+? =
+
+?5?5??8??9???V-TO2
+
+2?
+????
+
+??????2
+2
+
+?(?????2??6)
+2
+?????2
+
+ (?6 ? ??6)  (86) 
+
+ 
+
+???????1
+? =
+
+?4?4??7??8???V-TO1?????????1
+
+?????1MW
+ (?8 ? ??8)   (87) 
+
+ 
+
+???????2
+? =
+
+?5?5??8??9???V-TO2?????????2
+
+?????2MW
+ (?9 ? ??9)   (88) 
+
+ 
+
+ 
+
+ Assim sendo, só falta definir o modelo de referência para se poder realizar a 
+simulação do sistema. Neste caso, ela foi escolhida como na Equação (11), com 
+
+ 
+
+?? = ?0,5 ?9  (89) 
+
+?? = 0,5 ?9  (90) 
+
+?? = ?9 ,   (91) 
+
+ 
+
+sendo ?? a representação da matriz identidade de dimensão ?.  
+
+Essa escolha se justifica pela intenção de que a função de transferência entre 
+cada estado e respectiva entrada seja de primeira ordem com ganho estático 
+unitário para garantir o seguimento de referências do tipo salto com erro nulo em 
+regime permanente. O valor da constante de tempo de cada uma dessas funções 
+de transferência (duas horas aproximadamente) foi escolhido de maneira a não 
+saturar nenhum dos sinais de controle das válvulas, ao mesmo tempo que 
+mantendo dinâmicas típicas para o processo em questão. 
+
+ 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+20 
+
+3.4 Simulação 
+
+ 
+
+A simulação foi realizada com auxílio do software Matlab/Simulink®, utilizando 
+o sistema descrito pelas equações (21) a (29), com as leis de controle das equações 
+(65) a (73), as leis de adaptação paramétrica das equações (83) a (88) e utilizando 
+o modelo de referência descrito nas equações (89) a (91).  
+
+ Os valores iniciais do vetor de estados, do vetor de parâmetros adaptados e do 
+
+vetor de referências ? = [?1, … , ?9]
+? usado como entrada do sistema, contendo os 
+
+valores desejados para as saídas do sistema em regime permanente são, 
+respectivamente 
+
+[
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+?1
+
+0
+
+?2
+0
+
+?3
+0
+
+?4
+0
+
+?5
+0
+
+?6
+0
+
+?7
+0
+
+?8
+0
+
+?9
+0]
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=
+
+[
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+1,335 ?
+0,813 ?
+0,813 ?
+1,480 ?
+0,650?
+0,650 ?
+
+18 ???/??2
+
+5 ???/??2
+
+2 ???/??2 ]
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+  ,     
+
+[
+ 
+ 
+ 
+ 
+ 
+ 
+ ???????1
+
+0
+
+???????2
+0
+
+???????1
+0
+
+???????2
+0
+
+???????1
+0
+
+???????2
+0
+]
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=
+
+[
+ 
+ 
+ 
+ 
+ 
+0,300
+0,020
+0,800
+0,870
+0,010
+0,025]
+
+ 
+ 
+ 
+ 
+ 
+
+ e  
+
+[
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+?1
+?2
+?3
+?4
+?5
+?6
+?7
+?8
+?9]
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=
+
+[
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+3,0 ?
+1,0 ?
+1,5 ?
+1,5 ?
+1,0 ?
+1,2 ?
+
+23 ???/??2
+
+8 ???/??2
+
+2,4 ???/??2]
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ . 
+
+ Os valores numéricos das constantes presentes nas equações utilizadas na 
+simulação se encontram no Apêndice B. 
+
+ A Figura 4 apresenta um diagrama de blocos simplificado da simulação 
+realizada. 
+
+ 
+
+Figura 4 – Diagrama de blocos simplificado da simulação 
+
+ 
+
+ 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+21 
+
+4 Resultados  
+
+ 
+
+4.1 Simulação do sistema 
+
+Os resultados obtidos após simulação do sistema no software Matlab/Simulink® 
+para as saídas do sistema e variáveis adaptadas seguem abaixo. 
+
+Figura 5 – Resultados para ?1 
+
+Figura 6 - Resultados para ?2 
+
+ 
+
+ 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+22 
+
+ 
+
+Figura 7 - Resultados para ?3 
+
+ 
+
+Figura 8 - Resultados para ?4 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+23 
+
+ 
+
+Figura 9 - Resultados para ?5 
+
+ 
+
+Figura 10 - Resultados para ?6 
+
+ 
+
+ 
+
+ 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+24 
+
+ 
+
+Figura 11 - Resultados para ?7 
+
+ 
+
+Figura 12 - Resultados para ?8 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+25 
+
+ 
+
+ 
+
+Figura 13 - Resultados para ?9 
+
+ 
+
+Figura 14 - Resultados para ?????1 e ?????2 
+
+ 
+
+ 
+
+ 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+26 
+
+ 
+
+Figura 15 - Resultados para ?????1 e ?????2 
+
+ 
+
+ 
+
+Figura 16 - Resultados para ?????1 e ?????2 
+
+ 
+
+ 
+
+ 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+27 
+
+4.2 Discussão 
+
+ 
+
+ 
+
+Pode-se verificar através da análise das figuras 5 a 16 que para efeitos de 
+simulação para o modelo utilizado, o controlador proposto apresentou os resultados 
+esperados. Todas as saídas convergiram para os valores desejados, todas as 
+variáveis adaptadas convergiram para seus valores reais e as variáveis de controle 
+não saturaram. Entretanto, é necessário fazer algumas análises mais detalhadas 
+sobre o comportamento de alguns dos estados e das variáveis adaptadas. 
+
+Para os estados ?1, ?4 e ?7 (figuras 5, 8 e 11, respectivamente), o 
+comportamento das  variáveis é exatamente igual ao comportamento do modelo de 
+referência, pois como as equações dinâmicas destes estados não possuíam 
+nenhuma variável a ser adaptada, com a linearização por realimentação sendo 
+
+exata se esperava mesmo esse tipo de comportamento. Já nos casos de ?2 (Figura 
+6), ?3 (Figura 7), ?5 (Figura 9), ?6 (Figura 10), ?8(Figura 12) e ?9 (Figura 13), estados 
+que possuíam variáveis adaptadas em suas equações dinâmicas, o 
+comportamento inicial durante a adaptação desses parâmetros é oscilatório, porém 
+após o fim da adaptação seus valores finais convergem para a  referência e passam 
+a apresentar comportamento idêntico ao modelo de referência. Isso é ainda mais 
+perceptível se forem analisadas as figuras 12 e 13, onde a adaptação ocorre muito 
+rapidamente. 
+
+Na Figura 14 se encontra a evolução das variáveis adaptadas ?????1 e ?????2, 
+que convergem para o valor correto, assim como as variáveis ?????1 e ?????2 
+(Figura 15). Para ?????1 e ?????2, a convergência também ocorre porém de forma 
+perceptivelmente mais rápida. Cabe ressaltar que a escala de tempo é em horas, 
+porém mesmo assim as variáveis de controle relacionadas aos parâmetros que 
+
+convergem muito rapidamente (?8 e ?9), relativas a abertura de válvulas de gás, 
+oscilam em uma frequência elevada demais para a aplicação (cerca de 0,5Hz). O 
+próprio modelo do processo foi realizado desprezando-se a dinâmica de abertura e 
+fechamento das válvulas uma vez que assumiu-se que elas eram desprezíveis 
+frente à dinâmica do sistema como um todo. Dessa forma, são necessários estudos 
+mais detalhados, seja para avaliar a possibilidade das próprias válvulas atuarem 
+como filtro para a elevada frequência de oscilação, seja para a aplicação de 
+técnicas que limitem essa variação tão abrupta das variáveis de controle mas ainda 
+assim garantam a convergência da adaptação paramétrica. 
+
+ 
+
+  
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+28 
+
+5 Conclusões  
+
+ 
+
+ 
+
+Conforme já se esperava, para nível de simulação, os resultados obtidos foram 
+coerentes com a teoria apresentada na Seção 2. O sistema se comportou na forma 
+para a qual o controlador foi projetado, com todas suas saídas e variáveis 
+adaptadas convergindo para os valores desejados. 
+
+A linearização por realimentação, quando possível de ser implementada, 
+permite a imposição das dinâmicas desejadas a um sistema de comportamento 
+não-linear. Acaba sendo dessa forma uma ferramenta extremamente útil quando 
+se possui um modelo difícil de ser controlado pelas técnicas tradicionais de controle 
+linear. Já a adaptação paramétrica adiciona um componente de robustez 
+importante a essa técnica, pois auxilia significativamente na garantia de que o 
+cancelamento das não-linearidades seja exato, requisito que deve ser atingido para 
+que a linearização por realimentação funcione de forma satisfatória. 
+
+ Obviamente, para se passar a uma etapa posterior, de implementação física do 
+controlador na planta, seriam necessárias inúmeras outras considerações que não 
+foram levadas em conta nesse trabalho. Mesmo com a adaptação paramétrica, o 
+cancelamento das não-linearidades pode não ser exato pelo fato de ser muito difícil 
+de se obter um modelo matemático que descreva com exatidão o comportamento 
+dinâmico da planta. Além do caso ocorrido nesse trabalho da adaptação de alguns 
+parâmetros ocorrer muito rapidamente, algo que matematicamente é aceitável mas 
+fisicamente é impossível de ser implementado. 
+
+Também há outros fatores externos a se considerar, como a ocorrência eventual 
+de golfadas na entrada do processo, perturbação que acaba variando de forma 
+significativa as quantidades de óleo, água e gás na entrada do separador trifásico. 
+Para o modelo utilizado no trabalho, foi considerado que esses valores eram 
+constantes, o que não traduz com exatidão a realidade. Qualquer variação nos 
+valores dessas entradas de óleo, água e gás acarretaria num cancelamento 
+insatisfatório das não-linearidades, o que levaria o sistema a se comportar de forma 
+indesejada. Porém esse problema poderia ser solucionado realizando-se a 
+
+adaptação paramétrica desses parâmetros de entrada (?1, ?2 e ?3), alterando as 
+leis de controle ?1, ?4 e ?7, conforme foi realizado para as demais seis leis de 
+controle do sistema. 
+
+ Assim sendo, a sequência natural para o prosseguimento desse trabalho seria, 
+visando a implementação física dos controladores não-lineares adaptativos no 
+processo, inicialmente solucionar o problema da variação em frequências muito 
+elevadas das variáveis de controle onde isso ocorre. Também se faria necessária 
+a validação do modelo matemático utilizado para a planta, com a obtenção de um 
+modelo mais preciso se assim for julgado necessário. Faz-se também necessária a 
+adaptação paramétrica para a minimização de efeitos indesejáveis devidos à 
+ocorrência eventual de golfadas, problema recorrente nesse tipo de processo. Seria 
+interessante e prudente também avaliar a possibilidade de se adicionar mais 
+componentes de robustez ao controlador, o que sem dúvidas requererá estudos e 
+análises mais aprofundadas do caso. 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+29 
+
+6 Referências  
+
+ 
+
+SASTRY, S.S. &amp;amp; ISIDORI, A. (1989).  Adaptative Control of Libearizable 
+Systems. IEEE Transactions on Automatic Control, v.34, n.11, p. 1123-1131. 
+
+ISIDORI, A. (1995). Non Linear Control Systems. London, Springer-Verlag.  
+
+PEREIRA, L.F.A. (1995). Controle Adaptativo de Sistemas Não-Lineares 
+Linearizáveis por Realimentação de Estados. São José dos Campos, Tese 
+apresentada à Divisão de Pós Graduação do ITA para obtenção do título de 
+“Doutor em Ciência”, na área de Sistemas e Controle do curso de Engenharia 
+Eletrônica e Computação. 
+
+MENDES, P.R.C. (2002). Controle Avançado de um Sistema de Separação 
+Trifásica e Tratamento de Água. Florianópolis, Dissertação submetida à UFSC 
+para obtenção do título de “Mestre em Engenharia de Automação e Sistemas”. 
+
+FILGUEIRAS, N. G. T. (2005). Modelagem, Análise e Controle de um 
+processo de Separação Óleo/Água. Rio de Janeiro, Dissertação apresentada 
+à UFRJ para obtenção do grau de “Mestre em Ciências em Engenharia 
+Química”. 
+
+UCHIYAMA, M.T.J. (2013). Controle Preditivo Aplicado ao Processamento 
+Primário de Petróleo. São Paulo, Dissertação apresentada à Escola 
+Politécnica da Universidade de São Paulo para obtenção do título de “Mestre 
+em Engenharia”, p.19-42. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+30 
+
+7 A p ê n d i c e s  
+
+ 
+
+7.1 Apêndice A:  Modelagem do processo 
+
+ 
+
+A modelagem do processo da Figura 2 é realizada de forma simplificada, sem 
+considerar a eficiência de separação de água, óleo e gás. Dessa maneira, é 
+considerado que a composição da vazão de entrada em cada um dos tanques é 
+conhecida, baseada na eficiência de separação do tanque anterior, exceto para o 
+caso do separador trifásico gravitacional SG-01, cuja vazão de entrada é oriunda 
+dos poços de petróleo. Em cada um dos vasos, as válvulas de saída de água a 
+levam de volta ao poço e as válvulas de saída de gás o levam a um outro vaso que 
+não é levado em consideração na modelagem. Considera-se que os tanques são 
+cilindros deitados. 
+
+Do balanço de massa, tem-se 
+
+ 
+
+??????
+
+??
+= ?????? ? ???? .     (92) 
+
+ 
+
+As vazões de entrada de gás, óleo e água em SG-01 vêm diretamente dos 
+
+poços e é representada por ?1, ?2 e ?3, respectivamente. Para V-TO1 e V-TO2, 
+as vazões de entrada são iguais às vazões de saída de óleo de SG-01 e V-TO1, 
+respectivamente, multiplicadas por fatores de composição de água, óleo e gás na 
+vazão de entrada de cada um dos tanques e nas equações correspondentes, 
+
+denotadas por ?????1 e ?????2 (composições de água), ?????1 e 
+?????2(composições de óleo), e  ?????1 e ?????2 (composições de gás). Já as 
+vazões de saída dependem do controle que atua nas válvulas.  
+
+Um modelo simplificado, que será utilizado tanto para as válvulas de controle 
+de gás quanto de óleo, é 
+
+ 
+
+???? =
+????????[%]
+
+100
+× ?? × ??? ? ??,  (93) 
+
+onde a válvula é considerada linear, a abertura é definida pelo controlador 
+
+associado, ?? é a constante de válvula, ?? a pressão à montante e ?? a pressão à 
+jusante. 
+
+ Já nas válvulas de água, pelo fato de existir bombas, o modelo é o seguinte: 
+
+ 
+
+???? =
+????????[%]
+
+100
+× ??.      (94) 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+31 
+
+ 
+
+ 
+
+ 
+
+Para as pressões, considerando a equação dos gases perfeitos 
+
+ 
+
+????? × ? = ? ×
+?????
+
+?
+
+??
+× ??? × ? ,   (95) 
+
+ 
+
+eliminando a massa de gás acumulada no vaso (?????
+? ) e considerando o volume 
+
+(V), a temperatura (T), o peso molecular (MW) e a natureza do gás (z – fator de 
+compressibilidade) constantes, obtém-se a equação da evolução das pressões em 
+cada um dos vasos separadores: 
+
+ 
+
+?×??
+
+?×???×?
+×
+
+??????
+
+??
+= (??????
+
+? ? ????
+? ).   (96) 
+
+ 
+
+Para os níveis de água e óleo, do balanço de massa (Equação 92), tem-se, para 
+cada um dos vasos separadores: 
+
+ 
+
+?? × 2??
+2 ? (? ? ?)2 × ? ×
+
+??
+
+??
+= (?????? ? ????), (97) 
+
+ 
+
+onde ?? é a massa específica do líquido (água ou óleo), ? o raio do tanque cilíndrico, 
+? o comprimento do tanque cilíndrico e ? a altura do líquido. 
+
+ Assim, as equações dinâmicas dos níveis de água são obtidas da concatenação 
+das equações (94) e (97) , as equações dinâmicas dos níveis de óleo das equações 
+(93) e (97) e as equações dinâmicas das pressões das equações (93) e (96). 
+
+Reforçando que as vazões de entrada dos tanques dependem ou de  ?1, ?2 e ?3 
+para SG-01, ou da vazão de saída de óleo do vaso anterior multiplicada pelo fator 
+de composição correspondente para V-TO1 e V-TO2. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+32 
+
+7.2 Apêndice B: Valores numéricos das constantes  
+
+ 
+
+ 
+
+ Foram utilizados os valores numéricos das tabelas 1 a 4 para as constantes, os 
+mesmos utilizados no projeto REDIC – Fase V: 
+
+ 
+
+ 
+
+Tabela 1 – Valores numéricos das constantes para SG-01 
+
+SG-01 
+
+Constante Valor Unidade 
+
+?1 541000 ??
+
+?
+ 
+
+?2 840000 ??
+
+?
+ 
+
+?3 288000 ??
+
+?
+ 
+
+?1 855000 ??
+
+?
+ 
+
+?4 413000 ??
+
+????? ??2?
+ 
+
+?7 117000 ??
+
+????? ??2?
+ 
+
+????01 150  ?
+3 
+
+????01 39 ? 
+
+????01 2,3 ? 
+
+????01
+?  27 ? 
+
+????01
+?  10 ? 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+33 
+
+ 
+
+ 
+
+ 
+
+Tabela 2 - Valores numéricos das constantes para TO1 e V-TO1 
+
+TO1 e V-TO1 
+
+Constante Valor Unidade 
+
+?2 300000 ??
+
+?
+ 
+
+?5 540000 ??
+
+????? ??2?
+ 
+
+?8 10500 ??
+
+????? ??2?
+ 
+
+?????1 15 ?
+3 
+
+?????1 90 ? 
+
+???1 1,829 ? 
+
+?????1 0,762 ? 
+
+???1 48  ? 
+
+?????1 24 ? 
+
+WV-TO1 0,2060 - 
+
+OV-TO1 0,7742 - 
+
+GV-TO1 0,0199 - 
+
+ 
+
+ 
+
+ Cabe ressaltar que os parâmetros  WV-TO1,  OV-TO1 e GV-TO1 se tratam de 
+composições de água, óleo e gás nas vazões de entrada do vaso V-TO1, portanto 
+não possuem unidade. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+  Controle adaptativo de um processo de tratamento de petróleo através de linearização 
+por realimentação de estados 
+
+________________________________________________________________________________________ 
+
+34 
+
+ 
+
+ 
+
+Tabela 3 - Valores numéricos das constantes para TO2 e V-TO2 
+
+TO2 e V-TO2 
+
+Constante Valor Unidade 
+
+?4 47000 ??
+
+?
+ 
+
+?3 98500 ??
+
+?
+ 
+
+?6 925000 ??
+
+????? ??2?
+ 
+
+?9 17500 ??
+
+????? ??2?
+ 
+
+?????2 15 ?
+3 
+
+?????2 90 ? 
+
+???2 1,829 ? 
+
+?????2 0,762 ? 
+
+???2 48  ? 
+
+?????2 24 ? 
+
+WV-TO2 0,0380 - 
+
+OV-TO2 0,9428 - 
+
+GV-TO2 0,0192 - 
+
+ 
+
+ As mesmas considerações feitas para os parâmetros  WV-TO1,  OV-TO1 e GV-TO1 
+são válidas para  WV-TO2,  OV-TO2 e GV-TO2. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+Escola de Engenharia / UFRGS – Matheus Perin 
+
+________________________________________________________________________________________ 
+
+35 
+
+ 
+
+ 
+
+Tabela 4 – Valores numéricos das demais constantes 
+
+Constante Valor Unidade 
+
+? 0,99 - 
+
+??? 0,0848 - 
+
+MW 22 ?
+
+???
+ 
+
+???? 1 ???
+
+??2
+ 
+
+???? 0,5 ???
+
+??2
+ 
+
+????? 1000 ??
+
+?3
+ 
+
+????? 880 ??
+
+?3
+ 
+
+ 
+
+
+</field>
+	</doc>
+</add>

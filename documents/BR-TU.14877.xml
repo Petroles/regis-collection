@@ -1,0 +1,8513 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.14877</field>
+		<field name="filename">21263_Perles_LuisAugusto_M.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+Universidade Estadual de Campinas
+
+Instituto de Física "Gleb Wataghin"
+
+Cálculo da Dose de Radiação Através de Convoluções em
+
+Meios Heterogêneos para Aplicações em Radioterapia
+
+Luís Augusto Perles
+
+Orientadora: Profa. Dra. Carola Dobrigkeit Chinellato
+
+Maio de 2001
+
+
+
+
+
+Agradecimentos
+
+Agradeço ao Sérgio e a Rosângela da física médica do CEB por todo o apoio recebido. Ao
+
+pessoal da radioterapia do CAISM pela recepção e valorosas discussões: Márcio, Núria,
+
+José Garcia, Fernanda, André, etc. Ao Fred, por ter escaneado e enviado (por e-mail!) um
+
+valiosíssimo artigo. À Patrícia (USP - Ribeirão Preto) por possuir e emprestar o tal artigo.
+
+Agradeço ao Wilson e ao Mário da Informática do CEB e do CCJDR do IFGW, respec-
+
+tivamente, pela valiosa ajuda.
+
+Agradeço também ao professor Lúcio (DMA - IMECC) pela importante ajuda com as
+
+FFT's.
+
+E, em especial, desejo expressar minha enorme gratidão aos meus dois orientadores: à
+
+professora Carola (DRCC - IFGW) e ao José Renato O. Rocha da radioterapia do CAISM
+
+pela dedicação e apoio dispensados.
+
+iv
+
+
+
+Resumo
+
+Nesta dissertação de mestrado apresentamos o estudo sobre uma técnica de convolução
+
+para o cálculo da distribuição da dose de radiação usada em teleterapia. Este método
+
+decompõe em três parcelas a distribuição da energia absorvida pelo meio: uma devida
+
+à dose do espalhamento primário, uma devida à dose do espalhamento secundário e uma
+
+terceira, devida aos espalhamentos de ordens superiores. Mostramos todo o desenvolvimento
+
+teórico do método de cálculo da dose de radiação por convoluções para meios homogêneos e
+
+heterogêneos, onde os tecidos moles são tratados todos como tendo a mesma seção de choque
+
+que a água. As heterogeneidades são tratadas como de densidades diferentes da água, porém
+
+com a mesma seção de choque da água. As funções de transporte de elétrons e fótons foram
+
+simuladas no EGS4.
+
+Fizemos os cálculos para a energia do 60Co e os resultados apresentaram uma boa con-
+
+cordância quando comparados a resultados experimentais e simulados para campos de até
+
+10 ? 10 cm2 a uma profundidade de 26 cm. Com o aumento das dimensões do campo, a
+profundidade em que há con?abilidade reduz-se. Este fato se deve ao espaço limitado em
+
+que o programa EGS4 realiza as simulações dos transportes de fótons de altas ordens de
+
+espalhamento.
+
+O programa desenvolvido para o cálculo da distribuição de dose de radiação nesta tese
+
+tem por objetivo servir de base para outros estudos e pesquisas relativas à aplicação deste
+
+método e também poderá ser usado no dia-a-dia da radioterapia após os devidos testes de
+
+con?abilidade.
+
+v
+
+
+
+vi
+
+
+
+Abstract
+
+In this thesis we have applied the convolution techniques to calculate the three dimensional
+
+(3D) dose distribution to be used in teletherapy. The convolution method spans the total
+
+dose in three parts: one due to the energy released by charged particles produced at the ?rst
+
+collisions, one due to the energy released by the ?rst scattered photons, and the last one due
+
+to photons of higher order scattering. We have shown up the theoretical development for
+
+homogeneous and inhomogeneous media. Cross sections of tissues have been approximated
+
+to water like. Heterogeneities are supposed to have the same cross sections as water and
+
+their densities have been treated as weight for the dose computations. Electron and photon
+
+functions were simulated in a previous step using EGS4.
+
+We have done the calculations for 60Co energy and the results have shown good agree-
+
+ment with experimental data sets for ?elds less than 10?10 cm2 at 26 cm depth. For larger
+?elds the depth of agreement was reduced. We have associated this fact to the limitation of
+
+simulation steps, during transport of photons of higher order scattering.
+
+The aim of the software developed to calculate the radiation dose distribution in this the-
+
+sis is to be the basis for other studies and researches related. The appliance in radiotherapy
+
+routine will be evaluated after con?ability tests.
+
+vii
+
+
+
+viii
+
+
+
+Sumário
+
+Agradecimentos iv
+
+Resumo v
+
+Abstract vii
+
+1 Introdução 1
+
+2 A teoria do cálculo da dose por convolução para meios homogêneos e
+
+heterogêneos 5
+
+2.1 A distribuição espacial da dose . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+
+2.2 O modelo teórico . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+
+2.3 A ?uência . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+
+2.4 O cálculo da dose para meios homogêneos . . . . . . . . . . . . . . . . . . . . 10
+
+2.4.1 A dose primária . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+
+2.4.2 A dose secundária . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+
+2.4.3 A dose de múltiplo espalhamento . . . . . . . . . . . . . . . . . . . . . 15
+
+2.4.4 A dose total . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+
+2.5 O cálculo da dose para meios heterogêneos . . . . . . . . . . . . . . . . . . . . 21
+
+2.5.1 A dose primária . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+
+2.5.2 A dose secundária . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+
+2.5.3 A dose de múltiplo espalhamento . . . . . . . . . . . . . . . . . . . . . 27
+
+2.5.4 A dose total . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+
+3 Simulação por Monte Carlo 33
+
+3.1 O programa de simulação EGS4 . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+
+3.2 O processo de simulação . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+
+3.2.1 A simulação dos processos físicos . . . . . . . . . . . . . . . . . . . . . 37
+
+ix
+
+
+
+3.3 Simulando os núcleos de deposição de energia . . . . . . . . . . . . . . . . . . 39
+
+3.3.1 O Método usado nas simulações . . . . . . . . . . . . . . . . . . . . . . 40
+
+3.3.1.1 A geometria e as técnicas utilizadas . . . . . . . . . . . . . . 40
+
+3.3.1.2 Os parâmetros da simulação . . . . . . . . . . . . . . . . . . 42
+
+3.3.1.3 A contabilização da energia depositada . . . . . . . . . . . . 43
+
+3.3.1.4 Núcleo primário . . . . . . . . . . . . . . . . . . . . . . . . . 43
+
+3.3.1.5 Núcleo secundário . . . . . . . . . . . . . . . . . . . . . . . . 43
+
+3.3.1.6 Núcleo de múltiplo espalhamento . . . . . . . . . . . . . . . . 45
+
+4 O Método Numérico 47
+
+4.1 O cálculo computacional da dose . . . . . . . . . . . . . . . . . . . . . . . . . 47
+
+4.2 A matriz da ?uência primária . . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+
+4.2.1 A implementação computacional . . . . . . . . . . . . . . . . . . . . . 49
+
+4.3 Convolução via FFT . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+
+4.3.1 A Transformada de Fourier Rápida . . . . . . . . . . . . . . . . . . . . 51
+
+4.3.1.1 Os Teoremas da Amostragem . . . . . . . . . . . . . . . . . . 52
+
+4.3.2 Convolução de duas funções ?nitas . . . . . . . . . . . . . . . . . . . . 53
+
+4.3.2.1 O deslocamento dos dados . . . . . . . . . . . . . . . . . . . 53
+
+5 Resultados e Discussões 55
+
+5.1 Os núcleos de deposição de energia . . . . . . . . . . . . . . . . . . . . . . . . 55
+
+5.1.1 O núcleo de deposição de energia primária . . . . . . . . . . . . . . . . 55
+
+5.1.1.1 Os limites de resolução . . . . . . . . . . . . . . . . . . . . . 56
+
+5.1.2 O núcleo de deposição de energia secundária . . . . . . . . . . . . . . . 58
+
+5.1.3 O núcleo de deposição de energia devido ao múltiplo espalhamento
+
+dos fótons . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 61
+
+5.2 Os cálculos da dose de radiação . . . . . . . . . . . . . . . . . . . . . . . . . . 61
+
+5.2.1 Os testes em meios homogêneos . . . . . . . . . . . . . . . . . . . . . . 64
+
+5.2.1.1 Comparação com as medidas feitas no CAISM . . . . . . . . 64
+
+5.2.1.2 Comparação com o programa PLATO . . . . . . . . . . . . . 79
+
+5.2.2 Os testes em meios heterogêneos . . . . . . . . . . . . . . . . . . . . . 79
+
+5.2.2.1 Comparação com a simulação no EGS4 . . . . . . . . . . . . 79
+
+5.2.2.2 Comparação com o programa PLATO . . . . . . . . . . . . . 81
+
+6 Conclusões 85
+
+x
+
+
+
+A Algumas de?nições usadas nesta tese 87
+
+A.1 As de?nições dadas pelo ICRU . . . . . . . . . . . . . . . . . . . . . . . . . . 87
+
+A.1.1 Radiometria . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 87
+
+A.1.2 Coe?cientes de interação . . . . . . . . . . . . . . . . . . . . . . . . . . 87
+
+A.1.3 Dosimetria . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 89
+
+A.2 Erro relativo e absoluto . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 90
+
+B Tabela de probabilidades de interações do fóton na água 91
+
+C Os testes e o código fonte do programa que realiza os cálculos 3D da dose 93
+
+C.1 A estrutura do programa de convolução . . . . . . . . . . . . . . . . . . . . . 93
+
+C.1.1 O código fonte . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 94
+
+C.2 Os Testes da Função de Convolução . . . . . . . . . . . . . . . . . . . . . . . 108
+
+C.2.1 Teste 1D . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 109
+
+C.2.2 Teste 2D . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 109
+
+C.2.3 Teste 3D . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 110
+
+D Alterações no programa XYZP para a geração dos núcleos de convolução117
+
+D.1 ?Forçando? a primeira interação do feixe . . . . . . . . . . . . . . . . . . . . . 117
+
+D.1.1 Os núcleos de deposição de energia . . . . . . . . . . . . . . . . . . . . 119
+
+E O PEGS 121
+
+F O Formato Padrão dos Arquivos de Entrada e Saída 123
+
+G As máquinas usadas nas simulações e cálculos numéricos 125
+
+xi
+
+
+
+xii
+
+
+
+Capítulo 1
+
+Introdução
+
+A radioterapia tem função importante no tratamento contra o câncer. O físico participa deste
+
+tratamento fazendo o planejamento da aplicação da radiação ionizante. O planejamento
+
+consiste em ajustar o tamanho do campo de radiação, a posição, direção e quantidade de
+
+feixes a serem usados. Para tomar estas decisões, o físico normalmente usa programas que
+
+calculam a distribuição tridimensional (3D) da dose de radiação dentro do corpo do paciente
+
+a ?m de concentrar o máximo da dose no alvo (tumor) e o mínimo possível nos tecidos sadios.
+
+Estes procedimentos exigem um bom programa de cálculo da dose, porém nos deparamos
+
+com programas caros e que podem apresentar falhas. Este fato nos motivou a estudar os
+
+algoritmos usados para os cálculos 3D da dose e suas limitações. Nesta tese vamos apresentar
+
+um algoritmo e sua respectiva implementação computacional.
+
+O que torna o cálculo da distribuição 3D da dose uma tarefa complicada é que não
+
+conseguimos equacionar o transporte de energia analiticamente. Para facilitar a compreensão
+
+da tese, vamos apresentar uma interpretação para a de?nição formal, dada no apêndice A,
+
+de dose de radiação e de uma outra grandeza também muito importante, o kerma1.
+
+Quando um fóton atravessa um meio material, ele interage com os átomos que formam
+
+este meio e lança partículas carregadas. O kerma é a quantidade de energia cinética por
+
+unidade de massa que a partícula carregada (elétron ou pósitron) recebe no instante da
+
+interação do fóton com a matéria. Basicamente, uma parte desta energia cinética será usada
+
+para a ionização dos átomos e moléculas do meio e a outra será irradiada por bremsstrahlung
+
+ou aniquilação de pares. A parcela do kerma que ioniza o meio chama-se kerma de colisão
+
+e a que irradia, de kerma de radiação.
+
+Estas partículas carregadas que receberam um kerma de colisão irão ionizar a matéria
+
+1Kerma vem do inglês e signi?ca Kinetic Energy Released in the Medium; o a foi adicionado apenas por
+questões fonéticas.
+
+1
+
+
+
+ao longo de sua trajetória. Suponha, então, um elemento de volume ?nito 4V sendo atra-
+vessado por estas partículas carregadas. A dose de radiação é a parte do kerma de colisão
+
+de todas as partículas que atravessam 4V e que é convertida em ionização do meio nes-
+te elemento de volume. É interessante notar que este 4V pode estar sendo atravessado
+por partículas carregadas que foram geradas nele próprio e por outras partículas que foram
+
+geradas em elementos de volume vizinhos. A di?culdade em se determinar exatamente a
+
+dose está em descrever estes transportes das partículas carregadas (elétrons, pósitrons, etc)
+
+e também das neutras (fótons, nêutrons, etc.) [1, 2]. Sobre este tema discutiremos mais no
+
+capítulo seguinte.
+
+Na prática, existem várias formas de se obter a distribuição aproximada da dose de ra-
+
+diação. A mais simples é a que se baseia no per?l de isodose medido na água e pode até
+
+ser feita gra?camente, sem o auxílio de computadores [1]. Este é um método aproximativo
+
+antigo, porém ainda usado em determinados casos. Outra técnica é a simulação por Monte
+
+Carlo do transporte e das interações das partículas. Esta forma apresenta excelentes resul-
+
+tados, todavia o tempo computacional ainda é extremamente elevado. O método que será
+
+descrito e aplicado nesta tese é o de convolução da ?uência do feixe de fótons que incide no
+
+meio absorvedor com núcleos de deposição de energia. A função destes núcleos é de espalhar
+
+o kerma de colisão lançado pela ?uência [3, 4].
+
+O objetivo desta tese é iniciar o projeto de desenvolvimento de um programa para o
+
+cálculo da dose de radiação através de convoluções para uso em teleterapia (radioterapia com
+
+fonte externa ao paciente). Inicialmente, o programa será aplicado em pesquisa, podendo
+
+ser adotado no planejamento dos tratamentos após os testes necessários.
+
+A organização desta dissertação
+
+No capítulo 2 detalhamos dois modelos teóricos para o cálculo da distribuição da dose de
+
+radiação, sendo um para meios homogêneos e outro para heterogêneos. Neste capítulo são
+
+apresentados os modelamentos dos núcleos de deposição de energia.
+
+Tais núcleos serão simulados e as técnicas aplicadas são descritas no capítulo 3.
+
+Descrevemos o método numérico usado para fazer a convolução no capítulo 4, onde
+
+aplicamos as técnicas de transformada de Fourier rápida.
+
+Os resultados são apresentados no capítulo 5 onde comparamos o método de convolução
+
+com simulações e com um programa comercial usado no planejamento de radioterapia pelo
+
+CAISM (Centro de Assistência Integral a Saúde da Mulher, Unicamp), o Plato, da Nucletron
+
+[5].
+
+Por ?m, as conclusões encontram-se no capítulo 6, onde discutimos os caminhos do
+
+2
+
+
+
+projeto do programa iniciado nesta dissertação.
+
+No apêndice A estão algumas das de?nições da ICRU (International Commission on
+
+Radiation Units and Measurements). Nos apêndices seguintes encontramos informações
+
+técnicas a respeito da programação e características dos equipamentos usados no desenvol-
+
+vimento desta dissertação.
+
+3
+
+
+
+4
+
+
+
+Capítulo 2
+
+A teoria do cálculo da dose por
+
+convolução para meios homogêneos e
+
+heterogêneos
+
+Estamos interessados em obter um modelo matemático para o cálculo da dose de radiação em
+
+meios heterogêneos que possa ser usado no planejamento de um procedimento de teleterapia
+
+por cobalto 60
+?
+60Co
+
+?
+. Descreveremos neste capítulo dois modelos teóricos para o cálculo
+
+da dose usando um método que nos permite chegar a algumas integrais de convolução [3, 4].
+
+No primeiro modelo tratamos apenas da aplicação da radiação a meios homogêneos,
+
+já o segundo modelo é uma extensão do primeiro para meios heterogêneos. Ambos os
+
+modelos são para radiação monoenergética, mas podem ser facilmente estendidos para raios-
+
+X, discretizando-se o espectro em faixas de energias e realizando os cálculos para cada faixa
+
+de energia em separado, e depois somando os resultados considerando o devido peso [6].
+
+2.1 A distribuição espacial da dose
+
+Vamos prosseguir com o estudo da composição da dose de radiação iniciado na introdução
+
+desta tese. Considere um elemento de volume discreto ?V pertencente a um meio material,
+
+como mostrado na ?gura 2.1. Nesta ?gura vemos vários processos de interação da radiação
+
+com a matéria ocorrendo. Os fótons 
+ e 
+00 interagem pelo processo Compton, 
+0 por efeito
+
+fotoelétrico e 
+000 por produção de pares. Suponha que 
+, 
+00e 
+000 sejam os fótons provenientes
+
+de uma fonte de radiação monoenergética externa ao meio. A dose absorvida em ?V será
+
+dada pela soma dos kermas de colisão das partículas carregadas, como esquematizadas na
+
+5
+
+
+
+??
+
+??’’
+??’ ’
+
+??’ ’ ’
+
+??VV
+
+fóton
+elétron
+
+pósitron
+
+Figura 2.1: Um esquema ilustrando a composição da dose de radiação.
+
+?gura 2.1, convertidos em ionização dentro do elemento de volume ?V . Vemos que a dose
+
+absorvida neste elemento de volume é devida a partículas carregadas que se originam no
+
+próprio elemento de volume e também por partículas oriundas das células vizinhas. Este
+
+fato sugere que o transporte eletrônico do kerma de colisão possa ser modelado por meio
+
+de uma integral de convolução. Observe, também, que como o fóton 
+0 foi gerado em
+
+um elemento de volume relativamente distante de ?V , este fato sugere uma integral de
+
+convolução para o transporte fotônico da dose.
+
+Estes processos que contribuem para a formação da dose absorvida são de natureza
+
+estocástica e ocorrem em enorme quantidade, o que di?culta um modelamento mais preciso
+
+do problema. Por este motivo a simulação computacional freqüentemente é sugerida para
+
+resolver este problema, porém o tempo utilizado por estas simulações ainda é muito grande,
+
+inviabilizando o seu uso no planejamento das seções de radioterapia (este tema será abordado
+
+no capítulo 3). Como citamos anteriormente, a dependência da dose absorvida em ?V de
+
+outros elementos de volume sugere a existência de integrais de convolução para transportar
+
+elétrons e fótons.
+
+6
+
+
+
+2.2 O modelo teórico
+
+Os modelos teóricos que vamos estudar aplicam-se principalmente a raios-
+ com energia
+
+em torno de 1 MeV, em que o principal processo de interação da radiação com a água é
+
+o Compton (a tabela das probabilidades dos vários processos de interação de fótons com a
+
+água está no apêndice B).
+
+??
+
+??’’
+
+??’ ’
+ee??’’
+
+ee??
+
+Figura 2.2: Esquema ilustrativo de uma seqüência de espalhamentos Compton.
+
+Suponha uma história de um fóton 
+ de energia inicial E0 que interage por processo
+
+Compton em um determinado meio absorvedor. O estado ?nal deste sistema será composto
+
+por um fóton 
+0 de energia E0 e um elétron e? de energia K, como mostrado na ?gura 2.2.
+
+Este elétron irá depositar a sua energia cinética ao longo de sua trajetória e, eventualmente,
+
+emitir um ou mais fótons por bremsstrahlung (não esquematizado).
+
+Continuemos a seguir o fóton 
+0 gerado no primeiro processo Compton. Este fóton
+
+poderia, novamente, sofrer uma interação Compton. Assim, o estado ?nal deste segundo
+
+sistema ?ca sendo um fóton 
+00 de energia E00 e um elétron e?
+0
+
+de energia K0. Este elétron irá
+
+depositar a sua energia cinética em forma de ionização ao longo da sua trajetória e também
+
+poderia gerar algum fóton por bremsstrahlung.
+
+O fóton 
+00 termina sua história em mais alguns espalhamentos que podem, dependendo
+
+da sua energia, ser uma combinação dos efeitos Compton, produção de pares e fotoelétrico,
+
+podendo até mesmo sair do meio absorvedor em questão. Não estamos levando em conta o
+
+efeito Rayleigh por este não contribuir para a dose absorvida.
+
+Esta história é a base do modelo proposto em [3, 4], que supõe que todas as interações
+
+dos fótons sejam Compton, como mostrado na ?gura 2.3.
+
+7
+
+
+
+ee??
+
+Contribuem para a fonte do 
+múltiplo espalhamento, s
+
+mm
+..
+
+??
+pp??
+
+ss
+
+Figura 2.3: Este é o modelo teórico proposto pelo esquema da ?gura 2.2, agora com uma
+?uência associada aos fótons. Por simplicidade, não representamos os elétrons a partir da
+segunda interação.
+
+A ?uência de fótons é a razão entre o número de partículas e a área, como de?nido
+
+pela ICRU e apresentado no apêndice A. A ?uência primária ?p é constituída pelos fótons
+
+que penetraram o meio absorvedor, são provenientes de uma fonte externa, e que ainda não
+
+interagiram.
+
+O modelo a ser tratado nesta dissertação considera que os fótons da ?uência primária
+
+interajam somente por efeito Compton. Após a primeira interação, a direção e a energia dos
+
+fótons são dadas pela seção de choque Compton. Neste passo não temos mais uma ?uência
+
+unidirecional e monoenergética, o que pode di?cultar um pouco a sua descrição matemática.
+
+Esta ?uência secundária ?s de fótons está indicada na ?gura 2.3.
+
+Consideramos novamente que os fótons que constituem a ?uência secundária interajam
+
+por efeito Compton. Porém descrever a ?uência após esta terceira colisão seria muito com-
+
+plicado e desprezar estes fótons signi?caria subestimar a dose total. Note que estes fótons,
+
+após mais algumas colisões, poderiam ser considerados como sendo provenientes de todo
+
+o meio e tendo direções aleatórias. Assim, a solução encontrada foi tratar os fótons que
+
+constituem a ?uência após a terceira colisão como uma fonte a ser usada nos modelos de
+
+difusão, normalmente empregada para gases [3]. Desta forma, os fótons provenientes da
+
+terceira colisão serão tratados como a fonte sm na equação da difusão de Helmholtz [7, 8].
+
+8
+
+
+
+Estes são os conceitos do modelo teórico que serão desenvolvidos e equacionados nas
+
+seções seguintes deste capítulo.
+
+2.3 A ?uência
+
+Para sabermos a dose em uma determinada região no meio absorvedor precisaremos saber
+
+qual a quantidade e as características dos elétrons que estão atravessando esta região. Estes
+
+elétrons foram postos em movimento por fótons na região em questão e nas suas proximida-
+
+des.
+
+Considere um esquema onde encontramos um tanque semi-in?nito contendo água como
+
+meio absorvedor e um feixe monoenergético de energia E0 cuja ?uência na superfície deste
+
+meio é denotada por ?0, como esquematizado na ?gura 2.4. Seja ?p a ?uência de fótons
+
+que atravessam o meio absorvedor, descrita como função da ?uência da fonte na superfície
+
+?0 como [6]:
+
+?p (
+?!r ) = ?0 (?!r0) ?
+
+j?!r0j2
+j?!r j2
+
+? exp
+?
+?
+Z r
+r0
+?
+??!
+l
+?
+? d?!l
+
+?
+(2.1)
+
+onde ?!r0 é a distância da fonte à superfície do meio, também conhecida como SSD (source
+to surface distance), ?!r é a distância da fonte ao ponto em que estamos interessados em
+calcular a dose e ?
+
+??!
+l
+?
+é o coe?ciente de atenuação linear do meio no ponto
+
+?!
+l . Note
+
+que nesta expressão para a ?uência primária o coe?ciente de atenuação linear ? depende da
+
+posição, portanto esta expressão de ?p aplica-se também a meios heterogêneos.
+
+Se este feixe de fótons atravessa um meio de coe?ciente de atenuação linear constante
+
+?, então podemos simpli?car a expressão anterior para ser usada nos cálculos para meios
+
+homogêneos, equação 2.2.
+
+?p = ?0 (
+?!r0) ?
+
+j?!r0j2
+j?!r j2
+
+? e???
+???!r ??!r0 0?? (2.2)
+
+Para efeito de modelamento teórico da dose, não estamos considerando a divergência
+
+geométrica do feixe, pois em teleterapia esta divergência é tipicamente desprezível do ponto
+
+de vista da contribuição para a dose total. Voltaremos a discutir este assunto no capítulo 4.
+
+9
+
+
+
+Figura 2.4: Esquema da geometria utilizada para descrever a ?uência primária ?p em um
+ponto como função da ?uência da fonte ?0.
+
+2.4 O cálculo da dose para meios homogêneos
+
+2.4.1 A dose primária
+
+A ?uência primária apresentada na equação 2.2 transfere um kerma de colisão1, chamado
+
+de kerma primário Kp, descrito por [1]:
+
+Kp (
+?!r0) = ?p (?!r ) ?
+
+?en (E0)
+
+?
+? E0 ? C (2.3)
+
+onde ?en é o coe?ciente de absorção de energia atômico e ? a densidade do material. ?en é
+
+derivado do coe?ciente linear como visto na equação 2.4, dado em cm2=g [1, 2]. A ?uência
+
+está em f?otons=cm2 e o kerma Kp está em gray (Gy). O fator C é usado para converter o
+
+kerma para gray, sendo C = 1; 602 ? 10?10
+h
+
+Gy
+MeV=g
+
+i
+.
+
+Temos ainda que
+
+?en (E0) = ? (E0)
+Etr
+E0
+
+(2.4)
+
+onde Etr é a energia média transferida para o meio em forma de ionização.
+
+Os elétrons resultantes da primeira colisão são chamados primários, assim a dose as-
+
+sociada ao kerma da equação 2.3 será chamada de dose primária. Como apresentamos
+1A partir deste ponto vamos nos referir ao kerma de colisão apenas como kerma, exceto quando haja
+
+menção contrária.
+
+10
+
+
+
+anteriormente, um elétron primário irá depositar o seu kerma ao longo da sua trajetória,
+
+ionizando o meio. Durante o seu trajeto, o elétron sofre inúmeras colisões onde ocorrem
+
+trocas de energia e mudanças de direção aleatórias. Este fato di?culta o modelamento teó-
+
+rico da conversão do kerma em dose, mas sabemos que todo este kerma será convertido
+
+em dose absorvida em algum ponto, e para tanto vamos supor uma função f (?!r ) que faça
+esta distribuição. Do fato de que todos os elétrons que receberam um kerma primário serão
+
+termalizados em algum ponto do meio, escrevemos que :Z Z Z
+V
+f
+??!r 0?dV 0 = 1 (2.5)
+
+Assim a expressão para a dose primária será dada por[3]:
+
+Dp (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? ? ?en
+?
+
+(E0) ? E0 ? c ? f
+??!r ? ?!r 0?dV 0 (2.6)
+
+Interpretamos a função f
+??!r ? ?!r 0? como a fração do kerma lançado em ?!r 0 que é trans-
+
+portado e transforma-se em dose no ponto ?!r . Vamos simpli?car a equação anterior, para
+
+Dp (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? ? kp ??!r ? ?!r 0?dV 0 (2.7)
+A equação 2.7 representa a dose primária distribuída em todo o meio semi-in?nito de
+
+água, onde ?p (?!r ) é a ?uência primária calculada em ?!r e kp
+??!r ? ?!r 0? é o núcleo de depo-
+
+sição de energia primária. Se estas duas funções envolvidas nesta integral forem invariantes
+
+por deslocamento, a equação 2.7 será uma integral de convolução.
+
+A função f (?!r ) pode ser conseguida por meio da simulação de Monte Carlo em um
+meio homogêneo [3]. Desta forma f (?!r ) será, assim como ?p, invariante por deslocamento,
+tornando a equação 2.7 uma convolução.
+
+Embora um dos pontos tratados nesta tese seja a simulação por Monte Carlo dos núcleos
+
+de deposição de energia, por hora desejamos obter uma visão mais física do problema da
+
+conversão do kerma em dose. Por isso vamos buscar uma outra aproximação para a dose
+
+primária.
+
+Para conseguirmos um núcleo de deposição de energia analítico, ainda que aproximado,
+
+vamos introduzir mais uma grandeza radiológica: o stopping power. Esta quantidade nos
+
+mostra a taxa em que as partículas carregadas perdem sua energia cinética dE para a
+
+ionização do meio ao longo de sua trajetória dx, e pode ser escrita assim: dE
+dx
+. Dividindo
+
+esta expressão pela densidade ? obtemos dE
+?dx
+
+, chamado de mass stopping power, que é
+
+11
+
+
+
+aproximadamente independente da densidade do meio2. O stopping power depende da seção
+
+de choque total do meio material e da energia cinética da partícula carregada em questão.
+
+Nas referências [1, 2] encontramos expressões analíticas para o stopping power.
+
+Considere, então, um elemento de volume dV 0 com ?e elétrons por unidade de volume,
+
+onde as partículas carregadas são lançadas pelas interações Compton de um feixe de fótons
+
+monoenergéticos. Desejamos saber a dose absorvida por um determinado elemento de vo-
+
+lume dV . Este elemento de volume centrado em ?!r está compreendido efetivamente em um
+ângulo sólido inversamente proporcional a
+
+???!r ? ?!r 0??2. Considere também a seção de choque
+Compton que forneça o ângulo médio de saída do elétron, dada na equação 2.9. Podemos
+
+descrever o núcleo de deposição de energia primária, aproximadamente, por [4]:
+
+kp
+??!r ? ?!r 0? = ?e ? d?0
+
+d
+0
+??!r ? ?!r 0? ? dE
+
+?dx
+
+??!r ? ?!r 0? ? 1???!r ? ?!r 0??2 (2.8)
+sendo d?0=d
+0 a seção de choque Compton para os elétrons e dE
+
+?dx
+o stopping power para
+
+os elétrons na água. O vetor ?!r ? ?!r 0 é a direção média de saída dos elétrons da interação
+Compton. Note que a seção de choque Compton e o stopping power apenas necessitam do
+
+ângulo ?0 de saída do elétron. A seguir temos a expressão para a seção de choque Compton
+
+como função do ângulo médio de saída dos elétrons [9]:
+
+d?0
+
+d
+0
+?
+?0
+?
+
+=
+d?
+
+d
+
+(?) ?
+
+?
+1
+
+1 + ?
+
+(1 + cos ?)sin?
+
+sin3 ?0
+
+?
+(2.9)
+
+?0 = cot?1
+?
+(1 + ?) tan
+
+?
+?
+
+2
+
+??
+(2.10)
+
+? =
+E0
+m0c2
+
+(2.11)
+
+onde ?0 é o ângulo do elétron que foi lançado pela interação Compton, e que se relaciona ao
+
+ângulo ? de saída do fóton pela equação 2.10, m0 é a massa de repouso do elétron e c é a
+
+velocidade da luz no vácuo.
+
+O que apresentamos aqui é uma aproximação analítica para o núcleo de deposição de
+
+energia primária considerando que todas as primeiras colisões são do tipo Compton e assu-
+
+mindo que, na média, a conversão do kerma em ionização ocorre de acordo como a expressão
+
+para o stopping power. É esperada uma boa concordância em determinadas energias como
+
+a do 60Co, porém este modelo começa a falhar em energias mais altas.
+
+2Não estamos considerando o ?efeito densidade? [2].
+
+12
+
+
+
+2.4.2 A dose secundária
+
+Quando estamos em um meio cujo número atômico efetivo é aproximadamente igual ao da
+
+água (ZH2O = 7; 51), o alcance prático de um elétron gerado por um fóton de 1MeV é de
+
+0,329 cm [1]. Na introdução dissemos que a resolução espacial em que estamos trabalhando é
+
+de 0,5 cm, portanto maior que o alcance da maioria dos elétrons energéticos. Mesmo assim,
+
+?zemos o modelamento do transporte dos elétrons primários porque temos a intenção de
+
+que este modelo tenha boa concordância em energias maiores.
+
+Porém é um pouco mais difícil fazer esta mesma estimativa para o caso dos fótons se-
+
+cundários, pois temos um espectro de energia de fótons após a primeira interação. Sabemos
+
+também que estes fótons secundários, possuem uma energia menor que os primários, e, por-
+
+tanto, os elétrons gerados por estes fótons secundários também terão um alcance prático
+
+menor que os primários. Este fato sugere que podemos desconsiderar o transporte dos elé-
+
+trons secundários e apenas considerar que eles depositam toda sua energia na mesma célula
+
+em que interagiram. O modelamento teórico do núcleo de deposição de energia secundá-
+
+ria ?ca então resumido ao transporte dos fótons através do meio absorvedor [3], o que nos
+
+remete novamente a uma convolução.
+
+No esquema apresentado na ?gura 2.3 temos um espalhamento da ?uência primária ?p
+por um processo Compton e observamos a geração da ?uência secundária ?s. Seja um meio
+
+absorvedor cuja seção de choque Compton para fótons seja d?=d
+. Neste meio considere um
+
+elemento de volume dV 0 onde haja ?e elétrons por unidade de volume. Então o número de
+
+fótons espalhados em um ângulo sólido d
+ é ?p ??e ?d? ?dV 0. O número de fótons espalhados
+dN 0s provenientes de dV
+
+0como função do ângulo sólido d
+ ?ca
+
+dN 0s = ?p ? ?e ? dV 0 ?
+d?
+
+d
+
+? d
+ (2.12)
+
+Como estamos em um meio absorvedor e desejamos saber a ?uência ?s que alcança um
+
+determinado elemento de volume dV em ?!r , devemos então fazer a atenuação exponencial
+da expressão anterior. Assim
+
+dN 0s = ?p ? ?e ? dV 0 ?
+d?
+
+d
+
+? dA???!r ? ?!r 0??2 ? e??
+
+???!r ??!r 0?? (2.13)
+onde trocamos o d
+ do numerador por dA???!r ??!r 0??2 , e ? é o coe?ciente de atenuação linear do
+meio, que estamos considerando homogêneo.
+
+13
+
+
+
+Podemos então escrever uma ?uência ?0s dependente do elemento de volume dV
+0 como:
+
+dN 0s
+dA
+
+= ?p ? ?e ? dV 0 ?
+d?
+
+d
+
+? e
+
+??
+???!r ??!r 0?????!r ? ?!r 0??2 (2.14)
+
+?0s =
+dN 0s
+dA
+
+(2.15)
+
+Portanto ?0s é uma ?uência secundária diferencial e vamos escrevê-la assim: d?s = ?
+0
+s.
+
+Estamos interessados em saber a ?uência total no elemento de volume dV apontado por
+?!r , e portanto devemos integrar a ?uência secundária diferencial em todo o espaço, conforme
+a equação 2.17.
+
+?s =
+
+Z Z Z
+V
+d?0s (2.16)
+
+?s (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? ? ?e ? dV 0???!r ? ?!r 0??2 ?
+d?
+
+d
+
+
+??!r ? ?!r 0? ? e?????!r ??!r 0?? (2.17)
+Simpli?cando a equação anterior, identi?camos claramente o núcleo k0s da convolução:
+
+?s (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? ? k0s ??!r ? ?!r 0? ? dV 0 (2.18)
+k0s
+??!r ? ?!r 0? = ?e ? dV 0???!r ? ?!r 0??2 ?
+
+d?
+
+d
+
+? e??
+
+???!r ??!r 0?? (2.19)
+O kerma secundário Ks (?!r ) é escrito como função da ?uência secundária desta forma:
+
+Ks (
+?!r ) = ?s (?!r ) ?
+
+?0en
+?
+? Es ? C (2.20)
+
+onde ?
+0
+
+en
+
+?
+tem o mesmo signi?cado que ?en
+
+?
+porém o sinal 0 indica que deve ser calculado na
+
+energia Es, sendo esta a energia média dos fótons que são espalhados no processo Compton
+
+[3].
+
+Então, escrevendo o kerma secundário em termos da ?uência primária, chegamos a:
+
+Ks (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? ? ks ??!r ? ?!r 0? ? dV 0 (2.21)
+ks
+??!r ? ?!r 0? = k0s ??!r ? ?!r 0? ? ?0en? ? Es ? C (2.22)
+
+Como estamos considerando que os elétrons lançados por esta interação secundária estão
+
+14
+
+
+
+depositando toda a sua energia dentro da célula onde são gerados, a dose secundária em ?!r
+será igual ao kerma calculado neste mesmo ponto, e assim
+
+Ds (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? ? ks ??!r ? ?!r 0? ? dV 0 (2.23)
+2.4.3 A dose de múltiplo espalhamento
+
+Consideramos novamente que os fótons secundários irão interagir por efeito Compton e que
+
+esta segunda interação produzirá os fótons de terceira ordem. Como já citamos, não é muito
+
+interessante seguir cada uma das interações dos fótons, pois assim seríamos obrigados a
+
+truncar a série que compõe a dose total, incorrendo em um certo erro e sempre subestimando
+
+a dose total. Vamos considerar que os fótons de terceira ordem já não têm mais uma direção
+
+preferencial, e assim poderemos transportá-los de acordo com a teoria da difusão.
+
+Quando inserimos uma molécula de gás com uma velocidade e direção conhecidas em
+
+um volume fechado contendo um certo gás, após algumas colisões não teremos mais como
+
+recuperar as condições iniciais desta partícula, isto é, não conseguiremos mais saber quais
+
+eram sua velocidade e direção iniciais. A equação que descreve este problema é a equação
+
+de Helmholtz [8]. Este problema é análogo ao transporte dos fótons de terceira ordem e
+
+superiores. Como o nosso problema não envolve o tempo, usaremos a equação estática de
+
+Helmholtz:
+
+Dr2 e?m (?!r ) ? ?00ene?m (?!r ) + sm (?!r ) = 0 (2.24)
+onde D é o coe?ciente de difusão, ?00en é o coe?ciente de absorção em massa para a energia
+
+média dos fótons para o múltiplo espalhamento3 Eavg, sm (?!r ) é a função que descreve a
+fonte de fótons a serem transportados e e?m (?!r ) é a ?uência do múltiplo espalhamento que
+desejamos saber [3].
+
+Vamos reescrever a equação da difusão para conseguirmos algumas quantidades de inte-
+
+resse físico, e assim temos
+
+r2 e?m (?!r ) ? 1
+L2
+
+e?m (?!r ) = ? 1
+D
+sm (
+
+?!r ) (2.25)
+
+onde L é conhecido como o comprimento de difusão e é dado por L =
+q
+
+D
+?00en
+
+.
+
+O coe?ciente de difusão D pode ser escrito em termos do coe?ciente de absorção linear,
+
+3
+Eavg é obtida através da conservação da energia do fóton de entrada E0 e dos fótons espalhados na
+
+primeira interação Es
+
+15
+
+
+
+equação 2.26:
+
+D =
+?00s
+3?002
+
+(2.26)
+
+sendo ?00s o coe?ciente de espalhamento dado por: ?
+00
+s = ?
+
+00 ? ?00en, em que ?00 é o coe?ciente
+de atenuação linear, e todos são para a energia Eavg.
+
+Para resolvermos a equação de Helmholtz e encontrarmos a ?uência de múltiplo espa-
+
+lhamento e?m (?!r ), precisaremos primeiro conhecer a função sm (?!r ) que descreve o compor-
+tamento da fonte para o múltiplo espalhamento.
+
+Os fótons que irão compor a função sm (?!r ) serão aqueles que forem desviados da direção
+da ?uência secundária ?s (?!r ), isto é, serão os fótons que sofrerem uma terceira interação
+ao longo de sua trajetória ?!r ? ?!r 0, veja ?gura 2.5.
+
+O número de fótons desviados da direção ?!r ? ?!r 0 pode ser escrito na forma:
+
+4N` = ?0 ? N` ? 4` (2.27)
+
+sendo 4` =
+???!r ? ?!r 0?? a distância percorrida pelo fóton, N` o número de fótons originados
+
+em ?!r 0que seguem na direção apontada por ?!r ??!r 0 e ?0 é o coe?ciente de atenuação linear
+na energia Es. Em seguida já escrevemos a sua forma diferencial,
+
+dN` = ?
+0 ? N` ? d` (2.28)
+
+Sabendo que na direção ?!r ? ?!r 0 temos a ?uência secundária ?s e que ela é dada pela
+razão entre o número de fótons N` que seguem nesta trajetória pela área A`, neste caso a
+
+área é a base do cone formado pelo ângulo sólido diferencial d
+ em torno da direção ?!r ??!r 0.
+Então escrevemos a equação 2.28 em função da ?uência secundária, conforme a equação 2.29:
+
+dN` = ?
+0 ? ?s ? A` ? d` (2.29)
+
+N` = ?s ? A` (2.30)
+
+Agora a multiplicação da área A` pela diferencial de comprimento do cone d` será subs-
+
+tituída pelo elemento de volume diferencial dV` e a equação 2.29 será escrita da seguinte
+
+maneira:
+
+dN` = ?
+0 ? ?s ? dV` (2.31)
+
+dV` = A` ? d` (2.32)
+
+16
+
+
+
+Figura 2.5: A trajetória dos fótons secundários e a ilustração dos fótons que foram desviados
+pela terceira colisão neste trajeto.
+
+17
+
+
+
+Reescrevendo a expressão 2.31 chegamos à fonte para o múltiplo espalhamento, conforme
+
+a equação 2.34:
+
+sm (
+?!r ) = dN`
+
+dV`
+(?!r ) (2.33)
+
+sm (
+?!r ) = ?0 ? ?s (?!r ) (2.34)
+
+Note que a fonte para o múltiplo espalhamento tem dimensão de número de fótons por
+
+unidade de volume. Observe também que a equação 2.36 que descreve a fonte do múltiplo
+
+espalhamento é uma integral de convolução devido à ?uência secundária.
+
+sm (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? ? ?0s ? ks ??!r ? ?!r 0? ? dV 0 (2.35)
+sm (
+
+?!r ) =
+Z Z Z
+
+V
+?p
+
+??!r 0? ? eks ??!r ? ?!r 0? ? dV 0 (2.36)
+onde fks ??!r ? ?!r 0? ?ca sendo o núcleo de convolução que compõe a fonte sm.
+
+Tendo a fonte para o múltiplo espalhamento de fótons a serem transportados, usamos a
+
+solução apresentada na referência [7] para a equação de Helmholtz,
+
+e?m (?!r ) = sm (?!r ) ? e?r=L
+4?Dr
+
+(2.37)
+
+Veja que a ?uência de múltiplo espalhamento e?m (?!r ) depende dos fótons da fonte sm (?!r )
+localizada em ?!r . Como no nosso caso as fontes de fótons estão distribuídas em todo o meio
+material, devemos escrever e?m (?!r ) = d?m (?!r ), onde d?m (?!r ), equação 2.38, é a diferencial
+da ?uência de múltiplo espalhamento desejado. Assim a ?uência de múltiplo espalhamento
+
+total ?m ?ca sendo
+
+d?m (
+?!r ) = sm
+
+??!r 0? ? e????!r ??!r 0??=LdV 0
+4?D
+
+???!r ? ?!r 0?? (2.38)
+?m (
+
+?!r ) =
+Z Z Z
+
+V
+
+sm
+??!r 0? ? e????!r ??!r 0??=LdV 0
+
+4?D
+???!r ? ?!r 0?? (2.39)
+
+Devemos ressaltar que a equação diferencial de Helmholtz que rege o processo de difusão
+
+vem da equação da lei de Fick, onde assumimos que o espalhamento de fótons é isotrópico.
+
+Esta não é uma boa aproximação para o caso do espalhamento Compton. Podemos contornar
+
+este problema usando um coe?ciente de difusão D aproximado para este tipo de anisotropia
+
+18
+
+
+
+[7], conforme a expressão 2.40:
+
+D ?= 1
+3?00s ? (1 ? ?)
+
+(2.40)
+
+com ? sendo o cosseno médio do espalhamento dado por:
+
+? =
+1
+
+?00s
+
+Z
+4?
+
+d?00s
+d
+
+
+(?) ? cos ? ? d
+ (2.41)
+
+onde d?00s=d
+ é a seção de choque diferencial Compton na energia Eavg.
+
+De maneira análoga ao kerma secundário, teremos o kerma de múltiplo espalhamento,
+
+dado pela equação 2.44:
+
+Km (
+?!r ) = ?m
+
+??!r 0? ?en (Eavg)
+?
+
+? Eavg ? C (2.42)
+
+Km (
+?!r ) =
+
+Z Z Z
+V
+sm
+
+??!r 0? ? e?
+???!r ??!r 0??=L(Eavg)
+
+4? ? D (Eavg) ?
+???!r ? ?!r 0?? ? ?en (Eavg)? ? Eavg ? C (2.43)
+
+Km (
+?!r ) =
+
+Z Z Z
+V
+sm
+
+??!r 0? ? km ??!r ? ?!r 0? ? dV 0 (2.44)
+Também como no caso da dose secundária, podemos considerar que os elétrons gerados
+
+pelas interações destes fótons difundidos serão absorvidos localmente, na mesma célula em
+
+que foram lançados. Portanto a dose de múltiplo espalhamento será igual ao respectivo
+
+kerma, Dm (?!r ) = Km (?!r ).
+No entanto a equação para a dose de múltiplo espalhamento destoa das demais por não
+
+depender diretamente da ?uência primária. Desejamos escrever esta última parcela da dose
+
+total também como função da ?uência primária pois isto facilita os cálculos computacionais.
+
+Vemos na equação 2.36 que a fonte sm (?!r ) depende da ?uência primária, e substituindo-a
+na expressão para a dose de múltiplo espalhamento temos:
+
+Dm (
+?!r ) =
+
+Z Z Z
+V
+
+?Z Z Z
+V
+?p
+
+??!r 00? ? eks ??!r 0 ? ?!r 00? ? dV 00? ? km ??!r ? ?!r 0? ? dV 0 (2.45)
+Propomos a seguinte substituição de variáveis:
+
+( ?!r 0 ? ?!r 00 = ?!r 000
+?!r ? ?!r 0 = ??!r ? ?!r 00? ? ?!r 000 (2.46)
+
+e as respectivas mudanças nos diferenciais de volume:
+
+19
+
+
+
+(
+dV 00 ! ?dV 000
+dV 0 ! ?dV 00
+
+(2.47)
+
+Assim a dose de múltiplo espalhamento ?ca:
+
+Dm (
+?!r ) =
+
+Z Z Z
+V
+?
+??!r 00? ? ?Z Z Z
+
+V
+
+fks ??!r 000? ? km ???!r ? ?!r 00? ? ?!r 000? ? dV 000?dV 00
+(2.48)
+
+ks;m
+??!r ? ?!r 00? = Z Z Z
+
+V
+
+eks ??!r 000? ? km ???!r ? ?!r 00? ? ?!r 000? ? dV 000 (2.49)
+Identi?camos o núcleo de deposição de energia ks;m
+
+??!r ? ?!r 00? como composto por dois
+outros núcleos de deposição de energia, conforme equação 2.49. A expressão ?nal para a
+
+dose de múltiplo espalhamento ?ca sendo
+
+Dm (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? ? ks;m ??!r ? ?!r 0? ? dV 0 (2.50)
+
+2.4.4 A dose total
+
+A dose total é composta pela soma das doses primária (eq. 2.7), secundária (eq. 2.23) e de
+
+múltiplo espalhamento (eq. 2.50):
+
+D (?!r ) = Dp (?!r ) + Ds (?!r ) + Dm (?!r ) (2.51)
+
+Notamos que todas as doses parciais são integrais de convolução da ?uência primária com
+
+um núcleo de deposição de energia diferente para cada uma delas. Este fato nos permite
+
+determinar um núcleo de deposição de energia total kt que será formado pela soma dos
+
+núcleos primário, secundário e de múltiplo espalhamento:
+
+kt (
+?!r ) = kp (?!r ) + ks (?!r ) + ks;m (?!r ) (2.52)
+
+Interpretamos kt como a função que realiza o transporte e deposição da energia que
+
+compõe a dose. Esta função também é chamada de função de espalhamento de ponto (Point
+
+Spread Function - PSF).
+
+Assim precisaremos realizar somente uma integral de convolução para saber a dose total,
+
+20
+
+
+
+conforme equação 2.53:
+
+D (?!r ) =
+Z Z Z
+
+V
+?p
+
+??!r 0? ? kt ??!r ? ?!r 0? ? dV 0 (2.53)
+2.5 O cálculo da dose para meios heterogêneos
+
+Quando trabalhamos em radioterapia, e em especial na teleterapia, tratamos constantemente
+
+de meios heterogêneos. Podemos aproximar alguns tecidos do corpo humano do ponto de
+
+vista radiológico como sendo apenas água, pois o importante em radioterapia é justamente
+
+a forma como a radiação penetra, interage e é absorvida por este meio. A seção de choque
+
+desses tecidos, através do número atômico efetivo Z, e sua densidade, são os fatores que
+
+in?uenciam nestes processos. Por isso consideramos tecidos como o muscular e o adiposo
+
+aproximadamente iguais à água.
+
+materiais/tecidos Z ?
+?
+kg=m3
+
+?
+Ar (CNTP) 7; 78 1; 205
+
+Água 7; 51 1000
+Muscular 7; 64 1040
+Adiposo 6; 46 916
+
+Poliestireno (C8H8) 5; 74 1044
+Lucite (C5H8O2) 6; 56 1180
+
+Baquelite (C43H38O7) 6; 27 1400
+Ósseo 12; 31 1650
+
+Alumínio 13 2699
+
+Tabela 2.1: A densidade e o número atômico efetivo de alguns materiais e tecidos [1].
+
+Na tabela 2.1 apresentamos as densidades e Z de alguns tecidos e materiais de uso comum
+
+na radioterapia [1]. Embora as densidades do ar, água, dos tecidos muscular e adiposo sejam
+
+diferentes entre si, os números atômicos médios são aproximadamente iguais. Note também
+
+que o número atômico efetivo do alumínio e do osso são bem próximos, mas bem maiores
+
+que o da água. Na prática, o alumínio é usado para fazer o papel do tecido ósseo em medidas
+
+dosimétricas e até em alguns cálculos de dose.
+
+Nesta seção vamos apresentar um modelo teórico para o cálculo da dose em meios he-
+
+terogêneos através de convoluções, aplicando uma correção de densidade entre os elementos
+
+de volume. Este modelo é totalmente baseado na teoria desenvolvida na seção anterior. A
+
+dose total será formada pela soma das doses primária, secundária e de múltiplo espalhamen-
+
+to. Será considerado também que os fótons interajam por efeito Compton a cada passo [4],
+
+21
+
+
+
+assim como no modelo sugerido na seção 2.2. Observando a tabela apresentada no apêndice
+
+B constatamos que este modelo teórico deve apresentar bons resultados na faixa de energia
+
+de 10MeV a 50keV.
+
+2.5.1 A dose primária
+
+O modelo para o cálculo da dose por convolução em meios heterogêneos faz uso da distri-
+
+buição de densidades obtidas, por exemplo, através de tomogra?a computadorizada.
+
+O teorema de Fano nos mostra que os tipos de processos envolvidos na interação da
+
+radiação com a matéria são independentes da densidade do meio, dependendo exclusivamente
+
+da sua composição [2]. Tendo em vista este teorema, uma expressão para a dose primária
+
+[4, 10, 11] ?ca:
+
+Dp (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? ? e???!r 0? ? kp ??!r ? ?!r 0? ? dV 0 (2.54)
+e???!r 0? = ???!r 0?
+
+?H2O
+(2.55)
+
+sendo e???!r 0? a densidade relativa entre a densidade do meio ???!r 0? e a densidade da água
+?H2O. A ?uência primária, de?nida na equação 2.1, contabiliza a atenuação exponencial de
+
+cada elemento de volume com sua respectiva densidade. O núcleo de deposição de energia
+
+está de?nido na equação 2.8 e é o mesmo usado para o cálculo da dose primária em meios
+
+homogêneos. Veri?camos que esta expressão para a dose primária reduz-se à equação 2.7
+
+para meios homogêneos quando a densidade relativa é unitária.
+
+Esta correção de densidade tem o efeito de atenuar (e? &amp;lt;1) ou intensi?car (e? &gt; 1) a
+dose depositada naquele elemento de volume, atuando como um fator de correção para a
+
+dose primária. Esta correção depende da mesma variável que a ?uência primária, e assim
+
+consideraremos a ?uência primária e a densidade relativa como uma função e o núcleo de
+
+deposição de energia como a outra função da convolução. No entanto, por questão de clareza,
+
+as expressões para a dose de qualquer espécie serão escritas no mesmo formato que a equação
+
+2.54.
+
+2.5.2 A dose secundária
+
+Analogamente, para o desenvolvimento do modelo para a dose secundária em meios hete-
+
+rogêneos vamos nos basear no desenvolvimento da dose secundária para meios homogêneos,
+
+seção 2.4.2. A ?uência secundária será escrita então da seguinte maneira:
+
+22
+
+
+
+?s (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? e???!r 0? ? ?e ? 1???!r ? ?!r 0??2 ?
+d?
+
+d
+
+
+??!r ? ?!r 0?
+?exp
+
+"
+?
+Z ???!r ??!r 0??
+`=0
+
+?0
+??!??
+
+d
+?!?
+#
+dV 0 (2.56)
+
+Nesta ?uência incluímos uma correção de e???!r 0?, e a atenuação exponencial, que na
+equação 2.17 dependia apenas da distância percorrida pelos fótons multiplicada pelo coe?-
+
+ciente de atenuação linear ?0, agora depende de uma integral sobre os coe?cientes ?0
+??!??
+
+,
+
+onde
+?!?
+
+representa o vetor distância percorrido pelo fóton. O ?0
+??!??
+
+usado é aquele para a
+
+energia Es, que é a energia média dos fótons produzidos no espalhamento Compton [4].
+
+O caminho para chegarmos a esta ?uência é o mesmo que o apresentado na seção 2.4.2
+
+apenas inserindo a função da densidade relativa e considerando que a queda exponencial
+
+depende de uma integral sobre os coe?ciente lineares ?0
+??!??
+
+.
+
+Facilmente veri?camos que a equação 2.56 se reduz à equação 2.17 quando estamos num
+
+meio de densidade relativa unitária e de coe?ciente de absorção linear constante em todos
+
+os pontos do meio absorvedor.
+
+A integral de convolução exige que as duas funções sejam invariantes por deslocamento
+
+espacial. Esta ?uência secundária, tal como está na expressão 2.56, não pode ser escrita
+
+como uma convolução, pois a atenuação exponencial depende da posição. Como desejamos
+
+expressar esta função como uma convolução, faremos algumas aproximações.
+
+Considere a diferença 4?0
+??!??
+
+entre o coe?ciente ?0 (`) e o coe?ciente de atenuação ?0,
+
+onde a ausência da indicação de posição deverá ser subentendida como sendo o coe?ciente
+
+na água.
+
+4?0
+??!??
+
+= ?0
+??!?? ? ?0 (2.57)
+
+Usando a equação 2.57, podemos escrever a expressão para a atenuação exponencial da
+
+seguinte maneira:
+
+exp
+
+"
+?
+Z ???!r ??!r 0??
+`=0
+
+?0
+??!??
+
+d
+?!?
+#
+
+= exp
+???0 ???!r ? ?!r 0???
+
+?exp
+"
+?
+Z ???!r ??!r 0??
+`=0
+
+4?0
+??!??
+
+d
+?!?
+#
+
+(2.58)
+
+23
+
+
+
+Vamos de?nir 	
+??!r ? ?!r 0? como:
+	
+??!r ? ?!r 0? = exp
+
+"
+?
+Z ???!r ??!r 0??
+`=0
+
+4?0
+??!??
+
+d
+?!?
+#
+
+(2.59)
+
+Nós agora podemos expandir 	 em série Taylor como função de 4r =
+???!r ? ?!r 0??,
+
+	 (4r) = 	 (0) + @	
+@ (4r) j4rj +
+
+1
+
+2
+
+@2	
+
+@ (4r)2
+j4rj2 + ? ? ? (2.60)
+
+Note que estamos usando a distância que o fóton viaja como variável da função 	 e
+
+quando fazemos 4r ! 0, estamos dizendo que ?!r ! ?!r 0, de modo que o coe?ciente de
+atenuação acaba por ser calculado em ?!r 0. Assim teremos
+
+	 (0) = 1 (2.61)
+@	 (4r)
+@ (4r)
+
+????
+4r=0
+
+= ?4?0 ??!r 0? (2.62)
+O resultado mostrado em 2.61 é conhecido como aproximação de ordem zero e em 2.62
+
+como aproximação de primeira ordem. Portanto, a expressão de 	 aproximada até primeira
+
+ordem ?ca sendo
+
+	
+??!r ? ?!r 0? ?= 1 ? 4?0 ??!r 0? ? ???!r ? ?!r 0?? (2.63)
+
+Substituindo a relação dada em 2.57 obtemos
+
+	
+??!r ? ?!r 0? ?= 1 ? ??0 ??!r 0? ? ?0? ? ???!r ? ?!r 0?? (2.64)
+
+Estamos considerando que o meio absorvedor tenha sempre a mesma seção de choque,
+
+mudando apenas a densidade. Desta forma usamos o escalonamento do livre caminho médio
+
+do fóton, baseado no teorema de Fano, para conseguirmos escrever a seguinte expressão para
+
+o coe?ciente de atenuação linear
+
+?0
+??!r 0? = ?0 ? e???!r 0? (2.65)
+
+Então a equação 2.64 passa a ser
+
+	
+??!r ? ?!r 0? ?= 1 ? ?0 ?e???!r 0? ? 1? ? ???!r ? ?!r 0?? (2.66)
+
+24
+
+
+
+e substituindo 	 na equação 2.56 teremos a seguinte expressão para a ?uência secundária:
+
+?s (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? e? (?!r ) ?e d?
+d
+
+
+??!r ? ?!r 0? e??0
+???!r ??!r 0?????!r ? ?!r 0??2 dV 0
+
++
+
+Z Z Z
+V
+?p
+
+??!r 0? e? (?!r ) ?1 ? e???!r 0??(?!r ) ?e d?
+d
+
+
+??!r ? ?!r 0?
+?e
+
+??0
+???!r ??!r 0?????!r ? ?!r 0?? ?0 ??!r ? ?!r 0?dV 0 (2.67)
+
+Esta ?uência secundária pode ser melhor compreendida se considerarmos cada integral
+
+que a compõe como uma função independente, assim
+
+?0s (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? e? (?!r ) k0s ??!r ? ?!r 0?dV 0 (2.68)
+k0s
+??!r ? ?!r 0? = ?e d?
+
+d
+
+
+??!r ? ?!r 0? e??0
+???!r ??!r 0?????!r ? ?!r 0??2 (2.69)
+
+?1s (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? e? (?!r ) ?1 ? e???!r 0??k1s ??!r ? ?!r 0?dV 0 (2.70)
+k1s
+??!r ? ?!r 0? = ?e d?
+
+d
+
+
+??!r ? ?!r 0? ? e??0
+???!r ??!r 0?????!r ? ?!r 0?? ?0 ??!r ? ?!r 0?
+
+(2.71)
+
+Conseqüentemente, a ?uência secundária total ?ca
+
+?s (
+?!r ) ?= ?0s (?!r ) + ?1s (?!r ) (2.72)
+
+onde o termo de ordem zero ?0s considera parcialmente as heterogeneidades do meio por
+
+conta da presença da ?uência ?p e da densidade relativa e? em sua expressão, enquanto que
+o termo de primeira ordem ?1s compensa parcialmente o erro do termo de ordem zero nas
+
+heterogeneidades do meio absorvedor.
+
+Para entender melhor o comportamento destes dois termos da ?uência secundária imagi-
+
+nemos a equação 2.67 sendo avaliada através de uma interface entre dois meios. O primeiro
+
+tem densidade igual à da água e o segundo possui uma densidade relativa menor. Neste caso
+
+?1s será positivo, porque 1? e???!r 0? &gt; 0, acrescendo seu valor ao de ?0s para compor ?s, que
+sempre será positivo. Em uma outra situação, fótons passando da água para um meio de den-
+
+sidade relativa maior, a correção dada por ?1s será negativa, pois 1 ? e???!r 0? &amp;lt;0, corrigindo
+25
+
+
+
+o valor da ?uência secundária superestimada por ?0s dentro do meio onde e???!r 0? &gt; 1.
+Um raciocínio análogo pode ser feito em diversos pontos do meio, porém quando estiver-
+
+mos calculando a ?uência secundária em elementos de volume cuja densidade é a da água,
+
+?1s será sempre nulo, e a ?uência secundária para o meio heterogêneo reduz-se à respec-
+
+tiva ?uência para o meio homogêneo. Portanto a correção ?1s somente será não nula nos
+
+elementos de volume onde e???!r 0? 6= 1.
+Observamos que as equações 2.68 e 2.70 que compõem a ?uência secundária são também
+
+escritas em forma de convolução.
+
+A dose secundária é escrita da mesma forma que a apresentada na seção 2.4.2 para meios
+
+homogêneos. O princípio de que a dose secundária é igual ao kerma secundário permanece
+
+válido sob o mesmo argumento: os elétrons não têm energia su?ciente para deixarem o ele-
+
+mento de volume onde foram lançados. Da equação 2.20 para o kerma secundário escrevemos
+
+a expressão apropriada para a dose secundária em meios heterogêneos:
+
+Ds (
+?!r ) = D0s (?!r ) + D1s (?!r ) (2.73)
+
+sendo a dose secundária de ordem zero dada por:
+
+D0s (
+?!r ) =
+
+Z Z Z
+V
+?
+??!r 0? e???!r 0?k0s ??!r ? ?!r 0?dV 0 (2.74)
+
+k0s
+??!r ? ?!r 0? = ?e d?
+
+d
+
+
+??!r ? ?!r 0? e??0
+???!r ??!r 0?????!r ? ?!r 0??2
+
+?Es
+??!r ? ?!r 0? ?0en
+
+?
+
+??!r ? ?!r 0? (2.75)
+e a parcela de correção de primeira ordem da dose secundária dada por:
+
+D1s (
+?!r ) =
+
+Z Z Z
+V
+?
+??!r 0? e???!r 0??1 ? e???!r 0??k1s ??!r ? ?!r 0?dV 0 (2.76)
+
+k1s
+??!r ? ?!r 0? = ?e d?
+
+d
+
+
+??!r ? ?!r 0? e??0
+???!r ??!r 0?????!r ? ?!r 0?? Es ??!r ? ?!r 0?
+
+??
+0
+en
+
+?
+
+??!r ? ?!r 0??0 ??!r ? ?!r 0? (2.77)
+A interpretação para os termos de ordem zero e primeira ordem que compõem a dose
+
+secundária é dada pela ?uência secundária. Mas note que, por se tratar de uma expansão
+
+em série, o termo de primeira ordem é menos signi?cativo que o de ordem zero.
+
+Desta forma, temos uma expressão para a dose secundária escrita na forma de convolução
+
+26
+
+
+
+que considera, ainda que aproximadamente, as correções devido às variações de densidade
+
+do meio.
+
+2.5.3 A dose de múltiplo espalhamento
+
+Um modelo para o cálculo da dose por convolução em meios heterogêneos, em princípio,
+
+deve ser o mais abrangente possível, contemplando as mais variadas formas e dimensões das
+
+estruturas do corpo humano. Portanto, não é interessante criar modelos para a distribuição
+
+da dose onde as heterogeneidades sejam tratadas através de geometrias simples tais como
+
+esferas, cilindros, ou qualquer outra que facilite o modelamento teórico. Necessitamos de
+
+um modelo abrangente que apresente uma precisão boa e previamente conhecida.
+
+Resolver a equação da difusão apresentada na seção 2.4.3 considerando as heterogeneida-
+
+des do meio signi?ca impor condições de contorno à equação diferencial de Helmholtz. Como
+
+é extremamente difícil prever a geometria dessas estruturas, vamos aproximar a solução de-
+
+sejada para a de meios homogêneos [4], equação 2.37. Este fato nos remete diretamente
+
+à ?uência de múltiplo espalhamento para meios homogêneos, equação 2.39, que então será
+
+adotada para os meios heterogêneos.
+
+Notamos que esta ?uência ?m depende diretamente da fonte sm para o múltiplo espa-
+
+lhamento, e esta fonte depende da ?uência secundária ?s, onde, nesta seção, usaremos a
+
+respectiva ?uência para meios heterogêneos, conforme a equação 2.56.
+
+Porém, analisando cuidadosamente a dedução da expressão para a fonte sm, percebemos
+
+que podemos fazer algumas correções de densidade. O coe?ciente de atenuação linear ?0
+
+usado na equação 2.27 e admitido constante agora depende do trajeto percorrido pelos
+
+fótons secundários, e pode variar de acordo com a densidade. Partindo deste princípio e
+
+refazendo os cálculos da seção 2.4.3 chegaremos à seguinte expressão para a fonte de múltiplo
+
+espalhamento para meios heterogêneos:
+
+sm (
+?!r ) = e? (?!r ) Z Z Z
+
+V
+?p
+
+??!r 0? e???!r 0? ek ??!r ? ?!r 0?dV 0 (2.78)
+ek ??!r ? ?!r 0? = ?e d?
+
+d
+
+
+??!r ? ?!r 0? exp
+"
+?R???!r ??!r 0??`=0 ?0 ??!??d?!?
+
+#
+???!r ? ?!r 0??2 ?0s
+
+??!r ? ?!r 0? (2.79)
+A fonte para o múltiplo espalhamento, equação 2.78, é escrita como uma integral se-
+
+melhante à da fonte para meios homogêneos, equação 2.36. Notamos a dupla utilização da
+
+densidade relativa e?. A que está dentro da integral modi?ca a fonte de fótons espalhados
+atuando diretamente onde eles são gerados, isto é, agindo sobre o coe?ciente de espalhamen-
+
+27
+
+
+
+to Compton ?0s. A densidade relativa que está fora da integral modi?ca a fonte, portanto, se
+
+a densidade relativa em ?!r é menor que a unidade, a probabilidade de haver uma interação
+destes fótons da fonte também será reduzida. No núcleo de convolução mostrado na equa-
+
+ção 2.79 usamos o coe?ciente de espalhamento Compton [4], e não o de atenuação linear,
+
+como usado na seção 2.4.3, por ser mais preciso, contabilizando apenas os fótons que são
+
+espalhados na direção ?!r ? ?!r 0.
+Contudo a equação 2.78 não é uma integral de convolução pois o seu núcleo, equação 2.79,
+
+não é invariante por deslocamento. Contornamos este problema ao expandir a exponencial
+
+em série de Taylor e aproximamos o resultado a apenas os dois primeiros termos, como
+
+feito na seção 2.5.2 para a ?uência secundária. Assim, a fonte sm será composta por duas
+
+parcelas:
+
+sm (
+?!r ) ?= s0m (?!r ) + s1m (?!r ) (2.80)
+
+onde s0m será dado por
+
+s0m (
+?!r ) = e? (?!r ) Z Z Z
+
+V
+?p
+
+??!r 0? e???!r 0? ? ek0s ??!r ? ?!r 0? ? dV 0 (2.81)
+ek0s ??!r ? ?!r 0? = ?e d?d
+ ??!r ? ?!r 0? e
+
+??0
+???!r ??!r 0?????!r ? ?!r 0??2 ?0s
+
+??!r ? ?!r 0? (2.82)
+e s1m por
+
+s1m (
+?!r ) = e? (?!r )Z Z Z
+
+V
+?p
+
+??!r 0? e???!r 0?
+??1 ? e???!r 0?? 0ek1s ??!r ? ?!r 0? ? dV 0 (2.83)
+
+ek1s ??!r ? ?!r 0? = ?e d?d
+ ??!r ? ?!r 0? e
+??0
+
+???!r ??!r 0?????!r ? ?!r 0??
+??0 ??!r ? ?!r 0??0s ??!r ? ?!r 0? (2.84)
+
+Devido às correções de densidade, a fonte para o múltiplo espalhamento não pode mais
+
+ser escrita em função da ?uência secundária, como ocorreu no caso homogêneo.
+
+O kerma associado ao múltiplo espalhamento é dado pela equação 2.44 e a respectiva
+
+dose será aproximadamente igual ao kerma pelo mesmo motivo apresentado na seção 2.4.3.
+
+A função da fonte sm é aproximada pela soma dos dois primeiros termos de uma expansão
+
+em série, conforme equação 2.80. Portanto, a dose de múltiplo espalhamento será escrita
+
+28
+
+
+
+como uma soma de dois termos:
+
+Dm (
+?!r ) = D0m (?!r ) + D1m (?!r ) (2.85)
+
+onde o termo de ordem zero é dado por
+
+D0m (
+?!r ) =
+
+Z Z Z
+V
+s0m
+
+??!r 0?k0m ??!r ? ?!r 0?dV 0 (2.86)
+e o de primeira ordem por
+
+D1m (
+?!r ) =
+
+Z Z Z
+V
+s1m
+
+??!r 0?k1m ??!r ? ?!r 0?dV 0 (2.87)
+O núcleo de convolução k0m
+
+??!r ? ?!r 0? é o mesmo dado pela multiplicação sugerida na
+expressão 2.44. Os coe?cientes ?0, ?0en e ?
+
+0
+s são calculados na mesma energia Es que para
+
+os meios homogêneos.
+
+Os dois termos que compõem a dose Dm não podem ser escritos na forma:Z Z Z
+V
+?p
+
+??!r 0? e???!r 0?k ??!r ? ?!r 0?dV 0 (2.88)
+A dependência da fonte sm, equação 2.78, com o primeiro e? impede tal fato. Em conseqüên-
+cia, não poderemos escrever a dose total como uma única convolução (veja a seção 2.5.4).
+
+Este resultado é o obtido por Boyer em [4].
+
+Para uso nesta tese desejamos que a dose total seja uma convolução da ?uência primária
+
+e da densidade relativa com um núcleo de deposição de energia, e assim sugerimos a seguinte
+
+aproximação para a função da fonte sm:
+
+s0m (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? e???!r 0? ? ek0s ??!r ? ?!r 0? ? dV 0 (2.89)
+s1m (
+
+?!r ) =
+Z Z Z
+
+V
+?p
+
+??!r 0? e???!r 0?
+??1 ? e???!r 0?? ek1s ??!r ? ?!r 0? ? dV 0 (2.90)
+
+onde desconsideramos a correção da densidade relativa agindo sobre a fonte sm.
+
+Assim a dose de múltiplo espalhamento pode ser escrita da mesma forma que as outras
+
+componentes da dose:
+
+D0m (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? e???!r 0?k0s;m ??!r ? ?!r 0?dV 0 (2.91)
+29
+
+
+
+D1m (
+?!r ) =
+
+Z Z Z
+V
+?p
+
+??!r 0? e???!r 0??1 ? e???!r 0??k1s;m ??!r ? ?!r 0?dV 0 (2.92)
+sendo k0s;m e k
+
+1
+s;m calculados da mesma maneira sugerida pela equação 2.49.
+
+Esta é uma aproximação válida porque sabemos que a dose de múltiplo espalhamento
+
+é uma fração pequena da dose total, e que correções deste tipo podem ser desprezadas [3].
+
+Notamos também que a dose de múltiplo espalhamento para meios heterogêneos se reduz à
+
+respectiva expressão para meios homogêneos quando a densidade relativa for unitária.
+
+2.5.4 A dose total
+
+A dose total será formada pela soma das doses parciais Dp, Ds e Dm. Devido às correções da
+
+dose em primeira ordem não poderemos calcular a dose total realizando apenas uma integral
+
+de convolução como foi feito na equação 2.53. Neste caso vamos necessitar do cálculo de
+
+duas integrais de convolução para conseguirmos a dose total D (?!r ):
+
+D (?!r ) = D0 (?!r ) + D1 (?!r ) (2.93)
+
+sendo D0 uma convolução onde temos como núcleo a soma da dose primária com a aproxi-
+
+mação em primeira ordem da dose secundária e de múltiplo espalhamento:
+
+D0 (?!r ) =
+Z
+V
+?p
+
+??!r 0? ? e???!r 0? ? k0 ??!r ? ?!r 0? ? dV 0 (2.94)
+k0
+??!r ? ?!r 0? = kp ??!r ? ?!r 0? + k0s ??!r ? ?!r 0? + k0s;m ??!r ? ?!r 0? (2.95)
+
+D1 será composta pela soma da aproximação de primeira ordem da dose secundária com
+
+a respectiva aproximação da dose de múltiplo espalhamento:
+
+D1 (?!r ) =
+Z
+V
+?p
+
+??!r 0? ? e???!r 0??1 ? e???!r 0?? ? k1 ??!r ? ?!r 0? ? dV 0 (2.96)
+k1
+??!r ? ?!r 0? = k1s ??!r ? ?!r 0? + k1s;m ??!r ? ?!r 0? (2.97)
+
+Concluímos, portanto, chegando a um modelo teórico para o cálculo da dose de radiação
+
+em que fazemos as correções de densidade de estruturas heterogêneas. Este modelo apresenta
+
+uma boa concordância com dados experimentais [4] em que as estruturas heterogêneas têm
+
+aproximadamente o mesmo número atômico efetivo que o da água, diferindo apenas em sua
+
+densidade. Porém não é esperado que ele apresente um bom resultado quando aplicado a
+
+meios onde as estruturas heterogêneas tenham um número atômico efetivo muito diferente
+
+30
+
+
+
+do da água, pois este fato implicaria em um modelo onde k0 e k1 dependessem da posição
+
+onde a integral D0 ou D1 fossem calculadas, impedindo que as expressões para a dose fossem
+
+escritas na forma de convolução.
+
+31
+
+
+
+32
+
+
+
+Capítulo 3
+
+Simulação por Monte Carlo
+
+Como mostramos no capítulo anterior, a dose absorvida pelo meio em um determinado ponto
+
+depende de elétrons e fótons lançados em outro local. O equacionamento do transporte de
+
+fótons após algumas colisões se torna complexo e o de elétrons quase impossível devido
+
+à grande variedade de processos e a enorme quantidade de colisões aleatórias. Por este
+
+motivo não conseguimos determinar a dose através de métodos analíticos sem fazer certas
+
+aproximações. Uma outra forma de obtermos estas informações, e também a mais precisa,
+
+é por meio de simulação de Monte Carlo.
+
+Técnicas de simulações são amplamente usadas em pesquisas físicas onde desejamos ter
+
+acesso a certas grandezas que não podem ser medidas e nem analiticamente equacionadas. A
+
+simulação das interações eletromagnéticas consiste no uso das distribuições de probabilidades
+
+de colisão individual de elétrons, pósitrons e fótons com a matéria para encontrar o trajeto
+
+a ser percorrido por cada partícula e as energias das partículas produzidas. Nestes processos
+
+armazenamos as quantidades físicas de interesse em nossos estudos.
+
+Discutiremos neste capítulo o programa adotado de simulação EGS4 (Electron Gam-
+
+ma Shower)[12] e o método que o mesmo usa para simular as interações eletromagnéticas.
+
+Apresentaremos também o tratamento aplicado às simulações dos núcleos de deposição de
+
+energia estudados teoricamente.
+
+3.1 O programa de simulação EGS4
+
+O sistema EGS é um pacote de rotinas de simulação de interações eletromagnéticas desen-
+
+volvido pelos pesquisadores do SLAC (Stanford Linear Accelerator Center) em 1978 com o
+
+objetivo de estudar as interações eletromagnéticas em aceleradores. As primeiras distribui-
+
+ções tinham como limite inferior de energia para o transporte de fótons a energia de 100 keV
+
+33
+
+
+
+e 1 MeV para elétrons. Porém a popularidade deste programa cresceu principalmente quan-
+
+do estes limites inferiores caíram para 1 keV (fótons) e 10 keV (elétrons), mostrando que o
+
+programa foi muito bem recebido pelos pesquisadores que trabalhavam a baixas energias. A
+
+versão EGS4 foi lançada em 1985, consolidando estes desenvolvimentos.
+
+Outro fato que nos auxiliou na adoção do EGS4 foi a facilidade na obtenção do programa
+
+via rede mundial de computadores.
+
+As rotinas são escritas em Mortran3, uma linguagem de programação que permite ao
+
+usuário tanto chamar as rotinas do EGS4, como processar os dados que estão sendo simula-
+
+dos.
+
+3.2 O processo de simulação
+
+Quando transportamos um fóton através de um meio material in?nito, em algum ponto
+
+ocorrerá uma interação (colisão) deste fóton com o meio. O ponto onde ocorre esta interação
+
+é de natureza aleatória, porém a função que determina esta probabilidade é bem conhecida.
+
+Então podemos simular no computador o que acontece na prática, sorteando a partir da
+
+distribuição de probabilidades o ponto onde o fóton colide.
+
+O estado do sistema após esta primeira interação também pode ser sorteado, bastando
+
+saber as distribuição de probabilidades dos possíveis processos e da direção ?nal das partí-
+
+culas envolvidas. Este método pode ser aplicado sucessivamente até que todas as partículas
+
+?lhas sejam freadas pelo meio material.
+
+Vamos denotar uma variável aleatória por bx e a probabilidade desta variável estar contida
+no intervalo (a;b) por Pr fa &amp;lt;bx &amp;lt;bg. Podemos de?nir uma função de distribuição (ou
+função de distribuição cumulativa) como
+
+F (x) = Pr fbx &amp;lt;xg (3.1)
+Se F (x) for diferenciável, então a primeira derivada desta função de distribuição, f (x) =
+
+dF (x) =dx, é chamada de função densidade de probabilidade, e vale a relação:
+
+Pr fa &amp;lt;bx &amp;lt;bg = Z b
+a
+f (x) ? dx (3.2)
+
+Na prática quase todos os métodos de sorteio baseiam-se na possibilidade de gerar em
+
+computadores seqüências de números aleatórios distribuídos segundo uma f (x), a partir
+
+de uma seqüência de números aleatórios uniformemente distribuídos entre 0 e 1. Se b? for
+uma variável randômica uniformemente distribuída e seu valor sorteado for ?, então pode-se
+
+34
+
+
+
+sortear um valor da variável bx, a partir do valor de ?, pelo chamado método da inversão:
+F (x) = ? (3.3)
+
+e resolvendo para x:
+
+x = F?1 (?) (3.4)
+
+Para tal é importante atentar para que a F (x) esteja normalizada no intervalo da variávelbx, (a;b).
+Existe um outro procedimento que é muito usado em casos onde a função a ser simulada
+
+é bastante complexa, que chamamos de composição e rejeição. Como o próprio nome sugere,
+
+este método é uma combinação das técnicas de composição e rejeição, baseado nos conceitos
+
+elementares de probabilidade. Assim, se uma função de densidade de probabilidade h (x)
+
+puder ser decomposta da seguinte forma:
+
+h (x) =
+nX
+i=1
+
+?ifi (x) gi (x) (3.5)
+
+sendo ?i um número real positivo que corresponde ao peso atribuído à parcela fi (x). A
+
+função h (x), assim como cada fi (x) devem estar normalizadas no intervalo de de?nição
+
+da variável x. O somatório
+Pn
+
+i=1 ?ifi (x) é conhecido como função de composição, dada
+
+pela de?nição elementar de probabilidade, onde diferentes processos podem acontecer com
+
+diferentes pesos (?i). gi (x) é uma função de rejeição e deve estar contida em [0; 1].
+
+Desta maneira o processo de simulação da expressão 3.5 ?ca:
+
+1. Escolhemos a parcela i dos n elementos do somatório de acordo com a expressão
+
+Pi?1
+j=1 ?jPn
+j=1 ?j i
+
+&amp;lt;?1 ?
+Pi
+
+j=1 ?jPn
+j=1 ?j
+
+(3.6)
+
+onde ?1 é um número aleatório entre [0; 1]. Digamos que seja encontrado i = 4.
+
+2. Sorteamos outro número aleatório ?2 e encontramos x de f4 (x) resolvendo a integralR x
+a f4 (x
+
+0) dx0 = ?2, como mostramos na ?gura 3.1. Em outras palavras usa-se o método
+
+da inversão para a função f4 (x).
+
+3. Com ?3 terminamos por aceitar ou não o valor sorteado de x se ?3 ? g4 (x) ou
+rejeitando-o, caso ?3 &gt; g4 (x); a ?gura 3.2 nos mostra este processo gra?camente.
+
+35
+
+
+
+f (x’ )
+
+x’
+
+44
+
+??22
+
+xxaa bb
+
+Figura 3.1: A função de composição
+
+Figura 3.2: A função de composição.
+
+36
+
+
+
+4. Repete-se este processo retornando ao passo 1 até ser atingido o número de histórias
+
+desejadas.
+
+As variáveis até então chamadas de aleatórias são na realidade pseudo-aleatórias, pois são
+
+geradas por algoritmos especí?cos. Tais algoritmos necessitam de, pelo menos, um número
+
+para iniciar a seqüência de número aleatórios. Este número é conhecido como semente para o
+
+número pseudo-aleatório. Então, ao repetirmos a semente em um programa de simulação no
+
+mesmo equipamento, a seqüência de números pseudo-aleatórios gerados será rigorosamente
+
+a mesma. Este fato será explorado na seção 3.3.
+
+3.2.1 A simulação dos processos físicos
+
+O livre caminho médio ? de uma partícula é dado por
+
+? =
+1
+
+?t
+=
+
+M
+
+? ? Na ? ?t
+(3.7)
+
+sendo ? a densidade do material, Na o número de Avogadro, M o peso molecular e ?t a seção
+
+de choque total por molécula. ?t é a seção de choque total macroscópica. Sendo a função de
+
+densidade de probabilidade e?r
+0=?dr0=?, o ponto onde irá ocorrer a primeira interação será
+
+dado por:
+
+Z ?
+0
+d?0 =
+
+Z r
+0
+e?r
+
+0=? dr
+0
+
+?
+(3.8)
+
+1 ? ? = e?r=? (3.9)
+
+onde ? é um valor da variável aleatória distribuída uniformemente em [0; 1], r é a distância
+
+até o ponto de interação. Se b? é uma variável aleatória distribuída uniformemente entre o
+intervalo [0,1], 1 ? b? = b? também o é. Assim podemos relacionar o ponto de interação r
+diretamente com o número aleatório por
+
+r = ?? ln? (3.10)
+
+Tipicamente o livre caminho médio depende da posição, de mudanças de material ou,
+
+no caso de partículas carregadas, da energia, devido a perdas de energia para a ionização do
+
+meio [12]. Para sortear r através da equação 3.10 considera-se ? constante.
+
+Após sabermos onde a partícula irá interagir, devemos sortear um dos processos físicos
+
+possíveis, cuja probabilidade é proporcional às seções de choque individuais.
+
+37
+
+
+
+O EGS4 faz a simulação do transporte e deposição de energia de fótons, elétrons, pósi-
+
+trons, partícula por partícula. Os seguintes processos de interação dos fótons com a matéria
+
+são considerados no EGS4:
+
+? efeito fotoelétrico;
+
+? efeito Compton;
+
+? produção de pares;
+
+? espalhamento Rayleigh.
+
+Para as partículas carregadas os processos são:
+
+? espalhamento Möller;
+
+? espalhamento Bhabha;
+
+? aniquilação de par elétron-pósitron;
+
+? bremsstrahlung;
+
+? múltiplo espalhamento coulombiano;
+
+? perda contínua de energia.
+
+Este último item é o responsável pela deposição da dose de radiação ao longo da trajetória
+
+da partícula carregada.
+
+As equações para as seções de choque e a forma como foram computacionalmente im-
+
+plementadas estão no manual do EGS4 [12].
+
+O procedimento de transporte das partículas carregadas em um meio material é mais
+
+complicado que o de fótons porque as partículas como elétrons e pósitrons possuem um livre
+
+caminho médio tipicamente muito menor que o do fóton, tornando o processo de simulação
+
+de elétrons e pósitrons extremamente complicado. Quando um elétron, por exemplo, recebe
+
+uma quantidade de energia cinética ele, ao se deslocar pelo meio, sofre uma enorme quantida-
+
+de de colisões elásticas, além de outros processos. Para resolver este problema os programas
+
+de simulação recorrem aos modelos que tratam o múltiplo espalhamento coulombiano. O
+
+tratamento que o EGS4 usa para este processo é o estudo de Molière que posteriormente foi
+
+simpli?cado por Bethe.
+
+Este tratamento tende a ser um dos pontos mais críticos deste tipo de simulador, porque
+
+uma colisão onde haja uma troca de energia acima de certo valor mínimo pré-estabelecido
+
+38
+
+
+
+deve ser tratada como um evento onde as partículas secundárias geradas por esta colisão
+
+sejam transportadas individualmente, caso contrário a colisão não será discreta. Geralmente
+
+os simuladores de interações eletromagnéticas são divididos em duas classes: os de classe
+
+I, que usam o modelo CSDA (Continuous Slowing Down Approximation) onde partículas
+
+secundárias não são criadas [13], simpli?cando este processo; e os de classe II, que fazem
+
+todo o tratamento de criação e transporte de partículas secundárias.
+
+No EGS4 existem variáveis especí?cas destinadas à distinção entre os processos de espa-
+
+lhamento múltiplo e discreto durante o transporte. A variável AE de?ne a energia mínima
+
+em que uma colisão de uma partícula carregada com a matéria será tratada como discreta,
+
+e a AP de?ne a energia mínima para que um fóton seja produzido por bremsstrahlung.
+
+3.3 Simulando os núcleos de deposição de energia
+
+Os núcleos de convolução são interpretados como a função que deposita a energia transpor-
+
+tada pelo feixe de partículas, sejam elas fótons, elétrons, etc.
+
+As formas existentes para obtermos este núcleo são:
+
+? deconvolução da dose medida em água;
+
+? cálculo analítico;
+
+? simulação de Monte Carlo.
+
+O primeiro envolve a medida da deposição de dose de feixes estreitos em um tanque de
+
+água, e sua posterior deconvolução[14]. Esse método gera apenas um núcleo de convolução
+
+relacionado à deposição total da dose e está limitado à precisão em que foram feitas as
+
+medidas.
+
+O cálculo analítico nos permite entender por meio de quais processos a dose é distribuída,
+
+isto é, permite-nos compreender a física do problema. Porém não apresenta bons resultados
+
+para as deposições de energia devido aos múltiplos espalhamentos de fótons. Estes espalha-
+
+mentos são difíceis de serem modelados analiticamente, sendo usual a sua aproximação pela
+
+teoria da difusão [3, 4].
+
+Em contrapartida, a simulação de Monte Carlo nos permite obter bons resultados em uma
+
+ampla faixa de energias porque não exige que todas as interações sejam por efeito Compton
+
+e também porque transporta igualmente bem ordens baixas e altas de espalhamentos de
+
+fótons.
+
+39
+
+
+
+Sendo assim usamos os conceitos estudados no capítulo 2 para simular os núcleos de
+
+deposição de energia, com a diferença de que nesta dissertação não restringimos os processos
+
+somente ao efeito Compton, como o modelo teórico aproxima.
+
+3.3.1 O Método usado nas simulações
+
+A simulação dos núcleos consiste em fazer incidir um feixe estreito de fótons (área zero) sobre
+
+um meio material e forçá-lo a ter sua primeira interação em um ponto conhecido dentro do
+
+meio material. Após esta interação, começamos a transportar normalmente as partículas
+
+e a contabilizar separadamente as energias relacionadas a cada ordem de espalhamento.
+
+Assim como na teoria, teremos um grupo de deposição para a energia primária, um para
+
+a secundária e outro para os espalhamentos de terceira ordem e superiores. Para tanto
+
+adaptamos um programa chamado XYZP1 que aplica as rotinas do EGS4 na simulação das
+
+interações de um feixe de partículas com a matéria e obtém a energia absorvida por este
+
+meio. As partículas incidentes são forçadas a terem a sua primeira interação em um ponto
+
+?xo porque estamos buscando a função de espalhamento de ponto (PSF).
+
+A simulação é feita em três dimensões onde o meio é subdividido em células cúbicas
+
+e indexadas em um sistema cartesiano de eixos coordenados. Originalmente o programa
+
+XYZP faz a simulação de feixes paralelos de partículas incidentes em um meio material e
+
+contabiliza a dose absorvida por este meio.
+
+3.3.1.1 A geometria e as técnicas utilizadas
+
+O meio usado foi um cubo de água subdividido em células cúbicas, cercado por vácuo,
+
+conforme mostrado ?gura 3.3. Nessas células são contabilizadas as energias transferidas dos
+
+elétrons e pósitrons para o meio material. Este tanque de água recebe um feixe de fótons
+
+que incide perpendicularmente na direção convencionada como o eixo z, na ?gura 3.4.
+
+Todo este trabalho é baseado na referência [15]. Neste artigo o autor ataca o proble-
+
+ma em coordenadas esféricas através de um programa criado por eles mesmos, o SCASPH.
+
+Embora este sistema de coordenadas seja a melhor alternativa para a geração de núcleos de
+
+convolução, as coordenadas esféricas não são tão práticas, porque elas precisam ser conver-
+
+tidas em cartesianas respeitando-se a periodicidade amostral usada na ?uência, a qual deve
+
+ser constante2. Temos também o interesse, neste trabalho, de instalar, testar e interagir
+
+com as rotinas do EGS4 através da modi?cação de programas já existentes, introduzindo
+
+o uso do mesmo no nosso grupo de Física Médica pertencente ao Centro de Engenharia
+1Este programa pertence ao pacote do EGS4.
+2Condição necessária para os algoritmos de transformada de Fourier rápida, discutida no capítulo seguinte.
+
+40
+
+
+
+(0,0,0) (0,M,0)(0,1,0)
+
+(L,0,0) (L,1,0)
+
+(0,0,N)
+
+(0,M,N)
+
+Figura 3.3: A subdivisão do meio usado nas simulações.
+
+ZZ YY
+
+XX
+
+??
+
+Figura 3.4: Geometria simulada e os eixos coordenados
+
+41
+
+
+
+Biomédica da Unicamp (CEB - Unicamp). Estes são os principais motivos para adotarmos
+
+as coordenadas cartesianas.
+
+Usamos a unidade gray para contabilizar a dose absorvida em cada célula. Esta dose é
+
+dividida pelo número de fótons incidentes, assim teremos um resultado que é independente
+
+do número de histórias.
+
+3.3.1.2 Os parâmetros da simulação
+
+Escolhemos a energia de 1,25 MeV para o feixe primário de fótons pois representa a média
+
+das duas linhas de emissão de 
+ do 60Co3. O meio absorvedor usado é a água, de densidade
+
+1g=cm3.
+
+Os dados sobre a seção de choque foram gerados pelo PEGS conforme apresentado no
+
+apêndice E.
+
+Os principais parâmetros usados no EGS4, bem como na execução do PEGS, estão na
+
+tabela 3.1. Destes, apenas o AE e AP são ajustados durante a execução do PEGS. Os valores
+
+Nome do parâmetro Descrição Valores usados
+
+EI Energia do fóton incidente 1,25 MeV
+NCASE Número de histórias 107
+
+ESTEPE Máxima fração da energia perdida em cada passo
+pelo processo de perda contínua de energia
+
+0,02
+
+ECUT Energia cinética mínima das partículas carregadas
+(cut-o? )
+
+50 keV
+
+AE Energia mínima para a produção de elétrons se-
+cundários
+
+50 keV
+
+PCUT Energia mínima dos fótons (cuto? ) 50 keV
+AP Energia mínima para a produção de fótons secun-
+
+dários
+50 keV
+
+Tabela 3.1: Parâmetros usados nas simulações
+
+de ECUT, PCUT, AP e AE usados são baseados em [15].
+
+ESTEPE é a máxima fração da energia cinética do elétron (pósitron) transferida para o
+
+meio pelo processo de perda contínua de energia. Esta variável limita diretamente o espaço
+
+percorrido pelo elétron a cada transporte. O valor para esta variável, mostrado na tabela
+
+3.1, é o sugerido por [15] e fundamentado pelos estudos de [13, 17].
+
+Valores menores que os apresentados na tabela 3.1 não alteram substancialmente o re-
+
+sultado mas aumentam o tempo de simulação.
+3As linhas são: 1,127MeV e 1,33 MeV[16]
+
+42
+
+
+
+3.3.1.3 A contabilização da energia depositada
+
+O feixe de fótons que incide perpendicularmente à superfície xy do cubo de água possui
+
+área zero4, isto é, ele é ideal. ?Forçamos? todos os fótons a terem sua primeira interação a
+
+uma profundidade conhecida, exatamente no centro de uma célula. A profundidade pode
+
+ser escolhida de tal maneira que todo o máximo de energia seja depositada dentro do meio.
+
+A maneira como alteramos o programa XYZP para que ele simulasse os núcleos de
+
+convolução é descrita no apêndice D.
+
+Por convenção, a face xy por onde entra a partícula tem como coordenada espacial de
+
+profundidade z = 0, e este valor aumenta com o aumento da profundidade, da mesma forma
+
+os índices das células também aumentam na mesma direção dos eixos. Todo este tanque de
+
+água é cercado por vácuo, por isso cada partícula que ultrapassar as fronteiras deste tanque
+
+terá sua história terminada.
+
+Na ?gura 3.5 temos esquematizado o processo completo de simulação dos núcleos de
+
+convolução que será descrito em mais detalhes a seguir. Para cada espécie de núcleo simulado
+
+?zemos um programa especí?co. Deste modo, cada núcleo foi simulado separadamente.
+
+3.3.1.4 Núcleo primário
+
+Para o núcleo primário desejamos saber como é a deposição da dose devido aos elétrons e
+
+pósitrons gerados na primeira interação, conforme mostrado na ?gura 3.5. Assim na simula-
+
+ção do núcleo primário o fóton incidente interage no ponto desejado e são transportadas as
+
+partículas carregadas criadas e sua energia é transferida para o meio. O primeiro processo
+
+é aleatório e pode ser qualquer uma dos apresentados anteriormente5. Qualquer fóton que
+
+venha a ser gerado nesta primeira interação ou nas posteriores não será transportado.
+
+3.3.1.5 Núcleo secundário
+
+O núcleo secundário de deposição de energia contabiliza somente as partículas carregadas
+
+lançadas pelo fóton secundário. Este fóton existe somente se a primeira interação for por
+
+efeito Compton, caso contrário a história é imediatamente terminada. Então, saindo da
+
+primeira interação, o fóton secundário será simulado sem nenhuma outra intervenção. Na
+
+segunda interação as partículas carregadas serão transportadas sem restrições. O processo
+
+pelo qual ocorre a segunda interação do fóton também é livre. Quaisquer fótons gerados
+
+após a segunda colisão serão descartados.
+4Também conhecido como pencil beam.
+5Exceto Rayleigh porque o XYZP não usa este processo. Tal processo também não transfere energia e,
+
+como um todo, não é muito provável de acontecer. A não ativação desta opção reduz o tempo de simulação.
+
+43
+
+
+
+Energia 
+dos fótons
+primários
+
+Energia
+cinética da
+partícula
+carregada
+primária
+
+Energia 
+primária
+depositada
+
+Os fótons de 
+bremsstrahlung e 
+aniquilação de pares 
+são descartados
+
+Energia dos 
+fótons 
+secundários
+
+Energia cinética das 
+partículas carregadas 
+secundárias
+
+Energia 
+secundária 
+depositada
+
+Energia dos fótons 
+de terceira ordem 
+e superiores
+
+Energia cinética das 
+partículas carregadas 
+de terceira ordem e 
+superiores depositada
+
+Transporte e deposição 
+da energia dos fótons 
+de bremsstrahlung e 
+aniquilação de pares
+
+Energia cinética 
+depositada
+
+F
+igu
+
+ra
+3.5:
+
+O
+organ
+
+ogram
+a
+d
+o
+p
+ro
+cesso
+
+d
+e
+sim
+
+u
+lação
+
+d
+os
+
+n
+ú
+cleos
+
+d
+e
+con
+
+volu
+ção
+
+44
+
+
+
+3.3.1.6 Núcleo de múltiplo espalhamento
+
+Neste núcleo os primeiros processos de interação dos fótons ocorrem da mesma forma como
+
+no secundário, porém a energia das partículas secundárias não são contabilizadas. Mas agora
+
+não vamos descartar nenhuma outra partícula após a terceira interação do fóton e todas as
+
+partículas carregadas serão transportadas e contabilizadas normalmente. O processo pelo
+
+qual ocorrem a terceira interação e as posteriores também não sofre nenhuma restrição.
+
+Neste núcleo também transportaremos e contabilizaremos todos os fótons gerados por
+
+bremsstrahlung e aniquilação de pares (caso haja). Embora no artigo [15] os fótons gera-
+
+dos pelo processo de bremsstrahlung e aniquilação de pares sejam sempre contabilizados
+
+separadamente, eles possuem uma a?nidade maior com o grupo de múltiplo espalhamento
+
+de fótons. Mas é importante lembrar que somente os fótons gerados pelas partículas car-
+
+regadas de terceira ordem ou ordens superiores serão contabilizados no grupo de múltiplo
+
+espalhamento de fótons.
+
+45
+
+
+
+46
+
+
+
+Capítulo 4
+
+O Método Numérico
+
+Neste capítulo discutiremos os métodos numéricos usados para calcular as integrais de con-
+
+volução do capítulo 2 usando os núcleos de deposição de energia simulados no capítulo 3.
+
+Primeiro veremos como modi?car as expressões integrais teóricas da dose para que pos-
+
+samos usar os núcleos de deposição de energia simulados. A seguir mostraremos como a
+
+?uência deve ser discretizada.
+
+Por ?m, discutiremos a técnica de transformada de Fourier rápida (em inglês Fast Fourier
+
+Transform - FFT) para fazer as convoluções numericamente.
+
+Implementamos somente o modelo para as doses parciais de ordem zero porque é possível
+
+simular o núcleo desta ordem. Os núcleos de primeira ordem não são facilmente simulados
+
+no EGS4 e este foi o motivo pelo qual não o implementamos.
+
+4.1 O cálculo computacional da dose
+
+Os artigos mais antigos apresentam cálculos de dose em duas dimensões (2D) [3, 4], tendo
+
+integrado previamente os dados em uma das direções perpendiculares ao campo. Optamos
+
+por trabalhar em 3D porque atualmente dispomos de equipamentos capazes de indexar
+
+matrizes grandes e ao mesmo tempo manter uma boa precisão nos resultados.
+
+Usaremos uma matriz de dimensões L ? M ? N representando as células no meio em
+coordenadas cartesianas, onde cada célula é indexada respectivamente pelos índices i;j;k
+
+e contém o valor da densidade relativa naquele ponto. O formato dos arquivos de dados
+
+desta matriz 3D está descrito no apêndice F. Por questões de economia de memória so-
+
+mente descreveremos o meio absorvedor nesta matriz, excluindo o ar entre a fonte e o meio
+
+47
+
+
+
+absorvedor1.
+
+Para efetuarmos os cálculos numéricos devemos primeiro discretizar as funções envolvidas
+
+nas expressões das convoluções para as doses parciais, nas equações 2.54, 2.73 e 2.85.
+
+A simulação nos fornece os núcleos de deposição de energia discretizados em células de
+
+0; 5 ? 0; 5 ? 0; 5 cm3, por isso a ?uência também será discretizada em células de mesmo
+tamanho. Este é o menor elemento de volume a que teremos associado um valor de dose,
+
+por isso o tamanho destas células designa a resolução espacial.
+
+Os núcleos de deposição de energia simulados têm dimensão de gray=f?oton e os apre-
+
+sentados no capítulo teórico de gray=cm, portanto deveremos modi?car as expressões das
+
+funções envolvidas nos cálculos teóricos para que possamos usar os núcleos de convolução
+
+simulados.
+
+Como na simulação dos núcleos consideramos apenas um feixe in?nitesimal (área zero)
+
+de fótons, esperamos que a outra função que substituirá a ?uência na integral de convolução
+
+seja apenas o número de fótons na posição ?!r . Assim
+
+D (?!r ) =
+Z Z Z
+
+V
+N
+??!r 0? ? k ??!r ? ?!r 0? ? dV 0 (4.1)
+
+sendo N
+??!r 0? o número de fótons e k ??!r ? ?!r 0? o núcleo de deposição de energia dado
+
+em gray=
+?
+f?otons ? cm3?. Portanto os núcleos de deposição de energia simulados devem
+
+ser divididos pelo volume das células [10]. Assim, quando integrado em todo o espaço V ,
+
+teremos a dose ?total? em ?!r daquele tipo de processo descrito pelo núcleo de deposição de
+energia k
+
+??!r ? ?!r 0? e pelo número de fótons N ??!r 0?.
+Embora N seja o número de fótons, continuaremos a tratá-lo como ?uência primária por
+
+motivos que serão esclarecidos logo mais.
+
+4.2 A matriz da ?uência primária
+
+Os modelos teóricos estudados no capítulo 2 se baseiam em uma expressão para a ?uência
+
+onde não consta a divergência geométrica. Esta divergência existe e suas características
+
+são inerentes ao equipamento. A máquina do CEB de teleterapia é composta por uma
+
+fonte em forma de um disco de 2 cm de diâmetro, e por um conjunto de colimadores. A
+
+distância da fonte aos colimadores zc é de 45 cm [18]. Com esta geometria, um campo de
+
+10?10 cm2 em uma superfície plana distante 80 cm da fonte se tornaria de 13; 75?13; 75 cm2
+a uma profundidade de 30 cm da superfície. Note que estamos tratando a divergência como
+
+1Desprezamos o espalhamento dos fótons pelo ar.
+
+48
+
+
+
+geométrica apenas, porque a queda com o inverso do quadrado da distância foi preservada
+
+durante os estudos teóricos.
+
+Fonte
+
+zz
+
+zz
+
+zz
+00
+
+cc
+
+?? 00
+22
+
+??
+22
+
+colimadores
+
+superfície
+
+Figura 4.1: A divergência geométrica da fonte
+
+Na ?gura 4.1 esquematizamos um equipamento de teleterapia onde a distância SSD é da-
+
+da por z0, o campo na superfície por ?0, e ? é o campo na profundidade z. Matematicamente
+
+o campo em z é descrito por
+
+? (z) = z ?
+?
+?0
+z0
+
+?
+(4.2)
+
+Se descrevêssemos esta divergência na função da ?uência primária, não conseguiríamos
+
+construir os modelos teóricos do capítulo 2 com a mesma facilidade.
+
+Porém, os mesmos argumentos que usamos anteriormente para desprezar a divergência
+
+agora legitimam a sua implementação computacional.
+
+4.2.1 A implementação computacional
+
+Como já discutimos anteriormente, devemos alterar as dimensões da ?uência usada na con-
+
+volução para que tenhamos como resultado a dose em gray. Partimos então da equação
+
+2.1, e sendo a área do campo uma constante, chegaremos a uma equação para o número de
+
+49
+
+
+
+fótons Np em função do vetor posição ?!r , dado por
+
+Np (
+?!r ) = N0 (?!r0) ?
+
+?????!r0?!r
+????2 ? exp
+
+?
+?
+Z r
+r0
+?
+??!
+l
+?
+? d?!l
+
+?
+(4.3)
+
+onde N0 é o número de fótons na superfície do meio absorvedor e as outras variáveis são as
+
+mesmas da equação 2.1.
+
+Assim, chegamos facilmente a uma expressão discretizada para o número de fótons,
+
+Np (i;j;k) = N0 (i;j;k) ?
+???? Z0k ? 4` + Z0
+
+????2 ? ZY
+k=0
+
+exp
+
+?
+? ?
+?H2O
+
+? ? (i;j;k) ? 4`
+?
+
+(4.4)
+
+sendo Z0 a distância da fonte à superfície, 4` é a lateral da célula cúbica em centímetros,
+i;j;k são os índices das células, ?
+
+?H2O
+é o coe?ciente de atenuação linear em massa da água
+
+dado em cm2=g e ? (i;j;k) é a densidade da célula em g=cm3. Note que estamos somando
+
+Z0 a k ? 4` porque estamos calculando a ?uência somente dentro do meio espalhador, e o
+índice k = 0 corresponde à primeira camada de células.
+
+A função N0 (i;j;k) descreve a extensão do campo em qualquer ponto do meio absorve-
+
+dor. Assim, para um campo quadrado teremos:
+
+N0 (i;j;k) =
+
+(
+1 se ? ?k
+
+2
+&amp;lt;i0 &amp;lt;?k
+
+2
+e ? ?k
+
+2
+&amp;lt;j0 &amp;lt;?k
+
+2
+
+0 se ? ?k
+2
+&gt; i0 &gt; ?k
+
+2
+e ? ?k
+
+2
+&gt; j0 &gt; ?k
+
+2
+
+(4.5)
+
+onde i0 e j0 são os respectivos centros da matriz do meio absorvedor dados por: i0 = i ? L
+2
+
+e j0 = j ? M
+2
+. Nesta tese usaremos dois tipos de campo quadrado: um com e outro sem
+
+divergência geométrica. Então ?k = 1 para campo sem divergência em qualquer k, e ?k =
+
+(k ? 4` + z0) ? ?0z0 para campo com divergência com k = 0; 1; 2 : : : N.
+Normalmente N0 tem seu valor atribuído ao número de fótons em um determinado
+
+ponto, mas, como veremos no capítulo 5, estamos interessados apenas nos valores relativos
+
+das curvas de isodose quando o pico é normalizado a 100%. Por este motivo, todas as
+
+constantes que multiplicam tanto a ?uência quanto o núcleo de deposição de energia serão
+
+englobadas em uma única constante de normalização.
+
+4.3 Convolução via FFT
+
+O problema a ser discutido agora é como fazer da maneira mais e?ciente possível as inte-
+
+grais de convolução apresentadas no capítulo 2. Estas integrais serão feitas numericamente,
+
+50
+
+
+
+portanto devemos primeiro discretizá-las.
+
+Discretizamos uma integral simples da seguinte forma:
+
+Z
+f (?) d? ?!
+
+X
+n
+
+f (nT) (4.6)
+
+onde n é o índice da soma e T é o intervalo entre os pontos.
+
+Então podemos escrever uma integral de convolução na sua forma discreta assim
+
+h (t) =
+
+Z `
+0
+f (?) ? g (t ? ?) d? ?! bh (tk) = NX
+
+n=0
+
+f (nT) ? g (tk ? nT) (4.7)
+
+onde o intervalo ` foi subdivido em N partes de comprimento T, e k = 0; 1; 2 : : : N. bh (tk)
+representa a função h (t) amostrada no ponto tk.
+
+Temos N pontos para serem amostrados e cada um deles é o resultado da soma sobre os
+
+N termos, portanto o tempo computacional para este cálculo de convolução é proporcional a
+
+N 2. Mas esta é uma operação custosa em termos de tempo de processamento, especialmente
+
+quando temos grandes conjuntos de dados. Como mostraremos a seguir, a alternativa en-
+
+contrada para reduzir o tempo de cálculo foi usar os algoritmos de transformada de Fourier
+
+rápida (FFT) [19, 20].
+
+4.3.1 A Transformada de Fourier Rápida
+
+Em 1965 Cooley e Tukey publicaram um algoritmo matemático que reduzia o número de
+
+operações nos procedimentos de transformadas de Fourier, tornando-se o primeiro algoritmo
+
+de FFT. A redução no tempo de computação é considerável, indo de N2 para N log2 N para
+
+cada transformada de Fourier [20].
+
+As expressões para uma transformada de Fourier (eq. 4.8) e sua inversa (eq. 4.9) são:
+
+H (f) =
+
+Z
+1
+
+?1
+
+h (t) e?i2?ftdt (4.8)
+
+h (t) =
+
+Z
+1
+
+?1
+
+H (f) ei2?ftdf (4.9)
+
+onde i =
+p
+?1, e t e f são parâmetros das suas respectivas funções.
+
+Assumimos também a equivalência entre as transformadas contínuas e as discretas[20].
+
+Esta a?rmação é válida quando observadas as restrições apresentadas na seção 4.3.1.1.
+
+A transformada de Fourier de uma função h (t) será denotada por =fh (t)g = H (f) e a
+
+51
+
+
+
+transformada inversa por =?1 fH (f)g = h (t).
+Uma convolução de p com q pode ser indicada por h = p ? q. É uma propriedade da
+
+transformada de Fourier a seguinte relação [20, 21]:
+
+=fhg = =fpg ? =fqg (4.10)
+
+Este fato é o que torna a aplicação do cálculo de convolução realmente interessante. É
+
+por este motivo que, no capítulo 2, sempre buscamos a integral de convolução.
+
+4.3.1.1 Os Teoremas da Amostragem
+
+Seja uma função unidimensional contínua e suave p (t) de?nida em um intervalo ?1 &amp;lt;t&amp;lt;
+1. Esta função deve possuir variações tais que a máxima freqüência relacionada seja fc, isto
+é, a função tenha a sua banda de freqüências limitada a, no máximo, fc. Este é o primeiro
+
+teorema da amostragem.
+
+O segundo teorema enuncia que o intervalo entre as amostragens T para realizar uma
+
+operação de FFT deve obedecer a seguinte expressão:
+
+T&amp;lt;
+1
+
+2fc
+(4.11)
+
+Uma operação como a mostrada na equação 4.12 deverá ser corretamente transformada se
+
+a expressão acima for obedecida. Caso tenhamos T &gt; 1
+2fc
+
+, esta mesma operação apresentará
+
+ondulações resultantes do batimento entre a freqüência de amostragem e as freqüências mais
+
+altas presentes na função p (t). Este fenômeno é conhecido como aliasing.
+
+=fpg = P ?! =?1 fPg = p (4.12)
+
+A condição 1
+T
+
+= 2fc indica a menor freqüência de amostragem para obtermos =fpg
+corretamente. Esta freqüência é também conhecida como freqüência de Nyquist.
+
+A discussão apresentada até o momento é para funções unidimensionais periódicas, mas
+
+pode facilmente ser estendida para n dimensões.
+
+O nosso problema envolve uma convolução entre duas funções distintas. A primeira é a
+
+?uência primária que é uma expressão monotônica decrescente e suave, portanto não teremos
+
+problemas com o teoremas da amostragem. A função de densidade relativa e? também faz
+parte de primeira função da convolução e devemos obedecer o teorema da amostragem na
+
+montagem desta matriz, o que será feita manualmente.
+
+Conseguimos o núcleo de deposição de energia, que é a segunda função, através de uma
+
+52
+
+
+
+simulação onde os dados são gerados discretizados. Se quisermos reduzir a resolução deste
+
+núcleo devemos estudar o seu espectro de freqüências e, se necessário, ?ltrá-lo para satisfazer
+
+a condição 4.11, mas este tratamento está além do objetivo desta tese e, portanto, não será
+
+feito.
+
+4.3.2 Convolução de duas funções ?nitas
+
+Com a propriedade apresentada na equação 4.10 podemos fazer uma convolução usando
+
+apenas três transformadas de Fourier e uma operação de multiplicação, independentemente
+
+da dimensão das funções, podendo ser de 1D, 2D, 3D, etc.
+
+Em 3D com um conjunto amostral de L ? M ? N, onde L; M; N são os números de
+pontos da função em cada direção ortogonal, dados respectivamente pelos índices i;j;k,
+
+o cálculo convencional de uma transformada de Fourier exigiria um tempo proporcional a
+
+(L ? M ? N)2 e via FFT teremos apenas (L ? M ? N) log2 (L ? M ? N)[20, 19].
+Nenhuma das duas funções utilizadas nos cálculos por convolução deste trabalho apre-
+
+senta periodicidade, propriedade exigida na convolução via FFT. Sem a periodicidade, pode
+
+haver sobreposição das funções após a convolução (conhecido como ?efeito de borda?). É
+
+importante ressaltar que o número de pontos e o intervalo das duas funções usadas na
+
+convolução também podem ser diferentes.
+
+Suponha que temos duas funções 1D, f (xi) com P pontos e g (xi) com Q pontos. Para
+
+evitar o efeito de sobreposição devemos estender ambas as funções para um tamanho N &gt;
+
+P + Q ? 1 e preencher estes espaços com zeros. Desta forma teremos:
+
+f (xi) =
+h
+x0 x1 : : : xP 0 0 : : : 0 0
+
+i
+1?N
+
+(4.13)
+
+g (xi) =
+h
+x0 x1 : : : xQ 0 : : : 0 0
+
+i
+1?N
+
+(4.14)
+
+Agora temos as duas funções com o mesmo número de pontos e com zeros su?cientes
+
+para evitar a sobreposição. A este procedimento damos o nome de Zero Padding [20, 22].
+
+Para 3D devemos estender da mesma maneira cada uma das três direções com termos
+
+nulos.
+
+4.3.2.1 O deslocamento dos dados
+
+Quando fazemos uma convolução de dados não periódicos, o espaço de amostragem de saída
+
+tem o tamanho do espaço de entrada mais a extensão do padding de zeros. O número de
+
+células equivalente a este padding deve ser extraído do resultado ?nal.
+
+53
+
+
+
+No nosso caso os dados corretos estão transladados pela matriz estendida após a con-
+
+volução, e a translação corresponde exatamente à distância do valor máximo presente no
+
+conjunto de dados do núcleo de convolução à sua origem. Para corrigir este problema temos
+
+duas alternativas [20]:
+
+? transladar previamente o pico do núcleo de convolução para a origem;
+
+? transladar posteriormente os dados após os cálculos.
+
+A primeira alternativa é a melhor, pois torna possível a otimização dos cálculos durante
+
+a convolução e também é a técnica mais elegante [20, 22]. No entanto, como estamos
+
+trabalhando em 3D, ela di?culta a visualização e a manipulação dos dados contidos no
+
+núcleo de convolução. Por isso nesta tese será usada a translação posterior por ser mais
+
+prática e simples. A forma mais elegante deverá ser implementada ao longo do trabalho de
+
+otimização do código, posterior à dissertação.
+
+54
+
+
+
+Capítulo 5
+
+Resultados e Discussões
+
+Neste capítulo apresentamos e discutimos os resultados das simulações para a obtenção dos
+
+núcleos de deposição de energia e os resultados obtidos pelo algoritmo de cálculo da dose
+
+por convolução utilizando estes núcleos simulados.
+
+5.1 Os núcleos de deposição de energia
+
+As simulações foram feitas considerando tanques de água1 de forma cúbica discretizados em
+
+células também cúbicas de 0; 5?0; 5?0; 5 cm3. As dimensões adotadas para os tanques são
+diferentes para cada núcleo.
+
+Todos os núcleos de deposição de energia usados nesta tese foram simulados na máquina
+
+Thor2 com 107 histórias, mas ?zemos simulações nas máquinas Araguaia e HAL9000 e
+
+os resultados apresentaram variações da ordem de 10% nos valores de pico dos núcleos. As
+
+maiores diferenças estão nos núcleos secundário e de múltiplo espalhamento. Este fato sugere
+
+uma ?utuação estatística e a solução proposta seria aumentar o número de histórias. Porém
+
+este aumento signi?caria um aumento considerável no tempo de simulação. O aumento
+
+de uma ordem de grandeza no número de histórias levaria a simulação a tomar algumas
+
+centenas de horas de CPU.
+
+5.1.1 O núcleo de deposição de energia primária
+
+Simulamos o núcleo de deposição primária de energia para um tanque de 5 ? 5 ? 5 cm3. As
+?guras 5.1 e 5.2 mostram o resultado obtido para esta simulação.
+
+1Também conhecidos por fantom na literatura técnica.
+2Veja as con?gurações dos computadores no apêndice G.
+
+55
+
+
+
+0 1 1.6
+0.0×100
+
+1.0×10?9
+
+1.6×10?9
+
+Profundidade, Eixo Z (cm)
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e 
+em
+
+ G
+y/
+
+p
+ar
+
+t.
+
+Figura 5.1: Per?l do núcleo primário de convolução.
+
+Na ?gura 5.1 temos o per?l de dose depositada na profundidade z pelas partículas pri-
+
+márias. Neste grá?co observamos o pico de deposição de energia de todo meio, 1; 477 ?
+10?9gray/partícula. Os dados até 10?13 gray/partícula têm no máximo 1% de incerteza. O
+
+tempo de CPU3 tomado por todas as histórias desta simulação foi de aproximadamente 0,7
+
+horas.
+
+Deste mesmo conjunto de dados extraímos um grá?co em isolinhas, que nos permite ter
+
+uma idéia da distribuição da dose em um corte no plano do pico da dose, como na ?gura
+
+5.2.
+
+As posições em centímetro anotadas nos eixos destes grá?cos e dos posteriores não cor-
+
+respondem à posição absoluta no tanque de água. Não há a necessidade dessa coincidência
+
+e nem mesmo de saber a posição real em que ocorreu a primeira interação do fóton com o
+
+meio, pois para a convolução apenas importa a posição dos dados em relação ao pico, como
+
+discutido no capítulo 4.
+
+5.1.1.1 Os limites de resolução
+
+O modelo adotado pela subrotina de múltiplo espalhamento coulombiano do EGS4 é válido
+
+somente quando, durante o transporte, a partícula carregada sofre pelo menos 20 colisões
+
+3Tempo de CPU signi?ca o tempo que a máquina dedicou exclusivamente para este processo.
+
+56
+
+
+
+1 2 2.5
+0
+
+1
+
+2
+
+Eixo Z (cm)
+
+E
+ix
+
+o 
+Y
+
+ (
+cm
+
+)
+
+1e?11
+
+1e
+?1
+
+1
+
+1e?11
+1e
+
+?1
+1
+
+1e?10 1e
+?1
+
+0
+
+1e?101e
+?1
+
+0
+
+5e?10
+
+5e?10
+
+Figura 5.2: Grá?co em isolinhas do núcleo de convolução primário obtido por meio de
+simulação de Monte Carlo. Os números nas isolinhas indicam a intensidade em Gy/part.
+
+57
+
+
+
+elásticas. Caso o número seja menor, o modelo de Bethe não é mais válido, a subrotina é
+
+desligada e nenhuma outra correção é feita. Este fato implica em não corrigir a trajetória
+
+da partícula carregada. Quando reduzimos as dimensões das células, a probabilidade da
+
+trajetória de um elétron ultrapassar uma interface entre células aumenta, e a cada vez
+
+que um elétron alcança uma interface, o seu transporte é interrompido antes que ocorra o
+
+número mínimo de colisões para a devida correção pelo múltiplo espalhamento. Assim os
+
+dados resultantes da simulação não seriam muito con?áveis.
+
+Para testar esta condição, o EGS4 dispõe de uma variável chamada de NOSCAT, que
+
+mostra o número total de vezes em que a subrotina de múltiplo espalhamento foi desligada.
+
+O teste de resolução consistiu em simular o núcleo de convolução primário em diversos
+
+tamanhos de células. A extensão do meio foi a mesma da seção anterior e o número de
+
+histórias foi reduzido a 105 por uma questão de tempo de CPU. Os resultados estão na
+
+tabela 5.1.
+
+Dimensões das células NOSCAT
+
+0; 5 ? 0; 5 ? 0; 5 cm3 44.478
+0; 2 ? 0; 2 ? 0; 2 cm3 53.136
+0; 1 ? 0; 1 ? 0; 1 cm3 164.936
+
+Tabela 5.1: Os testes para os limites de resolução.
+
+Notamos um brusco aumento no número de vezes em que essa rotina é desligada quando
+
+passamos de 0,2 cm de lado para 0,1 cm. Concluímos que a melhor resolução possível para
+
+células cúbicas é de 0,2 cm de lado.
+
+No entanto não aproveitaremos, nesta tese, os dados das células cúbicas de 0,2 cm de lado
+
+pois tal procedimento gera uma quantidade muito grande de pontos durante a convolução,
+
+necessitando de (2; 5)3vezes mais memória RAM que as células cúbicas de 0,5 cm!
+
+5.1.2 O núcleo de deposição de energia secundária
+
+Para esta simulação as dimensões do tanque são 30?30?30 cm3 e as células têm 0; 5?0; 5?
+0; 5 cm3, também. O tempo de CPU dedicado a esta simulação foi de aproximadamente 4,6
+
+horas. A seguir apresentamos os resultados da simulação do núcleo de convolução secundário.
+
+Na ?gura 5.3 vemos o per?l da deposição da dose ao longo do eixo z atravessando o
+
+pico de todo o conjunto de dados, 5; 266 ? 10?11 gray/partícula. O grá?co tem seu eixo de
+intensidades em escala logarítmica para conseguirmos ver toda a extensão em que a energia é
+
+espalhada. Na seqüência temos um corte em representação de isolinhas, mostrado na ?gura
+
+5.4.
+
+58
+
+
+
+0 10 20
+1.0×10?14
+
+1.0×10?13
+
+1.0×10?12
+
+1.0×10?11
+
+1.0×10?10
+
+Profundidade, Eixo Z (cm)
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e 
+em
+
+ G
+y/
+
+P
+ar
+
+t.
+
+Figura 5.3: Per?l no eixo central da dose depositada pelos elétrons secundários.
+
+59
+
+
+
+0 10 20
+7
+
+10
+
+20
+
+23
+
+Eixo Z (cm)
+
+E
+ix
+
+o 
+Y
+
+ (
+cm
+
+)
+
+1e?14
+
+1e
+?
+
+14 1e?14
+
+1e?14
+
+1e
+?
+
+14
+
+1e?
+14
+
+1e?
+14
+
+1e
+?1
+
+4
+
+1e?
+14
+
+1e?14
+
+1e?14
+1e?1
+
+4
+
+1e?13
+
+1e?13
+
+1e?
+12
+
+1e
+?1
+
+1
+
+F
+igu
+
+ra
+5.4:
+
+G
+rá?
+
+co
+em
+
+isolin
+h
+as
+
+d
+e
+u
+m
+
+corte
+d
+o
+n
+ú
+cleo
+
+secu
+n
+d
+ário.
+
+O
+s
+n
+ú
+m
+eros
+
+n
+as
+
+isolin
+h
+as
+
+in
+d
+icam
+
+a
+in
+ten
+
+sid
+ad
+e
+em
+
+G
+y
+/p
+art.
+
+60
+
+
+
+Nestes dois grá?cos observamos algum ruído que aumenta com a distância ao pico da
+
+distribuição. A incerteza máxima nesta simulação ?cou em torno de 11% para os dados
+
+periféricos, e em 10?13 gray/partícula a incerteza ?cou em aproximadamente 0,6%.
+
+5.1.3 O núcleo de deposição de energia devido ao múltiplo espalhamento
+
+dos fótons
+
+A extensão do meio usado nesta simulação foi a mesma que para o núcleo secundário. O
+
+tempo de CPU para esta simulação foi de 6 horas. Nas ?guras 5.5 e 5.6 apresentamos os
+
+resultados desta simulação.
+
+Na ?gura 5.5 observamos o pico de todo o conjunto de dados, 2; 3?10?10 gray/partícula.
+Notamos também que este pico é maior que o do secundário devido, principalmente, ao maior
+
+número de fótons que contribuíram para a sua formação. A incerteza máxima ?cou em torno
+
+de 11% nas células mais externas e foi de aproximadamente de 0,6% em 10?13 gray/partícula.
+
+No grá?co do per?l a incerteza observada é claramente maior que 11% porque as células
+
+vizinhas também possuem uma incerteza próxima a esta, o que sugere oscilações maiores
+
+que a incerteza individual. O mesmo raciocínio vale para o núcleo secundário.
+
+Na ?gura 5.6 vemos que a energia no núcleo de múltiplo espalhamento estende-se por
+
+uma região ainda maior que no núcleo secundário. Esta extensão da energia absorvida no
+
+núcleo de múltiplo espalhamento é maior porque contabilizamos ordens superiores a três
+
+espalhamentos de fótons.
+
+5.2 Os cálculos da dose de radiação
+
+Implementamos o algoritmo de cálculo da dose de radiação por convolução apresentado no
+
+capítulo 4 e a listagem deste programa se encontra no apêndice C. Fizemos o teste do
+
+algoritmo em várias situações em meios homogêneos e heterogêneos. Em todas as situações
+
+calculadas pelo método de convolução o meio foi discretizado em células cúbicas de 0,5 cm
+
+de lado em uma matriz 3D ?xada em 64 ? 64 ? 64 células4. Portanto o meio descrito é um
+cubo de 32 ? 32 ? 32 cm3.
+
+Usamos a água como meio homogêneo em todos os cálculos, e nas montagens heterogê-
+
+neas a água também foi muito usada.
+
+4Usamos 26 células em cada direção apenas porque a FFT apresenta o melhor desempenho.
+
+61
+
+
+
+0 10 20
+1.0×10?15
+
+1.0×10?14
+
+1.0×10?13
+
+1.0×10?12
+
+1.0×10?11
+
+1.0×10?10
+
+1.0×10?9
+
+Profundidade, Eixo Z (cm)
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e 
+em
+
+ G
+y/
+
+p
+ar
+
+t.
+
+Figura 5.5: Per?l do núcleo de múltiplo espalhamento.
+
+62
+
+
+
+0 10 13
+10
+
+20
+
+Eixo Z (cm)
+
+E
+ix
+
+o 
+Y
+
+ (
+cm
+
+)
+
+1e?14
+
+1e?14
+
+1e
+?
+
+14
+
+1e?
+14
+
+1e?14
+
+1e?
+13
+
+1e
+?1
+
+2
+
+1e
+?1
+
+1
+
+F
+igu
+
+ra
+5.6:
+
+C
+u
+rvas
+
+em
+isolin
+
+h
+as
+
+d
+e
+u
+m
+
+corte
+d
+o
+n
+ú
+cleo
+
+d
+e
+m
+ú
+ltip
+
+lo
+esp
+
+alh
+am
+
+en
+to.
+
+O
+s
+
+n
+ú
+m
+eros
+
+n
+as
+
+isolin
+h
+as
+
+in
+d
+icam
+
+a
+in
+ten
+
+sid
+ad
+e
+em
+
+G
+y
+/p
+art.
+
+63
+
+
+
+5.2.1 Os testes em meios homogêneos
+
+Dividimos em duas partes os testes propostos para meios homogêneos. Na primeira parte
+
+comparamos o algoritmo apresentado nesta dissertação com medidas feitas no CAISM, e na
+
+segunda comparamos com os resultados calculados pelo programa PLATO da Nucletron.
+
+Este programa usa os per?s transversais5 de dose medidos na água quando irradiados pela
+
+máquina de 60Co 6.
+
+5.2.1.1 Comparação com as medidas feitas no CAISM
+
+O primeiro teste proposto é bastante simples: as medidas foram feitas aplicando um campo
+
+quadrado de 10 ? 10 cm2 na superfície do tanque de água dado por uma fonte a 80 cm de
+distância da superfície.
+
+Mostramos a curva da ?uência em perspectiva onde no eixo z está a intensidade nor-
+
+malizada a 100%. Note que não há divergência geométrica do feixe neste cálculo, mas
+
+consideramos normalmente a queda com o inverso do quadrado da distância. Esta normali-
+
+zação do máximo das curvas a 100% será um procedimento muito usado a partir deste ponto
+
+e, por isso, vamos citar somente os casos em contrário.
+
+A distribuição da dose calculada para esta fatia de ?uência está na ?gura 5.8.
+
+As imagens em 3D mostradas aqui terão sempre a intensidade no eixo das ordenadas.
+
+Este tipo de imagem nos permite ter uma idéia do comportamento da intensidade sobre
+
+um plano, mas imagens em isolinhas são mais quantitativas. Como exemplo, veja a mesma
+
+imagem mostrada na ?gura 5.8 agora em curvas de isodose: As respectivas curvas de isodose
+
+para as doses parciais primária, secundária e de múltiplo espalhamento estão nas ?guras 5.10,
+
+5.11 e 5.12, onde todas as parcelas estão normalizadas com relação ao seu próprio pico.
+
+A dose primária assemelha-se à ?uência primária porque a extensão do transporte ele-
+
+trônico da dose é pequena, e a maioria do elétrons primários tem alcance de 0,5 cm, como
+
+podemos ver no grá?co da ?gura 5.1.
+
+O transporte das doses secundárias e de múltiplo espalhamento é feito principalmente
+
+pelos fótons, por isso a extensão destas doses parciais é maior que a da dose primária, como
+
+conferimos nas ?guras 5.11 e 5.12.
+
+Vamos fazer uma comparação quantitativa do per?l da dose no eixo central do campo
+
+com dados experimentais.
+
+5O per?l transversal é o per?l da dose, medido na direção perpendicular ao feixe de fótons.
+6Na realidade não sabemos ao certo o método pelo qual este programa calcula as isodoses, porque o
+
+PLATO é um programa comercial fechado e o manual técnico pouco fala a este respeito.
+
+64
+
+
+
+0
+
+15
+
+30
+
+45
+
+60
+
+75
+
+90
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+0
+
+100
+
+Eixo Z
+
+0
+10
+
+20
+30
+
+E
+ix
+
+o 
+Y
+
+0
+
+10
+
+20
+
+30
+
+Figura 5.7: Vista em perspectiva da ?uência primária dada pelo corte no plano x no centro
+do campo. O pico de intensidade foi normalizado a 100%.
+
+65
+
+
+
+10
+
+20
+
+30
+
+40
+
+50
+
+60
+
+70
+
+80
+
+90
+
+95
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+100
+
+Eixo Z (cm)
+
+0
+
+10
+
+20
+
+30
+Ei
+
+xo
+ Y
+
+ (c
+m
+
+)
+
+0
+
+10
+
+20
+
+30
+
+Figura 5.8: A dose total vista em perspectiva.
+
+66
+
+
+
+0 10 20 30
+
+10
+
+20
+
+23
+
+Eixo Z (cm)
+
+E
+ix
+
+o 
+Y
+
+ (
+cm
+
+)
+
+10 10
+10
+
+10 10 10
+
+20 2
+0
+
+20
+20
+
+30
+
+30
+
+3030
+
+40
+
+40
+
+40
+
+50
+
+50
+
+0
+
+60
+
+60
+
+70
+
+70
+
+80
+
+90
+
+Figura 5.9: Curvas de isodose na água.
+
+0 10 20 30
+
+10
+
+20
+
+23
+
+Eixo Z (cm)
+
+E
+ix
+
+o 
+Y
+
+ (
+cm
+
+)
+
+10 10
+
+10
+
+1010
+
+20 20
+
+20
+
+20
+
+30
+
+30
+
+30
+
+40
+
+40
+
+40
+
+50
+
+50
+
+60
+
+60
+
+70
+
+70
+
+80
+
+90
+
+Figura 5.10: Curvas em isodose da dose primária.
+
+67
+
+
+
+0 10 20 30
+4
+
+10
+
+20
+
+28
+
+Eixo Z (cm)
+
+E
+ix
+
+o 
+Y
+
+ (
+cm
+
+)
+
+10
+10
+
+10
+
+10
+
+10
+
+10
+
+20
+20
+
+20
+
+20 20
+
+20
+
+30 30
+
+30
+
+30
+30
+
+40
+40
+
+40
+40
+
+50 50
+
+50
+
+50
+
+50
+
+60
+
+60
+60
+
+60
+
+70
+
+70
+
+70
+
+80
+
+808
+0
+
+90
+
+90
+
+Figura 5.11: Curvas em isodose da dose secundária.
+
+68
+
+
+
+0 10 20 30
+7
+
+10
+
+20
+
+25
+
+Eixo Z (cm)
+
+E
+ix
+
+o 
+Y
+
+ (
+cm
+
+)
+
+10 10
+10
+
+10 10
+10
+
+20 20
+
+20
+
+20
+
+30
+
+30
+
+3030
+
+40
+
+40
+
+40
+
+50
+
+50
+0
+
+60
+
+60
+
+70
+
+70
+
+80
+
+90
+
+Figura 5.12: Curvas em isodose da dose de múltiplo espalhamento.
+
+69
+
+
+
+0 10 20 30
+0
+
+100
+
+110
+
+Convolução X Medidas
+
+Eixo Z (cm)
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+Perfil central ? campo 5x5cm²
+
+CAISM
+
+Convolução
+
+Figura 5.13: Comparação do per?l da dose em profundidade para campo 5 ? 5 cm2 com
+dados experimentais do CAISM.
+
+70
+
+
+
+0 10 20 30
+0
+
+100
+
+110
+
+Convolução X Medidas
+
+Eixo Z (cm)
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+Perfil central ? campo 8x8cm²
+
+CAISM
+
+Convolução
+
+Figura 5.14: Comparação do per?l da dose em profundidade para campo 8 ? 8 cm2 com
+dados experimentais do CAISM.
+
+71
+
+
+
+0 10 20 30
+0
+
+100
+
+110
+
+Convolução X Medidas
+
+Eixo Z (cm)
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+Perfil central ? campo 10x10cm²
+
+CAISM
+
+Convolução
+
+Figura 5.15: Comparação do per?l da dose em profundidade para campo 10 ? 10 cm2 com
+dados experimentais do CAISM.
+
+72
+
+
+
+0 10 20 30
+0
+
+100
+
+110
+
+Convolução X Medidas
+
+Eixo Z (cm)
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+Perfil central ? campo 15x15cm²
+
+CAISM
+
+Convolução
+
+Figura 5.16: Comparação do per?l da dose em profundidade para campo 15 ? 15 cm2 com
+dados experimentais do CAISM.
+
+73
+
+
+
+As medidas usadas nestes grá?cos foram feitas na máquina de teleterapia ALCYON-II
+
+para uso do CAISM. O erro experimental está estimado em menos de 1%. Consideramos a
+
+divergência geométrica nos cálculos por convolução. A distância da fonte à superfície (SSD)
+
+desta máquina é de 80 cm, e este foi o valor usado nas simulações.
+
+Observamos uma excelente concordância dos resultados calculados para campos menores
+
+que 10 ?10 cm2 com os valores experimentais. O erro relativo está próximo ao das medidas
+até a profundidade de 24 cm para o campo de 5?5 cm2, de 17 cm para o campo de 8?8 cm2.
+
+O erro relativo entre o cálculo e os dados experimentais do campo 5 ? 5 cm2 a 28 cm
+de profundidade foi de 3% e do campo 8 ? 8 cm2 na mesma profundidade foi de 7,7%. O
+erro relativo é de?nido no apêndice A. Normalmente os artigos sobre o cálculo da dose por
+
+convolução comparam seus modelos com simulações ou valores experimentais e mencionam
+
+o erro absoluto, também de?nido neste mesmo apêndice. Tal método apresenta um valor
+
+para o erro muito menor e inadequado cienti?camente7.
+
+Escolhemos esta profundidade para fazer as comparações porque devemos sempre des-
+
+considerar os dados que estão nos últimos 3 cm já que esta é a distância do pico ao início
+
+do conjunto de dados do núcleo secundário e também do de múltiplo espalhamento. Este
+
+cuidado é necessário para minimizar a in?uência dos pontos que estão além da borda infe-
+
+rior do tanque de água, e que não espalham radiação. Como o nosso meio tem 32 cm de
+
+profundidade, 28 cm é uma distância segura.
+
+As doses calculadas e medidas para o campo de 10 ? 10 cm2 apresentam uma boa con-
+cordância para profundidades de até 15 cm. Em 28 cm a dose apresenta um erro relativo de
+
+9,8%8, e observamos também uma tendência mais acentuada em subestimar o valor medido.
+
+Com um campo de 15 ? 15 cm2 o erro relativo subiu para 15,4% a 28 cm, e chegou a 20%
+para um de 20 ? 20 cm2 (não mostrado)!
+
+A razão pela qual o per?l da dose calculada no eixo central do campo discorda tanto
+
+dos resultados experimentais é encontrada quando analisamos a extensão do meio onde
+
+foram simulados os núcleos secundário e de múltiplo espalhamento. Esta extensão não é
+
+grande o su?ciente para que todos os fótons sejam absorvidos dentro do meio em que foram
+
+feitas as simulações. A ?gura 5.17 mostra porque campos maiores precisam de núcleos de
+
+convoluções mais extensos. O artigo [15] sugere que o meio em que simulamos tenha uma
+
+extensão física de pelo menos 60 cm de raio. Por limitações técnicas dos computadores e do
+
+EGS4 nós ?zemos esta simulação em um cubo de 30 cm de lado, portanto a distância do
+
+feixe a qualquer lateral do cubo tem apenas 15 cm! O mesmo comentário vale para o núcleo
+
+7Por exemplo, este erro relativo de 7,7% signi?ca apenas 1,1% como absoluto.
+8Este valor corresponde a 2,1% de erro absoluto.
+
+74
+
+
+
+secundário porque o livre caminho médio destes fótons é maior que as dimensões do meio.
+
+Interferência de feixes laterais 
+no perfil central da dose
+
+curvas de 
+isodose
+
+Interferência de feixes em outras 
+profundidades  no perfil central da dosezz
+
+x,y
+
+F
+ei
+x
+e 
+d
+e 
+
+fó
+to
+n
+s
+
+Figura 5.17: A composição da dose no eixo central pelos feixes de fótons vizinhos.
+
+Nos grá?cos mostrados nas ?guras 5.18 e 5.19 temos uma comparação entre os per?s
+
+da dose absorvida transversal ao campo calculado e os dados da máquina ALCYON II.
+
+Nesta comparação ambos os resultados foram normalizados a 100%. Portanto, neste grá?co
+
+mostramos somente a concordância lateral da dose. O per?l transversal é dado pela dose
+
+perpendicular ao campo. Usamos um campo de 10 ? 10 cm2 e as profundidades mostradas
+são 0,5 cm e 20 cm, respectivamente. Nos cálculos numéricos consideramos a divergência
+
+geométrica do campo. Em ambos os grá?cos observamos uma boa concordância. O modelo
+
+para a ?uência ainda pode ser melhorado considerando a zona de penumbra, mas o ideal
+
+seria mapear o ?uxo ou a ?uência de fótons na superfície do meio em cada máquina e usá-lo
+
+nos cálculos, pois somente assim conseguiríamos corrigir as regiões afetadas pelo sistema de
+
+colimação [1]. Estas regiões aparecem claramente nas bordas inferiores e superiores do per?l
+
+do campo na ?gura 5.18.
+
+Neste grá?co comparamos os per?s de dose total, primária, secundária e de múltiplo
+
+espalhamento no eixo central do campo 20 ? 20 cm2. Na referência [3] o autor faz a mesma
+comparação onde, pelos cálculos teóricos para o modelo homogêneo, o per?l do múltiplo
+
+espalhamento deveria ter o mesmo valor numérico que o per?l secundário a partir de 20 cm
+
+de profundidade. Esta comparação é mais um indício de que estamos subestimando a dose
+
+total por perder energia, principalmente, no núcleo de múltiplo espalhamento.
+
+75
+
+
+
+0 10 20 30
+0
+
+100
+
+Convolução X Medidas
+
+Eixo X (cm)
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+Perfil da dose no eixo X, com Z=0,5cm
+
+ALCYON II
+
+Convolução
+
+Figura 5.18: Comparação do per?l transversal da dose para o campo de 10?10 cm2 a 0; 5 cm
+de profundidade entre o modelo apresentado nesta tese e os dados obtidos da máquina
+ALCYON II.
+
+76
+
+
+
+0 10 20 30
+0
+
+100
+
+Convolução X Medidas
+
+Eixo X (cm)
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+Perfil da dose no eixo X, com Z=20cm
+
+ALCYON II
+
+Convolução
+
+Figura 5.19: Comparação do per?l transversal da dose para o campo de 10?10 cm2 a 20 cm
+de profundidade entre o método de convolução e os dados obtidos da máquina ALCYON II.
+
+77
+
+
+
+0 10 20 30
+0
+
+100
+
+110
+
+Perfil central no eixo Z
+
+Eixo Z (cm)
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+Campo 20x20cm²
+
+Dose Total
+
+Dose Primária
+
+Dose Secundária
+
+Dose Múltiplo Espalhamento
+
+Figura 5.20: Os per?s das doses total e parciais.
+
+78
+
+
+
+5.2.1.2 Comparação com o programa PLATO
+
+Vamos comparar o per?l de dose no centro do campo 10?10 cm2 calculado com o programa
+PLATO com o método de convolução descrito nesta tese. Excepcionalmente normalizamos
+
+o pico em 124,579% porque o programa PLATO tem problemas para normalizar o pico a
+
+100%. Veri?camos pelo grá?co 5.21 que a concordância está muito boa.
+
+5.2.2 Os testes em meios heterogêneos
+
+Como já citamos, é esperado que este algoritmo calcule bem apenas os elementos heterogê-
+
+neos que tenham a mesma seção de choque que a água, mas densidades diferentes. Vamos
+
+então usar a situação mostrada na ?gura 5.22 para as comparações, onde uma fatia do tan-
+
+que de água é substituída por um outro meio de densidade relativa ? = 0; 25g=cm3, mas de
+
+mesma seção de choque que a água. Esta fatia de menor densidade pode ser considerada
+
+equivalente ao pulmão.
+
+5.2.2.1 Comparação com a simulação no EGS4
+
+Aplicamos um campo de 1 ? 1 cm2 perpendicular à superfície do meio e obtivemos a curva
+de isodose no plano central apresentada na ?gura 5.23.
+
+Usamos novamente o programa XYZP do EGS4, mas desta vez sem nenhuma modi?ca-
+
+ção, para compararmos o resultado calculado pela convolução com o simulado. A qualidade
+
+da simulação depende diretamente do número de histórias. Usamos um feixe estreito de
+
+1 ? 1 cm2 para conseguir uma boa precisão, concentrando as partículas em uma área pe-
+quena. Desta forma a incerteza no per?l central do feixe foi menor que 1%. Para reduzir
+
+o tempo de simulação a valores aceitáveis (da ordem de algumas dezenas de horas) usamos
+
+células de 1 ? 1 ? 1 cm3. É importante lembrar que o programa XYZP simula feixes de
+fótons paralelos, assim os cálculos por convolução foram feitos sem a queda com o inverso
+
+do quadrado da distância (SSD = in?nito).
+
+Notamos a excelente concordância com os resultados da simulação, sendo o desvio na
+
+profundidade de 24 cm menor que 1%. Nas interfaces com material de menor densidade o erro
+
+chegou a 2,7%. Esperamos que a discordância neste ponto seja realmente um pouco maior
+
+porque nesta região não há equilíbrio eletrônico. Este fenômeno ocorre porque a produção de
+
+elétrons livres depende diretamente da densidade do meio, assim o meio de menor densidade
+
+gera menos elétrons que o de maior. Portanto esperamos que a dose calculada dentro deste
+
+meio seja um pouco menor que a simulada em 5 cm (antes da segunda interface), e superior
+
+que a simulada em 6 cm. Esta previsão se con?rma em 5 cm mas não em 6 cm porque as
+
+79
+
+
+
+0 10 20 30 32
+0
+
+100
+
+137
+
+Convolução X PLATO
+
+Eixo Z (cm)
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+Perfil central no eixo Z (SSD=80cm)
+
+Calculado por convolução
+
+Calculado pelo PLATO
+
+F
+igu
+
+ra
+5.21:
+
+C
+om
+
+p
+aração
+
+en
+tre
+
+os
+resu
+
+ltad
+os
+
+d
+o
+P
+L
+A
+T
+O
+
+e
+con
+
+volu
+ção.
+
+80
+
+
+
+2 cm
+
+4 cm
+
+26 cm
+
+??=0,25 g/cm
+
+??=1,0 g/cm
+
+??=1,0 g/cm 33
+
+33
+
+33
+zz
+
+x,y
+
+32 cm
+
+Figura 5.22: Situação proposta para simular o tecido do pulmão entre tecidos musculares.
+
+células onde estão calculadas as doses são menores que as da simulação, e este fato interferiu
+
+na precisão. No entanto, os resultados apresentam-se muito bons.
+
+5.2.2.2 Comparação com o programa PLATO
+
+Para este teste o campo usado foi de 10?10 cm2, SSD de 80 cm e consideramos a divergência
+geométrica. A normalização excepcionalmente foi feita em 104,67%. Apresentamos na ?gura
+
+5.25 a comparação dos per?s de dose no centro do campo entre o calculado pelo algoritmo
+
+apresentado nesta tese e o calculado pelo PLATO.
+
+No grá?co 5.25 comparamos os resultados do programa de convolução com o do PLATO.
+
+Pelo PLATO calculamos duas situações: a primeira segue exatamente a ?gura 5.22 e a
+
+segunda substitui a densidade do pulmão pela da água, ou seja, temos um meio homogêneo.
+
+Este grá?co nos mostra claramente que o PLATO corrige a atenuação exponencial, por-
+
+que os pontos após a região de ? = 0; 25 g=cm3 coincidem com o resultado da convolução,
+
+mas não corrige a dose nessa mesma região! Temos a certeza de que o PLATO realiza a
+
+correção exponencial quando comparamos o per?l de dose no meio homogêneo, por ele cal-
+
+culado, com o heterogêneo e vemos que o primeiro possui uma queda mais acentuada, como
+
+deveria ser.
+
+81
+
+
+
+0 10 20 25
+14.5
+
+15
+
+16
+
+17
+
+17.5
+
+Eixo Z (cm)
+
+E
+ix
+
+o 
+Y
+
+ (
+cm
+
+)
+
+10 10
+10
+
+10
+
+10 10
+10
+
+10
+
+20 20
+20
+
+20
+
+20
+
+20
+
+202
+0
+
+30 30
+
+30
+
+30
+
+30
+
+30
+
+3030
+
+40
+40
+
+40
+
+40
+
+40
+
+40
+
+50
+50
+
+50
+
+50
+50
+
+60
+60
+
+60
+
+60
+
+70
+
+70
+
+70
+
+80
+
+80
+
+80
+
+80
+
+90
+
+F
+igu
+
+ra
+5.23:
+
+C
+u
+rvas
+
+d
+e
+iso
+
+d
+ose
+
+p
+ara
+
+o
+m
+eio
+
+com
+p
+osto
+
+d
+a
+?
+gu
+ra
+
+5.22
+com
+
+cam
+p
+o
+d
+e
+1?
+
+1
+cm
+
+2.
+
+82
+
+
+
+0 10 20 30 32
+0
+
+100
+
+110
+
+Convolução X EGS
+
+Profundidade, Eixo Z (cm)
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+Perfil central no eixo Z (SSD=inf.)
+
+Calculado por convolução
+
+Simulado no EGS4
+
+F
+igu
+
+ra
+5.24:
+
+C
+om
+
+p
+aração
+
+d
+o
+p
+er?
+
+l
+cen
+
+tral
+d
+a
+d
+ose
+
+calcu
+lad
+
+a
+p
+or
+
+con
+volu
+
+ção
+con
+
+tra
+os
+
+re-
+su
+ltad
+
+os
+d
+a
+sim
+
+u
+lação.
+
+83
+
+
+
+0 10 20 30 32
+0
+
+100
+
+115.1
+
+Convolução X Programa atual
+
+Eixo Z (cm)
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+Campo 10x10 cm²
+
+Plato (homogêneo)
+
+Plato (heterogêneo)
+
+Convolução
+
+F
+igu
+
+ra
+5.25:
+
+C
+om
+
+p
+aração
+
+en
+tre
+
+a
+con
+
+volu
+ção
+
+e
+o
+resu
+
+ltad
+o
+d
+o
+p
+rogram
+
+a
+P
+L
+A
+T
+O
+.
+
+84
+
+
+
+Capítulo 6
+
+Conclusões
+
+Nesta tese implementamos um algoritmo para cálculo da dose em meios heterogêneos usando
+
+convoluções [6]. Aplicamos a técnica de transformada de Fourier rápida (FFT) na imple-
+
+mentação computacional deste algoritmo. Os núcleos de transporte e deposição de energia
+
+foram simulados usando um programa modi?cado por nós, o XYZP disponível no pacote do
+
+EGS4.
+
+A implementação deste algoritmo apresentou excelentes resultados quando comparados
+
+com os dados experimentais medidos no CAISM e resultados de simulações no EGS4. A
+
+discordância do per?l da dose no eixo central do campo em profundidades maiores que 20 cm
+
+para grandes campos se deve, principalmente, ao pouco espaço reservado para o meio ma-
+
+terial onde foram simulados os núcleos secundário e de múltiplo espalhamento. Este espaço
+
+deveria conter pelo menos uma esfera de meio material de raio igual a 60 cm [15], mas
+
+o número de células da matriz que discretiza este meio era limitado pelo método usado
+
+na simulação e pela quantidade de memória disponível. Este fato impediu que os núcleos
+
+alcançassem uma qualidade melhor. O programa XYZP adaptado para esta ?nalidade pra-
+
+ticamente chegou ao seu limite, portanto no aprimoramento desta pesquisa deveremos usar
+
+algum programa que contorne este problema usando, por exemplo, coordenadas cilíndricas
+
+ou esféricas, aproveitando as simetrias do problema [15].
+
+O cerne matemático do programa de cálculo da dose de radiação tem um desempenho
+
+comparável aos comerciais, tanto na precisão dos cálculos, quanto no tempo de cálculo. Para
+
+se calcular a matriz 3D da distribuição da dose para todo um meio material de 32?32?32 cm3
+o tempo gasto é de aproximadamente 3 minutos em um equipamento do tipo PC de 400MHz.
+
+No entanto, ainda há muito a ser otimizado no programa responsável pela convolução, o que
+
+pode aumentar ainda mais a sua e?ciência.
+
+85
+
+
+
+Na parte computacional, o próximo passo será a construção, por pro?ssionais da área
+
+da informática, de uma interface grá?ca e um módulo que permita ler arquivos de dados
+
+provenientes de sistemas de tomogra?as computadorizadas e ressonância magnética, que são
+
+as fontes de informação 3D da geometria do paciente e do tumor.
+
+Concluímos portanto, que o método descrito nesta tese para a obtenção da distribuição
+
+espacial da dose absorvida usando convoluções é bastante preciso e viável de ser implantado
+
+no planejamento de procedimentos de teleterapia.
+
+86
+
+
+
+Apêndice A
+
+Algumas de?nições usadas nesta tese
+
+Apresentamos aqui as de?nições formais das grandezas físicas usadas nesta tese dadas pela
+
+ICRU (International Commission on Radiation Units and Measurements) [23]. As unidades
+
+destas grandezas são expressas de acordo com o Sistema Internacional de unidades (SI).
+
+Na segunda seção deste apêndice de?nimos a maneira pela qual avaliamos o erro entre
+
+os valores calculados e aqueles usados como referência.
+
+A.1 As de?nições dadas pelo ICRU
+
+A.1.1 Radiometria
+
+A ?uência de partículas, ?, é o quociente de dN por da, onde dN é o número de
+
+partículas incidente em uma esfera de área da.
+
+? =
+dN
+
+da
+:
+
+Unidade: m?2.
+
+A.1.2 Coe?cientes de interação
+
+A seção de choque, ?, de um alvo para uma interação produzida por uma partícula
+
+carregada ou não, é o quociente de P por ?, onde P é a probabilidade de interação por
+
+partícula alvo quando sujeita a uma ?uência de partículas ?.
+
+? =
+P
+
+?
+: (A.1)
+
+87
+
+
+
+Unidade: m2.
+
+Coe?ciente de atenuação em massa, ?=?, de um material para partículas ionizantes
+
+sem carga elétrica é o quociente de dN=N por ?d`, onde dN=N é a fração de partículas que
+
+interagem após atravessarem uma distância d` em um material de densidade ?.
+
+?
+
+?
+=
+
+1
+
+?N
+
+dN
+
+d`
+: (A.2)
+
+Unidade: m2 kg?1
+
+Nota: ?, de?nido implicitamente, é o coe?ciente de atenuação linear total.
+
+Coe?ciente de transferência de energia em massa, ?tr=?, de um material para par-
+
+tículas ionizantes sem carga elétrica é dado pelo quociente de dEtr=EN por ?d`, onde E é a
+
+energia de cada partícula (excluindo a sua energia de repouso), N é o número de partículas,
+
+e dEtr=EN é a fração da energia da partícula inicidente que é transferida para a energia
+
+cinética de partículas carregadas pelas interações ao ser atravessada uma distância d` em
+
+um material de densidade ?.
+?tr
+?
+
+=
+1
+
+?EN
+
+dEtr
+d`
+
+: (A.3)
+
+Unidade: m2 kg?1.
+
+Coe?ciente de absorção de energia em massa, ?en=?, de um material para partículas
+
+ionizantes sem carga elétrica é o produto do coe?ciente de transferência de energia em massa,
+
+?tr=?, por (1 ? g), onde g é a fração da energia das partículas carregadas secundárias que é
+perdida por bremsstrahlung no material.
+
+?en
+?
+
+=
+?tr
+?
+
+(1 ? g) : (A.4)
+
+Unidade: m2 kg?1.
+
+Stopping power total em massa, S=?, de um material para partículas carregadas é
+
+o quociente de dE por ?d`, onde dE é a energia perdida por uma partícula carregada ao
+
+atravessar uma distância d` em um material de densidade ?.
+
+S
+
+?
+=
+
+1
+
+?
+
+dE
+
+d`
+: (A.5)
+
+88
+
+
+
+Unidade: J m2 kg?1.
+
+Nota: De?nido implicitamente está o stopping power linear total, S.
+
+A.1.3 Dosimetria
+
+Energia cedida, ?, pela radiação ionizante para a matéria em um volume é:
+
+? = Rin ? Rout +
+X
+
+Q (A.6)
+
+onde
+
+? Rin é a energia radiante incidente no volume, isto é, a soma das energias cinéticas de
+todas as partículas ionizantes carregadas e neutras que entram no volume.
+
+? Rout é a energia radiante que sai do volume, isto é, a soma das energias cinéticas de
+todas as partículas ionizantes carregadas e neutras que deixam o volume.
+
+? PQ é a soma de todas as mudanças na energia de repouso dos núcleos e partículas
+elementares em qualquer transformação nuclear que ocorra no volume.
+
+Unidade: J.
+
+Nota: ? é uma quantidade estocástica, mas seu valor esperado, designado energia média
+
+cedida, ?, é uma quantidade não-estocástica.
+
+A dose absorvida, D, é o quociente de d? por dm, onde d? é a energia média cedida pela
+
+radiação ionizante para uma quantidade de matéria de massa dm.
+
+D =
+d?
+
+dm
+: (A.7)
+
+Unidade: J kg?1.
+
+Nota: O nome especial para a unidade de dose absorvida é o gray (Gy), equivalente a
+
+um joule por kilograma.
+
+89
+
+
+
+O kerma, K, é o quociente de dEtr por dm, onde dEtr é a soma das energias cinéticas
+
+iniciais de todas as partículas ionizantes carregadas liberadas pelas partículas ionizantes
+
+neutras em um material de massa dm.
+
+k =
+dEtr
+dm
+
+: (A.8)
+
+Unidade: J kg?1.
+
+Nota: O gray (Gy) também é usado como unidade para o kerma da mesma forma que
+
+para a dose.
+
+A.2 Erro relativo e absoluto
+
+Durante os estudos dos artigos sobre os algoritmos de cálculo da dose de radiação notamos
+
+o emprego freqüente de um tipo de avaliação de erro entre os dados do modelo apresentado
+
+com os valores medidos ou simulados, que servem de referência. No entanto este tipo de
+
+avaliação de erro é pouco prático para o físico médico no seu dia-a-dia. Nesta tese utilizamos
+
+um outro tipo de avaliação do erro, o erro relativo. Em contrapartida, chamaremos de erro
+
+absoluto a forma de avaliação do erro comumente usada nos artigos cientí?cos.
+
+De?nimos o erro relativo, "r, no ponto ?!ri como sendo o quociente entre o módulo da
+diferença entre o valor de referência, Dm, e o calculado, Dc, pelo valor de referência, todos
+
+dados no mesmo ponto de interesse, ?!ri .
+
+"r (
+?!ri ) =
+
+jDc (?!ri ) ? Dm (?!ri )j
+Dm (
+
+?!ri )
+? 100% (A.9)
+
+De?nimos o erro absoluto, "a, no ponto ?!ri como o quociente entre módulo da diferença
+entre os valores referência e calculado, e o valor de pico do conjunto de dados de referência,
+
+Dpico.
+
+"a (
+?!ri ) =
+
+jDc (?!ri ) ? Dm (?!ri )j
+Dpico
+
+? 100% (A.10)
+
+O valor de referência pode ser o resultado experimental ou o simulado.
+
+Note que o erro absoluto é proporcional à diferença entre o valor de referência e o
+
+calculado, já o erro relativo depende da razão entre esta diferença e o valor de referência.
+
+Tipicamente o erro relativo é maior que o erro absoluto como mostrado no capítulo 5. Desta
+
+forma, o erro em um determinado ponto é interpretado como a tolerância percentual entre
+
+o valor real e o calculado naquele ponto.
+
+90
+
+
+
+Apêndice B
+
+Tabela de probabilidades de
+
+interações do fóton na água
+
+Encontramos na tabela a seguir a proporção entre os tipos de interações na água para
+
+várias energias de fótons e as respectivas proporções para a transferência de energia em cada
+
+processo. Os valores que apresentamos provêm da referência [1].
+
+91
+
+
+
+% de interações por cada processo % de energia transferida
+
+por cada processo
+
+% da energia
+
+perdida por
+
+bremsstrahlung
+
+h?
+
+(keV)
+
+Rayl. Comp. Foto. Pares Comp. Foto. Pares
+
+10,0 4,5 3,1 92,4 0,0 0,1 99,9 0,0 0,0
+
+15,0 8,5 10,8 80,7 0,0 0,4 99,6 0,0 0,0
+
+20,0 11,6 23,3 65,1 0,0 1,3 98,7 0,0 0,0
+
+30,0 13,0 50,7 36,3 0,0 6,8 93,2 0,0 0,0
+
+40,0 11,0 69,6 19,4 0,0 19,3 80,7 0,0 0,0
+
+50,0 8,6 80,4 11,0 0,0 37,2 62,8 0,0 0,0
+
+60,0 6,8 86,6 6,6 0,0 55,0 45,0 0,0 0,0
+
+80,0 4,5 92,6 2,9 0,0 78,8 21,2 0,0 0,0
+
+100,0 3,1 95,3 1,5 0,0 89,6 10,4 0,0 0,0
+
+150,0 1,6 97,9 0,5 0,0 97,4 2,6 0,0 0,0
+
+200,0 1,0 98,8 0,2 0,0 99,0 1,0 0,0 0,0
+
+300,0 0,5 99,4 0,1 0,0 99,7 0,3 0,0 0,1
+
+400,0 0,4 99,6 0,0 0,0 99,9 0,1 0,0 0,1
+
+500,0 0,3 99,7 0,0 0,0 99,9 0,1 0,0 0,1
+
+600,0 0,2 99,8 0,0 0,0 100,0 0,0 0,0 0,1
+
+800,0 0,1 99,9 0,0 0,0 100,0 0,0 0,0 0,2
+
+(MeV)
+
+1,0 0,1 99,9 0,0 0,0 100,0 0,0 0,0 0,2
+
+1,5 0,0 99,8 0,0 0,2 99,9 0,0 0,1 0,4
+
+2,0 0,0 99,2 0,0 0,8 99,3 0,0 0.7 0,5
+
+3,0 0,0 97,1 0,0 2,9 96,7 0,0 3,3 0,8
+
+4,0 0,0 94,5 0,0 5,5 93,3 0,0 6,7 1,1
+
+5,0 0,0 91,6 0,0 8,4 89,6 0,0 10,4 1,4
+
+6,0 0,0 88,9 0,0 11,1 86,2 0,0 13,8 1,6
+
+8,0 0,0 83,1 0,0 16,9 79,0 0,0 21,0 2,3
+
+10,0 0,0 77,0 0,0 23,0 71,9 0,0 28,1 2,9
+
+15,0 0,0 65,6 0,0 34,4 59,3 0,0 40,7 4,6
+
+20,0 0,0 56,0 0,0 44,0 49,3 0,0 50,7 6,5
+
+30,0 0,0 43,2 0,0 56,8 37,1 0,0 62,9 10,0
+
+40,0 0,0 35,1 0,0 64,9 29,7 0,0 70,3 13,6
+
+50,0 0,0 29,3 0,0 70,7 24,6 0,0 75,4 16,8
+
+60,0 0,0 25,3 0,0 74,7 21,1 0,0 78,9 19,8
+
+80,0 0,0 19,7 0,0 80,3 16,4 0,0 83,6 25,3
+
+100,0 0,0 16,0 0,0 84,0 13,3 0,0 86,7 30,1
+
+92
+
+
+
+Apêndice C
+
+Os testes e o código fonte do
+
+programa que realiza os cálculos 3D
+
+da dose
+
+Neste apêndice apresentamos os testes e a implementação computacional da função de con-
+
+volução 3D dada pela equação 4.1, aplicando as técnicas discutidas no capítulo 4. Apresen-
+
+tamos também o código fonte dos programas usados nos cálculos da distribuição 3D da dose
+
+mostrados no capítulo 5.
+
+C.1 A estrutura do programa de convolução
+
+Os módulos do programa de cálculo tridimensional da dose estão organizados conforme o
+
+esquema mostrado na ?gura C.1.
+
+O usuário do programa deve fornecer como informação de entrada a matriz de densidades
+
+[?] e um núcleo de deposição de energia [ki] (o índice i signi?ca primário, secundário ou
+
+múltiplo espalhamento). Um programa chamado fluência calcula a matriz da ?uência
+
+primária [?p] a partir da matriz de densidades, conforme discutido na seção 4.2. O programa
+
+dose calcula a matriz de dose parcial [Di] por meio da convolução via FFT como apresentado
+
+nas seções 4.2 e 4.3.2.
+
+Este procedimento é feito para cada núcleo de deposição de energia a ?m de obter as
+
+doses parciais. Por ?m, um programa bastante simples, não mostrado no esquema C.1, é
+
+usado para somar estas doses parciais e fornecer a dose total, o programa soma.
+
+Todos os programas foram escritos em linguagem C++ da GNU. Escolhemos esta lin-
+
+93
+
+
+
+[[??]]
+
+[[??
+pp
+]] [[kk
+
+ii
+]]
+
+dose
+
+[[DD
+ii
+]]
+
+fluência
+
+Entrada 
+de dados
+
+Saída de 
+dados
+
+Figura C.1: Esquema da organização do programa de cálculo tridimensional da dose. O
+sinal [ ] signi?ca matriz de dados no formato apresentado no apêndice F.
+
+guagem por ela possuir todas as características de programação estruturada do ANSI C [24]
+
+e ao mesmo tempo dispor de comandos orientados a objeto, que facilita muito a programa-
+
+ção. O C++ da GNU é muito conhecido pois seu compilador e as bibliotecas associadas são
+
+todas gratuitas e de domínio público. Este fato torna os compiladores da GNU disponíveis
+
+para qualquer sistema operacional existente no mercado.
+
+C.1.1 O código fonte
+
+Como apresentado na seção anterior, o programa de cálculo da dose é composto basicamente
+
+por três blocos que tratam da ?uência, convolução e soma das doses parciais. Este três blocos
+
+são unidos em um shell-script [25] para a TCshella. Por questão de espaço não discutiremos
+
+os detalhes do código fonte e comentaremos apenas os termos gerais.
+
+Implementamos a ?uência primária dada pela equação 4.4 multiplicada pela matriz den-
+
+sidade no programa fluência. Este programa é executado com o arquivo de densidades em
+
+sua linha de comando e pede ao usuário as seguintes informações: a distância da fonte à
+
+superfície (SSD), o tamanho do campo na superfície do meio e se desejamos o campo com
+
+ou sem divergência geométrica.
+
+aTCshell é um tipo de terminal Linux/Unix que pode ser programado facilmente.
+
+94
+
+
+
+Com o arquivo de dados de ?uência e os núcleos de deposição de energia armazenados em
+
+arquivos no formato padrão, executamos o programa dose para cada uma das doses parciais
+
+a serem calculadas. Este programa faz a convolução entre os dois conjuntos de dados que
+
+são informados na sua linha de comando. Como já comentamos, a convolução é obtida por
+
+meio de FFT, que é feita por uma biblioteca especí?ca de alto desempenho chamada FFTW
+
+[26].
+
+A biblioteca FFTW possui vários tipos de algoritmos de FFT implementados em seu
+
+código [26]. Ela seleciona o mais adequado a cada situação, permitindo ao usuário trabalhar
+
+com qualquer número de amostragem, não necessariamente do tipo N = 2
+ com 
+ sendo um
+
+número inteiro positivob e mantendo a mesma precisão, embora o tempo de cálculo possa
+
+ser um pouco maior.
+
+Com as doses parciais calculadas executamos o programa doset para somá-las e obtermos
+
+a dose total.
+
+O programa fluência
+
+Linha de compilação
+
+g++ -o fluencia fluencia3.C fluencia.C -O4
+
+Os arquivos fonte
+
+fluencia3.C
+
+#include&amp;lt;iostream.h&gt;
+
+#include&amp;lt;fstream.h&gt;
+
+#include "fluencia.H"
+
+#define NMaxCell 64
+
+#define ZMaxCell 64
+
+void main (int argc, char *argv[])
+
+{
+
+bComo o exigido pelo algoritmo original de Cooley-Tukey [20].
+
+95
+
+
+
+int i,j,k, nx,ny,nz, campo_x,campo_y;
+
+double phi, escalap, escalas, r0;
+
+char diverg;
+
+double Ro[NMaxCell][NMaxCell][ZMaxCell],
+
+Phi[NMaxCell][NMaxCell][ZMaxCell];
+
+if (argc &amp;lt;5) {
+
+cout&amp;lt;&amp;lt;"Uso: " ;
+
+cout&amp;lt;&amp;lt;argv[0] ;
+
+cout&amp;lt;&amp;lt;" densidade_p.dat densidade_s.dat fluencia_p.dat";
+
+cout&amp;lt;&amp;lt;" fluencia_s.dat [fluencia_c.dat]";
+
+cout&amp;lt;&amp;lt;endl;
+
+return 0;
+
+}
+
+cout&amp;lt;&amp;lt;"Tamanho do campo (em # de células) na direçcão X= " ;
+
+cin &gt;&gt; campo_x;
+
+cout&amp;lt;&amp;lt;"Tamanho do campo (em # de células) na direçcão Y= " ;
+
+cin &gt;&gt; campo_y;
+
+cout&amp;lt;&amp;lt;"Deseja campo divergente (d) ou paralelo (p)? ";
+
+cin &gt;&gt; diverg;
+
+cout&amp;lt;&amp;lt;"Qual a distância da fonte a superficie (SSD)? ";
+
+cin &gt;&gt; r0;
+
+cout&amp;lt;&amp;lt;"A escala da fluencia primária para cada voxel cúbico (cm):" ;
+
+cin &gt;&gt; escalap;
+
+cout&amp;lt;&amp;lt;"A escala da fluencia secundária para cada voxel cúbico (cm):" ;
+
+cin &gt;&gt; escalas;
+
+cout&amp;lt;&amp;lt;"As dimensões máxima da matriz atual é de ";
+
+cout&amp;lt;&amp;lt;NMaxCell&amp;lt;&amp;lt;" X "&amp;lt;&amp;lt;NMaxCell&amp;lt;&amp;lt;" X "&amp;lt;&amp;lt;ZMaxCell&amp;lt;&amp;lt;endl;
+
+// Ler o arquivo passado como primeiro parâmetro
+
+ifstream leitura (argv[1]);
+
+leitura &gt;&gt; nx &gt;&gt; ny &gt;&gt; nz;
+
+for (i=0; i&lt;nx; i++)
+
+for (j=0; j&lt;ny; j++)
+
+96
+
+
+
+for(k=0; k&lt;nz; k++)
+
+leitura &gt;&gt; Ro[i][j][k];
+
+leitura.close();
+
+// A fluencia primária
+
+Fluencia (nx,ny,nz, campo_x,campo_y, escalap, r0, diverg, Ro, Phi);
+
+ofstream saidap (argv[3]);
+
+saidap&amp;lt;&amp;lt;nx&amp;lt;&amp;lt;" "&amp;lt;&amp;lt;ny&amp;lt;&amp;lt;" "&amp;lt;&amp;lt;nz&amp;lt;&amp;lt;endl&amp;lt;&amp;lt;endl;
+
+for (i=0; i&lt;nx; i++){
+
+for (j=0; j&lt;ny; j++){
+
+for (k=0; k&lt;nz; k++)
+
+saidap&amp;lt;&amp;lt;Phi[i][j][k]&amp;lt;&amp;lt;" ";
+
+saidap&amp;lt;&amp;lt;endl;
+
+}
+
+saidap&amp;lt;&amp;lt;endl;
+
+}
+
+saidap.close ();
+
+// Ler o arquivo passado como segundo parâmetro
+
+ifstream leitura2 (argv[2]);
+
+leitura2 &gt;&gt; nx &gt;&gt; ny &gt;&gt; nz;
+
+for (i=0; i&lt;nx; i++)
+
+for (j=0; j&lt;ny; j++)
+
+for(k=0; k&lt;nz; k++)
+
+leitura2 &gt;&gt; Ro[i][j][k];
+
+leitura2.close();
+
+// A fluencia secundária e de múltiplo espalhamento
+
+Fluencia (nx,ny,nz, campo_x,campo_y, escalas, r0, diverg, Ro, Phi);
+
+ofstream saidas (argv[4]);
+
+saidas&amp;lt;&amp;lt;nx&amp;lt;&amp;lt;" "&amp;lt;&amp;lt;ny&amp;lt;&amp;lt;" "&amp;lt;&amp;lt;nz&amp;lt;&amp;lt;endl&amp;lt;&amp;lt;endl;
+
+for (i=0; i&lt;nx; i++){
+
+for (j=0; j&lt;ny; j++){
+
+for (k=0; k&lt;nz; k++)
+
+saidas&amp;lt;&amp;lt;(Phi[i][j][k]*Ro[i][j][k])&amp;lt;&amp;lt;" ";
+
+97
+
+
+
+saidas&amp;lt;&amp;lt;endl;
+
+}
+
+saidas&amp;lt;&amp;lt;endl;
+
+}
+
+saidas.close ();
+
+// A fluencia para os núcleos de correção
+
+if (argc&gt;4){
+
+ofstream saidac (argv[5]);
+
+saidac&amp;lt;&amp;lt;nx&amp;lt;&amp;lt;" "&amp;lt;&amp;lt;ny&amp;lt;&amp;lt;" "&amp;lt;&amp;lt;nz&amp;lt;&amp;lt;endl&amp;lt;&amp;lt;endl;
+
+for (i=0; i&lt;nx; i++){
+
+for (j=0; j&lt;ny; j++){
+
+for (k=0; k&lt;nz; k++)
+
+saidac&amp;lt;&amp;lt;(Phi[i][j][k]*Ro[i][j][k]*(1-Ro[i][j][k]))&amp;lt;&amp;lt;" ";
+
+saidac&amp;lt;&amp;lt;endl;
+
+}
+
+saidac&amp;lt;&amp;lt;endl;
+
+}
+
+saidac.close ();
+
+}
+
+}
+
+fluencia.H
+
+#include&amp;lt;iostream.h&gt;
+
+#include&amp;lt;math.h&gt;
+
+#define NMaxCell 64
+
+#define ZMaxCell 64
+
+#ifndef FLUENCIA_H
+
+#define FLUENCIA_H
+
+void Fluencia (int ,int ,int ,int ,int ,double , double , char ,
+
+double [][NMaxCell][ZMaxCell], double [][NMaxCell][ZMaxCell]);
+
+#endif
+
+98
+
+
+
+fluencia.C
+
+#include&amp;lt;iostream.h&gt;
+
+#include&amp;lt;math.h&gt;
+
+#define NMaxCell 64
+
+#define ZMaxCell 64
+
+#define phi0 1
+
+#define mi_ro 0.0632
+
+inline double Prod_exp (int ,int ,int ,double ,double [][NMaxCell][ZMaxCell]);
+
+inline double Campo (int , int , char ,double , double );
+
+void Fluencia (int nx, int ny, int nz, int campo_x, int campo_y,
+
+double escala,double r0, char Div,
+
+double ro [][NMaxCell][ZMaxCell],
+
+double phi [][NMaxCell][ZMaxCell]){
+
+int i,j,k;
+
+double r, x,y,z, campox, campoy;
+
+x = i*escala;
+
+y = j*escala;
+
+z = k*escala;
+
+r = sqrt(x*x + y*y + z*z);
+
+for (i=0; i&lt;nx; i++)
+
+for (j=0; j&lt;ny; j++)
+
+for (k=0; k&lt;nz; k++){
+
+if(i&gt;=((nx-Campo(k,campo_x, Div, escala, r0))/2) &amp;amp;
+
+i&lt;=((nx+Campo(k,campo_x, Div, escala, r0))/2) &amp;amp;
+
+j&gt;=((ny-Campo(k,campo_y, Div, escala, r0))/2) &amp;amp;
+
+99
+
+
+
+j&lt;=((ny+Campo(k,campo_y, Div, escala, r0))/2)){
+
+phi[i][j][k] = phi0*(r0*r0 / ((k*escala+r0)*(k*escala+r0)))
+
+*Prod_exp(i,j,k, escala, ro);
+
+}
+
+else {phi[i][j][k] = 0.0;}
+
+}
+
+}
+
+inline double Prod_exp (int i,int j,int k, double escala,
+
+double ro[][NMaxCell][ZMaxCell]){
+
+int z;
+
+double produtorio;
+
+produtorio = 1.0;
+
+for (z=0; z&lt;=k; z++)
+
+produtorio *= exp (-ro[i][j][z] * mi_ro * escala);
+
+return produtorio;
+
+}
+
+inline double Campo (int k, int campo, char divergencia,
+
+double escala, double ssd){
+
+double ext_campo;
+
+switch (divergencia){
+
+case 'd':
+
+ext_campo = (k*escala +ssd) * (campo/ssd);
+
+break;
+
+case 'p':
+
+ext_campo = campo;
+
+break;
+
+}
+
+return ext_campo;
+
+100
+
+
+
+}
+
+O programa dose
+
+Linha de compilação
+
+g++ -o dose dose_c.C convolucao_c.C -O4
+
+Os arquivos fonte
+
+dose_c.C
+
+#include&amp;lt;iostream.h&gt;
+
+#include&amp;lt;fstream.h&gt;
+
+#include&amp;lt;fftw.h&gt;
+
+#include "convolucao_c.H"
+
+#include "../acessorios/deslocar.H"
+
+#define NMaxCell 128
+
+#define ZMaxCell 128
+
+void main (int argc, char *argv[])
+
+{
+
+fftw_complex Phi[NMaxCell][NMaxCell][ZMaxCell],
+
+Kernel[NMaxCell][NMaxCell][ZMaxCell];
+
+fftw_complex dosep[NMaxCell][NMaxCell][ZMaxCell];
+
+int i,j,k, nx,ny,nz, nxc,nyc,nzc;
+
+unsigned foi;
+
+double Dose;
+
+if (argc &amp;lt;4)
+
+{
+
+cout&amp;lt;&amp;lt;"Uso: "&amp;lt;&amp;lt;argv[0]&amp;lt;&amp;lt;" fluencia.dat kernel.kernel";
+
+cout&amp;lt;&amp;lt;" saida.dat kernel.id"&amp;lt;&amp;lt;endl;
+
+return 0;
+
+101
+
+
+
+}
+
+// Limpando a área de matrizes
+
+for (i=0; i&lt;NMaxCell; i++)
+
+for (j=0; j&lt;NMaxCell; j++)
+
+for (k=0; k&lt;ZMaxCell; k++){
+
+Phi [i][j][k].im=0;
+
+Phi [i][j][k].re=0;
+
+Kernel [i][j][k].im=0;
+
+Kernel [i][j][k].re=0;
+
+}
+
+// Ler o arquivo passado como primeiro parâmetro
+
+ifstream leitura (argv[1]);
+
+leitura &gt;&gt; nx &gt;&gt; ny &gt;&gt; nz;
+
+for (i=0; i&lt;nx; i++)
+
+for (j=0; j&lt;ny; j++)
+
+for(k=0; k&lt;nz; k++)
+
+leitura &gt;&gt; Phi[i][j][k].re;
+
+leitura.close();
+
+// Lendo arquivo passado como segundo parâmetro
+
+ifstream leitura2 (argv[2]);
+
+leitura2 &gt;&gt; nxc &gt;&gt; nyc &gt;&gt; nzc;
+
+for (i=0; i&lt;nxc; i++)
+
+for (j=0; j&lt;nyc; j++)
+
+for (k=0; k&lt;nzc; k++)
+
+leitura2 &gt;&gt; Kernel[i][j][k].re;
+
+leitura2.close();
+
+// Chamando a função de convolução
+
+foi = convolucao (nx,ny,nz, Phi, Kernel, dosep);
+
+if (foi)
+
+{
+
+cout&amp;lt;&amp;lt;"Modulo de convolucao acessado."&amp;lt;&amp;lt;endl;
+
+102
+
+
+
+}
+
+// gravando o arquivo com a dose
+
+Deslocar (dosep, argv[4], argv[3]);
+
+}
+
+convolucao_c.H
+
+#include&amp;lt;iostream.h&gt;
+
+#include&amp;lt;fstream.h&gt;
+
+#include&amp;lt;fftw.h&gt;
+
+#include "convolucao_c.H"
+
+#include "../acessorios/deslocar.H"
+
+#define NMaxCell 128
+
+#define ZMaxCell 128
+
+void main (int argc, char *argv[])
+
+{
+
+fftw_complex Phi[NMaxCell][NMaxCell][ZMaxCell],
+
+Kernel[NMaxCell][NMaxCell][ZMaxCell];
+
+fftw_complex dosep[NMaxCell][NMaxCell][ZMaxCell];
+
+int i,j,k, nx,ny,nz, nxc,nyc,nzc;
+
+unsigned foi;
+
+double Dose;
+
+if (argc &amp;lt;4)
+
+{
+
+cout&amp;lt;&amp;lt;"Uso: "&amp;lt;&amp;lt;argv[0]&amp;lt;&amp;lt;" fluencia.dat kernel.kernel";
+
+cout&amp;lt;&amp;lt;" saida.dat kernel.id"&amp;lt;&amp;lt;endl;
+
+return 0;
+
+}
+
+103
+
+
+
+// Limpando a área de matrizes
+
+for (i=0; i&lt;NMaxCell; i++)
+
+for (j=0; j&lt;NMaxCell; j++)
+
+for (k=0; k&lt;ZMaxCell; k++){
+
+Phi [i][j][k].im=0;
+
+Phi [i][j][k].re=0;
+
+Kernel [i][j][k].im=0;
+
+Kernel [i][j][k].re=0;
+
+}
+
+// Ler o arquivo passado como primeiro parâmetro
+
+ifstream leitura (argv[1]);
+
+leitura &gt;&gt; nx &gt;&gt; ny &gt;&gt; nz;
+
+for (i=0; i&lt;nx; i++)
+
+for (j=0; j&lt;ny; j++)
+
+for(k=0; k&lt;nz; k++)
+
+leitura &gt;&gt; Phi[i][j][k].re;
+
+leitura.close();
+
+// Lendo arquivo passado como segundo parâmetro
+
+ifstream leitura2 (argv[2]);
+
+leitura2 &gt;&gt; nxc &gt;&gt; nyc &gt;&gt; nzc;
+
+for (i=0; i&lt;nxc; i++)
+
+for (j=0; j&lt;nyc; j++)
+
+for (k=0; k&lt;nzc; k++)
+
+leitura2 &gt;&gt; Kernel[i][j][k].re;
+
+leitura2.close();
+
+// Chamando a função de convolução
+
+foi = convolucao (nx,ny,nz, Phi, Kernel, dosep);
+
+if (foi)
+
+{
+
+cout&amp;lt;&amp;lt;"Modulo de convolucao acessado."&amp;lt;&amp;lt;endl;
+
+}
+
+104
+
+
+
+// gravando o arquivo com a dose
+
+Deslocar (dosep, argv[4], argv[3]);
+
+}
+
+convolucao_c.C
+
+#include&amp;lt;iostream.h&gt;
+
+#include&amp;lt;fftw.h&gt;
+
+#define NMaxCell 128
+
+#define ZMaxCell 128
+
+#include&amp;lt;fstream.h&gt;
+
+unsigned convolucao(int x, int y, int z,
+
+fftw_complex phi_p[][NMaxCell][ZMaxCell],
+
+fftw_complex k_p[][NMaxCell][ZMaxCell],
+
+fftw_complex dose[][NMaxCell][ZMaxCell])
+
+{
+
+// Variaveis da biblioteca FFTW
+
+fftw_complex *PHI, *K, DOSE[NMaxCell][NMaxCell][ZMaxCell];
+
+fftwnd_plan p, pinv;
+
+double scale = 1.0 / (NMaxCell * NMaxCell * ZMaxCell);
+
+// Variaveis internas do modulo de convolucao
+
+int i,j,k;
+
+// planos para ambas as transformadas
+
+p = fftw3d_create_plan (NMaxCell,NMaxCell,ZMaxCell,
+
+FFTW_FORWARD, FFTW_ESTIMATE | FFTW_IN_PLACE);
+
+pinv = fftw3d_create_plan (NMaxCell,NMaxCell,ZMaxCell,
+
+FFTW_BACKWARD, FFTW_ESTIMATE);
+
+// computando as FFT's
+
+105
+
+
+
+fftwnd_one(p, &amp;amp;phi_p[0][0][0], NULL);
+
+fftwnd_one(p, &amp;amp;k_p[0][0][0], NULL);
+
+for (i=0; i&lt;NMaxCell; ++i)
+
+for (j=0; j&lt;NMaxCell; ++j)
+
+for (k=0; k&lt;NMaxCell; ++k)
+
+{
+
+DOSE[i][j][k].re=(phi_p[i][j][k].re*k_p[i][j][k].re
+
+- phi_p[i][j][k].im*k_p[i][j][k].im)*scale;
+
+DOSE[i][j][k].im=(phi_p[i][j][k].re*k_p[i][j][k].im
+
++ phi_p[i][j][k].im*k_p[i][j][k].re)*scale;
+
+}
+
+// transformada inversa para encontrar 'dose'
+
+// que e' a convolucao de 'phi' com 'k'
+
+fftwnd_one (pinv, &amp;amp;DOSE[0][0][0], &amp;amp;dose[0][0][0]);
+
+// destruindo os planejamentos das transformadas
+
+fftwnd_destroy_plan(p);
+
+fftwnd_destroy_plan(pinv);
+
+return 1;
+
+}
+
+O programa soma
+
+Linha de compilação
+
+g++ -o doset doset.C -O4
+
+O arquivo fonte
+
+doset.C
+
+#include&amp;lt;iostream.h&gt;
+
+#include&amp;lt;fstream.h&gt;
+
+106
+
+
+
+void main (int argc, char *argv[])
+
+{
+
+int i,j,k, x, nx,ny,nz;
+
+double dosep, doses, dosem, doses_c, dosem_c, doset;
+
+if (argc &amp;lt;4) {
+
+cout&amp;lt;&amp;lt;"Uso:"&amp;lt;&amp;lt;endl;
+
+cout&amp;lt;&amp;lt;argv[0];
+
+cout&amp;lt;&amp;lt;" dose_primaria.dose dose_sec.dose ";
+
+cout&amp;lt;&amp;lt;"dose_mul.dose [doses_c.dose dosem_c.dose]"&amp;lt;&amp;lt;endl;
+
+return 0;}
+
+ifstream entrada1 (argv[1]);
+
+entrada1 &gt;&gt; nx &gt;&gt; ny &gt;&gt; nz;
+
+ifstream entrada2 (argv[2]);
+
+entrada2 &gt;&gt; nx &gt;&gt; ny &gt;&gt; nz;
+
+ifstream entrada3 (argv[3]);
+
+entrada3 &gt;&gt; nx &gt;&gt; ny &gt;&gt; nz;
+
+ifstream entrada4 (argv[4]);
+
+entrada4 &gt;&gt; nx &gt;&gt; ny &gt;&gt; nz;
+
+ifstream entrada5 (argv[5]);
+
+entrada5 &gt;&gt; nx &gt;&gt; ny &gt;&gt; nz;
+
+ofstream saida ("doset.dose");
+
+saida&amp;lt;&amp;lt;nx&amp;lt;&amp;lt;" "&amp;lt;&amp;lt;ny&amp;lt;&amp;lt;" "&amp;lt;&amp;lt;nz&amp;lt;&amp;lt;endl&amp;lt;&amp;lt;endl;
+
+dosep=0.0; doses=0.0; dosem=0.0;
+
+doses_c=0.0; dosem_c=0.0; doset=0.0;
+
+for (i=0; i&lt;nx; i++){
+
+107
+
+
+
+for (j=0; j&lt;ny; j++){
+
+for(k=0; k&lt;nz; k++){
+
+entrada1 &gt;&gt; dosep;
+
+entrada2 &gt;&gt; doses;
+
+entrada3 &gt;&gt; dosem;
+
+if (argc &gt; 4){entrada4 &gt;&gt; doses_c;}
+
+if (argc &gt; 5){entrada5 &gt;&gt; dosem_c;}
+
+doset = dosep + doses + dosem + doses_c +dosem_c;
+
+saida&amp;lt;&amp;lt;doset&amp;lt;&amp;lt;" ";
+
+}
+
+saida&amp;lt;&amp;lt;endl;
+
+}
+
+saida&amp;lt;&amp;lt;endl&amp;lt;&amp;lt;endl;
+
+}
+
+entrada1.close();
+
+entrada2.close();
+
+entrada3.close();
+
+saida.close();
+
+if (argc &gt; 4){entrada4.close();}
+
+if (argc &gt; 5){entrada5.close();}
+
+}
+
+C.2 Os Testes da Função de Convolução
+
+Fizemos os testes para averiguar se o programa de convolução 3D estava funcionando cor-
+
+retamente. Usamos funções unidimensionais e bidimensionais de [20] e comparamos com as
+
+respectivas convoluções apresentadas nesta mesma referência. Criamos uma função tridi-
+
+mensional também para esta ?nalidade, e o resultado desta convolução via FFT foi confron-
+
+tado com o resultado de um programa que fazia uma convolução discreta, sem usar nenhum
+
+algoritmo de FFT, apenas convertendo as integrais em somatórios.
+
+Todos os arquivos de dados usados nos testes seguem a convenção apresentada no apên-
+
+dice F.
+
+108
+
+
+
+C.2.1 Teste 1D
+
+O teste 1D consistiu na convolução de uma função pulso unidimensional com ele próprio,
+
+h = f ? f. Este pulso é de?nido pela expressão dada a seguir:
+
+f (0; 0;zi) =
+
+(
+2 se 0 ? zi &amp;lt;7
+0 sezi ? 7
+
+(C.1)
+
+f (xi;yi;zi) = 0 sexi &gt; 0 ouyi &gt; 0 (C.2)
+
+Uma fatia da matriz montada para o cálculo é dada abaixo:
+
+f (0;yi;zi) =
+
+2
+666664
+
+2 2 2 : : : 2 0 0 : : : : : : 0
+
+0 0 : : : : : : 0
+...
+
+...
+
+0 0 0 : : : : : : 0
+
+3
+777775
+16?16
+
+(C.3)
+
+As outras fatias são nulas.
+
+Na ?gura C.2 temos o grá?co encontrado para h (0; 0;zi), onde veri?camos que o resul-
+
+tado está correto.
+
+Foram feitos testes com este pulso sobre os três eixos das coordenadas e sobre as dia-
+
+gonais de três faces do cubo. Os resultados foram exatamente os mesmos. Para manter a
+
+uniformidade em todos os testes 1D, as matrizes usadas foram de 16 ? 16 ? 16 células.
+
+C.2.2 Teste 2D
+
+Os dados usados neste teste são apresentados a seguir e também saíram da referência [20].
+
+f (0;yi;zi) =
+
+2
+666664
+
+2 1 0 0 0 0 0 0
+
+3 1 0 0 0 0 0 0
+
+0 0 0 0 0 0 0 0
+
+0 0 0 0 0 0 0 0
+
+3
+777775
+4?8
+
+(C.4)
+
+g (0;yi;zi) =
+
+2
+666664
+
+1 0 0 1 0 0 0 0
+
+2 1 3 2 0 0 0 0
+
+0 0 0 0 0 0 0 0
+
+0 0 0 0 0 0 0 0
+
+3
+777775
+4?8
+
+(C.5)
+
+109
+
+
+
+0
+10
+
+16
+0 10 20 30
+
+35.2
+
+E
+ixo Z
+
+Intensidade
+
+F
+igu
+
+ra
+C
+.2:
+
+C
+on
+volu
+
+ção
+d
+a
+fu
+n
+ção
+
+ap
+resen
+
+tad
+a
+an
+teriorm
+
+en
+te
+
+com
+ela
+
+p
+róp
+
+ria.
+
+f
+(x
+
+i ;y
+i ;z
+
+i )
+=
+g
+(x
+
+i ;y
+i ;z
+
+i )
+=
+
+0
+s
+e
+x
+i
+&gt;
+
+0
+(C
+
+.6)
+
+A
+s
+m
+atrizes
+
+3D
+u
+sad
+
+as
+tin
+
+h
+am
+
+d
+im
+
+en
+são
+
+d
+e
+4?
+
+4?
+8.
+
+O
+resu
+
+ltad
+o
+ob
+tid
+
+o
+é
+m
+ostrad
+
+o
+a
+segu
+
+ir:
+
+h
+(0
+;y
+
+i ;z
+i )
+= 2666664
+
+2
+1
+
+0
+2
+
+1
+0
+
+0
+0
+
+7
+5
+
+7
+1
+0
+
+3
+0
+
+0
+0
+
+6
+5
+
+1
+0
+
+9
+2
+
+0
+0
+
+0
+
+0
+0
+
+0
+0
+
+0
+0
+
+0
+0 3777775
+
+4
+?
+8
+
+(C
+.7)
+
+A
+s
+ou
+tras
+
+fatias
+com
+
+x
+i
+&gt;
+
+0
+são
+
+to
+d
+as
+
+n
+u
+las.
+
+E
+ste
+
+resu
+ltad
+
+o,
+d
+e
+acord
+
+o
+com
+
+a
+referên
+
+cia
+
+citad
+a
+acim
+
+a
+e
+com
+
+o
+p
+rogram
+
+a
+d
+e
+con
+
+volu
+ção
+
+con
+ven
+
+cion
+al,
+
+está
+correto.
+
+E
+stes
+
+d
+ad
+os
+
+tam
+b
+ém
+
+foram
+in
+serid
+
+os
+em
+
+ou
+tras
+
+orien
+taçõ
+
+es
+e
+to
+d
+os
+
+cálcu
+los
+
+m
+ostraram
+
+-se
+
+corretos.
+
+C
+.2
+.3
+
+T
+e
+s
+t
+e
+3
+D
+
+A
+q
+u
+i
+u
+sam
+
+os
+u
+m
+a
+cu
+rva
+
+gau
+ssian
+
+a
+trid
+
+im
+en
+sion
+
+al
+p
+ara
+
+testar
+a
+cap
+
+acid
+ad
+e
+d
+a
+rotin
+
+a
+d
+e
+
+con
+volu
+
+ção.
+A
+ex
+p
+ressão
+
+u
+sad
+
+a
+é
+a
+segu
+
+in
+te:110
+
+
+
+f (x;y;z) = e?
+(x?4)2+(y?4)2+(z?4)2
+
+10 (C.8)
+
+Esta função foi discretizada para um espaço cúbico de 8 ? 8 ? 8 células e organizada na
+forma padrão dos dados de entrada.
+
+Fizemos a convolução de f (x;y;z) com ela própria, isto é, h = f ? f. O espaço usado
+
+foi de 16 ? 16 ? 16, já considerando o devido padding de zeros.
+A convolução feita via FFT apresentou praticamente os mesmos resultados que a convo-
+
+lução numérica feita através de somatórios, isto é, sem usar FFT. Veja as ?guras C.3 e C.4
+
+onde apresentamos as curvas de nível de uma fatia do espaço 3D.
+
+Aqui foi ?xado o plano xi = 7 e as curvas de nível representam o valor de h (7;yi;zi).
+
+O pico da curva gaussiana nos dois casos foi igual a 57; 8133. As ?guras C.5 e C.6 nos
+
+dão uma visão tridimensional dos mesmos dados apresentados nas ?guras C.3 e C.4. Aqui o
+
+eixo das intensidades tem o mesmo signi?cado das curvas de nível nos grá?cos anteriores.
+
+111
+
+
+
+0 10 15
+0
+
+10
+
+15
+
+Eixo Z
+
+E
+ix
+
+o 
+Y
+
+5.58
+
+5.58
+
+5.
+58
+
+5.58
+
+5.58
+
+5.
+58
+
+11.2
+
+11.2
+
+11
+.2
+
+11.2
+
+11
+.2
+
+16.7
+
+16
+.7
+
+16.7
+
+16
+.7
+
+22.3
+
+22
+.3
+
+22.3
+
+22
+.3
+
+27.9
+
+27
+.9
+
+27.9
+
+27.9
+
+33.5
+
+33.5
+
+33
+.5
+
+39.1
+
+39.1
+
+39.1
+
+44.
+6
+
+44
+.6
+
+50
+.2
+
+Figura C.3: Curvas de nível da convolução via FFT de uma gaussiana com ela própria.
+
+112
+
+
+
+0 10 15
+0
+
+10
+
+15
+
+Eixo Z (cm)
+
+E
+ix
+
+o 
+Y
+
+ (
+cm
+
+)
+
+5.58
+
+5.58
+5.
+
+58
+
+5.58
+
+5.58
+
+5.
+58
+
+11.2
+
+11.2
+11
+
+.2
+
+11.2
+11
+
+.2
+
+16.7
+
+16
+.7
+
+16.7
+16
+
+.7
+
+22.3
+
+22
+.3
+
+22.3
+22
+
+.3
+
+27.9
+27
+
+.9
+
+27.9
+
+27.9
+
+33.5
+
+33.5
+
+33
+.5
+
+39.1
+
+39.1
+
+39.1
+
+44.
+6
+
+44
+.6
+
+50
+.2
+
+Figura C.4: A mesma operação é mostrada neste grá?co, porém via somatórios.
+
+113
+
+
+
+?1.02e?17
+
+8.37
+
+16.7
+
+25.1
+
+33.5
+
+41.8
+
+50.2
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+?1.0×10?17
+
+1.0×101
+
+2.0×101
+
+3.0×101
+
+4.0×101
+
+5.0×101
+
+5.6×101
+
+Eixo Y
+
+0
+
+10
+
+15 Eixo
+ Z
+
+0
+
+10
+
+15
+
+Figura C.5: Apresentação 3D da convolução via FFT.
+
+114
+
+
+
+0
+
+8.37
+
+16.7
+
+25.1
+
+33.5
+
+41.8
+
+50.2
+
+In
+te
+
+n
+si
+
+d
+ad
+
+e
+
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+55.8
+
+Eixo Y
+
+0
+
+10
+
+15
+
+Eixo Z
+
+0
+
+10
+15
+
+Figura C.6: Convolução convencional de duas gaussianas.
+
+115
+
+
+
+116
+
+
+
+Apêndice D
+
+Alterações no programa XYZP para
+
+a geração dos núcleos de convolução
+
+Cada núcleo de convolução foi gerado por um programa diferente. Baseamos-nos em um
+
+programa contido no pacote do EGS4 chamado XYZP.
+
+O programa XYZP, escrito em Mortran, utiliza as rotinas do EGS4 para simular a in-
+
+teração de um feixe de partículas em um meio material em coordenadas cartesianas [12].
+
+Alteramos este programa com a ?nalidade de ?forçar? a posição onde deve ocorrer a pri-
+
+meira interação dos fótons do feixe primário e contabilizar corretamente as partículas que
+
+depositarão as energias para os núcleos de convolução.
+
+Primeiro vamos apresentar como ?zemos com que o fóton incidente interagisse sempre
+
+no mesmo ponto. Na seqüência, apresentaremos a forma como controlamos o transporte das
+
+partículas nos núcleos primário, secundário e de múltiplo espalhamento.
+
+D.1 ?Forçando? a primeira interação do feixe
+
+Desejamos interferir na simulação de maneira tal que todos os fótons do feixe tenham a sua
+
+primeira interação num ponto conhecido. A partir deste ponto, a cascata eletromagnética
+
+segue o seu caminho normal.
+
+Uma das maneiras de forçar a interação de uma partícula é ?viciar? o gerador de números
+
+aleatórios. Analisando o ?uxograma do EGS4 descobrimos que a função SHOWER, que
+
+lança um fóton por vez contra o alvo, chama a subrotina PHOTON para determinar as
+
+interações e posições onde estas partículas irão interagir. Nesta subrotina o primeiro número
+
+sorteado é o ponto onde o fóton primário irá interagir, portanto basta chamar a rotina
+
+117
+
+
+
+SHOWER usando sempre a mesma semente para o gerador de números aleatórios. Porém
+
+deveremos restaurar a semente original antes que o gerador seja utilizado novamente, a ?m
+
+de prevenir resultados viciados.
+
+Analisando cuidadosamente o ?uxograma da subrotina PHOTON descobrimos um desvio
+
+condicional para a rotina HOWFAR [12]. Esta rotina é escrita pelo usuário e será usada
+
+para retornar a semente original para a simulação. A condição para que haja o desvio da
+
+subrotina PHOTON para a HOWFAR é que entre a posição atual do fóton e a ?nal deva
+
+haver pelo menos uma interface, quer seja entre células ou entre materiais diferentes.
+
+Assim a alteração feita no programa ocorreu logo antes da chamada da rotina SHOWER:
+
+...
+
+ISEG=0; "Flag para dizer que houve uma interacao"
+
+ISEM=IXX; "Guardando a semente em ISEM"
+
+ICOND=1; "Flag para dizer que a semente IXX foi alterada"
+
+IXX=13; "Nova semente. De resultado previamente conhecido"
+
+IAUSFL(18)=1; "Flag para acionar o ausgab qdo ocorrer Compton"
+
+IAUSFL(16)=1; "Flag para acionar o ausgab qdo ocorrer Prod. Pares"
+
+IAUSFL(20)=1; "Flag para acionar o ausgab qdo ocorrer Int. Fotoel."
+
+CALL SHOWER (IQIN,ETOTIN,XIN,YIN,ZIN,UIN,VIN,WIN,IRIN,WTIN);
+
+...
+
+Criamos as variáveis ISEG, ISEM e ICOND para controlar a geração dos núcleos. ISEM
+
+armazena o valor da semente original e ICOND indica para a rotina HOWFAR que a semente
+
+atual é a ?viciada?. IXX é a variável da semente do gerador de números aleatórios do EGS4.
+
+As outras variáveis serão apresentadas na seção seguinte pois tratam do controle das ordens
+
+de interação dos fótons. Na última linha é chamada a rotina SHOWER normalmente.
+
+A rotina HOWFAR recebeu apenas um comando condicional para recuperar a semente
+
+original:
+
+...
+
+;IF(ICOND=1)[IXX=ISEM;
+
+ICOND=0;
+
+"OUTPUT IXX; ('IXXnew = ', I12);" "Depuração"
+
+] "Se a semente nao e' original, entao recupere-a"
+
+...
+
+118
+
+
+
+Desta forma conseguimos fazer com que os fótons primários tenham a sua primeira
+
+interação controlada, bastando apenas modi?car o ponto inicial do feixe para alterar a
+
+localização da primeira interação.
+
+D.1.1 Os núcleos de deposição de energia
+
+O núcleo primário deve ser composto pela energia depositada pelas partículas carregadas
+
+lançadas pela primeira interação dos fótons do feixe com a matéria. Para isso basta des-
+
+cartar os fótons após uma colisão Compton e os fótons gerados pelas partículas carregadas
+
+(bremsstrahlung e aniquilação de pares).
+
+Este controle é feito pela variável ISEG e pelo vetor de sinalização IAUSFL ( ) que
+
+aparecem na primeira listagem do código apresentada neste apêndice. ISEG indica que
+
+houve uma interação com o feixe de fótons. IAUSFL ( ) é um conjunto de sinalizadores
+
+internos ao EGS4 que exige a chamada da rotina AUSGABa quando os eventos indicados
+
+entre parênteses por este sinalizador ocorrerem.
+
+A rotina AUSGAB (IARG) é escrita pelo usuário e nela a energia depositada quando do
+
+transporte das partículas carregadas é armazenada em matrizes com esta ?nalidade. Usamos
+
+esta rotina para selecionar o armazenamento da energia somente das partículas carregadas
+
+primárias através de seu argumento IARG, que indica o processo pelo qual a rotina AUSGAB
+
+foi requisitada. Apenas foi necessária a inclusão de uma linha de comando nesta rotina:
+
+IF (IARG=15 | IARG=17 | IARG=19) [ISEG=1;]
+
+Esta condição muda o valor da variável ISEG de zero para um quando os argumentos da
+
+rotina AUSGAB indicarem produção de pares, Compton ou fotoelétrico, respectivamente.
+
+ISEG indicará à rotina HOWFAR, no instante em que for requisitada, que já ocorreu a
+
+primeira interação e que os fótons seguintes deverão ser descartados. Para tanto adicionamos
+
+a seguinte linha de comando na rotina HOWFAR:
+
+IF(ISEG~=0 &amp;amp; IQ(NP)=0) [IDISC=1;RETURN;]
+
+Esta condição nos diz que a partícula indicada pelo índice NP é descartada (IDISC=1) se
+
+ela for fóton, IQ(NP)=0, e se ISEG for diferente de zero.
+
+Os programas para a geração dos núcleos secundário e de múltiplo espalhamento seguem
+
+na mesma linha de trabalho porém necessitam de alterações mais elaboradas. Tais mudanças
+
+começam a depender muito de toda a estrutura complexa do programa XYZP e passam a
+
+não fazer sentido quando apresentadas em partes, por isso não as mostraremos nesta tese.
+aDo alemão Ausgabe, que signi?ca saída; no nosso caso, refere-se à saída de dados da simulação.
+
+119
+
+
+
+Para geração do núcleo de deposição de energia secundário os elétrons primários não
+
+foram contabilizados, os fótons terciários não foram transportados, nem os fótons criados por
+
+bremsstrahlung e aniquilação de pares. Somente os elétrons secundários foram devidamente
+
+transportados e contabilizados.
+
+Na geração do núcleo de múltiplo espalhamento os elétrons primários e secundários não
+
+foram computados e as interações dos fótons e elétrons que se sucederam à terceira colisão
+
+do fóton com a matéria seguiram sem nenhuma interferência, inclusive os fótons criados por
+
+bremsstrahlung.
+
+120
+
+
+
+Apêndice E
+
+O PEGS
+
+O PEGS é o pré-processador do EGS4 e dentre as suas várias atribuições, gera uma arquivo
+
+com as seções de choque a serem utilizadas nas simulações [12].
+
+Executamos o PEGS apenas uma única vez para ajustar os limites inferiores para o
+
+transporte de partículas carregadas e fótons, respectivamente AE e AP, discutidos na seção
+
+3.3.1.2. Os valores usados estão na tabela 3.1. Este ajuste permite um melhor desempenho
+
+do EGS4 nas simulações.
+
+O PEGS também permite selecionar o material a ser usado nas simulações, que no nosso
+
+caso foi H2O, com densidade de 1g=cm
+3.
+
+A entrada de dados para a execução do PEGS é mostrada a seguir:
+
+COMP
+
+&amp;amp;INP NE=2,RHO=1.0,PZ=2,1 &amp;amp;END
+
+H2O
+
+H O
+
+ENER
+
+&amp;amp;INP AE=0.561,UE=30.511,AP=0.05,UP=30. &amp;amp;END
+
+PWLF
+
+&amp;amp;INP &amp;amp;END
+
+DECK
+
+&amp;amp;INP &amp;amp;END
+
+COMP signi?ca que estamos selecionando o composto. Na segunda linha temos o número
+
+de elementos NE, a densidade do composto RHO e o número relativo PZ dos respectivos
+
+elementos mostrados na quarta linha. Na terceira linha está o nome do composto.
+
+Abaixo da linha ENER estão as especi?cações de energias cinéticas das partículas dadas
+
+em MeV, onde UE é o limite superior de energia das partículas carregadas e analogamente
+
+121
+
+
+
+UP é o dos fótons.
+
+PWLF diz para o PEGS usar a interpolação linear por partes (piecewise linear ?t) para
+
+obter as seções de choque para a faixa de energia selecionada. Não requer mais informações
+
+de entrada.
+
+DECK amostra os dados que serão armazenados no arquivo de saída. Também não
+
+requer maiores informações de entrada.
+
+122
+
+
+
+Apêndice F
+
+O Formato Padrão dos Arquivos de
+
+Entrada e Saída
+
+Os dados de entrada e saída foram gravados em arquivos texto. Este formato é muito
+
+importante pois podemos editar os arquivos de entrada com mais facilidade para criar ou
+
+modi?car as heterogeneidades manualmente conforme as nossas necessidades. Os dados de
+
+saída seguem este mesmo padrão, permitindo também a fácil geração de grá?cos.
+
+Os arquivos de dados nos lembram uma matriz fatiada, como no exemplo na tabela F.1.
+
+Na primeira linha estão as dimensões da matriz na forma (L;M;N). L é o número de
+
+conjuntos separados por uma linha em branco, M é o número de linhas de cada conjunto e N
+
+é o número de colunas que cada conjunto possui. Em cada linha, os números são separados
+
+entre si por um espaço em branco e possuem no máximo oito dígitos de informaçãoa. Assim
+
+os tipos de dados possíveis são:
+
+? inteiro com 8 dígitos: XXXXXXXX
+
+? real com 8 casas decimais: 0.XXXXXXXX
+
+? real com 6 casas decimais e dois dígitos de expoente: 0.XXXXXXeXX
+
+Fisicamente, as dimensões dos dados lidos se relacionam com a matriz espacial por (L;M;N) !
+(bx; by; bz), isto é, as coordenadas (L1;M1;N1) são multiplicadas por uma fator de conversão,
+que no nosso caso corresponde a um lado das células em que o meio estudado foi discreti-
+
+zado. Assim, a posição do dado no arquivo e o respectivo índice da matriz na memória do
+
+computador identi?cam a sua posição física.
+aPadrão de escrita da linguagem ANSI C/C++
+
+123
+
+
+
+2 8 3
+
+0.00822975 0.0165727 0.0273237
+0.0165727 0.0333733 0.0550232
+0.0273237 0.0550232 0.090718
+0.0368832 0.0742736 0.122456
+0.0407622 0.082085 0.135335
+0.0368832 0.0742736 0.122456
+0.0273237 0.0550232 0.090718
+0.0165727 0.0333733 0.0550232
+
+0.0165727 0.0333733 0.0550232
+0.0333733 0.0672055 0.110803
+0.0550232 0.110803 0.182684
+0.0742736 0.149569 0.246597
+0.082085 0.165299 0.272532
+0.0742736 0.149569 0.246597
+0.0550232 0.110803 0.182684
+0.0333733 0.0672055 0.110803
+
+Tabela F.1: Um exemplo de arquivo de dados.
+
+Os espaços em branco entre os conjuntos e as quebras de linhas não são obrigatórias,
+
+mas tal artifício torna a leitura humana dos dados mais fácil.
+
+Não há limites quanto à extensão da linha ou tamanho total do arquivo.
+
+124
+
+
+
+Apêndice G
+
+As máquinas usadas nas simulações e
+
+cálculos numéricos
+
+As características mais relevantes das máquinas usadas nesta tese estão na tabela abaixo.
+
+Nome Modelo/Freq. RAM Sistema Operacio-
+
+nal
+
+HD Interface
+
+HAL9000 AMD k6-2/400MHz 88MB GNU/Linux kernel
+
+2.2.13-7mdk
+
+IDE - UDMA 2
+
+Thor Alpha 4000/300MHz 1GB OSF1 SCSI
+
+Araguaia Ultra Sparc 5/270MHz 128MB SunOS 5.7 SCSI
+
+125
+
+
+
+126
+
+
+
+Referências Bibliográ?cas
+
+[1] John Robert Cunningham and Harold Elfort Johns. The Physics of Radiology. Charles
+
+C. Thomas, 4th edition, 1984.
+
+[2] Frank H. Attix. Introduction to Radiological Physics and Radiation Dosimetry. John
+
+Wiley and Sons, 1986.
+
+[3] Arthur Boyer and Ed Mok. A photon dose distribution model employing convolution
+
+calculations. Medical Physics, 12(2):169?177, Mar/Apr 1985.
+
+[4] Arthur L. Boyer and Edward C. Mok. Calculation of photon dose distributions in an
+
+inhomogeneous medium using convolutions. Medical Physics, 13(4):503?509, Jul/Aug
+
+1986.
+
+[5] Nucletron International B.V. PLATO - Radiotherapy Planning System, 1995.
+
+[6] Yunping Zhu and Arthur Boyer. X-ray dose computations in heterogeneous media using
+
+3-dimensional FFT convolution. Physics in Medicine and Biology, 35(3):351?368, 1990.
+
+[7] J. R. Lamarsh. Introduction to Nuclear Reactor Theory. Addison-Wesley, 1975.
+
+[8] V. Kafarov. Fundamentals of Mass Transfer. Mir Publishers, 1975.
+
+[9] R. D. Evans. X-ray and gamma ray interactions. In E. Tochilin F. H. Attix, W.
+
+C. Roesch, editor, Radiation dosimetry - Fundamentals, volume I, chapter 3. Academic
+
+Press, 2nd edition, 1968.
+
+[10] T. R. Mackie. Applications of the Monte Carlo methods in radiotherapy. In The
+
+Dosimetry of Ionizing Radiation, volume III. K. R. Kase, B. E. Bjarngard, F. H. Attix,
+
+1990.
+
+[11] J. W. Scrimger T. R. Mackie and J. J. Battista. A convolution method of calculating
+
+dose for 15-MV x rays. Med. Phys., 12(2):188?196, Mar/Apr 1985.
+
+127
+
+
+
+[12] Hideo Hirayama, Walter R. Nelson and David W. O. Rogers. The EGS4 Code System.
+
+Stanford Linear Accelerator Center, Stanford University, Stanford, California 94305,
+
+December 1985. SLAC-265.
+
+[13] D. W. O. Rogers and A. F. Bielajew. Techniques of electron and photon transport,
+
+volume III, chapter 5. K. R. Kase, B. E. Bjarngard, F. H. Attix, 1990.
+
+[14] Proc. 8th Int. Conf. on Computers in Radiotherapy (Toronto), 1984.
+
+[15] T. R. Mackie and A. F. Bielajew. Generation of photon energy deposition kernels using
+
+EGS Monte Carlo code. Physics in Medicine and Biology, 33(1):1?20, 1988.
+
+[16] CRC - Handbook of Chemistry and Physics, 1989-1990.
+
+[17] D. W. O. Rogers A. F. Bielajew and A. E. Nahum. The Monte Carlo simulation of ion
+
+chamber response to cobalt - resolution of anomalies associated with interfaces. Physics
+
+in Medicine and Biology, (30):419?27, 1985.
+
+[18] CGR/GE Medical Systems. Manual ALCYON IIi, 1984.
+
+[19] Arthur L. Boyer. Shortening the calculation time of photon dose distributions in an
+
+inhomogeneous medium. Medical Physics, 11(4):552?554, Jul/Aug 1984.
+
+[20] E. Oran Brigham. The Fast Fourier Transform and its Applications. Signal Processing
+
+Series. Prentice Hall, 1988.
+
+[21] Eugene Butkov. Fisica Matematica. Guanabara Koogan, 1988.
+
+[22] Numerical Recipes in Fortran 77: The art of scienti?c computing. Cambridge University
+
+Press, 1992.
+
+[23] Radiation Quantities and Units. Technical Report 33, International Commision on
+
+Radiation Units and Measurement - ICRU, April 1980.
+
+[24] P. J. Plauger. A biblioteca Standard C. Campus, 1994.
+
+[25] Mark G. Sobell. A Practical Guide to Linux. Addison-Wesley, 1997.
+
+[26] M. Frigo and S. G. Johnson. FFTW - Fastest Fourier Transform in the West (User's
+
+Manual). http://www.?tw.org.
+
+128
+
+
+</field>
+	</doc>
+</add>

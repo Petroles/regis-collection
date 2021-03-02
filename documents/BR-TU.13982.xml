@@ -1,0 +1,5070 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.13982</field>
+		<field name="filename">20193_3773_7410.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+ 
+
+UNIVERSIDADE DA BEIRA INTERIOR 
+Faculdade de Engenharia 
+Departamento de Informática 
+
+ 
+
+ 
+
+A comprehensive IVR (Interactive 
+
+Voice Response) analysis model using 
+
+online analytical processing (OLAP) 
+
+on a multidimensional data cube 
+
+ 
+Hugo Alexandre Carvalheira Veiga 
+
+ 
+
+Submitted to the University of Beira Interior in candidature for the 
+
+Degree of Master of Science in Computer Science and Engineering 
+
+ 
+
+Supervised by Professor Nuno M. Garcia 
+
+ 
+
+ 
+
+ 
+
+Department of Computer Science 
+
+University of Beira Interior 
+
+Covilhã, Portugal 
+
+http://www.di.ubi.pt
+
+
+
+
+
+ 
+
+i 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Acknowledgements 
+
+ 
+
+ 
+
+Ten years and two kids after, I’m at the edge of fulfilling a personal dream. 
+
+This requires real celebration and by the way Howards and Johnnie you guys 
+
+are invited. My thanks goes to everyone at Sinclair, without you guys I would 
+
+probably be a famous neurosurgeon.  
+
+ 
+
+A very great thanks to all my colleagues and coworkers, in particular 
+
+Professor J. Canavilhas, which gave me this idea. This dissertation would not 
+
+have been possible without the guidance and the help of “A” special friend 
+
+and mentor, Professor Nuno Garcia, your valuable assistance in the 
+
+preparation and completion of this study is priceless. A special thanks to all 
+
+my family, it’s a big family, I will only point a few, my grandfather Higino 
+
+without you and your constant support this wouldn’t happen, my 
+
+grandmother Fernanda that prays a lot for my salvation – I really hope it 
+
+works grandma, my uncles Juca and Getty that write English a lot better than 
+
+me, my father Joaquim, my mother Graça and my sister Rebeca that are 
+
+always there when I need, my loving wife Luísa that sacrificed every time I 
+
+needed, staying with the kids, cooking, doing the laundry, cleaning the house 
+
+and the most important of them all, taking care of me. I almost forgot, a big 
+
+thanks to my dog Nuchy Maria Cunixo de Belldogs that managed to stay away 
+
+from my papers – those anger lessons are really paying out. Gabriel and 
+
+Miguel this one is for you both. 
+
+ 
+
+ 
+
+
+
+
+
+ 
+
+iii 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Abstract  
+
+Private Branch eXchange (PBX) is a tool indispensable in the business world. 
+
+The telephone exchanges allow employees to perform internal connections 
+
+between telephones, or make calls to the external network also known as 
+
+Public Switched Telephone Network (PSTN). With increasing Internet usage, 
+
+there is interest in understanding what services are offered. Enterprise 
+
+Courier is a commercial Internet Protocol Private Branch eXchange (IP PBX) 
+
+based on open source Asterisk web-based PBX software for Linux, which 
+
+supports multiple protocols and services, like Interactive Voice Response 
+
+(IVR). Cisco Unified Communications Manager (CUCM) or CallManager, is a 
+
+software based call-processing system (IP PBX) developed by Cisco Systems. 
+
+CUCM tracks all active Voice over IP (VoIP) network components; including 
+
+phones, gateways, conference bridges, among others. IVR is part of the 
+
+Academic Services costumer contact and ticketing of University of Beira 
+
+Interior (UBI). IVR monitoring and analysis are essential for effective 
+
+operation and resource management, in particular, multidimensional 
+
+analysis for long-term data is necessary for comprehensive understanding of 
+
+the trend, the quality of customer service and costumer experience. In this 
+
+paper, we propose a new IVR analysis model for large volumes of IVR data 
+
+accumulated over a long period of time. The IVRCube proposed is an analysis 
+
+model using online analytical processing (OLAP) on a multidimensional data 
+
+cube that provides an easy and fast way to construct a multidimensional IVR 
+
+analysis system for comprehensive and detailed evaluation of long-term 
+
+data. The feasibility and applicability are validated, as the proposed IVRCube 
+
+analysis model is implemented and applied to Academic Services costumer 
+
+contact and ticketing IVR data.
+
+
+
+
+
+ 
+
+v 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Resumo  
+
+A Private Branch eXchange (PBX) é uma ferramenta indispensável no mundo 
+
+dos negócios. As centrais telefónicas permitem que os funcionários realizem 
+
+chamadas internas entre telefones, ou façam chamadas para a rede externa, 
+
+também conhecida como Public Switched Telephone Network (PSTN). Com o 
+
+aumento sistemático da utilização da Internet, há um interesse acrescido em 
+
+entender quais os serviços que são oferecidos nas redes baseadas em Internet 
+
+Protocol (IP). Um destes serviços é o Voice over IP (VoIP). 
+
+O Enterprise Courier é um software IP PBX comercial para VoIP baseado na 
+
+aplicação de código aberto Asterisk, que opera sobre Linux. O IP PBX 
+
+Enterprise Courier suporta vários protocolos e serviços, por exemplo o 
+
+Interactive Voice Response (IVR). O Cisco Unified Communications Manager 
+
+(CUCM) também chamado de CallManager, é um sistema de processamento 
+
+de chamadas IP, ou IP PBX, desenvolvido pela Cisco Systems. O CUCM permite 
+
+fazer a gestão e operação de todos os componentes ativos de voz, incluindo 
+
+telefones, gateways, equipamentos de conferência entre outros.  
+
+Estes sistemas coexistem na rede de gestão de comunicações de voz da 
+
+Universidade da Beira Interior (UBI), sendo que o sistema automatizado 
+
+utilizado para o encaminhamento de chamadas dos Serviços Académicos na 
+
+UBI utiliza a tecnologia IVR. Este serviço da UBI é uma das formas que os 
+
+clientes da Universidade (alunos e não alunos) têm para obter informações e 
+
+resolver questões de forma rápida e simples usando o telefone.  
+
+Por ser um importante ponto de interface entre a universidade e a 
+
+comunidade, a monitorização e análise de desempenho do IVR são essenciais 
+
+para o funcionamento eficaz e gestão de recursos humanos atribuídos a este 
+
+serviço, o que torna a tarefa de extrair os dados do sistema de VoIP e 
+
+apresentá-los de forma a poder extrair deles informação útil à gestão, o 
+
+centro deste trabalho de investigação. Para a análise dos dados, foi usada 
+
+uma técnica de análise multidimensional de dados a longo prazo, necessária 
+
+para uma compreensão abrangente da evolução e qualidade de serviço 
+
+prestada ao cliente tendo como objetivo a melhor experiência possível por 
+
+parte do cliente.  
+
+
+
+Neste trabalho, propomos um novo modelo de análise de IVR para grandes 
+
+volumes de dados acumulados ao longo de um extenso período de tempo. O 
+
+IVRCube é um modelo de análise utilizando online analytical processing 
+
+(OLAP) num cubo de dados multidimensional que fornece uma forma fácil e 
+
+rápida de construir um sistema de análise multidimensional para avaliação 
+
+exaustiva e pormenorizada dos dados ao longo do tempo. A viabilidade e 
+
+aplicabilidade deste modelo são validadas, uma vez que o modelo de análise 
+
+IVRCube proposto é implementado e aplicado ao serviço de contacto 
+
+telefónico (IVR) dos Serviços Académicos da UBI. 
+
+ 
+
+
+
+ 
+
+vii 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Keywords 
+
+ 
+
+ 
+
+ 
+
+Call Center, Contact Center, Customer Contact Transformation, Customer 
+
+Self-Service, Customer Service, IVR, IVR Design, Customer Care, Business 
+
+Intelligence, OLAP, Multidimensional information systems, Data 
+
+Warehousing, Decision Support Systems, Business Analytics, Knowledge 
+
+Management 
+
+ 
+
+  
+
+ 
+
+
+
+
+
+ 
+
+ix 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Contents 
+
+ 
+
+ 
+
+Acknowledgements ...................................................................i 
+
+Abstract ............................................................................... iii 
+
+Resumo ................................................................................ v 
+
+Keywords ............................................................................ vii 
+
+Contents .............................................................................. ix 
+
+List of Figures ....................................................................... xi 
+
+List of Tables ...................................................................... xiii 
+
+Acronyms ............................................................................ xv 
+
+Extended Abstract in Portuguese .............................................. xvii 
+
+1. Introduction ........................................................................ 1 
+
+1.1. Technological background ............................................ 1 
+
+1.2. IVR a new offered service ............................................ 3 
+
+1.3. Motivation and problem............................................... 5 
+
+1.4. Organization of the Thesis ............................................ 6 
+
+2. State of the art .................................................................... 7 
+
+2.1. Telephony Evolution ................................................... 7 
+
+2.2. Unified Communications ............................................ 12 
+
+2.3. Microsoft UC solution ................................................ 15 
+
+
+
+2.4. Cisco UC solution .................................................... 16 
+
+2.5. Avaya UC solution .................................................... 18 
+
+2.6. Mitel UC solution ..................................................... 19 
+
+2.7. Asterisk UC solution ................................................. 20 
+
+2.8. Call Center Management and Reporting .......................... 22 
+
+3. Architecture and solution to the problem: a comprehensive IVR analysis 
+
+model using online analytical processing on a multidimensional data 
+
+cube ............................................................................... 23 
+
+3.1. Requirements ......................................................... 23 
+
+3.2. Call Detail Record structure ........................................ 24 
+
+3.3. Retrieved fields to Data WareHouse .............................. 24 
+
+3.4. Cube Structure ....................................................... 27 
+
+4. Results and Discussion ......................................................... 31 
+
+5. Conclusions and future work ................................................. 51 
+
+5.1. Future Work .......................................................... 53 
+
+References .......................................................................... 55 
+
+Appendices .......................................................................... 59 
+
+
+
+ 
+
+xi 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+List of Figures 
+
+ 
+
+ 
+
+FIGURE 1.1 – SCHEME DEPICTING CALLMANAGER INTEGRATION. ......................................................................... 1 
+
+FIGURE 1.2 – INTEGRATION OF VOIP@RCTS IN UBI INFRASTRUCTURE. ................................................................ 2 
+
+FIGURE 1.3 – FLOWCHART FOR THE IVR ACADEMIC SERVICES COSTUMER CONTACT AND TICKETING. ........................... 4 
+
+FIGURE 2.1 – DIGITAL AMPLIFICATION VS ANALOG AMPLIFICATION. ...................................................................... 7 
+
+FIGURE 2.2 – SCHEME DEPICTING DIALUP CONNECTION TO NEAREST POP. ............................................................. 8 
+
+FIGURE 2.3 – GARTNER MAGIC QUADRANT FOR UNIFIED COMMUNICATIONS. ........................................................ 14 
+
+FIGURE 2.4 – EXAMPLE OF IVR LYNC REPORTING USING POWERSHELL. ............................................................... 16 
+
+FIGURE 2.5 – REPORT GENERATION FOR ABANDONED CALLS. ............................................................................. 17 
+
+FIGURE 2.6 – REPORT GENERATION USING UNIFIED INTELLIGENCE CENTER. .......................................................... 18 
+
+FIGURE 2.7 – REPORT EXAMPLE ON AGENT PERFORMANCE. ............................................................................... 19 
+
+FIGURE 2.8 – ASTERISK IVR HELLO WORLD, USING DIALPLAN LANGUAGE. ........................................................... 21 
+
+FIGURE 2.9 – SCHEME DEPICTING QUEUEMETRICS ANSWERED CALL DISTRIBUTION PER HOUR. ................................. 22 
+
+FIGURE 3.1 – DATA RETRIEVAL SCHEME. ........................................................................................................ 25 
+
+FIGURE 3.2 – CUBE STRUCTURE VIEW. ........................................................................................................... 29 
+
+FIGURE 4.1 – TOTAL CALLS (ANSWERED AND UNANSWERED) DISTRIBUTION BY IVR OPTION. ................................... 31 
+
+FIGURE 4.2 – TOTAL (ANSWERED AND UNANSWERED) CALLS DISTRIBUTION BY MONTH. ......................................... 33 
+
+FIGURE 4.3 – TOTAL CALLS DISTRIBUTION BY IVR OPTION AND BY MONTH. .......................................................... 34 
+
+FIGURE 4.4 – CALLS DISTRIBUTION BY OPERATOR EXTENSION. ............................................................................ 35 
+
+FIGURE 4.5 – CALLS DISTRIBUTION BY ANSWERED AND UNANSWERED TYPE. .......................................................... 36 
+
+FIGURE 4.6 – ANSWERED AND UNANSWERED CALLS DISTRIBUTED BY IVR OPTION. ................................................. 36 
+
+FIGURE 4.7 – ANSWERED AND UNANSWERED CALLS DISTRIBUTED BY IVR OPTION, A DIFFERENT PERSPECTIVE. ............. 37 
+
+FIGURE 4.8 – CALLS DISTRIBUTION BY IVR OPTION AND BY OPERATOR. ................................................................ 38 
+
+FIGURE 4.9 – ANSWERED AND UNANSWERED CALLS DISTRIBUTED BY AGENT FOR IVR OPTION "APPLICATION AND 
+
+ENROLLMENT" ................................................................................................................................. 39 
+
+FIGURE 4.10 – AVERAGE CONVERSATION AND AVERAGE WAITING TIME BY ANSWERED AND UNANSWERED CALLS. ....... 40 
+
+FIGURE 4.11 – AVERAGE ANSWERED AND UNANSWERED WAITING TIME DISTRIBUTED BY IVR OPTION. ...................... 40 
+
+FIGURE 4.12 – ANSWERED AND UNANSWERED CALLS WAITING TIME (OVER 10 MINUTES) BY IVR OPTION. ................. 41 
+
+FIGURE 4.13 – NUMBER OF UNANSWERED CALLS WITH WAITING TIME BIGGER THAN 3 MINUTES. ............................. 42 
+
+FIGURE 4.14 – ANSWERED AND UNANSWERED MAXIMUM WAITING TIME BYE IVR OPTION. ..................................... 43 
+
+FIGURE 4.15 – AVERAGE CONVERSATION TIME BY IVR OPTION. ......................................................................... 44 
+
+FIGURE 4.16 – CUMULATIVE CONVERSATION TIME DISTRIBUTED BY AGENTS.......................................................... 44 
+
+FIGURE 4.17 – NUMBER OF CALLS, AVERAGE WAITING TIME AND IVR OPTION “ACCESS TO UNIVERSITY” DISTRIBUTED BY 
+
+HOURLY BUCKET. .............................................................................................................................. 45 
+
+FIGURE 4.18 – NUMBER OF CALLS, AVERAGE WAITING TIME AND IVR OPTION “APPLICATION AND ENROLLMENT” 
+
+DISTRIBUTED BY HOURLY BUCKET. ........................................................................................................ 46 
+
+
+
+FIGURE 4.19 – NUMBER OF CALLS, AVERAGE WAITING TIME AND IVR OPTION “CERTIFICATES AND DIPLOMAS” DISTRIBUTED 
+
+BY HOURLY BUCKET. .......................................................................................................................... 46 
+
+FIGURE 4.20 – NUMBER OF CALLS, AVERAGE WAITING TIME AND IVR OPTION “EQUIVALENCE AND RECOGNITION OF 
+
+ACADEMIC DEGREES” DISTRIBUTED BY HOURLY BUCKET. ........................................................................... 47 
+
+FIGURE 4.21 – NUMBER OF CALLS, AVERAGE WAITING TIME AND IVR OPTION “OTHER ISSUES” DISTRIBUTED BY HOURLY 
+
+BUCKET. ......................................................................................................................................... 48 
+
+FIGURE 4.22 – NUMBER OF CALLS, AVERAGE WAITING TIME AND IVR OPTION “TARIFF AND ACCREDITATIONS” DISTRIBUTED 
+
+BY HOURLY BUCKET. .......................................................................................................................... 48 
+
+
+
+ 
+
+xiii 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+List of Tables 
+
+ 
+
+ 
+
+TABLE 2.1 – COMPARISON OF THE MOST WELL-KNOWN VOICE CODECS. ............................................................... 10 
+
+TABLE 2.2 – SUBJECTIVE SPEECH QUALITY MEASUREMENT. ................................................................................ 11 
+
+TABLE 2.3 – FIVE COMPONENTS THAT CONTRIBUTE TO THE MOUTH-TO-EAR DELAY................................................. 12 
+
+TABLE 2.4 – DELAY LIMITS FOR ONE-WAY TRANSMISSION. ................................................................................. 12 
+
+TABLE 2.5 – UC COMMUNICATIONS AREAS. ................................................................................................... 13 
+
+TABLE 3.1 – RECORDS REPRESENTING ONE ANSWERED CALL. .............................................................................. 26 
+
+TABLE 3.2 – RECORD REPRESENTING ONE UNANSWERED CALL. ........................................................................... 27 
+
+TABLE 4.1 – PROPOSED REORDER OF IVR MENU OPTIONS. ................................................................................ 32 
+
+ 
+
+ 
+
+
+
+
+
+ 
+
+xv 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Acronyms 
+
+ 
+
+ 
+
+AM Amplitude Modulation 
+
+CDR Call Detail Record 
+
+Codec Coder-decoder 
+
+CUCM Cisco Unified Communications Manager 
+
+CUCS Cisco Unified Computing System 
+
+DDI Direct Dial-In 
+
+DID Direct Inward Dialing 
+
+FCCN Fundação para a Computação Científica Nacional 
+
+FM Frequency Modulation 
+
+FR Functional Requirements 
+
+HCS Cisco Hosted Collaboration Solution 
+
+IP Internet Protocol 
+
+IP PBX Internet Protocol Private Branch eXchange 
+
+ISDN Integrated Services Digital Network 
+
+ISP Internet Service Provider 
+
+IVR Interactive Voice Response 
+
+MOS Mean opinion Score 
+
+ms Milliseconds 
+
+NFR Non-Functional Requirements 
+
+NREN National Research and Education Network 
+
+OLAP Online Analytical Processing 
+
+OSI Open Systems Interconnection 
+
+PBX Private Branch Exchange 
+
+POP Point of Presence 
+
+PRI Primary Rate Interface 
+
+PSTN Public Switched Telephone Network 
+
+SBC Session Border Controller 
+
+TCP Transmission Control Protocol 
+
+TV Television 
+
+UBI University of Beira Interior 
+
+
+
+UC Unified Communications 
+
+UCaaS Unified Communications as a Service 
+
+UDP User Datagram Protocol 
+
+UHF Ultra High Frequency 
+
+VHF Very High Frequency 
+
+VoIP Voice over IP 
+
+ 
+
+ 
+
+
+
+ 
+
+xvii 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Extended Abstract in Portuguese 
+
+ 
+
+ 
+
+Introdução 
+
+ 
+
+Esta secção apresenta, em português, o resumo alargado da dissertação de 
+
+mestrado intitulada “A comprehensive IVR (Interactive Voice Response) 
+
+analysis model using online analytical processing (OLAP) on a 
+
+multidimensional data cube” (“Modelo de análise abrangente de sistemas de 
+
+resposta de voz interativa usando processamento analítico em tempo real 
+
+num sistema de cubo de dados multidimensional”). 
+
+O seu propósito é o de enunciar o problema a ser tratado, os principais 
+
+objetivos e as suas contribuições para o avanço da ciência. 
+
+Este resumo alargado tem a seguinte organização: em primeiro lugar, são 
+
+apresentados uma pequena introdução tecnológica, o problema e objetivo 
+
+desta dissertação. Seguidamente a solução abordada e na secção resultados 
+
+são apresentados alguns resultados relevantes. A finalizar são descritas as 
+
+conclusões deste trabalho e propostas linhas de investigação para trabalho 
+
+futuro.  
+
+ 
+
+ 
+
+Introdução Tecnológica e objetivos 
+
+ 
+
+Durante o ano de 2005 a Universidade da Beira Interior (UBI) iniciou o seu 
+
+processo de convergência da rede telefónica e da rede de dados, após ter 
+
+adquirido uma solução Internet Protocol Private Branch Exchange (IP PBX) 
+
+da Cisco Systems. Esta solução foi interligada com o PBX existente e através 
+
+de um media gateway foi também interligado com a rede Public switched 
+
+
+
+telephone network (PSTN). Após dois anos, em 2007, a UBI integrou um 
+
+projeto à escala nacional denominado VOIP@RCTS, que foi liderado pela 
+
+Fundação para a Computação Científica Nacional (FCCN). Este projeto 
+
+consistiu em interligar todos os PBX existentes através de media gateways e 
+
+encaminhar o tráfego sempre que possível por IP. O software escolhido é 
+
+denominado de Enterprise Courier e é baseado na plataforma Asterisk. 
+
+Com o novo IP PBX Enterprise Courier novas funcionalidades tornaram-se 
+
+disponíveis, nomeadamente a possibilidade de utilizar Interactive Voice 
+
+Response (IVR). Esta funcionalidade permite que as chamadas sejam 
+
+atendidas automaticamente pelo sistema e após a seleção de uma opção do 
+
+menu, a chamada seja encaminhada para um agente ou operador que vai 
+
+atender o assunto em causa. Esta seleção permite que o agente que atenda 
+
+a chamada seja o mais capacitado para o assunto em causa.  
+
+ 
+
+Problema e motivação 
+
+A UBI procura melhorar de forma continuada a sua estrutura organizacional, 
+
+os seus processos e seus métodos de controlo, com o objetivo de satisfazer 
+
+e antecipar as necessidades dos seus clientes e outras partes interessadas. 
+
+O novo serviço IVR do IP PBX Enterprise Courier não tem nenhuma forma de 
+
+análise estatística dos dados que gera e portanto não existem métricas que 
+
+permitam a UBI avaliar e planear melhorias na área do atendimento 
+
+telefónico automático. 
+
+Em 2013, o Sr. Vice-Reitor responsável pelos Serviços Académicos requereu 
+
+que fosse implementada monitorização neste sistema para uma correta 
+
+gestão e supervisão do mesmo. Tendo isto em consideração, este estudo 
+
+descreve a investigação levada a cabo que permitirá no futuro ter estatísticas 
+
+do serviço IVR e assim contribuir para a tomada de decisões de gestão melhor 
+
+informadas. 
+
+ 
+
+ 
+
+  
+
+
+
+ 
+
+xix 
+
+ 
+
+IVRCube: um modelo de análise IVR usando online 
+
+analytical processing (OLAP) num cubo de dados 
+
+multidimensional 
+
+ 
+
+Baseado num conjunto de entrevistas efetuadas, foi criado um conjunto de 
+
+requisitos funcionais e não funcionais. Estes requisitos foram fundamentais 
+
+para o desenvolvimento deste trabalho, pois indicam sob um aspeto geral as 
+
+funcionalidades mais relevantes do sistema. 
+
+O sistema Enterprise Courier guarda os registos Call Detail Record (CDR) de 
+
+todas as chamadas, incluindo as chamadas que entram no sistema IVR, em 
+
+base de dados MySQL. A primeira fase do trabalho foi identificar quais os 
+
+dados relevantes constantes dos CDR e importar esses dados para o data 
+
+warehouse institucional. Com esses dados foi criada uma estrutura 
+
+multidimensional, normalmente denominada de cubo ou hipercubo, que 
+
+contém medidas ou factos e inclui dimensões ou perspetivas. O hipercubo 
+
+construído tem seis dimensões e duas medidas. 
+
+ 
+
+ 
+
+Resultados e discussão 
+
+ 
+
+Os decisores normalmente pretendem ter acesso à informação de forma 
+
+simples, generalizada e rápida. Nesta seção são apresentados vários 
+
+resultados em forma de gráfico e tentou-se de uma forma geral que esses 
+
+mesmos resultados fossem expostos a partir das várias perspetivas do 
+
+hipercubo construído. 
+
+A partir da informação recolhida foi possível identificar imediatamente duas 
+
+situações no IVR que necessitam ser modificadas: 
+
+1. A ordem do menu não está de acordo com o que vários estudos 
+
+indicam, ou seja, no menu a opção mais solicitada deve ser colocada em 
+
+primeiro lugar, a segunda opção mais solicitada em segundo lugar e assim 
+
+sucessivamente. 
+
+
+
+2. O período matinal de atendimento automático termina às 13h, isto 
+
+permite que chamadas que entrem muito próximo do fecho sejam atendidas 
+
+durante o intervalo de almoço dos funcionários deste serviço. Tendo em 
+
+conta tempo médio que um cliente está disposto a esperar para ser atendido 
+
+e o tempo médio mais longo de conversação das várias opções IVR, 
+
+identificou-se que o sistema deve deixar de aceitar novas chamadas antes 
+
+das 12 horas 52 minutos e 25 segundos. 
+
+ 
+
+ 
+
+Conclusões e trabalho futuro 
+
+ 
+
+Os estudos indicam que grande maioria das pessoas ainda prefere utilizar o 
+
+telefone em detrimento das novas tecnologias. Os sistemas de atendimento 
+
+telefónico IVR são desta forma um dos principais e normalmente o primeiro 
+
+ponto de contato e pretende-se que a experiência do utilizador seja a melhor 
+
+possível. 
+
+Este estudo permitiu a resposta a várias questões normalmente colocadas 
+
+pelos decisores e poderá ser usado para ajustar a mão-de-obra disponível de 
+
+acordo com os meses de maior afluxo de chamadas, as horas a que estas 
+
+normalmente ocorrem, materializar estímulos positivos aos agentes que 
+
+interagem com atendimento automático e de uma forma recursiva melhorar 
+
+o desempenho global. 
+
+ 
+
+Trabalho futuro 
+
+Como trabalho a curto prazo será a definição de um dashboard para que o 
+
+Sr. Vice-Reitor possa ter acesso a informação de gestão de uma forma rápida 
+
+e efetiva. Esta informação poderá então ser usada para fazer decisões 
+
+baseadas no conhecimento adquirido. 
+
+Existe ainda a oportunidade de utilizar esta tecnologia e esta abordagem em 
+
+vários sistemas informáticos, por exemplo, ligados às redes de 
+
+computadores, que tipicamente geram um grande volume de dados e que 
+
+raramente são analisados, não contribuindo assim para a extração de novo 
+
+conhecimento. 
+
+
+
+Introduction 
+
+ 
+
+ 
+
+1 
+
+Chapter 1 
+
+ 
+
+ 
+
+ 
+
+1. Introduction 
+
+ 
+
+1.1. Technological background 
+
+University of Beira Interior (UBI) [1] started the convergence of the phone 
+
+system and the data network in 2005, after acquiring a commercial Internet 
+
+Protocol (IP) Private Branch Exchange (PBX) software from Cisco called 
+
+CallManager [2]. The long term objective to UBI, was to have 100% Voice over 
+
+IP (VoIP) network until 2020. The Internet Protocol Private Branch eXchange 
+
+(IP PBX) was integrated with the analog PBX’s and with the Public switched 
+
+telephone network (PSTN). Figure 1.1 presents a scheme depicting 
+
+CallManager integration in UBI voice architecture. In Figure 1.1, E-carrier 
+
+(E1) represents a Primary Rate Interface (PRI). PRI is a standardized 
+
+telecommunications service level within the Integrated Services Digital 
+
+Network (ISDN). E1 provides 30 communication channels and 2 signaling 
+
+channels, this is also referred to as 30B channels plus 2D channels. In this 
+
+case Media Gateway has 60 voice channels to interconnect VoIP and legacy 
+
+telephony.  
+
+E1
+
+Media Gateway
+E1
+
+IP PBX Call Manager
+
+E1
+
+PSTN
+
+IP
+
+Trunk
+
+IP Phones
+
+IP
+
+Analogical Phones
+
+ 
+
+Figure 1.1 – Scheme depicting CallManager Integration. 
+
+ 
+
+
+
+In 2007, Portuguese Universities started changing their phone systems into a 
+
+converged system using the data network to route phone calls. This project, 
+
+named VoIP@RCTS [3] was launched by the Fundação para a Computação 
+
+Científica Nacional (FCCN), the Portuguese National Research and Education 
+
+Network (NREN). The chosen solution was a software platform based on 
+
+FreePBX [4] which uses the Asterisk core [5]. This software, although based 
+
+on FreePBX, it has been redesigned to suite Universities’ specifications. This 
+
+new software is called Enterprise Courier from itCenter [6]. UBI integrated 
+
+that same project and the system was incorporated in its telephone network. 
+
+Figure 1.2 illustrates UBI integration of VoIP@RCTS in the existing 
+
+infrastructure of UBI. In Figure 1.2 we can also see the Session Border 
+
+Controller (SBC) that acts as a firewall for the VoIP world. 
+
+Telephony
+
+Operators
+
+E1
+
+SBC
+
+IP
+
+Trunk
+
+IP PBX
+
+Enterprise Courier
+
+IP PBX Call Manager
+
+IP 
+
+Trunk
+
+IP
+
+Trunk
+
+IP Trunk
+
+PSTN
+
+Backup
+
+IP
+
+Trunk
+
+IP Phones
+
+IP
+
+Analogical Phones
+
+Media Gateway
+E1
+
+E1
+
+ 
+
+Figure 1.2 – Integration of VoIP@RCTS in UBI infrastructure. 
+
+ 
+
+Although the provided solution was based on open source software, it was 
+
+customized for the universities specific needs permitting further use of the 
+
+new features offered by Enterprise Courier. One of these possibilities is the 
+
+use of Interactive Voice Response (IVR), which suited some of the specific 
+
+services, allowing for example, the calling user select the most adequate 
+
+operator for his/her particular call motivation.  
+
+ 
+
+
+
+Introduction 
+
+ 
+
+ 
+
+3 
+
+1.2. IVR a new offered service 
+
+Interactive Voice Response play an important and increasingly role in today’s 
+
+business world and global economy. Indeed, they serve as the primary 
+
+customer-contact channel, for companies in many different industries. IVR 
+
+systems, if properly designed, can increase customer satisfaction and 
+
+loyalty, cut staffing costs and increase revenue by extending business hours 
+
+and market reach [7].  
+
+Poorly designed IVR systems, on the other hand, will cause the opposite 
+
+effect and lead to dissatisfied customers, increased call volume and even 
+
+increased agent turnover, as customers take out their frustrations on the 
+
+agents. A study from Purdue University, revealed that 92% of US consumers 
+
+evaluate a company based on their experience using the company's call 
+
+center. More surprisingly, the study found that 63% of consumers stop using 
+
+a company's products based on a negative call center experience. That 
+
+number could raise to 100% for consumers with ages between 18 and 25 years 
+
+old [8].  
+
+There are two options to create an IVR: deep divided design or broad design. 
+
+Deep divided design is used in order to limit the number of options in every 
+
+menu, but it can have many submenus. This can increase the complexity and 
+
+create confusion because it might not fit the user's mental model [9]. 
+
+Experimental results showed that users who used broad IVR design performed 
+
+tasks faster and with greater satisfaction than users who used deep IVR 
+
+design [10]. In this study it was preferred a broad design, as it is showed in 
+
+Figure 1.3. 
+
+ 
+
+
+
+ 
+
+Figure 1.3 – Flowchart for the IVR Academic Services costumer contact and ticketing. 
+
+ 
+
+According to Figure 1.3, there are two direct inward dialing (DID), also called 
+
+direct dial-in (DDI) and one internal extension to reach Academic Services 
+
+Call to one of the 
+direct dial numbers
+
+Check time and 
+week day
+
+Out of schedule
+
+Presents a recording with the following options:
+
+0 – Access to University
+
+1 – Application and Enrollment
+
+2 – Certificates and Diplomas
+
+3 – Tariff and Accreditations
+
+4 – Equivalence and Recognition of academic degrees
+
+5 – Other subjects
+
+Working days from 9h to 13:00h or 14h to 17:45h
+
+Terminate Call
+End
+
+Checks the 
+option
+
+Dial:
+2034
+
+Option 0 Option 1
+
+Dial:
+1093
+1095
+1096
+1097
+1105
+1113
+
+Option 2
+
+Dial:
+1105
+1109
+1113
+
+Option 3
+
+Dial:
+1100
+1101
+
+Option 4
+
+Dial:
+1115
+1116
+
+End
+
+Direct Dial:
+Ext. 1111
+
+275320690
+808200105
+
+Dial:
+1113
+
+Option 5
+
+After 5 seconds without choosing an option
+
+
+
+Introduction 
+
+ 
+
+ 
+
+5 
+
+costumer contact and ticketing. The date and time are only checked at the 
+
+beginning.  
+
+To increase customer satisfaction, there were great concerns ordering the 
+
+six menu options. According to the latest studies, the most frequent options 
+
+must be placed in first place [11]. In this way, users calling the service can 
+
+identify their option and don’t have to wait until the recording. This ordering 
+
+was done empirically without previous knowledge and will be discussed later 
+
+in the results section. 
+
+There was also a great concern about the recordings. The first challenge had 
+
+to do with the tone, pitch and accent. The chosen voice had to transmit a 
+
+feeling of sympathy, had to be sharp and without any accent.  
+
+The second concern was related to what to present first, the textual 
+
+description or the option number itself. The goal-action sequence (e.g., "To 
+
+do x, press y") was preferred, rather than the action-goal sequence (e.g., 
+
+"Press y to do x"), for options. Most researchers and standards agree with the 
+
+goal-action sequence because it seems more consistent with the cognitive 
+
+makeup of the task [12]. The goal-action sequence seems to encourage dial-
+
+through and was shown slightly faster response times than the action-goal 
+
+sequence [13]. 
+
+After the initial greeting, it’s usual to prompt the user to indicate whether 
+
+touch-tone service is being used. Many IVR systems instruct users to press 1 
+
+as evidence of a Dual-Tone Multi-Frequency (DTMF). Instead of asking users 
+
+to press a key for evidence of DTMF, it’s used the timeout value for key 
+
+insertion. According to Figure 1.3, after five seconds the system will timeout 
+
+and automatically choose option 5 [14]. 
+
+After the option is chosen, the call is inserted in a first-come first-served 
+
+(FCFS) queue. The ring strategy used is ring all, i.e., the call that is leaving 
+
+the queue is placed simultaneously in all phones identified for that option, 
+
+i.e., a call living option’s 3 queue will dial extensions “1100” and “1101”. 
+
+The first operator to pick up the handset gets the call. 
+
+ 
+
+1.3. Motivation and problem 
+
+UBI seeks to continuously improve its organizational structure, its processes 
+
+and its control methods, aiming to satisfy and anticipate the requirements 
+
+of its customers and other stakeholders.  
+
+
+
+Yet, the Enterprise Courier IP PBX does not provide IVR statistics, and 
+
+therefore, there are no metrics that allow UBI to evaluate and plan 
+
+improvements in the area of automated telephone response. 
+
+Therefore, in 2013, the Vice-Rector for Academic Affairs, recognized as the 
+
+main stakeholder, required that monitoring and supervision would need to 
+
+be implemented in the Academic Services costumer contact and ticketing 
+
+IVR system. 
+
+Having this in consideration, this paper describes the carried out research 
+
+that will allow the future creation of a solution that allows monitoring and 
+
+supervision, for example, get a relationship between how many calls an 
+
+option receives and which operator takes it, or how many minutes does a call 
+
+last, or how many seconds is a client on hold until he starts to talk with the 
+
+operator, on an Asterisk based software. 
+
+ 
+
+1.4. Organization of the Thesis 
+
+The remainder of this paper is organized as follows: this paragraph concludes 
+
+section 1, the Introduction, where the problem, motivations and objectives 
+
+of the research were outlined; section 2 follows, describing the state of the 
+
+art; section 3 presents the architecture and the solution; section 4 describes 
+
+and discusses the results obtained; section 5 concludes de the paper 
+
+presenting conclusions and future work; and finally in the appendices section 
+
+a paper with the title “A comprehensive IVR (Interactive Voice Response) 
+
+analysis model using online analytical processing (OLAP) on a 
+
+multidimensional data cube” fruit of this work. 
+
+ 
+
+ 
+
+ 
+
+
+
+State of the art 
+
+ 
+
+ 
+
+7 
+
+Chapter 2 
+
+ 
+
+ 
+
+ 
+
+2. State of the art 
+
+2.1. Telephony Evolution 
+
+The first voice transmission was accomplished on 10 March 1876 through a 
+
+ring down circuit, in which two devices were connected by wire, but there 
+
+was no dialing numbers and it just worked one-way. Inventor Alexander 
+
+Graham Bell called out to his assistant Thomas Watson, “Mr. Watson, come 
+
+here! I want to see you.” This transmission took place in their attic 
+
+laboratory. Over time, one-way voice transmission transformed to bi-
+
+directional voice transmission using wired networks. Before adopting the 
+
+circuit switched technology has the basis of the telecommunication services 
+
+there where human operators making the connections. Until several decades 
+
+ago, the communication services were based on analog infrastructure, but 
+
+the analog communication is neither robust nor efficient at recovering from 
+
+the line noise (Figure 2.1). In digital communication, the line noise is less of 
+
+an issue because digital amplifiers also known as repeaters not only amplify 
+
+the signal, but also clean it to its original condition (Figure 2.1).  
+
+ 
+
+Figure 2.1 – Digital amplification vs Analog amplification. 
+
+ 
+
+Original signal
+
+Original signal
+
+Signal with noise
+
+Signal with noise
+
+Signal with noise 
+amplified
+
+Signal amplified
+
+Talker
+
+Talker
+
+Analog Amplifier
+
+Digital Amplifier
+
+Signal with noise Signal with noise 
+amplified
+
+Signal with noise Signal amplified
+
+
+
+Public switched telephone network (PSTN) system sampled the voice stream 
+
+at 8 kHz and transmits the digitized voice over the circuit switched network 
+
+with bit rate of 64 kb/s [15]. 
+
+At the end of the 20th century, analog radio, television (TV) and telephony 
+
+services stood out in particular. Most of the audio distribution in home was 
+
+centered in radio, and for this purpose different modulation standards were 
+
+used, as is the case of frequency modulation (FM) and amplitude modulation 
+
+(AM). Regarding the TV, different signal transmission technologies were 
+
+used. One example of this was the use of analog TV broadcasting on the very 
+
+high frequency (VHF) and ultra-high frequency (UHF) wavebands. After that, 
+
+the satellite broadcasting technology made possible the transmission of 
+
+audiovisual content over very long distances, thus encouraging cultural 
+
+diversity and enabling new business models to be set up. Traditionally, 
+
+telephony services have been provided by telecom operators through the 
+
+PSTN infrastructure. 
+
+High-quality voice services had been provided by the traditional PSTN 
+
+system, since this system was built for switching voice calls over the network. 
+
+The connection between the end points is established before starting the 
+
+voice communications and that connection remains in use until the end of 
+
+communication. This makes the bandwidth unavailable for the other services 
+
+over this established circuit. The architecture built for voice is not flexible 
+
+to converge data, video and voice traffic at the same time.  
+
+Interestingly, it was the PSTN that made possible many of the IP data 
+
+transmissions. In the 90s it was common to have a home computer and a 
+
+dialup modem connected to the nearest point of presence (POP), as showed 
+
+in Figure 2.2.  
+
+ 
+
+ 
+
+Figure 2.2 – Scheme depicting dialup connection to nearest POP.  
+
+ 
+
+Dialer cloud
+
+PSTN
+
+Nearest
+
+Point of Presence (POP)
+
+Communications Server
+
+Dialup modem
+
+Dialup modem
+
+Personal computer
+
+Personal com puter
+
+
+
+State of the art 
+
+ 
+
+ 
+
+9 
+
+Modern networks are constantly evolving to meet user demands. Initial data 
+
+networks were limited to exchanging character-based information between 
+
+connected computer systems. Traditional telephone, radio, and television 
+
+networks were maintained separately from data networks. In the past, every 
+
+one of these services required a dedicated network, with different 
+
+communication channels and different technologies to carry a particular 
+
+communication signal. Each service had its own set of rules and standards to 
+
+ensure successful communication. 
+
+The Open Systems Interconnection (OSI) transport layer protocols, 
+
+transmission control protocol (TCP) and user datagram protocol (UDP) are 
+
+being used to overcome the drawbacks. Nowadays, VoIP is one of the 
+
+prominent and fastest growing telecommunication service based on an 
+
+Internet protocol suite. VoIP enables the users to use the Internet as the 
+
+transmission medium for voice communication. The general architecture of 
+
+the VoIP system presented in Figure 1.2 demonstrates some of the basic 
+
+requirements for implementing a VoIP system. 
+
+Advances in technology are enabling us to consolidate these different kinds 
+
+of networks onto one platform referred to as the “converged network”. 
+
+Unlike dedicated networks, converged networks are capable of delivering 
+
+voice, video streams, text, and graphics between many different types of 
+
+devices over the same communication channel and network structure. 
+
+Previously separate and distinct communication forms have converged into a 
+
+common platform [16]. 
+
+In traditional systems, increasing the connectivity, means more ports to 
+
+connect in telephones which leads to an increase in cost. But in the VoIP 
+
+system, no extra cost would be paid to increase the connectivity. In VoIP, 
+
+increase in cost relay on the functionality improvement. VoIP is software 
+
+based, so any type of addition can be done just by upgrading the software. 
+
+The hardware cost is also very low because it runs on computer platforms 
+
+[17]. 
+
+The VoIP system has a lot of advanced features, which makes the VoIP system 
+
+the best alternative to the traditional circuit network. These features attract 
+
+the communication industries and business community towards the new 
+
+telephony. 
+
+Low cost is the main advantage of the VoIP system. The long distance calls 
+
+can be made at very low cost through the VoIP system, since it can access 
+
+the public Internet and the low cost broadband connection, increases the 
+
+
+
+adaptation of VoIP system in the small business world, too. It uses the 
+
+existing infrastructure such as computer system and Internet to provide the 
+
+communication without any addition cabling cost [15].  
+
+Data networks are based on packet switching and can be architected to be 
+
+reliable and resilient, providing alternative paths to data in case of failure. 
+
+VoIP systems benefit from that design and are less susceptible to total 
+
+failure. Because the sound must be digitally encoded to be packetized, the 
+
+resulting sound is more robust compared to the traditional analog systems, 
+
+as showed in Figure 2.1. Although digitally encoded speech has many 
+
+advantages over its analog counterpart, it nevertheless requires extra 
+
+bandwidth for transmission, if it is applied without compression. To 
+
+counteract this, VoIP systems use coder-decoder (codec) through software 
+
+and hardware to compress and decompress sound. The selection of a suitable 
+
+codec for the VoIP system is of much importance, since this selection may 
+
+affect the system performance. Table 2.1 describes some codecs and various 
+
+characteristics [18]. 
+
+ 
+
+Table 2.1 – Comparison of the most well-known voice codecs. 
+
+Codec Year Bit rate (kb/s) 
+Algorithmic delay 
+
+(ms) 
+Mean Opinion 
+Score (MOS) 
+
+G.711 1972 64 0.125 4.1 
+
+GSM-FR 1987 13 20 3.6 
+
+G.722 1988 48, 56, 64 1.5 4.1 
+
+G.726 1990 24 0.125 3.5 
+
+G.726 1990 32 0.125 4.1 
+
+GSM-HR 1994 5.6 24.4 3.5 
+
+G.723.1 1995 6.3 30 3.8 
+
+G.723.1 1995 5.3 30 3.6 
+
+G.729 1996 8 15 3.92 
+
+G.729A 1996 8 15 3.7 
+
+GSM-EFR 1998 12.2 20 4.1 
+
+AMR-NB 1999 4.75 – 12.2 25 3.5 – 4.1 
+
+G.722.1 1999 24, 32 40 4.0 
+
+Speex (NB) 2002 2.15 – 24.6 30 2.8 – 4.2 
+
+iLBC 2004 13.33 40 3.8 
+
+iLBC 2004 15.2 25 3.9 
+
+BV32 2005 32 5 4.1 
+
+ 
+
+The most obvious way to measure speech quality is to go right to the source 
+
+and use human subjects to rate the quality of the telephone calls. This is a 
+
+
+
+State of the art 
+
+ 
+
+ 
+
+11 
+
+subjective method, described in two ITU recommendations [19] [20]. The 
+
+primary results of the subjective test are mean opinion score (MOS), which 
+
+rate the quality of a telephone call from an end-user perspective. The MOS 
+
+score is a subjective score of voice quality as perceived by a large number of 
+
+people listening to speech over a communication system. 
+
+To determine the MOS for a particular phone connection, a statistically valid 
+
+group of males and females rate the quality of special test sentences read 
+
+aloud over the connection. This recommendation uses the scale from 1 to 5 
+
+and the MOS of the voice transmission is the average estimate of voice quality 
+
+rates assigned by this statistical group as presented in Table 2.2.  
+
+ 
+
+ Table 2.2 – Subjective speech quality measurement. 
+
+Speech quality MOS 
+
+Excellent 5 
+Good 4 
+Fair 3 
+Poor 2 
+Bad 1 
+
+ 
+
+An MOS of 4.0, is considered toll quality (PSTN quality) within the telephone 
+
+industry and anything below MOS of 4.0 would then be below toll quality 
+
+level. Subjective testing includes both listening opinion and conversation 
+
+opinion tests. 
+
+Delay is the time taken by the voice to reach from the talker's mouth to the 
+
+listener's ear. Round trip delay is the sum of two one-way delays that occur 
+
+in the user's call. In a VoIP system, beside the encoding delay and decoding 
+
+delay, the propagation delay is also affected by three additional delays, 
+
+packeting delay, network delay and playback delay. These delays may be 
+
+variable during the transmission [21]. Table 2.3 resumes the general five 
+
+components that contribute to the overall delay. 
+
+ 
+
+
+
+Table 2.3 – Five components that contribute to the mouth-to-ear delay 
+
+Type of delay Description 
+
+Encoding delay 
+The amount of time needed to encode the voice signal, which 
+depends on the voice codec used 
+
+Packetization 
+delay 
+
+The amount of time required to packetize the encoded voice stream 
+
+Network delay The amount of time to transmit the packets to the receiver’s side 
+
+Decoding delay The time interval needed to reconstruct the voice signal 
+
+Playback delay 
+The delay induced by the playback buffer that resides at the 
+receiver’s side. This buffer is needed to smooth delay between 
+consecutive packets (jitter) 
+
+ 
+
+One-way delay, i.e, from mouth-to-ear, should be less than 150 milliseconds, 
+
+latency greater than 400 milliseconds is unacceptable [22]. Table 2.4 
+
+describes the delay according to the user's satisfaction. 
+
+ 
+
+Table 2.4 – Delay limits for one-way transmission. 
+
+One-way delay 
+milliseconds (ms) Description 
+
+0-150 Acceptable for most users 
+
+150-400 Acceptable but with impact 
+
+Above 400 Unacceptable 
+
+ 
+
+Compared to traditional telephony (circuit switching), VoIP is now more 
+
+scalable, robust, reliable, allows the integration of new features and the 
+
+possibility of reducing costs. From the perspective of data networks, VoIP 
+
+has transformed the voice into just another application [5].  
+
+ 
+
+2.2. Unified Communications 
+
+VoIP as evolved on the last years and today offers a complete set of tools 
+
+called unified communications (UC). UC integrates real-time communication 
+
+services such as instant presence information, messaging (chat), desktop 
+
+sharing, telephony, video conferencing, data sharing, call control and speech 
+
+
+
+State of the art 
+
+ 
+
+ 
+
+13 
+
+recognition. UC isn’t necessarily a single product, instead, it’s a set of 
+
+products that provides a consistent unified user-interface and user-
+
+experience across multiple devices and media-types. 
+
+UC products facilitate the use of multiple enterprise communications 
+
+methods to improve user productivity and to enhance business processes. 
+
+This can include the management, control and integration. UC products 
+
+integrate communications channels, networks and systems, as well as IT 
+
+business applications, consumer applications and devices. Offers the ability 
+
+to significantly improve how individuals, groups and companies interact and 
+
+perform. The UC products may be composed of a single vendor suite, or may 
+
+span multiple platforms and vendors. These products are used by individuals 
+
+to facilitate personal communications, and by enterprises to support 
+
+collaborative communications and business workflows. Some products may 
+
+even extend UC to the cloud.  
+
+ 
+
+Table 2.5 – UC communications areas.  
+
+  
+
+Telephony   This area includes mobile, fixed and soft telephony. 
+
+Conferencing  
+ This area includes videoconferencing, voice conferencing and 
+Web conferencing. Includes application sharing and document 
+sharing. 
+
+Messaging   This area includes voice mail and email.  
+
+Presence and IM  
+ Presence allows individuals to see the status of other people and 
+resources. Instant messaging allows individuals or groups to send 
+and receive text information in real time.  
+
+Clients  
+ Unified clients enable access from various platforms from a 
+consistent interface. May include thin browser clients, thick 
+desktop clients, and mobile clients in smartphones and tablets. 
+
+Communications-
+enabled applications  
+
+Communications-enabled applications include key application in 
+collaboration area. This area includes contact center, 
+notification, and consolidated administration, reporting and 
+analytics tools.  
+
+ 
+
+Many authors find it useful to divide UC into six broad communication areas, 
+
+according to Table 2.5. 
+
+
+
+Gartner is the world's leading information technology research and advisory 
+
+company, delivering the technology-related insight necessary to make the 
+
+right decisions. Figure 2.3 presents the major players for UC [23].  
+
+ 
+
+Figure 2.3 – Gartner magic quadrant for unified communications.  
+
+ 
+
+The leader’s quadrant will be used to focus the best solutions available in 
+
+the market [23]. Asterisk UC will also be included in this study for its 
+
+popularity in the open source community.  
+
+All UC solutions in study allow IVR configuration. IVR allows call handling, in 
+
+order to give some sort of response to them without human interaction. Being 
+
+the caller responsible to choose one of the options that are presented. IVR 
+
+is usually presented in a form of a menu that can have many layers or 
+
+submenus and are composed by audio files played to the caller, witch, 
+
+through touch keys on the phone can interact with the system, for example, 
+
+allowing the creation of a voting system via phone, money transfer from a 
+
+bank account or to choose the more skilled operator in certain subject [24].  
+
+ 
+
+
+
+State of the art 
+
+ 
+
+ 
+
+15 
+
+2.3. Microsoft UC solution 
+
+Microsoft Lync offers UC functionality. Microsoft continues to improve UC 
+
+functionality with each release and integrates with Active Directory, Office 
+
+applications and Skype. Microsoft has a large set of business applications that 
+
+will increasingly be leveraged, including Cortana (a digital assistant) and 
+
+Office Graph (which uses machine learning to define the context and connect 
+
+users with relevant documents, conversations and people). 
+
+Microsoft Lync federation capabilities are an effective way for groups to 
+
+collaborate. Microsoft Lync Online is part of Office 365, however, Lync Online 
+
+only offers a subset of the on-premises solution, with limited PSTN 
+
+connectivity. 
+
+According to its manufacturer, organizations with a significant number of 
+
+employees that can benefit from Lync's collaboration model, should consider 
+
+the Lync solution. Organizations that use advanced telephony feature 
+
+requirements should also ensure that the needed functions are supported. 
+
+Also according to its manufacturer Microsoft Lync continues to make 
+
+significant gains in the market and is attractive to a broad range of 
+
+enterprises. In many cases, it is initially deployed for its IM, presence and 
+
+Web conferencing functionalities, with gradual incremental deployments of 
+
+telephony and video added as follow-on phased deployments for specifically 
+
+targeted groups or regions. 
+
+Microsoft has added video capabilities. Support for Lync room-based video 
+
+systems and interoperability of standards-based video endpoints were 
+
+included. 
+
+Customers report that Lync functions can be readily integrated into business 
+
+processes and applications, providing new, different and effective ways to 
+
+perform tasks. Often, these new functions are achieved by deploying Lync 
+
+enhancements from a growing list of ecosystem partners. 
+
+Lync implementation might not eliminate legacy PBXs. Usually, Lync Web 
+
+conferencing and IM/presence are deployed across the organization, while 
+
+telephony is deployed only for a subset of employees. Telephony 
+
+implementation will include third party’s software and hardware. Deploying 
+
+Lync might be a challenge, multiple partners may be required to obtain a 
+
+complete deployment, for example, different partners for telephones, 
+
+gateways, servers, remote support and network monitoring. This can lead to 
+
+incompatibilities on software from any of these partners.  
+
+
+
+According to the documentation it’s possible to do IVR reporting. 
+
+Documentation indicates the need to export the data and then run the 
+
+analyses using PowerShell. A PowerShell example would be [25]:  
+
+$calls = Import-Csv -Path 
+
+"C:\Response_Group_Call_List_Report_export.csv" 
+
+$calls | Group-Object Workflow | Select-Object Count, Name 
+
+| Sort-Object Count –Descending 
+
+The resulting information would be similar to Figure 2.4 [25]. 
+
+ 
+
+Figure 2.4 – Example of IVR Lync reporting using PowerShell.  
+
+ 
+
+2.4. Cisco UC solution 
+
+Cisco offers a full UC suite, and as part of it a broad range of communications 
+
+functions. Key parts of the UC suite include Cisco Jabber, CUCM, Cisco Unity 
+
+Connection and Cisco WebEx. The entire portfolio is available on VMware, 
+
+operating on Cisco Unified Computing System (CUCS) servers or other 
+
+qualified servers. Cisco leverages its UC software into a cloud portfolio 
+
+branded Cisco Hosted Collaboration Solution (Cisco HCS), which allows to 
+
+build Unified Communications as a Service (UCaaS) or hybrid options on 
+
+premises. 
+
+According to the vendor, Cisco UC has strong voice and video capabilities and 
+
+solutions from midsize to multinational sites. It’s very attractive for 
+
+enterprises that wish to leverage Cisco's networking infrastructure or that 
+
+require full UC client integration on leading mobile platforms. A full UC suite 
+
+is offered with IM/presence, video, multiple conferencing options and 
+
+telephony, also available on leading mobile platforms. 
+
+Through Internet service providers (ISP), Cisco is advancing hybrid on-
+
+premises and cloud options. Cisco HCS is based on the on-premises software 
+
+and both support the same Jabber client, there are also the possibility to 
+
+transfer licenses from on-premises to hosted environments. 
+
+
+
+State of the art 
+
+ 
+
+ 
+
+17 
+
+Cisco UC solution is based on a set of distinct products and acquisitions over 
+
+the years, as a result some administrator and user experiences are 
+
+fragmented. 
+
+IVR possibility comes in two flavors Unified Contact Center Express, for small 
+
+implementations and Unified Contact Center Enterprise for larger 
+
+deployments [2]. 
+
+The ability to create IVR reports is given by one add-on tool called Cisco 
+
+Unified IP IVR. This tool can create reports for application performance 
+
+analysis report, detailed call by call report and traffic analysis report for 
+
+answered and unanswered calls [2].  
+
+ 
+
+ 
+
+Figure 2.5 – Report generation for abandoned calls.  
+
+ 
+
+Figure 2.5 show’s how to create a report for Cisco Contact Center Express. 
+
+There’s also the possibility to schedule reports and load existing reports. For 
+
+Enterprise version the Unified Intelligence Center is a more complete tool. 
+
+It’s possible to create Dashboards, and reporting is more flexible. Figure 2.6 
+
+show’s a simple example. 
+
+ 
+
+
+
+ 
+
+Figure 2.6 – Report generation using Unified Intelligence Center. 
+
+ 
+
+In Figure 2.6 the report was manipulated by the administrator just to show 
+
+handled calls, abandoned calls and service level for the analyzed period. 
+
+Reports still have to pass through a configuration menu indicating start and 
+
+end date, similar to Figure 2.5. For advanced users there’s also the possibility 
+
+to run SQL queries. 
+
+ 
+
+2.5. Avaya UC solution 
+
+Avaya is one of the leaders in Gartner review and has a wide set of 
+
+communications products. The UC product is Avaya Aura Platform. Other 
+
+elements in the UC portfolio are: Avaya Aura Conferencing, Avaya Aura 
+
+Messaging, Scopia Video Conferencing and the Avaya Aura Collaboration 
+
+Environment. There are also available UC applications for desktop, mobile, 
+
+phone and video. Avaya Aura is considered a good solution in the presence 
+
+of heterogeneous environments (systems, services and devices). The vendor's 
+
+strength and brand recognition in telephony and contact center are central 
+
+key elements for Avaya's products. The UC solution is advancing to the cloud 
+
+and is based on the same solution as the on-premises version.  
+
+Avaya is expanding its portfolio in Avaya Aura Collaboration, expanding 
+
+middleware integration options there for enabling a broader ecosystem of 
+
+partner applications. The expansion on the integration capabilities, allows a 
+
+stronger multivendor UC integration, for example, integration with Microsoft 
+
+Lync. The multivendor integration and the portfolio redundant capabilities 
+
+(Scopia, Aura Conferencing and Avaya one-X Communicator) might lead to 
+
+client confusion in the sales process and the Avaya solutions themselves 
+
+appears individual point solutions, rather than as a comprehensive UC suite.  
+
+
+
+State of the art 
+
+ 
+
+ 
+
+19 
+
+Avaya's contact center solutions are: Aura Contact Center and Aura Call 
+
+Center Elite, both capable of IVR. Reports are also available in this solution 
+
+but have to pass through a few configuration menus indicating the kind of 
+
+report and the span date.  
+
+ 
+
+ 
+
+Figure 2.7 – Report example on agent performance. 
+
+ 
+
+2.6. Mitel UC solution 
+
+In 2013, Mitel changed its offerings, simplifying the buy experience. In the 
+
+end of 2013 Mitel and Aastra entered in a merge process. The deal was closed 
+
+in January 2014 and gave birth to a new company under the name of Mitel, 
+
+while continuing to leverage Aastra’s strong brand recognition in European 
+
+markets. Aastra had a strong portfolio for telephony, video, call centers and 
+
+UC. Mitel pretends to use MiCollab suite as the common UC solution across 
+
+the various call management platforms. MiCloud service is also available as 
+
+UCaaS based on MiCollab, MiVoice and MiContact Center. The incorporation 
+
+of Aastra video capabilities into the existing MiCollab video option and into 
+
+MiVoice Video Unit are on track. One big concern about Mitel and their 
+
+products is that the expanded portfolio may reduce Mitel ability to research, 
+
+development and support. 
+
+The Mitel MiVoice, MiCollab and MiContact Center solutions provide a mature 
+
+and comprehensive software suite. The common based software architecture 
+
+makes it possible to use a distributed solution or centralized solution in a 
+
+data center. They run on industry-standard servers, and are certified for 
+
+virtualizations on VMware environments. The same solutions are also 
+
+available as cloud offerings.  
+
+
+
+Mitel MiContact Center sits on top of MiVoice product and has two versions, 
+
+Business Edition delivers robust contact center, IVR, multimedia 
+
+functionality and reporting but packaged specifically for small contact 
+
+centers. For large scale Mitel MiContact Center Enterprise Edition is a robust, 
+
+highly flexible solution that delivers feature-rich IVR capabilities, contact 
+
+center monitoring and reporting. Reporting can be made by request or by 
+
+schedule. It’s very similar to other vendors solutions, in this case the result 
+
+is an excel file that can be later worked by a statistician or imported to data 
+
+warehouse for data mining. Mitel also allows access to its database raw data, 
+
+for custom reports. 
+
+ 
+
+2.7. Asterisk UC solution 
+
+Asterisk system is built by a community of developers and is targeted to 
+
+communication systems developers. The result is an engine that is able to 
+
+handle the low-level details of initiating, maintaining and manipulating calls 
+
+between endpoints (phone terminals). Since the initial release it’s been 
+
+tested and refined by a community of more than 80,000 developers. With the 
+
+right developer skills, raw configuration files and custom scripts, it’s possible 
+
+to provide UC capabilities like: voice messaging, instant messaging, desktop 
+
+fax, drag/drop call control, multi-party conferencing and IVR [5]. 
+
+There are many forks from Asterisk, some are free to use and usually have 
+
+no support, like: FreePBX or Trixbox CE, while others, are commercial 
+
+versions and typically provide software, hardware and support for both. 
+
+Some commercial versions of Asterisk are: Switchvox, Masip, Zycoo, 
+
+Enterprise Courier and Xorcom, among many others. 
+
+Asterisk includes a wealth of functions that make it a powerful IVR platform: 
+
+audio playback, audio recording, queues and calendar integration. For 
+
+Asterisk, IVR is just a special use of the Dialplan, as showed in Figure 2.8 
+
+[26]. 
+
+
+
+State of the art 
+
+ 
+
+ 
+
+21 
+
+ 
+
+Figure 2.8 – Asterisk IVR Hello World, using Dialplan language. 
+
+ 
+
+Figure 2.8, shows how the Dialplan can be used to create IVR function in 
+
+Asterisk. In this example, if someone dials the extension 90, the system will 
+
+pick up the call and will play the audio file called 
+
+hello_world_audio_file. Meanwhile if the key 1 is pressed the system 
+
+will play the audio file called you_pressed_1_audio_file and 
+
+afterwards the system will hang-up the call. A similar action will occur if key 
+
+number 2 is pressed.  
+
+IVR are just calls and being so, one could think about using Call Detail Record 
+
+(CDR) for reporting. 
+
+In Asterisk based systems, CDR-stats [27] is a separate application that 
+
+analyses the CDR and creates statistics from there. There are two options: 
+
+professional support (commercial version) or community support (free to 
+
+use). It’s one interesting tool for CDR reporting, but it’s not by any mean IVR 
+
+specialized, the report will have inconsistent results. Being IVR just a special 
+
+use of the Dialplan, creates a few difficulties for IVR reporting, because 
+
+generally calls that enter IVR will generate more than one CDR record.  
+
+QueueMetrics is a call center analysis, monitoring and reporting software 
+
+application for Asterisk. Because it is specialized for call centers it has a 
+
+special treatment for IVR. QueueMetrics can be integrated with some 
+
+Asterisk based systems and it’s a commercial solution with a license renewal 
+
+every four years. This software creates reports for total calls, answered calls, 
+
+unanswered calls, Call distribution, Agents and Call detail, as showed in 
+
+Figure 2.9 [28]. 
+
+
+
+ 
+
+Figure 2.9 – Scheme depicting QueueMetrics Answered call distribution per hour. 
+
+ 
+
+Figure 2.9 shows peak hours of IVR use, in this example, peak hours are 
+
+between 17:00 and 22:00, this can be very useful for assigning more 
+
+workforce at this hours.  
+
+ 
+
+2.8. Call Center Management and Reporting  
+
+Call Center or Contact Center equipment currently available generates vast 
+
+amounts of data related to the daily operation of a call center. This data is 
+
+used by the UC equipment to route calls and logging, but also has the 
+
+potential to reveal important details about agent's productivity and 
+
+performance. This data can reveal user experience provided by the contact 
+
+center to each person that placed a call in the system. To date there has 
+
+been no public system or method which has been able to gather, organize, 
+
+interpret, and report vital data to managers and supervisors in a manner 
+
+which unleashes the full potential and value of such data [29]. 
+
+
+
+Architecture and solution to the problem 
+
+ 
+
+ 
+
+23 
+
+Chapter 3 
+
+ 
+
+ 
+
+ 
+
+3. Architecture and solution to the problem: a 
+
+comprehensive IVR analysis model using online 
+
+analytical processing on a multidimensional data cube 
+
+ 
+
+3.1. Requirements 
+
+As presented in the introduction section, there was a need to develop new 
+
+solutions for a system analysis approach in order to respond to the UBI’s 2020 
+
+mission call for constant improvement on all University services. 
+
+The relevant stakeholders were, primarily, the Vice-Rector for the Academic 
+
+Affairs, and also, too much lesser extent, the users at the Academic Services, 
+
+and external users that contact UBI using the telephone. 
+
+Based on the interviews conducted with the stakeholders, the following list 
+
+of functional requirements (FR) and non-functional requirements (NFR) was 
+
+produced for the answered and unanswered calls: 
+
+FR1: The system must be able to provide metrics on the efficiency of 
+
+the incoming calls, e.g., the system must provide information about 
+
+the answered and unanswered calls per day or set of consecutive days, 
+
+month or set of consecutive months, quarter or set of consecutive 
+
+quarters and year or set of consecutive years;  
+
+FR2: The system must be able to provide information about the 
+
+answered calls per operator number;  
+
+FR3: The system must be able to provide information about the 
+
+distribution of the incoming calls, i.e. the system must provide 
+
+information about the answered and/or unanswered calls per IVR 
+
+menu option; 
+
+
+
+FR4: The system must be able to provide information about the time 
+
+spent, i.e. the system must provide information about the waiting 
+
+time and conversation time. 
+
+NRF1: The system must not install any software in the IP PBX 
+
+Enterprise Courier. 
+
+NRF2: The system must not interfere with the IP PBX system, e.g. the 
+
+system must not alter the IP PBX databases. 
+
+NRF3: The system must not interfere with the VoIP performance. 
+
+It must be noted that this list of requirements is not final, as the approach 
+
+to the development of the system was performed in a prototyping manner, 
+
+thus allowing the stakeholders to refine the requirements list, i.e., the 
+
+results that the system must output will be subject of continuous 
+
+improvement. 
+
+ 
+
+3.2. Call Detail Record structure 
+
+The IP PBX Enterprise Courier stores locally, in a MySQL database, 
+
+information about all calls in a format named Call Detail Record (CDR) and 
+
+in particular, calls that enters into the IVR. The CDR structure has the 
+
+following fields: cdr_id, calldate, clid, src, dst, dcontext, 
+
+channel, dstchannel, lastapp, lastdata, duration, billsec, 
+
+disposition, amaflags, accountcode, uniqueid and 
+
+userfield.  
+
+ 
+
+3.3. Retrieved fields to Data WareHouse 
+
+From all of the fields, there are a few with special interest for this study: 
+
+cdr_id, calldate, src, dst, duration, billsec, disposition and 
+
+uniqueid.  
+
+The cdr_id field is a sequential number generated when the database 
+
+record is created.  
+
+The calldate field has the timestamp for the call beginning and is a 
+
+datetime type.  
+
+
+
+Architecture and solution to the problem 
+
+ 
+
+ 
+
+25 
+
+The src field has the call source, e.g. “+351275319700” and is of varchar 
+
+type.  
+
+The dst field has the call destination, e.g. “1113” and is a varchar type.  
+
+The duration field has the call total time in seconds and it is of int type.  
+
+The billsec field has the call conversation time in seconds and it is of int 
+
+type. 
+
+The disposition field is a varchar type and can take two possible strings: 
+
+“ANSWERED” or “UNANSWERED”.  
+
+The uniqueid field has the id for the call in question and is a varchar type.  
+
+The relevant data fields [30] for this study are retrieved from Enterprise 
+
+Courier IP PBX by the data warehouse and are stored for comprehensive and 
+
+detailed analysis as it is showed in Figure 3.1. The data warehouse retrieval 
+
+SQL job, fetches new data, based on CDR_id, i.e, twice a day and it can be 
+
+adjusted for more sensitive real-time data, if required.  
+
+ 
+
+Figure 3.1 – Data retrieval scheme. 
+
+ 
+
+As stated before in Chapter 2, usually there are two database rows for the 
+
+same call. Actually, this only occurs if the call is answered. The first CDR is 
+
+generated for the receiving call stating the queue of the call. This queue can 
+
+then be translated to the appropriate IVR option. The second CDR record is 
+
+generated for the operator that took the call, as showed in Table 3.1. 
+
+ 
+
+
+
+Table 3.1 – Records representing one answered call. 
+
+cdr_id calldate src dst duration billsec disposition 
+
+2448554 
+
+2014- 
+
+07-15 
+
+15:57:01 
+
+91XXX6962 9000005 223 223 ANSWERED 
+
+       
+
+2448239 
+
+2014- 
+
+07-15 
+
+15:57:34 
+
+91XXX6962 1113 192 188 ANSWERED 
+
+ 
+
+In Table 3.1 it was omitted the field uniqueid, the value is “asterisk-
+
+1405436252.64896” for both records. 
+
+The total call length, since the system pick up the call, until the operator or 
+
+user ended the call, is given by the first record in the duration field, in 
+
+this case 223 seconds. 
+
+Total conversation time is given by the second record, in the field billsec, 
+
+that in this example is 188 seconds.  
+
+The waiting time for answered calls is defined in this study as showed in 
+
+Equation 3.1 and Equation 3.2. 
+
+ 
+
+????_???? = ?????_????_????? ? ????????????_????. (3.1) 
+
+ 
+
+Substituting with the values of Table 3.1, the result will be: 
+
+ 
+
+????_???? =  223 ? 188 = 34 ???????. (3.2) 
+
+ 
+
+The destination field (dst), in the first record with the value “9000005” 
+
+represents the queue that took the call. This value can be translated to IVR 
+
+option number “5”, and according to Figure 1.3, represents “Other issues”. 
+
+The destination field (dst), in the second record with the value “1113” 
+
+represents the actual phone extension that took this call. 
+
+
+
+Architecture and solution to the problem 
+
+ 
+
+ 
+
+27 
+
+The source field (src), in both records was partially omitted for privacy 
+
+reasons. 
+
+ 
+
+Table 3.2 – Record representing one unanswered call. 
+
+cdr_id calldate src dst duration billsec disposition 
+
+1847989 
+
+2014- 
+
+04-22  
+
+15:13:37 
+
+24XXX5728 9000005 173 173 ANSWERED 
+
+ 
+
+Unanswered calls only generate one record, like it’s showed in Table 3.2. 
+
+The disposition field shows the value “ANSWERED” because the system 
+
+picked up the call and presented the IVR menu options to the user. The 
+
+second record doesn’t exist because the operator didn’t took this call.  
+
+The duration field represents the total time of this call. This value is 
+
+defined for this study, as the waiting time, that in this case was 173 seconds, 
+
+approximately 2 minutes and 53 seconds. 
+
+The destination field (dst), with the value “9000005” represents the queue 
+
+that took the call. This value can be translated to IVR option number “5”, 
+
+and according to Figure 1.3, represents “Other issues”. 
+
+In Table 3.2 it was omitted the field uniqueid, the value is “asterisk-
+
+1398176017.17671” and in the case of unanswered calls, this value is in 
+
+fact unique. 
+
+ 
+
+3.4. Cube Structure 
+
+Online Analytical Processing (OLAP) is a technology that is used to organize 
+
+large business databases and support business intelligence. OLAP databases 
+
+are constituted by cubes. 
+
+Online Analytical Processing (OLAP) databases facilitate business intelligence 
+
+queries. OLAP is a database technology that has been optimized for querying 
+
+and reporting, instead of processing transactions. 
+
+OLAP data results from historical data and is aggregated into structures that 
+
+permit sophisticated analysis. OLAP data is also organized hierarchically and 
+
+
+
+stored in cubes instead of tables. It is a sophisticated technology that uses 
+
+multidimensional structures to provide rapid analysis. 
+
+With the imported data, a multidimensional data model is constructed at the 
+
+institutional data warehouse. This model views data in the form of a data 
+
+cube [31] [32] [33]. A data cube allows data to be modeled, viewed and 
+
+filtered in multiple dimensions.  
+
+Cube is a data structure that aggregates measures by the levels and 
+
+hierarchies of each of the dimensions that are needed to analyze. Cubes 
+
+combine several dimensions, such as time, geography, and product lines, 
+
+with summarized data. Cubes are not "cubes" in the strictly mathematical 
+
+sense, however, they are an appropriate representation for the concept. 
+
+The cube is defined by dimensions and facts [34]. Dimension tables are 
+
+integral companions to a fact table. Dimensions are a set of one or more 
+
+organized hierarchies of levels in a cube that a user understands and uses as 
+
+the base for data analysis. The dimension tables contain the textual 
+
+descriptors. Each dimension is defined by its single primary key, designated 
+
+by the PK notation in Figure 3.2, which serves as the basis for referential 
+
+integrity with any given fact table to which it is joined. Dimension table 
+
+attributes play a vital role in the data warehouse, since they are the source 
+
+of virtually all interesting constraints [35].  
+
+ 
+
+
+
+Architecture and solution to the problem 
+
+ 
+
+ 
+
+29 
+
+ 
+
+Figure 3.2 – Cube structure view. 
+
+ 
+
+A fact table is the primary table in a dimensional model [34]. The fact table 
+
+contains the names of the facts, or measures, according to Figure 3.2, 
+
+“wait_time” and “conversation_time”. Measures are the central 
+
+values in the cube that are processed, aggregated and analyzed. 
+
+In addition to these measures, calculated measures were introduced based 
+
+on this two primary measures, MAX_wait_time as the maximum value for 
+
+wait_time, MIN_wait_time as the minimum value for wait_time, 
+
+Avg_wait_time as the average value for wait_time, 
+
+MAX_conversation_time as the maximum value for 
+
+conversation_time, MIN_conversation_time as the minimum value 
+
+for conversation_time and Avg_conversation_time as the average 
+
+IVR_HIT_ Academics
+
+id_callPK
+
+wait_ti me
+
+conversation_ti me
+
+Ti meKeyFK
+
+PK_DateFK
+
+id_IVRFK
+
+id_SRCFK
+
+id_DSTFK
+
+DIM_IVR_OPTION
+
+id_IVRPK
+
+option
+
+Description
+
+DIM_SRC
+
+id_SRCPK
+
+number
+
+DIM_DST
+
+id_DSTPK
+
+number
+
+DIM_CALENDAR
+
+PK_DatePK
+
+Year
+
+Month
+
+DIM_TIME
+
+Ti meKeyPK
+
+HourlyBucket
+
+Day
+
+DIM_ANSWERED
+
+id_ANSWEREDPK
+
+Description
+
+id_ANSWEREDFK
+
+
+
+value for conversation_time were introduced, as well foreign keys to 
+
+each related dimension tables, designated by the FK notation in Figure 3.2.  
+
+The fact table itself generally has its own primary key made up of a subset 
+
+of the foreign keys. This key is often called a composite or concatenated key, 
+
+in Figure 3.2 is showed as id_call.  
+
+A data warehouse requires a concise, subject-oriented schema that 
+
+facilitates online data analysis. A star schema [32] for the multidimensional 
+
+analysis model, Figure 3.2, with the fact table in the middle. As this schema 
+
+was applied on IVR data, it was decided to call it IVRCube. 
+
+For the multidimensional analysis model were defined six dimensions [36]: 
+
+DIM_CALENDAR, DIM_TIME, DIM_DST (stands for destination), DIM_SRC 
+
+(stands for source), DIM_ANSWERED and DIM_IVR_OPTION.  
+
+The DIM_DST dimension has all possible destination numbers, in this study, 
+
+it’s the operator numbers. DIM_SRC dimension has all source numbers from 
+
+the data source. DIM_SRC and DIM_DST dimensions has all sources and 
+
+destinations respectively, from the data source and are populated from the 
+
+retrieved data (Figure 3.1).   
+
+DIM_CALENDAR dimension is the one dimension nearly guaranteed to be in 
+
+every data mart, because virtually every data mart is a time series. Calendar 
+
+dimension was created with an SQL script and has all possible data from 2014 
+
+until 2020.  
+
+DIM_TIME dimension gives a perspective of how hours of the day may 
+
+influence the service (for example peak hours). TIME dimension was created 
+
+with an SQL script and has all possible hours from 00h until 23 hours 59 
+
+minutes 59 seconds, distributed in hourly bucket.  
+
+The DIM_ANSWERED dimension takes just two possible values, according to 
+
+Table 3.1 it will take the “ANSWERED” value or according to Table 3.2 it will 
+
+take the “UNANSWERED” value, i.e., the value in DIM_ANSWERED dimension 
+
+is manipulated to represent answered or unanswered calls. 
+
+The DIM_IVR_OPTION dimension has all possible options the clients can 
+
+choose from the IVR menu. This was the only dimension that was manually 
+
+populated with the names of the possible options of the IVR menu, according 
+
+to Figure 1.3, “Access to University”, “Application and Enrollment”, 
+
+“Certificates and Diplomas”, “Tariff and Accreditations”, “Equivalence and 
+
+Recognition of academic degrees” and “Other issues”.  
+
+
+
+Results and Discussion 
+
+ 
+
+ 
+
+31 
+
+Chapter 4 
+
+ 
+
+ 
+
+ 
+
+4. Results and Discussion 
+
+High level decisions often want to see a big picture indicating broader trends 
+
+based on aggregated data, or to see these trends broken down by any number 
+
+of variables. Business intelligence is the process of extracting data from an 
+
+OLAP database and then analyzing that data for information that can be used 
+
+to make informed business decisions. 
+
+The IVR in study is running since late January of 2014 and the presented 
+
+results include processed information since then until September 5, 2014. 
+
+OLAP data was retrieved using Microsoft Excel. Results may be presented in 
+
+table form, or as charts. In this section, some of the most relevant views 
+
+from the multidimensional analysis are presented.  
+
+According to Figure 4.1 the three most used IVR options are: “Application 
+
+and Enrollment”, followed by “Certificates and Diplomas” and “Access to 
+
+University”. 
+
+ 
+
+ 
+
+Figure 4.1 – Total Calls (Answered and Unanswered) distribution by IVR option. 
+
+ 
+
+
+
+As stated before, there were great concerns ordering the six menu options. 
+
+As data showing suggests in Figure 4.1, a change in IVR menu order should 
+
+take place in a near future, as proposed in Table 4.1.  
+
+ 
+
+Table 4.1 – Proposed reorder of IVR menu options. 
+
+New IVR menu position 
+IVR menu Option 
+Description Older Position 
+
+1st Application and Enrollment 2nd 
+
+2nd Certificates and Diplomas 3rd 
+
+3rd Access to University 1st 
+
+4th Tariff and Accreditations 4th 
+
+5th 
+Equivalence and 
+Recognition of academic 
+degrees 
+
+5th 
+
+6th Other issues 6th 
+
+ 
+
+The three first options are actually the options with more hits. The empirical 
+
+reasons behind the ordering were reasonable, since shifting option “Access 
+
+to University” to third place matched the correct IVR menu order.  
+
+Options in fourth, fifth and sixth positions maintain the same positions as the 
+
+originals. “Other issues” option should maintain the last option, because it’s 
+
+a last resort option. 
+
+ 
+
+
+
+Results and Discussion 
+
+ 
+
+ 
+
+33 
+
+ 
+
+Figure 4.2 – Total (Answered and Unanswered) calls distribution by month. 
+
+ 
+
+In the monthly distribution, January had a very small number of calls, most 
+
+likely because it was when the IVR service was created and it wasn’t properly 
+
+advertised. Calls volume triples in July and August compared to previous 
+
+months. Data available for September only includes the first week, according 
+
+to Figure 4.2 it’s expectable that September total calls will exceed August 
+
+total calls.  
+
+In Figure 4.3, additional detail shows the evolution on the motivation for the 
+
+calls in the months of July, August and September and compares it to calls 
+
+in the month of June.  
+
+ 
+
+
+
+ 
+
+Figure 4.3 – Total Calls distribution by IVR option and by month. 
+
+ 
+
+The month of July, relative to June (Figure 4.3) shows a global increase in 
+
+all IVR options. In particular the options: “Certificates and Diplomas”, 
+
+“Access to University” and “Application and Enrollment”.  
+
+July is the end of the scholar year, and recent graduated students need their 
+
+certificates and diplomas to compete in the labor market, explaining the 
+
+abnormal amount of calls related to “Certificates and Diplomas”.    
+
+In Portugal, from July 17 until August 8 and from September 8 until 
+
+September 12, are periods of the year where students choose which 
+
+University they want to enroll. From September 6 until September 10 is the 
+
+first period for new students to enroll in their courses. Both of these two 
+
+situations explain the call increase in options “Access to University” and 
+
+“Applications and Enrollment” for the months of July, August and 
+
+September. 
+
+Figure 4.4 presents call distribution by operator. Extension 1113 answerers 
+
+most of the calls 52% and, according to Figure 1.3, this is perfectly 
+
+
+
+Results and Discussion 
+
+ 
+
+ 
+
+35 
+
+acceptable since this operator responds to three options of IVR menu, as 
+
+showed in Figure 1.3.  
+
+ 
+
+ 
+
+Figure 4.4 – Calls distribution by operator extension. 
+
+ 
+
+With exception for extension 1113, extensions 2034 and 1105 together have 
+
+1572 calls, representing more calls than all other extensions combined (1058 
+
+calls).  
+
+Extension 1107 is not referred before in Figure 1.3, as this is a very recent 
+
+change to Figure 1.3 – Flowchart for the IVR Academic Services costumer 
+
+contact and ticketing. It’s yet uncertain if this change is to persist or not, 
+
+but it’s reflected automatically in this study. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+ 
+
+Figure 4.5 – Calls distribution by answered and unanswered type. 
+
+ 
+
+One major concern is how many calls are being answered and how many calls 
+
+are being lost, as this might indicate the performance of the entire IVR 
+
+service. Figure 4.5 indicates the distribution of calls by answered and 
+
+unanswered type. From a total of 7261 calls, 24.6% are unanswered, also 
+
+interesting is how answered and unanswered calls are distributed per IVR 
+
+option (Figure 4.6).  
+
+ 
+
+ 
+
+Figure 4.6 – Answered and unanswered calls distributed by IVR option. 
+
+ 
+
+
+
+Results and Discussion 
+
+ 
+
+ 
+
+37 
+
+Figure 4.6 indicates the number of unanswered calls per IVR option, 
+
+indicating exactly 206 and 835 unanswered calls in options “Access to 
+
+University” and “Application and Enrollment”, respectively. These two 
+
+options combined represent the possible interest of students to become UBI 
+
+alumni, and have a total of 1041 unanswered calls.  
+
+Option “Equivalence and Recognition of academic degrees” has the lowest 
+
+number of unanswered calls. This doesn’t mean that it has the best rate of 
+
+answered calls, as it’s possible to confirm in Figure 4.7. 
+
+ 
+
+ 
+
+Figure 4.7 – Answered and unanswered calls distributed by IVR option, a different 
+perspective. 
+
+ 
+
+According to Figure 4.7, option “Equivalence and Recognition of academic 
+
+degrees”, had a total a 73 calls with nearly 35.4% lost calls. This was only 
+
+surpassed by “Tariff and Accreditation” option with nearly 35.96% of 
+
+unanswered calls. “Certificates and Diplomas” present the best rate of 
+
+answered calls, only leaving about 9.14% of unanswered calls. 
+
+ 
+
+
+
+ 
+
+Figure 4.8 – Calls distribution by IVR option and by operator. 
+
+ 
+
+Figure 4.8 shows an interesting fact, there are two operators responding to 
+
+IVR option “Other issues”. This is because in the first days the IVR was 
+
+implemented there were actually two operators for option 5 of the IVR menu, 
+
+which was changed afterwards. It also suggests that option “Access to 
+
+University” and “Other issues” should have at least one more agent to answer 
+
+calls, this will help to balance work load and will function has a redundancy 
+
+if one of those agents is out. Figure 4.8 indicates a big variation on agents 
+
+answering calls for option “Application and Enrollment”, i.e., there are 
+
+agents taking a very small amount of calls. This is furthered detailed in Figure 
+
+4.9. 
+
+ 
+
+
+
+Results and Discussion 
+
+ 
+
+ 
+
+39 
+
+ 
+
+Figure 4.9 – Answered and Unanswered calls distributed by agent for IVR option 
+"Application and Enrollment" 
+
+ 
+
+The unanswered calls represents 32% of calls received by IVR option 
+
+“Application and Enrollment”. Extension 1113 takes about 55.31% of total 
+
+calls received by this option. 
+
+Figure 4.9 shows that the combined five agents taking fewer calls represent 
+
+less than 13% of the total calls, with four of those operators having 
+
+individually less than 3% of all calls for this option. The unanswered calls 
+
+account for more than the double of those five agents answered calls. 
+
+ 
+
+ 
+
+
+
+ 
+
+Figure 4.10 – Average conversation and average waiting time by Answered and 
+Unanswered calls. 
+
+ 
+
+Figure 4.10 indicates that average waiting time for answered calls is about 1 
+
+minute and 29 seconds. The average call length is 3 minutes and 37 seconds. 
+
+The average frustration time before a client ends the call before an agent 
+
+add the chance to pick it up is about 3 minutes. 
+
+ 
+
+ 
+
+Figure 4.11 – Average answered and unanswered waiting time distributed by IVR 
+option. 
+
+ 
+
+
+
+Results and Discussion 
+
+ 
+
+ 
+
+41 
+
+The waiting time before an agent picks up the call varies according to IVR 
+
+option. For answered calls, Figure 4.11 shows less waiting time for “Access 
+
+to University” option with an average of 39 seconds and greater waiting time 
+
+for “Application and Enrollment” with an average of 2 minutes and 6 seconds.  
+
+Average frustration time also differs according to selected IVR option. This 
+
+shows that clients are more willing to wait for option “Access to University” 
+
+with 4 minutes and 3 seconds and “Tariff and Accreditations” with and 4 
+
+minutes and 8 seconds. Clients are less willing to wait for “Application and 
+
+Enrollment” with 2 minutes and 44 seconds. 
+
+ 
+
+ 
+
+Figure 4.12 – Answered and unanswered calls waiting time (over 10 minutes) by IVR 
+option. 
+
+ 
+
+Figure 4.12 shows the number of calls over 10 minutes for answered and 
+
+unanswered groups. It also presents cumulative waiting time for those calls 
+
+per IVR option.  
+
+“Application and Enrollment” has 46 answered calls with more than 10 
+
+minutes, the answered and unanswered calls for this option sum 13 hours 1 
+
+minute and 50 seconds of waiting. “Other issues” option has 17 unanswered 
+
+calls with more than 10 minutes. The answered and unanswered calls with 
+
+more than 10 minutes for this option, represent 9 hours 28 minutes and 26 
+
+seconds of waiting time. 
+
+
+
+ 
+
+ 
+
+Figure 4.13 – Number of unanswered calls with waiting time bigger than 3 minutes. 
+
+ 
+
+According to Figure 4.13 there are 20.16% of calls lost from unanswered calls, 
+
+for waiting times between for 3 minutes and 5 minutes. For this study 3 
+
+minutes is the average waiting time before frustration takes place. For 
+
+waiting times between 5 minutes and 10 minutes there are 185 calls and 
+
+represents about 10.35% of unanswered calls. 
+
+There are 50 unanswered calls with more than 10 minutes of waiting time, 
+
+which represent 0.689% of total calls (answered and unanswered) and only 
+
+2.8% of unanswered calls. 
+
+ 
+
+ 
+
+
+
+Results and Discussion 
+
+ 
+
+ 
+
+43 
+
+ 
+
+ 
+
+Figure 4.14 – Answered and unanswered maximum waiting time bye IVR option. 
+
+ 
+
+Figure 4.14 shows the maximum waiting times ever recorded during this 
+
+study. For answered calls the best time goes to “Tariff and Accreditation” 
+
+option, while the worst goes to “Other issues”.  
+
+For unanswered calls there as one call willing to wait for 1 hour 2 minutes 
+
+and 21 seconds before giving up in option “Access to University”. 
+
+The minimum waiting time for answered calls vary from 3 seconds to 11 
+
+seconds. 
+
+ 
+
+
+
+ 
+
+Figure 4.15 – Average conversation time by IVR option. 
+
+ 
+
+The average conversation time presents the smaller value for “Equivalence 
+
+and Recognition of academic degrees” option. The biggest average value is 
+
+for “Tariff and Accreditations”.  
+
+ 
+
+ 
+
+Figure 4.16 – Cumulative conversation time distributed by agents. 
+
+ 
+
+
+
+Results and Discussion 
+
+ 
+
+ 
+
+45 
+
+Figure 4.16 shows the cumulative conversation time by every agent on the 
+
+IVR option menu. It is no big surprise that extension 1113 is the one with 
+
+more time spent on the phone, since it was the one that answered to more 
+
+calls, with 170 hours 9 minutes and 9 seconds of conversation time.   
+
+Total conversation time from all agents is 330 hours 37 minutes and 29 
+
+seconds. Putting this value to perspective, it means 41 days 3 hours 37 
+
+minutes and 29 seconds of one person workdays doing nothing more than 
+
+talking to the phone. 
+
+The following six graphics are presented separately because they present 
+
+very different characteristics, according to IVR menu option. 
+
+ 
+
+ 
+
+Figure 4.17 – Number of calls, average waiting time and IVR option “Access to 
+University” distributed by hourly bucket. 
+
+ 
+
+From Figure 4.17 it is perceived that there are two periods with more call 
+
+inflows. One period in the morning between 10h and 12h59m, the other 
+
+period refers to the afternoon period between 14h and 16h59m. The 
+
+answered average waiting time seems to be unaffected by peak hours. 
+
+Interesting is the fact that it is in the morning, between 9h and 10h59m, 
+
+where clients are willing to wait more time before hang-up the call. 
+
+ 
+
+
+
+ 
+
+Figure 4.18 – Number of calls, average waiting time and IVR option “Application and 
+Enrollment” distributed by hourly bucket. 
+
+ 
+
+Figure 4.18 presents two peak periods for receiving calls, one in the morning 
+
+between 10h and 12h59m and one bigger in the afternoon from 14h to 
+
+16h59m. Answered average waiting time is affected by peak hours and clients 
+
+are more willing to wait in the period 13h to 13h59m. 
+
+ 
+
+ 
+
+Figure 4.19 – Number of calls, average waiting time and IVR option “Certificates and 
+Diplomas” distributed by hourly bucket. 
+
+ 
+
+
+
+Results and Discussion 
+
+ 
+
+ 
+
+47 
+
+Figure 4.19 presents two periods with more call inflows. One period in the 
+
+morning between 10h and 12h59m, the other period refers to the afternoon 
+
+period between 14h and 15h59m. The answered average waiting time has a 
+
+slight inflection in peak hours. Interesting is the fact that unanswered 
+
+number of calls doesn’t follow the peak of answered calls in the morning 
+
+period. 
+
+The periods where clients are willing to wait more are from 9h to 9h59m, 
+
+12h to 12h59m and 14h to 16h59m.  
+
+ 
+
+ 
+
+Figure 4.20 – Number of calls, average waiting time and IVR option “Equivalence and 
+Recognition of academic degrees” distributed by hourly bucket. 
+
+ 
+
+Figure 4.20 presents two peak periods for receiving calls, one is in the 
+
+morning between 11h and 11h59m and the other one in the afternoon from 
+
+14h to 16h59m. Answered average waiting time appears to have no relation 
+
+to peak hours. Unanswered calls follow the trend of answered calls. 
+
+Clients are more willing to wait from 10h to 12h59m, from 14h to 15h59m 
+
+and from 17h to 17h59m. 
+
+ 
+
+
+
+ 
+
+Figure 4.21 – Number of calls, average waiting time and IVR option “Other issues” 
+distributed by hourly bucket. 
+
+ 
+
+Figure 4.21 shows two periods with more incoming calls. One period in the 
+
+morning between 10h and 11h59m, the other period refers to the afternoon 
+
+period between 14h and 15h59m. The answered average waiting time 
+
+appears to be affected by peak hours. The periods where clients are willing 
+
+to wait more are from 13h to 13h59m. 
+
+ 
+
+ 
+
+Figure 4.22 – Number of calls, average waiting time and IVR option “Tariff and 
+Accreditations” distributed by hourly bucket. 
+
+ 
+
+
+
+Results and Discussion 
+
+ 
+
+ 
+
+49 
+
+Figure 4.22 presents two periods with more call inflows. One period in the 
+
+morning between 11h and 11h59m, the other period refers to the afternoon 
+
+period between 14h and 14h59m. The answered average waiting time 
+
+appears affected in the afternoon period, but shows no relation to peak hours 
+
+in the morning period. Unanswered number of calls follows the trend 
+
+revealed by answered calls.  
+
+The periods where clients are willing to wait more are from 10h to 11h59m 
+
+and from 14h to 15h59m.  
+
+From Figure 4.17, Figure 4.18, Figure 4.19, Figure 4.21 and Figure 4.22 it’s 
+
+possible to observe that there are some calls being answered after 13h. This 
+
+overlaps with the lunch break for workers at the Academic Services. Figure 
+
+4.20 is the only one that doesn’t present such fact. This happens, according 
+
+to Figure 1.3, because IVR Academic Services costumer contact and ticketing 
+
+is available until 13h. So a call entering the system near 13h will span over 
+
+lunch break. As data suggests, a change in IVR availability hours should take 
+
+place in a near future. 
+
+According to Figure 4.10 the average frustration time is about 3 minutes and 
+
+in consonance to Figure 4.15, the longest average conversation time is 4 
+
+minutes and 35 seconds. The sum of this values is 7 minutes and 35 seconds. 
+
+The IVR for Academic Services costumer contact and ticketing should stop 
+
+taking new calls before 12 hours 52 minutes and 25 second.  
+
+These preliminary results will allow high level management to re-organize 
+
+the human resources around the real workload as evidenced by the collected 
+
+data, therefore allowing the external users to perceive a more efficient 
+
+service, and the internal users to focus where the workload is increased. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+
+
+Conclusions and future work 
+
+ 
+
+ 
+
+51 
+
+Chapter 5 
+
+ 
+
+ 
+
+ 
+
+5. Conclusions and future work 
+
+Despite the massive spread of self-service Web applications, Gartner states 
+
+that 92% of all customer transactions still take place over the telephone. This 
+
+number is more likely to increase if the destination is a toll-free number [23]. 
+
+Many systems that use IVRs have a very bad reputation, in many cases well 
+
+deserved, although it’s a precious tool for many call/contact centers. Well-
+
+designed IVRs can provide the caller the most skilled agent to handle his/her 
+
+matter at the first contact.  
+
+Poorly designed they can become a source of frustration and annoyance, one 
+
+good example of this is the call being routed to someone that can’t help the 
+
+caller. Even worst is the call being transferred over and over again by agents 
+
+that still can’t help. It’s not the IVR systems that customers hate, it’s the 
+
+way they are configured, as the technology itself is completely neutral. 
+
+IVR is usually the first touch-point most consumers have. It either facilitates 
+
+positive experiences or negative experiences. Many information technology 
+
+administrators configure these systems and then leave them to be like a self 
+
+sustaining system. This was already established to be a big mistake, with 
+
+many enterprises loosing clients, as research proves it.  
+
+An IVR is like any piece of software or hardware, it needs maintenance and 
+
+monitoring. Maintenance might be from a software/hardware perspective, 
+
+i.e.: 
+
+- Are all options well configured and routed to at least one operator? 
+
+- Are equipment’s still handling traffic volume? 
+
+- Do logs reveal any malfunction? 
+
+- How is sound quality? 
+
+ 
+
+
+
+These are very important questions, but aren’t the only ones. From a 
+
+business intelligence perspective there are still questions to be answered, 
+
+for example: 
+
+- How many calls the system gets? 
+
+- Are menu options still relevant? 
+
+- Are they in the correct order (most required in first place)? 
+
+- Do the options with most hits have the correct number of workers? 
+
+- What is the percentage of answered/unanswered calls? 
+
+- Are menu options intuitive and the wording clear? 
+
+- What is the average frustration time? 
+
+- Do peak times have more agents to answer calls? 
+
+In monitoring, it’s possible to identify positive and negative aspects. IVR 
+
+systems are like any other system, they need maintenance and monitoring. 
+
+In a quality culture, an important insight is that failure or success is always 
+
+a value formed after certain facts.  
+
+Treating large amounts of data and extract concise information in a timely 
+
+manner from it it’s vital nowadays. Iterate, monitor, and iterate in a 
+
+constant cycle will guarantee the best decisions based on current 
+
+experience, information and understanding, so that the IVR continue running 
+
+efficiently and be an effective tool for both users and agents.  
+
+The suggested a multidimensional data analysis model using data cube 
+
+extracts comprehensive analysis results that fits the two proposed 
+
+assumptions: maintain comprehensive historical data and service monitoring.  
+
+The views presented in the results section are representative of the full 
+
+power of this analysis, as the IVRCube makes it possible to create all types 
+
+of views on the data by gathering and filtering the various dimensions. 
+
+The system is used to conduct a multidimensional analysis through an OLAP 
+
+operation according to the level of abstraction for each dimension. Analysis 
+
+system using data cube can easily and timely extract comprehensive analysis 
+
+results showing relevant trends. It can be used as a decision support system 
+
+for business intelligence. A properly optimized IVR can lead to higher rates 
+
+
+
+Conclusions and future work 
+
+ 
+
+ 
+
+53 
+
+of satisfaction while lowering costs. The continuous improvement provides 
+
+the ability to find potential enhancements that may otherwise go unnoticed. 
+
+ 
+
+5.1. Future Work 
+
+The ultimate objective is to create a dashboard for the University’s high level 
+
+management, so the information that the system provides can be effectively 
+
+and timely used to make correct management decisions, namely by allowing 
+
+the re-allocation of resources considering date, time and workload 
+
+constraints.  
+
+Efficiency and productivity are key aspects in network and 
+
+telecommunication systems, therefore in the long term, I foresee many 
+
+opportunities to apply analytical technologies as the one presented in this 
+
+work, giving me purpose and motivation for future developments. 
+
+ 
+
+
+
+
+
+References 
+
+ 
+
+ 
+
+55 
+
+ 
+
+ 
+
+ 
+
+ 
+
+References 
+ 
+
+[1]  "University of Beira Interior Home Page," 2014. [Online]. Available: 
+
+http://www.ubi.pt. [Accessed 12 2 2014]. 
+
+[2]  "Cisco Home Page," 2014. [Online]. Available: http://www.cisco.com. 
+
+[Accessed 10 7 2014]. 
+
+[3]  "VoIP@RCTS Project," [Online]. Available: 
+
+http://www.fccn.pt/pt/servicos/comunicacao-e-colaboracao/voip-
+
+rcts. [Accessed 21 8 2014]. 
+
+[4]  "FreePBX Home Page," [Online]. Available: http://www.freepbx.org/. 
+
+[Accessed 23 8 2014]. 
+
+[5]  "Asterisk Home Page," 2014. [Online]. Available: 
+
+http://www.asterisk.org. [Accessed 29 6 2014]. 
+
+[6]  "itCenter Home Page," [Online]. Available: 
+
+http://www.itcenter.com.pt. [Accessed 15 7 2014]. 
+
+[7]  A. C. Corporation, Why Your Customers Hate Your IVR., 2003.  
+
+[8]  E. Delorey, Correlating IVR Performance and Customer Satisfaction., 
+
+2003.  
+
+[9]  N. Yuviler, "Optimizing the Design of IVR Systems, as a Special Case of 
+
+Self-Services.," 2012. 
+
+[10]  P. M. Commarford, J. R. Lewis, J. A. Smither and M. D. Gentzler, "A 
+
+comparison of broad versus deep auditory menu structures.," Human 
+
+Factors, pp. 77-89, 2008.  
+
+
+
+[11]  L. D. Jennifer, K. E. Amanda, P. P. Marie and W. Thaddeus, "The Effect 
+
+of Automated Telephone Menu Structure on User Frustration and 
+
+Performance.," Proceedings of the Human Factors and Ergonomics 
+
+Society Annual Meeting, 2007.  
+
+[12]  R. Halstead-Nussloch, "The design of phone-based interfaces for 
+
+consumers.," Proceedings of CHI, pp. 347-352, 1989.  
+
+[13]  G. Engelbeck and T. Roberts, "The effects of several voice-menu 
+
+characteristics on menu selection performance," Tech. Report ST0401, 
+
+1989.  
+
+[14]  R. M. Schumacher JR., M. L. Hardzinski and A. L. Schwartz, "Increasing 
+
+the Usability of Interactive Voice Response Systems: Research and 
+
+Guidelines for Phone-Based Interfaces.," Human Factors: The Journal 
+
+of the Human Factors and Ergonomics Society, 1995.  
+
+[15]  J. Davidson, J. Peters, M. Bhatia, S. Kalidindi and S. Mukherjee, "Voice 
+
+over IP fundamentals.," Cisco Press, 2006.  
+
+[16]  A. K. Taludker, N. M. Garcia and G. M. Jayateeertha, Convergence 
+
+through all IP Networks, 2013.  
+
+[17]  T. Wallingford, Switching to VoIP, O?Reilly Media, 2005.  
+
+[18]  S. Karapantazis and F. Pavlidou, "VoIP: A comprehensive survey on a 
+
+promising technology," Computer Networks, vol. 53, pp. 2050-2090, 
+
+2009.  
+
+[19]  ITU-T Recommendation P.800, Methods for Subjective Determination 
+
+of Transmission Quality, 1996.  
+
+[20]  ITU-T Recommendation P.830, Subjective performance assessment of 
+
+telephone-band and wideband digital codecs, 1996.  
+
+[21]  T. J. Kostas, M. S. Borella, I. Sidhu, G. M. Shuster, J. Grabiec and J. 
+
+Mahler, "Real-time voice over packet-switched networks," IEEE 
+
+Network, vol. 12, pp. 18-27, 1998.  
+
+[22]  ITU-T Recomendation G.114, TRANSMISSION SYSTEMS AND MEDIA, 
+
+DIGITAL SYSTEMS AND NETWORKS, 2003.  
+
+
+
+References 
+
+ 
+
+ 
+
+57 
+
+[23]  "Gartner, Inc. (NYSE: IT)," 2014. [Online]. Available: www.gartner.com. 
+
+[Accessed 1 9 2014]. 
+
+[24]  "Using outbound IVR and SMS to improve workflows and streamline 
+
+business processes," Speech Technology Magazine, 2013.  
+
+[25]  Mircrosoft, "TechNet," 2014. [Online]. Available: 
+
+http://technet.microsoft.com/. [Accessed 28 8 2014]. 
+
+[26]  "Asterisk wiki," 2014. [Online]. Available: 
+
+https://wiki.asterisk.org/wiki/. [Accessed 10 6 2014]. 
+
+[27]  "CDR-Stats Home Page," 2014. [Online]. Available: http://www.cdr-
+
+stats.org. [Accessed 21 8 2014]. 
+
+[28]  "QueueMetrics," 2014. [Online]. Available: http://queuemetrics.com. 
+
+[Accessed 18 7 2014]. 
+
+[29]  J. W. Scott, "System and Method for Generating and Delivering 
+
+Automated Reports Concerning the Performance of a Call Center". US 
+
+Patent US20140211931 A1, 31 July 2014. 
+
+[30]  D. Zhang, C. Zhai and J. Han, "Topic cube: topic modeling for OLAP on 
+
+multidimensional text databases.," Proceedings of the International 
+
+Conference on Data Mining, 2009.  
+
+[31]  L. Vokorokos, A. Pekar and N. Adam, "Preparing databases for network 
+
+traffic monitoring," Proceedings of the IEEE 10th International 
+
+Symposium on Applied Machine Intelligence and Informatics (SAMI), pp. 
+
+13-18, 2012.  
+
+[32]  G. Tanaksaranond, T. Cheng, A. Chow and A. Santacreu, "Conceptual 
+
+design of a star-schema OLAP to support multi-dimensional," 
+
+International Symposium on Spatial-Temporal Analysis and Data 
+
+Mining, 2011.  
+
+[33]  J. Han, M. Kamber and J. Pei, Data Mining: Concept and Techniques, 
+
+Third Edition, 2011, pp. 83-149. 
+
+[34]  R. Kimball and M. Ross, The Data Warehouse Toolkit: The Complete 
+
+Guide to Dimensional Modeling, 2002, pp. 16-24. 
+
+
+
+[35]  R. Kimball and M. Ross, The Data Warehouse Toolkit: The Definitive 
+
+Guide to Dimensional Modeling, 2013.  
+
+[36]  M. Zekri and A. Abdellatif, "A New Approach to Update the Dimension 
+
+Hierarchies for Data Warehouse Design," IEEE, 2011.  
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+Appendices 
+
+ 
+
+ 
+
+59 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Appendices 
+
+ 
+
+ 
+
+  
+
+ 
+
+ 
+
+Paper: 
+
+ 
+
+A comprehensive IVR (Interactive Voice Response) analysis model using 
+
+online analytical processing (OLAP) on a multidimensional data cube 
+
+ 
+
+
+
+A comprehensive IVR (Interactive Voice Response) analysis model using online analytical processing 
+
+(OLAP) on a multidimensional data cube 
+
+ 
+
+Veiga H.1,2, Garcia N. M. 1,2,3 
+
+ 
+
+1Computer Science Department, University of Beira Interior  
+
+2Instituto de Telecomunicações  
+
+Rua Marquês d'Ávila e Bolama, Covilhã, Portugal 
+
+3Universidade Lusófona de Humanidades e Tecnologias 
+
+Av. Campo Grande, Lisbon, Portugal 
+
+ 
+
+Abstract 
+
+ 
+
+Private Branch eXchange (PBX) is a tool indispensable in the business world. The telephone 
+
+exchanges allows employees to perform internal connections between telephones, or make calls to 
+
+the external network (PSTN) also known as Public Switched Telephone Network. With increasing 
+
+Internet usage, there is interest in understanding what services are offered. FreePBX is an open 
+
+source Asterisk web-based PBX software for Linux, which supports multiple protocols and services, 
+
+like Interactive Voice Response (IVR). Cisco Unified Communications Manager (CUCM) or 
+
+CallManager, is a software-based call-processing system developed by Cisco Systems. CUCM tracks 
+
+all active VoIP network components; including phones, gateways, conference bridges, among others. 
+
+IVR is part of the Academic Services costumer contact and ticketing of University of Beira Interior 
+
+(UBI). IVR monitoring and analysis are essential for effective operation and resource management, in 
+
+particular, multidimensional analysis for long-term data is necessary for comprehensive 
+
+understanding of the trend, the quality of customer service and costumer experience. In this paper, 
+
+we propose a new IVR analysis model for large volumes of IVR data accumulated over a long period 
+
+of time. The IVRCube proposed is an analysis model using online analytical processing (OLAP) on a 
+
+multidimensional data cube that provides an easy and fast way to construct a multidimensional IVR 
+
+analysis system for comprehensive and detailed analysis of long-term data. The feasibility and 
+
+applicability are validate, as the proposed IVRCube analysis model is implemented and applied it to 
+
+Academic Services costumer contact and ticketing IVR data. 
+
+  
+
+  
+
+http://en.wikipedia.org/wiki/Cisco_Systems
+http://en.wikipedia.org/wiki/VoIP
+
+
+I. Introduction: 
+
+University of Beira Interior (UBI) [1] started the convergence of the phone system and the data 
+
+network in 2005, after acquiring a commercial Internet Protocol (IP) Private Branch Exchange (PBX) 
+
+software from Cisco called CallManager [2]. The long term UBI objective, was to have 100% Voice 
+
+over IP (VoIP) network until 2020. The Internet Protocol Private Branch eXchange (IP PBX) was 
+
+integrated with the analogical PBX’s and with the Public switched telephone network (PSTN). Figure 
+
+1 presents a scheme depicting CallManager integration in the UBI voice architecture. In Figure 1 E-
+
+carrier (E1) represents a Primary Rate Interface (PRI). PRI is a standardized telecommunications 
+
+service level within the Integrated Services Digital Network (ISDN). E1 provides 30 communication 
+
+channels and 2 signaling channels, this is also referred to as 30B channels plus 2D channels. In this 
+
+case Media Gateway has 60 voice channels to interconnect VoIP and legacy telephony.  
+
+E1
+
+Media Gateway
+E1
+
+IP PBX Call Manager
+
+E1
+
+PSTN
+
+IP
+
+Trunk
+
+IP Phones
+
+IP
+
+Analogical Phones
+
+ 
+
+Figure 1 – Scheme depicting CallManager Integration. 
+
+In 2007, Portuguese Universities started to transform their phone systems in favor of a converged 
+
+system using the data network to route phone calls. This project, named VoIP@RCTS [3] was 
+
+launched by the Fundação para a Computação Científica Nacional (FCCN), the Portuguese National 
+
+Research and Education Network (NREN). The chosen solution was a software platform based on 
+
+FreePBX [4] witch uses the Asterisk core [5]. This software although it’s based on FreePBX it has 
+
+been redesigned to suite Universities specifications. This new software is called Enterprise Courier 
+
+from itCenter [6]. UBI integrated that same project called VoIP@RCTS and incorporated in its 
+
+telephone system. Figure 2 illustrates UBI integration of VoIP@RCTS in the existing infrastructure of 
+
+UBI. In Figure 2 we can also see the Session Based Controller (SBC) that acts as a firewall for the VoIP 
+
+world. 
+
+Telephony
+
+Operators
+
+E1
+
+SBC
+
+IP
+
+Trunk
+
+IP PBX
+
+Enterprise Courier
+
+IP PBX Call Manager
+
+IP 
+
+Trunk
+
+IP
+
+Trunk
+
+IP Trunk
+
+PSTN
+
+Backup
+
+IP
+
+Trunk
+
+IP Phones
+
+IP
+
+Analogical Phones
+
+Media Gateway
+E1
+
+E1
+
+ 
+
+Figure 2 – Integration of VoIP@RCTS in UBI infrastructure. 
+
+
+
+Although the provided solution was based on open source software, it was customized for the 
+
+specific needs of the universities, therefore, Enterprise Courier offers new possibilities to explore. 
+
+One of the offered possibilities is the use of IVR, which suited some of the specific services, by 
+
+allowing the calling user select the most adequate operator for his/her particular call motivation.  
+
+The actual flow diagram for the IVR in study (Academic Services costumer contact and ticketing) is 
+
+showed in Figure 3. 
+
+Call to one of the 
+direct dial numbers
+
+Check time and 
+week day
+
+Out of schedule
+
+Presents a recording with the following options:
+
+0 – Access to University
+
+1 – Application and Enrollment
+
+2 – Certificates and Diplomas
+
+3 – Tariff a nd Accreditations
+
+4 – Equivalence and Recognition of academic degrees
+
+5 – Other issues
+
+Working days from 9h to 13:00h or 14h to 17:45h
+
+Terminate Call
+End
+
+Checks the 
+option
+
+Dial:
+2034
+
+Option 0
+Option 1
+
+Dial:
+1093
+1095
+1097
+1105
+1113
+
+Option 2
+
+Dial:
+1105
+1109
+1113
+
+Option 3
+
+Dial:
+1100
+1101
+
+Option 4
+
+Dial:
+1115
+1116
+
+End
+
+Direct Dial:
+Ext. 1111
+
+275320690
+808200105
+
+Dial:
+1113
+
+Option 5
+
+After 5 seconds without choosing an option
+
+ 
+
+Figure 3 – Flowchart for the IVR Academic Services costumer contact and ticketing. 
+
+ 
+
+
+
+UBI seeks to continuously improve its organizational structure, its processes and its control methods, 
+
+aiming to satisfy and anticipate the requirements of its customers and other stakeholders.  
+
+Yet, the Enterprise Courier does not provide IVR statistics, and therefore, there are no metrics that 
+
+allow UBI to evaluate and plan improvements in the area of automated telephone response. 
+
+Therefore, in 2013, the Vice-Rector for Academic Affairs, recognized as the main stakeholder, 
+
+required that monitoring and supervision would need to be implemented in the Academic Services 
+
+costumer contact and ticketing IVR system. 
+
+Having this in consideration, this paper describes the research carried out that will allow the future 
+
+creation of a solution that allows monitoring and supervision, for example, get a relationship 
+
+between how many calls an option receives and which operator takes it, or how many minutes does 
+
+a call last, or how many seconds is a client on hold until he starts to talk with the operator, on an 
+
+Asterisk based software. 
+
+The remainder of this paper is organized as follows: this paragraph concludes section 1, the 
+
+Introduction, where the problem, motivations and objectives of the research were outlined; section 
+
+2 follows, describing the state of the art; section 3 presents the architecture and the solution; 
+
+section 4 describes and discusses the results obtained; and finally section 5 concludes de the paper 
+
+presenting conclusions and future work.   
+
+ 
+
+ 
+
+II. State of the Art: 
+
+Modern networks are constantly evolving to meet user demands. Initial data networks were limited 
+
+to exchanging character-based information between connected computer systems. Traditional 
+
+telephone, radio, and television networks were maintained separately from data networks. In the 
+
+past, every one of these services required a dedicated network, with different communication 
+
+channels and different technologies to carry a particular communication signal. Each service had its 
+
+own set of rules and standards to ensure successful communication. 
+
+Advances in technology are enabling us to consolidate these different kinds of networks onto one 
+
+platform referred to as the “converged network”. Unlike dedicated networks, converged networks 
+
+are capable of delivering voice, video streams, text, and graphics between many different types of 
+
+devices over the same communication channel and network structure. Previously separate and 
+
+distinct communication forms have converged into a common platform [7]. 
+
+Compared to traditional telephony (circuit switching), VoIP is now more scalable, allows the 
+integration of new features and the possibility of reducing costs. From the perspective of data 
+networks, VoIP has transform the voice into just another application [5]. In particular some VoIP 
+applications allow IVR configuration. IVR allows call handling in order to give some sort of response 
+to them without human interaction. Being the caller responsible to choose one of the options that 
+are presented. IVR is usually presented in a form of a menu that can have many layers or submenus 
+and are composed by audio files played to the caller, witch, through touch keys on the phone can 
+interact with the system, for example, allowing the creation of a voting system via phone, money 
+transfer from a bank account or to choose the more skilled operator in certain subject [8].  
+
+Some VoIP applications have add-on tools that allow to create IVR processes using drag and drop. In 
+this category there at least three popular solutions, one from Alcatel Lucent called OmniTouch 
+
+
+
+Contact Center [9] and the other from Cisco called Unified Contact Center Express [2]. Both are 
+commercial, have various license options according to the desired functionality range and integrate 
+their respective unified VoIP solutions. On the other hand, in the open source world we have 
+Asterisk [5] or Asterisk based systems, where IVRs are abstractions created from fragments of the 
+dial plan and have no special treatment. 
+
+The commercial solution from Alcatel Lucent also has built-in statistics reports. According to their 
+documentation, this product has a range of reports of real-time details on service activity, individual 
+agent, agent group activity and statistics on each type of interaction [9]. 
+
+The Cisco platform has one add-on tool called Cisco Unified IP IVR that has this functionality. This 
+tool can create reports for application performance analysis report, detailed call by call report and 
+traffic analysis report [2].  
+
+In Asterisk based systems, CDR-stats [10] is a separate application that analyses the Call Detail 
+Records (CDR) and creates statistics from there. It’s not by any mean IVR specialized, but is one 
+interesting tool for CDR reporting. There are two options: professional support (commercial version) 
+or community support (free to use). QueueMetrics [11] is specialized for call centers and has a 
+special treatment for IVR, it can be integrated with some Asterisk based systems and it’s a 
+commercial solution with a license renewal every four years. This software creates reports for total 
+calls, answered calls, unanswered calls, area code breakdown, inbound call attempts, Call 
+distribution, Agents, Outcomes and Call detail. 
+
+ 
+
+ 
+
+III. Architecture and solution to the problem: A comprehensive IVR analysis model using online 
+
+analytical processing on a multidimensional data cube: 
+
+Responding to the constant need for improvement stated in UBI’s 2020 mission and previously 
+
+presented in the introduction section, a system analysis approach was used to define the solution 
+
+development process. 
+
+The identified relevant stakeholders were, primarily, the Vice-Rector for the Academic Affairs, and 
+
+also, too much lesser extent, the users at the Academic Services, and external users that contact UBI 
+
+using the telephone. 
+
+Based on the interviews conducted with the stakeholders, the following list of functional 
+
+requirements (FR) and non-functional requirements (NFR) was produced for the answered calls: 
+
+FR1: The system must be able to provide metrics on the efficiency of the incoming calls, e.g., 
+
+the system must provide information about the answered calls per day or set of consecutive 
+
+days, month or set of consecutive months, quarter or set of consecutive months and year or 
+
+set of consecutive years;  
+
+FR2: The system must be able to provide information about the answered calls per operator 
+
+number; FR3: The system must be able to provide information about the distribution of the 
+
+incoming calls, i.e. the system must provide information about the answered calls per IVR 
+
+menu option; 
+
+FR4: The system must be able to provide information about the time spent, i.e. the system 
+
+must provide information about the waiting time and conversation time. 
+
+NRF1: The system must not install any software in the IP PBX Enterprise Courier. 
+
+
+
+NRF2: The system must not interfere with the IP PBX system, e.g. the system must not alter 
+
+the IP PBX databases. 
+
+NRF3: The system must not interfere with the VoIP performance. 
+
+It must be noted that this list of requirements is not final, as the approach to the development of the 
+
+system was performed in a prototyping manner, thus allowing the stakeholders to refine the 
+
+requirements list, i.e., the results that the system must output will be subject of continuous 
+
+improvement. 
+
+The IP PBX Enterprise Courier stores locally, in a MySQL database, information about all calls in a 
+
+format named Call Detail Record (CDR) and in particular, calls that enters into the IVR. The structure 
+
+of the CDR has the following fields: calldate, clid, src, dst, dcontext, channel, 
+dstchannel, lastapp, lastdata, duration, billsec, disposition, 
+
+amaflags, accountcode, uniqueid and userfield. From this list of fields we have 
+
+special interest in: calldate, src, dst, duration, billsec and uniqueid. The field 
+
+calldate has the timestamp for the call beginning and is a datetime type. The field src has the 
+
+call source, e.g. “+351275319700”and is a varchar type. The field dst has the call destination, e.g. 
+
+“1113” and is a varchar type. The field duration has the call total time and it is of int type. The field 
+
+billsec has the call conversation time and it is of int type. The field uniqueid has the id for the 
+
+call in question and is a varchar type.  
+
+The relevant data fields [12] for this study are retrieved from Enterprise Courier IP PBX by the data 
+
+warehouse and are stored for comprehensive and detailed analysis as it is showed in Figure 4. The 
+
+data warehouse retrieval SQL job, fetches new data and runs twice a day, but it can be adjusted for 
+
+more sensitive real-time data, if required.  
+
+IP PBX – Enterprise Courier
+Institutional
+
+Data Warehouse
+
+CDR 
+
+Local storage
+
+Job 
+
+Retreives New 
+Data
+
+ 
+
+Figure 4 – Data retrieval scheme. 
+
+With the imported data, a multidimensional data model is constructed at the institutional data 
+
+warehouse. This model views data in the form of a data cube [13] [14] [15]. A data cube allows data 
+
+to be modeled, viewed and filtered in multiple dimensions. The cube is defined by dimensions and 
+
+facts [16]. Dimension tables are integral companions to a fact table. The dimension tables contain 
+
+the textual descriptors. Each dimension is defined by its single primary key, designated by the PK 
+
+notation in Figure 5, which serves as the basis for referential integrity with any given fact table to 
+
+which it is joined. Dimension table attributes play a vital role in the data warehouse. Since they are 
+
+the source of virtually all interesting constraints. [17]  
+
+A fact table is the primary table in a dimensional model [16]. The fact table contains the names of 
+
+the facts, or measures, in this case “wait_time” and “conversation_time”, according to Figure 5. In 
+
+addition to these measures, calculated measures where introduced based on this this two primary 
+
+
+
+measures, MAX_wait_time as the maximum value for wait_time, MIN_wait_time as the minimum 
+
+value for wait_time, Avg_wait_time as the average value for wait_time, MAX_conversation_time as 
+
+the maximum value for conversation_time, MIN_conversation_time as the minimum value for 
+
+conversation_time and Avg_conversation_time as the average value for conversation_time were 
+
+introduced, as well foreign keys to each related dimension tables, designated by the FK notation in 
+
+Figure 5. The fact table itself generally has its own primary key made up of a subset of the foreign 
+
+keys. This key is often called a composite or concatenated key, in Figure 5 is showed as id_call. A 
+
+data warehouse requires a concise, subject-oriented schema that facilitates online data analysis. A 
+
+star schema [14] for the multidimensional analysis model, figure 5, with the fact table in the middle. 
+
+As this schema was applied on IVR data, it was decided to call it IVRCube. 
+
+IVR_HIT_ Academics
+
+id_callPK
+
+wait_ti me
+
+conversation_ti me
+
+Ti meKeyFK
+
+PK_DateFK
+
+id_IVRFK
+
+id_SRCFK
+
+id_DSTFK
+
+DIM_IVR_OPTION
+
+id_IVRPK
+
+option
+
+Description
+
+DIM_SRC
+
+id_SRCPK
+
+number
+
+DIM_DST
+
+id_DSTPK
+
+number
+
+DIM_CALENDAR
+
+PK_DatePK
+
+Year
+
+Month
+
+DIM_TIME
+
+Ti meKeyPK
+
+HourlyBucket
+
+Day
+
+ 
+
+Figure 5 – Cube structure view. 
+
+In this paper, we defined five dimensions [18]: CALENDAR, TIME, DST (stands for destination), SRC 
+
+(stands for source) and IVR_OPTION. The DST dimension has all possible destination numbers, in this 
+
+study, it’s the operator numbers. SRC dimension has all source numbers from the data source. SRC 
+
+and DST dimensions has all sources and destinations respectively, from the data source, and are 
+
+automatically populate in the retrieval job, Figure 4.  The calendar dimension is the one dimension 
+
+nearly guaranteed to be in every data mart, because virtually every data mart is a time series. 
+
+Calendar Dimension was created with an SQL script and has all possible data from 2014 until 2020. 
+
+TIME dimension gives a perspective of how hours of the day may influence the service (for example 
+
+peak hours). TIME Dimension was created with an SQL script and has all possible hours from 00h 
+
+until 24h, distributed in hourly bucket. The IVR_OPTION dimension has all possible options the 
+
+clients can choose from the IVR menu. This was the only dimension that was manually populated 
+
+with the names of the possible options of the IVR menu, e.g. “Access to University”, according to 
+
+Figure 3.  
+
+ 
+
+ 
+
+ 
+
+
+
+IV. Results 
+
+The IVR is running since late January of 2014 and the presented results span this period until late July 
+
+2014. In this study only answered calls will be analyzed. Results may be presented in table form, or 
+
+as charts. In this section, some of the most relevant views from the multidimensional analysis are 
+
+presented, describing views from the multidimensional analysis in the form of graphics.  
+
+In Figure 6 we can see the distribution of calls by the various IVR options. 
+
+ 
+
+Figure 6 – Answered calls distribution of by IVR options. 
+
+The “Access to University” and “Application and Enrollment” options represent possible interest in 
+
+the University and combined have a total of 42% of total calls, followed by the “Other issues” option 
+
+that represents a total a 33% from a total of 3337 answered calls. 
+
+ 
+
+Figure 7 represents the distribution of calls during the period of this research. 
+
+ 
+
+Figure 7 – Calls distributed by month. 
+
+
+
+In the monthly distribution, January had a very small number of calls, most likely because it was 
+
+when the IVR service was created and it wasn’t properly advertised. Calls volume doubles in July 
+
+compared to previous months. In Figure 8, additional detail shows the evolution on the motivation 
+
+for the calls in month of July and compares it to calls in the month of June. 
+
+ 
+
+Figure 8 – Call details for June and July. 
+
+The month of July, Figure 8, shows a global increase in all call options. In particular the options: 
+
+“Access to University”, “Application and Enrollment”. In Portugal, July is period of the year where 
+
+students choose which University they want to enroll, which accounts for the increase in these 
+
+options. The “Certificate and Diplomas” option also has a significant increase due to the school year 
+
+end. 
+
+Figure 9 presents the distribution of calls per IVR operator. 
+
+ 
+
+Figure 9 – Calls distribution by operator. 
+
+This figure shows all 3337 answered calls distributed by all IVR operators. The operator that as most 
+
+of the calls is extension 1113, and according to Figure 3, this is perfectly acceptable since this 
+
+operator responds to three options of IVR menu, as showed in the Figure 10. 
+
+
+
+ 
+
+Figure 10 – Calls distribution by IVR option and by operator. 
+
+ 
+
+Figure 10 also shows an interesting fact, as there are two operators responding to IVR option “Other 
+
+issues”. This is because in the first days the IVR was implemented there were actually two operators 
+
+for option 5 of the IVR menu, which was changed afterwards. 
+
+ 
+
+Figure 11 – Conversation and waiting time averages by IVR option. 
+
+Figure 11 presents the time, in minutes, users spend in the telephony system. It shows that the 
+
+average conversation time spans from 3 minutes and 18 seconds in option “Application and 
+
+Enrollment” to 4 minutes and 1 second in “Tariff and Accreditations” option. Figure 11 also shows 
+
+that the average waiting time spans from 41 seconds in “Access to University” option to 1 minute 
+
+and 21 seconds in “Tariff and Accreditations”.  
+
+
+
+ 
+
+Figure 12 – Maximum vs minimum waiting time by IVR option. 
+
+According to Figure 12, the maximum waiting time spans from 8 minutes and 22 seconds in “Tariff 
+
+and Accreditations” to 24 minutes and 19 seconds in “Certificates and Diplomas”. The minimum 
+
+waiting time spans from 4 seconds in “Other issues” to 11 seconds in “Tariff and Accreditations”. 
+
+These preliminary results will allow high level management to re-organize the human resources 
+
+around the real workload as evidenced by the collected data, therefore allowing the external users 
+
+to perceive a more efficient service, and the internal users to focus where the workload is increased. 
+
+ 
+
+ 
+
+V. Conclusion 
+
+With the emergence of technologies such as Voice over IP and the easy inherited ability to store 
+
+records in a database, new challenges regarding the use of this data are addressed. Treating large 
+
+amounts of data and extracting a concise and timely relevant information allow to make decisions 
+
+that may improve the performance of the systems and the way people deal with these systems.  
+
+The views presented in the results section are only representative of the full power of this analysis, 
+
+as the IVRCube makes it possible to create all types of views on the data by gathering and filtering 
+
+the various dimensions. 
+
+We suggested a multidimensional data analysis model using data cube to elicit comprehensive 
+
+analysis results that fits at least two purposes: keep comprehensive historical data and monitoring 
+
+the service. The system can be used to conduct a multidimensional analysis through an OLAP 
+
+operation according to the level of abstraction for each dimension. Because the analysis system 
+
+using data cube can easily extract comprehensive analysis results within the viewpoints of trend it 
+
+can be used beyond monitoring.  
+
+The ultimate objective is to create a dashboard for the University’s high level management, so that 
+
+the information the system provides can be effectively and timely used to make correct 
+
+management decisions, namely by allowing the re-allocation of resources considering date and time 
+
+workload constraints.  
+
+
+
+ 
+
+Bibliography 
+
+ 
+
+[1]  "University of Beira Interior Home Page," 2014. [Online]. Available: http://www.ubi.pt. 
+
+[2]  “Cisco Home Page,” 2014. [Online]. Available: http://www.cisco.com. 
+
+[3]  "VoIP@RCTS Project," [Online]. Available: http://www.fccn.pt/pt/servicos/comunicacao-e-
+
+colaboracao/voip-rcts. 
+
+[4]  "FreePBX Home Page," [Online]. Available: http://www.freepbx.org/. 
+
+[5]  "Asterisk Home Page," 2014. [Online]. Available: http://www.asterisk.org. 
+
+[6]  "itCenter Home Page," [Online]. Available: http://www.itcenter.com.pt. 
+
+[7]  A. K. Taludker, N. M. Garcia and G. M. Jayateeertha, Convergence through all IP Networks, 2013.  
+
+[8]  "Using outbound IVR and SMS to improve workflows and streamline business processes," 
+
+Speech Technology Magazine, 2013.  
+
+[9]  "Alcatel-Lucent Home Page," 2014. [Online]. Available: http://www.alcatel-lucent.com. 
+
+[10]  "CDR-Stats Home Page," 2014. [Online]. Available: http://www.cdr-stats.org. 
+
+[11]  "QueueMetrics," 2014. [Online]. Available: http://queuemetrics.com. 
+
+[12]  D. Zhang, C. Zhai and J. Han, "Topic cube: topic modeling for OLAP on multidimensional text 
+
+databases.," Proceedings of the International Conference on Data Mining, 2009.  
+
+[13]  L. Vokorokos, A. Pekar and N. Adam, "Preparing databases for network traffic monitoring," 
+
+Proceedings of the IEEE 10th International Symposium on Applied Machine Intelligence and 
+
+Informatics (SAMI), pp. 13-18, 2012.  
+
+[14]  G. Tanaksaranond, T. Cheng, A. Chow and A. Santacreu, "Conceptual design of a star-schema 
+
+OLAP to support multi-dimensional," International Symposium on Spatial-Temporal Analysis and 
+
+Data Mining, 2011.  
+
+[15]  J. Han, M. Kamber and J. Pei, Data Mining: Concept and Techniques, Third Edition, 2011, pp. 83-
+
+149. 
+
+[16]  R. Kimball and M. Ross, The Data Warehouse Toolkit: The Complete Guide to Dimensional 
+
+Modeling, 2002, pp. 16-24. 
+
+[17]  R. Kimball and M. Ross, The Data Warehouse Toolkit: The Definitive Guide to Dimensional 
+
+Modeling, 2013.  
+
+[18]  M. Zekri and A. Abdellatif, "A New Approach to Update the Dimension Hierarchies for Data 
+
+Warehouse Design," IEEE, 2011.  
+
+ 
+
+
+	tese V3_save
+	paper_v3L
+
+</field>
+	</doc>
+</add>

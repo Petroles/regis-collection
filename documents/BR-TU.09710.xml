@@ -1,0 +1,1203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.09710</field>
+		<field name="filename">146_273971.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">UNIVERSIDADE FEDERAL DE SANTA CATARINA PROGRAMA DE PÓS-GRADUAÇÃO EM ENGENHARIA MECÂNICA
+SIMULAÇÃO BIDIMENSIONAL DE BACIAS SEDIMENTARES: MÉTODO DE VOLUMES FINITOS COMBINADO COM RAY TRACING
+Dissertação submetida à
+UNIVERSIDADE FEDERAL DE SANTA CATARINA
+para a obtenção do grau de
+MESTRE EM ENGENHARIA MECÂNICA
+MARCELO DE LUCA DOS SANTOS
+Florianópolis, outubro de 2009
+Ficha Catalográfica
+S237s SANTOS, Marcelo de Luca dos
+Simulação bidimensional de bacias sedimentares: método de volumes finitos combinado com ray tracing. 2009 [dissertação] / Marcelo de Luca dos Santos; orientador Clovis Raimundo Maliska -Florianópolis (SC): UFSC/Pós-graduação em Engenharia Mecânica, 2009.
+129 p. il.
+Possui tabelas.
+Inclui bibliografia.
+1. Petróleo - exploração. 2. Petróleo - tecnologia. 3. Bacias sedimentares. 4. Engenharia mecânica. I. Autor.
+CDD - 338.27282
+Catalogado na fonte por Anna Khris Furtado D. Pereira - CRB14/1009
+UNIVERSIDADE FEDERAL DE SANTA CATARINA PROGRAMA DE PÓS-GRADUAÇÃO EM ENGENHARIA MECÂNICA
+SIMULAÇÃO BIDIMENSIONAL DE BACIAS SEDIMENTARES: MÉTODO DE
+VOLUMES FINITOS COMBINADO COM RAY TRACING
+MARCELO DE LUCA DOS SANTOS
+Esta dissertação foi julgada adequada para a obtenção do grau de MESTRE EM ENGENHARIA
+ESPECIALIDADE ENGENHARIA MECÂNICA sendo aprovada em sua forma final.
+Clovis Raimundo Maliska, Ph.D - Orientador
+Eduardo Alberto Fancello, D.Sc. - Coordenador do Curso
+BANCA EXAMINADORA
+Paulo César Philippi, Dr. Eng - Presidente
+António Fábio Carvalho da Silva, Dr. Eng.
+Antônio Carlos Ribeiro Nogueira, Dr. Eng.
+AGRADECIMENTOS
+Gostaria de agradecer a todas as pessoas que, de alguma forma, contribuíram para a elaboração deste trabalho, em especial,
+ao Professor Maliska, pela orientação e ensinamentos;
+aos amigos do laboratório SINMEC;
+ao POSMEC/UFSC e SINMEC/UFSC, pelo apoio financeiro e infraestrutura utilizada neste trabalho;
+aos meus pais e ao meu irmão, pelo amor, apoio e por terem sempre acreditado em mim;
+à minha esposa, Uiara, pelo amor, dedicação e incentivo nos momentos mais difíceis, pois sem o seu apoio e compreensão este trabalho nunca seria concluído.
+RESUMO
+A utilização de poços de exploração durante a procura por um poço produtivo é um processo muito dispendioso e demorado. Tais aspectos têm forçado a indústria do petróleo a investir em tecnologias para acelerar o processo e minimizar os custos desta operação. Para atingir estes objetivos, a simulação da migração de hidrocarbonetos em bacias sedimentares é de fundamental importância. Esta dissertação estuda a aplicação de uma nova metodologia, mais robusta e eficiente, para resolver a migração de hidrocarbonetos em bacias sedimentares. Um software in-house foi desenvolvido para resolver um escoamento black-oil (água e óleo) através de uma bacia bi-dimensional utilizando o método numérico Element-based Volume Finite Method (EbVFM), que se diferencia dos tradicionais simuladores que utilizam, de uma forma geral, o método de Diferenças Finitas ou o Método dos Elementos Finitos. Também foi introduzida uma nova técnica para descrever a migração de petróleo em sistemas condutores de alta permeabilidade. Esta nova técnica utiliza o método de visualização gráfica ray tracing, reduzindo o tempo de simulação. Um novo modelo para o ciclo de compactação foi sugerido e implementado, visando acelerar ainda mais esta etapa no processo de simulação. Em nosso entendimento, esta dissertação traz importantes contribuições no campo de busca por ferramentas que ajudam a aumentar a precisão e diminuir o tempo gasto na procura por reservatórios. A simulação da reconstituição de uma bacia e da migração de petróleo contribui para a redução do numero de poços exploratórios e aumento da taxa de sucesso.
+Palavras-chave: Simulação. Bacias Sedimentares. Petróleo. FlowTrace. Migração Secundária.
+ABSTRACT
+Drilling exploration wells during the process of searching for a productive well is a very expensive and time consuming task. These high costs have forced the petroleum industry to invest in new technologies trying to speed up this search and minimize the expenses. This is where the simulation of the hydrocarbon migration process through sedimentary basins takes place. This dissertation investigates the oil migration problem by applying a new methodology aiming to create a robust numeric model. A numerical procedure has been developed to solve black-oil model equations (oil-water) in two dimensional basins using the Element Based Volume Finite Method (EbVFM) opposed to the traditional simulators which normally employ Finite Differences or Finite Element methods. A new technique is implemented to describe the migration of oil in a high permeability carrier system. This new technique uses the ray tracing method (the same used in computational visualization) to reduce the simulation time and to confer to the method robustness. This dissertation contributes for the development of tools for improving the time spent in finding petroleum reservoirs. The simulation of the basin reconstitution and the oil migration may help reduce the numbers of exploration wells and increase the success ratio of the oil companies.
+Keywords: Numerical Simulation. Sedimentary Basin. Petroleum. FlowTrace. Secondary Migration.
+LISTA DE FIGURAS
+Figura 1.1	Bacia sedimentar hipotética - Migração primária e secundária.	26
+Figura 1.2	Migração secundária.......................................... 28
+Figura 1.3	Imagem criada a partir do Método Ray Tracing................. 29
+Figura 1.4 Perspectiva de uma bacia de domos contemplando detalhes da aplicação do método FLOWPATH como as áreas delimitadas pelos prováveis reservatórios e suas linhas de comunicação..................	30
+Figura 2.1 Fenômenos que podem ocorrer durante a formação de uma bacia sedimentar hipotética. 1 - (120 Ma) Erosão; 2 - (100 Ma) Chuvas formaram um vasto rio; 3 - (75 Ma) Longo período de secas resultando em mais erosão; 4 - (60 Ma) Crescimento de vegetação tropical; 5 - (50 Ma) Erupção vulcânica e soterramento de sedimentos; 6 - (40 Ma) Crescimento de Florestas; 7 - (20 Ma)
+Era do gelo; 8 - Período atual, solo com hidrocarbonetos
+formados e acumulados ao longo dos períodos anteriores...	33
+Figura 2.2 Bloco-diagrama mostrando um tipo de armadilha estratigráfica 36
+Figura 2.3 Bloco-diagrama mostrando um tipo de armadilha estrutural. As
+rochas estão dobradas em anticlinal pelo efeito das forças de
+compressão horizontais......................................... 37
+Figura 2.4 Esquema do experimento realizado por Selle et al. (1993)......... 39
+Figura 2.5 Curvas de pressão capilar em função da saturação de água dos materiais utilizados nos experimentos de Selle et al. (1993). Figura extraída de Sylta (2004).......................................... 40
+Figura 2.6 Resultado dos experimentos realizados por Selle et al. (1993). Meio poroso de baixa permeabilidade depois de 330 h (imagem central) e 660 h (imagem superior). Na parte inferior, meio poroso de alta permeabilidade após 330 h (Figura retirada de Sylta, 2004).	40
+Figura 2.7 Resultado da simulação utilizando software comercial. À esquerda, meio poroso com alta permeabilidade (2.26 D) após 330h e à direita, amostra com baixa permeabilidade (0.066 D) após 660h.................... 41
+Figura 2.8 Fotografias de estruturas porosas de duas rochas sedimentares denominadas arenito (esquerda) e calcarenito (direita), vistas em microscópio (retirado de Schubert, 2006)............................. 42
+Figura 2.9 Curva da Variação da Porosidade com a profundidade. As densidades dos materiais Sandstone, Shale e Limestone são, respectivamente, 2660 kg/m3, 2680 kg/m3 e 2710 kg/m3. Curva em vermelho sobrepõe a curva de losangos azuis escuros, mostrando a similaridade entre curvas do software PETROMOD e SiBa (2008)........................................................... 43
+Figura 2.10 Figura exemplifica a visualização da permeabilidade na unidade de Log.(mD)............................................................. 45
+Figura 2.11 Variação da permeabilidade com a porosidade e equações utilizadas para reproduzir curvas do software	PETROMOD........	45
+Figura 2.12 Esquema da deposição e compactação de sedimentos no tempo de uma bacia sedimentar hipotética...................................... 47
+Figura 2.13 Balanço de massa em um volume de controle para um meio poroso(Figura retirada de Schubert, 2006)............................... 48
+Figura 2.14 Esquema do cálculo da altura de hidrocarbonetos acumulada em um reservatório...................................................... 53
+Figura 3.1 Apresentação das entidades utilizadas no EbFVM. Fonte: Schubert (2006)......................................................... 56
+Figura 3.2 Representação de elementos triangulares nos planos físico e transformado. Fonte: Schubert (2006).................................... 57
+Figura 3.3 Esquema de descompactação de múltiplas camadas baseada em “backstripping”. Fonte: Schubert (2006).............................. 59
+Figura 3.4 Modelo FLOWPATH 3D e 2D. Imagens extraídas do site da empresa IES GmbH - www.ies.de........................................... 60
+Figura 3.5	Método Híbrido.................................................. 61
+Figura 3.6	Esquema simplificado do processo de migração secundária.... 63
+Figura 3.7 Emissão de raios (a). Interceptação do raio em uma interface e a determinação do ponto de injeção de hidrocarbonetos (b).................... 64
+Figura 3.8 Tipos configurações de interfaces................................. 65
+Figura 3.9	(a) Capacidade máxima que pode ser armazenada na área de
+drenagem determinada pelo H máx. (b) Determinação das coordenadas limítrofes do reservatório.......................... 66
+Figura 3.10 Cálculo da capacidade do reservatório através do método dos trapézios.................................................................... 67
+Figura 3.11 Caso em que a quantidade de hidrocarbonetos gerada é inferior à capacidade máxima do reservatório.......................................... 67
+Figura 3.12 (a) Quantidade drenada da mesma magnitude que a capacidade máxima do reservatório, e (b) quantidade drenada muito maior que a capacidade máxima do reservatório, transbordando o volume excedente............................................................. 68
+Figura 3.13 (a) Duas áreas de drenagem com o mesmo ponto de derramamento. (b) Fusão das áreas de drenagem após o contínuo derramamento de um reservatório dentro do outro....................	69
+Figura 3.14 (a) Reservatório delimitado na sua porção inferior por uma camada de baixa permeabilidade. (b) Mapeamento da camada inferior para o cálculo da verdadeira capacidade volumétrica do reservatório..............	70
+Figura 3.15 (a) Malha estruturada de quadriláteros. (b) Malha não estruturada de triângulos.................................................... 71
+Figura 3.16 Lado esquerdo (a) elementos vizinhos verticalmente. Lado direito (b) elementos vizinhos sobrepostos................................... 72
+Figura 3.17 Lado esquerdo (a) elementos que possuem uma aresta em comum e formam um par de baixa (elemento 15) e alta permeabilidade (elemento 35). Lado direito (b) esquema mostrando como encontrar elementos que possuem uma aresta em comum.................................... 73
+Figura 3.18 Nós das camadas inseridas na batimetria do tempo geológico corrente 74
+Figura 3.19 (a) Modo como o domínio é introduzido no software. (b) Modo como rotinas separam o domínio em elementos que formam as interfaces................................................................. 74
+Figura 3.20 (a) Círculos vermelhos representam os nós que formam as interfaces entre as camadas. (b) Mostra qual interface do domínio realmente será abordada por possuir a configuração de elementos necessária para a aparição de áreas de drenagem............................ 75
+Figura 3.21 Área de Drenagem............................................... 76
+Figura 3.22 Esquema ilustrando como uma área de drenagem é delimitada através dos gradientes de ascensão......................................... 76
+Figura 3.23 Como os elementos são posicionados em um vetor de vetores para organizar as informações de um mesmo segmento......................... 77
+Figura 3.24 Definição de uma área de drenagem, ponto em vermelho marcando ponto mais alto, ponto cor magenta representando ponto de derramamento, as letras representam os pares de elementos que formam os segmentos das interfaces........................... 77
+Figura 3.25 Sequência de deposição de uma camada iniciando da esquerda para direita e de cima para baixo.......................................... 78
+Figura 4.1 Fluxograma da versão do software SiBa 2007 desenvolvido na dissertação de Schubert (2006)............................................. 82
+Figura 4.2 Fluxograma do software SiBa 2008 desenvolvido pelo autor deste trabalho............................................................. 83
+Figura 4.3	Fluxograma do Método FlowTrace................................ 85
+Figura 4.4	Fluxograma função “Procurar por Regiões de Confinamento”.....	87
+Figura 4.5	Fluxograma “Extrair Informações Geométricas”.................. 88
+Figura 4.6	Fluxograma função “Distribuir Massa”.......................... 89
+Figura 5.1 Tempo de simulação, utilizando um processador Pentium IV 3.01 GHz
+com 2GB de memória RAM e sistema operacional Windows.........	92
+Figura 5.2 Máxima variação da coordenada Z calculada durante a simulação da bacia...................................................... 93
+Figura 5.3 Geometrias utilizadas, da direita para esquerda: Caso A4, Caso
+A5, Caso A6, Caso A7, Caso A8 e Caso A3..................... 94
+Figura 5.4 Máxima variação da coordenada Z para os casos A4, A5, A6, A7 e A8.................................................................... 94
+Figura 5.5 Diferença entre as máximas profundidades calculadas pelo método Hidrostático e o Monofásico...................................... 95
+Figura 5.6 Na esquerda o Caso B, bacia constituída por Sandstone (cor azul), Shale (verde) e Limestone (vermelho). Na direita o Caso C, bacia composta por Shale (azul) e Limestone (vermelho)..............	96
+Figura 5.7 Tempo de simulação, utilizando um processador Pentium IV 3.01GHz com 2GB de memória RAM e sistema operacional Windows................................................................. 97
+Figura 5.8	Máxima variação da coordenada Z calculada durante a
+simulação da bacia.......................................... 97
+Figura 5.9	Na esquerda, vetores de velocidade referentes ao Caso B
+5000x5000. Na direita, vetores de velocidade do Caso C 500x500.. 98
+Figura 5.10 Esquerda Caso C 5000x5000 m, direita Caso C 500x500 m.......	99
+Figura 5.11 Diferença entre as máximas profundidades calculadas pelo método Hidrostático e o Monofásico...................................... 99
+Figura 5.12 (a) Geometria domínio Caso A. (b) Geometria domínio Caso B..	101
+Figura 5.13 Caso A e Caso B reproduzidos no software PETROMOD...........	102
+Figura 5.14 Variação da porosidade com a profundidade para diferentes valores do parâmetro k na equação de Athy (1930)....................... 103
+Figura 5.15 Acúmulo de hidrocarbonetos. Em reta vertical em vermelho será considerada a reta padrão para a obtenção das curvas de distribuição de porosidade e permeabilidade para os resultados a seguir............................................................... 105
+Figura 5.16 (a) Distribuição de porosidade ao longo da reta padrão. (b) Distribuição de permeabilidade ao longo da reta padrão. Unidade de Z em metros..................................................... 106
+Figura 5.17	Permeabilidade log (mD). Unidade de Z e X em	metros......... 107
+Figura 5.18	Pressão Capilar MPa, eixo Z e X em metros.................... 107
+Figura 5.19	Campo de Porosidade. Eixo Z e X em metros.................... 108
+Figura 5.20	Pressão Hidrostática em Pascal. Eixo Z e X em	metros......... 108
+Figura 5.21 (a) Resultado obtido através do Software SiBa 2008. (b) Resultado do acúmulo de hidrocarbonetos obtido através do software PETROMOD.......................................................... 109
+Figura 5.22	Distribuição de porosidade ao longo da reta padrão. Eixo Z em metros 110
+Figura 5.23 Distribuição de permeabilidade (log(mD)) ao longo da reta padrão. Eixo Z em metros................................................... 111
+Figura 5.24	Permeabilidade log (mD). Unidade de Z e X em metros.......... 112
+Figura 5.25	Porosidade................................................... 112
+Figura 5.26	Distribuição de porosidade ao longo da reta padrão........... 114
+Figura 5.27	Distribuição de permeabilidade ao longo da reta padrão....... 115
+Figura 5.28 Distribuição de porosidade (a) e permeabilidade (b) ao longo de uma reta vertical.......................................................... 116
+Figura 5.29 Detalhe da curva de porosidade (eixo X) por profundidade (eixo
+Z). Círculos vermelhos ressaltam pontos que possuem mesma coordenada, localizados na interface entre camadas............ 117
+Figura 5.30 Distribuição de permeabilidade ao longo de uma reta vertical cortando o domínio para diferentes refinos d malha......................... 118
+Figura 5.31 Balanço realizado para o nó na interface entre duas camadas com propriedades distintas................................................. 119
+Figura 5.32 Distribuição de porosidade ao longo da reta padrão cortando o domínio para diferentes refinos de malha.................................. 119
+Figura 5.33 Distribuição da pressão hidrostática ao longo da reta padrão
+para diferentes refinos de malha..................................... 120
+Figura 6.1 Interface gráfica do software SiBa 2008................................. 125
+LISTA DE TABELAS
+Tabela 1.1 Evolução histórica da modelagem de bacias sedimentares.
+Adaptada de Tuncay (2004)................................. 25
+Tabela 2.1 Dados utilizados no experimento por Selle et al. (1993) e na
+simulação numérica........................................ 39
+Tabela 5.1 Informações gerais sobre as simulações realizadas......... 102
+Tabela 5.2 Massa acumulada e diferença em relação ao software PETROMOD 105
+Tabela 5.3 Massa acumulada e diferença em relação ao software PETROMOD 109
+Tabela 5.4 Massa acumulada e diferença em relação ao software PETROMOD 113
+Tabela 5.5 Massa acumulada e diferença em relação ao software PETROMOD 116
+Tabela 6.1 Comparação qualitativa dos modelos estudados neste trabalho
+com o modelo de Compactação e escoamento multifásico.....	122
+LISTA DE SÍMBOLOS
+Latinos
+g	aceleração da gravidade, m/s2
+H	altura da coluna de hidrocarbonetos
+H	modelo de bacias sedimentares com transferência de calor
+h	comprimento utilizado no experimento de Darcy, m
+k	tensor permeabilidade absoluta do meio poroso, m2
+l	comprimento utilizado no experimento de Darcy, m
+S	tensão média da carga sedimentar, N/ m2
+Re	número de Reynolds
+rk	razão entre as permeabilidades nas duas direções
+constante
+k	parâmetro na equação de	Athy para a porosidade, km-1
+Nj	funções de forma
+p	pressão, N/ m2
+P	nó de um volume de	controle
+Pc	pressão capilar, N/ m2
+PG	modelo de bacias sedimentares com geração de petróleo
+q	taxa de mudança de fase
+S	vetor área, m2
+r	raio do poro, m
+t	tempo, s
+u	vetor velocidade de Darcy, m/kanos
+Vo	volume de uma região	do espaço	no tempo	zero, m3
+V	(t)	volume de uma região	do espaço	no tempo	t,	m3
+V	volume do volume de controle, m3
+3
+Vv	volume de vazio de um meio poroso, m3
+considerada
+3
+Vt	volume total de um meio poroso, m3
+V	vetor velocidade, m/s
+x	coordenada global, m
+z	coordenada global, m
+Gregos
+A	área da face do subvolume de controle em coordenadas locais
+AS	área de face de um subvolume de controle
+AV	volume do volume de controle
+porosidade
+(/&gt;i	porosidade do material não-compactado (profundidade igual a zero)
+n	coordenada local
+2	mobilidade, 1/Pa.s
+p	viscosidade dinâmica do fluido, Pa.s
+£	coordenada local
+3
+p	massa especifica, kg/m3
+&lt;5e	tensão efetiva, N/m2
+9	ângulo de contato referente a tensão superficial
+Superscritos
+w	referente à água
+pet	referente ao petróleo
+Hg	referente ao mercúrio
+Subscritos
+f	referente ao fluido
+h	referente à permeabilidade absoluta na	direção horizontal
+i	ponto de integração
+máx	valor máximo
+n	índice utilizado para indicar o subvolume em questão
+P	nó da malha ou ponto central do volume submetido à integração
+numérica
+s	referente ao sólido
+svc	subvolume de controle
+v	referente à permeabilidade absoluta na direção vertical
+Acrônimos
+EbFVM Element-based Finite Volume Method (Método de Volumes Finitos baseado em Elementos)
+SUMÁRIO
+CAPÍTULO 1................................................ 21
+1	INTRODUÇÃO............................................. 21
+1.1	MOTIVAÇÃO............................................. 22
+1.2	OBJETIVOS............................................. 23
+1.3	REVISÃO DE LITERATURA................................. 24
+1.4	ORGANIZAÇÃO DO	TRABALHO............................... 31
+CAPÍTULO II............................................... 32
+2	FORMULAÇÃO DO PROBLEMA................................. 32
+2.1	FENÔMENO FÍSICO....................................... 32
+2.1.1	Formação de Bacias.................................. 32
+2.1.2	Migração e Acumulação de Hidrocarbonetos............ 35
+2.1.2.1	Empuxo e Hidrodinâmica............................ 37
+2.1.2.2	Migração Secundária............................... 39
+2.2	MODELO MATEMÁTICO................................. 41
+2.2.1	Compactação......................................... 41
+2.2.1.1	Porosidade........................................ 42
+2.2.1.2	Permeabilidade (Log (mD).......................... 44
+2.2.1.3	Pressão Capilar advinda da Porosidade............. 46
+2.2.1.4	Equação de Compactação............................ 47
+2.2.1.5	Tensão Efetiva e Carga Sedimentar................. 49
+2.2.1.6	Relação da Porosidade com a Tensão Efetiva........ 50
+2.2.1.7	Equação de Escoamento Monofásico.................. 50
+2.2.2	Migração Secundária................................. 53
+2.2.2.1	Determinação da Colina de Hidrocarboneto (HC)... 53
+CAPÍTULO III............................................ 55
+3	MÉTODO NUMÉRICO....................................... 55
+3.1	REVISÃO DO MÉTODO EbFVM......................... 55
+3.2	MODELO DE DESCOMPACTAÇÃO E SOTERRAMENTO............. 58
+3.3	FLOWTRACE........................................... 60
+3.3.1	Ray Tracing....................................... 63
+3.3.2	Modelo de Enchimento.............................. 65
+3.3.3	FlowTrace para malhas não estruturadas............ 70
+CAPÍTULO IV............................................. 80
+4	IMPLEMENTAÇÃO COMPUTACIONAL........................... 80
+4.1	FLUXOGRAMA DA COMPACTAÇÃO........................... 80
+4.2	FLUXOGRAMA PARA O FLOWTRACE......................... 84
+4.2.1	Determinação de Regiões de Confinamento........... 86
+4.2.2	Extração de Informações Geométricas............... 87
+4.2.3	Distribuição de Massa............................. 88
+CAPÍTULO V.............................................. 91
+5	RESULTADOS............................................ 91
+5.1	ANÁLISE DO MODELO DE COMPACTAÇÃO.................... 91
+5.1.1	Bacias Homogêneas................................. 92
+5.1.2	Bacias Heterogêneas............................... 96
+5.2	COMPARAÇÃO COM UM SOFTWARE COMERCIAL.............. 100
+5.2.1	Caso A com parâmetro k igual a 0,2	km'1........... 104
+5.2.2	Caso B com parâmetro k igual a 0,2	km'1........... 108
+5.2.3	Caso A com parâmetro k igual a 0,1	km'1........... 113
+5.2.4	Caso B com parâmetro k igual a 0,1	km'1........... 115
+5.3	ANÁLISE DO REFINO DE MALHA...................... 117
+CAPÍTULO VI........................................ 121
+6	CONCLUSÕES....................................... 121
+6.1	SUGESTÕES PARA TRABALHO FUTUROS................ 124
+REFERÊNCIAS........................................ 126
+CAPÍTULO I
+1 INTRODUÇÃO
+A utilização de métodos sísmicos em combinação com modelos geológicos e técnicas de simulação de escoamentos de fluidos em meios porosos tem permitido obter maior índice de acertos na descoberta de campos de óleo e gás e aumentar a produção dos campos existentes. Durante os últimos 10 anos, este aumento na produtibilidade de hidrocarbonetos tem contribuído significativamente com o contínuo acréscimo da demanda global por derivados do petróleo. A ampliação do fornecimento de petróleo tem sido uma das principais necessidades do crescimento econômico mundial, e um aumento constante nos volumes de produção é necessário para manter o futuro crescimento econômico.
+Os poços de exploração são perfurados para identificar e descrever novos campos de óleo e gás a partir de prospectos que foram definidos usando dados sísmicos ou registro de poços. A principal finalidade da perfuração de exploração é confirmar ou rejeitar o modelo geológico da bacia. Quase todos os poços de exploração podem ser descritos como despesas para as companhias de petróleo e somente em casos raros, quando os poços da exploração são convertidos em poços de produção, haverá então algum lucro diretamente resultante de um poço de exploração. Consequentemente, é conveniente reduzir o número desses poços, ou eliminá-los completamente, se a confirmação de campos de petróleo puder ser alcançada usando outros métodos.
+A formação de petróleo em bacias sedimentares, seu escoamento e acumulação na bacia e a formação final dos depósitos de petróleo (reservatórios) tem sido um dos problemas-chave na exploração de recursos de óleo e gás. Estudar estes fenômenos que aconteceram há milhões de anos e deram origem aos reservatórios de petróleo é a tarefa principal da simulação numérica da migração de hidrocarbonetos em bacias sedimentares. A simulação numérica da história evolucionária da bacia é conduzida de acordo com o mecanismo da geologia do petróleo e da mecânica dos fluidos em meios porosos. Ela simula o processo
+evolutivo das bacias, a geração de hidrocarbonetos e a migração e o acúmulo do óleo e gás.
+O presente trabalho pretende definir de forma clara e objetiva a utilização da simulação numérica da migração de hidrocarbonetos e desenvolve o Método FlowTrace. Tendo como pilares o software Petromod da empresa alemã IES GmbH, os estudos desenvolvidos por Sylta (2004) e Schubert (2006).
+1.1	MOTIVAÇÃO
+Atualmente, estudos progridem na busca por energias renováveis, no entanto, a utilização de derivados de óleo em suas mais variadas formas está longe de ser substituída, o que torna crescente a necessidade mundial por óleo e gás, pois esses compostos estão diretamente relacionados a avanços científicos e tecnológicos em diferentes áreas como, por exemplo, na qualidade dos processos hospitalares, na biomedicina e em diferentes formas de confortos que a sociedade atual está habituada em seu cotidiano.
+Tendo em vista a grande demanda por derivados de óleo e, por se tratar de um recurso não renovável, faz-se necessário uma produção sempre crescente e, por conseguinte, o aumento da eficiência na exploração de poços torna-se obrigatório. Cumpre destacar que a taxa mundial de sucesso de encontrar óleo ou gás em um poço de exploração é em torno de 30%, e o custo estimado da operação de perfuração varia entre 20 e 50 milhões de dólares, pois demanda um grande período de tempo, recursos humanos especializados e grandes tecnologias, o que faz o processo de busca por um poço produtivo e rentável uma das etapas mais dispendiosas para a indústria petrolífera na perfuração de poços exploratórios.
+Este fator impulsiona a indústria petrolífera a investir em novas tecnologias, visando ao aumento da taxa de sucesso exploratório e reduzindo o seu custo financeiro. Desse modo, ferramentas que contribuam significativamente para reduzir a demanda por recursos são de grande interesse para esta indústria, sendo que a simulação numérica de hidrocarbonetos em bacias sedimentares é uma dessas ferramentas, a qual deve ser estudada, aperfeiçoada e implementada na indústria petrolífera.
+Assim, desenvolver uma nova ferramenta mais ágil e com baixo custo computacional, comparada aos métodos de simulação para migração de hidrocarbonetos em bacias utilizados atualmente, é o que motiva o presente trabalho.
+1.2	OBJETIVOS
+Este trabalho tem o objetivo de simular o processo de migração de hidrocarbonetos através de métodos robustos e de baixo custo computacional. Para tanto, será feita uma revisão sobre a migração secundária de hidrocarbonetos e, posteriormente, será apresentada uma forma de como modelar este fenômeno em um simulador de bacias sedimentares.
+SiBa 2008 será o nome atribuído ao software desenvolvido neste trabalho, que utilizará como plataforma o simulador de bacias sedimentares, o software SiBa 2007, desenvolvido por Schubert (2006), em sua dissertação de mestrado. O SiBa 2007 é um simulador de compactação de bacias sedimentares bidimensional que não resolve o problema da migração de hidrocarbonetos. Ele utiliza o método numérico de Volumes Finitos baseado em Elementos (EbFVM).
+Para o SiBa 2008, será desenvolvido um modelo de compactação baseado somente na pressão hidrostática da bacia, visando diminuir os custos e tempos computacionais.
+Como objetivo principal, será implementado um modelo batizado FlowTrace para a rápida solução do problema da migração secundária de hidrocarbonetos baseado no método ray tracing aplicado a uma malha não-estruturada. Este método foi criado por Sylta et al. (1987) e Sylta (2004) e trata-se de uma metodologia que localiza os reservatórios e distribui a massa de hidrocarbonetos através da bacia, sendo que, para isso, utiliza a técnica de renderização de imagens ray tracing para simular e descrever a migração secundária de hidrocarbonetos na bacia, não sendo necessária a resolução de um sistema de equações, juntamente com um modelo de enchimento que determina a capacidade de armazenagem dos reservatórios.
+Serão realizadas simulações comparativas entre o software SiBa 2008 e o software PETROMOD da empresa alemã IES GmbH, o qual é atualmente a referência mundial entre os simuladores de bacias sedimentares.
+1.3	REVISÃO DE LITERATURA
+Esta seção tem o objetivo de relatar os trabalhos principais sobre bacias sedimentares e sua evolução. Para isto serão citados alguns trabalhos que tiveram maior relevância na história da modelagem de bacias sedimentares. Modelagem de bacias, para a área de geologia, significa encontrar um modelo que melhor represente a bacia geologicamente, a composição de suas camadas, seus horizontes etc., e não apenas encontrar um modelo matemático.
+O escoamento dos fluidos em uma bacia sedimentar pode ser modelado com base nas conhecidas equações de Darcy (1856). Esse pesquisador realizou experimentos para estudar o escoamento de água através de meios porosos na tentativa de solucionar o problema de abastecimento de água na cidade de Dijon, França. A lei de Darcy, 1856, foi constituída a partir da análise do escoamento de água através de uma coluna de areia e, desde então, vem sendo adaptada e generalizada para diversos tipos de escoamentos.
+Um dos processos mais importantes que ocorrem durante a formação de uma bacia sedimentar é a sua compactação. Athy (1930) modelou a compactação de sedimentos através de uma relação exponencial que correlaciona a porosidade com a profundidade.
+Hubbert e Rubey (1959) relacionaram a porosidade com a tensão efetiva, sendo esta grandeza definida pela diferença entre a carga sedimentar e pressão do poro, a partir de uma correlação empírica.
+Outro fenômeno importante é a geração de hidrocarbonetos pelas rochas geradoras. Para a geração de hidrocarbonetos, Tissot e Welte (1984), que podem ser citados como os pioneiros nesta área, propuseram um modelo simplificado que não considerava a cinética química. Atualmente novos métodos baseados em cinética química foram propostos, associados aos avanços na área computacional. O modelo mais aceito nas análises de bacia para cálculo de formação de hidrocarbonetos atualmente é o proposto por Sweeney e Burnham (1990), no qual se integram equações de cinética química ao longo do tempo e como função da temperatura.
+A Tabela 1.1, retirada de Schubert (2006), tenta reunir a evolução histórica da modelagem de bacias sedimentares de uma forma geral, visando contextualizar este trabalho.
+Tabela 1.1 - Evolução histórica da modelagem de bacias sedimentares. Adaptada de Tuncay (2004).
+Pesquisadores	Modelagem de bacias
+	sedimentares
+Ungerer et al. (1990)	2-D, 0E, H, II n, PG
+Forbes et al. (1992)	2-D, 0E, H, IIn, PG
+Person &amp;amp; Garven (1992)	2-D, 0E, H, In, PG
+Maubeuge &amp;amp; Lerche (1993)	1 -D, 0E, H, In, PG
+Maubeuge &amp;amp; Lerche (1994)	2-D, $E, H, In, PG
+Bour &amp;amp; Lerche (1994)	2-D, 0E, H, In
+Bredehoeft et al. (1994)	2-D, 0E, H, In, PG
+Wieck et al. (1995)	2-D, (/&gt;E, H, In
+Person et al. (1995)	1-D,&amp;lt;^D, H, In, PG
+Robert &amp;amp; Nunn (1995)	1 -D, (j)E, H, In
+Gordon &amp;amp; Flemings (1998)	1 -D, (/&gt;E, H, In
+Lee &amp;amp; Williams (2000)	2-D, (/&gt;E, H, In
+Schneider et al. (2000)	3-D,&amp;lt;^D, IIn, PG
+Chen et al. (2002)	2-D,&amp;lt;/&gt;D, In
+Legenda: 1-D, unidimensional; 2-D, bidimensional; H, transferência de calor; In, escoamento monofásico; Iin, escoamento bifásico; ¿d , relação porosidade-profundidade;&amp;lt;pE, relação porosidade-tensão efetiva e PG, geração de petróleo.
+Os simuladores de bacias se preocupam em modelar os movimentos e características do relevo durante o período geológico. A evolução térmica das rochas geradoras de hidrocarbonetos, reservatórios e rochas selantes são computadas tipicamente, utilizando um histórico dos fluxos de calor, as temperaturas de superfície e os transportes de calor por condução e convecção. Da reconstrução da história dos campos de temperatura, modelos cinéticos são utilizados para simular a geração de componentes de óleo e gás durante o tempo geológico.
+A migração primária de hidrocarbonetos é modelada como sendo o fluxo que sai da rocha-fonte e migra até o mais próximo meio com permeabilidade suficiente para ser considerado um sistema condutor efetivo (Figura 1.1), chamado de carrier
+rock ou rocha condutora, utilizando as equações para meios porosos de Darcy, Juanes (2003). A migração secundária, que ocorre dentro do sistema de rochas condutoras até o local de armazenamento dos hidrocarbonetos, pode também ser modelada utilizando as equações de Darcy ou os métodos de percolação ou ray tracing.
+Figura 1.1 - Bacia sedimentar hipotética. Migração primária e secundária.
+A migração primária de hidrocarbonetos em sequências de argilitos é frequentemente um processo muito eficiente, com uma perda relativa pequena de hidrocarbonetos. As perdas que acontecem devem-se à retenção de hidrocarbonetos no meio poroso (saturação irredutível). Observações do campo de saturações em rochas do tipo folhelho (argila consolidada também chamada de shale) onde hidrocarbonetos partindo da rocha geradora migraram até atingir uma rocha capeadora (rocha que impede a continuidade da migração e delimita um reservatório) mostram valores baixos de saturação de hidrocarbonetos, exceto nas regiões muito próximas à rocha geradora (MACKENZIE et al., 1987). Muitos autores têm estudado os efeitos da migração primária utilizando métodos geoquímicos. Leythaeuser, et al. (1982) e Kroos, et al. (1993) investigaram a difusão molecular como um processo de migração primária, mas o escoamento governado pelas equações de Darcy é o processo mais difundido para representar esta migração. O escoamento de Darcy para hidrocarbonetos em shales compactos irá ocorrer a baixas taxas de migração, porque estas rochas possuem permeabilidades muito
+baixas. Medições em laboratório mostraram permeabilidades da ordem de nanoDarcy (1D = 10-12 m2) (INGRAM et al., 1997).
+A migração secundária é o escoamento de hidrocarbonetos dentro de sistemas condutores permeáveis e dentro das trapas (Figura 1.2). Ocorre em um sistema mais favorável ao escoamento do que para a migração primária (Schowalter, 1979). As condições do escoamento são mais parecidas com as que ocorrem em campos de petróleo durante a fase da produção por causa da boa permeabilidade dos diversos sistemas condutores. Frequentemente, os sistemas condutores são constituídos do mesmo tipo de rocha dos campos de produção, ou trapas, assim é possível analisar as propriedades das rochas através de experimentos em laboratório.
+Por causa da alta permeabilidade envolvida no processo, a migração secundária pode ser estudada em laboratório através de experimentos. Dembicki e Andersen (1989) publicaram um experimento onde o petróleo foi injetado em um cilindro vertical de areia. O escoamento resultante foi observado através de cortes na areia depois de completo o experimento/ensaio. Foi observado que o escoamento ocorreu dentro de um único filete, com apenas alguns mm de espessura e a saturação muito alta dentro deste filete, embora nenhuma estimativa quantitativa tenha sido feita.
+Selle et al. (1993) mediu a migração de óleo dentro de um núcleo de 60 cm de comprimento com uma inclinação de 5°. A saturação de óleo foi medida durante o experimento, utilizando uma metodologia com raios gama. Eles observaram que a migração ocorreu a relativamente baixas saturações de hidrocarbonetos (entre 10 a 20%), e, para uma amostra com alta permeabilidade, o escoamento ocorreu concentrado na região superior do núcleo.
+Para uma amostra com baixa permeabilidade, o escoamento ocorreu sobre todo o núcleo com saturações de hidrocarbonetos consistentes com o modelo de escoamento bifásico de Darcy. A partir destas experiências e análises de testemunhos, constatou-se que as velocidades de migração secundária podem exceder 1000 km/Ma em bacias sedimentares, até 100 vezes mais que as velocidades encontradas para a migração primária. A migração concentrada e as saturações não tão altas dentro dos caminhos resultam em perdas muito pequenas durante este processo de migração secundária.
+Figura 1.2 - Migração secundária.
+Migrações secundárias eficientes são possíveis para longas distâncias, e alguns campos de petróleo podem ter sido originados por “cozinhas” que se localizam a mais de 1000 km das rochas capeadoras (trapas) (SYLTA et al., 1998). Isto é possível se o sistema condutor for contínuo, o ângulo de inclinação pequeno e se não houver distúrbios que façam os caminhos da migração ser interceptados por vazamentos verticais para a superfície.
+Frette et al. (1992) realizou experimentos de migração lenta devido ao empuxo, de uma fase não-molhante em um meio 3D e utilizou um algoritmo modificado de invasão por percolação para ajudar a explicar o processo como quasi-estático na escala de poro. Carruthers e Ringrose (1998) sugeriram que a invasão por percolação poderia ser utilizada para descrever a migração secundária na escala de bacias porque as taxas de alimentação vindas da rocha geradora são muito baixas e a migração irá ocorrer com saturações de hidrocarbonetos aproximadamente na faixa de percolação.
+O método numérico empregado neste trabalho, no processo de compactação da bacia sedimentar com escoamento monofásico de água, é o EbFVM (Element-based Finite Volume Method (MALISKA, 2004; CORDAZZO, 2006; HURTADO, 2005).
+Os simuladores mais completos, aqueles que no processo utilizam as equações de Darcy em todos os níveis, tomarão dias para realizar simulações de bacias 3D com todos os processos acima mencionados. Os parâmetros existentes precisam quase sempre ser calibrados através de repetidas simulações a fim de encontrar bons resultados comparados aos dados observados.
+Os algoritmos usados têm que ser suficientemente rápidos para permitir múltiplas simulações em horas ou dias. Isto é crítico para permitir avaliações de risco de prospecção precisas e rápidas durante os curtos tempos de decisões permitidos para os trabalhos de exploração.
+Existem diversas possibilidades de aproximações que podem ser utilizadas para modificar os métodos de modelagem clássicos de bacias. Uma maneira seria utilizar soluções híbridas para a migração de hidrocarbonetos dentro do sistema portador. Sistemas híbridos, como os descritor por Hantschel, et al. (2003) podem usar técnicas de ray tracing ou percolação para descrever a migração dentro do sistema condutor, enquanto que o método clássico de Darcy poderia lidar com o sistema geológico restante.
+Na área de simulação de reservatórios, o método EbFVM é pouco utilizado e quase nada se encontra sobre publicações a respeito de sua aplicação para malhas não- estruturadas para simulação de bacias sedimentares. Ainda, é praticamente inexistente literatura sobre o método de migração usando ray tracing aplicado em domínios representados por malha não-estruturadas, o que mostra o pioneirismo deste trabalho.
+O método FLOWPATH utiliza o modelo ray tracing para descrever o processo de migração de hidrocarbonetos na bacia sedimentar (SYLTA, 2004). O ray tracing é usado em muitas aplicações técnicas e científicas como meio de simular os efeitos de algum tipo de movimento. Isto inclui desde modelos sísmicos até o processo de renderização de objetos tridimensionais.
+Figura 1.3 - Imagem criada a partir do Método Ray Tracing.
+No caso de simulação de bacias, o método é aplicado em uma estreita região (camada de alta permeabilidade condutora de hidrocarbonetos) logo abaixo de uma camada pouco permeável (rocha capeadora). Linhas de fluxo são traçadas através dos maiores gradientes de inclinação da camada condutora, construindo um mapa (Figura 1.4) de possíveis caminhos que o petróleo poderá migrar.
+* possible spill path ---------alternative spill path (see text) maximum closure
+Figura 1.4 - Perspectiva de uma bacia de domos contemplando detalhes da aplicação
+do método FLOWPATH como as áreas delimitadas pelos prováveis reservatórios e
+suas linhas de comunicação.
+Resumindo, a simulação do problema da migração de hidrocarbonetos em bacias sedimentares pode ser resolvida através da solução do sistema de equações para um escoamento multifásico acoplado ao sistema de equações para a compactação de acordo com a evolução da bacia, porém esse procedimento torna o problema muito complexo, podendo ocorrer divergência no resultado devido à dificuldade no acoplamento entre dois fenômenos de naturezas distintas (escoamento multifásico e compactação) com passos de tempo muito diferenciados, e levar a custos computacionais muito elevados.
+Este trabalho vem propor um modelo de simulador de bacias que poderá resolver o problema da compactação através de duas opções, uma baseada apenas no campo de pressões decorrentes da solução de um escoamento monofásico (água) e outra utilizando diretamente a pressão hidrostática. Após a solução da compactação para uma determinada era geológica, um método novo criado neste trabalho, denominado FlowTrace, inspirado no FLOWPATH e nos achados de Sylta (2004), será 30
+aplicado utilizando informações obtidas do domínio já compactado para determinar a localização dos reservatórios e calcular o acúmulo de hidrocarbonetos, seguindo este ciclo de compactação e solução da migração até completar a evolução da bacia para o presente momento. Dessa forma, será acelerada a obtenção de resultados. A validade deste modelo será analisada no decorrer deste trabalho.
+1.4	ORGANIZAÇÃO DO TRABALHO
+Esta dissertação está dividida em seis capítulos, e o primeiro apresenta uma breve introdução sobre o processo de simulação numérica em bacias sedimentares assim como os objetivos e motivações que levaram à confecção deste estudo.
+O capítulo 2 trata dos detalhes da formulação física e matemática do problema. De uma forma intuitiva, primeiramente será abordada a formulação física dos processos envolvidos na compactação e na migração do petróleo, em seguida será descrita a forma matemática utilizada para representar estes fenômenos.
+O capítulo 3 apresenta o método FlowTrace e demonstra como este foi adaptado para uma malha não-estruturada, e quais as vantagens e desvantagens desta adaptação.
+O capítulo 4 traz, de uma forma resumida, através de fluxogramas, a implementação computacional de um simulador de bacias sedimentares que utiliza a metodologia apresentada nos capítulos 2 e 3.
+O capítulo 5 mostra diversos resultados obtidos com o simulador desenvolvido. Primeiramente, são apresentados os resultados para validar o novo modelo de compactação utilizado, depois o software desenvolvido neste trabalho é comparado com um software comercial para validar o modelo FlowTrace implementado para caracterizar a migração secundária. Por último, será apresentada uma discussão sobre a importância do refino da malha e como isto afeta a representação das propriedades de uma bacia.
+Finalmente, o capítulo 6 conclui este trabalho, reunindo as vantagens e desvantagens dos métodos propostos e ainda apresenta sugestões para trabalhos futuros.
+CAPÍTULO II
+2 FORMULAÇÃO DO PROBLEMA
+Este capítulo apresentará primeiramente uma breve descrição do fenômeno físico do processo de formação de bacias sedimentares e da migração de hidrocarbonetos. Em seguida serão apresentados os modelos matemáticos que representam os processos físicos da compactação de sedimentos, do escoamento de água no interior do meio poroso compactado e, por último, as equações que modelam a formação de reservatórios advindos da migração secundária.
+2.1	FENÔMENO FÍSICO
+A formação e a evolução de uma bacia sedimentar envolvem processos muito complexos. Estes processos abrangem a decomposição de materiais orgânicos, a sua evolução térmica, a compactação desses sedimentos pela adição de camadas sedimentares, o aumento da pressão e temperatura que culmina na geração de hidrocarbonetos, o escoamento de água e a migração de hidrocarbonetos através do meio poroso então formado.
+2.1.1	Formação de Bacias
+Uma bacia sedimentar é normalmente definida como sendo uma depressão na superfície terrestre onde é possível, ao longo de milhões de anos, acumular sedimentos em sucessivas camadas que, posteriormente, irão formar rochas sedimentares. A formação inicial da depressão é consequência das forças provenientes do interior da terra, chamados esforços tectônicos. A Figura 2.1 traz um exemplo da evolução de uma bacia sedimentar hipotética.
+Figura 2.1 - Fenômenos que podem ocorrer durante a formação de uma bacia sedimentar hipotética. 1 - (120 Ma) Erosão; 2 - (100 Ma) Chuvas formaram um vasto rio; 3 - (75 Ma) Longo período de secas resultando em mais erosão; 4 - (60 Ma) Crescimento de vegetação tropical; 5 - (50 Ma) Erupção vulcânica e soterramento de sedimentos; 6 - (40 Ma) Crescimento de Florestas; 7 - (20 Ma) Era do gelo; 8 - Período atual, solo com hidrocarbonetos formados e acumulados ao longo dos períodos anteriores.
+O preenchimento por sedimentos durante a evolução geológica varia de acordo com os diversos tipos de ambientes que se sucedem como rios, lagos, praias, mar raso ou profundo, delta de rios etc. À medida que os sedimentos são depositados nas depressões no fundo do mar, os sedimentos previamente depositados compactam-se cada vez mais devido ao aumento da carga sedimentar sobre eles, assim diminuindo o espaço interno dos poros. Com a diminuição consecutiva da porosidade, a água existente dentro dos poros é expulsa, formando um escoamento monofásico (água) no meio poroso.
+Para que ocorra a formação do petróleo é necessária a deposição e preservação de matéria orgânica nas bacias sedimentares (principalmente restos de plantas e animais marinhos). Essa matéria orgânica terá, então, que passar por um processo chamado maturação, espécie de cozimento para que possa se transformar em petróleo. Esse processo tem que ocorrer em condições especiais de temperatura, pressão e tempo geológico (milhões de anos). A rocha rica em matéria orgânica que forma o petróleo é chamada de rocha geradora.
+Após sua geração, é necessário que o óleo migre e seja armazenado em outras rochas chamadas de rochas reservatórios. As rochas reservatórios são recobertas por uma camada de rocha impermeável (baixa permeabilidade) ou uma estrutura geológica de forma a reter a acumulação. Então, com a geração do petróleo, o escoamento no meio poroso que era anteriormente monofásico (água apenas) passa a ser multifásico (água-óleo-gás).
+O processo de migração pode ser dividido, portanto, em três etapas:
+•	Migração Primária: O petróleo gerado migra através de meios porosos de baixa permeabilidade até encontrar a rocha condutora (camada sedimentar de alta permeabilidade). Esta migração é a mais lenta, 0,1 a 10 km/Ma (quilômetros por milhões de anos), quando comparada às outras duas;
+•	Migração Secundária: Escoamento dentro das rochas condutoras em uma estreita camada logo abaixo de uma região de baixa permeabilidade. Essas rochas condutoras geralmente possuem as mesmas propriedades das rochas reservatórios. O petróleo migra a altas velocidades (1000 km/Ma), devido ao empuxo, até chegar ao arcabouço, onde formará o reservatório;
+•	Migração Terciária: O petróleo começa a vazar do arcabouço devido a condições de pressão impostas pelo acúmulo de hidrocarbonetos. Migração e Acumulação de Hidrocarbonetos.
+2.1.2	Migração e Acumulação de Hidrocarbonetos
+A crosta terrestre vem se modificando ao longo das eras geológicas (Pré-cambriano - cerca de 4.650 a 700 Ma, Paleozóico - cerca de 570 a 280 Ma, Mesozóico - cerca de 225 a 136 Ma, Cenozóico - cerca de 65 a 10 Ma). Como resultado desses deslocamentos, oceanos inteiros desapareceram, ao mesmo tempo em que novos foram surgindo, antigos fundos submarinos vieram à superfície, enquanto certas regiões continentais foram invadidas pelos mares. Em decorrência dessa incessante evolução, os sedimentos depositados sobre o fundo dos mares, oceanos e lagos, sob a forma de enormes grupos de estratos (camadas constituídas de diferentes tipos de rochas sedimentares) dispostos quase horizontalmente uns sobre os outros, podem, sob o efeito das forças tectônicas, deformar-se, originando dobras com formas variadas (anticlinais, sinclinais, entre outras) e falhas de diferentes tipos, como normais, inversas.
+As rochas sedimentares portadoras de hidrocarbonetos e água, ao sofrerem as modificações mecânicas (dobras, falhas e fraturas), fazem com que as partículas de hidrocarbonetos, sendo mais leves que a água, tendam a deslocar-se para cima ou para os lados (migração) e a acumular-se na parte superior da rocha.
+Os hidrocarbonetos, uma vez formados na rocha geradora, normalmente migram para as rochas porosas e permeáveis, do tipo grés (areias consolidadas, sandstone) e calcários, chamadas rochas reservatórios quando enquadradas por rochas impermeáveis, do tipo sal-gema e argilitos (argilas consolidadas) que impedem a migração, denominadas de rochas capeadoras (de cobertura). Este conjunto reservatório-cobertura é conhecido por armadilha ou trapa, no qual se encontram o petróleo e o gás. No caso dos hidrocarbonetos serem compostos por gás e petróleo, o gás, menos denso, encontra-se na parte superior do reservatório, com o petróleo na inferior por ser mais denso.
+Os reservatórios são constituídos por rochas que apresentam vazios, poros e fissuras interligadas e onde podem circular os hidrocarbonetos e a água. As suas características petrofísicas são expressas basicamente pela porosidade e pela permeabilidade, cujas relações são muitas vezes complexas.
+As rochas-reservatório dividem-se em duas grandes famílias, os reservatórios detríticos, na sua grande maioria siliciosos (areias e grés), e os reservatórios carbonatados, calcários e dolomias. Se as camadas sedimentares que cobrem a rocha reservatório, isto é, onde estão contidos os hidrocarbonetos, não forem impermeáveis (argilitos), os hidrocarbonetos ascendem à superfície da crosta terrestre, oxidam-se e dispersam-se. Porém, este caso é pouco frequente. O mais comum é existir, no subsolo, uma sobreposição de camadas porosas e permeáveis (grés ou arenitos, calcários e dolomias) e de camadas impermeáveis (argilas, argilitos e margas).
+Como o movimento dos fluidos subterrâneos só é possível ao longo das camadas permeáveis, os hidrocarbonetos acumulam-se nas zonas "altas" das rochas porosas cobertas por rochas impermeáveis (rochas capeadoras). Neste caso, diz-se que se está perante “armadilhas petrolíferas”, que compreendem vários tipos.
+Uma armadilha petrolífera é, geralmente, constituída por uma rocha porosa recoberta por uma rocha impermeável: a superfície que separa as duas rochas deve ter, no seu conjunto, uma forma convexa para a parte superior. Sempre que uma armadilha fica preenchida por hidrocarbonetos, passa-se a chamá-la de jazigo petrolífero ou jazida petrolífera.
+Figura 2.2 - Bloco-diagrama mostrando um tipo de armadilha estratigráfica.
+GàS
+Figura 2.3 - Bloco-diagrama mostrando um tipo de armadilha estrutural. As rochas estão dobradas em anticlinal pelo efeito das forças de compressão horizontais.
+A avaliação da migração de hidrocarbonetos se baseia fortemente em técnicas geoquímicas orgânicas. Medições em laboratório de materiais extraídos de rochas geradoras e amostras de reservatórios de petróleo e gás têm permitido a criação de um ou mais cenários que podem explicar acumulações existentes e também fazer previsões sobre futuras possibilidades de perfurações. Essas técnicas são complementadas por aproximações mais quantitativas utilizando simuladores de escoamento de fluidos em meios porosos combinados com mapeamento das bacias sedimentares com alta resolução, advindos de técnicas mais avançadas de varreduras sísmicas do solo. Entretanto, o sucesso dessas técnicas irá depender de uma adequada descrição quantitativa do processo de migração de hidrocarbonetos.
+2.1.2.1	Empuxo e Hidrodinâmica
+Os processos mais importantes que influenciam a migração de hidrocarbonetos são o empuxo e a hidrodinâmica (Hubbert, 1953). Condições hidrodinâmicas em uma bacia sedimentar estão associadas com sobrepressões e barreiras. O processo de difusão pode também influenciar a migração em algumas composições geológicas. Expandindo o conceito, as condições da fase dos hidrocarbonetos e o processo térmico também influenciam na migração, mais no tipo 37
+de hidrocarbonetos que se pode encontrar nos reservatórios hoje em dia do que na direção da migração. Enquanto a temperatura é o fator mais importante no processo de geração, a pressão é, definitivamente, a grandeza física mais importante para o de migração.
+O empuxo influencia a migração de hidrocarbonetos porque a água é mais pesada que o óleo e o gás em condições abaixo da superfície. Somente em casos extremamente raros o óleo pode se tornar denso como a água. O empuxo é muito importante para a migração secundária, para o confinamento de petróleo em “armadilhas” e para o vazamento de petróleo para fora das armadilhas (migração terciária). Existe sempre uma componente significativa apontando para cima na direção da migração para estes processos. As taxas de migração são altas para a segunda migração, enquanto que taxas de migração mais lentas são mais normais durante as migrações primárias e terciárias. As distâncias de migração são geralmente menores para as migrações primárias e terciárias do que para a migração secundária na maioria das bacias.
+A hidrodinâmica exerce um importante controle na migração de hidrocarbonetos em diversos aspectos. Durante a formação de uma bacia, com o soterramento, os sedimentos e as falhas tornam-se gradativamente menos permeáveis devido ao processo de compactação química e mecânica. Falhas irão frequentemente começar a atuar como barreiras com o aumento da profundidade do soterramento.
+Quando a permeabilidade de rochas de granulação fina (argilitos, como folhelho, por exemplo) torna-se muito baixa durante a compactação, a água não consegue mais escapar de uma forma rápida o suficiente dessas formações de baixa permeabilidade e, como resultado, a compactação é reduzida e uma maior parte da carga sedimentar é transmitida dos grãos para o líquido intersticial. Este aumento de carga na fase água faz com que a pressão aumente na escala de poro, resultando na sobrepressão. A sobrepressão será gradualmente reduzida se a taxa de sedimentação diminuir suficientemente, ou um período de não-deposição ocorrer.
+2.1.2.2	Migração Secundária
+Experimentos conduzidos por Selle et al. (1993) mostram o padrão do escoamento em meios porosos pouco permeáveis (66 mD) e em meios de alta permeabilidade (2.26 D). A Tabela 2.1 mostra os dados dos materiais utilizados na simulação assim como o valor da vazão. O experimento (Figura 2.4, Figura 2.5 e Tabela 2.1) consiste de uma amostra porosa com dimensões 5x5x60 cm (altura, espessura e comprimento respectivamente), inclinada de 7.5 graus, inclinação normalmente encontrada em camadas formadoras de bacias, em cuja base inferior foi injetado óleo (dodecaeno) e mantida aberta a outra extremidade do experimento. Como condição inicial, o meio é previamente saturado com água salobra. A visualização do escoamento de dodecaeno foi realizada através da emissão de raios gama.
+Para o meio de alta permeabilidade, verificou-se a formação de uma região concentrada de hidrocarboneto, menor que 1 cm, que migra acompanhando a parte superior do experimento (ver figura do experimento).
+Figura 2.4 - Esquema do experimento realizado por Selle et al. (1993).
+Tabela 2.1 - Dados utilizados no experimento por Selle et al. (1993) e na simulação numérica.
+Tipo de Rocha	Dimensões	Porosidade	Volume de Poro	Permeabilidade
+Bentheimer	L= 60 cm H= 5 cm W= 5 cm	22.6%	345 cmA3	2.26 D
+Berea	L= 60 cm H= 5 cm W= 5 cm	18.4%	274 cmA3	0.066 D
+Figura 2.5 - Curvas de pressão capilar em função da saturação de água dos materiais utilizados nos experimentos de Selle eta/.(1993). Figura extraída de Sylta etal. (2004).
+Entretanto, para o experimento com o meio poroso de baixa permeabilidade, a distribuição da saturação de dodecaeno ocorreu quase uniformemente por todo esse meio. Através desse experimento, Sylta et al. (2004) deduziu equações para a formação da coluna de migração de hidrocarbonetos em meios porosos de alta permeabilidade (carrier rocks), tendo como força motriz somente o empuxo e
+desprezando o efeito da pressão capilar.
+Figura 2.6 - Resultado dos experimentos realizados por Selle et al. (1993). Meio poroso de baixa permeabilidade depois de 330 h (imagem central) e 660 h (imagem superior). Na parte inferior, meio poroso de alta permeabilidade após 330 h (Figura retirada de Sylta 2004).
+Os experimentos de Selle et al. (1993) foram repetidos neste trabalho através da simulação numérica utilizando o software comercial CFX 10.0. Os resultados podem ser vistos na Figura 2.7. O fluido metanol teve as suas propriedades modificadas para que pudesse representar o escoamento de dodecaeno.
+Figura 2.7 - Resultado da simulação utilizando software comercial. A esquerda meio poroso com alta permeabilidade (2.26 D) após 330h e à direita amostra com baixa
+permeabilidade (0.066 D) após 660h.
+2.2	MODELO MATEMÁTICO
+2.2.1	Compactação
+Nesta seção, será apresentado o conceito de porosidade e permeabilidade, duas propriedades físicas importantes para a caracterização de um meio poroso, e o equacionamento de todos os processos físicos que foram implementados no simulador de bacias SiBa 2008, como o processo de compactação, escoamento monofásico, cálculo da carga sedimentar, porosidade, pressão capilar, tensão efetiva e o dimensionamento dos reservatórios pelo método FlowTrace.
+2.2.1.1	Porosidade
+Porosidade (representada pela letra grega Eq.(2.1)) é fração de vazio de um meio sólido determinada pela razão entre o volume de vazios (Vv) e a soma do volume vazio mais o volume do sólido, isto é, volume total (Vt). É a porosidade que determinará o quanto um determinado reservatório poderá armazenar.
+4 = —
+Vt
+(2.1)
+A Figura 2.8 ilustra dois importantes tipos de rochas sedimentares encontradas em bacias brasileiras. As áreas em azul representam os poros -espaços vazios entre os grãos de minerais que são preenchidos por petróleo e água.
+Figura 2.8 - Fotografias de estruturas porosas de duas rochas sedimentares denominadas arenito (esquerda) e calcarenito (direita), vistas em microscópio (retirado de Schubert, 2006).
+A porosidade de uma dada litologia pode ser avaliada de forma direta ou indireta. A forma direta dá-se através de amostras de solo retiradas durante o processo de exploração, também conhecidas como testemunhos. Já a forma indireta é realizada através de perfis elétricos.
+A forma na qual a porosidade varia de acordo com a profundidade é determinada através da lei de Athy (1930), definida por
+t =	(2.2)
+onde e k são parâmetros referentes ao material e z a coordenada na direção vertical com a origem na superfície superior da bacia. A Figura 2.9 mostra as curvas dos materiais utilizados para as simulações mostradas no Capítulo 5 deste trabalho.
+Figura 2.9 - Curva da Variação da Porosidade com a profundidade. As densidades dos materiais Sandstone, Shale e Limestone são respectivamente: 2660 kg/m3, 2680 kg/m3 e 2710 kg/m3. Curva em vermelho sobrepõe a curva de losangos azuis escuros mostrando a similaridade entre curvas do software PETROMOD e SiBa 2008.
+A variação da porosidade é classificada da seguinte forma: insignificante (05%), pobre (5-10%), regular (10-15%), boa (15-20%), ou muito boa (&gt;20%).
+2.2.1.2	Permeabilidade (Log (mD))
+A facilidade como que o fluido escoa em um meio poroso é função do tensor
+permeabilidade absoluta k . Ela é medida diretamente em testemunhos e seu valor é
+dado em função da porosidade do meio.
+Devido à complexidade do fenômeno de compactação, a permeabilidade em uma rocha sedimentar geralmente apresenta valores distintos para diferentes orientações da rocha, sendo normalmente maior na direção horizontal. Em
+consequência, o tensor permeabilidade absoluta pode ser dado, em duas dimensões, por
+[k ] =
+kh
+0
+kv
+(2.3)
+0
+sendo kv a permeabilidade absoluta na direção vertical (função logarítmica da porosidade dada pela Eq. (2.4)) ek. a permeabilidade absoluta na direção horizontal (Eq. (2.5)).
+kv = 10 ' B
+kh = rkkv
+(2.4)
+(2.5)
+onde A e B são constantes que dependem do meio poroso e rk é uma razão entre as permeabilidades nas duas direções considerada constante.
+A permeabilidade é dada na unidade de Darcy (1 Darcy é equivalente a 9.869233*10"13 m2). Representar esta propriedade física na unidade de m2 torna muito difícil o seu pós-processamento, pois a sua magnitude pode variar, por exemplo, de 1E-15m2 até 1E-10m2. Neste trabalho, a permeabilidade será dada em Log. (mD), forma que permite captar pequenas variações da permeabilidade (variando, por exemplo, de -5 a +5) e torna mais fácil a percepção física desta propriedade (Figura 2.10).
+Figura 2.10 - Figura exemplifica a visualização da permeabilidade na unidade de Log.(mD).
+A Figura 2.11 apresenta curvas da variação da permeabilidade com a porosidade para os materiais utilizados nas simulações do Capítulo 5. Apenas o material Sandstone não obedece à equação (2.4), tendo a sua curva sido obtida a partir dos pontos utilizados pelo software PETROMOD.
+Figura 2.11 - Variação da permeabilidade com a porosidade e equações utilizadas para reproduzir curvas do software PETROMOD.
+2.2.1.3	Pressão Capilar advinda da Porosidade
+O fenômeno da capilaridade que ocorre no interior dos meios porosos que constituem os reservatórios de petróleo deve-se ao fato de que as jazidas petrolíferas, em geral, contêm dois ou mais fluidos imiscíveis. Por exemplo, nos reservatórios de óleo encontram-se em contato pelo menos dois fluidos imiscíveis, água e óleo. Nos reservatórios de gás, estão em contato a água e o gás natural.
+Dois ou mais fluidos são considerados miscíveis entre si quando, misturados em quaisquer proporções, formam uma mistura homogênea. A miscibilidade entre dois ou mais fluidos depende das suas composições e das condições de pressão e temperatura às quais se encontra o sistema submetido.
+A equação para a pressão capilar de um fluido qualquer é dada por
+P
+c
+IFT
+2nr ■ cos 0
+(2.6)
+onde IFT é a tensão interfacial entre os fluidos, r o raio do capilar e 0 o ângulo de contato formado entre a fase molhante e a não-molhante.
+As curvas de pressão capilar normalmente são obtidas em laboratório, a partir de experimentos realizados com pequenas amostras de testemunhos. Usando-se dados de pressão e de saturação medidos no campo, ou seja, nos poços, também é possível traçar curvas de pressão capilar para um dado reservatório.
+A pressão capilar costuma ser calculada a partir do campo de saturações, mas, para este trabalho, como não será resolvido nenhum campo de saturações, o campo de pressões capilares será obtido através da porosidade pela equação:
+PcHg = a *$ + b	(2.7)
+onde a e b são constantes obtidas através de experimentos em laboratório.
+A conversão dos dados de laboratório para o campo é necessária porque os fluidos utilizados nas experiências de laboratório diferem em suas propriedades físicas dos fluidos encontrados nos reservatórios. A Eq. 2.8 fornece a pressão capilar para o sistema de referência Mercúrio-Ar. A conversão deste sistema de referência para o sistema Petróleo-Água é realizada através de
+pPet = pHg IFTPe • cos£Pet
+P P	IFTHg • cos 0Hg
+(2.8)
+onde iFTPet significa a tensão interfacial do sistema Petróleo-Água, iFTHg a tensão interfacial do sistema Mercúrio-Ar, 0Pet e 0Hg os ângulos de contato referentes aos sistemas Petróleo-Água e Mercúrio-Ar, respectivamente.
+2.2.1.4	Equação da compactação
+O processo geológico de deposição de sedimentos é contínuo e lento, podendo levar milhões de anos. A deposição é contínua ao longo do tempo, mas, para ser possível realizar as simulações, os modelos são simplificados, e considerase que os sedimentos são depositados em camadas, isto é, discretamente, como observado na Figura 2.12 (CHEN etal., 2002; SCHNEIDER, 2003).
+Figura 2.12 - Esquema da deposição e compactação de sedimentos no tempo de uma bacia sedimentar hipotética.
+O fenômeno da compactação é regido pela equação da conservação da massa para o sólido, deduzida a partir do balanço em um volume de controle onde o sólido poroso se move com velocidade definida por:
+m sx
+Vsx	PsAy(i
+sx
+Vsy	PsAx(1 -&lt;f&gt;}
+(2.9)
+(2.10)
+onde Vsx representa a velocidade do sólido na direção x e V a velocidade na
+direção y.
+m sy
+Figura 2.13 - Balanço de massa em um volume de controle para um meio poroso
+(retirada de Schubert 2006).
+Através do balanço de massa (Eq.(2.11)) em um volume de controle, representado pela Figura 2.13
+m -msx . + m -m =—(1 -fij&amp;amp;xAy	(2.11)
+sxlx sxlx+Ax syly syly+Ay \f	T	'
+combinado com as equações (2.9) e (2.10) tem-se,
+(1 - ^)PVsx Ay|x - (1 - ^)PVsx Ay|x+Ax + (1 - ^)PVsy Ax|y -(1 - ^)PVsy Ax||y+Ay
+(2.12)
+rearranjando a equação (2.12) e aplicando o limite:
+lim(1 ~^&gt;pV^ - (1 ~^)PVsxL+Ax
+Ax^O
+Ax
+(1 ~^)pVy\ - (1 ~fòpVsy |	Ap
++ lim---------™ = lim Ap (1 - 0)
+Ay &gt;o	Ay	At^O At
+Ay
+(2.13)
+chega-se em,
+d(1 -^)pV„ + d(1 -fipV, + dp(1 -0
+dx	dy	dt
+= 0
+(2.14)
+Aplicando-se o conceito do divergente, pode-se reescrever a equação (2.14), obtendo-se a equação da conservação da massa para sólidos, dada pela equação (2.15).
+o
+^^((1 -0p,) + V.((1 -0)p,V) = 0	(2.15)
+sendo ps a densidade do sólido e Vs o vetor velocidade do sólido.
+Buscando um modelo simplificado, assume-se que os grãos são incompressíveis (ps constante). Isto pode ser considerado pelo fato de que a compressibilidade nos poros é muito maior que a compressibilidade dos grãos sedimentares. Finalmente, assume-se que a compactação será 1D, isto é, apenas na direção do eixo cartesiano z. A equação (2.15) toma a seguinte forma, utilizada neste trabalho:
+o
+—(1 -0 + V.((1 -0)V’,) = 0	(2.16)
+Toda a teoria sobre a compactação monofásica e a forma como ela está implementada no software SiBa 2007 podem ser encontradas em Schubert (2006).
+2.2.1.5	Tensão efetiva e carga sedimentar
+Outra simplificação adotada no processo de compactação é a consideração de que esta acontece apenas na direção vertical. Decorrente disso, somente a tensão efetiva média é necessária para o cálculo da compactação, não sendo necessário estimar o campo total de tensões nos sedimentos.
+A tensão efetiva (°-.) está relacionada à tensão média da carga sedimentar (S) e à pressão do fluido no meio poroso (pf) pela equação (2.17).
+°e = S - Pf	(2.17)
+A carga sedimentar é calculada através de uma integral, levando em consideração a carga hidrostática da coluna de água e a carga referente ao peso dos sedimentos, por
+S = ÍZ (P + 0 -^)Ps)êdz	(2.18)
+2.2.1.6	Relação da porosidade com a tensão efetiva
+Não existe uma relação direta entre a variação da porosidade e a tensão efetiva &amp;amp;e. Neste trabalho, a porosidade é avaliada em função da tensão efetiva (TERZAGHI, 1923) através de tabelas que relacionam as tensões efetivas e as suas respectivas porosidades para cada material existente no domínio de simulação.
+As porosidades são calculadas para cada profundidade através da lei de Athy (ATHY, 1930), definida pela Eq. (2.2). De posse dessas porosidades, são, então, calculadas as cargas sedimentares através da Eq. (2.18). Depois, pela Eq. (2.17), são obtidas as tensões efetivas que compõem as tabelas porosidade-tensão efetiva de cada material.
+2.2.1.7	Equação do escoamento monofásico
+O problema do escoamento de um fluido através de meios porosos é governado pelas equações da continuidade e da conservação da quantidade de movimento (JUANES, 2003), mostradas respectivamente a seguir:
+o
+(p	)-q=0
+o
+ã (¿f, ) + Vf	)-V.a = p,g
+(2.19)
+(2.20)
+onde Vf é a velocidade do fluido, q é a vazão mássica por unidade de volume e a é o tensor tensão.
+É importante ressaltar que, na Eq.(2.19), no caso em que a geração de hidrocarbonetos for considerada, a vazão mássica por unidade de volume q será positiva quando se tratar de fonte e negativa quando se tratar de sumidouro.
+Essas equações são definidas em escala microscópica e geralmente o que se faz em mecânica dos fluidos é trabalhar em escala macroscópica, ou seja, utilizase um valor médio das propriedades microscópicas de certa quantidade de substância contida em um determinado volume. Assim, segundo Helmig (1997), na transição da escala microscópica para a escala macroscópica, a equação do movimento toma a forma da lei de Darcy.
+Como neste trabalho o meio poroso é representado por uma bacia sedimentar e através dele o escoamento de fluido é lento (número de Re menor que 1), utiliza-se a equação de Darcy, generalizada para o caso de escoamento monofásico, em substituição à equação da quantidade de movimento. A equação de Darcy tem a seguinte forma:
+1
+(2.21)
+onde é a viscosidade dinâmica, kf é o tensor permeabilidade, pf é a pressão do fluido no interior do poro e z a coordenada vertical com eixo apontado no sentido de - g.
+É comum definir a grandeza escalar mobilidade como
+Pf
+(2.22)
+Considerando-se que, neste problema, o fluido só se move no meio poroso e o meio poroso só se move com a velocidade do sólido, a velocidade de Darcy, Eq. (2.21), relaciona-se com a velocidade do fluido através da expressão:
+U =&amp;lt;KVf - Vs)
+(2.23)
+cujas variáveis já foram definidas anteriormente.
+Assim, a forma geral da equação para o caso de escoamento monofásico através de meios porosos é obtida combinando a Eq. (2.23) com a equação da continuidade, Eq. (2.19). Desta forma, tem-se:
+o
+-	) + V-(^,fV, ) + V- f = 0
+(2.24)
+Introduzindo a Eq. (2.21) na Eq. (2.24), obtém-se:
+d(¿p,) +vP) - V •íPfk —(Ñp, - PfgÑz)! = 0
+(2.25)
+Esta é a equação que rege o escoamento de um fluido dentro de um meio poroso em movimento. O que se deseja por meio dela é o resultado do campo de pressões que servirá de dado de entrada para o cálculo da tensão efetiva na solução da compactação do meio poroso.
+1
+-¿Pf)-V Pfk—(Npf UI	—f
+(2.26)
+Aqui, mais uma simplificação é realizada, admitindo-se que o escoamento ocorre em um meio poroso que se desloca com a mesma velocidade da malha. Dessa forma, a velocidade do sólido, no segundo termo da Eq.(2.25), é igualada a zero, resultando na Eq. (2.26). Então, em virtude deste campo de pressões, a movimentação do meio é executada.
+2.2.2	Migração Secundária
+Como visto anteriormente, a migração secundária ocorre em um sistema condutor, constituído por materiais semelhantes aos encontrados em reservatórios e situados em finas camadas logo abaixo de uma litológica com permeabilidade baixa. Essas diferenças de permeabilidades, porosidades e pressões capilares serão as informações necessárias para estimar o volume armazenado nos reservatórios formados ao longo da bacia.
+2.2.2.1	Determinação da coluna de hidrocarbonetos (HC)
+A capacidade volumétrica máxima de petróleo que um reservatório pode armazenar está relacionada diretamente com a magnitude da altura da coluna de hidrocarbonetos que o material “impermeável” pode manter. Isto significa que a rocha capeadora poderá suportar uma dada pressão, na sua parte inferior, com a magnitude da pressão de uma coluna de hidrocarbonetos igual à diferença de pressão capilar entre a rocha capeadora e a rocha reservatório.
+Figura 2.14 - Esquema do cálculo da altura de hidrocarbonetos acumulada em um reservatório.
+A Figura 2.14 ilustra uma região de aprisionamento de hidrocarbonetos hipotética. Assumindo que o campo de pressões é essencialmente hidrostático, tem-
+se,
+PB = PA + g • p • h	(2.27)
+PD = Pc + g • ppt • h	(2.28)
+Deve-se notar, nesta figura, que, devido ao princípio dos vasos comunicantes, a seguinte igualdade é verdadeira:
+Pb = Pd	(2.29)
+Dessa forma:
+PA + g • p • h = Pc + g • ppet • h	(2.30)
+Imaginando que o que está mantendo o óleo em repouso é a diferença de pressão capilar entre as camadas, assume-se que a pressão no ponto A e no ponto C equivalem às pressões capilares do reservatório e da trapa, respectivamente,
+P _______P reservatório
+tj ___ jj trapa
+PC _ Pc
+(2.31)
+(2.32)
+Assim, a diferença entre PC e PA se iguala à diferença de pressão capilar
+Eq.(2.33).
+Pc - Pa
+(2.33)
+Manipulando a equação (2.30) combinada com a equação (2.33), obtém-se a equação que determina a altura máxima da coluna de hidrocarbonetos (h) que servirá de base para limitar o preenchimento máximo dos reservatórios e, dessa forma, a capacidade máxima de armazenamento do reservatório.
+^c
+h _
+g • (pw - ppe)
+(2.34)
+CAPÍTULO III
+3	MÉTODO NUMÉRICO
+Este capítulo apresenta o modelo FlowTrace. Não serão dados detalhes da metodologia numérica EbFVM e do processo de compactação, pois estes já estão descritos na dissertação de Schubert (2006). O foco deste capítulo será o método FlowTrace baseado em ray tracing aplicado para malhas não-estruturadas.
+3.1	REVISÃO DO MÉTODO EbFVM
+No método EbFVM, a discretização do domínio de solução pode ser realizado através de uma malha não-estruturada formada por elementos, triângulos e/ou quadriláteros para um domínio geométrico 2D, que cobrem completamente o domínio sem uma ordenação estabelecida e sem se sobrepor ou deixar espaços vazios.
+Os pontos onde serão calculados os valores das variáveis principais, os quais serão denominados de nós da malha, estão localizados nos vértices dos elementos (Figura 3.1). Os volumes de controles são construídos ao redor dos nós, unindo-se o centróide dos elementos com suas medianas (cell vertex). O volume de controle resultante é formado por porções (sub-volumes de controle - Svc) dos elementos da vizinhança.
+Como pode ser observado na Figura 3.1 o volume de controle total é formado pela união dos sub-volumes de controle dos elementos ao redor do nó P.
+Figura 3.1 - Apresentação das entidades utilizadas no EbFVM. Fonte: Schubert (2006).
+Na metodologia numérica desenvolvida Cordazzo (2006), usando EbFVM, as propriedades físicas são associadas aos elementos e não aos volumes de controle. Assim, já que os pontos de integração se encontram dentro de elementos, não há a necessidade de nenhum método de interpolação para o cálculo, por exemplo, da permeabilidade nesses pontos, pois a permeabilidade é considerada constante em cada elemento. Neste caso, todos os fluxos calculados nos pontos de integração podem ser determinados utilizando apenas os dados dos elementos onde a integração acontece. A utilização das propriedades definidas no volume de controle leva à necessidade de empregar o conceito da média harmônica para o cálculo dos fluxos nas fronteiras do volume de controle. Em mais do que uma dimensão, este requerimento dá origem aos métodos denominados MPFA -Multipoint Flux Approximation (AAVATSMARK, 2002).
+Outra peculiaridade deste método é a forma como os elementos são tratados. Todos os fluxos necessários para construir as equações aproximadas são calculados elemento por elemento. Em seguida, é realizado o balanço de todos os fluxos de cada ponto de integração pertencente a um volume de controle.
+Neste método é utilizado um sistema de coordenadas locais (n e £). Esse sistema local torna cada elemento um ente independente dos demais e, além disso, trata cada elemento da malha identicamente, não importando o quão distorcido ele se apresenta (Figura 3.2), o que torna sua implementação computacional mais simples e intuitiva.
+O plano físico possui um sistema de coordenada global e varia de acordo com o tamanho da bacia a ser simulada. Já o plano transformado para elementos triangulares possui um sistema de coordenadas locais que varia entre 0 e 1. Por definição, os nós no plano transformado devem ser numerados de 1 a 3 no sentido anti-horário, como na Figura 3.2 à direita.
+Figura 3.2 - Representação de elementos triangulares nos planos físico e transformado.
+Fonte: Schubert (2006).
+Entretanto, como as equações estão definidas com base nas coordenadas globais x e y, são necessárias relações matemáticas que façam a transformação para coordenadas locais. Esta transformação é realizada através das funções de forma, que, para elementos triangulares, é dada por
+(£,n) =1
+&lt;n2 (ç,n) = í	(3.1)
+_ N3 (%n) = n
+Utilizando as funções de forma, é possível expressar as coordenadas globais de um ponto qualquer no interior de um elemento através das seguintes relações de transformação:
+x (Z,n) = ^ N (Z,n) x
+,==	(3.2)
+y (Z,n) = X N (ç,n) y,
+,=1
+onde x, e y, são os valores das coordenadas globais dos vértices do elemento, seguindo a orientação local.
+As equações discretizadas são obtidas somando-se a contribuição de cada subvolume de controle (MALISKA, 2004).
+3.2	MODELO DE DESCOMPACTAÇÃO E SOTERRAMENTO
+O processo físico de deposição dos sedimentos é contínuo no tempo, o que o torna difícil de ser modelado desta forma em função do tempo de compactação que seria necessário. Por isso, a opção é pela introdução discreta de sedimentos, ou seja, considera-se que todo o sedimento de um tipo de material, gerando uma camada, foi introduzido de uma só vez num certo período de tempo, tornando o processo discreto no tempo.
+O modelo adotado neste trabalho considera que o estado atual da bacia sedimentar, ou seja, os sedimentos distribuídos nas diversas camadas do modelo geológico estão em equilíbrio hidrostático e compactados, onde cada camada foi introduzida em um dado período de tempo. Mas, como a compactação é um processo que ocorre gradualmente, a camada não pode ser inserida no estado de compactação em que se encontra hoje. Por este motivo, é necessário um procedimento de descompactação destas camadas.
+Assim, o início de um processo de simulação de bacias sedimentares começa com a descompactação das camadas. A partir da Eq. (2.15), pode-se determinar a espessura que esta camada teve no início do processo, levando-se em conta a conservação da massa do sólido.
+O processo de determinação da espessura da camada descompactada é baseado no conceito “backstripping”, onde o topo da camada é ajustado à batimetria (posição do fundo do mar em relação ao nível do mar) do período geológico
+correspondente e a espessura descompactada é determinada em função do tipo de deposição.
+A Figura 3.3 mostra um esquema de descompactação de múltiplas camadas utilizando o conceito “backstripping”. Como pode ser observado, ocorre o alívio da carga, pela retirada das camadas 2 e 3, sobre a primeira camada e, dependendo do método de descompactação utilizado, neste caso o totalmente expandido, a nova espessura da camada (expandida) é calculada. O processo é repetido nas camadas seguintes, ou seja, ocorre o alívio da carga sobre a camada 2 e ela é expandida e depositada sobre a camada 1, e assim por diante. Somente após a determinação da nova espessura a camada é inserida na batimetria da época, soterrando as camadas depositadas anteriormente.
+Figura 3.3 - Esquema de descompactação de múltiplas camadas baseada em “backstripping”. Fonte: Schubert (2006).
+Como o modelo de descompactação considera que o topo da camada mantém-se na batimetria do período, o trabalho de determinar a nova espessura resume-se em encontrar a nova posição de sua base, e, por consequência, dos nós no interior da geometria também. Para isso utiliza-se a equação da conservação da massa do sólido, já que foi assumido que os grãos de sedimentos são incompressíveis, resultando em um sistema linear que determina uma nova posição da coordenada z para cada nó.
+O soterramento das camadas pré-depositadas é realizado após ser determinada a nova posição de cada nó da camada que está sendo expandida. As
+camadas previamente depositadas são encaixadas uma a uma, sucessivamente, abaixo da descompactada, através de uma translação pura, porém, sem considerar a carga devido ao peso da última.
+O trabalho de Schubert (2006) detalha o procedimento computacional e matemático de descompactação e compactação, não sendo este o foco do presente estudo.
+3.3	FLOWTRACE
+O método FlowTrace desenvolvido neste trabalho, assim como o método FLOWPATH, utilizado pelo software comercial PETROMOD, foram baseados nos estudos de Sylta (2004).
+FLOWPATH, com o significado vindo do inglês “caminho do escoamento”, foi assim registrado pela empresa alemã IES GmbH por ser um método que busca descrever o caminho preferencial do escoamento de hidrocarbonetos através da camada condutora. Este caminho do escoamento tem como força motriz o empuxo e seguirá o gradiente de ascensão através de áreas de drenagens onde serão aprisionados em armadilhas potenciais ou escaparão para a superfície.
+Figura 3.4 - Modelo FLOWPATH 3D e 2D. Imagens extraídas do site da empresa IES
+GmbH - www.ies.de
+Este método foi desenvolvido como uma alternativa para agilizar o processo de localização de reservatórios e migração de hidrocarbonetos em bacias sedimentares, evitando acoplamentos complexos entre escoamento multifásico e compactação, e consegue resolver em alguns segundos o que um simulador utilizando as equações de Darcy para a mesma questão levaria horas ou dias.
+A casca formada pela interface entre a camada condutora e a camada selante (rocha capeadora) consiste na região de aplicação do método FLOWPATH. O software PETROMOD apresenta a opção de resolver a migração de hidrocarbonetos em uma bacia através dos métodos FLOWPATH (para toda a bacia), DARCY multifásico ou através de um método Híbrido (Figura 3.5) onde as equações de Darcy são utilizadas para representar o escoamento de hidrocarbonetos em meios de baixa permeabilidade (menores que 2 log (mD)) e a aplicação do FLOWPATH nos locais onde ocorrer a interface de uma camada condutora com uma camada capeadora.
+Figura 3.5 - Método Híbrido.
+Para este trabalho, foi desenvolvida uma metodologia inspirada no modelo FLOWPATH e nos trabalhos de Sylta (2004). Este modelo foi batizado de FlowTrace (flow escoamento, trace traçado), ou seja, traçar o escoamento através da bacia, seja ele óleo ou gás.
+O método FlowTrace será aplicado para toda a bacia, até mesmo para as regiões com baixa permeabilidade, dessa forma, permitindo comparações dos
+resultados obtidos com o método FLOWPATH utilizado no software comercial PETROMOD.
+De uma forma simplificada, a sequência de figuras a seguir exemplifica o processo de migração secundária, procurando introduzir o procedimento de
+aplicação do método FlowTrace para a migração secundária.
+baixa permeabilidade
+geração
+t t t t
+geração
+a- Esquema de uma bacia sedimentar com duas camadas Uma de baixa
+b- Identificando
+os maiores
+permeabilidade e a outra com alta
+permeabilidade.
+gradientes de ascensão da geometria formada pela intersecção das camadas.
+Possível	Possível	Ponto de
+Ponto de
+Ponto de
+Derramamento 3
+Derramamento 1
+Derramamento 2
+1111
+geraçao
+c- Dessa forma os possíveis reservatórios são delineados e nomeados como área de drenagem. O ponto mais alto da área de drenagem é identificado (estrelas) assim como seu limite inferiores (círculos) também denominados de pontos de derramamento (spill points).
+d- A massa de petróleo gerada será então o input do problema, sendo aplicada diretamente acima da região a qual ela foi gerada. O flow trace é estabelecido através
+da junção do limite inferior do reservatório até o seu ponto mais alto. O volume de petróleo se distribuirá de acordo com a
+capacidade de cada reservatório.
+Continuação
+e- Uma coluna de hidrocarbonetos se formará estabelecendo a área de contato Petróleo-Água. Se o volume de hidrocarbonetos exceder o limite do reservatório, ocorrerá o vazamento de massa
+f- Havendo a geração de gás, este se posicionará na região superior do reservatório e uma área de contato Gás-Óleo é estabelecida.
+para a área de drenagem vizinha, conectada pelo flow trace ou spillpath .
+Figura 3.6 - Esquema simplificado do processo de migração secundária
+Pode-se separar o método FlowTrace em duas funções principais: uma para distribuir a massa gerada injetada na camada condutora, para isso utilizando os princípios da técnica de visualização gráfica ray tracing, e outra função responsável por avaliar o modelo de enchimento dos reservatórios encontrados.
+3.3.1	Ray Tracing
+O método de computação gráfica ray tracing, utilizado para visualização de superfícies e sólidos 3D, baseia-se numa ideia muito simples: um observador sentase em frente a uma tela plana transparente, e de seus olhos partem diversos “raios visuais” que vão atravessar os pontos da tela e bater nos objetos tridimensionais, que foram definidos utilizando-se alguma técnica de modelagem. É pintado, então, o ponto da tela que foi atravessado pelo raio com a cor do objeto que foi atingido por este. Esta é a forma mais simplificada de se apresentar o algoritmo de ray tracing. Resumindo, para cada ponto da tela deve-se:
+1.	encontrar a linha reta que une o olho do observador a este ponto;
+2.	encontrar as intersecções desta reta com os objetos 3D que estão atrás da tela;
+3.	pintar o ponto com a cor do objeto mais próximo.
+O algoritmo ray tracing é adaptado no método FlowTrace para efetuar a distribuição e transporte de massa de petróleo pelo domínio. Esta adaptação parte de uma analogia com o algoritmo original supracitado. Para cada ponto gerador (emissor, elemento em vermelho na Figura 3.7(a)) de massa na base da camada condutora, deve-se:
+1.	calcular uma linha reta que parte do ponto emissor e atravessa o domínio;
+2.	encontrar a intersecção desta reta com a primeira interface entre baixa e alta permeabilidade (Figura 3.7(b)), isto é, a área de drenagem equivalente a uma superfície opaca;
+3.	transmitir a massa do ponto emissor para o reservatório correspondente à área de drenagem interceptada.
+Figura 3.7 - Emissão de raios (a). Interceptação do raio em uma interface e a
+determinação do ponto de injeção de hidrocarbonetos (b).
+De uma forma geral, pode-se categorizar quatro tipos de interfaces existentes que serão avaliadas para verificar se haverá a interceptação dos raios
+emitidos no domínio. A Figura 3.8 reúne estes quatro tipos, sendo o termo baixa permeabilidade considerado para valores menores que 2 log(mD).
+A seta em vermelho representa um raio emitido. Nos casos A, B e C, o raio emitido atravessará a interface (linha tracejada), ou seja, estas interfaces serão consideradas translúcidas ao raio emitido.
+A	B	C	D
+Baixa Permeabilidade
+71 Alta Permeabilidade
+Figura 3.8 - Tipos configurações de interfaces.
+O método FlowTrace é aplicado mesmo para regiões de baixa permeabilidade como na configuração A, onde seria esperado que as equações de Darcy multifásico fossem empregadas.
+Somente para o caso da configuração D, onde uma camada com baixa permeabilidade sobrepõe uma camada de alta permeabilidade, haverá a interceptação do raio emitido, assim esta interface será considera opaca, absorvendo os raios que nela chegam. Esta é a configuração típica encontrada em áreas de drenagem, em que todo óleo interceptado em uma área de drenagem será encaminhado para o ponto mais alto desta e ali acumulado. Cada área de drenagem poderá conter apenas um único reservatório. O item seguinte explicará como ocorre o acúmulo de hidrocarbonetos nos reservatórios.
+3.3.2	Modelo de Enchimento
+Após a distribuição da massa, uma análise volumétrica é realizada. Este procedimento se torna necessário, já que o ray tracing simplesmente aloca a massa
+de hidrocarbonetos injetada no reservatório da área de drenagem interceptada, não levando em conta se haverá ou não capacidade de armazenamento.
+O valor da capacidade volumétrica máxima em um reservatório é obtido através da equação (2.34) para altura máxima de coluna de hidrocarbonetos (H máx na Figura 3.9(a)). Com o valor do H máx determinado, um segmento de reta é traçado a partir do ponto mais alto da área de drenagem, sendo este segmento da magnitude da altura da coluna máxima de hidrocarbonetos. A partir da coordenada geométrica da extremidade inferior deste segmento, são determinadas as coordenadas limítrofes do reservatório. Isto é realizado através de uma linha imaginária que parte desta extremidade na direção horizontal, buscando as coordenadas de intersecção com a área de drenagem correspondente, Figura 3.9 (b).
+(a)
+(b)
+Figura 3.9 - (a) Capacidade máxima que pode ser armazenada na área de drenagem
+determinada pelo H máx. (b) Determinação das coordenadas limítrofes do reservatório.
+Uma vez conhecidas essas coordenadas limítrofes, a área do reservatório é calculada utilizando o método dos trapézios, Figura 3.10. A capacidade máxima é delimitada pelo ponto de derramamento (spill point). O ponto de derramamento, por sua vez, é determinado através de uma análise da coordenada z dos pontos das extremidades da área de drenagem. Aquele que for mais alto é denominado ponto de derramamento.
+Figura 3.10 - Cálculo da capacidade do reservatório através do método dos trapézios.
+O volume geométrico do reservatório é obtido através da multiplicação da área calculada pela profundidade hipotética de 1 km. Já o volume poroso é igual ao volume geométrico multiplicado pela porosidade média dos elementos formadores da interface de alta permeabilidade, neste exemplo, os elementos em azul.
+Figura 3.11 - Caso em que a quantidade de hidrocarbonetos gerada é inferior à capacidade máxima do reservatório
+Se a quantidade de volume de petróleo injetada em um reservatório for menor que a sua capacidade de volume poroso (triângulo verde claro na Figura 3.11(a)), o valor da altura de coluna de hidrocarbonetos é determinado através de um processo iterativo, em que o valor da magnitude do segmento de reta, que parte
+do ponto mais alto do reservatório, é variado até que o valor do volume calculado se iguale ao valor do volume de petróleo injetado no reservatório , Figura 3.11(b).
+Agora, se o volume injetado for igual (Figura 3.12(a)) ou maior (Figura 3.12 (b)) que o volume poroso do reservatório, a magnitude da altura da coluna de hidrocarbonetos se iguala à diferença entre a coordenada z do ponto mais alto do reservatório e a coordenada z do ponto de derramamento.
+(a)
+(b)
+Figura 3.12 - (a) Quantidade drenada da mesma magnitude que a capacidade máxima
+do reservatório, e (b) quantidade drenada muito maior que a capacidade máxima do
+reservatório, transbordando o volume excedente.
+A Figura 3.12(b) mostra que, quando o volume injetado é maior que o volume poroso do reservatório, o excedente é “derramado” através do ponto de derramamento, e este é o novo ponto emissor de “raios” para o ray tracing.
+Se um mesmo ponto de derramamento pertencer a duas áreas de drenagens e os reservatórios destas áreas transbordarem (Figura 3.13(a)), ocorrerá a fusão das áreas de drenagens em uma única área de drenagem maior, com o ponto de derramamento situado em uma posição mais abaixo em relação ao ponto antigo (Figura 3.13(b)).
+-1000
+-1500
+•2000 &gt;-
+•2500
+-3000
+(a)
+-500 •1000 •1500 •-2000 -2500 -3000 •3500
+(b)
+Figura 3.13 - (a) Duas áreas de drenagem com o mesmo ponto de derramamento. (b)
+Fusão das áreas de drenagem após o continuo derramamento de um reservatório
+dentro do outro.
+Caso a região de armazenamento seja invadida pela camada inferior, o reservatório assumirá o formato de uma geometria complexa, e a sua capacidade máxima será definida através de uma operação de subtração, em que a área geométrica referente à capacidade total (área avaliada ignorando a existência da camada inferior) calculada pelo método dos trapézios é subtraída pelas áreas da camada inferior que invadem o espaço, resultando no polígono em verde na Figura 3.14.
+A região a ser subtraída é determinada através da emissão de uma linha imaginária que parte do ponto de derramamento da área de drenagem em questão, na direção do seu interior. Esta será “desviada” caso encontre uma região com permeabilidade inferior àquela aceitável para camadas condutoras (conforme representado pelas setas vermelhas na Figura 3.14(b). Então, a região compreendida entre os pontos em branco, na Figura 3.14(b) terá a sua área calculada através do método dos trapézios e assim subtraída da área total do reservatório, fornecendo a área para o cálculo da capacidade real de acúmulo.
+(a)
+(b)
+Figura 3.14 - (a) Reservatório delimitado na sua porção inferior por uma camada de
+baixa permeabilidade. (b) Mapeamento da camada inferior para o cálculo da verdadeira capacidade volumétrica do reservatório.
+3.3.3	FlowTrace para malhas não estruturadas
+O método FLOWPATH original é aplicado sobre geometrias descritas por malhas estruturadas, sendo Sylta (2004) a única referência bibliográfica sobre os princípios físicos que fundamentam este método, não havendo uma teoria que demonstre como esta metodologia é aplicada computacionalmente no simulador de bacias PETROMOD. Ainda, no conhecimento deste autor, não há software ou literatura que demonstre a aplicação deste método para malhas não-estruturadas. O que se tem conhecimento é que este método lança mão das variáveis (porosidade, permeabilidade, pressão capilar e outras) calculadas no domínio por algum método numérico, podendo ser ele Volumes Finitos, Diferenças Finitas, Elementos Finitos ou EbFVM, utiliza a malha para localizar as áreas de drenagem e os possíveis reservatórios e descreve a geometria de estudo onde o ray tracing será aplicado para distribuir a massa de hidrocarbonetos.
+Figura 3.15 - (a) Malha estruturada de quadriláteros. (b) Malha não estruturada de triângulos.
+Uma malha estruturada possui uma sequência lógica na distribuição de seus elementos e nós, onde o número de elementos e nós são distribuídos igualitariamente por linhas e colunas (Figura 3.15(a)). Já uma malha não-estruturada possui uma distribuição randômica de seus elementos e nós Figura 3.15(b).
+Conforme apresentado no item 2.1 do capítulo 3, existem 4 tipos de configurações possíveis de interfaces entre elementos, sendo que apenas uma delas , a configuração D, da Figura 3.8, será considerada uma barreira para os raios emitidos. Fica simples para uma malha estruturada desenvolver uma rotina que identifique e localize geometricamente os pares de elementos que possuem uma aresta em comum e estão dispostos de acordo com a configuração D, visto que os elementos e nós podem ser rastreados sequencialmente, seguindo uma lógica. Já para uma malha não-estruturada (Figura 3.15(b)), devido à aleatoriedade na distribuição da indexação dos elementos e nós durante a construção da malha numérica, a tarefa de localizar no domínio computacional os pares de elementos de acordo com a configuração D se torna algo complexo, demandando tempo e custo computacional maiores.
+A malha não-estruturada da Figura 3.16 é gerada de uma forma aleatória, isto é, as numerações dos elementos e dos nós da malha não obedecem a uma ordem, como por exemplo, numerados da esquerda para direita e de baixo para cima, como feito em malhas estruturadas (Figura 3.15(a)). Além disso, a distribuição do número de elementos e nós não ocorre de forma matricial através de linhas e 71
+colunas. Eis que surge o desafio de programar o método FlowTrace para uma malha não-estruturada de triângulos.
+O par de elementos número 1 e 35, na Figura 3.16(a), tenta ilustrar a dificuldade de se encontrar pares de elementos com interface em comum (aresta em vermelho) cujos centroides estejam orientados de tal forma que em um elemento possa ser considerado a parte superior e em outro a parte inferior, como na Figura 3.16(b), por exemplo, onde o elemento número 12 está posicionado com o seu centroide acima do elemento 27.
+Figura 3.16 - Lado esquerdo (a) elementos vizinhos verticalmente. Lado direito (b)
+elementos vizinhos sobrepostos.
+Este procedimento de localização de elementos vizinhos pertencentes a um mesmo segmento se faz necessário no método FlowTrace para delinear um sistema condutor, onde a permeabilidade do elemento superior deve ser menor que 2 log(mD) enquanto que, no elemento inferior, a permeabilidade deve ser maior que 2 log(mD), e.g. Figura 3.17(a).
+(a)	(b)
+Figura 3.17 - Lado esquerdo (a) elementos que possuem uma aresta em comum e formam um par de baixa (elemento 15) e alta permeabilidade (elemento 35). Lado
+direito (b) esquema mostrando como encontrar elementos que possuem uma aresta em
+comum.
+Através da matriz de conexões dos elementos da malha, é possível identificar quais nós estão conectados aos nós de um mesmo segmento de reta e, a partir desta informação, encontrar quais são os elementos vizinhos formados por estes nós. Por exemplo, na Figura 3.17(b), os nós número 5 e 37 estão conectados aos nós número 8 e 22 do segmento de reta vermelho e aqueles (nós 5 e 37) são localizados através da matriz de conectividades, assim identificando o par de elementos vizinhos. Este procedimento foi aplicado nos nós constituintes das interfaces das camadas, também chamadas de horizontes da bacia, limitando-se em aplicar a metodologia nas regiões delimitadas pelos segmentos de retas que formam as interfaces entre duas camadas consecutivas. Isso porque, nestas regiões, as informações referentes aos nós que formam os segmentos já estão disponíveis, pois, quando uma camada é inserida no domínio computacional, os seus nós da parte superior são posicionados na batimetria da era geológica em questão, enquanto que os nós da parte inferior desta camada são posicionados sobre a camada previamente depositada, se esta já existir. Estes nós do topo de cada camada inserida na batimeria de cada era geológica estão separados e organizados em vetores que facilitam o seu tratamento adequado.
+Figura 3.18 - Nós das camadas inseridas na batimetria do tempo geológico corrente.
+A Figura 3.19 mostra como o método enxerga o domínio de simulação.
+Aplicar o método FlowTrace apenas sobre as interfaces das camadas depositadas introduz a possibilidade de criar um sequenciamento na varredura dos elementos como se fosse em uma malha estruturada, seguindo através dos segmentos formadas pelos nós das interfaces, orientando, assim, a procura por pares de elementos capazes de formar as áreas de drenagem .
+Como a malha é não-estruturada, os nós das interfaces são armazenados nos vetores de forma aleatória, sendo necessário criar uma função que desembaralha e organiza a numeração dos nós de acordo com a coordenada x, partindo da esquerda para direita, de modo a padronizar as informações que serão utilizadas mais adiante.
+Figura 3.19 - (a) Modo como o domínio é introduzido no software. (b) Modo como rotinas separam o domínio em elementos que formam as interfaces.
+De posse de dois nós consecutivos e através da matriz de conectividades dos elementos, é possível encontrar os nós e os elementos que irão formar os
+segmentos desejados conforme citado anteriormente. Assim, pode-se determinar as propriedades pertinentes, como porosidade, permeabilidade, pressão capilar, coordenadas X e Z dos nós para a aplicação do método.
+A Figura 3.20(a) mostra os nós, que formam os seguimentos de reta, circulados em vermelho.
+Após uma varredura no domínio já adaptado para o FlowTrace, é então localizada qual interface entre camadas possui condições de conter uma região de aprisionamento (Figura 3.20(b)) onde o petróleo gerado poderá ser armazenado. Esta região de aprisionamento é qualificada conforme a permeabilidade da camada superior composta por elementos com permeabilidade menor que 2 log(mD) (em verde), e de acordo com os elementos da camada inferior (em azul) com permeabilidade maior ou igual a 2 log(mD).
+Figura 3.20 - (a) Círculos vermelhos representam os nós que formam as interfaces entre as camadas. (b) Mostra qual interface do domínio realmente será abordada por possuir a configuração de elementos necessária para a aparição de áreas de drenagem.
+Com a interface de trabalho identificada, a próxima etapa consistirá em separar as áreas de drenagem. Área de drenagem é a região na qual todo petróleo que estiver nela será direcionado para o seu respectivo reservatório. Cada área de drenagem possui apenas um único reservatório e ponto de derramamento (spill point). As áreas de drenagem são delimitadas geometricamente pela variação no gradiente de ascensão da interface. A Figura 3.21 mostra uma área de drenagem separada do restante da interface.
+O gradiente de ascensão é determinado varrendo-se a interface da direita para esquerda e analisando-se as diferenças entre as coordenadas z de dois nós consecutivos (segmento de reta). Dessa forma, uma análise nos sinais destas grandezas determina o começo e o fim de uma área de drenagem. A Figura 3.22 demonstra como uma área de drenagem é delineada. Os limites da área de drenagem são determinados quando há uma inversão de sinais dos gradientes de segmentos consecutivos, passando de um valor negativo para positivo. O ponto mais alto da área de drenagem é determinado quando uma inversão de sinais é registrada, partindo do positivo para o negativo.
+Uma vez determinadas as extremidades da área de drenagem, o ponto de derramamento será a extremidade com a coordenada de maior cota Z (Figura 3.22).
+São obtidos todos os coeficientes de retas dos segmentos de retas formados por dois nós consecutivos, pois dessa forma é possível saber onde um raio emitido irá interceptar a área de drenagem e qual área de drenagem será interceptada.
+Figura 3.22 - Esquema ilustrando como uma área de drenagem é delimitada através dos gradientes de ascensão.
+A Figura 3.23 mostra como os elementos que formam um segmento de reta da interface são identificados na armazenagem em um vetor de vetores, sendo posição 0 para elementos da camada condutora e posição 1 para elementos da
+Figura 3.23 - Como os elementos são posicionados em um vetor de vetores para organizar as informações de um mesmo segmento.
+A Figura 3.24 mostra, no detalhe em vermelho, o ponto mais alto da área de drenagem e, em magenta, o ponto de derramamento. Todo o petróleo que estiver dentro da área de drenagem irá se deslocar na direção do ponto mais alto da área, formando uma armadilha potencial.
+Figura 3.24 - Definição de uma área de drenagem, ponto em vermelho marcando ponto mais alto, ponto cor magenta representando ponto de derramamento, as letras representam os pares de elementos que formam os segmentos das interfaces.
+A porosidade utilizada no cálculo do volume poroso do reservatório é obtida através de uma média simples realizada com os valores das porosidades dos elementos da parte inferior da área de drenagem (de A até F nos elementos azuis da Figura 3.24). A porosidade dentro de cada elemento é tomada como constante. Quanto maior o refino de malha na região inferior da interface baixa-alta permeabilidade, cor azul na Figura 3.24, melhor o fenômeno físico da migração secundaria será representado.
+A Figura 3.25 mostra um exemplo da aplicação do método FlowTrace em uma bacia hipotética constituída de 6 camadas sedimentares. Os dados de saída do software SiBa são tratados através de rotinas, podendo ser visualizados através de um software de visualização científica público, que permite a sua edição. Dessa forma foi possível caracterizar a bacia, criando funções que reconhecem as camadas depositadas assim como o volume de óleo acumulado no reservatório, representado por um polígono cor verde.
+-1QOO
+■2000
+&gt;-
+-3000
+-4000
+o -1OOO •2000
+&gt;■
+•3000
+-4000
+O
+-5000
+
+X-
+0
+—I—
+6000
+0
+1000 -
+-2000 -
+&gt;-
+3000 -
+4000 -
+—I—
+6000
+-L i ■	■I-
+X
+1
+■5000 -
+---L-
+0
+-4000
+-5000
+Figura 3.25 - Sequência de deposição de uma camada iniciando da esquerda para
+direita e de cima para baixo.
+A região de geração e emissão de raios (em amarelo) está simbolizada pelos vetores. Em um primeiro momento, não há barreiras contra os raios, logo todo óleo gerado tende a migrar até a superfície. Com a deposição da quarta camada contendo um trecho de rocha com baixa permeabilidade, ocorre o acúmulo de hidrocarbonetos, preenchendo parte do reservatório
+Já com as deposições das camadas seguintes, ocorre a compactação do reservatório, reduzindo a sua capacidade. Neste caso simulado, a região inferior do reservatório invade o espaço ocupado pelos hidrocarbonetos, demonstrando a capacidade do método de representar o reservatório em situações mais complexas.
+CAPÍTULO IV
+4	IMPLEMENTAÇÃO COMPUTACIONAL
+Este capítulo contém os principais fluxogramas da arquitetura da implementação computacional utilizada no desenvolvimento do software SiBa 2008, que reúne brevemente os desenvolvimentos do SiBa de Schubert (2006) com os desenvolvimentos deste trabalho. Os subcapítulos estão organizados de forma sequencial, obedecendo à ordem em que as funções são chamadas no programa.
+4.1	FLUXOGRAMA DA COMPACTAÇÃO
+O ciclo de compactação é o procedimento principal em um simulador de bacias, pois é nele que são calculadas as variáveis principais como porosidade, campo de pressões e permeabilidades para a aplicação dos métodos de solução da migração de hidrocarbonetos.
+A Figura 4.1 mostra o fluxograma do processo do ciclo de compactação. Este processo nada mais é que a solução de um sistema linear para a coordenada z onde a conservação da massa do sólido é satisfeita. As condições de contorno para este sistema são os nós do topo da bacia que devem permanecer na batimetria da época. O problema de compactação é, na verdade, geo-mecânico e sempre acoplado ao problema do escoamento. Do problema de compactação determinam-se as cargas, e do problema do escoamento, a pressão do poro. Com estes dois dados obtém-se a tensão efetiva que permite determinar a porosidade. O nível de precisão do cálculo da pressão depende do modelo empregado. Existem métodos que usam apenas a pressão hidrostática e são válidos para situações em que a quantidade de óleo é pequena e as rochas são bastante porosas. O modelo mais complexo resolve o escoamento multifásico água/óleo/gás. Neste trabalho, optou-se
+por resolver o escoamento monofásico de água, já que este escoamento, na presença de pouco óleo, fornece um bom cálculo da pressão.
+Em seguida, o escoamento monofásico ou multifásico é resolvido e um novo campo de pressão está disponível. Assim, o próximo passo é resolver o acoplamento entre a tensão efetiva e a porosidade (representada pelos quadros em cinza). É este acoplamento que calcula a nova tensão efetiva utilizando a pressão advinda da solução do escoamento, e através desta nova tensão efetiva, um novo campo de porosidade é obtido.
+Com as novas porosidades consegue-se montar um sistema linear para a coordenada z em que a massa do sólido se conserva. Após a solução deste sistema linear, a malha irá se mover, quando então é realizada a comparação das coordenadas z anteriores com as novas, dessa forma obtendo-se a máxima variação da coordenada z. Caso esta variação esteja dentro da tolerância desejada, o processo de compactação é considerado convergido e novas camadas podem ser introduzidas. Caso contrário, o ciclo volta para resolver o escoamento até que todo o procedimento convirja para uma tolerância de compactação controlada através da coordenada z.
+O processo do ciclo de compactação, como citado anteriormente, é a etapa mais importante em um simulador de bacias, sendo nele registrados os maiores gastos computacionais. O que ocorre muito comumente é a tentativa de solucionar o escoamento multifásico juntamente com a compactação, sendo que estes dois fenômenos possuem características muito distintas, por isso exigem diferentes passos de tempos para a solução de cada um, podendo levar facilmente a um maior tempo computacional para atingir a convergência do problema. E, em muitos casos, pode ocorrer a divergência da solução do problema.
+Figura 4.1 - Fluxograma da versão do software SiBa 2007 desenvolvido na dissertação de Schubert (2006).
+Uma das formas de solucionar esta dificuldade é evitando solucionar a migração e a compactação ao mesmo tempo. Resolver primeiramente a compactação, deixando para solucionar a migração no domínio já compactado, é a estratégia mostrada pelo fluxograma da Figura 4.2.
+Conforme já antecipado, o campo da pressão para a compactação pode vir da solução do escoamento monofásico, sem muito efeito nos resultados, já que, em toda bacia, a influência da carga relativa à quantidade de hidrocarbonetos acumulada é muito menor do que a carga total representada pelo acúmulo de água no domínio. Porém, esta metodologia ainda implica resolver um sistema linear para encontrar o valor do campo de pressões. A Figura 4.2 mostra as duas alternativas, exibindo no quadro amarelo superior, o uso do campo de pressões hidrostático ou calculado através da solução do escoamento monofásico. Depois de resolvida a compactação, pode-se, então, calcular a migração de óleo, resolvendo-se, então, um problema multifásico, agora em uma malha fixa.
+convergiu?
+convergiu?
+Executa \
+Compactação /
+Resolve Campo de Pressão:
+Escoamento Darcy Monofásico
+Pressão = Pressão Hidrostática
+Solução da Migração de hidrocarbonetos na Bacia já compactada
+Calcula nova Porosidade
+I
+Move malha
+Resolve
+Escoamento
+Cálculo da tensão
+Efetiva
+Cálculo da Carga Sedimentar 1
+Calcula diferença de Porosidade
+Figura 4.2 - Fluxograma do software SiBa 2008 desenvolvido pelo autor deste trabalho.
+As equações para a solução do escoamento monofásico em uma bacia sedimentar estão novamente descritas, por completeza, lembrando que o escoamento monofásico é resolvido sem movimentação da malha, o que faz com que o termo relativo à velocidade do sólido na equação (4.6) seja igual a zero. As equações são:
+d(P )-x-(''pv )-q=0	(4.1)
+ã	)+V W= Pfg	(4.2)
+u = -k —	- Pfg^Z) Pf	(4.3)
+u = KVf - Vs)	(4.4)
+O
+(fo,) + V. (pV) + V • (p,u ) = O
+d	( k
+ã (tof)+V. (pV) V. p,k -í. (VP , - pgj-.) J £&lt;pp.)-V p,k (VP,-p.gV)J
+(4.5)
+dt
+(4.6)
+(4.7)
+= O
+d
+(
+= O
+
+A equação diferencial (4.7) é então integrada no volume de controle para a obtenção do campo de pressão.
+A outra forma alternativa simplificada de obter o valor da pressão para efetuar a compactação de uma forma mais rápida é através do cálculo da pressão hidrostática, sendo desnecessária a solução de um sistema linear. A equação, neste caso, é dada por
+P, = ppg í dz	(4.8)
+f	Jz0
+Na equação (4.8), pf é a pressão no fluido, pw a densidade da água, g a gravidade e z e z0 as coordenadas da profundidade do nó e do nível do mar, respectivamente. A eficiência do método usando a pressão hidrostática foi analisada através de diversos testes e os resultados estão presentes no capítulo 5.
+4.2	FLUXOGRAMA PARA O FLOWTRACE
+A implementação do método FlowTrace segue o seguinte fluxograma, mostrado na Figura 4.3. Primeiramente, ocorre a inicialização do método, etapa que consiste em determinar os nós pertencentes às interfaces e a organização desses nós para que o método possa ser aplicado em malhas não-estruturadas. Este ciclo é repetido para cada camada depositada.
+Ha Massa?
+Encontrou?
+convergiu?
+não
+Extrai Informações Geométricas
+não
+z
+Inicializar
+FlowTrace
+Executar
+FlowTrace
+I FlowTrace
+Procura por Regiões de Confinamento
+Distribui Massa
+FIM
+Figura 4.3 - Fluxograma do Método FlowTrace.
+A próxima etapa consiste na execução do método propriamente dito, conforme mostrado na caixa em amarelo, na Figura 4.3. Durante a execução do método, confirma-se se há massa de petróleo gerada ou injetada no domínio em uma determinada era geológica. Serão chamadas as funções subsequentes apenas se houver massa de hidrocarbonetos.
+No caso de existência de massa de petróleo no domínio, o próximo passo será encontrar as possíveis regiões onde ocorrerá a formação de reservatórios. Esse procedimento é realizado pela função “FindTrap” ou “Procurar por Regiões de Confinamento”.
+Caso haja alguma região propícia à formação de reservatórios, a função “ExtractGeoInfo” (Extrair Informações Geométricas) é chamada e, a partir dela, todas
+as informações geométricas relevantes ao método FlowTrace são extraídas das regiões delineadas pela função “FindTrap”.
+Uma vez definidas todas as informações geométricas (capacidades volumétricas porosas máximas dos reservatórios e limites das áreas de drenagem) e informações das propriedades físicas necessárias (pressões capilares, porosidades e permeabilidades nos elementos das áreas de drenagens), a função “MassDistribution” (Distribuir Massa) é executada e toda a massa existente no domínio em uma determinada era geológica será gerenciada por esta função, manipulando a sua distribuição através da metodologia ray tracing.
+A seguir, as funções supracitadas, “FindTrap”, “ExtractGeoInfo” e “MassDistribution” receberão melhor detalhamento.
+4.2.1	Determinação de Regiões de Confinamento
+Esta função se subdivide em três partes, conforme Figura 4.1. A primeira mapeia os gradientes de ascensão das interfaces em cada era geológica, “Determina Gradientes de Ascensão”. Com os gradientes de ascensão definidos, uma análise das permeabilidades dos elementos formadores das interfaces da era geológica em questão é efetuada a fim de determinar quais trechos possuem a configuração de interface baixa-alta permeabilidade, função “Classifica os Seguimentos da Interface”.
+Cada segmento é rotulado de acordo com a sua configuração. Essas informações serão necessárias mais adiante na determinação das áreas de drenagens.
+Figura 4.4 - Fluxograma função “Procurar por Regiões de Confinamento”
+Os segmentos que possuírem a configuração baixa-alta permeabilidade são armazenados, através da função “Armazena Região de Trapa”, em vetores para o uso posterior.
+4.2.2	Extração de Informações Geométricas
+A função de extração das informações geométricas, mostradas na Figura
+4.5,	primeiramente define as áreas de drenagem, baseando-se em uma análise das informações sobre os gradientes de ascensão e a classificação dos elementos efetuada pela função “FindTrap”.
+Uma vez definidas as áreas de drenagem, uma sequência de dados geométricos é obtida a partir destas áreas, começando pelas coordenadas do ponto de altura máxima, dos pontos de derramamento ou vazamento (cada área de drenagem possuirá apenas um único ponto de derramamento), da maior coluna de hidrocarbonetos possível, dos coeficientes de retas dos segmentos de retas formados por dois nós consecutivos (este procedimento é realizado para toda a
+interface) e, por último, é realizado o cálculo do maior volume poroso possível do provável reservatório.
+Figura 4.5 - Fluxograma “Extrair Informações Geométricas”
+Essas informações servirão de dados de entrada para a função de distribuição de massa que será detalha a seguir.
+4.2.3	Distribuição de Massa
+A distribuição de massa é realizada através de função “Distribuir Massa” (MassDistribution), e é nesta parte do procedimento que o processo de ray tracing é aplicado. Esta é a principal função dentro do núcleo do método FlowTrace, pois as outras funções apenas alimentam-na com as informações necessárias para a aplicação do método em si.
+Figura 4.6 - Fluxograma função “Distribuir Massa”.
+Primeiramente, são determinados os pontos emissores de massa em uma determinada era geológica. Em seguida, são emitidos os raios que partem verticalmente para cima, procurando uma área de drenagem. Cada raio que intercepta uma área de drenagem deposita uma carga relativa à quantidade de massa emitida por seu ponto emissor. Esse procedimento se repete até que não haja mais pontos emissores.
+Uma análise da capacidade volumétrica dos reservatórios, pertencentes às áreas de drenagens interceptadas pelos raios, é executada conforme detalhado no capítulo 3, onde o volume alocado em um reservatório não poderá ser maior que a capacidade volumétrica máxima previamente determinada.
+Caso o volume injetado supere a capacidade máxima do reservatório, o volume excedente será “derramado” (spilled out) através do ponto de derramamento, isto é, este será um novo ponto emissor, e o procedimento anteriormente descrito será aplicado, agora para os pontos emissores derivados dos pontos de derramamentos.
+Ainda, se o volume “derramado” escoar para um reservatório vizinho (spilled in) que compartilhe o mesmo ponto de derramamento e este reservatório já estiver na sua capacidade máxima, ocorrerá então a fusão destes reservatórios, como mencionado no capítulo 3, e o processo de distribuição de massa será reinicializado, agora considerando a união das áreas de drenagens destes reservatórios para que os cálculos das propriedades geométricas necessárias sejam factíveis.
+Os cálculos das alturas das colunas de hidrocarbonetos resultantes somente serão realizados depois que todo o volume gerado ou derramado, em uma determinada era geológica, tenha sido alocado em um reservatório ou migrado para fora do domínio. A determinação da altura da coluna é efetuada através de um processo iterativo, variando o valor desta altura, de forma que o valor do volume calculado se iguale ao volume acumulado.
+CAPÍTULO V
+5	RESULTADOS
+Este capítulo reúne todos os resultados relevantes para a avaliação da metodologia desenvolvida neste trabalho. Primeiramente, será tratada a validação do modelo de compactação hidrostático. Em seguida, serão apresentados alguns resultados envolvendo o método FlowTrace, que serão avaliados através de comparações com os resultados obtidos utilizando o software comercial PETROMOD v.9.0, que utiliza o método FLOWPATH.
+Por último, serão feitas algumas análises quanto ao refino de malha e a sua importância em um problema de migração de hidrocarbonetos em uma bacia sedimentar.
+5.1	ANÁLISE DO MODELO DE COMPACTAÇÃO
+A etapa de compactação em um simulador de bacias para Schubert, (2006) pode se tornar um gargalo durante a simulação, pois diversas interações são necessárias para que ocorra a convergência do sistema para a solução do campo de pressão que irá servir de dado de entrada para o cálculo dos novos parâmetros geológicos da bacia como porosidade, permeabilidade e novas coordenadas do sistema.
+Se não fosse necessário resolver um sistema de equações descrevendo o escoamento multifásico no meio poroso para a determinação da pressão, com certeza os gastos computacionais envolvidos seriam muito menores, e o tempo de solução do problema também. Com isso em mente, decidiu-se testar outras opções para o cálculo da pressão. E o uso da pressão hidrostática é, logicamente, a primeira alternativa que se apresenta. Alguns casos hipotéticos foram simulados a fim de avaliar a eficiência desta alternativa.
+A Figura 2.9 e a Figura 2.11 contêm as propriedades das litologias aplicadas nas simulações que se sucedem.
+5.1.1	Bacias Homogêneas
+Intuitivamente, o primeiro teste a fazer seria aquele em que, para ocorrer o escoamento de água dentro da bacia, tenha que surgir grandes gradientes de pressão, devido à resistência ao escoamento imposta pelo meio de baixa permeabilidade e porosidade. Dessa forma, uma estimativa hidrostática para a compactação não seria sensível a este gradiente de pressão do escoamento, diferenciando as pressões de poro em uma bacia resolvida apenas hidrostaticamente e de uma bacia resolvida pela equação do escoamento monofásico de Darcy. É importante lembrar que a aproximação hidrostática, considerando apenas água na bacia, é razoável quando existe pouco óleo e quando as restrições ao escoamento que faria a pressão total afastar-se da hidrostática não são severas.
+Pensando nisso, foram estabelecidas a priori três simulações para uma mesma geometria de bacia sedimentar (5000x5000m, com seis camadas, passo de tempo de 5 Ma (milhões de anos) e malha não-estruturada de triângulos composta por 193 nós e 338 elementos), utilizando materiais de propriedades distintas( caso A1 sandstone, caso A2 limestone e caso A3 shale).
+Figura 5.1 - Tempo de simulação, utilizando um processador Pentium IV 3.01GHz com 2GB de memória RAM e sistema operacional Windows.
+Os tempos gastos quando o método de compactação é alimentado pela pressão obtida através da solução das equações para escoamento monofásico são em média quase que cinco vezes maiores do que quando o método utiliza a pressão hidrostática para a compactação da bacia.
+Do ponto de vista físico, interessa saber se as dimensões finais de compactação diferem muito quando a pressão hidrostática ou a pressão do escoamento monofásico é usada no modelo de compactação. A Figura 5.2 tem esta tarefa e mostra a maior diferença entre a batimetria inicial e final da bacia, utilizando a função “máxima variação da coordenada z”. Essa função encontra o nó que obteve a maior variação da coordenada z durante a compactação. Os casos A1 e A2 concordam para ambos os métodos testados, sendo isso devido ao fácil escoamento do fluido através dos materiais das bacias A1 e A2. Já para o caso A3, material com menor permeabilidade, ocorreu uma diferença entre os resultados obtidos, mostrando razoável influência do gradiente de pressão devido ao escoamento do fluido no meio poroso.
+A partir do caso A3, foram definidas outras cinco simulações, variando as dimensões X e Z, para delimitar até onde é possível utilizar a estimativa hidrostática em um meio de baixa permeabilidade, isto é, até onde o gradiente de pressão devido ao escoamento sobrepuja o da pressão hidrostática.
+A Figura 5.3 mostra as geometrias de cada caso criado a partir do caso 3A.
+Figura 5.3 - Geometrias utilizadas, da direita para esquerda: Caso A4, Caso A5, Caso
+A6, Caso A7, Caso A8 e Caso A3.
+Analisando a Figura 5.4, é possível reparar que, conforme o domínio aumenta, amplia-se a diferença entre as maiores variações para a coordenada Z encontrada pela função “máxima variação de coordenada Z”, tendo os maiores valores para o método hidrostático.
+Figura 5.4 - Máxima variação da coordenada Z para os casos A4, A5, A6, A7 e A8.
+O gradiente de pressão requerido para ocorrer o escoamento dentro do meio poroso passa ser maior conforme o tamanho da bacia aumenta. Dessa forma, uma maior profundidade implica uma maior compactação, reduzindo a porosidade cada vez mais. Consequentemente, aparecerá uma pequena diferença no valor referente à máxima variação da coordenada Z no domínio, devido às diferentes pressões utilizadas no processo de compactação, já que o método hidrostático não leva a parcela referente à pressão de poro.
+Já a Figura 5.5 fornece os valores referentes à diferença entre as máximas profundidades calculadas pelos dois métodos, isto é, a diferença em porcentagem da coordenada Z do ponto mais profundo encontrado na bacia após a sua compactação utilizando os dois métodos.
+Diferença entre os valores das coordenadas mais profundas de Z entre os métodos
+Figura 5.5 - Diferença entre as máximas profundidades calculadas pelo método Hidrostático e o Monofásico.
+De acordo com a Figura 5.5 a máxima diferença encontrada não passa de 6%, isto é, para um processo quase 5 vezes mais veloz computacionalmente, está associado um erro de apenas 6% no deslocamento da bacia. É claro que as
+decisões sobre a escolha do método sempre dependem do problema em questão e das questões de engenharia envolvidas, não existindo uma regra fixa que determine a escolha.
+5.1.2	Bacias Heterogêneas
+Generalizando um pouco mais a análise, deve-se testar situações em que a bacia é formada por mais de um tipo de material, buscando validar o método para situações mais reais, em que a heterogeneidade é dominante. A Figura 5.6 mostra as bacias utilizadas nas simulações, formadas por sete camadas, passo de tempo de 5 Ma e malha composta por 182 nós e 316 elementos.
+Figura 5.6 - Na esquerda o Caso B, bacia constituída por Sandstone (cor azul), Shale
+(verde) e Limestone (vermelho). Na direita o Caso C, bacia composta por Shale (azul) e
+Limestone (vermelho).
+Novamente, o tempo de simulação do método hidrostático foi em média quase que cinco vezes menor do que o tempo gasto utilizando o método monofásico.
+Tempo de Simulação
+Figura 5.7 - Tempo de simulação, utilizando um processador Pentium IV 3.01GHz com 2GB de memória RAM e sistema operacional Windows.
+Para o caso B, com dimensões 5000x5000 m e 500x500 m, os resultados dos nós com a máxima variação da coordenada Z e da diferença entre as maiores profundidades calculadas foram idênticos (Figura 5.8 e Figura 5.11). Já para o caso C, apenas a bacia com dimensões 500x500 m apresentou o mesmo resultado para ambos os modelos, mais uma vez mostrando a influência da profundidade na física do problema, visto que maiores profundidades resultam em bacias sedimentares mais compactadas, com maiores gradientes de pressão para ocorrer o escoamento de água no seu interior.
+Máxima Variação da Coordenada Z
+Figura 5.8 - Máxima variação da coordenada Z calculada durante a simulação da bacia.
+Analisando a Figura 5.9, pode-se entender melhor o porquê deste resultado. Para o caso B, pode-se dizer que ocorreu um “curto circuito”, onde o fluxo se estabeleceu em uma região de baixa resistência, já que o material azul que interliga todas as camadas possui permeabilidade relativamente alta (Sandstone Figura 2.11). Dessa forma, a pressão resultante do sistema de equações do escoamento monofásico é insignificante quando comparada com a pressão hidrostática.
+Mas para o caso C 5000x5000 m, a pressão necessária para estabelecer o escoamento de água no domínio precisa ser muito maior do que a encontrada no caso B, uma vez que o fluido é obrigado a atravessar camadas compostas por materiais de baixa permeabilidade. Quando se reduz o tamanho da bacia, a magnitude da pressão resultante do escoamento no meio poroso torna-se insignificante quando comparada com a magnitude da pressão hidrostática (Figura 5.10), tornando a pressão de poro coincidente em ambos os métodos (predomínio da pressão hidrostática).
+X
+Figura 5.9 - Na esquerda, vetores de velocidade referentes ao Caso B 5000x5000. Na direita, vetores de velocidade do Caso C 500x500.
+Figura 5.10 - À esquerda Caso C 5000x5000 m, à direita Caso C 500x500 m.
+A Figura 5.11 ilustra as diferenças entre as maiores profundidades calculadas por ambos os métodos. Mesmo com as curvas de pressão de poro do caso C 5000x5000m sendo tão distintas para os modelos utilizados, a diferença entre o ponto mais profundo calculado não passa de 3.4%.
+4
+0
+Diferença entre os valores das coordenadas máximas de Z
+3
+* 2
+1
+	3.40		□ Caso C 5000x5000
+			|_| Ca^O C 500X500
+			
+		0.02	
+Caso C 5000x5000
+CasoC500x500
+Figura 5.11 - Diferença entre as máximas profundidades calculadas pelo método Hidrostático e o Monofásico.
+A utilização de um modelo simplificado de compactação através da estimativa do campo de pressões pela pressão hidrostática mostrou ser um método bastante eficiente para a solução da compactação de bacias sedimentares. O tempo de simulação, para uma mesma bacia, chega a ser cinco vezes menor do que o tempo gasto para uma simulação utilizando o campo de pressão advinda da solução do escoamento monofásico.
+A maior diferença entre as maiores profundidades calculada por ambos os métodos não supera a magnitude de 6%.
+A implementação do modelo hidrostático para a compactação provou sua eficiência e rapidez na solução dos problemas. Esta metodologia pode servir para testar diferentes configurações de bacias cinco vezes mais rápido do que o método monofásico, pois, dessa forma, o analista pode calibrar o modelo computacional e obter estimativas, cinco vezes mais eficazes, otimizando o processo de exploração no qual os tempos de tomadas de decisões são muito curtos e custosos.
+5.2	COMPARAÇÃO COM UM SOFTWARE COMERCIAL
+Depois de validado o modelo de compactação, o próximo passo será a validação do modelo FlowTrace criado para simular a migração secundária em malhas não-estruturadas de triângulos.
+O software PETROMOD v. 9.0, da empresa alemã IES GmbH, foi utilizado como base de comparação para os resultados obtidos com o software SiBa 2008, desenvolvido neste trabalho. O software PETROMOD utiliza malhas estruturadas de quadriláteros e aplica o método de Elementos Finitos. O software PETROMOD permite que o usuário aplique o método FLOWPATH para todo o domínio da bacia simulado, dessa forma a migração de hidrocarbonetos em meios porosos de baixa permeabilidade através do modelo de Darcy é suprimida.
+Devido às características de implementação e aos modelos numéricos bem distintos destes softwares, são esperadas algumas diferenças nos resultados. Para minimizar essas variáveis, procurou-se simplificar os problemas a serem testados, porém mantendo os quesitos necessários para avaliar a eficiência do método.
+A Figura 5.12 mostra as diferentes configurações de bacias hipotéticas utilizadas nas comparações que se sucedem. Apesar de possuírem a mesma forma geométrica (5000 x 5000m e 6 camadas de deposição sedimentar), as Figura 5.12 (a) e (b) representam diferentes regiões de armazenamento.
+4000
+2000
+X
+(a) Caso A
+X
+(b) Caso B
+Figura 5.12 - (a) Geometria domínio Caso A. (b) Geometria domínio Caso B.
+No Caso A, todas as camadas são compostas pelo mesmo material (sandstone em azul escuro) sendo apenas a região da rocha capeadora diferenciada (material do tipo shale em azul claro). A região de geração de hidrocarbonetos está em vermelho, sendo esta formada também pelo material do tipo sandstone.
+Já para o Caso B, toda região inferior da bacia e a rocha capeadora são compostas pelo material de baixa permeabilidade do tipo shale (inclusive a rocha geradora em vermelho), sendo que o restante é constituído pelo material de alta permeabilidade do tipo sandstone. Este caso se aproxima mais de uma situação real, onde a camada com maior permeabilidade que acomodará um reservatório fica delimitada nas suas porções superiores e inferiores por materiais de baixa permeabilidade, constituindo um sistema condutor.
+As mesmas bacias foram reproduzidas no software PETROMOD (Figura 5.13), procurando manter as mesmas condições de contorno, curvas de propriedades de materiais, espaço de tempo e outras características que pudessem comprometer as análises comparativas.
+CASO A
+CASO B
+Figura 5.13 - Caso A e Caso B reproduzidos no software PETROMOD.
+Os polígonos de cor verde, que aparecem nas Figuras 5.12(a) e (b), são funções implementadas no software SiBa 2008 para gerar macros a serem executadas pelo software de visualização Tecplot, a fim de representar o acúmulo de petróleo nos reservatórios, e a sua forma será sempre independente do formato e tipo de malha empregado. Esta função foi baseada no software PETROMOD (Figura 5.13), onde a representação do acúmulo de petróleo também é apresentada na forma de um polígono de coloração verde, sendo a sua forma também independente da malha utilizada.
+A Tabela 5.1 reúne as informações sobre as simulações realizadas, neste trabalho, para o melhor acompanhamento dos resultados apresentados nesta seção. Tabela 5.1 - Informações gerais sobre as simulações realizadas.
+Variável	Magnitude
+Passo de Tempo	5 Ma
+Tempo Total	30 Ma
+Camadas	6
+Dimensões	5000x5000 m
+Por completeza, as curvas relativas às variações da porosidade com a profundidade são repetidas aqui (Figura 5.14). Este gráfico mostra como a variação do parâmetro k na equação de Athy (1930) pode influenciar no comportamento da compactação, isto é, para valores pequenos de k, a compactação tende a ser suave, 102
+já para valores maiores de k, ocorrerá uma grande variação na porosidade para pequenas variações de profundidade.
+Curvas de Porosidade
+Figura 5.14 - Variação da porosidade com a profundidade para diferentes valores do parâmetro k na equação de Athy (1930).
+Foram realizadas simulações com os valores padrões de k igual a 0,2 km-1 e com os valores de k iguais a 0,1 km-1 para verificar influência da compactação na determinação dos volumes de hidrocarbonetos acumulados.
+Os resultados e comentários sobre estes testes estão organizados nos seguintes subtítulos:
+•	Caso	A	com parâmetro k igual	a	0,2 km-1;
+•	Caso	B	com parâmetro k igual	a	0,2 km-1;
+•	Caso	A	com parâmetro k igual	a	0,1 km-1;
+•	Caso	B	com parâmetro k igual	a	0,1 km-1.
+Todas as simulações foram realizadas com (ref) e sem refino de malha. Também foram realizadas simulações com o modelo de compactação monofásico (m) e hidrostático (h).
+5.2.1	Caso A com parâmetro k igual a 0,2 km-1
+Este primeiro caso simulado foi realizado no intento de identificar as áreas de drenagem e efetuar todos os cálculos necessários para verificar o volume final acumulado, representado pelo “triângulo verde” na Figura 5.15.
+A geração de massa de hidrocarbonetos é estabelecida por uma função na qual o usuário seleciona a partir de qual camada depositada será iniciada a geração, já que nenhum modelo térmico foi implementado para servir de base para um modelo de geração mais complexo.
+Para estas simulações, a geração de hidrocarbonetos foi iniciada a partir da deposição da segunda camada, sendo assumido um valor constante para a taxa de geração de modo que a quantidade de massa gerada seja suficientemente grande para superar a capacidade volumétrica máxima do reservatório, garantindo o seu completo preenchimento. Da mesma forma, para o software PETROMOD, o valor da taxa de geração foi dimensionado para que o reservatório transbordasse. Este é o único meio de comparar os dois softwares, porque o modelo de geração implementado necessita de informações termodinâmicas não calculadas pelo software SiBa 2008.
+o
+-500 -1000 -1500 -2000 í-2500 -3000 -3500 -4000 -4500 -5000
+4000
+2000
+X
+SIBA 2008
+PETROMOD 9.0
+Figura 5.15 - Acúmulo de hidrocarbonetos. Em reta vertical em vermelho será
+considerada a reta padrão para a obtenção das curvas de distribuição de porosidade e
+permeabilidade para os resultados a seguir.
+A Tabela 5.2 traz, de forma resumida, os resultados obtidos para os cálculos de massa acumulada (em mega toneladas) no reservatório para o tempo presente. Conforme mencionado anteriormente, foram realizadas quatro simulações, variando o refino de malha e o método de compactação utilizado.
+Os cálculos das diferenças entre as massas acumuladas foram efetuados tomando como base o valor encontrado na simulação que utilizou o software PETROMOD.
+Tabela 5.2 - Massa acumulada e diferença dos resultados em relação ao software PETROMOD.
+h	SIBA 2008 k02 h ref	m	m ref	PETROMOD	
+258.145 289.296 258.172 289.115 1.6	10.3	1.57	10.22		262.3	Mega ton diferença [%]
+Com o aumento do refino de malha, houve um aumento da massa acumulada calculada, e, consequentemente, uma maior diferença entre os simuladores. Isto ocorre porque o valor da massa acumulada é muito sensível a pequenas variações de parâmetros, como a porosidade. Uma mudança na segunda casa decimal para a porosidade média do reservatório implica diferentes valores para a massa acumulada. Por exemplo, a mudança da porosidade média de 0,3 para 0,33 em um reservatório com volume da ordem de 1.000.000 de m3, resulta em uma diferença de 10% para os valores dos volumes porosos e, portanto, uma disparidade da mesma ordem para os valores de massa calculados.
+A Figura 5.16 traz as curvas de porosidade e permeabilidade ao longo da reta vermelha, doravante reta padrão, presente na Figura 5.15. É possível ver, na região de interface entre as camadas, que há uma suavização nos valores encontrados, principalmente nos casos utilizando baixa resolução de malha.
+Porosidade xZ(kO2)
+(a)
+PermeabilidadexZ(k02)
+(b)
+Figura 5.16 - (a) Distribuição de porosidade ao longo da reta padrão. (b) Distribuição de
+permeabilidade ao longo da reta padrão. Unidade de Z em metros.
+Como a quantidade de informação manipulada é demasiadamente grande, apenas as distribuições de algumas variáveis ao longo da bacia serão apresentadas referentes ao caso simulado pelo software SiBa 2008 com modelo de compactação monofásico e refino de malha, juntamente com os resultados obtidos para as mesmas variáveis através do software PETROMOD 9.0.
+SIBA 2008	PETROMOD 9.0
+Figura 5.17 - Permeabilidade log (mD). Unidade de Z e X em metros.
+SIBA 2008
+PETROMOD 9.0
+Figura 5.18 - Pressão Capilar MPa, eixo Z e X em metros.
+SIBA 2008	PETROMOD 9.0
+Figura 5.19 - Campo de Porosidade. Eixo Z e X em metros.
+lorizonte 6
+lorizonte 5
+lorizonte 1
+4000
+2000
+X
+-4000
+-5000 t
+-1000
+-1500
+-2000
+¡-2500
+-3000
+-3500
+-4500
+-500
+50000000.00
+45000000.00
+40000000.00
+35000000.00
+30000000.00
+25000000.00
+20000000.00
+15000000.00 10000000.00
+5000000.00
+SIBA 2008
+PETROMOD 9.0
+Figura 5.20 - Pressão Hidrostática em Pascal. Eixo Z e X em metros.
+5.2.2	Caso B com parâmetro k igual a 0,2 km-1
+Seguindo os moldes da simulação anterior, a mesma análise se procede para uma situação mais complexa, onde o reservatório é delimitado nas suas 108
+porções superior e inferior por camadas de baixa permeabilidade (Figura 5.21); configuração mais próxima dos reservatórios reais.
+O desafio aqui consiste em determinar a capacidade volumétrica do reservatório, identificando e definindo a camada de baixa permeabilidade na sua parte inferior (como citado no capítulo 3), isto é, reduzindo a sua capacidade volumétrica.
+(a)
+(b)
+Figura 5.21 - (a) Resultado obtido através do Software SiBa 2008. (b) Resultado do acúmulo de hidrocarbonetos obtido através do software PETROMOD.
+A Tabela 5.3 traz os resultados encontrados para as diversas modalidades simuladas. Novamente, os valores de massa acumulada nos reservatórios, calculados pelo simulador SiBa 2008, se aproximaram muito do valor obtido através do software PETROMOD.
+Tabela 5.3 - Massa acumulada e diferença em relação ao software PETROMOD.
+H	SIBA 2008 k02 h ref	m	m ref	PETROMOD	
+190.357 206.8825 190.87 206.8895		198.59	Mega ton
+			diferença
+4.14	4.17	3.88	4.18		%
+As Figuras 5.22 e 5.23 reúnem as informações da distribuição de porosidade e permeabilidade ao longo da reta-padrão, cortando a bacia da mesma forma que na Figura 5.12.
+Figura 5.22 - Distribuição de porosidade ao longo da reta padrão. Eixo Z em metros.
+Outra vez, a atenuação inerente ao método acontece, necessitando de um refino local na região da interface trapa-reservatório.
+Permeabilidade x Z (k02)
+Figura 5.23 - Distribuição de permeabilidade (log(mD)) ao longo da reta padrão. Eixo Z em metros.
+As Figura 5.24(a) Figura 5.25(a) mostram os campos de permeabilidade e porosidade obtidos na simulação com modelo de compactação monofásico e com malha refinada realizadas pelo software SiBa 2008. Ao lado destas, constam os resultados obtidos utilizando o software PETROMOD.
+-5000
+-1000
+-2000
+&gt;
+-3000
+-4000
+O	1OOO 2000	3000	4000	5000	6000
+x
+(b)
+(a)
+Figura 5.24 - Permeabilidade log (mD). Unidade de Z e X em metros.
+(a)
+(b)
+Figura 5.25 - Porosidade
+Após uma breve análise nos resultados, é possível notar uma grande semelhança entre eles, sendo que as colorações aplicadas diferem apenas devido ao modo como foram empregadas pelos softwares de visualização, já que as mesmas magnitudes se encontram nas mesmas posições, apenas com cores diferentes.
+5.2.3	Caso A com parâmetro k igual a 0,1 km-1
+Para verificar a influência da compactação nos resultados encontrados, procurou-se reduzir o valor da constante k na equação de Athy (1930). Desse modo, conforme mencionado anteriormente, a variação da porosidade com a profundidade se comportará de forma menos sensível.
+Tabela 5.4 - Massa acumulada e diferença em relação ao software PETROMOD
+SIBA 2008 k01				PETROMOD	
+h	h ref	m	m ref		
+334.027 355.466		333.8984 355.41		336.25	Mega ton
+0.66	5.7	0.7	5.7		diferença %
+A Tabela 5.4 traz os resultados relativos às massas acumuladas nos reservatórios dos quatro casos simulados comparados com o valor encontrado utilizando o software PETROMOD.
+É possível reparar a queda na diferença entre os valores de massa calculados pelos softwares quando um fator k que atenue a variação da porosidade é utilizado, reduzindo aproximadamente pela metade os valores das diferenças quando comparadas com os resultados encontrados para um fator k da ordem de 0,2 km-1.
+As Figura 5.26 e 5.27 trazem as distribuições de permeabilidade e porosidade ao longo da reta padrão especificada na Figura 5.15.
+Porosidade xZ
+Figura 5.26 - Distribuição de porosidade ao longo da reta padrão.
+Esta redução nas diferenças significa que a forma como a bacia é compactada afeta diretamente no resultado do cálculo da massa acumulada, visto que a redução do fator k gera uma menor influência dos métodos utilizados para a compactação em ambos os softwares. Logo, os cálculos geométricos e outras sub-rotinas, implementadas para o método FlowTrace, estão de acordo com o software PETROMOD 9.0, aferindo confiabilidade às rotinas desenvolvidas.
+Permeabilidade xZ
+Figura 5.27 - Distribuição de permeabilidade ao longo da reta padrão
+5.2.4	Caso B com parâmetro k igual a 0,1 km-1
+Finalmente, realiza-se a mesma alteração no fator k, agora para o caso mais complexo. Os resultados obtidos Tabela 5.5, novamente, mostraram-se bastante satisfatórios, sendo que apenas para as malhas refinadas as diferenças se mantiveram constantes, mas, como anteriormente citado, uma pequena discrepância nos valores de porosidade média (truncamentos na segunda casa decimal, por exemplo) pode induzir aos valores destas diferenças mesmo com uma malha de maior resolução.
+Tabela 5.5 - Massa acumulada e diferença em relação ao software PETROMOD
+H	SIBA 2008 k01 h ref	m	m ref	PETROMOD	
+248.587 261.464 248.587 261.407		249.89	Mega ton
+			diferença
+0.52	4.63	0.52	4.6		%
+Os gráficos nas Figuras 5.28 a e b mostram a distribuição de porosidade e permeabilidade ao longo da reta-padrão. São sutis as diferenças entre as retas simuladas pelo software SiBa 2008, reforçando a idéia de que as variações presentes no cálculo da massa acumulada se devem a pequenas diferenças, podendo estas serem causadas por truncamento como já foi mencionado.
+(a)
+Permeabilidade xZ (k 01)
+Permeabilidade Log(md)
+(b)
+Figura 5.28 - Distribuição de porosidade (a) e permeabilidade (b) ao longo de uma reta
+vertical.
+5.3	ANÁLISE DO REFINO DE MALHA
+Para melhor representar uma bacia sedimentar, deve-se refinar as regiões das interfaces entre as camadas para que o método de numérico possa caracterizar com uma maior fidelidade o domínio simulado. Isto se deve ao fato de que, entre uma camada e outra, existe uma singularidade, uma variação abrupta de propriedades, dependendo dos materiais que constituem estas camadas, sandstone e shale, por exemplo.
+O software comercial PETROMOD é implementado de tal forma que cada nó possui dois valores armazenados para uma mesma variável (triângulos cor magenta na Figura 5.29), rotulando estes dados em seu arquivo de saída como top e botton. Dessa forma, e somente dessa forma é possível obter um resultado de alta precisão em regiões de descontinuidade, interfaces entre camadas de materiais diferentes, com baixo custo computacional, pois não há a necessidade de refino local. Maiores detalhes sobre este método não puderam ser encontrados, já que a empresa fabricante do software não fornece informações a respeito do método aplicado.
+Figura 5.29 - Detalhe da curva de porosidade (eixo X) por profundidade (eixo Z). Círculos vermelhos ressaltam pontos que possuem mesma coordenada, localizados na interface entre camadas.
+Três refinos de malha foram utilizados para averiguar o comportamento de algumas das principais variáveis, sendo elas a permeabilidade (Figura 5.30), a porosidade (Figura 5.32), e a pressão hidrostática (Figura 5.33).
+Perni eabilidade x Z
+SIBA1261 Elem 667NÓS petromod 960 Elem 1029 Nós
+i SIBA 430 Elem e 242 nós SIBA 100 Elem e 66 Nós
+Figura 5.30 - Distribuição de permeabilidade ao longo de uma reta vertical cortando o domínio para diferentes refinos de malha.
+Este gradiente no valor das propriedades físicas interfere no cálculo dos parâmetros que envolvem a avaliação do volume acumulado nos reservatórios de petróleo. Esta variação é inerente a qualquer método numérico que realize balanços envolvendo nós na fronteira entre as duas camadas (Figura 5.31). O balanço irá envolver os subvolumes de controle de elementos das duas camadas, criando uma transição suave, como mostrado nas Figuras 5.30 e 5.32.
+Figura 5.31 - Balanço realizado para o nó na interface entre duas camadas com propriedades distintas.
+Então, para simulações de bacias sedimentares, onde camadas com propriedades distintas estão envolvidas, é necessário tomar cuidado com a distribuição dos elementos, tentando sempre manter um refino de malha nas regiões interfaciais, principalmente aquelas compostas por materiais com propriedades físicas com grande disparidade.
+Porosidade x Z
+petromod novatrapa2	¿ SI BA 430 Elem e242 nós
+SI BA 1261 E le m 667 N ós -m- SIBA 100 EI em e 66 N ós
+Figura 5.32 - Distribuição de porosidade ao longo da reta padrão cortando o domínio para diferentes refinos de malha.
+Uma consideração deve ser feita: para as variáveis que não fazem parte das propriedades do material (por exemplo, pressão e componentes da velocidade), apenas um valor é armazenado em cada nó, e o resultado fica idêntico para ambos os softwares.
+Pressão Hidrostática x Z
+P (MPa)
+SI BA 1261 El em 667NÓS petromod 960 E lem 1029 Nós SIBA430Elem e 242 nós SIBAlOOEIem e 66 Nós
+Figura 5.33 - Distribuição da pressão hidrostática ao longo da reta padrão para diferentes refinos de malha.
+CAPÍTULO VI
+6	CONCLUSÕES
+Ao longo deste trabalho, vários aspectos sobre simuladores de bacias sedimentares foram abordados, desde modelos de compactação até modelos numéricos para o tratamento da migração secundária de hidrocarbonetos. Este estudo procurou reunir informações relevantes para o desenvolvimento de ferramentas numéricas, capazes de reduzir o tempo gasto nas simulações de bacias sedimentares, bem como contribuir para um maior entendimento do processo de simulação da migração de hidrocarbonetos através do método FLOWPATH.
+A grande contribuição desta pesquisa foi o desenvolvimento de uma nova metodologia, batizada de FlowTrace. Este método baseado em ray tracing foi aplicado juntamente com o Método de Volumes Finitos baseado em Elementos em malhas não-estruturadas de triângulos, utilizando como base para isto o software SiBa 2007 (Simulador de compactação monofásica de bacias), desenvolvido por Schubert (2006), na sua dissertação de mestrado.
+Muitos desafios foram encontrados para a implementação do método FlowTrace em malhas não-estruturadas, em vista do pioneirismo deste trabalho, que não contou com pontos de referência claros quanto a grande parte da programação e algoritmos utilizados. Uma das dificuldades que se destaca é o fato de uma malha não-estruturada possuir a numeração de seus elementos e nós distribuídos de forma aleatória. Isso levou a simplificações na implementação do método e, como consequência direta disso, limitações na sua abrangência e aplicações, por exemplo, restringindo-se apenas às regiões interfaciais das camadas (horizontes).
+Outra grande dificuldade encontrada foi a ausência de um manual ou documentos que mostrassem como o método FLOWPATH é aplicado no software PETROMOD 9.0. Em decorrência disso, diversas hipóteses tiveram que ser assumidas para que a pesquisa fosse concluída.
+A Tabela 6.1 resume, de forma qualitativa, o desempenho da ferramenta FlowTrace baseado em ray tracing, desenvolvida neste trabalho.
+Tabela 6.1 - Comparação qualitativa dos modelos estudados neste trabalho com o Modelo de Compactação e Escoamento Multifásico.
+Compactação com a solução do escoamento multifásico.	Os reservatórios são automaticamente determinados. Dificuldades numéricas. Custos computacionais e tempo de simulação elevados
+Compactação monofásica associando o método FlowTrace baseado em ray tracing.	Compactação equivalente a compactação multifásica. Custos computacionais e tempo de simulação reduzidos;
+Compactação hidrostática associando o método FlowTrace baseado em ray tracing.
+Método mais rápido, porém com limitações quanto ao domínio utilizado.
+O modelo de compactação puramente hidrostático sugerido mostrou-se bastante eficaz na solução de bacias de pequenas profundidades, abaixo de mil metros de profundidade, sendo que, para a solução de bacias com maiores dimensões, a diferença na maior profundidade calculada não superou a magnitude dos 6% em relação ao método de compactação tradicional monofásico. A solução de uma mesma bacia hipotética utilizando o método de compactação hidrostático foi até cinco vezes mais rápida que a mesma bacia resolvida utilizando o método que usa o escoamento monofásico para a solução do campo de pressões, implicando um menor esforço e custo computacional.
+Os resultados obtidos com o software SiBa 2008 para o acúmulo de massa de hidrocarbonetos foram muito satisfatórios. Dois modelos distintos de bacias sedimentares foram selecionados para a realização das análises dos resultados, sendo que outros modelos testados durante o desenvolvimento desta dissertação foram excluídos para evitar uma quantidade excessiva de informações.
+Estes resultados foram comparados aos obtidos pelo software comercial PETROMOD 9.0, que utiliza o método FLOWPATH juntamente ao método de Elementos Finitos em malhas estruturadas de quadriláteros para a solução de bacias sedimentares e migração de hidrocarbonetos.
+Os resultados encontrados com o software SiBa 2008 obtiveram coerência com os resultados alcançados pelo software PETROMOD, levando à conclusão de que o modelo FlowTrace implementado está de acordo com a física do problema.
+Duas simulações utilizando as mesmas bacias, porém alterando (reduzindo o valor) o parâmetro de compactação k na lei de Athy (1930), foram realizadas, com o intuito de investigar a influência do modelo de compactação na solução final para o cálculo da massa de hidrocarbonetos acumulada. Os resultados demonstraram uma maior semelhança, visto que os deslocamentos impostos pela compactação foram menores.
+Outro fator que explica as pequenas disparidades encontradas (menores que 10% de desigualdade) é o fato de que pequenas variações em propriedades como a porosidade (por exemplo, entre 0,33 e 0,30) implicam diferenças de algumas mega- toneladas na massa armazenada no reservatório. Portanto, se houver truncamento (prática utilizada pelo software PETROMOD), também acarretará desigualdades entre os resultados obtidos por ambos os softwares.
+Finalmente, um pequeno estudo sobre o refino de malha foi realizado. O problema de bacias sedimentares envolve diversos tipos de materiais com propriedades bem distintas, resultando em descontinuidades nas regiões de transição de camadas com materiais diferentes. Estas descontinuidades somente serão representadas de forma fidedigna em um domínio numérico, se uma malha muito refinada for utilizada nas fronteiras entre estes materiais, acarretando em um gasto computacional desnecessário e excessivo. Outra maneira seria, para uma mesma posição geométrica, armazenar dois valores para a mesma variável (por exemplo, porosidade e permeabilidade), definindo uma orientação, como valor referente ao material inferior “bottom” ou material referente ao material superior “top”, somente, definindo assim a posição de armazenamento da variável para um mesmo nó. Dessa forma, seria mantida a condição de transição abrupta entre as camadas, evitando as suavizações decorrentes dos balanços de propriedades que utilizam subvolumes de controle pertencentes a elementos de materiais vizinhos com propriedades físicas singulares.
+6.1	SUGESTÕES PARA TRABALHOS FUTUROS
+O software SiBa 2008 apresentou resultados satisfatórios como ferramenta computacional e certamente poderá ser utilizado como plataforma para futuros simuladores de bacias sedimentares de petróleo. Para finalizar este documento, serão mencionadas algumas sugestões para trabalhos futuros.
+Primeiramente, sugere-se a implementação do modelo de Darcy multifásico bidimensional, e, para isto, deve também ser implementada a equação da energia para servir como dado de entrada, juntamente ao campo de pressão, no modelo de geração de massa de hidrocarbonetos a ser implementado.
+Para o modelo FlowTrace, o futuro desafio será tentar desenvolver um algoritmo capaz de vasculhar todo o domínio (não somente as regiões de interface entre camadas), procurando por combinações de elementos que possam vir a funcionar com áreas de drenagem para futuros reservatórios.
+Por último, sugere-se a continuidade do desenvolvimento da interface gráfica para o software SiBa 2008. A Figura 6.1 mostra um exemplo de como será a interface gráfica do gerenciador de arquivos e de dados de entrada para o simulador SiBa 2008. A ideia é que este gerenciador crie um arquivo com extensão “*.SIBA” e que, a partir deste arquivo, sejam gerados todos os outros necessários para a simulação (arquivos com extensão TIME, SOLID, FLUID e PARAM para parâmetros). Cada aba permitirá a edição destes arquivos, que servirão de entrada para o software.
+Figura 6.1 - Interface gráfica do software SiBa 2008.
+REFERÊNCIAS
+AAVATSMARK, I. An Introduction to Multipoint Flux Approximations for Quadrilateral Grids. Computational Geosciences, Kluwer Academic Publishers, Holanda, v. 6, n. 3-4, p. 405-432, 2002.
+ATHY, L.F. Density, porosity, and compaction of sedimentary rocks. American Association of Petroleum Geologists Bulletin, Tulsa-EUA, v. 14, p. 1-24, 1930.
+BOUR, O.; LERCHE I. Numerical modeling of abnormal fluid pressures in the Navarin Basin, Bering Sea. Marine and Petroleum Geology, Alberta-Canadá, v. 11, p. 491-500, 1994.
+BREDEHOEFT, J.D.; WESLEY, J.B.; FOUCH, T.D. Simulations of the origin of fluid pressure, fracture generation, and the movement of the fluid in the Uinta Basin. Utah American Association of Petroleum Geologists Bulletin, Tulsa-EUA, v. 78, n. 11, p. 1729-47, 1994.
+CARRUTHERS, D.; RINGROSE, P. Secondary oil migration: oil-rock contact volumes, flow behaviour and rates. In: PARNELL, J. (ed.). Dating and Duration of Fluid Flow and Fluid-rock Interaction. Geological Society of London, Special Publication, v. 144, p. 205-220, 1998.
+CHEN, Z. et al. Integrated two-dimensional modeling of fluid flow and compaction in a sedimentary basin. Computational Geosciences, v. 6, p. 545-564, 2002.
+CORDAZZO, J. et al. Representação de Reservatórios Heterogêneos e com Falhas Geológicas em Malhas Não-Estruturadas. CILAMCE - XXV Iberian Latin-American Congress on Computational Methods in Engineering, Recife, Pernambuco, Brasil, 2004a.
+CORDAZZO, J. et al. The Negative Transmissibility Issue When Using CVFEM in Petroleum Reservoir Simulation - 1. Theory, Proceedings of the 10o Brazilian Congress of Thermal Sciences and Engineering - ENCIT, 2004b.
+CORDAZZO, J. Element-based Finite Volume Method Applied to Reservoir
+Simulation. 2006. Ph.D. Thesis in Portuguese, Programa de Pós-Graduação em Engenharia Mecânica - Universidade Federal de Santa Catarina, Florianópolis, Brazil, 2006.
+DARCY, H. Les Fontaines Publiques de la Ville de Dijon. Paris (reprinted in Hubbert, 1969), 1856
+DEMBICKI, J.R.H; ANDERSEN, M.J. Secondary migration of oil: experiments supporting efficient movement of separate, buoyant oil phase along limited conduits. American Association of Petroleum Geologists Bulletin, Tulsa-EUA, v. 73, p. 1018-1021, 1989.
+FORBES, A.; UNGERER, P.; MUDFORD, B.S. A two dimensional model of overpressure development and gás accumulation in Venture Field, Eastern Canada.
+American Association of Petroleum Geologists Bulletin, Tulsa-EUA, v. 76, p. 318-38, 1992.
+FRETTE, V. et al. Buoyancy driven fluid migration in porous media. Physics Review Letters, v. 68, p. 3164-3167, 1992.
+GORDON, D.S.; FLEMINGS, PB. Generation of overpressure and compaction-driven fluid flow in a Plio-Pleistocene growth-faulted basin, Eugene Island 330, offshore Louisiana. Basin Research, v. 10, p. 177-96, 1998.
+HANTSCHEL, T.; KAUERAUF, A.I.; WYGRALA, B. Finite element analysis and ray tracing modeling of petroleum migration. Integrated Exploration Systems (IES) GmbH, Bastionstrasse, Jülich, Alemanha. p.11-19, 2O03.
+HELMIG, R. Multiphase Flow and Transport Process in the Subsurface: a Contribution to the Modeling of Hydrosystems. New York: Springer-Verlag, 1997.
+HURTADO, F.S.V. An Element-based Finite Volume Formulation for Numerical Simulation of Two-Phase Immiscible Displacement in Porous Media. 2005.
+Master Thesis in Portuguese, Programa de Pós-Graduação em Engenharia Mecânica - Universidade Federal de Santa Catarina, Florianópolis, Brazil, 2005.
+HUBBERT, M.K.; RUBEY, W.W. Role of fluid pressure in mechanics of fluid-filled porous solids and application to over thrust faulting. Geol. Soc. Am. Bull., Houston-EUA, v. 70, p.115-166, 1959.
+HUBBERT, M.K. Entrapment of petroleum under hydrodynamic conditions. American Association of Petroleum Geologists Bulletin, Tulsa-EUA, v. 37, p. 1954-2026, 1953.
+INGRAM, G.M.; URAI, J.L.; NAYLOR; M.A. Sealing processes and top seal assessment. In: MOLLER-PEDERSEN, P.; KOESTLER, A.G. (eds.). Hydrocarbon Seals: Importance for exploration and production. NPF Special Publication 7, p. 165174, 1997.
+JUANES, R. Displacement theory and multiscale numerical modeling of three-phase flow in porous media. Ph.D. Thesis. University of California, Berkeley, 2003.
+KROOS, B.M.; HANEBECK, D.; LEYTHAEUSER, D. Experimental investigation of the molecular migration of light hydrocarbons in source rocks at elevated temperature. In: DORE A.G. et al. (eds.). Basin Modelling: Advances and Applications. NPF Special Publication 3, 277-291, 1993.
+LEE, M.K.; WILLIAMS, D.D. Paleohydrology of the Delaware Basin, Western Texas: overpressure development, hydrocarbon migration and ore genesis. American Association of Petroleum Geologists Bulletin, Tulsa-EUA, v. 84, p. 961-74, 2000.
+LEYTHAEUSER, D.; SCHAEFER, R.G.; YUKLER, A. Role of diffusion in primary migration of hydrocarbons. American Association of Petroleum Geologists Bulletin, Tulsa-EUA, v. 66, p. 408-429, 1982.
+LEYTHAEUSER, D. et al. A novel approach for recognition and quantification of hydrocarbon migration effects in shale sandstone sequences. American
+Association of Petroleum Geologists Bulletin, Tulsa-EUA, v. 68, 196-219. 1984.
+MACKENZIE, A.S. et al. The expulsion of petroleum from Kimmeridge Clay sourcerocks in the area of the Brae Oilfield, UK Continental Shelf. In: BROOKS,.J.;
+GLENNIE, K.W. (eds.). Petroleum Geology of North West Europe. Graham and Trotman, p. 865-877, 1987.
+MALISKA, C.R. Computational Heat Transfer and Fluid Flow. (in Portuguese). 2 Ed., Rio de Janeiro: Livros Técnicos e Científicos Editora, 2004.
+MAUBEUGE, F.; LERCHE, I. A north Indonesian basin: geothermal and hydrocarbon generation histories. Marine and Petroleum Geology, Columbia- EUA, v. 10, p. 231-45, 1993.
+MAUBEUGE, F.; LERCHE, I. Geopressure evolution and hydrocarbon generation in a north Indonesian basin: two-dimensional quantitative modeling. Marine and Petroleum Geology, Wuhan-China, v. 104, p. 104-15, 1994.
+PERSON, M.; GARVEN, G. Hydrologic constraints on petroleum generation within continental rift basins: theory and application to the Rhine Graben. American Association of Petroleum Geologists Bulletin, Tulsa-EUA, v. 76, p. 468-88, 1992.
+PERSON, M.; TOUPIN, D.; EADINGTON, P. One-dimensional models of groundwater flow, sediment thermal history and petroleum generation within continental rift basin. Basin Research, Minnesota-EUA,v. 7, p. 81-96, 1995.
+PETROMOD, “Petroleum Systems Modeling Software &amp;amp; Services”, Integrated Exploration Systems - IES. Disponível em:&amp;lt;www.ies.de&gt;.
+SCHNEIDER, F. et al. A 3D basin model for hydrocarbon potential evaluation: Application to Congo offshore. Oil &amp;amp; Gás Science and Technology, Rueil-Malmaison Cedex-France, v. 55, n 1, p 3-13, 2000.
+SCHNEIDER, F. Basin Modeling in complex area: Examples from Eastern Venezuelan and Canadian Foothills. Oil &amp;amp; Gás Science and Technology, Rueil-Malmaison Cedex-France, v. 58, n 2, p. 313-324, 2003.
+SCHUBERT, J.E. Simulação Bidimensional de Bacias Sedimentares Utilizando o Método de Volumes Finitos Baseado em Elementos. 2006. Master Dissertation in Portuguese, Programa de Pós-Graduação em Engenharia Mecânica -Universidade Federal de Santa Catarina, Florianópolis, Brazil, 2006.
+SCHWOLTER, T.T. Mechanics of secondary hydrocarbon migration and entrapment. American Association of Petroleum Geologists Bulletin, Tulsa-EUA, v. 63, p. 723-760, 1979.
+SELLE, O.M. et al. Experimental verification of low-dip, low rate two-phase (secondary) migration by means of gamma-ray absorption. In: PARNEL, J.;
+RUFFELL, A.H.; MOLES, N.R. (eds) Geofluids '93. Contributions to an Internationall Conference on fluid evolution, migration and interaction in rocks, p. 72-75, 1993.
+SYLTA, O.; PEDERSEN, J.I.; HAMBORG, M. On the vertical and lateral distribution of hydrocarbon migration velocities during secondary migration. In: PARNELL, J.
+(ed.). Dating and Duration of Fluid Flow and Fluid-Rock Interaction. Geological Society London, Special Publication 144, p. 221-232, 1998.
+SYLTA, O. SEMI - A program for the modelling of buoyancy driven, Secondary Migration of oil and gas by means of a ray-tracing technique. IKU Report 25.2403.00/01/87, Trondheim, Norway, 51p., 1987.
+SYLTA, O. Hydrocarbon Migration Modelling and Exploration Risk. 2004. Ph.D Thesis, Norwegian University of Science and Technology (NTNU),Trondheim, Norway, 2004.
+SWEENEY, J.J.; BURNHAM, A.K. Evaluation of a simple model of vitrinite reflectance based on chemical kinetics. Bulletin of American Association of Petroleum Geologists, Tulsa-EUA, v. 74, n.10, p. 1559-1570, 1990.
+TERZAGHI, K. Die Berechnung der durchlssigkeitsziffer des tones aus dem verlauf des hydrodynamishen spannungserscheinungen, Szgber Akad. Wiss. Viena, Math-Naturwiss. Klasse IIa, v. 132, n. 3-4, p. 125-138, 1923.
+TISSOT, B.P.; WELTE, D.H. Petroleum formation and occurrence. New York: Ed. Springer-Verlag, 1984.
+TUNCAY, K.; ORTOVELA, P. Quantitative basin modeling: present state and future developments towards predictability. Geofluids, Bloomington-EUA, v. 4, p. 23-39, 2004.
+UNGERER, P. et al. Basin evaluation by integrated two-dimensional modeling of heat transfer, fluid flow, hydrocarbon generation, and migration. American Association of Petroleum Geologists Bulletin, Tulsa-EUA, v. 74, p. 309-35, 1990.
+WIECK, J.; PERSON, M.; STRAYER, L. A finite element method for simulating fault block motion and hydrothermal fluid flow within rifting basins. Water Resources Research, Minneapolis-EUA, v. 31, p. 3241-3258, 1995.</field>
+	</doc>
+</add>

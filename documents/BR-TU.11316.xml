@@ -1,0 +1,4592 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.11316</field>
+		<field name="filename">16592_000979125.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL
+INSTITUTO DE INFORMÁTICA
+
+PROGRAMA DE PÓS-GRADUAÇÃO EM COMPUTAÇÃO
+
+MARCELO DE SOUZA
+
+Um método biobjetivo de alocação de
+tráfego para veículos convencionais e
+
+elétricos
+
+Dissertação apresentada como requisito parcial para
+a obtenção do grau de Mestre em Ciência da
+Computação
+
+Orientador: Profa. Dra. Ana Lúcia Cetertich Bazzan
+Co-orientador: Prof. Dr. Marcus Rolf Peter Ritt
+
+Porto Alegre
+2015
+
+
+
+CIP — CATALOGAÇÃO NA PUBLICAÇÃO
+
+de Souza, Marcelo
+
+Um método biobjetivo de alocação de tráfego para veículos
+convencionais e elétricos / Marcelo de Souza. – Porto Alegre:
+PPGC da UFRGS, 2015.
+
+77 f.: il.
+
+Dissertação (mestrado) – Universidade Federal do Rio Grande
+do Sul. Programa de Pós-Graduação em Computação, Porto Ale-
+gre, BR–RS, 2015. Orientador: Ana Lúcia Cetertich Bazzan; Co-
+orientador: Marcus Rolf Peter Ritt.
+
+1. Veículos elétricos. 2. Alocação de tráfego. 3. Caminhos
+mínimos. 4. Otimização multiobjetivo. I. Bazzan, Ana Lúcia Ce-
+tertich. II. Ritt, Marcus Rolf Peter. III. Título.
+
+UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL
+Reitor: Prof. Carlos Alexandre Netto
+Vice-Reitor: Prof. Rui Vicente Oppermann
+Pró-Reitor de Pós-Graduação: Prof. Vladimir Pinheiro do Nascimento
+Diretor do Instituto de Informática: Prof. Luis da Cunha Lamb
+Coordenador do PPGC: Prof. Luigi Carro
+Bibliotecária-chefe do Instituto de Informática: Beatriz Regina Bastos Haro
+
+
+
+Aos meus maiores orientadores, Renato e Marlene,
+
+os quais tenho a honra de chamar pai e mãe.
+
+
+
+“O que eu faço, é uma gota no meio de um oceano.
+
+Mas sem ela, o oceano seria menor.”
+
+— MADRE TERESA DE CALCUTÁ
+
+
+
+AGRADECIMENTOS
+
+Quero dedicar algumas linhas para agradecer a todos que, de alguma forma, contribuí-
+
+ram e tornaram possível a conclusão deste trabalho.
+
+Agradeço a Deus, por ser tão generoso comigo, por me agraciar com sua presença diária
+
+e possibilitar esta conquista.
+
+Agradeço aos meus orientadores Ana Bazzan e Marcus Ritt, pela confiança, paciência
+
+e suporte. Sou grato pela oportunidade que me concederam ao me aceitarem como aluno, pela
+
+motivação e interesse que sempre demonstraram pelo trabalho e, acima de tudo, por serem
+
+grandes exemplos para minha vida profissional.
+
+Agradeço aos meus pais Renato e Marlene, por não deixarem faltar o mais importante
+
+da vida, seu amor legítimo, verdadeiro e incondicional. Agradeço pelas palavras de apoio e por
+
+estarem ao meu lado em todos os momentos. Agradeço à minha companheira Taize, por fazer
+
+parte das minhas escolhas e compreender nossa distância. Acima de tudo, agradeço por me
+
+provocar incontáveis sorrisos, os quais me deram ânimo de seguir em frente.
+
+Agradeço aos companheiros de mestrado e de laboratório, pela troca de conhecimento
+
+e de experiência e, principalmente, por tornarem meus dias alegres e agradáveis. Agradeço
+
+especialmente aos meus amigos Alejandro, Fernando e Ana Cruzat, não apenas pela leitura e
+
+pelas valiosas revisões do trabalho, mas pela companhia e amizade.
+
+Agradeço à Universidade Federal do Rio Grande do Sul (UFRGS), em especial ao Ins-
+
+tituto de Informática (INF) e ao Programa de Pós-Graduação em Computação (PPGC), pela
+
+oportunidade de estudar em um centro de pesquisa de excelência e referência internacional.
+
+Aos funcionários e professores que, através do seu trabalho, contribuíram para minha formação
+
+acadêmica.
+
+Finalmente, agradeço ao CNPq e à CAPES pelo apoio financeiro que permitiu dedicar-
+
+me integralmente às atividades do mestrado.
+
+
+
+RESUMO
+
+A busca de soluções para a mobilidade urbana que minimizem a agressão do setor de tráfego
+
+e transportes ao meio ambiente está cada vez maior. Os veículos elétricos se posicionam como
+
+uma alternativa interessante, pois reduzem a emissão de gases poluentes na atmosfera, a po-
+
+luição sonora e o consumo de petróleo. No entanto, sua limitada autonomia e a escassez de
+
+postos de recarga intimidam sua adoção. Por conta disso, políticas governamentais de incen-
+
+tivo têm sido desenvolvidas para a oferta de benefícios a quem optar por um veículo elétrico.
+
+Estima-se que dentro de poucas décadas toda a frota urbana será substituída por veículos dessa
+
+natureza. Por isso, é importante entender as mudanças no tempo de viagem e no consumo de
+
+energia oriundos da inclusão de veículos elétricos em cenários de tráfego. Trabalhos anteriores
+
+estudaram as diferenças entre os mecanismos internos de veículos convencionais e elétricos na
+
+determinação destas mudanças. Porém, dadas as características destes últimos, motoristas de
+
+veículos elétricos se preocupam com a economia de energia e podem optar por rotas diferentes.
+
+Logo, uma análise completa destes impactos deve considerar uma nova distribuição de tráfego.
+
+Este trabalho propõe um método biobjetivo de alocação de tráfego que considera o tempo de
+
+viagem e o consumo de energia para determinar a distribuição de veículos elétricos em cenários
+
+de tráfego urbano. Duas estratégias de distribuição de fluxo são propostas como mecanismos
+
+de escolha de rotas. Como parte da alocação de tráfego, é proposto um algoritmo biobjetivo de
+
+caminhos mínimos para veículos elétricos. A abordagem apresentada foi aplicada a três cená-
+
+rios distintos, onde percebeu-se uma diminuição de até 80% no consumo total de energia. Em
+
+cenários com congestionamento, observou-se um aumento de 10% no tempo de viagem. Já em
+
+cenários sem congestionamento o tempo de viagem diminuiu cerca de 2%. A recuperação de
+
+energia representa quase 6% da economia total dos veículos elétricos. Além disso, experimen-
+
+tos mostraram que investimentos na eficiência dos veículos elétricos podem resultar em uma
+
+economia de até 15% de energia.
+
+Palavras-chave: Veículos elétricos. Alocação de tráfego. Caminhos mínimos. Otimização
+
+multiobjetivo.
+
+
+
+A bi-objective method of traffic assignment for conventional and electric vehicles
+
+ABSTRACT
+
+The search for urban mobility solutions that minimize the aggression to the environment is
+
+increasing. Electric vehicles are an attractive alternative because they reduce greenhouse gas
+
+emissions, noise pollution, and oil consumption. However, their limited autonomy and the lack
+
+of charging stations restrict their popularization. Therefore, government incentive policies have
+
+been developed in order to offer benefits to those who choose an electric vehicle. It is estimated
+
+that the entire urban fleet will be replaced by these vehicles in a few decades. Therefore, it is
+
+important to understand the changes in travel time and energy consumption from the inclusion
+
+of electric vehicles in traffic scenarios. Previous works determined these changes by studying
+
+the differences between the internal engine of conventional and electric vehicles. However,
+
+given the characteristics of the latter, drivers of electric vehicles care about saving energy and
+
+may want to choose different routes. Thus, a complete analysis of these impacts should con-
+
+sider a redistribution of traffic. This work proposes a bi-objective traffic assignment method that
+
+considers the travel time and the energy consumption to determine the distribution of electric
+
+vehicles in urban traffic scenarios. We introduce two strategies for flow distribution as models of
+
+route choice. As a procedure of the traffic assignment method, we propose a bi-objective short-
+
+est path algorithm for electric vehicles. Our approach was applied to three different scenarios,
+
+which resulted in a decrease of up to 80% in total energy consumption. In congested scenarios,
+
+we observe an increase of about 10% in average travel time. In uncongested scenarios, travel
+
+time decreases about 2%. Energy recovery is almost 6% of the total savings of electric vehicles.
+
+Moreover, experiments have shown that investments in the efficiency of electric vehicles can
+
+result in up to 15% of energy savings.
+
+Keywords: Electric vehicles, traffic assignment, shortest paths, multi-objective optimization.
+
+
+
+LISTA DE ABREVIATURAS E SIGLAS
+
+AON All-OR-Nothing
+
+BPR Bureau of Public Roads
+
+BSP Bi-objective Shortest Path
+
+CM Caminho Mínimo
+
+CTS Cost per Time unit Savings
+
+DOA Dominated Area Assignment
+
+EQS Equal Share Assignment
+
+GE Greedy Energy
+
+GF Greedy Efficiency
+
+IA Incremental Assignment
+
+MAON Multi-objective All-Or-Nothing
+
+MMSA Multi-objective Method of Successive Averages
+
+MSA Method of Successive Averages
+
+MTAP Multi-objective Traffic Assignment
+
+MUE Multi-objective User Equilibrium
+
+OD Origem-Destino
+
+RPT Reference Point Assignment
+
+TAP Traffic Assignment Problem
+
+VDF Volume Delay Function
+
+
+
+LISTA DE FIGURAS
+
+Figura 2.1 Relação de dominância de Pareto ........................................................................... 19
+Figura 2.2 Exemplo de fronteira de Pareto .............................................................................. 20
+Figura 2.3 Fronteira de Pareto com soluções suportadas e não-suportadas ............................. 20
+Figura 2.4 Grafo onde o algoritmo de Dijkstra falha ............................................................... 24
+Figura 2.5 Grafo simples para roteamento de veículos elétricos ............................................. 26
+Figura 2.6 Exemplo de sistema de transporte composto por (a) oferta e (b) demanda............ 29
+Figura 2.7 Exemplo de múltiplas alocações que satisfazem o MUE ....................................... 32
+Figura 2.8 Problema de alocação de tráfego simples ............................................................... 33
+
+Figura 4.1 Representação do espaço de decisão ...................................................................... 42
+Figura 4.2 Representação do espaço de decisão restrito .......................................................... 43
+Figura 4.3 Processo de produção de energia e suas métricas de eficiência.............................. 46
+Figura 4.4 Pontos do espaço de decisão com respostas do questionário ................................. 49
+Figura 4.5 Distribuição dos limites de tempo entre os respondentes ....................................... 49
+
+Figura 5.1 Rede grade 5x5 ....................................................................................................... 52
+Figura 5.2 Rede Sioux Falls ..................................................................................................... 55
+Figura 5.3 Energia economizada com o aumento da eficiência dos veículos elétricos............ 59
+Figura 5.4 Rede Anaheim ........................................................................................................ 60
+
+
+
+LISTA DE TABELAS
+
+Tabela 2.1 Trabalhos voltados à solução do problema de caminhos minimos biobjetivo........ 25
+Tabela 2.2 Execução do método MMSA-EQS para o exemplo da Figura 2.8......................... 34
+
+Tabela 3.1 Visão geral dos trabalhos relacionados e nossa abordagem ................................... 39
+
+Tabela 4.1 Distribuição dos limites de tempo entre os respondentes....................................... 49
+
+Tabela 5.1 Redes utilizadas nos experimentos ......................................................................... 50
+Tabela 5.2 Resultados para o cenário sintético ........................................................................ 53
+Tabela 5.3 Resultados para a rede Sioux Falls ......................................................................... 56
+Tabela 5.4 Resultados para a rede Sioux Falls com eficiência well-to-wheel .......................... 57
+Tabela 5.5 Resultados para a rede Sioux Falls com perturbação das elevações....................... 58
+Tabela 5.6 Economia de energia obtida por recuperação em veículos elétricos ...................... 59
+Tabela 5.7 Resultados para a rede Anaheim ............................................................................ 61
+
+Tabela 7.1 Coordenadas geográficas e elevações para os vértices da rede Sioux Falls ........... 75
+
+Tabela 8.1 Resultados completos para a rede Sioux Falls com perturbação das elevações
+(GE).................................................................................................................................... 76
+
+Tabela 8.2 Resultados completos para a rede Sioux Falls com perturbação das elevações
+(GF).................................................................................................................................... 77
+
+
+
+LISTA DE ALGORITMOS
+
+2.1 Algoritmo de caminhos mínimos de Dijkstra .................................................................... 23
+
+2.2 Algoritmo genérico de rotulamento de vértices................................................................. 26
+
+2.3 Algoritmo genérico de caminhos mínimos restrito............................................................ 28
+
+2.4 Método All-Or-Nothing (AON) ......................................................................................... 30
+
+2.5 Método iterativo de alocação de tráfego ............................................................................ 31
+
+4.1 Algoritmo biobjetivo de correção de rótulos para veículos elétricos................................. 46
+
+
+
+SUMÁRIO
+
+1 INTRODUÇÃO .................................................................................................................... 13
+1.1 Contribuições e objetivos................................................................................................. 14
+1.2 Organização do texto ....................................................................................................... 16
+2 FUNDAMENTAÇÃO TEÓRICA ....................................................................................... 17
+2.1 Otimização multiobjetivo ................................................................................................ 17
+2.2 Grafos ................................................................................................................................ 21
+2.3 Caminhos mínimos .......................................................................................................... 22
+2.3.1 O algoritmo de Dijkstra .................................................................................................. 23
+2.3.2 Caminhos mínimos biobjetivo ........................................................................................ 24
+2.3.3 Caminhos mínimos para veículos elétricos..................................................................... 26
+2.4 Problema da alocação de tráfego .................................................................................... 28
+2.5 Problema da alocação multiobjetivo de tráfego ............................................................ 31
+2.5.1 Distribuição do fluxo baseada em critérios autoritários.................................................. 33
+2.5.2 Distribuição do fluxo baseada nos objetivos do usuário ................................................. 34
+2.6 Resumo.............................................................................................................................. 35
+3 TRABALHOS RELACIONADOS ..................................................................................... 36
+3.1 Abordagens baseadas nas diferenças entre veículos convencionais e elétricos .......... 36
+3.2 Abordagens baseadas em caminhos mínimos ............................................................... 37
+3.3 Abordagens baseadas no problema da alocação de tráfego......................................... 38
+3.4 Resumo.............................................................................................................................. 39
+4 ALOCAÇÃO BIOBJETIVO DE TRÁFEGO PARA VEÍCULOS ELÉTRICOS ......... 41
+4.1 Estratégias de distribuição de fluxo para veículos elétricos ......................................... 41
+4.2 Modelo de consumo de energia ....................................................................................... 43
+4.3 Algoritmo biobjetivo de caminhos mínimos para veículos elétricos ........................... 46
+4.4 Questionário ..................................................................................................................... 48
+5 EXPERIMENTOS ............................................................................................................... 50
+5.1 Definição dos parâmetros ................................................................................................ 50
+5.2 Cenário sintético – Rede grade 5x5 ................................................................................ 51
+5.2.1 Descrição do cenário....................................................................................................... 51
+5.2.2 Análise dos resultados..................................................................................................... 52
+5.3 Cenário real – Rede Sioux Falls...................................................................................... 54
+5.3.1 Descrição dos cenários.................................................................................................... 54
+5.3.2 Análise dos resultados..................................................................................................... 55
+5.4 Cenário real – Rede Anaheim ......................................................................................... 60
+5.4.1 Descrição do cenário....................................................................................................... 61
+5.4.2 Análise dos resultados..................................................................................................... 61
+5.5 Discussão ........................................................................................................................... 62
+6 CONSIDERAÇÕES FINAIS .............................................................................................. 66
+6.1 Contribuições.................................................................................................................... 66
+6.2 Conclusões ........................................................................................................................ 66
+6.3 Trabalhos futuros ............................................................................................................. 67
+REFERÊNCIAS ...................................................................................................................... 69
+APÊNDICE A - DADOS COMPLEMENTARES PARA A REDE SIOUX FALLS......... 75
+APÊNDICE B - SIOUX FALLS COM PERTURBAÇÃO DAS ELEVAÇÕES................. 76
+
+
+
+13
+
+1 INTRODUÇÃO
+
+O transporte de pessoas, bens e serviços tem desempenhado um papel fundamental no
+
+desenvolvimento da sociedade. Os problemas oriundos do crescimento do número de veículos
+
+já não são exclusivos de grandes centros e trazem desafios no desenvolvimento de soluções para
+
+a mobilidade urbana. Além dos problemas de congestionamento e do consequente aumento no
+
+tempo de viagem dos motoristas, questões ambientais ganharam destaque nos últimos anos. A
+
+poluição do ar (AMATO et al., 2014), poluição sonora (ÖHRSTRÖM et al., 2006) e alterações
+
+climáticas (HICKMAN; BANISTER, 2014) são alguns exemplos. Além disso, com o aumento
+
+da frota de veículos previsto para as próximas décadas, não haverá petróleo suficiente para a
+
+produção de combustíveis.
+
+Os veículos elétricos se posicionam como uma alternativa aos veículos convencionais,
+
+contribuindo para a redução dos impactos ambientais oriundos do transporte. Eles possuem um
+
+sistema que utiliza energia elétrica para propulsão, dispensando o uso de combustíveis. Com
+
+seu sistema elétrico, eles não emitem poluentes e reduzem drasticamente os ruídos do motor,
+
+uma vez que não realizam combustão. Além disso, seu mecanismo interno permite a recupera-
+
+ção de parte da energia excedente durante desaceleração e em declives, a qual é desperdiçada
+
+na forma de calor pelos veículos convencionais. Esta energia é transformada em eletricidade
+
+e armazenada na bateria pelo processo conhecido como frenagem regenerativa. Em suma, a
+
+adoção de veículos elétricos tornou-se uma peça chave na busca de soluções sustentáveis para
+
+o transporte, principalmente urbano.
+
+A limitada autonomia dos veículos elétricos e a escassez de postos de recarga implicam
+
+em uma resistência por parte das pessoas quanto à sua adoção. Por isso, sua penetração no
+
+mercado tem sido lenta. Por conta dos benefícios da substituição de veículos convencionais
+
+por elétricos, vários países oferecem incentivos a motoristas que optarem pela troca. No Brasil,
+
+por exemplo, há isenção dos impostos de importação destes veículos. Em outros lugares são
+
+oferecidos descontos na sua aquisição. No Canadá, os veículos elétricos recebem uma placa
+
+diferenciada, permitindo o uso de pistas e vagas de estacionamento exclusivas. Os investimentos
+
+na tecnologia do motor e da bateria destes veículos se intensificaram nos últimos anos, buscando
+
+agregar um melhor desempenho e uma maior autonomia. Além disso, postos de recarga estão
+
+sendo disponibilizados e são cada vez mais comuns. Finalmente, políticas de popularização dos
+
+veículos elétricos e dos seus benefícios têm sido desenvolvidas e veiculadas na mídia, de modo
+
+a motivar sua adoção.
+
+Dados os benefícios e incentivos governamentais, se espera que em duas ou três décadas
+
+
+
+14
+
+os veículos elétricos substituam grande parte dos veículos nas ruas e a eletricidade seja o com-
+
+bustível alternativo mais viável (GILBERT; PERL, 2010). Por exemplo, a Comissão Europeia
+
+planeja substituir gradativamente todos os veículos convencionais urbanos até 2050 (EURO-
+
+PEAN COMISSION, 2011). Frente a este novo contexto, é importante entender os impactos da
+
+substituição de veículos convencionais por elétricos em termos de mudanças no tempo de via-
+
+gem e no consumo de energia. Estudos anteriores que objetivam medir estes impactos analisam
+
+as diferenças entre os mecanismos internos de cada tipo de veículo. É notório que os benefí-
+
+cios da inclusão de veículos elétricos são, em sua maior parte, consequência da maior eficiência
+
+do sistema elétrico na conversão do combustível (eletricidade) na energia utilizada pelo motor.
+
+No entanto, dada a limitada autonomia destes veículos, a escassez de postos de recarga, o alto
+
+tempo gasto para a recarga e a possibilidade de recuperar energia pela frenagem regenerativa,
+
+motoristas de veículos elétricos não consideram apenas o tempo de viagem ao optar por uma
+
+rota, mas também o consumo de energia. Logo, estes motoristas podem optar por rotas dife-
+
+rentes, resultando em diferentes custos em energia e tempo de viagem. Uma análise completa
+
+deve considerar este aspecto. Neste trabalho, o problema da alocação de tráfego é utilizado para
+
+determinar a forma como os veículos elétricos se distribuem e como estes impactos variam em
+
+função desta distribuição.
+
+1.1 Contribuições e objetivos
+
+Este trabalho tem como objetivo propor um método para a determinação da distribuição
+
+de veículos elétricos, com base não apenas no tempo de viagem, mas também no consumo de
+
+energia. Para isso, é proposto um modelo baseado no problema da alocação de tráfego, que
+
+dada uma demanda de viagens e uma rede viária, calcula a distribuição dos veículos e os flu-
+
+xos resultantes considerando efeitos do congestionamento. O consumo de energia é incluído
+
+como um objetivo adicional ao tempo de viagem, tornando o modelo biobjetivo. Veículos con-
+
+vencionais escolhem suas rotas minimizando apenas seu tempo de viagem, enquanto veículos
+
+elétricos consideram os dois custos simultaneamente. Duas estratégias de escolha de rotas para
+
+veículos elétricos são propostas, modelando a tomada de decisão destes motoristas em busca da
+
+simulação de ambientes reais.
+
+Os veículos elétricos possuem a capacidade de recuperar energia pela frenagem regene-
+
+rativa. Em alguns casos, a recuperação de energia pode ser maior que seu consumo. Por isso,
+
+na modelagem do problema através de grafos, alguns arcos podem apresentar pesos negativos.
+
+Além disso, estes veículos possuem duas restrições de bateria. A primeira delas impede que
+
+
+
+15
+
+seja recuperada mais energia que a capacidade de armazenamento, enquanto a segunda garante
+
+um consumo menor que a energia disponível. Por conta destes aspectos, algoritmos tradicio-
+
+nais de caminhos mínimos não podem ser utilizados. Portanto, este trabalho também propõe
+
+um algoritmo biobjetivo para a determinação dos caminhos mínimos baseado no rotulamento
+
+de vértices.
+
+Para calcular o consumo de energia foi adotado um modelo físico detalhado, capaz de
+
+determinar o gasto energético com maior precisão. As análises conduzidas se baseiam em
+
+cenários com populações mistas de veículos convencionais (movidos a gasolina) e elétricos
+
+(conhecidos na literatura por fully electric vehicle ou ainda battery electric vehicle, excluídos
+
+os híbridos), variando as parcelas de cada população.
+
+Com o modelo proposto, este trabalho analisa e mede as mudanças no tempo de viagem
+
+e no consumo de energia causadas pela inclusão de veículos elétricos em cenários de tráfego.
+
+Para isso, foram determinadas algumas questões de pesquisa:
+
+1. Como os custos em tempo de viagem e consumo de energia mudarão com a inclusão de
+
+veículos elétricos e qual o impacto sofrido pela população de veículos convencionais?
+
+2. Qual o efeito da recuperação de energia pela frenagem regenerativa no consumo total de
+
+energia?
+
+3. Qual o retorno esperado do investimento tecnológico para melhoria da eficiência do sis-
+
+tema elétrico (bateria e motor), em termos de economia de energia?
+
+Através dos experimentos conduzidos, percebeu-se uma diminuição de até 80% no con-
+
+sumo total de energia. Em cenários com congestionamento se observou um aumento de 10% no
+
+tempo de viagem. Por outro lado, em cenários com menor congestionamento há uma diminui-
+
+ção de aproximadamente 2% no tempo de viagem. Os veículos convencionais são prejudicados
+
+com a presença dos veículos elétricos em cenários de congestionamento. Nos demais, a troca
+
+de rota dos veículos elétricos, que aceitam um maior tempo de viagem em busca de economia
+
+de energia, beneficia os veículos convencionais, diminuindo seu tempo de viagem. A recupe-
+
+ração de energia representa quase 6% da economia total dos veículos elétricos. Além disso,
+
+experimentos mostraram que investimentos na eficiência dos veículos elétricos podem resultar
+
+em uma economia de até 15% de energia.
+
+
+
+16
+
+1.2 Organização do texto
+
+O Capítulo 1 contextualiza o tema do trabalho e apresenta sua motivação, objetivos
+
+e questões de pesquisa. Além disso, sumariza suas principais contribuições. O Capítulo 2
+
+apresenta os conceitos fundamentais ao trabalho, detalha os aspectos básicos de otimização
+
+multiobjetivo e de grafos e apresenta uma visão geral sobre caminhos mínimos, detalhando o
+
+problema na versão biobjetivo e a sua aplicação para veículos elétricos. Finalmente, apresenta
+
+o problema da alocação de tráfego e sua versão multiobjetivo. O Capítulo 3 apresenta os tra-
+
+balhos relacionados e posiciona este trabalho frente aos demais. Os trabalhos relacionados são
+
+divididos em três grupos: abordagens que analisam impactos dos veículos elétricos estudando
+
+suas diferenças em relação aos veículos convencionais, abordagens baseadas no problema dos
+
+caminhos mínimos para veículos elétricos e abordagens baseadas no problema da alocação de
+
+tráfego. O Capítulo 4 apresenta a abordagem proposta, detalhando as estratégias de distribui-
+
+ção de fluxo, o modelo de consumo de energia adotado e o algoritmo de correção de rótulos
+
+para veículos elétricos. Além disso, detalha o questionário conduzido para a determinação dos
+
+valores de alguns parâmetros. O Capítulo 5 detalha os experimentos conduzidos, os cenários
+
+propostos e seus resultados. Além disso, apresenta uma discussão com base nas questões de
+
+pesquisa supracitadas. O Capítulo 6 apresenta as ideias finais do trabalho, suas contribuições,
+
+as conclusões obtidas e os trabalhos futuros.
+
+
+
+17
+
+2 FUNDAMENTAÇÃO TEÓRICA
+
+Este capítulo apresenta e detalha os conceitos utilizados para o desenvolvimento da abor-
+
+dagem proposta (Capítulo 4). A Seção 2.1 introduz os conceitos fundamentais de otimização
+
+multiobjetivo. A Seção 2.2 apresenta uma introdução a grafos. A Seção 2.3 aborda o problema
+
+de caminhos mínimos, detalhando sua versão biobjetivo e sua aplicação a veículos elétricos. A
+
+Seção 2.4 apresenta o problema da alocação de tráfego, enquanto a Seção 2.5 detalha sua versão
+
+multiobjetivo. Por fim, a Seção 2.6 resume e conclui o capítulo.
+
+2.1 Otimização multiobjetivo
+
+Um problema de otimização consiste na busca de uma solução que minimize ou maxi-
+
+mize o valor de uma determinada função objetivo (MICHIELS; AARTS; KORST, 2007). Pro-
+
+blemas comumente encontrados na literatura possuem um objetivo único, o que não se aplica
+
+a grande parte dos cenários reais, os quais apresentam um maior número de objetivos a serem
+
+satisfeitos simultaneamente (ZHOU et al., 2011). Ao adquirir um veículo, o comprador de-
+
+seja a maior potência, pagando o mínimo possível. Melhorar a potência e diminuir o preço
+
+simultaneamente é algo que não é possível de se atingir. De fato, grande parte dos problemas
+
+multiobjetivo se caracterizam por conter objetivos antagônicos, onde a melhora de um deles
+
+resulta na piora dos demais. Este aspecto aumenta a complexidade do problema.
+
+Um problema de otimização multiobjetivo pode ser formalizado como
+
+minimizar ou maximizar f(x) = (f1(x),f2(x), ...,fM(x)),
+
+sujeito a g(x) ? 0,
+
+h(x) = 0,
+
+onde x é chamado vetor de variáveis de decisão, dado por x = (x1,x2, ...,xn)T e f(x) é o
+
+conjunto de objetivos a ser otimizado. O espaço formado pelos vetores de decisão é chamado
+
+espaço de busca. O espaço formado por todos os possíveis valores para as funções objetivo é
+
+chamado espaço de soluções. As funções g e h representam o conjunto de restrições de desi-
+
+gualdades e igualdades, as quais definem a região de soluções factíveis do espaço de soluções,
+
+a qual é denotada por S.
+
+Problemas de otimização multiobjetivo não necessariamente possuem uma solução ótima
+
+única, que otimize simultaneamente todos os objetivos (YANG, 2008), o que concorre a três
+
+
+
+18
+
+tipos de problemas. O primeiro deles consiste nos objetivos totalmente conflitantes, onde a
+
+melhora de qualquer objetivo implica em uma piora em algum dos demais. Para este caso,
+
+qualquer solução viável é também uma solução ótima. O segundo tipo consiste em problemas
+
+com objetivos correlacionados e, portanto, não conflitantes. Neste caso, qualquer melhora em
+
+um dos objetivos implica na melhora dos demais, o que permite tratar o problema agregando
+
+todos os objetivos em uma grandeza escalar única e, assim, transformando-o em mono-objetivo
+
+(GOH; TAN, 2009). Por fim, o terceiro e mais comum tipo de problema consiste em objeti-
+
+vos parcialmente conflitantes. Neste caso, não existe uma relação definida entre a otimalidade
+
+dos distintos objetivos, implicando na necessidade de se buscar uma compensação entre eles
+
+(YANG, 2008; GOH; TAN, 2009).
+
+Considerando, sem perda de generalidade, um problema de otimização multiobjetivo
+
+como a minimização de M objetivos, uma solução x domina uma solução y quando, para todos
+
+os objetivos, x é melhor ou igual a y e existe ao menos um objetivo para o qual a solução x é
+
+estritamente melhor que a solução y. A dominância é denotada por x ? y e dada por
+
+x ? y : ?i ?{1,2, ...,M}, fi(x) ? fi(y) e ?j ?{1,2, ...,M}, fj(x) &amp;lt;fj(y).
+
+Dadas duas soluções x e y, uma delas pode melhorar um conjunto de objetivos, mas
+
+piorar outros. Nestes casos, não é possível determinar qual a melhor solução e, portanto, as
+
+mesmas são ditas incomparáveis. Esta relação é denotada por x ? y e dada por
+
+x ? y : ?i ?{1,2, ...,M}, fi(x) &gt; fi(y) e ?j ?{1,2, ...,M}, fj(x) &amp;lt;fj(y).
+
+A Figura 2.1 ilustra o conceito de dominância para um problema com dois objetivos.
+
+Tomando como referência a solução A (marcada em preto) e tendo como base um problema de
+
+minimização, as soluções marcadas em verde dominam a solução A, pois melhoram a solução
+
+para os dois objetivos, sem piorar nem manter nenhum deles. As soluções em azul são domina-
+
+das pela solução A, uma vez que para ambos objetivos a solução A é estritamente melhor. As
+
+soluções em vermelho são incomparáveis à solução A, uma vez que melhoram um dos objeti-
+
+vos, mas pioram outro. Por fim, a solução A é dominada fracamente ou domina fracamente as
+
+soluções marcadas em branco, pois mantém um dos objetivos e melhora ou piora o outro. De
+
+acordo com os traços da Figura 2.1, são determinadas quatro regiões de dominância no espaço
+
+de busca. Os quadrantes superior esquerdo e inferior direito (cinza claro) constituem as regiões
+
+incomparáveis. O quadrante inferior esquerdo (branco) é a região de soluções dominadoras,
+
+enquanto o quadrante superior direito (cinza escuro) constitui a região de soluções dominadas
+
+
+
+19
+
+Figura 2.1 – Relação de dominância de Pareto
+
+f2
+
+f1
+
+A
+
+Fonte: Adaptado de Goh e Tan (2009)
+
+(GOH; TAN, 2009).
+
+Uma solução x? é não-dominada (ou Pareto ótima) caso não exista uma solução x que
+
+a domine, isto é, não existe uma solução que melhore algum objetivo sem piorar ao menos um
+
+dos demais (YANG, 2008). Em outras palavras, uma solução é não-dominada se não existe
+
+nenhuma solução no quadrante de soluções dominadoras. O conjunto de todas as soluções não-
+
+dominadas formam a fronteira (ou curva) de Pareto P . Estas soluções dominam as demais que
+
+não pertencem à fronteira de Pareto, enquanto são incomparáveis entre si (LUKE, 2013). A
+
+fronteira de Pareto é dada por
+
+P = {x ? S | 6?x? ? S : x? ? x}.
+
+Para um problema de minimização biobjetivo, a Figura 2.2 apresenta uma possível fron-
+
+teira de Pareto, onde são observadas a região de soluções dominadas (região branca) e as res-
+
+pectivas soluções não-dominadas. Identificar a fronteira de Pareto não é uma tarefa trivial, uma
+
+vez que os problemas costumam ter funções objetivo complexas e antagônicas. Por isso, algu-
+
+mas abordagens para o tratamento e solução de problemas de otimização multiobjetivo foram
+
+desenvolvidas nas últimas décadas, as quais buscam encontrar as soluções Pareto em um tempo
+
+considerável ou, para os casos mais complexos, atingir uma aproximação satisfatória.
+
+Uma abordagem comum ao problema é o método da soma ponderada (também co-
+
+nhecido por escalarização), que consiste em definir um grau de importância para cada obje-
+
+tivo. Esta abordagem transforma o problema em uma versão mono-objetivo, agregando to-
+
+dos os objetivos em uma função generalizada (YANG, 2008). Dessa forma, para um con-
+
+junto de M objetivos, o método da soma ponderada define uma função generalizada como
+
+
+
+20
+
+Figura 2.2 – Exemplo de fronteira de Pareto
+
+f2
+
+f1
+
+Fronteira de Pareto
+
+Soluções não-dominadas
+
+Fonte: Adaptado de Goh e Tan (2009)
+
+Figura 2.3 – Fronteira de Pareto com soluções suportadas e não-suportadas
+
+f2
+
+f1
+Soluções suportadas
+Soluções não-suportadas
+
+F(x) = ?1f1(x)+?2f2(x)+· · ·+?MfM(x), onde os coeficientes ?i representam os pesos para
+
+cada função objetivo original e
+?M
+
+i=1 ?i = 1.
+
+Este método é utilizado quando já se conhece a ponderação correta dos objetivos. Nos
+
+demais casos, determinar uma ponderação adequada é uma tarefa difícil (MOONEY; WINS-
+
+TANLEY, 2006). Além disso, o uso de uma função generalizada permite descobrir apenas
+
+soluções suportadas da fronteira de Pareto, que são aquelas que se encontram na borda do en-
+
+voltório convexo da região factível de soluções. A Figura 2.3 mostra uma fronteira de Pareto
+
+com soluções não-dominadas suportadas e não-suportadas para um problema de minimização
+
+biobjetivo.
+
+
+
+21
+
+2.2 Grafos
+
+Um grafo é uma estrutura abstrata que especifica relacionamentos entre elementos de
+
+um conjunto. Estes elementos são chamados vértices e os relacionamentos são expressos por
+
+arestas (ou arcos) que conectam vértices. O grafo é representado por dois conjuntos G = (V,A),
+
+onde V é o conjunto de vértices e A é o conjunto de arcos. Cada arco é representado por um
+
+par (i,j), onde i,j ? V .
+
+Um grafo simples possui no máximo um arco conectando cada par ordenado de vérti-
+
+ces. O grafo é chamado multigrafo caso existam arcos paralelos. Um grafo é dito rotulado
+
+quando existem atribuições associadas aos seus vértices ou arcos, como rótulos ou identificado-
+
+res. No caso de existirem valores numéricos associados aos elementos do grafo, estes valores
+
+são chamados de pesos e o grafo é dito ponderado. É comum a utilização de pesos nos arcos
+
+que representem o custo da relação entre os dois respectivos vértices. Para redes de tráfego,
+
+são utilizados pesos que representam custos de viagem como a distância ou o tempo de tráfego
+
+entre os pontos. Muitas vezes, estes pesos são determinados por funções que determinam o
+
+custo com base nas características da via e na quantidade de veículos.
+
+A ordem de um grafo é definida pela cardinalidade do seu conjunto de vértices |V |, en-
+
+quanto seu tamanho é definido pela cardinalidade do seu conjunto de arcos |A|. Dois vértices
+
+são adjacentes ou vizinhos, caso exista um arco que os conecte. Quando dois arcos compar-
+
+tilham um mesmo vértice, eles são adjacentes. Se todos os pares de vértices de um grafo são
+
+vizinhos, o grafo é completo. Em grafos direcionados, um vértice j é sucessor de i quando
+
+existe um arco com conexão de i para j. Neste mesmo caso, i é dito antecessor de j. O con-
+
+junto de sucessores de um vértice i é denotado por N+(i). Da mesma forma, o conjunto de
+
+antecessores de um vértice i é denotado por N?(i). Um grafo é conexo quando, para todo o par
+
+de vértices, existe pelo menos um caminho entre si.
+
+Um percurso consiste em um conjunto de vértices v0,v1, ...,vn, tal que para todo par vi?1
+
+e vi existe um arco com origem em vi?1 e destino em vi. Caso v0 = vn, tem-se um percurso
+
+fechado. Se todos os vértices são distintos, o percurso é chamado de caminho. Um percurso
+
+com n ? 3, v0 = vn e todos os demais vértices distintos é chamado de ciclo. Em um grafo
+
+não ponderado, o comprimento de um caminho é dado pelo número de arestas que o compõem.
+
+Para grafos ponderados, o comprimento de um caminho é igual à soma dos pesos das arestas
+
+que o compõem.
+
+Em muitas aplicações de grafos, os arcos suportam algum tipo de fluxo, como é o caso de
+
+redes de distribuição de água, energia elétrica ou movimentação de veículos. Problemas desta
+
+
+
+22
+
+natureza se baseiam em uma demanda composta pelo fluxo total, um vértice de origem i e um
+
+vértice de destino j. A tarefa consiste em determinar os caminhos, de origem i e destino j, pelos
+
+quais o fluxo passará, de modo a minimizar ou maximizar o custo associado (DIESTEL, 2010).
+
+A 1a lei de Kirchoff trata da conservação de fluxo em uma rede, onde o fluxo que chega em um
+
+vértice de passagem deve ser igual ao fluxo que sai deste mesmo vértice. Portanto, se um vértice
+
+possui um conjunto {f1,f2, ...,fr} de fluxos de entrada e um conjunto {fr+1,fr+2, ...,fp} de
+
+fluxos de saída,
+?r
+
+i=1 fi =
+?p
+
+j=r+1 fj. Jungnickel e Schade (2013) abordam em detalhes os
+
+aspectos principais de fluxos em redes.
+
+2.3 Caminhos mínimos
+
+A determinação de caminhos mínimos (ou caminho mais curto) é um problema comum
+
+sobre grafos. Dado um grafo ponderado G = (V,A), um vértice de origem s e um vértice
+
+de destino t, o problema do caminho mínimo consiste em determinar o caminho com menor
+
+custo partindo de s e chegando a t. Uma variante consiste em determinar a árvore de caminhos
+
+mínimos desde a origem até cada vértice do grafo (conhecidos como single source shortest
+
+paths). O custo do caminho é dado pela soma dos custos de cada arco que o compõe. Caso
+
+aplicável, o algoritmo deve identificar a impossibilidade de atingir o vértice t a partir de s. Para
+
+isso, é atribuído ? como a distância entre s e t. Caso nenhuma distância menor é encontrada,
+
+o algoritmo detecta a impossibilidade de chegar até o destino a partir da origem s. O problema
+
+do caminho mínimo é formalizado como
+
+min
+?
+
+(i,j)?A
+
+cijfij,
+
+sujeito a
+?
+
+j?N+(i)
+
+fij ?
+?
+
+j?N?(i)
+
+fji =
+
+??????
+?????
+1 se i = s,
+
+0 se i 6= s,t,
+
+?1 se i = t,
+
+?i ? V,
+
+fij ?{0,1},?(i,j) ? A,
+
+onde cij é o custo associado ao arco (i,j) e fij é o fluxo no arco (i,j), sendo igual a 1 se
+
+o arco pertence ao caminho e igual a 0, caso contrário. A primeira restrição corresponde à
+
+conservação de fluxo no sistema. Goldbarg (2012) apresenta uma visão geral dos principais
+
+trabalhos relacionados ao problema do caminho mínimo.
+
+
+
+23
+
+2.3.1 O algoritmo de Dijkstra
+
+O algoritmo de Dijkstra (1959) é o mais conhecido na determinação de caminhos míni-
+
+mos. Ele pode ser aplicado a grafos com pesos maiores ou iguais a zero nos arcos, calculando
+
+a árvore de caminhos mínimos a partir da origem s. No final de sua execução, é conhecida a
+
+distância do menor caminho desde a origem até cada vértice. Além disso, o predecessor de
+
+cada vértice é armazenado para rastreamento dos caminhos. O algoritmo pode ser interrompido
+
+assim que a distância mínima até o vértice de destino t é calculada. O pseudocódigo para o al-
+
+goritmo de Dijkstra é apresentado no Algoritmo 2.1, sendo c(i) o custo para se atingir o vértice
+
+i a partir de s, p(i) o predecessor do vértice i no caminho desde a origem e cij o custo do arco
+
+(i,j).
+
+Algoritmo 2.1: Algoritmo de caminhos mínimos de Dijkstra
+Entrada: Grafo G = (V,E), vértices de origem s e destino t
+Saída: Árvore de caminhos mínimos a partir de s
+
+1 para cada vértice v ? V faça
+2 c(v) ??
+3 p(v) ? indefinido
+4 c(s) ? 0
+5 Q ? s
+6 enquanto Q 6= ? faça
+7 seleciona o vértice i ? Q que apresenta o menor c(i)
+8 Q ? Q\{i}
+9 para cada j ? N+(i) faça
+
+10 c? ? c(i) + cij
+11 se c? &amp;lt;c(j) então
+12 c(j) ? c?
+13 p(j) ? i
+14 Q ? Q?{j}
+
+O algoritmo atribui custo ? e predecessor indefinido para todos os vértices do grafo,
+
+exceto para o vértice de origem, o qual recebe custo zero (linhas 1 a 5). O algoritmo mantém
+
+uma lista de vértices Q e, a cada iteração, seleciona o vértice i que apresenta menor custo até si
+
+(linha 8). Cada sucessor j de i é explorado e o custo até i mais o custo entre i e j é propagado
+
+(linhas 10 e 11). Caso o custo calculado seja menor que o armazenado em j, o caminho desde
+
+o vértice i é menor que o caminho explorado anteriormente (linha 12). Neste caso, o custo
+
+e o predecessor de j são atualizados e j é adicionado à lista para ser explorado (linhas 13 a
+
+15). Dessa forma, o algoritmo garante que ao explorar um vértice, o menor custo possível está
+
+armazenado nele e, consequentemente, o menor caminho desde s foi encontrado.
+
+
+
+24
+
+Figura 2.4 – Grafo onde o algoritmo de Dijkstra falha
+
+B
+
+A
+
+C
+
+4
+
+-3
+
+3
+
+Fonte: Sierksma e Ghosh (2010)
+
+O algoritmo de Dijkstra reconhecidamente falha na determinação de caminhos mínimos
+
+com a presença de pesos negativos nos arcos. Neste caso, o algoritmo não consegue determinar
+
+o caminho mais curto explorando uma única vez cada vértice. O grafo apresentado pela Fi-
+
+gura 2.4 exemplifica este aspecto. Considerando o vértice A como origem e C como destino, o
+
+algoritmo de Dijkstra retornará o caminho A-C como de menor custo (igual a 3), quando o ca-
+
+minho mínimo é o A-B-C (com custo 1). Outros algoritmos, como o de Bellman (1958) e Ford
+
+(1956) (conhecido como o algoritmo de Bellman-Ford), permitem a determinação de caminhos
+
+mínimos mesmo com pesos negativos nos arcos.
+
+2.3.2 Caminhos mínimos biobjetivo
+
+Caminhos mínimos com um objetivo são amplamente estudados na literatura. Porém,
+
+ambientes reais possuem um maior número de objetivos. Para a modelagem destes ambientes,
+
+são incluídos novos custos aos arcos, os quais atuam como objetivos independentes. No caso
+
+de redes de tráfego, custos comuns são a distância, tempo de viagem, consumo de combustível
+
+ou custo monetário. Com mais de um custo e, assim, mais de um objetivo, não necessariamente
+
+existe um caminho mínimo único. Um caminho pode oferecer um menor custo em um dos
+
+objetivos enquanto outros caminhos apresentam um custo menor para outros. Dessa forma,
+
+algoritmos de caminhos mínimos com mais de um objetivo calculam um conjunto de caminhos
+
+não-dominados (RAITH; EHRGOTT, 2009).
+
+A adoção de dois objetivos é a extensão natural dos caminhos mínimos tradicionais e é
+
+conhecido como problema dos caminhos mínimos biobjetivo (BSP, do inglês bi-objective shor-
+
+test path). Diferente da versão com objetivo único, este problema é conhecidamente NP-completo
+
+
+
+25
+
+Tabela 2.1 – Trabalhos voltados à solução do problema de caminhos minimos biobjetivo
+Referência Abordagem utilizada
+Hansen (1980) Atribuição de rótulos
+Daellenbach e Kluyver (1980) Correção de rótulos
+Climaco e Martins (1982) K-ésimo caminho mínimo
+Martins (1984) Atribuição de rótulos
+Corley e Moon (1985) Correção de rótulos
+Henig (1986) Correção de rótulos
+Brumbaugh-Smith e Shier (1989) Correção de rótulos
+Mote, Murthy e Olson (1991) Duas fases
+Tung e Chew (1988) Atribuição de rótulos
+Skriver e Andersen (2000) Correção de rótulos
+
+(SERAFINI, 1987), sendo formalizado como
+
+min
+?
+
+(i,j)?A
+
+c1,ijfij,
+
+min
+?
+
+(i,j)?A
+
+c2,ijfij,
+
+sujeito a
+?
+
+j?N+(i)
+
+fij ?
+?
+
+j?N?(i)
+
+fji =
+
+??????
+?????
+1 se i = s,
+
+0 se i 6= s,t,
+
+?1 se i = t,
+
+?i ? V,
+
+fij ?{0,1},?(i,j) ? A,
+
+onde ck,a é o custo do objetivo k no arco a.
+
+Um resumo dos trabalhos voltados à solução do BSP é apresentado na Tabela 2.1. Skri-
+
+ver e Andersen (2000) mostram que abordagens baseadas em rotulamento de vértices (atribui-
+
+ção e correção de rótulos) são mais eficientes. Por isso, algoritmos de rotulamento são mais
+
+comuns e amplamente estudados (veja Tabela 2.1). Estes algoritmos associam rótulos aos vér-
+
+tices, os quais representam os custos dos caminhos encontrados até si. No término de sua
+
+execução, os rótulos do vértice de destino representam os caminhos não-dominados desde a
+
+origem. Nos algoritmos de atribuição, os vértices são selecionados em uma ordem que garante
+
+que seus rótulos não sofram mais alterações. Neste caso, um vértice explorado não retorna
+
+à lista para exploração. Esta abordagem exige que não existam custos negativos, obtendo os
+
+caminhos não-dominados visitando cada vértice uma só vez. Nos algoritmos de correção, a
+
+cada iteração os rótulos do vértice explorado são atualizados e somente no final da execução se
+
+obtém os caminhos definitivos.
+
+Um esquema genérico para um algoritmo de rotulamento de vértices para o BSP é apre-
+
+
+
+26
+
+Figura 2.5 – Grafo simples para roteamento de veículos elétricos
+
+s
+
+y
+
+x
+
+t
+
+2
+
+-1
+
+-1
+
+2
+
+Fonte: Adaptado de Artmeier et al. (2010)
+
+sentado no Algoritmo 2.2 (SKRIVER, 2000). A cada iteração, um vértice i é selecionado e
+
+expandido. Na expansão, os custos desde o vértice i até o sucessor são somados aos custos
+
+previamente armazenados em i, gerando novos rótulos. Estes são adicionados ao conjunto de
+
+rótulos do sucessor, eliminando possíveis soluções dominadas. O que diferencia algoritmos
+
+de rotulamento é a estratégia de seleção de vértices, a forma como os rótulos são gerados e o
+
+critério de parada.
+
+Algoritmo 2.2: Algoritmo genérico de rotulamento de vértices
+Entrada: Grafo G = (V,A), vértices de origem s e de destino t
+Saída: Conjunto de caminhos não-dominados de s para todo v ? V
+
+1 Inicialização: Rótulos(s) ?{(0,0)}
+2 enquanto critério de parada não é satisfeito faça
+3 Seleciona um vértice i
+4 Expande i, propagando seus rótulos aos sucessores
+5 fim
+
+2.3.3 Caminhos mínimos para veículos elétricos
+
+Veículos elétricos possuem a capacidade de recuperar energia em declives e durante
+
+desaceleração pela frenagem regenerativa. Ao utilizar o consumo de energia como peso nos
+
+arcos, alguns custos podem ser negativos quando a recuperação de energia é superior ao con-
+
+sumo, o que impede a utilização de algoritmos como o de Dijkstra. A simples adoção de um
+
+algoritmo que trate pesos negativos nos arcos, como o de Bellman-Ford, não é suficiente para
+
+a aplicação com veículos elétricos, pois eles adicionalmente possuem restrições de bateria. A
+
+Figura 2.5 apresenta um exemplo sobre o qual estas restrições serão discutidas. Os valores nos
+
+arcos correspondem ao custo em energia (medidos em J) para atravessar a via.
+
+Partindo do vértice s com destino em t existem dois caminhos possíveis: s ? x ? t e
+
+s ? y ? t. Em uma abordagem tradicional de caminhos mínimos, ambas as opções produzem
+
+
+
+27
+
+o mesmo custo final de 1J. Considerando que o veículo inicie no vértice s contendo apenas 1J
+
+disponível na bateria, o caminho s ? x ? t torna-se infactível, pois não há energia suficiente
+
+para superar o arco (s,x). Considerando que o veículo inicie seu trajeto no vértice s com a
+
+bateria completamente carregada, o caminho s ? x ? t torna-se mais atrativo, pois produz
+
+um custo final de 1J, enquanto o caminho s ? y ? t produz um custo final de 2J, já que a
+
+recuperação no arco (s,y) não é possível pelo fato da bateria estar completamente carregada.
+
+Logo, estas duas restrições da bateria devem ser adicionadas ao algoritmo, não permitindo que
+
+seja utilizada mais energia do que a quantidade disponível e evitando a recuperação de mais
+
+energia do que a capacidade máxima da bateria. Estes aspectos podem alterar os resultados de
+
+caminhos mínimos e tornar alguns deles inviáveis (ARTMEIER et al., 2010). A implementação
+
+destas restrições dá origem a uma nova variante de caminhos mínimos, conhecida na literatura
+
+por caminhos mínimos energeticamente eficientes (energy efficient shortest paths).
+
+Artmeier et al. (2010) propõem a adição das restrições supracitadas ao algoritmo ge-
+
+nérico de caminhos mínimos (GALLO; PALLOTTINO, 1986; CHERKASSKY; GOLDBERG;
+
+RADZIK, 1996), dando origem ao algoritmo genérico de caminhos mínimos restrito, apresen-
+
+tado no Algoritmo 2.3. Por conta dos pesos negativos, vértices podem ser visitados mais de uma
+
+vez, o que aumenta o tempo de execução. De acordo com os autores, ao utilizar a estratégia de
+
+fila (FIFO) para exploração de vértices, o algoritmo apresenta uma complexidade em tempo de
+
+O(n3) para grafos com pesos positivos e negativos.
+
+O parâmetro Cmax representa a capacidade máxima da bateria e Uv a quantidade de
+
+energia que pode ser armazenada na bateria (seu estado) ao passar pelo vértice v. Logo, sendo
+
+c(v) o custo para se atingir o vértice v, Uv = Cmax ? c(v). O algoritmo considera que o
+
+veículo não necessariamente inicia seu trajeto com a bateria totalmente carregada. Logo, Us
+
+é recebido como entrada no algoritmo e é computado como o custo em energia do vértice de
+
+origem (linha 5). O custo de um determinado vértice nunca pode ser menor que zero, pois
+
+representaria uma recuperação de energia superior à capacidade de armazenamento da bateria.
+
+E ainda, o custo não pode ser maior que Cmax, pois tornaria o caminho infactível por não haver
+
+energia suficiente para realizá-lo. A primeira restrição é implementada pela linha 12, onde um
+
+custo zero é selecionado caso o custo computado seja negativo, enquanto a segunda restrição é
+
+implementada pela linha 13, onde nenhum custo superior à capacidade da bateria é considerado.
+
+
+
+28
+
+Algoritmo 2.3: Algoritmo genérico de caminhos mínimos restrito
+Entrada: Grafo G = (V,A) e respectivas funções de custo para os arcos, vértice de
+
+origem s, capacidade da bateria Cmax e o estado inicial da bateria Us
+Saída: Árvore de caminhos mínimos a partir de s
+
+1 para cada vértice v ? V faça
+2 c(v) ??
+3 p(v) ? indefinido
+4 c(s) ? 0 + Us
+5 Q ?{s}
+6 enquanto Q 6= ? faça
+7 seleciona um vértice i de Q
+8 Q ? Q\{i}
+9 para cada j ? N+(i) faça
+
+10 c? ? c(i) + cij
+11 c? ? max(c?,0)
+12 se c? &amp;lt;c(j) e c? ? Cmax então
+13 c(j) ? c?
+14 p(j) ? i
+15 Q ? Q?{j}
+
+2.4 Problema da alocação de tráfego
+
+Para estudar o problema da alocação de tráfego (TAP, do inglês traffic assignment pro-
+
+blem) o sistema de transporte deve ser concebido como um composto de dois elementos: oferta
+
+e demanda (BAZZAN; KLÜGL, 2013). A oferta consiste na infraestrutura, composta por vias
+
+e intersecções entre vias, enquanto a demanda consiste nas viagens, divididas em pares de
+
+origem-destino (conhecidos como pares OD). O TAP consiste no processo de alocar a demanda
+
+na infraestrutura da rede (oferta), definindo quais vias serão utilizadas para conduzir as viagens
+
+desde suas origens até seus destinos (PATRIKSSON, 1994).
+
+Neste trabalho, o TAP é formalizado da seguinte maneira. Um grafo G = (V,A) re-
+
+presenta a oferta, onde os arcos representam as vias e os vértices representam as intersecções
+
+entre elas. O grafo é comumente chamado de rede. A demanda é representada por uma matriz
+
+D = (dij) (também chamada matriz OD), com dij a demanda de fluxo de veículos/hora entre
+
+a origem i e o destino j. A Figura 2.6a apresenta um exemplo simples de rede, a respectiva
+
+matriz OD é apresentada na Figura 2.6b. Para cada arco a ? A, uma função ca : R+ ? R
+
+mapeia o fluxo fa ao custo em atravessá-lo. Comumente, adota-se uma das funções de custo
+
+que determinam o tempo de viagem para atravessar o respectivo arco, conhecidas como Volume
+
+Delay Functions (VDF). Para instâncias reais, frequentemente aplica-se a função Bureau of
+
+
+
+29
+
+Figura 2.6 – Exemplo de sistema de transporte composto por (a) oferta e (b) demanda
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+(a)
+
+1 2 3 4 5 6
+1 0 0 10 25 0 40
+2 10 0 15 10 20 20
+3 0 0 0 5 0 30
+4 0 0 0 0 0 10
+5 0 0 20 20 0 0
+6 0 0 0 0 0 0
+
+(b)
+
+Public Roads (1964) (BPR)
+
+ca(fa) = t
+0
+a
+
+(
+1 + ? (fa/ca)
+
+?
+)
+, (2.1)
+
+onde t0a é o tempo gasto na velocidade máxima permitida, sem efeitos de congestionamento
+
+(também conhecido por free-flow travel time, ou tempo em fluxo livre) e ca é a capacidade
+
+nominal da via. As constantes ? e ? servem para configurar o crescimento do tempo em função
+
+do fluxo de veículos na via.
+
+Este trabalho se baseia no primeiro princípio de Wardrop (1952), conhecido como equi-
+
+líbrio do usuário (ou user equilibrium). Este princípio considera que os motoristas (também
+
+chamados usuários) selecionam seus caminhos de forma não-colaborativa, agindo em busca do
+
+seu próprio benefício na minimização do tempo de viagem. No equilíbrio do usuário, todos
+
+os caminhos utilizados entre uma origem e um destino possuem o mesmo tempo de viagem,
+
+enquanto caminhos não utilizados possuem tempo maior. Dessa forma, nenhum usuário possui
+
+incentivo em trocar de rota.
+
+Existem vários métodos para resolver o TAP. Patriksson (1994) apresenta uma descrição
+
+dos principais métodos desenvolvidos desde a concepção do problema, enquanto Inoue e Ma-
+
+ruyama (2012) e Perederieieva et al. (2015) analisam os métodos que compõem o estado-da-arte
+
+em termos de eficiência. Conforme Ortúzar e Willumsen (2011), estes métodos possuem um
+
+mecanismo de cálculo de caminhos mínimos e um método de escolha de rotas para a determi-
+
+nação da distribuição do fluxo.
+
+A mais simples abordagem ao problema consiste em calcular os caminhos mínimos de
+
+cada par OD com base em um custo fixo para cada arco e alocar todo o fluxo a este caminho.
+
+Esta abordagem é conhecida como All-Or-Nothing (AON) (CHICAGO AREA TRANSPORTA-
+
+TION STUDY, 1960) e não considera os efeitos do congestionamento no momento da alocação.
+
+Claramente não é um método eficaz para a modelagem de cenários reais, pois não converge
+
+para o equilíbrio do usuário. No entanto, este método serve de base para o desenvolvimento
+
+
+
+30
+
+de abordagens incrementais e iterativas (PATRIKSSON, 1994). O Algoritmo 2.4 apresenta o
+
+pseudocódigo para o método AON.
+
+Algoritmo 2.4: Método All-Or-Nothing (AON)
+Entrada: Rede G = (V,A) e demanda D
+Saída: Fluxo total atribuído a cada arco a ? A
+
+1 Determina os custos fixos para cada arco a ? A (tempo em fluxo livre)
+2 para cada d ? D faça
+3 Determina o caminho mínimo r
+4 Atribui todo o fluxo d ao caminho r: fr ? d
+
+Baseado na abordagem AON, o método Incremental Assignment (IA) (MARTIN; MA-
+
+NHEIM, 1965) consiste em alocar as viagens de forma incremental. A demanda é dividida em
+
+frações e alocadas incrementalmente utilizando o método AON. No entanto, cada alocação rea-
+
+lizada utiliza o fluxo acumulado da iteração anterior na determinação dos custos para o cálculo
+
+dos caminhos mínimos (ORTÚZAR; WILLUMSEN, 2011). A determinação do tamanho e da
+
+quantidade de frações é uma dificuldade dos métodos incrementais. Além disso, o fluxo alocado
+
+em um incremento não é realocado. Por isso, estes métodos não garantem a convergência para
+
+o equilíbrio do usuário. Por exemplo, caso alguma das primeiras iterações aloque muito fluxo a
+
+um arco com custo baixo e baixa capacidade, o equilíbrio de Wardrop pode ser comprometido e
+
+o algoritmo converge para uma má solução. Permitir que usuários troquem de rota com o passar
+
+das iterações é fundamental para a convergência ao equilíbrio do usuário.
+
+Métodos iterativos foram desenvolvidos em busca do contorno dos problemas apresen-
+
+tados por métodos incrementais. Ortúzar e Willumsen (2011) detalham o método iterativo de
+
+alocação de tráfego como uma abordagem que permite a realocação de fluxos atribuídos em
+
+iterações anteriores. Nesta abordagem, o fluxo atual de cada arco é calculado como uma com-
+
+binação linear do fluxo da iteração anterior com o fluxo auxiliar da iteração atual, o qual é
+
+determinado pelo método AON. Sendo n a iteração atual, f
+?
+a o fluxo alternativo calculado pela
+
+alocação AON e ? ? [0,1] o coeficiente de aceitação do fluxo alternativo, o fluxo atual é deter-
+
+minado por fna = (1??)fn?1a + ?f
+?
+a.
+
+A determinação do valor de ? é o fator que diferencia as implementações de algorit-
+
+mos iterativos. Uma primeira estratégia consiste em atribuir a ele um valor constante. Smock
+
+(1962) propõe o uso de ? = 1/(n + 1), dando origem ao método Successive Averages (MSA).
+
+Sheffi (1985) mostra que utilizando esta abordagem o método produz uma solução que con-
+
+verge ao equilíbrio do usuário. O Algoritmo 2.5 apresenta o pseudocódigo do método iterativo
+
+de alocação de tráfego.
+
+
+
+31
+
+Algoritmo 2.5: Método iterativo de alocação de tráfego
+Entrada: Rede G = (V,A) e demanda D
+Saída: Fluxo total atribuído a cada arco a ? A
+
+1 n ? 0
+2 enquanto critério de convergência não é satisfeito faça
+3 Calcula os custos de cada arco a ? A
+4 Realiza alocação AON e obtém os fluxos auxiliares f
+
+?
+a
+
+5 Realiza a combinação linear fna = (1??)fn?1a + ?f
+?
+a
+
+6 n ? n + 1
+
+Outro aspecto que influencia a qualidade da solução é o critério de parada. Uma possi-
+
+bilidade é fixar um número máximo de iterações. Outra estratégia consiste em estimar o quão
+
+próximo está a solução atual do equilíbrio de Wardrop. Neste sentido, uma abordagem comu-
+
+mente utilizada consiste em parar quando a diferença de fluxo nos arcos em relação à iteração
+
+anterior não é mais significativa, implicando na aproximação ao equilíbrio (ORTÚZAR; WIL-
+
+LUMSEN, 2011).
+
+2.5 Problema da alocação multiobjetivo de tráfego
+
+Alguns autores estudam a aplicação do TAP com mais de um objetivo (TZENG; CHEN,
+
+1993; DIAL, 1996; NAGURNEY, 2000), dando origem ao problema da alocação multiobjetivo
+
+de tráfego (MTAP, do inglês multi-objective traffic assignment problem). Assim como a maioria
+
+dos esforços nesta direção, estes estudos se baseiam na determinação de pesos para cada função
+
+de custo, gerando uma função de custo generalizada. Raith et al. (2014) propõem o tratamento
+
+de cada custo como um objetivo independente, apresentando o TAP como um problema de
+
+otimização multiobjetivo. O conceito de equilíbrio do usuário é alterado a fim de considerar
+
+múltiplos objetivos. O multi-objective user equilibrium (MUE) implica na distribuição do trá-
+
+fego de modo que nenhum usuário é capaz de melhorar o valor de uma função objetivo, sem
+
+piorar o valor de outro objetivo mediante uma troca unilateral de rota.
+
+Um aspecto importante a ser considerado no MTAP é que, uma vez que mais de um
+
+objetivo determinam a distribuição do fluxo, não existe um único estado de equilíbrio, mas
+
+múltiplos estados que satisfazem o MUE. Considerando duas funções de custo simples c1(fa) =
+
+fa + da e c2(fa) = fa a serem minimizadas, onde fa é o fluxo no arco a e da é a sua distância,
+
+ambas as distribuições apresentadas na Figura 2.7 são alocações em MUE. A rede é composta
+
+por um vértice de origem s e um vértice de destino t, com dois possíveis caminhos entre eles.
+
+
+
+32
+
+Figura 2.7 – Exemplo de múltiplas alocações que satisfazem o MUE
+
+s t
+
+(s ? t)1 : 200m
+100 veículos
+
+80 veículos
+(s ? t)2 : 300m
+
+(a)
+
+s t
+
+(s ? t)1 : 200m
+110 veículos
+
+70 veículos
+(s ? t)2 : 300m
+
+(b)
+
+Sendo o custo de um caminho representado pelo vetor (c1,c2), a alocação (a) possui custo
+
+(300,100) para (s ? t)1 e (380,80) para (s ? t)2. Usuários do caminho (s ? t)1 não possuem
+
+incentivo de trocar para (s ? t)2, pois apesar de melhorar o custo c2, piora o custo c1. Usuários
+
+do caminho (s ? t)2 não possuem incentivo de trocar para (s ? t)1, pois apesar de melhorar
+
+o custo c1, piora o custo c2. Logo, é uma alocação em MUE. Analisando a alocação (b), o
+
+caminho (s ? t)1 possui custo (310,110), enquanto o caminho (s ? t)2 possui custo (370,70).
+
+Igualmente, usuários do caminho (s ? t)1 não possuem incentivo de trocar para (s ? t)2, pois
+
+apesar de melhorar o custo c2, piora o custo c1. Usuários do caminho (s ? t)2 não possuem
+
+incentivo de trocar para (s ? t)1, pois apesar de melhorar o custo c1, piora o custo c2. Logo, é
+
+uma alocação em MUE.
+
+Raith et al. (2014) propõem o método Multiobjective All-Or-Nothing (MAON). A prin-
+
+cipal diferença em relação ao método mono-objetivo está na substituição do custo de cada arco
+
+por um vetor de custos e na determinação dos caminhos mínimos (linha 3 do Algoritmo 2.4).
+
+Como existem múltiplos custos em cada arco, não existe apenas um caminho mínimo, mas um
+
+conjunto de caminhos não-dominados. Com isso, o algoritmo para a determinação de cami-
+
+nhos mínimos deve ser substituído por algum método multiobjetivo (CLIMACO; MARTINS,
+
+1982; RAITH; EHRGOTT, 2009; GUERRIERO; MUSMANNO, 2001). Igualmente, o Multi-
+
+objective Method of Successive Averages (MMSA) é a versão multiobjetivo para o método
+
+MSA, substituindo a alocação AON (linha 4 do Algoritmo 2.5) pela alocação MAON. Após
+
+a determinação do conjunto de caminhos não-dominados, os usuários devem ser distribuídos
+
+entre eles de acordo com alguma estratégia. Raith et al. (2014) propõem algumas abordagens
+
+para isso, as quais são analisadas neste trabalho em dois grupos: abordagens com critério auto-
+
+ritário e abordagens baseadas nos objetivos do usuário.
+
+
+
+33
+
+Figura 2.8 – Problema de alocação de tráfego simples
+
+s t
+
+x
+
+1
+
+1?
+x
+
+?
+2
+
+1?
+x
+
+?3
+
+x
+
+?1
+
+2.5.1 Distribuição do fluxo baseada em critérios autoritários
+
+O primeiro método de distribuição de fluxo é chamado Equal Share Assignment (EQS) e
+
+divide o fluxo igualmente entre os caminhos não-dominados. Sendo rij1 ,r
+ij
+2 , ...,r
+
+ij
+k os caminhos
+
+não-dominados para o par OD dij, o fluxo do caminho s é
+
+fs =
+
+???
+??
+
+dij
+k
+
+se s ?{rij1 , ...,r
+ij
+k },
+
+0 caso contrário.
+
+A segunda abordagem de distribuição do fluxo é o Reference Point Assignment (RPT).
+
+É determinado um ponto de referência no espaço de decisão, o qual representa o conjunto de
+
+custos desejado pelos usuários. Caminhos mais próximos ao ponto de referência recebem maior
+
+fluxo do que caminhos mais distantes. Raith et al. (2014) propõem formas de calcular o fluxo
+
+em função da distância ao ponto de referência, bem como formas de calcular esta distância.
+
+As abordagens EQS e RPT distribuem os usuários de forma forçada na rede e, por isso,
+
+são baseadas em critérios autoritários. Para que um método determine uma distribuição que sa-
+
+tisfaça o equilíbrio do usuário, seus objetivos devem ser levados em conta. No caso da alocação
+
+de tráfego tradicional, o objetivo dos usuários é a minimização do seu tempo de viagem. Logo,
+
+o fluxo é distribuído pelo caminho que forneça o menor tempo de tráfego. No caso multiobje-
+
+tivo, forçar a distribuição de fluxo de acordo com critérios externos aos objetivos dos usuários
+
+não necessariamente produz resultados que satisfaçam o equilíbrio do usuário.
+
+A Figura 2.8 apresenta um problema de alocação de tráfego para análise do método EQS.
+
+O fluxo total de 1 veículo/hora deve ser alocado com origem s e destino t. Os dois caminhos
+
+possíveis de s a t são chamados A (s ? t) e B (s ? x ? t). Cada arco a possui um coeficiente
+
+?a associado e duas funções de custo c1,a = fa e c2,a = fa ? ?a. O caminho A recebe um fluxo
+
+x a cada iteração, enquanto o caminho B recebe um fluxo 1?x. Com isso, o caminho A possui
+
+c1 = x e c2 = x? ?1, enquanto o caminho B possui c1 = ?2x + 2 e c2 = ?2x + 2? ?2 ? ?3.
+
+O equilíbrio do usuário é atingido quando ao menos um dos objetivos piora com uma
+
+
+
+34
+
+Tabela 2.2 – Execução do método MMSA-EQS para o exemplo da Figura 2.8
+Iter.
+(n)
+
+Custo A
+(c1; c2)
+
+Custo B
+(c1; c2)
+
+Soluções
+Pareto
+
+x 1 ? x
+
+1 (0; -0,8) (0; -0,5) {A} 1 0
+2 (1; 0,2) (0; -0,5) {B} 0,5 0,5
+3 (0,5; -0,3) (0,5; 0) {A} 0,67 0,33
+4 (0,67; -0,13) (0,33; -0,17) {B} 0,5025 0,4975
+5 (0,5025; -0,2975) (0,4975; -0,0025) {A, B} 0,502 0,498
+6 (0,502; -0,298) (0,498; -0,002) {A, B} 0,50166 0,49834
+
+. . . . . . . . . . . . 0,5 0,5
+
+troca de rota. Logo, existem dois casos que configuram o equilíbrio: (1) c1,A ? c1,B ? c2,A ?
+
+c2,B e (2) c1,A ? c1,B ? c2,A ? c2,B (considerando ao menos uma das desigualdades estrita).
+
+Sendo ? = ??1 + ?2 + ?3 e aplicando as funções adotadas, pelo caso (1) a alocação está em
+
+equilíbrio quando 2/3 ? ?/3 ? x ? 2/3, enquanto pelo caso (2) o equilíbrio é atingido se
+
+2/3 ? x ? 2/3? ?/3. A Tabela 2.2 apresenta a execução do método MMSA com distribuição
+
+de fluxo EQS para os valores ?1 = 0,8, ?2 = 0,2 e ?3 = 0,3. Neste caso, aplicando os valores
+
+das constantes ?a nas condições (1) e (2), o equilíbrio é atingido com valores 2/3 ? x ? 0,767.
+
+Como pode-se observar, a execução do método utilizando distribuição de fluxo EQS converge
+
+para x = 0,5, que não satisfaz as condições para o equilíbrio. Logo, uma distribuição de fluxo
+
+forçada não garante a convergência para o equilíbrio do usuário.
+
+2.5.2 Distribuição do fluxo baseada nos objetivos do usuário
+
+Raith et al. (2014) exploram dois outros métodos de distribuição de fluxo que conside-
+
+ram os objetivos dos usuários, evitando os problemas dos métodos EQS e RPT. O primeiro é o
+
+Cost per unit Time Saving (CTS) e foi aplicado a um problema de alocação de tráfego com dois
+
+objetivos: tempo de viagem e custo monetário, onde caminhos mais rápidos possuem um custo
+
+mais elevado. Para cada caminho não-dominado, o método determina a relação entre o custo e
+
+o tempo economizado com base no caminho mais barato. Este valor é chamado de slope e pode
+
+ser visto como o custo-benefício do respectivo caminho. Cada usuário possui um valor que está
+
+disposto a pagar em busca de uma economia em tempo. Com base neste valor, o método aloca
+
+cada usuário ao caminho mais rápido cujo slope seja aceitável por ele. Apesar de contornar os
+
+problemas dos métodos baseados em critérios autoritários, o método CTS não é realista ao con-
+
+siderar que um usuário disposto a pagar $8 para economizar 2 minutos também estaria disposto
+
+a pagar $80 para uma economia de 20 minutos (RAITH et al., 2014).
+
+O segundo método é o Dominated Area Assignment (DOA). Neste método, cada usuário
+
+
+
+35
+
+possui um ponto ideal no espaço de decisão e seleciona um dos caminhos não-dominados con-
+
+forme a área em que este ponto se encontra. Caso o ponto ideal esteja na área de dominância
+
+de um dos caminhos não-dominados, este é selecionado. Caso o ponto ideal esteja na área de
+
+dominância de dois ou mais caminhos não-dominados, um deles é escolhido de acordo com a
+
+preferência do usuário. Caso não exista nenhum caminho que domine o ponto ideal, o usuário
+
+deve escolher o caminho mais rápido com custo menor que o seu ponto ideal, ou escolher o
+
+caminho mais próximo. Raith et al. (2014) propõem técnicas para a distribuição nestes casos
+
+específicos.
+
+Ao considerar os objetivos do usuário como fatores determinantes da distribuição do
+
+fluxo entre os caminhos não-dominados, o método de alocação de tráfego é capaz de produzir
+
+um conjunto de fluxos que satisfaz os critérios do MUE. Um segundo aspecto a ser considerado
+
+no momento de adotar alguma estratégia de distribuição é o quão bem representa cenários reais,
+
+produzindo resultados capazes de simular sua movimentação veicular.
+
+2.6 Resumo
+
+Este capítulo apresentou os conceitos fundamentais à proposta deste trabalho, discu-
+
+tindo definições de otimização multiobjetivo, grafos, caminhos mínimos e alocação de tráfego.
+
+O TAP é aplicado na simulação da movimentação veicular em sistemas de transporte, deter-
+
+minando como os veículos se distribuem na rede de tráfego. Diferente da determinação de
+
+caminhos mínimos, o TAP considera os efeitos do congestionamento ao aplicar métodos incre-
+
+mentais e iterativos utilizando funções de custo dependentes do fluxo de veículos.
+
+Ao considerar o consumo de energia como um custo adicional ao tempo de viagem, o
+
+modelo se torna biobjetivo, o que implica na existência de múltiplas alocações em equilíbrio
+
+do usuário. Para sua aplicação com veículos elétricos, o algoritmo de caminhos mínimos deve
+
+endereçar os dois aspectos apresentados: computar o conjunto de caminhos não-dominados
+
+(biobjetivo) e considerar as restrições da bateria. Além disso, o modelo exige a adoção de
+
+alguma estratégia de distribuição do fluxo entre estes caminhos. A aplicação do MTAP com
+
+veículos elétricos carece de estratégias mais adequadas, uma vez que as discutidas neste capítulo
+
+não são realistas para este contexto.
+
+
+
+36
+
+3 TRABALHOS RELACIONADOS
+
+Com a popularização dos veículos elétricos, muitas pesquisas foram desenvolvidas com
+
+o objetivo de estudar os novos cenários de tráfego e medir as alterações em consumo de energia
+
+e emissão de poluentes. Este capítulo detalha estes trabalhos, analisando as técnicas utilizadas
+
+por eles. A Seção 3.1 apresenta os trabalhos que analisam os impactos dos veículos elétricos
+
+através do estudo das diferenças entre seu motor e o de veículos convencionais e, portanto, não
+
+consideram a forma como eles se distribuem e escolhem suas rotas. A Seção 3.2 apresenta os
+
+trabalhos que determinam a distribuição dos veículos elétricos através do cálculo dos caminhos
+
+mínimos. A Seção 3.3 apresenta os trabalhos que consideram os efeitos do congestionamento
+
+através do problema da alocação de tráfego com veículos elétricos. A Seção 3.4 resume os
+
+trabalhos relacionados e os compara com a abordagem proposta.
+
+3.1 Abordagens baseadas nas diferenças entre veículos convencionais e elétricos
+
+Diversos trabalhos se baseiam nas diferenças entre veículos convencionais e elétricos,
+
+estudando o impacto da substituição de uma categoria por outra. Granovskii, Dincer e Ro-
+
+sen (2006) apresentam uma análise detalhada de veículos convencionais, elétricos, híbridos e
+
+movidos a hidrogênio, comparando seus aspectos econômicos e ambientais. Os aspectos econô-
+
+micos consistem no custo dos veículos e dos seus combustíveis, enquanto os fatores ambientais
+
+se limitam à emissão de poluentes. Os autores analisaram todo o ciclo de vida dos veículos,
+
+identificando que os elétricos e híbridos possuem vantagens, reduzindo a emissão de poluentes.
+
+Porém, a forma como a energia elétrica é produzida também deve ser considerada no momento
+
+de analisar os impactos ambientais, uma vez que algumas formas de produção agridem o meio
+
+ambiente.
+
+Bradley e Frank (2009) apresentam um estudo da arquitetura e do funcionamento de
+
+veículos híbridos plug-in e como suas características contribuem para a diminuição do consumo
+
+de petróleo e para a redução na emissão de poluentes. Na sua análise, os autores consideram
+
+hábitos de direção obtidos por meio de questionários e padrões recomendados pela Society
+
+of Automotive Engineers (1999). Veículos com diferentes características foram considerados
+
+na determinação da redução no consumo de gasolina. A economia chega a 88% em veículos
+
+menores e com maior autonomia de bateria e a 50% em veículos com menor autonomia. A
+
+redução na emissão de poluentes também varia, podendo chegar a 67% para veículos com maior
+
+autonomia.
+
+
+
+37
+
+Alguns trabalhos usam dados de veículos convencionais obtidos de sistemas de navega-
+
+ção na determinação dos impactos da substituição de veículos convencionais por elétricos. Estes
+
+dados contêm informações sobre rotas e padrões de condução que são utilizados em modelos
+
+de consumo de veículos elétricos. Gonder et al. (2007) consideram veículos convencionais, hí-
+
+bridos e híbridos plug-in e se baseiam em dados de padrões de condução obtidos de sistemas de
+
+navegação de 227 veículos da área metropolitana de St. Louis, EUA. Estes dados apresentam
+
+eventos de aceleração e frenagem que são utilizados para determinar o consumo de combustí-
+
+vel. Os autores identificaram uma redução de até 66% no consumo de combustível comparando
+
+os veículos híbridos e híbridos plug-in com os convencionais.
+
+Wang, Zhang e Ouyang (2015) estudam a redução no consumo de energia com a inclusão
+
+de veículos elétricos na cidade de Pequim, China. Eles utilizam padrões de condução obtidos
+
+através de sistemas de navegação de mais de 1000 veículos, aplicando modelos de consumo de
+
+energia sobre estes dados. Como resultados, os autores identificaram uma redução máxima de
+
+83%. Os dados obtidos para a região estudada apresentaram características de baixa velocidade,
+
+longo tempo ocioso e mudanças bruscas de velocidade, fatores que afetam negativamente o
+
+consumo em veículos convencionais e favorecem os bons resultados para veículos elétricos. As
+
+baixas distâncias observadas na região contribuem para posicionar os veículos elétricos como
+
+uma boa alternativa aos motoristas.
+
+Os trabalhos supracitados apresentam análises detalhadas dos impactos de veículos elé-
+
+tricos. No entanto, apesar da melhor eficiência dos veículos elétricos ser responsável pela maior
+
+parcela deste impacto, sua completa análise deve considerar que eles escolhem suas rotas de
+
+forma diferenciada em relação aos veículos convencionais. É importante determinar qual a eco-
+
+nomia de energia relacionada às diferentes rotas dos veículos elétricos e qual a consequência
+
+no tempo de viagem, uma vez que motoristas e autoridades ambientais se preocupam com estes
+
+aspectos.
+
+3.2 Abordagens baseadas em caminhos mínimos
+
+Assim como Artmeier et al. (2010), que propõem um algoritmo para o problema dos ca-
+
+minhos mínimos energeticamente eficientes (Seção 2.3.3), outros autores exploram o problema
+
+da determinação de rotas para veículos elétricos. O algoritmo proposto por Artmeier et al.
+
+(2010) visita vértices mais de uma vez, aumentando seu tempo de execução. Para contornar este
+
+problema, Eisner, Funke e Storandt (2011) utilizam as funções potenciais de Johnson (1973)
+
+para transformar os pesos negativos em valores positivos que preservem os caminhos mínimos
+
+
+
+38
+
+originais. Dessa forma, os autores diminuem a complexidade do algoritmo para O(n log n+m).
+
+Baum et al. (2014) estendem o problema para o tratamento do tempo de viagem junta-
+
+mente ao consumo de energia em um modelo biobjetivo. Para determinar rotas que resultem em
+
+um equilíbrio entre ambos os custos, os autores consideram que os motoristas não necessaria-
+
+mente trafegam por uma via na sua velocidade máxima, mas podem optar por uma velocidade
+
+inferior para economizar energia. Para modelar esta característica, cada arco é substituído por
+
+um conjunto de arcos com diferentes velocidades. Os autores propõem uma série de técnicas
+
+para aumentar a eficiência e algumas heurísticas que aproximam a curva Pareto em um tempo
+
+aceitável. Storandt (2012) considera ainda estações de recarga em um algoritmo que calcula
+
+caminhos mínimos considerando o tempo gasto, consumo de energia e o número de recargas
+
+durante a viagem. Os objetivos são modelados como restrições na determinação dos caminhos
+
+mínimos e algumas estratégias para melhoria na eficiência do algoritmo são propostas. Sachen-
+
+bacher et al. (2011) e Baum et al. (2013) também apresentam melhorias em algumas abordagens
+
+para o problema e estudam seus resultados sobre instâncias continentais.
+
+3.3 Abordagens baseadas no problema da alocação de tráfego
+
+A utilização do TAP com veículos elétricos foi estudada por Jiang, Xie e Waller (2012),
+
+dando origem ao problema da alocação de tráfego com caminho restrito (path-constrained traf-
+
+fic assignment). Os autores minimizam o tempo de viagem, respeitando um limite de distância
+
+máxima para os caminhos, que representa a autonomia limitada dos veículos.
+
+He, Yin e Lawphongpanich (2014) se baseiam na mesma abordagem, mas modelam a
+
+restrição como um limite no consumo de energia e incluem postos de recarga de energia. Esta
+
+abordagem minimiza o tempo de viagem, escolhendo rotas que não ultrapassem o limite em
+
+consumo de energia, permitindo ainda que a bateria seja recarregada durante a viagem, porém
+
+com um custo em tempo. Os autores propõem duas abordagens para o consumo de energia. A
+
+primeira utiliza uma taxa fixa de consumo por milha, a segunda uma função dependente da ve-
+
+locidade. A função proposta calcula o consumo de energia de forma inversamente proporcional
+
+à velocidade, o que não é realista. Quanto maior a velocidade, maior o consumo de energia para
+
+a movimentação do veículo (GARDNER; DUELL; WALLER, 2013; BAUM et al., 2014).
+
+Jiang e Xie (2014) utilizam o TAP com caminho restrito assumindo que todos os mo-
+
+toristas possuem veículos convencionais e elétricos, podendo optar pelo uso de um deles. A
+
+alocação minimiza o custo monetário da viagem, composto pela soma de um custo fixo por
+
+unidade de tempo e o custo do combustível, no caso de um veículo convencional ou da energia,
+
+
+
+39
+
+Tabela 3.1 – Visão geral dos trabalhos relacionados e nossa abordagem
+
+Referência
+Método
+utilizado
+
+Como a
+energia é
+
+considerada
+
+Modelo
+físico de
+consumo
+
+População
+mista
+
+Análise das
+mudanças
+nos custos
+
+Artmeier et al. (2010) CM - - - -
+Sachenbacher et al. (2011) CM -
+
+?
+- -
+
+Eisner, Funke e Storandt (2011) CM -
+?
+
+- -
+Storandt (2012) CM R - - -
+Baum et al. (2013) CM - - - -
+Baum et al. (2014) CM B - - -
+Jiang, Xie e Waller (2012) TAP R - - -
+Jiang e Xie (2014) TAP R -
+
+?
+-
+
+He, Yin e Lawphongpanich (2014) TAP R
+?
+
+- -
+Nossa abordagem TAP B
+
+? ? ?
+
+no caso de um veículo elétrico.
+
+3.4 Resumo
+
+A Tabela 3.1 apresenta uma visão geral dos trabalhos relacionados que consideram a
+
+diferente escolha de rotas dos veículos elétricos. A primeira coluna mostra os trabalhos que
+
+se baseiam na alocação de tráfego (“TAP”) e os que somente computam caminhos mínimos
+
+(“CM”). A segunda coluna mostra como o consumo de energia é endereçado pelos trabalhos.
+
+Aqueles marcados com “R” modelam o consumo de energia como uma restrição dos caminhos,
+
+enquanto aqueles marcados com “B” modelam o tempo de viagem e o consumo de energia
+
+como custos e, portanto, apresentam uma abordagem biobjetivo. As demais colunas mostram
+
+os trabalhos que adotam um modelo físico para o cálculo do consumo de energia, os que consi-
+
+deram uma população mista de veículos convencionais e elétricos e, finalmente, quais trabalhos
+
+utilizam os fluxos (ou rotas) computados para a determinação e análise das mudanças em tempo
+
+de viagem e consumo de energia oriundas da adoção de veículos elétricos.
+
+Abordagens baseadas em caminhos mínimos fornecem uma visão geral da forma como
+
+veículos elétricos optam por suas rotas. Porém, estas abordagens não são realistas a medida que
+
+não consideram os efeitos de congestionamento na tomada de decisão. Rotas congestionadas
+
+podem alterar significativamente os custos em termos de tempo de viagem e consumo de ener-
+
+gia. As abordagens baseadas no TAP consideram os efeitos do congestionamento na escolha
+
+de rotas dos veículos elétricos, porém tratam o consumo de energia apenas como uma restrição
+
+dos caminhos, fazendo com que rotas interessantes não sejam consideradas. Por exemplo, assu-
+
+mindo a existência de duas rotas, onde a primeira apresenta um tempo de viagem ligeiramente
+
+
+
+40
+
+inferior e a segunda um consumo de energia muito menor. Caso ambas não violem a restrição
+
+de consumo máximo de energia, a primeira será escolhida. No entanto, a opção mais interes-
+
+sante para muitos motoristas pode ser a segunda rota, pois fornece uma economia expressiva
+
+de energia com um custo ligeiramente superior em tempo. Um modelo biobjetivo é capaz de
+
+resolver este problema ao considerar ambos os custos de forma independente.
+
+
+
+41
+
+4 ALOCAÇÃO BIOBJETIVO DE TRÁFEGO PARA VEÍCULOS ELÉTRICOS
+
+Este trabalho propõe um método de alocação biobjetivo de tráfego para determinar a
+
+distribuição de veículos elétricos em cenários de trânsito. Com isso, é possível calcular os
+
+custos em tempo de viagem e consumo de energia e analisar os impactos da inclusão e do
+
+aumento da quantidade de veículos elétricos.
+
+Uma primeira abordagem ao problema consistiria em substituir a função objetivo do
+
+TAP, modelada pela função BPR (Equação (2.1)), por um modelo de consumo de energia. Dessa
+
+forma, o gasto energético determinaria o quão atrativa é uma rota e os motoristas optariam pelos
+
+caminhos que minimizam o consumo de energia. No entanto, o consumo por atrito e em ener-
+
+gia cinética aumentam a medida que cresce a velocidade. Logo, uma maior velocidade resulta
+
+em um maior gasto de energia. Ao substituir a função objetivo pelo consumo de energia, os
+
+veículos tenderiam a distribuir-se por caminhos mais lentos e congestionados, pois forneceriam
+
+um menor gasto energético. Portanto, esta substituição não seria realista, pois apesar de busca-
+
+rem uma economia de energia, motoristas de veículos elétricos não estão dispostos a gastar um
+
+tempo de viagem muito elevado. Um modelo realista deve considerar um equilíbrio entre os
+
+dois objetivos. Como ambas funções são antagônicas, uma modelagem biobjetivo foi aplicada.
+
+Para isso, foi adotado o MTAP proposto por Raith et al. (2014) (Seção 2.5), conside-
+
+rando o tempo de viagem e o consumo de energia como objetivos do modelo. Como o MTAP
+
+exige uma estratégia de distribuição do fluxo entre caminhos não-dominados, este trabalho pro-
+
+põe duas estratégias que modelam a escolha de rotas de veículos elétricos, apresentadas na
+
+Seção 4.1. O modelo físico do consumo de energia é detalhado na Seção 4.2. Um algoritmo
+
+biobjetivo de caminhos mínimos para veículos elétricos é proposto e apresentado na Seção 4.3.
+
+Um questionário foi aplicado para o levantamento de valores de alguns parâmetros, o qual está
+
+detalhado na Seção 4.4.
+
+4.1 Estratégias de distribuição de fluxo para veículos elétricos
+
+As estratégias de distribuição do fluxo entre caminhos não-dominados consistem na es-
+
+colha de rotas dos motoristas. Apesar de considerarem os objetivos do usuário, as estratégias
+
+CTS e DOA (Seção 2.5) não representam com fidelidade ambientes reais e a tomada de decisão
+
+de motoristas de veículos elétricos. Os métodos propostos neste trabalho utilizam o caminho de
+
+menor tempo (caminho mais rápido) como base para a análise dos demais. Com isso, os demais
+
+caminhos não-dominados apresentam uma economia de energia em relação ao caminho mais
+
+
+
+42
+
+Figura 4.1 – Representação do espaço de decisão
+
+Tempo de viagem adicional [%]
+
+Economia de
+energia [%]
+
+r0
+
+r3
+
+r2
+
+r1
+
+r4
+
+rápido e um tempo adicional a ser pago por ela. A Figura 4.1 mostra o espaço de decisão com os
+
+caminhos r0,r1,r2,r3,r4, organizados conforme seus custos. Sendo r0 o caminho mais rápido,
+
+possui economia de energia e tempo adicional iguais a zero. Os demais caminhos apresentam
+
+alguma economia de energia em troca de algum tempo adicional.
+
+Analisando o espaço de decisão, o caminho r1 apresenta uma pequena economia de ener-
+
+gia com um tempo adicional considerável e provavelmente não seria escolhido em ambientes
+
+reais. Para evitar que fluxos sejam alocados a caminhos com estas características, uma relação
+
+de custo-benefício mínima foi introduzida. Neste sentido, a eficiência mínima aceitável consiste
+
+na mínima relação entre os custos, representando quanta energia deve ser economizada por cada
+
+unidade de tempo adicional para que o caminho seja aceitável. Para evitar que caminhos com
+
+eficiência aceitável mas tempo de viagem demasiado alto sejam escolhidos, foi adicionado um
+
+limite de tempo adicional. Por exemplo, o caminho r4 fornece uma boa economia de energia,
+
+mas motoristas podem não estar dispostos a gastar tanto tempo.
+
+A Figura 4.2 apresenta o mesmo espaço de decisão com a eficiência mínima aceitável
+
+e o limite de tempo adicional representados como restrições na escolha de rotas. O espaço
+
+de decisão é podado (área destacada), mantendo apenas os caminhos que possuem um custo-
+
+benefício superior à eficiência mínima aceitável e um tempo adicional menor que seu limite. No
+
+exemplo apresentado, as soluções r1 e r4 são excluídas do conjunto de caminhos não-dominados
+
+por não satisfazerem as restrições. O presente trabalho assume que o valor da eficiência mínima
+
+aceitável é comum a todos os motoristas, enquanto limites de tempo são distribuídos entre eles.
+
+Os valores destes parâmetros foram obtidos através de um questionário, detalhado na Seção 4.4.
+
+Veículos convencionais optam pelo caminho de menor tempo (r0 da Figura 4.2). Já os
+
+
+
+43
+
+Figura 4.2 – Representação do espaço de decisão restrito
+
+Tempo de viagem adicional [%]
+
+Economia de
+energia [%]
+
+Eficiência
+mínima
+aceitável
+
+Limite de
+tempo de viagem
+
+r0
+
+r3
+
+r2
+
+r1
+
+r4
+
+veículos elétricos aplicam as restrições sobre o espaço de decisão e optam por um entre os
+
+caminhos factíveis resultantes de acordo com uma estratégia. Na estratégia Greedy Energy
+
+(GE), a escolha é feita de forma gulosa em relação ao consumo de energia. Ou seja, o caminho
+
+que forneça a maior economia de energia é escolhido. Na estratégia Greedy Efficiency (GF), o
+
+caminho que possua a melhor relação entre economia de energia e tempo adicional (eficiência)
+
+é escolhido. Esta relação é medida pela expressão (tempo adicional) / (economia de energia).
+
+Considerando o exemplo apresentado na Figura 4.2 com custos (tempo adicional, eco-
+
+nomia de energia) sendo r2 = (8,4) e r3 = (11,5), a estratégia Greedy Energy seleciona o
+
+caminho r3, pois apresenta maior economia de energia (igual a 5). Analisando o valor de efi-
+
+ciência de ambos os caminhos, eficiênciar2 = 8/4 = 2 e eficiênciar3 = 11/5 = 2,2. Logo,
+
+a melhor relação de custo-benefício é apresentada pelo caminho r2, o qual é selecionado pela
+
+estratégia Greedy Efficiency.
+
+4.2 Modelo de consumo de energia
+
+Pesquisas voltadas ao estudo de veículos elétricos utilizam alguma técnica para medir
+
+o consumo de energia de determinada rota ou via. Uma abordagem simples consiste em defi-
+
+nir uma taxa de consumo, geralmente expressa em MJ ou kWh por milha ou quilômetro. Esta
+
+técnica é utilizada por Jiang e Xie (2014) e He, Yin e Lawphongpanich (2014), na tentativa de
+
+medir o gasto de veículos elétricos em simulações de sistemas de tráfego. Apesar da utilização
+
+de uma taxa de consumo permitir a determinação do gasto médio de um veículo elétrico, outros
+
+
+
+44
+
+fatores podem resultar em um maior ou menor consumo, como a inclinação da via ou a veloci-
+
+dade de tráfego. Estes fatores são importantes na tomada de decisão de motoristas de veículos
+
+elétricos, pois nem sempre uma distância menor implica em uma maior economia de energia.
+
+Este trabalho propõe o uso de modelos físicos de consumo de energia (SCHLOTE et al.,
+
+2012; PRANDTSTETTER; STRAUB; PUCHINGER, 2013) para determinar o gasto por atrito
+
+com o solo, resistência do ar, inclinação da via e mudanças de velocidade. O modelo proposto
+
+por Wang, Jiang e Mu (2013) com base em Larminie e Lowry (2004) foi adotado, o qual define
+
+uma função de custo para um arco a = (i,j) ? A. O consumo total de energia é decomposto
+
+em três consumos específicos. A função ra(va) computa a energia gasta no atrito com o solo e
+
+com o ar, pa calcula a energia potencial gravitacional e ka(va,va?) computa a energia cinética.
+
+Estas funções são apresentadas nas Equações (4.1) – (4.3), onde fr é o coeficiente de atrito de
+
+rolamento do veículo, m é a massa do veículo e sua carga, g é a aceleração da gravidade, ?
+
+é a densidade do ar, ? é o coeficiente de resistência do ar, A é a área frontal do veículo, va é
+
+a velocidade no arco a, la e o comprimento do arco a, q(V ) = mghV é a energia potencial
+
+gravitacional no vértice V , com hV sendo a elevação do vértice V e K(v) = mv2/2 é a energia
+
+cinética do veículo. É importante evidenciar que o gasto em energia cinética ka depende da
+
+troca de velocidade do arco anterior a? ao arco atual a.
+
+ra(va) = ?
+?1
+out · (frmg + ??Av
+
+2
+a/2) · la, (4.1)
+
+pa = ?(q(i)? q(j)), (4.2)
+
+ka(va,va?) = ?(K(va)?K(va?)). (4.3)
+
+As funções pa e ka(va,va?) podem resultar em valores negativos. Isto ocorre quando a
+
+recuperação de energia pela frenagem regenerativa é maior que o consumo. Diferente de veí-
+
+culos convencionais, nos quais esta energia é perdida na forma de calor, veículos elétricos são
+
+capazes de armazená-la de volta na bateria. De fato, esta é uma das principais diferenças entre
+
+veículos convencionais e elétricos. A função ? representa a eficiência da conversão de energia
+
+e é definida pela Equação (4.4). A eficiência da conversão determina quanta energia é perdida,
+
+seja na sua geração ou no seu processo de armazenamento a partir da recuperação. No processo
+
+de geração de energia a partir do tanque, a função ? determina quanta energia deverá ser ex-
+
+traída para suprir uma certa demanda do motor. Isto ocorre por conta da perda que acontece no
+
+tratamento (combustão dos veículos convencionais, por exemplo) para utilização no motor. No
+
+caso do armazenamento da energia recuperada, a função ? calcula a quantidade efetiva armaze-
+
+nada na bateria, descontando as perdas (LARMINIE; LOWRY, 2004). Os parâmetros ?in e ?out
+
+
+
+45
+
+expressam a fração de energia que é aproveitada.
+
+?(x) =
+
+???
+??
+??1outx, se x ? 0,
+
+?inx, caso contrário.
+(4.4)
+
+Finalmente, o consumo de energia total é definido pela Equação (4.5), que calcula o
+
+gasto energético de forma genérica para veículos elétricos e convencionais, bem como para
+
+diferentes modelos de veículos, bastando configurar os parâmetros com as suas características.
+
+ea = ra(va) + pa + ka(va,va?). (4.5)
+
+Neste trabalho, a função será aplicada a veículos convencionais e elétricos, considerando
+
+a mesma massa e área frontal. O único fator que os diferencia é a eficiência do motor. O veículo
+
+convencional possui eficiência nin = 0, enquanto o veículo elétrico possui eficiência nin = 0,7
+
+(VAN-MIERLO; MARENNE, 2009). Com relação à eficiência no consumo de energia, existem
+
+algumas discussões na literatura (SILVA et al., 2006) a respeito da adoção de valores mais
+
+representativos, introduzindo duas métricas distintas: tank-to-wheel e well-to-wheel.
+
+A métrica tank-to-wheel diz respeito à eficiência na conversão da energia desde o tan-
+
+que (ou bateria, no caso dos veículos elétricos) até as rodas. Ou seja, representa o percentual
+
+aproveitado pelo motor da energia extraída do tanque. Veículos elétricos possuem uma efici-
+
+ência tank-to-wheel de aproximadamente 0,9, veículos convencionais de aproximadamente de
+
+0,2 (VAN-MIERLO; MARENNE, 2009). A energia elétrica armazenada na bateria já está pra-
+
+ticamente na forma final a ser utilizada pelo motor. Já combustíveis fósseis, como a gasolina,
+
+ainda passam por um processo de combustão. A maior perda da energia elétrica ocorre antes
+
+de ela ser armazenada no tanque, enquanto a maior perda da gasolina ocorre no processo de
+
+combustão. Para uma análise global dos impactos no consumo de energia, a eficiência de todo
+
+o processo deve ser considerada. A métrica well-to-wheel considera a eficiência desde sua ex-
+
+tração na fonte da matéria-prima até a efetiva utilização pelo motor. A eficiência well-to-wheel
+
+de um veículo elétrico é de aproximadamente 0,27, enquanto a de um veículo convencional é
+
+de aproximadamente 0,18 (VAN-MIERLO; MARENNE, 2009). A Figura 4.3 apresenta uma
+
+visão simplificada do processo de produção de energia e das etapas consideradas por cada uma
+
+das medidas de eficiência.
+
+
+
+46
+
+Figura 4.3 – Processo de produção de energia e suas métricas de eficiência
+
+Well
+
+Fonte
+
+Station
+
+Estação
+
+Tank
+
+Tanque
+
+Wheel
+
+Rodas
+
+well-to-station station-to-tank tank-to-wheel
+
+well-to-wheel
+
+4.3 Algoritmo biobjetivo de caminhos mínimos para veículos elétricos
+
+No presente trabalho, as funções objetivo são tempo de viagem (BPR - Equação (2.1))
+
+e consumo de energia (Equação (4.5)). Conforme discutido na Seção 2.3.3, as restrições de
+
+bateria devem ser incorporadas ao algoritmo de caminhos mínimos. As modificações propostas
+
+por Artmeier et al. (2010) foram introduzidas no algoritmo de caminhos mínimos biobjetivo por
+
+correção de rótulos de Skriver e Andersen (2000). O resultado é apresentado no Algoritmo 4.1.
+
+Algoritmo 4.1: Algoritmo biobjetivo de correção de rótulos para veículos elétricos
+Entrada: Rede G = (V, A), vértice de origem s, capacidade da bateria Cmax e capacidade
+
+de armazenamento livre Us
+1 Q ?{s}
+2 Ro?tulos(s) ?{(0, Us, 0)}
+3 para cada v ? V \{s} faça
+4 Ro?tulos(v) ??
+5 enquanto Q 6= ? faça
+6 seleciona um vértice i de Q
+7 Q ? Q\{i}
+8 para cada a = (i,j) ? A faça
+9 calcula o tempo de viagem ta (Equação (2.1))
+
+10 para cada r ? Ro?tulos(i) faça
+11 calcula a energia ea (Equação (4.5))
+12 t ? tr + ta
+13 e ? er + ea
+14 e ? max(e, 0)
+15 r? ? (t, e, va)
+16 se e ? Cmax então
+17 Ro?tulos(j) ? removeDominados({r?}?Ro?tulos(j))
+18 se Ro?tulos(j) foram alterados e j /? Q então
+19 Q ? Q?{j}
+
+
+
+47
+
+O algoritmo utiliza rótulos para armazenar os custos em atingir cada vértice. O primeiro
+
+valor corresponde ao tempo de viagem, o segundo ao consumo de energia e o terceiro à velo-
+
+cidade do arco predecessor. Considerar a velocidade do arco predecessor é necessário pois o
+
+consumo de energia depende da variação de velocidade entre o arco anterior e o atual. Por isso,
+
+um rótulo domina outro quando apresenta menores valores para o tempo de viagem e para o
+
+consumo de energia e uma maior velocidade. A última condição é necessária pois se a veloci-
+
+dade de um rótulo é maior, ele pode atingir uma maior economia (ou um menor consumo) nos
+
+arcos subsequentes. Portanto, ele não pode ser considerado dominado.
+
+Um veículo pode iniciar seu trajeto com parte da energia já consumida. Por isso, Us
+
+é a capacidade de armazenamento livre da bateria no vértice s. Quando o veículo inicia com
+
+a bateria totalmente carregada, Us é igual a 0. Este parâmetro é recebido como entrada pelo
+
+algoritmo e é atribuído como custo em energia no vértice s (linha 2). Cada vértice é selecionado
+
+da lista de vértices modificados Q (linha 6). A complexidade do algoritmo está relacionada com
+
+a ordem na qual os vértices são processados. Artmeier et al. (2010) utilizam a estratégia FIFO
+
+e obtém resultados satisfatórios. Os sucessores do vértice selecionado são analisados (linha 8).
+
+O tempo de viagem e o consumo de energia para ir do vértice i ao vértice j são computados
+
+(linhas 9 e 11). O cálculo do consumo de energia é feito para cada rótulo de i, pois eles podem
+
+apresentar velocidades distintas, o que altera o consumo. Os custos em tempo e energia para
+
+chegar até o vértice j são computados e formam um novo rótulo (linhas 12, 13 e 15). A linha 14
+
+representa a primeira restrição da bateria e não permite uma recuperação de energia superior à
+
+capacidade máxima de armazenamento. A linha 16 representa a segunda restrição e não permite
+
+um consumo superior ao total de energia disponível.
+
+O procedimento de fusão dado na linha 17 adiciona o novo rótulo ao conjunto de rótulos
+
+do vértice j e remove os possíveis rótulos dominados. Caso haja modificação nos rótulos do
+
+vértice j, ele deve ser explorado para a propagação dos novos custos. Neste caso, ele é adici-
+
+onado à lista de vértices a serem explorados (linhas 18 e 19). Ao final, o algoritmo computa o
+
+conjunto de caminhos não-dominados desde a origem até cada vértice do grafo, respeitando as
+
+restrições de bateria de veículos elétricos.
+
+Caminhos mínimos biobjetivo compõem um problema NP-completo (SERAFINI, 1987).
+
+Além disso, o número de caminhos não-dominados cresce exponencialmente com a adoção de
+
+dois objetivos (HANSEN, 1980). Logo, o Algoritmo 4.1 é exponencial no número de iterações.
+
+Apesar disso, cada iteração possui uma complexidade polinomial em função do número de ar-
+
+cos sucessores e do número de rótulos do vértice. Além disso, sua aplicação em instâncias reais
+
+apresenta um menor número de caminhos não-dominados em comparação com a aplicação em
+
+
+
+48
+
+instâncias sintéticas (também observado por Raith e Ehrgott (2009)). A inclusão de um custo
+
+potencialmente negativo não altera a corretude do BSP por correção de rótulos, pois o algoritmo
+
+é capaz de tratar pesos negativos nos arcos. Da mesma forma, a adição das restrições da bateria
+
+dos veículos elétricos se limita a manter os custos dentro das restrições destes veículos. Por
+
+isso, a corretude se mantém em relação ao algoritmo base, apresentado em Skriver e Andersen
+
+(2000), uma vez que estas restrições apenas tornam alguns caminhos infactíveis.
+
+4.4 Questionário
+
+Um questionário foi conduzido para levantar o valor da eficiência mínima aceitável e a
+
+distribuição dos limites de tempo adicional entre a população de veículos elétricos. A pesquisa
+
+foi disponibilizada online e respondida por 154 pessoas.
+
+A primeira pergunta foi elaborada para identificar a relação de custo-benefício que com-
+
+põe a eficiência mínima aceitável. Para isso, o espaço de decisão foi mapeado com um conjunto
+
+de 225 pontos, compostos por um valor de economia de energia e um valor de tempo adicio-
+
+nal. Os respondentes analisaram se estes custos são aceitáveis. Um total de 15 pontos foram
+
+selecionados aleatoriamente para cada respondente com base na seguinte situação apresentada:
+
+"Considere que você realize uma viagem diária para o trabalho com duração média de 40 mi-
+
+nutos. O custo médio de cada viagem é de $10,00. Na possibilidade de optar por caminhos
+
+mais econômicos, porém mais lentos, você estaria disposto a:". Cada ponto foi apresentado
+
+como uma alternativa para a qual o participante opta por sim ou não. Por exemplo, um tempo
+
+adicional de 10% do valor do tempo original com uma economia de 50% é apresentado como:
+
+"Gastar 44 minutos para economizar 50% ($5,00) de combustível?". O questionário não tratou
+
+da economia de energia, pois em geral as pessoas ainda não estão habituadas com a realidade
+
+de veículos elétricos. Por isso, a economia foi dada em valores monetários, comum a todas as
+
+pessoas. Além disso, a economia e o tempo adicional foram tratados como valores percentuais
+
+sobre a situação hipotética apresentada, na tentativa de tornar as respostas genéricas e aplicáveis
+
+a realidades com diferentes amplitudes de custos.
+
+A Figura 4.4 apresenta o espaço de decisão com os 225 pontos mapeados. Para cada
+
+ponto, existe um percentual de economia e o respectivo percentual de tempo adicional. Pontos
+
+representados por um círculo preenchido foram aceitos pela maioria dos respondentes. Pontos
+
+representados por um círculo não preenchido foram rejeitados pela maioria dos respondentes.
+
+Pontos representados por um asterisco receberam o mesmo número de respostas positivas e
+
+negativas e, portanto, representam pontos de transição e incerteza. Com isso, foi determinada a
+
+
+
+49
+
+Figura 4.4 – Pontos do espaço de decisão com respostas do questionário
+
+50 100 150 200
+
+1
+0
+
+2
+0
+
+3
+0
+
+4
+0
+
+5
+0
+
+6
+0
+
+7
+0
+
+Tempo adicional (%)
+
+E
+c
+o
+n
+o
+m
+
+ia
+ (
+
+%
+)
+
+Figura 4.5 – Distribuição dos limites de tempo entre os respondentes
+
+?
+
+? ?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+? ?
+
+?
+
+?
+?
+
+?
+?
+
+?
+? ?
+
+? ?0
+
+5
+
+10
+
+15
+
+20
+
+0 100 200 300 400
+Tempo adicional [%]
+
+R
+e
+sp
+
+o
+n
+d
+e
+n
+te
+
+s 
+[%
+
+]
+
+reta presente na Figura 4.4 como a eficiência mínima aceitável (0,9% de economia de energia
+
+para cada 1% de tempo adicional).
+
+A segunda pergunta trata de determinar a distribuição dos limites de velocidade entre os
+
+motoristas de veículos elétricos. Ela apresenta a mesma situação hipotética da anterior e oferece
+
+um montante monetário mensal (a ser obtido em termos de economia) em troca de um tempo
+
+adicional diário. O respondente avalia se o tempo adicional apresentado é aceitável, frente a um
+
+retorno financeiro de $200,00 mensais. Por exemplo, para saber se o respondente aceita gastar
+
+50% a mais em tempo a pergunta seria: "Gastar 80 minutos para economizar $200,00 por mês".
+
+Os tempos adicionais questionados se baseiam na situação apresentada, sendo 10%, 20%, 30%,
+
+40%, 50%, 60%, 70%, 80%, 90%, 100%, 110%, 120%, 130%, 140%, 150%, 170%, 190%, 210%,
+
+230%, 250%, 400% do tempo base, totalizando 21 perguntas. A distribuição resultante pode ser
+
+observada na Figura 4.5, seus valores são apresentados pela Tabela 4.1. Por exemplo, 3,2% dos
+
+respondentes não aceitariam mais que 10% do tempo mínimo para seu trajeto, enquanto 11%
+
+aceitariam um tempo adicional de até 40% do tempo mínimo.
+
+Tabela 4.1 – Distribuição dos limites de tempo entre os respondentes
+limite de tempo (%) 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 170 190 210 230 250 400
+respondentes (%) 3.2 9.1 9.1 11.0 16.2 6.5 11.0 3.2 5.2 1.9 1.3 3.2 1.3 2.6 1.3 0.0 0.8 0.0 0.0 0.8 1.3
+
+
+
+50
+
+5 EXPERIMENTOS
+
+Três redes foram adotadas para avaliar a abordagem proposta e medir o impacto dos
+
+veículos elétricos. A primeira delas é sintética, composta por uma grade 5x5. A segunda rede é
+
+a cidade de Sioux Falls e a terceira é a cidade de Anaheim. A Tabela 5.1 sumariza as três redes
+
+e seus detalhes. Os experimentos foram executados em um computador com processador Core
+
+i7-3770 3.40GHz e 32GB de memória RAM.
+
+Tabela 5.1 – Redes utilizadas nos experimentos
+Rede Vértices Arcos Pares OD Demanda
+Grade 5x5 25 40 1 1000
+Sioux Falls 24 76 528 360.600
+Anaheim 416 914 1406 104.694,4
+
+Este capítulo detalha os experimentos realizados e os resultados obtidos. A Seção 5.1
+
+apresenta a definição dos parâmetros e seus valores. A Seção 5.2 se concentra no cenário
+
+sintético, apresentando os experimentos com a rede em grade. As Seções 5.3 e 5.4 detalham os
+
+cenários reais. A primeira aborda os experimentos com a rede Sioux Falls, enquanto a segunda
+
+se concentra na rede Anaheim. Por fim, uma discussão sobre os resultados é apresentada na
+
+Seção 5.5.
+
+5.1 Definição dos parâmetros
+
+O modelo de consumo de energia se baseia em uma série de características físicas do
+
+veículo, as quais influenciam no cálculo do gasto energético, assim como a resistência do ar e
+
+a aceleração da gravidade. Estes parâmetros foram apresentados na Seção 4.2 e os seguintes
+
+valores foram adotados: fr = 0,0386, m = 1000, g = 9,8, ? = 1,23, ? = 0,3 e A = 1 (baseados
+
+em Wang, Jiang e Mu (2013) e MacKay (2008)). Tanto veículos convencionais quanto elétricos
+
+utilizam os mesmos valores para os parâmetros acima, considerando que possuem a mesma
+
+estrutura física. O fator que os diferencia é a eficiência na conversão de energia, onde veículos
+
+elétricos possuem ?in = 0,7 e ?out = 0,9 e veículos convencionais possuem ?in = 0 e ?out =
+
+0,2 para análises tank-to-wheel. Para abordagens well-to-wheel, veículos elétricos possuem
+
+?in = 0,7 e ?out = 0,27 e veículos convencionais possuem ?in = 0 e ?out = 0,18 (VAN-
+
+MIERLO; MARENNE, 2009). Para a função BPR (Equação (2.1)) utilizada no cálculo do
+
+tempo de viagem com base no fluxo do arco, os valores para os parâmetros de configuração do
+
+crescimento da curva são ? = 0,15 e ? = 4, os quais são propostos em Bar-Gera (2002).
+
+
+
+51
+
+Todos os veículos elétricos iniciam seu trajeto no vértice de origem com a bateria par-
+
+cialmente carregada e, portanto, o algoritmo biobjetivo de caminhos mínimos considera Us =
+
+50MJ. A capacidade máxima de armazenamento utilizada foi Cmax = 250MJ, que corresponde
+
+à capacidade da bateria de veículos elétricos atuais. Como critério de parada para o método
+
+MMSA, o fluxo de cada arco é analisado e comparado ao fluxo da iteração anterior. Quando
+
+a diferença percentual entre os dois valores for menor que ? = 0,05, o critério de parada é
+
+satisfeito para aquele arco. Quando a condição for satisfeita para todos os arcos, o algoritmo
+
+termina. Os parâmetros para as estratégias Greedy Energy e Greedy Efficiency estão descritos
+
+na Seção 4.1, seus valores foram obtidos pelo questionário detalhado na Seção 4.4, resultando
+
+em uma eficiência mínima aceitável de tempo/economia = 0,9 e uma distribuição dos motoristas
+
+entre os limites de tempo conforme a Tabela 4.1. Para medir o impacto da inclusão e do au-
+
+mento da quantidade de veículos elétricos nos cenários concebidos, uma parcela da população
+
+total é substituída por veículos elétricos. Portanto, diferentes parcelas foram definidas, a fim de
+
+identificar como o impacto evolui a medida que veículos elétricos se popularizam. Os valores
+
+considerados são 0%, 10%, 20%, 50%, 80%, 90%, 100%.
+
+5.2 Cenário sintético – Rede grade 5x5
+
+Uma rede sintética simples foi adotada com o objetivo de estudar o comportamento dos
+
+métodos propostos e os efeitos da tomada de decisão dos motoristas de veículos elétricos na
+
+distribuição final dos fluxos. Esta rede foi estudada previamente em Raith et al. (2014).
+
+5.2.1 Descrição do cenário
+
+Apesar de não representarem com fidelidade ambientes reais, redes sintéticas constituem
+
+uma importante ferramenta para estudar o comportamento e a tomada de decisão dos motoristas
+
+frente aos métodos propostos. O cenário sintético utilizado neste trabalho consiste em uma rede
+
+em grade 5x5, totalizando 25 vértices e 40 arcos (ver Figura 5.1). Os arcos horizontais são di-
+
+recionados à direita, enquanto os arcos verticais são direcionados para baixo. Cada arco possui
+
+1000m de comprimento e capacidade nominal de 200 veículos. Foi adotada uma demanda total
+
+de 1000 veículos com um único par OD, de origem no vértice superior esquerdo e destino no
+
+vértice inferior direito. Dada a direção dos arcos, existem muitos caminhos possíveis entre o
+
+par OD considerado, mas não são permitidos retornos.
+
+
+
+52
+
+Figura 5.1 – Rede grade 5x5
+
+A elevação está representada pelas cores nos vértices da Figura 5.1. Os vértices de
+
+extremidade (em cinza escuro) possuem uma elevação de 200m. Vértices internos (em cinza
+
+claro) possuem uma elevação menor de 0m. Por fim, o vértice central (em branco) possui uma
+
+alta elevação de 300m. Os arcos centrais (com maior espessura) apresentam maior velocidade
+
+(72km/h, ou 20m/s) e, portanto, um tempo de viagem em fluxo livre de 50s. Os demais ar-
+
+cos apresentam velocidade de 36km/h (10m/s) e um tempo de viagem em fluxo livre de 100s.
+
+Dessa forma, o custo dos caminhos é impactado pelas diferentes inclinações dos arcos e pelas
+
+diferentes velocidades apresentadas.
+
+5.2.2 Análise dos resultados
+
+Para o cenário sintético foram realizados experimentos com o método MSA mono-
+
+objetivo a fim de verificar as distribuições de fluxo extremas (que consideram apenas um dos
+
+objetivos). Foram considerados o tempo de viagem e o consumo de energia isoladamente. O
+
+método MMSA foi executado utilizando as duas estratégias propostas para distribuição do fluxo
+
+entre caminhos não-dominados, Greedy Energy (GE) e Greedy Efficiency (GF), considerando
+
+as parcelas de veículos elétricos previamente definidas. Os resultados de tempo (em minutos) e
+
+energia (em MJ) são reportados separadamente para cada tipo de veículo, seguido dos valores
+
+médios sobre todos os veículos. Além disso, o tempo de execução também é apresentado.
+
+Os resultados para o cenário sintético são apresentados na Tabela 5.2, onde se observa
+
+
+
+53
+
+Tabela 5.2 – Resultados para o cenário sintético
+
+Estrat.
+% veículos
+
+elétricos
+Convencionais Elétricos Média Tempo
+
+exec. [s]Tempo Energia Tempo Energia Tempo Energia
+MSA 0 34,54 35,62 - - 34,54 35,62 0,5
+MSA 100 - - 1.265,86 3,36 1.265,86 3,36 0,0
+GE 0 34,54 35,62 - - 34,54 35,62 0,8
+GE 10 34,23 36,70 35,59 3,53 34,37 33,38 0,5
+GE 20 34,17 37,94 36,59 3,52 34,65 31,05 0,5
+GE 50 32,87 41,29 42,00 3,49 37,43 22,39 0,4
+GE 80 31,83 41,65 41,71 3,65 39,73 11,25 0,3
+GE 90 31,16 41,64 41,65 3,74 40,60 7,53 0,3
+GE 100 - - 41,57 3,83 41,57 3,83 0,4
+GF 0 34,54 35,62 - - 34,54 35,62 0,7
+GF 10 34,49 36,65 34,54 4,26 34,49 33,41 0,7
+GF 20 34,50 37,94 34,52 4,32 34,51 31,22 0,8
+GF 50 34,49 40,58 34,52 4,69 34,51 22,64 1,4
+GF 80 34,44 40,64 34,49 5,00 34,48 12,13 1,3
+GF 90 31,95 42,14 34,93 4,11 34,64 7,92 1,4
+GF 100 - - 35,65 4,02 35,65 4,02 1,3
+
+que ao considerar apenas um dos custos (MSA), o outro objetivo é penalizado. Ao minimizar
+
+o tempo de viagem, o consumo de energia é elevado (35,62MJ), enquanto que ao minimizar
+
+o consumo de energia, o tempo de viagem sobe de 34,54 para 1.265,86 minutos. Por isso,
+
+a simples substituição da função BPR pelo modelo de consumo de energia não produz uma
+
+alocação realista. Nos casos biobjetivo (GE e GF), percebe-se que os veículos elétricos atingem
+
+uma compensação entre ambos os custos, obtendo cerca de 3,5 a 4MJ de energia em troca de
+
+um tempo ligeiramente superior àquele obtido ao considerar apenas o tempo de viagem como
+
+objetivo. Do total de energia economizada pelos veículos elétricos, pouco mais de 4% é reflexo
+
+da escolha de diferentes rotas, enquanto o restante se deve a sua maior eficiência. Com o desvio
+
+dos veículos elétricos para rotas mais econômicas, o tempo de viagem dos veículos a gasolina
+
+diminui, pois um número menor de veículos compete pelos caminhos mais rápidos, diminuindo
+
+seu congestionamento. Consequentemente, a energia gasta por estes veículos aumenta, pois
+
+uma maior velocidade implica em um maior consumo energético.
+
+Observa-se ainda que utilizando a estratégia GE, o consumo de energia dos veículos
+
+elétricos diminui a medida que sua população cresce. No entanto, a partir de 50% de veículos
+
+elétricos, seu consumo de energia passa a aumentar com o crescimento da sua população. Esta
+
+variação é acompanhada por uma variação inversa no tempo de viagem. Este efeito é explicado
+
+pela busca dos veículos elétricos em minimizar seu consumo de energia, optando por caminhos
+
+mais lentos em troca de alguma economia. Com o crescimento desta população, a competição
+
+pelos caminhos mais econômicos aumenta, causando congestionamento. Como os métodos de
+
+
+
+54
+
+escolha de rotas definem um limite máximo de tempo de viagem adicional, muitos motoristas
+
+têm este limite excedido e, portanto, optam por caminhos mais rápidos. Por este motivo, ao au-
+
+mentar consideravelmente a parcela de veículos elétricos (mais de 50%), seu tempo de viagem
+
+decresce. Variações dessa mesma natureza também são observadas ao utilizar a estratégia GF.
+
+Neste experimento ainda é possível analisar as diferenças nos resultados entre as estra-
+
+tégias GE e GF. Pelo fato da estratégia GF considerar a eficiência dos caminhos ao invés de
+
+somente a economia de energia, como faz o GE, os tempos de viagem tendem a ser menores,
+
+ao passo que o consumo de energia apresenta maior valor. No entanto, o fato da estratégia GF
+
+selecionar caminhos mais rápidos em busca de uma melhor relação entre os custos resulta em
+
+um impacto mais suave no tempo de viagem de veículos convencionais. Ou seja, seguindo a
+
+estratégia GE, a distribuição dos veículos elétricos promove uma maior diminuição no tempo
+
+de viagem dos veículos convencionais. Na média, a estratégia GF apresenta melhor tempo de
+
+viagem e consequente maior consumo de energia.
+
+5.3 Cenário real – Rede Sioux Falls
+
+A rede Sioux Falls foi inicialmente proposta por LeBlanc, Morlok e Pierskalla (1975)
+
+e é utilizada neste trabalho a fim de avaliar a abordagem proposta em um cenário real e medir
+
+os impactos dos veículos elétricos nestes ambientes. A rede Sioux Falls é comumente utilizada
+
+em problemas de transporte para avaliar métodos de escolha de rotas e alocação de tráfego. A
+
+rede, bem como sua demanda e dados para a função BPR, pode ser obtida em Bar-Gera (2002).
+
+Existem algumas variações na topologia, demanda e parâmetros desta rede. Neste trabalho é
+
+utilizada a versão padrão da instância de acordo com Bar-Gera (2002).
+
+5.3.1 Descrição dos cenários
+
+A rede Sioux Falls é composta por 24 vértices e 76 arcos, conforme apresenta a Fi-
+
+gura 5.2. A instância está associada a uma demanda de fluxo de 360.600 veículos/hora, dis-
+
+tribuídos em 528 pares OD. As elevações foram obtidas mediante consulta manual no Google
+
+Earth (GOOGLE, 2015a) e Google Elevation API (GOOGLE, 2015b), uma vez que estes dados
+
+não são fornecidos no repositório. Para isso, foram determinadas as coordenadas geográficas
+
+aproximadas de cada vértice, visto que a rede não possui uma relação exata com a cidade real,
+
+para então determinar as respectivas elevações. O Apêndice A apresenta os vértices, as coorde-
+
+
+
+55
+
+nadas geográficas utilizadas e suas elevações.
+
+Figura 5.2 – Rede Sioux Falls
+
+Foram desenhados cinco cenários para a rede Sioux Falls. Primeiramente, foram execu-
+
+tados os mesmos experimentos da rede sintética (primeiro cenário). Além disso, foram conside-
+
+radas análises well-to-wheel (Seção 4.2) como parâmetros de eficiência no cálculo do consumo
+
+de energia (segundo cenário). Para identificar a influência de uma maior amplitude nas diferen-
+
+ças de altitude, os valores de elevação foram perturbados, multiplicando-os por uma constante.
+
+Os multiplicadores (constantes) utilizados foram 0,1,1.5,2,4, que fornecem ambientes com
+
+nenhuma até grandes diferenças de elevação. Para avaliar a contribuição da recuperação de
+
+energia dos veículos elétricos na composição do custo final, esta característica foi desativada
+
+(quarto cenário). Finalmente, maiores valores de eficiência foram testados para medir a econo-
+
+mia de energia obtida com o avanço da tecnologia no sistema elétrico (quinto cenário).
+
+5.3.2 Análise dos resultados
+
+A Tabela 5.3 apresenta o resultado dos experimentos para a rede Sioux Falls. Alguns
+
+efeitos observados no cenário sintético estão presentes no cenário real. O aumento do consumo
+
+
+
+56
+
+Tabela 5.3 – Resultados para a rede Sioux Falls
+
+Estrat.
+% veículos
+
+elétricos
+Convencionais Elétricos Média Tempo
+
+exec. [s]Tempo Energia Tempo Energia Tempo Energia
+MSA 0 20,77 10,57 - - 20,77 10,57 11,8
+MSA 100 - - 904,60 1,88 904,60 1,88 0,7
+GE 0 20,77 10,57 - - 20,77 10,57 56,3
+GE 10 20,82 10,70 21,22 2,02 20,86 9,83 51,2
+GE 20 20,94 10,80 21,37 2,03 21,03 9,05 34,0
+GE 50 21,34 11,31 22,13 2,05 21,73 6,68 23,1
+GE 80 21,79 11,87 22,74 2,09 22,55 4,05 15,8
+GE 90 21,88 11,96 22,88 2,11 22,78 3,10 15,7
+GE 100 - - 22,96 2,13 22,96 2,13 23,8
+GF 0 20,77 10,57 - - 20,77 10,57 55,7
+GF 10 20,80 10,69 21,08 2,05 20,83 9,82 41,3
+GF 20 20,87 10,82 21,16 2,06 20,93 9,07 25,8
+GF 50 20,99 11,28 21,44 2,08 21,22 6,68 30,5
+GF 80 21,08 12,09 21,63 2,13 21,52 4,12 20,9
+GF 90 21,11 12,31 21,67 2,15 21,62 3,17 27,0
+GF 100 - - 21,62 2,18 21,62 2,18 52,1
+
+de energia dos veículos elétricos com o crescimento da sua população é um deles, explicado
+
+pelo aumento da competição pelos caminhos econômicos e pela consequente busca por cami-
+
+nhos mais rápidos. Em geral, a diminuição do tempo de viagem é seguido de um aumento no
+
+consumo de energia. No cenário real é observado um terceiro fator que contribui para o aumento
+
+simultâneo de ambos os custos: o aumento da parcela de veículos elétricos.
+
+Diferente das observações feitas sobre os cenários sintéticos, na rede Sioux Falls o tempo
+
+de viagem dos veículos convencionais aumenta com o crescimento do número de veículos elé-
+
+tricos. Esta diferença é explicada pela configuração da demanda da Sioux Falls, onde há uma
+
+grande quantidade de veículos distribuídos entre muitos pares OD. Com isso, o desvio de rota
+
+de um veículo elétrico beneficia os veículos convencionais do seu par OD, pois diminui o fluxo
+
+nos caminhos mais rápidos. No entanto, este desvio impacta em rotas de outros pares OD,
+
+aumentando o fluxo nos caminhos de outros veículos convencionais e, consequentemente, seu
+
+tempo de viagem. Apesar da piora nos custos em energia, o gasto médio diminui com a pre-
+
+sença de veículos elétricos, caindo cerca de 80% em relação ao consumo com todos os veículos
+
+convencionais. Do total de energia economizada pelos veículos elétricos, pouco mais de 1% é
+
+reflexo da escolha de diferentes rotas, enquanto o restante se deve a sua maior eficiência.
+
+Em relação às diferenças entre as estratégias GE e GF, percebe-se um consumo de ener-
+
+gia maior dos veículos elétricos na estratégia GF, ao passo que o tempo de viagem é menor. O
+
+impacto negativo no tempo de viagem dos veículos convencionais também é menor, dado que
+
+veículos elétricos produzem menos desvios de rota na estratégia GF. Na média sobre todos os
+
+
+
+57
+
+Tabela 5.4 – Resultados para a rede Sioux Falls com eficiência well-to-wheel
+
+Estrat.
+% veículos
+
+elétricos
+Convencionais Elétricos Média Tempo
+
+exec. [s]Tempo Energia Tempo Energia Tempo Energia
+MSA 0 20,77 11,74 - - 20,77 11,74 12,1
+MSA 100 - - 1.200,34 6,47 1.200,34 6,47 1,1
+GE 0 20,77 11,74 - - 20,77 11,74 56,6
+GE 10 20,85 11,88 21,25 7,01 20,89 11,39 36,2
+GE 20 20,94 12,02 21,38 7,03 21,03 11,02 28,3
+GE 50 21,34 12,57 22,16 7,10 21,75 9,83 27,4
+GE 80 21,78 13,17 22,76 7,24 22,56 8,43 16,9
+GE 90 21,93 13,27 22,92 7,32 22,82 7,91 12,1
+GE 100 - - 23,08 7,38 23,08 7,38 15,5
+GF 0 20,77 11,74 - - 20,77 11,74 56,6
+GF 10 20,82 11,86 21,11 7,08 20,85 11,38 45,8
+GF 20 20,87 12,00 21,16 7,12 20,93 11,03 28,8
+GF 50 20,95 12,59 21,42 7,20 21,19 9,90 32,1
+GF 80 21,09 13,37 21,66 7,38 21,54 8,58 21,5
+GF 90 21,12 13,64 21,72 7,46 21,66 8,08 25,4
+GF 100 - - 21,69 7,54 21,69 7,54 34,8
+
+veículos, a estratégia GF apresenta menor tempo de viagem e maior consumo de energia.
+
+O método MSA é reconhecidamente lento em comparação a outros métodos estudados
+
+na literatura, pois a quantidade de fluxo que desvia para os novos caminhos mínimos a cada
+
+iteração n é determinada por um fator predeterminado igual a 1/(n+1). A Tabela 5.3 apresenta
+
+um tempo de execução 5 vezes mais lento para o método MSA com veículos convencionais em
+
+comparação com a média dos métodos apresentados em Perederieieva et al. (2015). Para o
+
+MMSA (biobjetivo), este fator sobe para 14. Logo, o tempo de execução sobe menos de 3 vezes
+
+no método biobjetivo em comparação ao mesmo método mono-objetivo.
+
+Os impactos medidos sobre os cenários sintéticos e os apresentados pela Tabela 5.3 con-
+
+sideram os parâmetros tank-to-wheel de eficiência, medindo o impacto da inclusão dos veículos
+
+elétricos nos custos dos usuários finais. Para medir o impacto em termos de redução no con-
+
+sumo de energia global, uma análise well-to-wheel foi conduzida utilizando as estratégias GE e
+
+GF. Os resultados destes experimentos são apresentados na Tabela 5.4.
+
+Em geral, os mesmos efeitos são observados ao considerar os parâmetros well-to-wheel e
+
+todos os comentários a respeito do comportamento dos motoristas e da consequente distribuição
+
+do fluxo permanecem válidos. Uma mudança natural em relação aos resultados no cenário tank-
+
+to-wheel é o aumento no consumo de energia, tanto para os veículos convencionais quanto para
+
+os veículos elétricos, dada a menor eficiência do motor. Este aspecto resulta em uma menor
+
+economia com a substituição de veículos convencionais por elétricos, pois o modelo considera
+
+as perdas de todo o processo de geração de energia. Mesmo assim, a Tabela 5.4 mostra um
+
+
+
+58
+
+Tabela 5.5 – Resultados para a rede Sioux Falls com perturbação das elevações
+
+Estrat. Pert
+% veículos
+
+elétricos
+Convencionais Elétricos Média
+
+Tempo Energia Tempo Energia Tempo Energia
+GE 0 0 20,77 9,91 - - 20,77 9,91
+GE 0 20 20,97 10,14 21,44 1,98 21,06 8,51
+GE 0 80 21,79 11,16 22,76 2,04 22,56 3,87
+GE 0 100 - - 23,00 2,08 23,00 2,08
+GE 1 0 20,77 10,57 - - 20,77 10,57
+GE 1 20 20,94 10,80 21,37 2,03 21,03 9,05
+GE 1 80 21,79 11,87 22,74 2,09 22,55 4,05
+GE 1 100 - - 22,96 2,13 22,96 2,13
+GE 1,5 0 20,77 10,90 - - 20,77 10,90
+GE 1,5 20 20,95 11,14 21,38 2,06 21,04 9,33
+GE 1,5 80 21,80 12,22 22,76 2,12 22,56 4,14
+GE 1,5 100 - - 23,03 2,16 23,03 2,16
+GE 2 0 20,77 11,22 - - 20,77 11,22
+GE 2 20 20,94 11,48 21,37 2,08 21,03 9,60
+GE 2 80 21,79 12,59 22,76 2,14 22,56 4,23
+GE 2 100 - - 23,13 2,19 23,13 2,19
+GE 4 0 20,77 12,53 - - 20,77 12,53
+GE 4 20 20,94 12,83 21,40 2,18 21,04 10,70
+GE 4 80 21,82 13,96 22,79 2,24 22,60 4,59
+GE 4 100 - - 23,14 2,29 23,14 2,29
+
+ganho em termos de economia de energia, diminuindo o consumo de 11,74MJ para 7,38MJ
+
+(GE) e 7,54MJ (GF).
+
+O terceiro cenário sobre a rede Sioux Falls consiste na perturbação das elevações dos
+
+vértices, obtida através da multiplicação de todas as elevações por uma constante. A Tabela 5.5
+
+mostra os resultados obtidos utilizando os parâmetros de eficiência tank-to-wheel para as di-
+
+ferentes constantes de perturbação e utilizando a estratégia GE. Os resultados para todas as
+
+parcelas de veículos elétricos e utilizando ambas estratégias (GE e GF) podem ser consultados
+
+no Apêndice B.
+
+Uma cidade plana resulta em um menor consumo de energia tanto para veículos conven-
+
+cionais quanto elétricos. No caso dos últimos, apesar da recuperação de energia obtida em de-
+
+clives, o gasto em subidas é ainda maior, provocando um maior consumo médio com o aumento
+
+das diferenças nas elevações. O maior consumo de energia torna muitos caminhos não mais
+
+atrativos, o que força veículos elétricos a optarem por caminhos mais rápidos, congestionando-
+
+os. Por isso, o aumento das elevações provoca um crescimento no tempo médio de viagem dos
+
+veículos elétricos, além do aumento no impacto aos veículos convencionais.
+
+O quarto cenário consiste na eliminação da recuperação de energia nos veículos elétri-
+
+cos com o objetivo de estudar a contribuição desta característica na energia economizada. A
+
+Tabela 5.6 apresenta os resultados deste experimento, comparando o consumo de energia com e
+
+
+
+59
+
+Tabela 5.6 – Economia de energia obtida por recuperação em veículos elétricos
+
+Estrat.
+% veículos
+
+elétricos
+Elétricos Média
+
+?in =0.7 ?in =0 econ. [%] ?in =0.7 ?in =0 econ. [%]
+GE 10 2,02 2,14 5,53 9,83 9,83 0,03
+GE 20 2,03 2,14 5,41 9,05 9,08 0,38
+GE 50 2,05 2,16 5,38 6,68 6,75 0,99
+GE 80 2,09 2,21 5,45 4,05 4,13 2,14
+GE 90 2,11 2,23 5,63 3,10 3,20 3,36
+GE 100 2,13 2,25 5,74 2,13 2,25 5,74
+GF 10 2,05 2,16 5,41 9,82 9,82 0,03
+GF 20 2,06 2,17 5,40 9,07 9,07 0,02
+GF 50 2,08 2,19 5,42 6,68 6,77 1,35
+GF 80 2,13 2,25 5,55 4,12 4,20 1,84
+GF 90 2,15 2,27 5,57 3,17 3,27 3,23
+GF 100 2,18 2,30 5,39 2,18 2,30 5,39
+
+sem a possibilidade de recuperação. Para desativar a recuperação, é atribuído valor zero ao pa-
+
+râmetro ?in da Equação (4.4). Conforme esperado, o consumo dos veículos elétricos aumenta
+
+com a eliminação da recuperação. Para a estratégia GE, a recuperação representa em média
+
+5,52% de economia de energia para os veículos elétricos e 5,46% na estratégia GF. Conside-
+
+rando 100% de veículos elétricos, este fator reflete em uma economia média de 5,74% e 5,39%
+
+para as estratégias GE e GF, respectivamente.
+
+Figura 5.3 – Energia economizada com o aumento da eficiência dos veículos elétricos
+
+0.7 0.75 0.8 0.85 0.9 0.95 1
+
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+10
+11
+12
+13
+14
+
+?in
+
+E
+c
+o
+n
+o
+m
+
+ia
+ d
+
+e
+ e
+
+n
+e
+rg
+
+ia
+ [
+
+%
+]
+
+?out = 0.9
+
+?out = 0.925
+
+?out = 0.95
+
+?out = 0.975
+
+?out = 1.0
+
+Finalmente, o quinto cenário sobre a rede Sioux Falls estuda valores de eficiência ele-
+
+vados, com o objetivo de medir os ganhos oriundos de melhorias na tecnologia do sistema
+
+elétrico. Um veículo elétrico possui eficiência de 90% (0,9) no consumo e 70% (0,7) na recu-
+
+peração. Portanto, foram experimentados os valores 0,9 a 1,0 para o parâmetro ?out e 0,7 a 1,0
+
+
+
+60
+
+Figura 5.4 – Rede Anaheim
+
+Fonte: Bar-Gera (2002)
+
+para o parâmetro ?in, com incrementos de 1/40. A Figura 5.3 mostra o consumo de energia dos
+
+veículos elétricos com as diferentes configurações de eficiência para uma população de 100%
+
+de veículos elétricos e utilizando a estratégia GE. Percebe-se que a melhora na eficiência de en-
+
+trada ?in pode reduzir até 3% o consumo de energia (crescimento de cada curva na Figura 5.3),
+
+enquanto a redução é de até 12,5% com melhorias na eficiência de saída ?out (diferença entre as
+
+curvas na Figura 5.3). Um cenário ideal, com melhorias em ambas eficiências, pode produzir
+
+uma economia de até 15,5%.
+
+5.4 Cenário real – Rede Anaheim
+
+A rede Anaheim está disponível em Bar-Gera (2002) e foi adotada para complementar
+
+as análises dos impactos dos veículos elétricos, uma vez que apresenta características diferentes
+
+da Sioux Falls. A rede Anaheim é maior, sendo considerada de tamanho médio. Além disso,
+
+sua demanda produz um ambiente com menor congestionamento.
+
+
+
+61
+
+Tabela 5.7 – Resultados para a rede Anaheim
+
+Estrat.
+% veículos
+
+elétricos
+Convencionais Elétricos Média Tempo
+
+exec. [s]Tempo Energia Tempo Energia Tempo Energia
+MSA 0 13,56 38,53 - - 13,56 38,53 2.790,0
+MSA 100 - - 20,70 7,42 20,70 7,42 1.470,2
+GE 0 13,56 38,53 - - 13,56 38,53 19.182,5
+GE 10 13,53 38,59 13,74 7,66 13,55 35,50 18.055,5
+GE 20 13,49 38,66 13,71 7,67 13,53 32,46 20.525,1
+GE 50 13,36 38,81 13,61 7,69 13,49 23,25 23.524,9
+GE 80 13,28 38,94 13,54 7,71 13,48 13,96 24.708,9
+GE 90 13,26 38,98 13,52 7,72 13,50 10,84 25.698,3
+GE 100 - - 13,51 7,72 13,51 7,72 25.642,3
+GF 0 13,56 38,53 - - 13,56 38,53 19.686,8
+GF 10 13,54 38,58 13,64 7,72 13,55 35,49 18.248,4
+GF 20 13,51 38,63 13,62 7,72 13,54 32,45 27.631,5
+GF 50 13,43 38,75 13,55 7,74 13,49 23,25 20.972,9
+GF 80 13,35 38,83 13,49 7,75 13,46 13,97 22.249,9
+GF 90 13,33 38,87 13,47 7,76 13,46 10,87 23.620,5
+GF 100 - - 13,46 7,76 13,46 7,76 35.400,2
+
+5.4.1 Descrição do cenário
+
+A rede Anaheim é composta por 416 vértices e 914 arcos e está representada na Fi-
+
+gura 5.4. A instância está associada a uma demanda de fluxo de 104.694,4 veículos/hora, dis-
+
+tribuídos em 1406 pares OD. A rede não possui valores de elevação, nem coordenadas nos
+
+vértices. Como a recuperação de energia dos veículos elétricos se dá, em maior parte, pela
+
+variação de velocidade, este trabalho assume elevação zero para todos os vértices.
+
+5.4.2 Análise dos resultados
+
+A Tabela 5.7 apresenta o resultado dos experimentos com os métodos MSA e MMSA e
+
+utilizando ambas estratégias de distribuição de fluxo para a rede Anaheim1. Esta rede é quase
+
+quatro vezes maior que a rede Sioux Falls, mas apresenta menos da metade da sua demanda.
+
+Ou seja, o ambiente congestionado configurado pela rede Sioux Falls não é observado na rede
+
+Anaheim. Apesar do comportamento dos veículos na rede ser o mesmo em ambos os cenários,
+
+na Anaheim se observam diferentes efeitos por conta desta característica.
+
+O tempo de viagem dos veículos convencionais diminui com o aumento do número
+
+de veículos elétricos. Em um cenário com menos congestionamento, o desvio de rota destes
+
+1Estes experimentos não permitem que vértices de origem e destino recebam fluxos de passagem, conforme
+Bar-Gera (2002). Ao desativar esta característica se obtém um novo equilíbrio. Por exemplo, o tempo de viagem
+diminui para 12,63 minutos no MSA com veículos convencionais.
+
+
+
+62
+
+últimos não congestiona rotas de veículos convencionais. Por isso, nestes casos a presença
+
+de veículos elétricos é benéfica aos demais por produzir uma melhor distribuição do tráfego.
+
+Em consequência disso, o tempo médio de viagem diminui de 13,56 para 13,51 minutos na
+
+estratégia GE e para 13,46 minutos na estratégia GF.
+
+5.5 Discussão
+
+As redes Sioux Falls e Anaheim foram adotadas como cenários para responder às per-
+
+guntas concebidas no início deste trabalho (Capítulo 1). Portanto, esta seção está estruturada
+
+em função das mesmas, apresentando uma discussão acerca dos resultados obtidos.
+
+Pergunta 1. Como os custos em tempo de viagem e consumo de energia mudarão com a inclu-
+
+são de veículos elétricos e qual o impacto sofrido pela população de veículos convencionais?
+
+Para a rede Sioux Falls, o tempo de viagem dos veículos convencionais sem nenhum
+
+veículo elétrico é de 20,77 minutos (método MSA). A medida que aumenta a quantidade de
+
+veículos elétricos este tempo cresce, chegando a 21,88 minutos quando os veículos convencio-
+
+nais representam apenas 10% da população total (estratégia GE). Na estratégia GF este impacto
+
+é mais suave, com um tempo de 21,11 minutos para a mesma parcela de veículos convencionais.
+
+Para uma distribuição de 50% de veículos de cada tipo, o tempo de viagem dos veículos con-
+
+vencionais cresce para 21,34 minutos utilizando a estratégia GE e 20,99 utilizando a estratégia
+
+GF.
+
+Considerando 10% de veículos convencionais e assumindo que este seja o trajeto entre
+
+casa e trabalho e, portanto, a viagem seja realizada duas vezes ao dia, obtém-se um tempo adici-
+
+onal de 2,22 minutos por dia para a estratégia GE, o que representa pouco mais de 5% de tempo
+
+adicional. Considerando uma média de 20 dias úteis no mês, o total de tempo adicional seria
+
+de aproximadamente 44 minutos mensais. Em um cenário com metade da população de cada
+
+tipo este impacto é um pouco menor, representando pouco menos de 3% em tempo adicional e
+
+um total de aproximadamente 23 minutos adicionais mensais. Logo, enquanto a parcela de veí-
+
+culos elétricos nas ruas for menor que 50%, um impacto inferior a 3% de tempo adicional será
+
+experimentado por veículos convencionais. Quando este percentual for superado, o impacto se
+
+aproximará a 5% de tempo adicional a medida que os veículos elétricos ganham espaço. Sobre
+
+o total de 360.600 veículos, o impacto de 2,22 minutos diários sobre a pequena parcela de 10%
+
+de veículos convencionais resulta em um total de mais de 80.000 minutos adicionais por dia.
+
+
+
+63
+
+Na rede Anaheim, o tempo de viagem dos veículos convencionais diminui com o au-
+
+mento do número de veículos elétricos, consequência do seu desvio de rotas. O tempo diminui
+
+de 13,56 para 13,26 utilizando a estratégia GE, e para 13,33 utilizando a estratégia GF, o que
+
+corresponde a uma diminuição de 2,2% e 1,7%, respectivamente. Considerando 10% de veícu-
+
+los convencionais, obtém-se uma economia de tempo de 0,6 minutos por dia para a estratégia
+
+GE. Sobre o total de 360.600 veículos, o impacto de 0,6 minutos diários sobre a pequena par-
+
+cela de 10% de veículos convencionais resulta em um total de mais de 20.000 minutos diários
+
+economizados.
+
+Em relação ao impacto sofrido pelos veículos elétricos, observa-se o mesmo comporta-
+
+mento para ambos os cenários reais. Uma maior parcela de veículos elétricos representa uma
+
+maior competição por caminhos econômicos, o que implica em um aumento nos custos destes
+
+veículos. Na rede Sioux Falls, com apenas 10% de veículos elétricos o consumo é de 2,02MJ
+
+para a estratégia GE e 2,05MJ para a estratégia GF. Considerando 100% de veículos elétricos,
+
+este valor aumenta para 2,13MJ na estratégia GE e 2,18MJ na estratégia GF, o que representa
+
+aproximadamente 5% e 7% de aumento, respectivamente. Como o congestionamento é menor
+
+na rede Anaheim, este aumento é menos expressivo, sendo cerca de 1% para ambas estratégias.
+
+Considerando duas viagens diárias com 20 dias no mês, o aumento no consumo de
+
+energia na rede Sioux Falls representaria cerca de 4,4MJ e 5,2MJ para as estratégias GE e GF. O
+
+consumo adicional diário de 0,2MJ (apresentado utilizando a estratégia GE) sobre a população
+
+total de 360.600 veículos elétricos representa um gasto adicional de mais de 72GJ por dia.
+
+Em termos de tempo de viagem para os veículos elétricos, com o aumento desta população o
+
+tempo sobe de 21,22 minutos (10% de veículos elétricos) para 22,96 minutos (100% de veículos
+
+elétricos) para a estratégia GE. Na estratégia GF o tempo de viagem cresce de 21,08 minutos
+
+para 21,62 minutos. Novamente, este tempo adicional projetado para um mês representaria 70
+
+minutos (GE) e 22 minutos (GF).
+
+Para mensurar o impacto global da inclusão de veículos elétricos, foram analisados os
+
+resultados médios de consumo de energia e tempo de viagem da rede Sioux Falls utilizando a
+
+eficiência well-to-wheel, a qual considera as perdas de todo o processo de produção de energia.
+
+Apesar do crescimento no consumo de energia de ambas as populações com o aumento do
+
+número de veículos elétricos, o consumo obtido pelos últimos é significativamente inferior. Por
+
+isso, de 0% para 100% de veículos elétricos a média de consumo de energia cai de 11,74MJ
+
+para 7,38MJ na estratégia GE e para 7,54MJ na estratégia GF. Estes valores representam uma
+
+economia diária de mais de 35%. Assumindo uma média de R$ 0,13 para cada MJ de energia
+
+(ANEEL, 2015), este percentual de economia representa R$ 0,53. Na projeção para um mês,
+
+
+
+64
+
+esta economia totaliza R$ 21,20. Considerando a população de 360.600 veículos elétricos, a
+
+economia utilizando a estratégia GF (menor entre as duas) representa um total diário de mais de
+
+3.000GJ (R$ 390.000,00). Ou seja, a economia global de energia é expressiva com a inclusão
+
+de veículos elétricos.
+
+Em relação ao impacto global no tempo de viagem, observa-se um aumento de 2,31
+
+minutos na estratégia GE e 0,92 minutos na estratégia GF, representando cerca de 11% e 4%,
+
+respectivamente. Em uma projeção mensal, cada motorista gastaria cerca de 90 minutos (estra-
+
+tégia GE) e 37 minutos (estratégia GF) adicionais no cenário com 100% de veículos elétricos.
+
+Por outro lado, em cenários sem congestionamento observa-se uma pequena diminuição no
+
+tempo de viagem (menos de 1%), resultado da melhor distribuição do tráfego. Portanto, no
+
+pior caso a popularização de veículos elétricos resulta em um maior tempo de viagem médio.
+
+Entretanto, este tempo adicional é compensado por uma economia considerável no consumo
+
+médio de energia.
+
+Conclui-se que a inclusão e o aumento do número de veículos elétricos nas ruas pro-
+
+moverá uma diminuição importante no consumo de energia, o que colabora para a redução da
+
+agressão do setor de transportes ao meio ambiente. Com o aumento da parcela de veículos
+
+elétricos, o consumo de energia desta população aumentará, mostrando que o melhor momento
+
+para aderir a um veículo elétrico é o mais cedo possível. Em cenários sem congestionamento, ao
+
+passo que diminui o consumo médio de energia, o tempo de viagem dos veículos convencionais
+
+também diminui por conta das diferentes rotas escolhidas pelos veículos elétricos. Logo, em
+
+muitos casos a presença de veículos elétricos beneficia os convencionais, que experimentarão
+
+menor congestionamento nas vias e um consequente menor tempo de viagem. Este aspecto
+
+não se mantém em situações de grande congestionamento na rede, onde o desvio de rotas dos
+
+veículos elétricos prejudicam outras viagens.
+
+Pergunta 2. Qual o efeito da recuperação de energia pela frenagem regenerativa no consumo
+
+total de energia?
+
+Os experimentos mostraram um aumento de aproximadamente 6% de energia ao desa-
+
+tivar a recuperação. Considerando o mesmo cenário de duas viagens diárias com 20 dias no
+
+mês, a economia mensal pela recuperação de energia chega a mais de 4MJ por veículo. Consi-
+
+derando um cenário com 50% de veículos de cada tipo, a recuperação da população de 180.300
+
+veículos elétricos totaliza uma economia de mais de 720GJ diários (R$ 93.600,00 considerando
+
+a mesma taxa de R$ 0,13/MJ). Em suma, a recuperação de menos de 6% de energia não figura
+
+um impacto tão expressivo para o consumidor final, mas implica em uma economia de energia
+
+
+
+65
+
+significativa sobre todos os veículos, o que é de interesse de autoridades ambientais.
+
+Pergunta 3. Qual o retorno esperado do investimento tecnológico para melhoria da eficiência
+
+do sistema elétrico (bateria e motor), em termos de economia de energia?
+
+Conforme o esperado, a melhoria na eficiência dos veículos elétricos produz uma di-
+
+minuição no consumo de energia. Quando combinadas melhorias nas eficiências de entrada e
+
+saída, a economia pode chegar a 15,5%. No entanto, este é um cenário ideal. Considerando uma
+
+pequena melhoria no sistema elétrico de, por exemplo, 0,7 para 0,75 para ?in e de 0,9 para 0,925
+
+para ?out, é possível obter uma economia de aproximadamente 3,2% de energia. Considerando
+
+50% de veículos elétricos, este percentual equivale a 366GJ (R$ 47.580,00) de energia diária
+
+poupada, valor que cresce para 732GJ (R$ 95.160,00) com 100% de veículos elétricos. Ou seja,
+
+o investimento para uma melhoria razoável na eficiência destes veículos gera um retorno alto
+
+em termos de economia de energia.
+
+
+
+66
+
+6 CONSIDERAÇÕES FINAIS
+
+Este capítulo apresenta as ideias finais do trabalho, detalhando as contribuições alcan-
+
+çadas, as conclusões da dissertação e algumas possibilidades de continuidade.
+
+6.1 Contribuições
+
+Este trabalho estudou o problema da alocação de tráfego para veículos elétricos, de
+
+modo a determinar a forma como eles se distribuem na rede. Como a simples substituição da
+
+função de custo pelo consumo de energia não é uma abordagem realista, ele adota o modelo de
+
+alocação de tráfego multiobjetivo de Raith et al. (2014). O tempo de viagem e o consumo de
+
+energia são tratados como objetivos independentes. Com isso, duas estratégias de distribuição
+
+do fluxo entre caminhos não-dominados foram propostas, chamadas Greedy Energy e Greedy
+
+Efficiency. Estas estratégias modelam a forma como motoristas de veículos elétricos optam por
+
+suas rotas de modo a economizar energia mantendo um tempo de viagem aceitável.
+
+Os métodos propostos utilizam um modelo físico de consumo de energia que considera
+
+aspectos importantes na determinação do gasto energético, como a inclinação da via e mudanças
+
+de velocidade. Além disso, este trabalho propõe um algoritmo biobjetivo de correção de rótulos
+
+para a determinação de caminhos mínimos para veículos elétricos. O algoritmo computa o
+
+conjunto de caminhos não-dominados em relação ao tempo de viagem e ao consumo de energia.
+
+O modelo proposto serve como ferramenta para autoridades analisarem cenários de trân-
+
+sito com veículos elétricos, determinando tanto a distribuição destes veículos, como também os
+
+custos desta distribuição. Além disso, o modelo auxilia na tomada de decisão, como no incen-
+
+tivo para que veículos elétricos tomem rotas que economizem energia ou até mesmo diminuam
+
+o congestionamento em pontos estratégicos da rede.
+
+6.2 Conclusões
+
+Percebeu-se que a abordagem proposta apresenta flexibilidade na determinação da dis-
+
+tribuição de veículos elétricos no trânsito. Ao modelar essa distribuição através de restrições de
+
+distância ou consumo de energia, rotas interessantes não são consideradas. O modelo proposto
+
+resolve este problema ao considerar ambos os custos como objetivos independentes. Neste sen-
+
+tido, a abordagem proposta é mais adequada para a modelagem do problema da alocação de
+
+
+
+67
+
+tráfego para veículos elétricos. Percebeu-se ainda que a estratégia de distribuição de fluxo é de
+
+fundamental importância ao método, pois implica em uma distribuição com maior ou menor
+
+fidelidade em relação a ambientes reais.
+
+Os resultados dos experimentos mostram uma diminuição no consumo de energia com
+
+a inclusão de veículos elétricos, bem como um pequeno aumento no tempo de viagem para
+
+cenários congestionados. Em cenários de menor congestionamento, o tempo de viagem também
+
+diminui por conta do desvio de rotas dos veículos elétricos. Além da energia poupada pela
+
+maior eficiência dos veículos elétricos, é possível obter entre 1 e 5% de economia adicional pela
+
+diferente escolha de rotas. Esta economia pode ser de interesse para autoridades ou empresas de
+
+logística, onde uma economia de 1% de energia a cada viagem em troca de apenas 1 minuto de
+
+tempo adicional pode fazer uma diferença considerável. Além disso, este percentual aplicado à
+
+população de uma região equivale a uma grande redução no consumo total de energia.
+
+Os veículos elétricos apresentaram aumento no consumo de energia com o crescimento
+
+da sua população, dada a maior competição por rotas que economizam energia. Foi observado
+
+ainda uma economia de energia na ordem de 5% por conta da frenagem regenerativa. Final-
+
+mente, os resultados mostraram que investimentos em tecnologia para o aumento da eficiência
+
+de veículos elétricos podem trazer retornos positivos em termos de economia no consumo global
+
+de energia.
+
+6.3 Trabalhos futuros
+
+Em geral, motoristas de veículos elétricos optam por rotas que economizam energia.
+
+Muitas vezes, as rotas com menor velocidade são escolhidas por serem econômicas. Uma ex-
+
+tensão ao trabalho consiste em substituir o algoritmo de caminhos mínimos por correção de
+
+rótulos pela proposta de Baum et al. (2014), permitindo aos motoristas optar com qual velo-
+
+cidade trafegar. Dessa forma, a escolha de uma rota congestionada pode ser substituída pela
+
+escolha de uma velocidade menor em uma rota sem congestionamento.
+
+A distribuição de estações de recarga de energia em trabalhos baseados tanto em ca-
+
+minhos mínimos quanto em alocação de tráfego tem ganhado atenção (LAM; LEUNG; CHU,
+
+2014; XIONG et al., 2015). A possibilidade de recarregar a bateria é um fator importante na
+
+escolha de rotas de veículos elétricos. A abordagem proposta neste trabalho pode ser adaptada
+
+para a inclusão de postos de recarga nos vértices. Para isso, é possível incluir um arco com ori-
+
+gem e destino no vértice onde se encontra a estação, apresentando uma recuperação de energia
+
+e um tempo gasto para a recarga. Isto possibilita o estudo da escolha de rotas em função da
+
+
+
+68
+
+possibilidade de recarga, bem como análises em relação ao posicionamento das estações para a
+
+otimização dos custos.
+
+Existe uma preocupação por parte das autoridades ambientais a respeito do consumo de
+
+combustível e de energia. Quanto menor este consumo, menor os impactos ambientais oriundos
+
+de todo o processo de produção de energia. Por isso, uma possibilidade de extensão do trabalho
+
+consiste no estudo de formas de incentivo aos veículos elétricos, a fim de que optem por rotas
+
+mais econômicas. Como exemplos, este incentivo pode ser explorado através do posiciona-
+
+mento de estações de recarga de energia ou mecanismos de recarga indutiva, bem como através
+
+de facilidades como faixas e vagas de estacionamento exclusivas.
+
+Finalmente, o estudo dos cenários propostos neste trabalho através de uma simulação
+
+microscópica de trânsito permite uma análise detalhada das mudanças no tempo de viagem e no
+
+consumo de energia, uma vez que um equilíbrio dificilmente é atingido em ambientes reais.
+
+
+
+69
+
+REFERÊNCIAS
+
+AMATO, F.; CASSEE, F. R.; GON, H. A. D. van der; GEHRIG, R.; GUSTAFSSON, M.;
+HAFNER, W.; HARRISON, R. M.; JOZWICKA, M.; KELLY, F. J.; MORENO, T. et al. Urban
+air quality: The challenge of traffic non-exhaust emissions. Journal of hazardous materials,
+Elsevier, v. 275, p. 31–36, 2014.
+
+ANEEL. Tarifas da Classe de Consumo Residencial. 2015.&amp;lt;http://www.aneel.gov.br/
+aplicacoes/tarifaAplicada/index.cfm&gt;. Acessado: 10/10/2015.
+
+ARTMEIER, A.; HASELMAYR, J.; LEUCKER, M.; SACHENBACHER, M. The shortest path
+problem revisited: Optimal routing for electric vehicles. In: KI 2010: Advances in Artificial
+Intelligence. Karlsruhe, Germany: Springer Berlin Heidelberg, 2010, (Lecture Notes in Com-
+puter Science, v. 6359). p. 309–316.
+
+BAR-GERA, H. Transportation network test problems. 2002.&amp;lt;http://www.bgu.ac.il/
+~bargera/tntp&gt;. Acessado: 05/08/2015.
+
+BAUM, M.; DIBBELT, J.; HÜBSCHLE-SCHNEIDER, L.; PAJOR, T.; WAGNER, D. Speed-
+consumption tradeoff for electric vehicle route planning. In: Workshop on Algorithmic Ap-
+proaches for Transportation Modelling, Optimization, and Systems. Dagstuhl: Schloss
+Dagstuhl–Leibniz-Zentrum fuer Informatik, 2014. v. 42, p. 138–151.
+
+BAUM, M.; DIBBELT, J.; PAJOR, T.; WAGNER, D. Energy-optimal routes for electric vehi-
+cles. In: International Conference on Advances in Geographic Information Systems. New
+York, NY, USA: ACM, 2013. (SIGSPATIAL’13), p. 54–63.
+
+BAZZAN, A. L.; KLÜGL, F. Introduction to intelligent systems in traffic and transportation.
+Synthesis Lectures on Artificial Intelligence and Machine Learning, Morgan &amp;amp; Claypool
+Publishers, v. 7, n. 3, p. 1–137, 2013.
+
+BELLMAN, R. On a routing problem. Quarterly of Applied Mathematics, v. 16, p. 87–90,
+1958.
+
+BRADLEY, T. H.; FRANK, A. A. Design, demonstrations and sustainability impact asses-
+sments for plug-in hybrid electric vehicles. Renewable and Sustainable Energy Reviews,
+Elsevier, v. 13, n. 1, p. 115–128, 2009.
+
+BRUMBAUGH-SMITH, J.; SHIER, D. An empirical investigation of some bicriterion shortest
+path algorithms. European Journal of Operational Research, Elsevier, v. 43, n. 2, p. 216–224,
+1989.
+
+Bureau of Public Roads. Traffic assignment manual. US Department of Commerce, 1964.
+
+CHERKASSKY, B. V.; GOLDBERG, A. V.; RADZIK, T. Shortest paths algorithms: Theory
+and experimental evaluation. Mathematical programming, Springer, v. 73, n. 2, p. 129–174,
+1996.
+
+CHICAGO AREA TRANSPORTATION STUDY. Chicago area transportation study: Final re-
+port. In: Data Projections. Illinois, Chicago: Department of Public Works and Buildings, 1960.
+v. 2.
+
+http://www.aneel.gov.br/aplicacoes/tarifaAplicada/index.cfm
+http://www.aneel.gov.br/aplicacoes/tarifaAplicada/index.cfm
+http://www.bgu.ac.il/~bargera/tntp
+http://www.bgu.ac.il/~bargera/tntp
+
+
+70
+
+CLIMACO, J. C. N.; MARTINS, E. Q. V. A bicriterion shortest path algorithm. European
+Journal of Operational Research, Elsevier, v. 11, n. 4, p. 399–404, 1982.
+
+CORLEY, H. W.; MOON, I. D. Shortest paths in networks with vector weights. Journal of
+Optimization Theory and Applications, Springer, v. 46, n. 1, p. 79–86, 1985.
+
+DAELLENBACH, H.; KLUYVER, C. D. Note on multiple objective dynamic programming.
+Journal of the Operational Research Society, JSTOR, p. 591–594, 1980.
+
+DIAL, R. B. Bicriterion traffic assignment: basic theory and elementary algorithms. Transpor-
+tation Science, INFORMS, v. 30, n. 2, p. 93–111, 1996.
+
+DIESTEL, R. Graph Theory. Heidelberg, Germany: Springer-Verlag Berlin Heidelberg, 2010.
+(Graduate Texts in Mathematics, 4).
+
+DIJKSTRA, E. W. A note on two problems in connexion with graphs. Numerische Mathema-
+tik, Springer, v. 1, n. 1, p. 269–271, 1959.
+
+EISNER, J.; FUNKE, S.; STORANDT, S. Optimal route planning for electric vehicles in large
+networks. In: AAAI Conference on Artificial Intelligence. San Francisco, California, USA:
+AAAI Press, 2011. p. 1108–1113.
+
+EUROPEAN COMISSION. Roadmap to a Single European Transport Area - Towards a
+competitive and resource efficient transport system. 2011. Communication on the Europe
+2020 Flagship Initiative and Innovation Union. White Paper.
+
+FORD, L. R. Network flow theory. Alexandria, Virginia, 1956.
+
+GALLO, G.; PALLOTTINO, S. Shortest path methods: A unifying approach. In: Netflow at
+Pisa. North-Holland: Springer Berlin Heidelberg, 1986, (Mathematical Programming Studies,
+v. 26). p. 38–64.
+
+GARDNER, L. M.; DUELL, M.; WALLER, S. T. A framework for evaluating the role of elec-
+tric vehicles in transportation network infrastructure under travel demand variability. Transpor-
+tation Research Part A: Policy and Practice, Elsevier, v. 49, p. 76–90, 2013.
+
+GILBERT, R.; PERL, A. Transport revolutions: moving people and freight without oil.
+London, UK: New Society Publishers, 2010.
+
+GOH, C.-K.; TAN, K. C. Evolutionary multi-objective optimization in uncertain environ-
+ments - Issues and algorithms. Berlin: Springer-Verlag, 2009. (Studies in Computational In-
+telligence, v. 186).
+
+GOLDBARG, M. Grafos: Conceitos, algoritmos e aplicações. Rio de Janeiro: Elsevier Brasil,
+2012.
+
+GONDER, J.; MARKEL, T.; THORNTON, M.; SIMPSON, A. Using global positioning system
+travel data to assess real-world energy use of plug-in hybrid electric vehicles. Transportation
+Research Record: Journal of the Transportation Research Board, Transportation Research
+Board of the National Academies, v. 2017, p. 26–32, 2007.
+
+GOOGLE. Google Earth. 2015.&amp;lt;http://www.google.com/earth&gt;. Acessado: 05/08/2015.
+
+http://www.google.com/earth
+
+
+71
+
+GOOGLE. Google Elevation API. 2015.&amp;lt;https://developers.google.com/maps/
+documentation/elevation&gt;. Acessado: 05/08/2015.
+
+GRANOVSKII, M.; DINCER, I.; ROSEN, M. A. Economic and environmental comparison
+of conventional, hybrid, electric and hydrogen fuel cell vehicles. Journal of Power Sources,
+Elsevier, v. 159, n. 2, p. 1186–1193, 2006.
+
+GUERRIERO, F.; MUSMANNO, R. Label correcting methods to solve multicriteria shortest
+path problems. Journal of optimization theory and applications, Springer, v. 111, n. 3, p.
+589–613, 2001.
+
+HANSEN, P. Bicriterion path problems. In: Multiple criteria decision making theory and ap-
+plication. Berlin: Springer Berlin Heidelberg, 1980, (Lecture Notes in Economics and Mathe-
+matical Systems, v. 177). p. 109–127.
+
+HE, F.; YIN, Y.; LAWPHONGPANICH, S. Network equilibrium models with battery elec-
+tric vehicles. Transportation Research Part B: Methodological, Elsevier, v. 67, p. 306–319,
+2014.
+
+HENIG, M. I. The shortest path problem with two objective functions. European Journal of
+Operational Research, Elsevier, v. 25, n. 2, p. 281–291, 1986.
+
+HICKMAN, R.; BANISTER, D. Transport, climate change and the city. Abingdon, Oxon,
+UK: Routledge, 2014. (Routledge Advances in Climate Change Research, v. 7).
+
+INOUE, S.; MARUYAMA, T. Computational experience on advanced algorithms for user equi-
+librium traffic assignment problem and its convergence error. Procedia – Social and Behavio-
+ral Sciences, Elsevier, v. 43, p. 445–456, 2012.
+
+JIANG, N.; XIE, C. Computing and analyzing mixed equilibrium network flows with gasoline
+and electric vehicles. Computer-Aided Civil and Infrastructure Engineering, Wiley Online
+Library, v. 29, n. 8, p. 626–641, 2014.
+
+JIANG, N.; XIE, C.; WALLER, S. Path-constrained traffic assignment: model and algorithm.
+Transportation Research Record: Journal of the Transportation Research Board, Trans-
+portation Research Board of the National Academies, v. 2283, p. 25–33, 2012.
+
+JOHNSON, D. B. A note on Dijkstra’s shortest path algorithm. Journal of the ACM (JACM),
+ACM, v. 20, n. 3, p. 385–388, 1973.
+
+JUNGNICKEL, D.; SCHADE, T. Graphs, networks and algorithms. 4. ed. Berlin: Springer,
+2013. (Algorithms and Computation in Mathematics, v. 5).
+
+LAM, A.; LEUNG, Y.-W.; CHU, X. Electric vehicle charging station placement: Formulation,
+complexity, and solutions. Smart Grid, IEEE Transactions on, v. 5, n. 6, p. 2846–2856, Nov
+2014. ISSN 1949-3053.
+
+LARMINIE, J.; LOWRY, J. Electric vehicle technology explained. West Sussex, England:
+John Wiley &amp;amp; Sons, 2004.
+
+LEBLANC, L. J.; MORLOK, E. K.; PIERSKALLA, W. P. An efficient approach to solving the
+road network equilibrium traffic assignment problem. Transportation Research, Elsevier, v. 9,
+n. 5, p. 309–318, 1975.
+
+https://developers.google.com/maps/documentation/elevation
+https://developers.google.com/maps/documentation/elevation
+
+
+72
+
+LUKE, S. Essentials of Metaheuristics. 2nd. ed. George Mason University: Lulu, 2013.
+
+MACKAY, D. Sustainable Energy: without the hot air. Cambridge, England: UIT Cam-
+bridge, 2008.
+
+MARTIN, B. V.; MANHEIM, M. L. A research program for comparison of traffic assignment
+techniques. Highway Research Record, n. 88, 1965.
+
+MARTINS, E. Q. V. On a multicriteria shortest path problem. European Journal of Operati-
+onal Research, Elsevier, v. 16, n. 2, p. 236–245, 1984.
+
+MICHIELS, W.; AARTS, E.; KORST, J. Theoretical aspects of local search. Berlin: Springer-
+Verlag Berlin Heidelberg, 2007.
+
+MOONEY, P.; WINSTANLEY, A. An evolutionary algorithm for multicriteria path optimiza-
+tion problems. International Journal of Geographical Information Science, Taylor &amp;amp; Fran-
+cis, v. 20, n. 4, p. 401–423, 2006.
+
+MOTE, J.; MURTHY, I.; OLSON, D. L. A parametric approach to solving bicriterion shortest
+path problems. European Journal of Operational Research, Elsevier, v. 53, n. 1, p. 81–92,
+1991.
+
+NAGURNEY, A. A multiclass, multicriteria traffic network equilibrium model. Mathematical
+and Computer Modelling, Elsevier, v. 32, n. 3, p. 393–411, 2000.
+
+ÖHRSTRÖM, E.; SKÅNBERG, A.; SVENSSON, H.; GIDLÖF-GUNNARSSON, A. Effects
+of road traffic noise and the benefit of access to quietness. Journal of Sound and Vibration,
+Elsevier, v. 295, n. 1, p. 40–59, 2006.
+
+ORTÚZAR, J. d. D.; WILLUMSEN, L. G. Modelling transport. 4. ed. Chichester, UK: John
+Wiley &amp;amp; Sons, 2011.
+
+PATRIKSSON, M. The traffic assignment problem: models and methods. Utrecht, The
+Netherlands: VSP, 1994. (Topics in Transportation Series).
+
+PEREDERIEIEVA, O.; EHRGOTT, M.; RAITH, A.; WANG, J. Y. T. A framework for and em-
+pirical study of algorithms for traffic assignment. Computers &amp;amp; Operations Research, v. 54,
+p. 90–107, 2015.
+
+PRANDTSTETTER, M.; STRAUB, M.; PUCHINGER, J. On the way to a multi-modal energy-
+efficient route. In: IECON Annual Conference. Vienna, Austria: IEEE, 2013. p. 4779–4784.
+
+RAITH, A.; EHRGOTT, M. A comparison of solution strategies for biobjective shortest path
+problems. Computers &amp;amp; Operations Research, Elsevier, v. 36, n. 4, p. 1299–1331, 2009.
+
+RAITH, A.; WANG, J. Y.; EHRGOTT, M.; MITCHELL, S. A. Solving multi-objective traffic
+assignment. Annals of Operations Research, Springer, v. 222, n. 1, p. 483–516, 2014.
+
+SACHENBACHER, M.; LEUCKER, M.; ARTMEIER, A.; HASELMAYR, J. Efficient energy-
+optimal routing for electric vehicles. In: AAAI Conference on Artificial Intelligence. San
+Francisco, California, USA: AAAI Press, 2011. p. 1402–1407.
+
+
+
+73
+
+SCHLOTE, A.; CRISOSTOMI, E.; KIRKLAND, S.; SHORTEN, R. Traffic modelling fra-
+mework for electric vehicles. International Journal of Control, Taylor &amp;amp; Francis, v. 85, n. 7,
+p. 880–897, 2012.
+
+SERAFINI, P. Some considerations about computational complexity for multi objective combi-
+natorial problems. In: Recent advances and historical development of vector optimization.
+Berlin: Springer, 1987. p. 222–232.
+
+SHEFFI, Y. Urban transportation networks. Englewood Cliffs, NJ: Prentice-Hall, 1985.
+
+SIERKSMA, G.; GHOSH, D. Networks in action: Text and computer exercises in network
+optimization. London, UK: Springer Science &amp;amp; Business Media, 2010. (International Series in
+Operations Research &amp;amp; Management Science, v. 140).
+
+SILVA, C.; GONÇALVES, G.; FARIAS, T.; MENDES-LOPES, J. A tank-to-wheel analysis
+tool for energy and emissions studies in road vehicles. Science of the Total Environment,
+Elsevier, v. 367, n. 1, p. 441–447, 2006.
+
+SKRIVER, A. J. A classification of bicriterion shortest path (BSP) algorithms. Asia Pacific
+Journal of Operational Research, National University of Singapore, v. 17, n. 2, p. 199–212,
+2000.
+
+SKRIVER, A. J.; ANDERSEN, K. A. A label correcting approach for solving bicriterion
+shortest-path problems. Computers &amp;amp; Operations Research, Elsevier, v. 27, n. 6, p. 507–524,
+2000.
+
+SMOCK, R. An iterative assignment approach to capacity restraint on arterial networks.
+Highway Research Board Bulletin, n. 347, 1962.
+
+Society of Automotive Engineers. Recommended practice for measuring the exhaust emis-
+sions and fuel economy of hybrid-electric vehicles. USA, 1999.
+
+STORANDT, S. Quick and energy-efficient routes: computing constrained shortest paths for
+electric vehicles. In: ACM. International Workshop on Computational Transportation Sci-
+ence. Redondo Beach, CA, USA, 2012. p. 20–25.
+
+TUNG, C. T.; CHEW, K. L. A bicriterion Pareto-optimal path algorithm. Asia Pacific Journal
+of Operational Research, v. 5, n. 2, p. 166–172, 1988.
+
+TZENG, G.-H.; CHEN, C.-H. Multiobjective decision making for traffic assignment. IEEE
+Transactions on Engineering Management, IEEE, v. 40, n. 2, p. 180–187, 1993.
+
+VAN-MIERLO, J.; MARENNE, Y. Energy consumption, CO2 emissions and other considera-
+tions related to battery electric vehicles. Association for Electric Vehicles in Europe, 2009.
+
+WANG, H.; ZHANG, X.; OUYANG, M. Energy consumption of electric vehicles based on
+real-world driving patterns: A case study of Beijing. To appear in Applied Energy, Elsevier,
+2015.
+
+WANG, Y.; JIANG, J.; MU, T. Context-aware and energy-driven route optimization for fully
+electric vehicles via crowdsourcing. IEEE Transactions on Intelligent Transportation Sys-
+tems, IEEE, v. 14, n. 3, p. 1331–1345, 2013.
+
+
+
+74
+
+WARDROP, J. G. Some theoretical aspects of road traffic research. ICE Proceedings: Engine-
+ering Divisions, v. 1, p. 325–362, 1952.
+
+XIONG, Y.; GAN, J.; AN, B.; MIAO, C.; BAZZAN, A. L. C. Optimal electric vehicle char-
+ging station placement. In: International Joint Conference on Artificial Intelligence. Buenos
+Aires: AAAI Press, 2015. p. 2662–2668.
+
+YANG, X.-S. Introduction to Mathematical Optimization: From linear programming to
+metaheuristics. Cambridge, UK: Cambridge International Science Publishing, 2008.
+
+ZHOU, A.; QU, B.-Y.; LI, H.; ZHAO, S.-Z.; SUGANTHAN, P. N. Multiobjective evolutionary
+algorithms: A survey of the state of the art. Swarm and Evolutionary Computation, v. 1, p.
+32–49, 2011.
+
+
+
+75
+
+APÊNDICE A - DADOS COMPLEMENTARES PARA A REDE SIOUX FALLS
+
+As elevações dos vértices são importantes para determinar o consumo de energia. Por-
+
+tanto, os dados de coordenadas geográficas e elevações foram consultados manualmente para
+
+a rede Sioux Falls (apresentada no Capítulo 5). A Tabela 7.1 apresenta estes valores para cada
+
+vértice.
+
+Tabela 7.1 – Coordenadas geográficas e elevações para os vértices da rede Sioux Falls
+Vértice Latitude Longitude Elevação
+
+1 43,57260858 -96,77506953 438
+2 43,56420630 -96,73137635 434
+3 43,55884336 -96,77946903 436
+4 43,55840651 -96,76119246 435
+5 43,55812758 -96,73136830 449
+6 43,56209266 -96,71150923 408
+7 43,55121187 -96,69381537 435
+8 43,55121333 -96,71139657 440
+9 43,55120896 -96,73131332 428
+10 43,54598970 -96,73127711 444
+11 43,54394153 -96,75121330 436
+12 43,54391334 -96,78024754 432
+13 43,51483097 -96,78043932 431
+14 43,52945461 -96,75122671 448
+15 43,52942349 -96,73130125 452
+16 43,54666771 -96,71138853 437
+17 43,53481968 -96,71131879 435
+18 43,54668764 -96,69407487 456
+19 43,52935835 -96,71129063 452
+20 43,51547480 -96,71080112 434
+21 43,51487425 -96,73122682 431
+22 43,52215004 -96,73126638 437
+23 43,52212401 -96,75113082 445
+24 43,51480957 -96,76110059 435
+
+
+
+76
+
+APÊNDICE B - SIOUX FALLS COM PERTURBAÇÃO DAS ELEVAÇÕES
+
+As Tabelas 8.1 e 8.2 apresentam os resultados completos para a rede Sioux Falls com
+
+perturbação das elevações utilizando eficiência tank-to-wheel. A Tabela 8.1 apresenta os resul-
+
+tados utilizando a estratégia Greedy Energy, enquanto a Tabela 8.2 apresenta os resultados para
+
+a estratégia Greedy Efficiency.
+
+Tabela 8.1 – Resultados completos para a rede Sioux Falls com perturbação das elevações (GE)
+
+Pert
+% veículos
+
+elétricos
+Convencionais Elétricos Média
+
+Tempo Energia Tempo Energia Tempo Energia
+0 0 20,77 9,91 - - 20,77 9,91
+0 10 20,85 10,04 21,31 1,97 20,90 9,23
+0 20 20,97 10,14 21,44 1,98 21,06 8,51
+0 50 21,36 10,61 22,23 2,00 21,80 6,31
+0 80 21,79 11,16 22,76 2,04 22,56 3,87
+0 90 21,88 11,25 22,89 2,07 22,79 2,98
+0 100 - - 23,00 2,08 23,00 2,08
+1 0 20,77 10,57 - - 20,77 10,57
+1 10 20,82 10,70 21,22 2,02 20,86 9,83
+1 20 20,94 10,80 21,37 2,03 21,03 9,05
+1 50 21,34 11,31 22,13 2,05 21,73 6,68
+1 80 21,79 11,87 22,74 2,09 22,55 4,05
+1 90 21,88 11,96 22,88 2,11 22,78 3,10
+1 100 - - 22,96 2,13 22,96 2,13
+
+1,5 0 20,77 10,90 - - 20,77 10,90
+1,5 10 20,85 11,04 21,24 2,05 20,89 10,14
+1,5 20 20,95 11,14 21,38 2,06 21,04 9,33
+1,5 50 21,33 11,66 22,13 2,08 21,73 6,87
+1,5 80 21,80 12,22 22,76 2,12 22,56 4,14
+1,5 90 21,90 12,34 22,90 2,14 22,80 3,16
+1,5 100 - - 23,03 2,16 23,03 2,16
+
+2 0 20,77 11,22 - - 20,77 11,22
+2 10 20,84 11,37 21,23 2,07 20,88 10,44
+2 20 20,94 11,48 21,37 2,08 21,03 9,60
+2 50 21,34 12,00 22,14 2,10 21,74 7,05
+2 80 21,79 12,59 22,76 2,14 22,56 4,23
+2 90 21,91 12,70 22,91 2,17 22,81 3,22
+2 100 - - 23,13 2,19 23,13 2,19
+4 0 20,77 12,53 - - 20,77 12,53
+4 10 20,84 12,67 21,27 2,17 20,88 11,62
+4 20 20,94 12,83 21,40 2,18 21,04 10,70
+4 50 21,31 13,41 22,14 2,20 21,73 7,80
+4 80 21,82 13,96 22,79 2,24 22,60 4,59
+4 90 21,98 14,08 22,99 2,27 22,89 3,45
+4 100 - - 23,14 2,29 23,14 2,29
+
+
+
+77
+
+Tabela 8.2 – Resultados completos para a rede Sioux Falls com perturbação das elevações (GF)
+
+Pert
+% veículos
+
+elétricos
+Convencionais Elétricos Média
+
+Tempo Energia Tempo Energia Tempo Energia
+0 0 20,77 9,91 - - 20,77 9,91
+0 10 20,82 10,03 21,10 1,99 20,84 9,22
+0 20 20,87 10,14 21,14 2,01 20,93 8,51
+0 50 21,00 10,56 21,45 2,03 21,22 6,29
+0 80 21,11 11,36 21,63 2,08 21,53 3,93
+0 90 21,13 11,56 21,71 2,10 21,65 3,04
+0 100 - - 21,59 2,13 21,59 2,13
+1 0 20,77 10,57 - - 20,77 10,57
+1 10 20,80 10,69 21,08 2,05 20,83 9,82
+1 20 20,87 10,82 21,16 2,06 20,93 9,07
+1 50 20,99 11,28 21,44 2,08 21,22 6,68
+1 80 21,08 12,09 21,63 2,13 21,52 4,12
+1 90 21,11 12,31 21,67 2,15 21,62 3,17
+1 100 - - 21,62 2,18 21,62 2,18
+
+1,5 0 20,77 10,90 - - 20,77 10,90
+1,5 10 20,80 11,01 21,07 2,07 20,83 10,12
+1,5 20 20,85 11,15 21,14 2,08 20,91 9,33
+1,5 50 20,97 11,64 21,43 2,11 21,20 6,87
+1,5 80 21,08 12,46 21,63 2,16 21,52 4,22
+1,5 90 21,10 12,68 21,69 2,18 21,63 3,23
+1,5 100 - - 21,66 2,21 21,66 2,21
+
+2 0 20,77 11,22 - - 20,77 11,22
+2 10 20,81 11,35 21,09 2,10 20,84 10,43
+2 20 20,85 11,48 21,13 2,11 20,90 9,61
+2 50 20,96 12,01 21,42 2,13 21,19 7,07
+2 80 21,12 12,80 21,69 2,18 21,58 4,31
+2 90 21,14 13,05 21,74 2,21 21,68 3,29
+2 100 - - 21,66 2,23 21,66 2,23
+4 0 20,77 12,53 - - 20,77 12,53
+4 10 20,82 12,66 21,13 2,19 20,85 11,62
+4 20 20,88 12,82 21,19 2,20 20,94 10,70
+4 50 20,95 13,44 21,43 2,23 21,19 7,83
+4 80 21,09 14,22 21,68 2,29 21,56 4,67
+4 90 21,08 14,51 21,68 2,31 21,62 3,53
+4 100 - - 21,77 2,33 21,77 2,33
+
+
+	Agradecimentos
+	Resumo
+	Abstract
+	Lista de Abreviaturas e Siglas
+	Lista de Figuras
+	Lista de Tabelas
+	Lista de algoritmos
+	Sumário
+	1 Introdução
+	1.1 Contribuições e objetivos
+	1.2 Organização do texto
+
+	2 Fundamentação teórica
+	2.1 Otimização multiobjetivo
+	2.2 Grafos
+	2.3 Caminhos mínimos
+	2.3.1 O algoritmo de Dijkstra
+	2.3.2 Caminhos mínimos biobjetivo
+	2.3.3 Caminhos mínimos para veículos elétricos
+
+	2.4 Problema da alocação de tráfego
+	2.5 Problema da alocação multiobjetivo de tráfego
+	2.5.1 Distribuição do fluxo baseada em critérios autoritários
+	2.5.2 Distribuição do fluxo baseada nos objetivos do usuário
+
+	2.6 Resumo
+
+	3 Trabalhos relacionados
+	3.1 Abordagens baseadas nas diferenças entre veículos convencionais e elétricos
+	3.2 Abordagens baseadas em caminhos mínimos
+	3.3 Abordagens baseadas no problema da alocação de tráfego
+	3.4 Resumo
+
+	4 Alocação biobjetivo de tráfego para veÍculos elétricos
+	4.1 Estratégias de distribuição de fluxo para veículos elétricos
+	4.2 Modelo de consumo de energia
+	4.3 Algoritmo biobjetivo de caminhos mínimos para veículos elétricos
+	4.4 Questionário
+
+	5 Experimentos
+	5.1 Definição dos parâmetros
+	5.2 Cenário sintético – Rede grade 5x5
+	5.2.1 Descrição do cenário
+	5.2.2 Análise dos resultados
+
+	5.3 Cenário real – Rede Sioux Falls
+	5.3.1 Descrição dos cenários
+	5.3.2 Análise dos resultados
+
+	5.4 Cenário real – Rede Anaheim
+	5.4.1 Descrição do cenário
+	5.4.2 Análise dos resultados
+
+	5.5 Discussão
+
+	6 Considerações finais
+	6.1 Contribuições
+	6.2 Conclusões
+	6.3 Trabalhos futuros
+
+	Referências
+	Apêndice A - Dados complementares para a rede Sioux Falls
+	Apêndice B - Sioux Falls com perturbação das elevações
+
+
+
+</field>
+	</doc>
+</add>

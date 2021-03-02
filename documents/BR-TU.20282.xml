@@ -1,0 +1,3638 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.20282</field>
+		<field name="filename">3753_PFC-20141-CarolinaMaiaVettorazzo.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+Implementac?a?o e avaliac?a?o de uma
+ferramenta de acompanhamento de
+
+controle preditivo para processos da
+indu?stria do petro?leo
+
+Relato?rio submetido a? Universidade Federal de Santa Catarina
+
+como requisito para a aprovac?a?o da disciplina:
+
+DAS 5511: Projeto de Fim de Curso
+
+Carolina Maia Vettorazzo
+
+Floriano?polis, agosto de 2014
+
+
+
+Implementac?a?o e avaliac?a?o de uma ferramenta de
+acompanhamento de controle preditivo para processos
+
+da indu?stria do petro?leo
+
+Carolina Maia Vettorazzo
+
+Esta monografia foi julgada no contexto da disciplina
+
+DAS 5511: Projeto de Fim de Curso
+
+e aprovada na sua forma final pelo
+
+Curso de Engenharia de Controle e Automac?a?o
+
+Prof. Ju?lio Normey-Rico
+
+ii
+
+
+
+Banca Examinadora:
+
+Mario Ce?sar M. Massa de Campos
+
+Orientador Empresa
+
+Ju?lio Normey-Rico
+
+Orientador do Curso
+
+Prof. Ricardo Jose? Rabelo
+
+Responsa?vel pela disciplina
+
+Prof. xxxxxxx, Avaliador
+
+aluno1, Debatedor
+
+aluno2, Debatedor
+
+
+
+Agradecimentos
+
+Antes de tudo, agradec?o a? minha fam??lia que me apoiou e me acompanhou
+
+durante toda a graduac?a?o. Obrigado por terem sido mais fortes do que eu e por nunca
+
+terem duvidado de mim, mesmo nos momentos mais dif??ceis.
+
+Agradec?o ao professor Julio Normey-Rico e ao engenheiro Mario Campos pela
+
+orientac?a?o e pela oportunidade de desenvolver este trabalho.
+
+Tambe?m agradec?o aos membros do projeto na UFSC, que me apoiaram a
+
+dista?ncia e muito me ensinaram sobre o tema, e a todos que conheci no Cenpes pelos
+
+conhecimentos passados a mim, pela ajuda com o meu projeto e pelos momentos
+
+descontra??dos, que tornaram meu esta?gio ta?o divertido.
+
+Aproveito tambe?m para agradecer aos meus amigos, na?o so? aos que estiveram
+
+ao meu lado durante minha jornada acade?mica, mas tambe?m aos que estiveram longe
+
+e mesmo assim na?o esqueceram de mim.
+
+Por fim, dedico este trabalho a todos aqueles que conheci atrave?s dos projetos
+
+de pesquisa dos quais participei, da empresa ju?nior Autojun, do centro acade?mico
+
+CAECA e do programa CIne?ncias sem Fronteiras, e que contribu??ram de alguma forma
+
+para o meu crescimento pessoal e para minha formac?a?o profissional.
+
+i
+
+
+
+Resumo
+
+O controle preditivo baseado em modelo (CPBM) e? uma das te?cnicas de con-
+
+trole moderno que provavelmente teve mais e?xito nas aplicac?o?es na indu?stria. Pore?m,
+
+uma das dificuldades encontradas na aplicac?a?o de CPBM e? a sintonia e avaliac?a?o de
+
+desempenho do sistema de controle.
+
+Em geral, os diversos algoritmos de CPBM utilizam diferentes func?o?es de custo
+
+para calcular a lei de controle, pore?m a maioria deles considera como objetivo mini-
+
+mizar o erro entre a sa??da futura e a refere?ncia desejada penalizando o esforc?o incre-
+
+mental de controle. Assim, a sintonia desses controladores e? diretamente dependente
+
+das ponderac?o?es das varia?veis controladas e das manipuladas e tambe?m da predic?a?o
+
+calculada a partir do modelo de predic?a?o.
+
+Algumas abordagens de avaliac?a?o de controle existentes na?o permitem definir
+
+qual varia?vel controlada tem o pior seguimento a refere?ncia e nem o motivo do de-
+
+sempenho ruim. Existem ainda metodologias que auxiliam os projetistas a escolher
+
+as de ponderac?o?es, mas que na?o garantem que as escolhas feitas sa?o as melhores
+
+poss??ves.
+
+Por isso a necessidade de me?todos de avaliac?a?o de desempenho de sistemas
+
+de controle MPC e? largamente reconhecida no meio industrial. Com base nisso, foram
+
+utilizados seis ??ndices, descritos em [13] que avaliam o desempenho e a sintonia do
+
+controlador: os Desvios Me?dios, o I?ndice de Seguimento de Refere?ncia Relativo, o
+
+I?ndice de Supressa?o de Movimento, o I?ndice de Controle Relativo, o I?ndice do Erro
+
+de Predic?a?o e o I?ndice de Estabilidade. Estes ??ndices mostram se as varia?veis esta?o
+
+seguindo a refere?ncia de forma satisfato?ria e caso elas na?o estajam, os ??ndices indicam
+
+o porque?.
+
+Este trabalho mostra, a partir de simulac?o?es de diversos cena?rios de operac?a?o
+
+de uma planta real, que os ??ndices sa?o uma ferramenta de grande potencial para
+
+avaliac?a?o do desempenho do controle e identificac?a?o dos problemas que impedem
+
+um bom desempenho.
+
+ii
+
+
+
+Abstract
+
+Model Predictive Control (MPC) is probably one of the most successful control
+
+techniques used in industrial applications. However, this technology has limitations like
+
+the tuning procedure and the control system performance evaluation.
+
+The various MPC algorithms propose different cost functions for obtaining the
+
+control law, but the general aim is to minimize the error between the future output and
+
+the reference signal, penalizing the control effort necessary for doing so. Therefore,
+
+these controllers tuning depend on the weighting sequences and the future output.
+
+Some available performance evaluation approaches do not indicate which varia-
+
+ble does not follow the reference signal well or why. There are also methodologies that
+
+help designers to choose the weighting sequences, but they do not guarantee the best
+
+choice as a result.
+
+That is why there is still the need of new evaluation methods. Based on that, six
+
+indices were created. They tell if the controlled variables are following the reference
+
+and if they are not, why.
+
+This work show, through various scenarios simulations, that the indices are a
+
+great tool to analyze the control performance and identify possible problems that pre-
+
+vent a good performance.
+
+iii
+
+
+
+Suma?rio
+
+Lista de Figuras vi
+
+1 Introduc?a?o 1
+
+2 Controle Preditivo de Processos da Indu?stria de Petro?leo e Ga?s 4
+
+2.1 Elementos do CPBM . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+
+2.1.1 O modelo de predic?a?o . . . . . . . . . . . . . . . . . . . . . . . . 6
+
+2.1.1.1 O modelo do processo . . . . . . . . . . . . . . . . . . 6
+
+2.1.1.2 Modelo das perturbac?o?es . . . . . . . . . . . . . . . . . 9
+
+2.1.1.3 Resposta livre e forc?ada . . . . . . . . . . . . . . . . . 10
+
+2.1.2 Func?a?o Objetivo . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+
+2.1.3 Obtenc?a?o da lei de controle . . . . . . . . . . . . . . . . . . . . . 13
+
+2.2 Controle por Matriz Dina?mica (DMC) . . . . . . . . . . . . . . . . . . . . 14
+
+2.2.1 DMC Original . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+
+2.2.2 DMC Recursivo . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+
+2.3 DMC Multivaria?vel . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+
+2.3.1 DMC Recursivo Multivaria?vel . . . . . . . . . . . . . . . . . . . . 22
+
+2.4 Comenta?rios finais . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+
+3 Ferramenta de Aux??lio a Sintonia Total (FAST MPC) 24
+
+3.1 Ca?lculo dos ??ndices . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+
+3.1.1 Desvios Me?dios . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+
+3.1.2 I?ndice de Estabilidade . . . . . . . . . . . . . . . . . . . . . . . . 28
+
+3.1.3 I?ndices de Seguimento de Refere?ncia Relativo . . . . . . . . . . 29
+
+3.1.4 I?ndices Controle Relativo . . . . . . . . . . . . . . . . . . . . . . 30
+
+iv
+
+
+
+3.1.5 I?ndices de Supressa?o de Movimento . . . . . . . . . . . . . . . . 31
+
+3.1.6 I?ndices do Erro de Modelagem . . . . . . . . . . . . . . . . . . . 32
+
+3.2 Apresentac?a?o Gra?fica dos Resultados . . . . . . . . . . . . . . . . . . . 32
+
+3.3 Me?todo Proposto para Tomada de Decisa?o . . . . . . . . . . . . . . . . 33
+
+3.3.1 Ana?lise dos I?ndices de Seguimento Relativos . . . . . . . . . . . 33
+
+3.3.2 Ana?lise dos I?ndices de Supressa?o de Movimento . . . . . . . . . 33
+
+4 Caso de estudo e ferramentas de simulac?a?o e controle 35
+
+4.1 UPGN . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+
+4.1.1 Controle do teor de C2 no GLP - y3 . . . . . . . . . . . . . . . . 37
+
+4.1.2 Controle do teor de C5 na gasolina natural - y8 . . . . . . . . . . 39
+
+4.1.3 Controle da abertura da va?lvula de pressa?o - y7 . . . . . . . . . 40
+
+4.2 BRLumina . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 40
+
+4.3 Comenta?rios finais . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+
+5 Implementac?a?o do FAST 43
+
+5.1 Comenta?rios finais . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 44
+
+6 Avaliac?a?o dos ??ndices e resultados 45
+
+6.1 Caso zero: cena?rio inicial . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+
+6.2 Caso 1: cena?rios com erros de modelagem . . . . . . . . . . . . . . . . 49
+
+6.3 Caso 2: Cena?rios com alterac?o?es na supressa?o das ac?o?es de controle . 50
+
+6.4 Comenta?rios finais . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 52
+
+7 Cap??tulo 7: Concluso?es e Perspectivas 54
+
+Refere?ncias Bibliogra?ficas 55
+
+v
+
+
+
+Lista de Figuras
+
+4.1 Esquema simplificado da UPGN . . . . . . . . . . . . . . . . . . . . . . 35
+
+4.2 Esquema simplificado torre desbutanizadora . . . . . . . . . . . . . . . 42
+
+4.3 Exemplo de cena?rio do BRLumina . . . . . . . . . . . . . . . . . . . . . 42
+
+6.1 Desvios Me?dios . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+
+6.2 I?ndices de Seguimento Relativo . . . . . . . . . . . . . . . . . . . . . . . 47
+
+6.3 I?ndices de Supressa?o de Movimento e Controle Relativo . . . . . . . . . 48
+
+6.4 I?ndices de Erro de Modelagem . . . . . . . . . . . . . . . . . . . . . . . 48
+
+6.5 I?ndice de Estabilidade . . . . . . . . . . . . . . . . . . . . . . . . . . . . 49
+
+6.6 I?ndices de Erro de Modelagem . . . . . . . . . . . . . . . . . . . . . . . 51
+
+6.7 I?ndices de Supressa?o e Controle Relativo . . . . . . . . . . . . . . . . . 53
+
+vi
+
+
+
+Cap??tulo 1: Introduc?a?o
+
+O controle preditivo baseado em modelo (CPBM) e? uma das te?cnicas de controle
+
+moderno que provavelmente teve mais e?xito nas aplicac?o?es na indu?stria porque suas
+
+estrate?gias podem ser aplicadas tanto a sistemas monovaria?veis como multivaria?veis,
+
+as restric?o?es nas sa??das e nas ac?o?es de controle podem ser consideradas no projeto
+
+da lei de controle em tempo real e, pela pro?pria definic?a?o dos algoritmos, podem ser
+
+usadas para controlar processos com atrasos.
+
+Pore?m, uma das dificuldades encontradas na aplicac?a?o de CPBM e? a sintonia e
+
+avaliac?a?o de desempenho do sistema de controle. Em geral, os diversos algoritmos
+
+de CPBM utilizam diferentes func?o?es de custo para calcular a lei de controle, pore?m
+
+a maioria deles considera como objetivo minimizar o erro entre a sa??da futura e a
+
+refere?ncia desejada penalizando o esforc?o incremental de controle. Nas func?o?es de
+
+custo o erro e o incremento de controle aparecem multiplicados por coeficientes que
+
+permitem dar mais ou menos importancia a minimizac?a?o de um ou de outro. Esses
+
+coeficientes podem ser seque?ncias ou matrizes de ponderac?a?o do erro e do esforc?o
+
+de controle.
+
+Assim, a sintonia desses controladores e? diretamente dependente das ponderac?o?es
+
+das varia?veis controladas e das varia?veis manipuladas, e tambe?m da predic?a?o, ou
+
+sa??da futura, calculada a partir do modelo de predic?a?o. Por isso, para conseguir o de-
+
+sempenho desejado do controlador sa?o necessa?rios bons modelos de predic?a?o e uma
+
+boa escolha nas ponderac?o?es das varia?veis.
+
+Por isso a necessidade de me?todos de avaliac?a?o de desempenho de sistemas
+
+de controle MPC e? largamente reconhecida no meio industrial. Algumas abordagens
+
+nessa direc?a?o baseiam-se na comparac?a?o do desempenho do sistema de controle
+
+sob ana?lise a um MPC baseado em varia?ncia m??nima. Entretanto, com essa aborda-
+
+gem na?o se pode definir qual varia?vel controlada tem o pior seguimento a refere?ncia
+
+e nem porque ela tem um desempenho ruim. Existem ainda metodologias que auxi-
+
+liam os projetistas a escolher as de ponderac?o?es, levando em considerac?a?o restric?o?es
+
+1
+
+
+
+operacionais e custos, por exemplo. Mas essas metodologias na?o garantem que as
+
+escolhas feitas sa?o as melhores poss??ves.
+
+Com base nos para?metros da func?a?o custo e na importa?ncia de uma boa predic?a?o,
+
+foram criados cinco ??ndices que avaliam o desempenho e a sintonia do controlador:
+
+1. Desvios Me?dios
+
+2. I?ndices de Seguimento de Refere?ncia Relativo
+
+3. I?ndices de Supressa?o de Movimento
+
+4. I?ndices de Controle Relativo
+
+5. I?ndices do Erro de Predic?a?o
+
+6. I?ndices de Estabilidade
+
+O objetivo deste trabalho e? validar o funcionamento desses ??ndices atraves da
+
+simulac?a?o de diversos cena?rios de operac?a?o no BRLumina, um software da Petrobra?s
+
+que permite a avaliac?a?o do funcionamento do controlador em um ambiente offline. A
+
+Unidade de Processamento de Ga?s Natural Atalaia, em Serjipe, foi a planta escolhida
+
+para ser simulada no BRLumina. O controle preditivo implementado nesta unidade e?
+
+do tipo Dinamic Matrix Control.
+
+Atrave?s dos ??ndices e? poss??vel verificar se as varia?veis esta?o seguindo a re-
+
+fere?ncia de forma satisfato?ria e caso elas na?o estejam, os ??ndices indicam o porque?.
+
+Durante o projeto, foram criados cena?rios com erros de modelagem, com alterac?o?es
+
+de sintonia e com ru??do, com o intuito de verificar se os ??ndices sa?o de fato capazes
+
+de mostrar esses problemas. Os resultados deste trabalho mostram que estes ??ndices
+
+sa?o uma ferramenta de grande potencial para avaliac?a?o do desempenho do controle e
+
+identificac?a?o de pontos de melhoria.
+
+Estes ??ndices [13] esta?o sendo desenvolvidos no projeto de colaborac?a?o entre
+
+o DAS e a Petrobra?s na a?rea de controle avanc?ado. Este projeto de fim de curso foi
+
+realizado no Centro de Pesquisas e Desenvolvimento Leopoldo Ame?rico Miguez de
+
+Mello (Cenpes) da Petrobra?s, no Rio de Janeiro.
+
+A Petrobra?s e? uma empresa integrada de energia nos setores explorac?a?o e
+
+produc?a?o, refino, comercializac?a?o, transporte, petroqu??mica, distribuic?a?o de derivados,
+
+ga?s natural, energia ele?trica, ga?s-qu??mica e biocombust??veis. A empresa, que hoje e?
+
+2
+
+
+
+l??der do setor petrol??fero no Brasil, esta? presente em outros 17 pa??ses. E a meta ate?
+
+2030 e? estar entre as 5 maiores empresas de energia do mundo. Para isso, inovac?a?o
+
+e? fundamental e por isso muitos projetos em colaborac?a?o com universidades esta?o
+
+sendo realizados no Cenpes, que hoje centraliza as atividades de pesquisa e desen-
+
+volvimento da empresa.
+
+O cap??tulo 2 traz uma revisa?o da teoria de controle preditivo e dos conceitos
+
+usados na formulac?a?o dos ??ndices apresentados no cap??tulo 3. O cap??tulo 4 explica o
+
+processo estudado atrave?s dos ??ndices e o software de simulac?a?o utilizado. O cap??tulo
+
+5 explica como a ferramenta foi implementada e no cap??tulo 6 sa?o apresentados os re-
+
+sultados obtidos atrave?s das simulac?o?es. As concluso?es sa?o apresentadas no cap??tulo
+
+7.
+
+3
+
+
+
+Cap??tulo 2: Controle Preditivo de
+
+Processos da Indu?stria de Petro?leo e
+
+Ga?s
+
+O controle preditivo baseado em modelo (CPBM) e? uma das te?cnicas de con-
+
+trole moderno mais potentes e provavelmente a que teve mais e?xito nas aplicac?o?es na
+
+indu?stria. As principais causas deste e?xito devem-se a que as estrate?gias de CPBM po-
+
+dem ser aplicadas tanto a sistemas monovaria?veis como multivaria?veis, as restric?o?es
+
+nas sa??das e nas ac?o?es de controle podem ser consideradas no projeto da lei de con-
+
+trole em tempo real e, pela pro?pria definic?a?o dos algoritmos, podem ser usadas para
+
+controlar processos com atrasos.
+
+O CPBM na?o e? uma estrate?gia de controle espec??fica, mas e? o nome dado a um
+
+conjunto muito grande de me?todos de controle que foram desenvolvidos considerando
+
+algumas ideias comuns. As caracter??sticas comuns destes sistemas de controle sa?o
+
+basicamente:
+
+• usam um modelo expl??cito do processo para predizer a sa??da 1 do mesmo num
+determinado horizonte finito;
+
+• calculam as ac?o?es de controle para todo o horizonte a partir da minimizac?a?o de
+uma determinada func?a?o objetivo;
+
+• o horizonte e? deslizante, pelo que, para cada per??odo de amostragem, o hori-
+zonte e? deslocado um passo para frente, aplica-se unicamente a ac?a?o de con-
+
+trole daquele instante e desconsidera-se o resto dos controles dentro do hori-
+
+zonte.
+
+As diferenc?as entre os diversos algoritmos existentes devem-se basicamente a?
+1Usaremos o termo sa??da da planta para as varia?veis controladas e o termo controle para as varia?veis
+
+manipuladas
+
+4
+
+
+
+forma de escolher os modelos para o processo e as perturbac?o?es, ao tipo de func?a?o
+
+objetivo e ao procedimento para manipular as restric?o?es e o ca?lculo do controle.
+
+Muitas te?cnicas de controle preditivo tem sido aplicadas com e?xito na indu?stria
+
+[7]. A maioria dos resultados de aplicac?a?o pra?tica de CPBM correspondem a? familia dos
+
+algoritmos que surgiram no ambiente industrial, como o controle por matriz dina?mica
+
+(“Dynamic Matrix Control”, DMC) [5] e o controle algor??tmico baseado em modelo (“Mo-
+
+del Algorithm Control”, MAC) [17]. Estes algoritmos utilizam modelos de tipo resposta
+
+ao impulso ou ao degrau para descrever o processo e modelos bem simples para a
+
+descric?a?o das perturbac?o?es.
+
+Por outro lado, existe outra fam??lia de algoritmos dentro da classe de CPBM que
+
+surgiram no meio acade?mico, geralmente relacionados ao controle adaptativo, e que
+
+possuem uma se?rie de caracter??sticas diferentes aos do primeiro grupo [6]. Neste
+
+segundo grupo, onde devem ser inclu??dos o controle preditivo generalizado (“Gene-
+
+ralized Predictive Controller”, GPC) [4], o controle adaptativo de predic?a?o extendida
+
+EPSAC (“Extended Prediction Self Adaptive Control”) [10], o controle adaptativo de
+
+horizonte extendido EHAC (“Extended Horizon Adaptive Control”) [21] e o controle pre-
+
+ditivo unificado UPC [19], a planta e? representada por uma func?a?o de transfere?ncia e as
+
+perturbac?o?es sa?o representadas por um modelo auto-regressivo integrado e de me?dia
+
+mo?vel (normalmente denominado na literatura inglesa modelo ARIMA [9]), enquanto as
+
+predic?o?es da sa??da do processo calculam-se usando preditores o?timos.
+
+2.1: Elementos do CPBM
+
+Todos os algoritmos de CPBM possuem os seguintes elementos em comum:
+
+• O modelo de predic?a?o
+
+• A func?a?o objetivo
+
+• Um me?todo para a obtenc?a?o da lei de controle
+
+sendo que as diferentes opc?o?es de modelo, func?a?o objetivo e me?todo de ca?lculo do
+
+controle geram as diversas verso?es de controladores propostos na literatura.
+
+5
+
+
+
+2.1.1: O modelo de predic?a?o
+
+O modelo de predic?a?o e? provavelmente o elemento mais importante dentro do
+
+controlador, dado que ele deve ser capaz de representar adequadamente a dina?mica
+
+do processo, deve permitir o ca?lculo das predic?o?es da sa??da do processo, ser intuitivo
+
+e, ao mesmo tempo, permitir uma ana?lise teo?rica do sistema.
+
+2.1.1.1: O modelo do processo
+
+As diferentes estrate?gias de CPBM utilizam diferentes formas para representar
+
+as relac?o?es entre entradas manipuladas, perturbac?o?es e sa??das do processo. Em
+
+geral, os modelos tambe?m incluem uma representac?a?o matema?tica das perturbac?o?es
+
+e do ru??do, assim como dos erros de modelagem. Em geral, o modelo e? separado em
+
+duas partes: no modelo do processo propriamente dito e no modelo das perturbac?o?es;
+
+ambos necessa?rios para o ca?lculo das predic?o?es.
+
+Os modelos mais usados para representar ao processo sa?o:
+
+• Resposta Impulsiva. E? utilizado no MAC e em casos especiais no GPC e no
+EPSAC. A relac?a?o entrada sa??da vem dada por:
+
+y(t) =
+??
+i=1
+
+hiu(t? i)
+
+onde hi sa?o as amostras da sa??da do processo correspondente a? aplicac?a?o de
+
+um impulso na entrada do mesmo. Em geral, como esta seque?ncia e? infinita a
+
+resposta e? truncada para os primeiros M valores, pelo que o modelo somente
+
+pode ser usado com plantas esta?veis, onde hi ? 0 quando i ??:
+
+y(t) =
+M?
+i=1
+
+hiu(t? i) = H(z?1)u(t) (2.1)
+
+onde H(z?1) = h1z?1 + h2z?2 + · · · + hNz?N , e z?1 e? o operador atraso unita?rio.
+
+A predic?a?o da sa??da em t + k calculada no instante t (doravante y?(t + k | t))
+usando este modelo e? calculada como:
+
+y?(t + k | t) =
+M?
+i=1
+
+hiu(t + k ? i | t) = H(z?1)u(t + k | t)
+
+6
+
+
+
+Este me?todo e? bastante utilizado na pra?tica devido a que oferece como vanta-
+
+gens: (a) e? intuitivo; (b) na?o precisa de conhecimento a-priori do processo para
+
+aplicar um me?todo de identificac?a?o e pode ser usado em plantas multivaria?veis
+
+sem acrescentar complexidade, e (c) descreve de maneira simples efeitos mais
+
+complexos da dina?mica do processo como atrasos e comportamentos de fase
+
+na?o minima.
+
+Por outro lado apresenta alguns inconvenientes: (a) na?o pode ser usado com
+
+plantas insta?veis e (b) necessita utilizar um grande nu?mero de para?metros para
+
+descrever o modelo. Geralmente M pode ser 40 ou 50, valor que pode aumentar
+
+ainda mais se o processo tiver um atraso grande.
+
+• Resposta ao degrau. E? usado pelo DMC e suas variantes. E? similar ao anterior
+mas usa um degrau unita?rio como sinal de entrada. Para sistemas esta?veis a
+
+resposta e?:
+
+y(t) = y0 +
+??
+i=1
+
+gi?u(t? i) = y0 + G(z?1)(1 ?z?1)u(t) (2.2)
+
+onde os gi sa?o as amostras da sa??da obtida ao aplicar o degrau e ?u(t) = u(t)?
+u(t? 1). Considerando o sistema no ponto de operac?a?o y0 a predic?a?o pode ser
+calculada como:
+
+y?(t + k | t) =
+??
+i=1
+
+gi?u(t + k ? i | t)
+
+A relac?a?o entre este modelo e o de resposta impulsiva e? dada por:
+
+hi = gi ?gi?1 gi =
+i?
+
+j=1
+
+hj
+
+Resulta, claro, que este modelo tem as mesmas vantagens e inconvenientes que
+
+o anterior.
+
+• Func?a?o de Transfere?ncia. Este modelo e? usado no GPC, UPC, EPSAC, EHAC entre
+outros. Utiliza o conceito de func?a?o de transfere?ncia G = B/A:
+
+A(z?1)y(t) = B(z?1)u(t)
+
+7
+
+
+
+onde z?1 representa o operador de atraso no tempo 2, os polino?mios ficam com
+
+a seguinte estrutura
+
+A(z?1) = 1 + a1z
+?1 + a2z
+
+?2 + · · · + anaz?na
+
+B(z?1) = b1z
+?1 + b2z
+
+?2 + · · · + bnbz?nb
+
+A predic?a?o e? calculada como:
+
+y?(t + k | t) =
+B(z?1)
+
+A(z?1)
+u(t + k | t)
+
+Esta representac?a?o tem como vantagens principais que pode ser usada para
+
+plantas insta?veis e que precisa, em geral, de poucos para?metros para descrever
+
+o comportamento do sistema (o atraso, por exemplo, pode ser descrito apenas
+
+com um para?metro). Ja? seu principal inconveniente e? a necessidade de conhecer
+
+a priori a ordem dos polino?mios A e B quando o modelo deve ser identificado a
+
+partir de dados experimentais.
+
+• Espac?o de estados. E? usado no controle preditivo funcional PFC [16] e tem a
+seguinte representac?a?o:
+
+x(t) = Mx(t? 1) + Nu(t? 1)
+
+y(t) = Qx(t)
+
+onde x e? o estado e M, N e Q sa?o matrizes de dimenso?es compat??veis. A
+
+predic?a?o e? calculada como:
+
+y?(t + k | t) = Qx?(t + k | t) = Q
+
+[
+Mkx(t) +
+
+k?
+i=1
+
+Mi?1Nu(t + k ? i | t)
+
+]
+
+Sua principal vantagem e? que pode ser usada diretamente para processos mul-
+
+tivaria?veis. Como inconvenientes, cabe mencionar que, em geral, os estados
+
+na?o tem significado f??sico, e que na maioria das vezes e? necessa?rio o uso de
+
+observadores, aumentando assim a complexidade de ca?lculo do controle.
+2neste cap??tulo z?1 tambe?m representara? a variavel complexa associada a transformada Z nos casos
+
+que se trabalhe com func?a?o de transfere?ncia
+
+8
+
+
+
+• Outros modelos. Todos os modelos anteriormente descritos consideram so-
+mente o comportamento linear ou linearizado do processo, e, por sua simpli-
+
+cidade, sa?o os mais utilizados. Pore?m, modelos na?o lineares tambe?m podem
+
+ser usados para descrever a dina?mica do processo quando os modelos lineares
+
+na?o geram bons resultados. E? importante salientar, entretanto, que a soluc?a?o do
+
+problema nestes casos apresenta alguns inconvenientes adicionais como: (a)
+
+a obtenc?a?o do modelo do processo se torna mais dif??cil, e (b) a complexidade
+
+dos algoritmos de controle resultantes. Redes neurais [20] ou lo?gica nebulosa
+
+[18] podem ser usadas em algumas aplicac?o?es para determinar o modelo de
+
+predic?a?o.
+
+O CPBM na?o linear e? um campo aberto para pesquisas tanto na a?rea de determinac?a?o
+
+de modelos como nos procedimentos e algoritmos de otimizac?a?o para o ca?lculo
+
+do controle.
+
+2.1.1.2: Modelo das perturbac?o?es
+
+A escolha de um modelo para as perturbac?o?es e? ta?o importante quanto a do
+
+processo. O modelo mais utilizado para a descric?a?o de perturbac?o?es determin??sticas
+
+e estoca?sticas e? o conhecido como modelo auto-regressivo integrado de media mo?vel
+
+(Auto-Regressive and Integrated Moving Average (ARIMA)). Neste caso, as diferenc?as
+
+entre a sa??da do modelo e do processo sa?o modeladas por:
+
+?(t) =
+C(z?1)e(t)
+
+D(z?1)
+
+onde o polino?mio D(z?1) inclui um integrador ? = 1 ? z?1, e(t) e? um ru??do branco de
+me?dia zero. Os demais para?metros dos polino?mios C e D sa?o usados para descre-
+
+ver as carater??sticas estoca?sticas de n. Este modelo permite representar mudanc?as
+
+aleato?rias, “off-sets”e outros feno?menos normalmente encontrados nos meios indus-
+
+triais. Este modelo e? usado diretamente no GPC, EPSAC, EHAC e UPC e, com algumas
+
+modificac?o?es, em outros controladores.
+
+Alguns casos particulares importantes sa?o: (a) o modelo usado em DMC,
+
+?(t) =
+e(t)
+
+1 ?z?1
+
+onde a melhor predic?a?o para ??(t + k | t) = ?(t) dado que e(t) tem me?dia zero; ou (b) o
+
+9
+
+
+
+modelo usado no PFC
+
+?(t) =
+e(t)
+
+(1 ?z?1)2
+
+onde ??(t + k | t) = ?(t) + (?(t) ??(t? 1))k.
+
+Outras variac?o?es destes modelos e estudos sobre o efeito do modelo das perturbac?o?es
+
+no sistema de controle podem ser encontradas em [1, 14].
+
+2.1.1.3: Resposta livre e forc?ada
+
+Uma carater??stica comum nos CPBM com modelos lineares, e? a utilizac?a?o dos
+
+conceitos de resposta livre e forc?ada. A ideia e? considerar a seque?ncia de controle
+
+composta por duas partes:
+
+u(t) = uf (t) + uc(t)
+
+uf (t) correspondente aos valores passados da entrada e que sa?o mantidos iguais aos
+
+valores da varia?vel manipulada:
+
+uf (t? j) = u(t? j) para j = 1, 2, · · ·
+
+uf (t + j) = u(t? 1) para j = 0, 1, 2, · · ·
+
+uc(t) e? zero no passado e igual aos controles a serem aplicados no futuro:
+
+uc(t? j) = 0 para j = 1, 2, · · ·
+
+uc(t + j) = u(t + j) ?u(t? 1) para j = 0, 1, 2, · · ·
+
+Desta forma a predic?a?o da sa??da do processo pode ser separada em duas par-
+
+tes: a resposta livre (yf (t)), que corresponde a? predic?a?o quando a entrada e igualada
+
+a? uf (t), e a outra, a? resposta forc?ada (yc(t)), que corresponde as predic?o?es quando o
+
+controle e? igual a uc(t). Como ser e? mostrado adiante, estes conceitos sa?o importantes
+
+para a interpretac?a?o da forma como o controle e? obtido.
+
+10
+
+
+
+2.1.2: Func?a?o Objetivo
+
+Em geral, os diversos algoritmos de CPBM utilizam diferentes func?o?es de custo
+
+para calcular a lei de controle, pore?m a maioria deles consideram como objetivo mini-
+
+mizar o erro entre a sa??da futura (y) e a refere?ncia desejada (w) penalizando o esforc?o
+
+incremental de controle ?u.
+
+Assim, a expressa?o mais geral desta func?a?o objetivo para o caso monovaria?vel
+
+e?:
+
+J =
+
+N2?
+j=N1
+
+?(j)[y?(t + j | t) ?w(t + j)]2 +
+Nu?
+j=1
+
+?(j)[?u(t + j ? 1)]2 (2.3)
+
+Os elementos desta func?a?o sa?o:
+
+• Para?metros: N1, N2, Nu, ?(t) e ?(t). N1 e N2 sa?o os horizontes de predic?a?o
+m??nimo e ma?ximo, Nu e? o horizonte de controle. Os valores destes ??ndices tem
+
+uma interpretac?a?o clara ja? que definem os instantes onde deseja-se que a re-
+
+fere?ncia siga a? sa??da e onde e? importante limitar a ac?a?o de controle. Assim,
+
+se, por exemplo, N1 e? grande implica que na?o e? importante o erro cometido nos
+
+primeiros N1 ? 1 instantes e a resposta obtida tendera? a ser suave. No caso
+particular de sistemas com um atraso de valor d, e? lo?gico escolher N1 &gt; d, ja?
+
+que na?o havera? resposta do sistema a? entrada u(t) ate? o tempo t = d. Variando
+
+Nu e? poss??vel penalizar durante mais ou menos tempo a ac?a?o de controle. Os
+
+coeficientes ?(j) e ?(j) sa?o as seque?ncias de ponderac?a?o do erro e do esforc?o
+
+de controle e geralmente sa?o escolhidas constantes ou exponenciais ao longo
+
+do horizonte. Por exemplo, uma func?a?o do tipo:
+
+?(j) = ?N2?j
+
+permite variar a penalizac?a?o do erro em diferentes partes do horizonte. Assim,
+
+para, por exemplo, gerar respostas mais suaves, escolhe-se um de valor ? entre
+
+0 e 1 de forma tal que sejam mais penalizados os u?ltimos valores do erro dentro
+
+do horizonte.
+
+• Trajeto?ria de refere?ncia: uma das vantagens do CPBM e? a possibilidade de utili-
+zar o conhecimento dos valores futuros da refere?ncia (quando dispon??veis) para
+
+o ca?lculo do sinal de controle, o que permite, por exemplo que o sistema atinja
+
+11
+
+
+
+mais rapidamente o novo valor desejado. Esta carater??stica torna-se interessante
+
+em algumas aplicac?o?es como em robo?tica mo?vel e manipuladora, em servo-
+
+acionamentos e em processos do tipo batelada, onde as refere?ncias futuras sa?o
+
+conhecidas a priori.
+
+Os valores de w(t + k) utilizados na func?a?o objetivo na?o sa?o necessariamente
+
+coincidentes com a refere?ncia real do sistema. Normalmente, nas aplicac?o?es
+
+pra?ticas, utilizam-se estrate?gias para suavizar as mudanc?as de refere?ncia, de
+
+forma similar aos filtros utilizados nas estruturas cla?ssicas de controle com dois
+
+graus de liberdade. Uma forma t??pica para esta lei e?:
+
+w(t) = r(t) w(t + k) = ?w(t + k ? 1) + (1 ??)r(t + k) k = 1 . . .N (2.4)
+
+onde ? e? um para?metro entre 0 e 1. Esta lei representa um filtro passa-baixas de
+
+primeira ordem que pode ser ajustado para suavizar mais, ? pro?ximo de um, ou
+
+menos, ? pro?ximo de zero, a forma da resposta. Estas ideias sa?o usadas no GPC
+
+e no EPSAC para especificar o comportamento desejado para a malha fechada
+
+[3].
+
+• Restric?o?es: Na pra?tica, todos os processos esta?o sujeitos a restric?o?es tanto nas
+varia?veis de sa??da como de entrada. Exemplos disto sa?o os limites ma?ximos e
+
+m??nimos impostos aos atuadores (como por exemplo va?lvulas), a ma?xima velo-
+
+cidade de variac?a?o de um acionamento (por exemplo servo-acionamentos) ou
+
+os valores limites que podem ser atingidos pelas sa??das de um sistema devido
+
+a questo?es de seguranc?a. Ale?m disso existem restric?o?es do tipo econo?mico
+
+para o funcionamento do sistema que em geral levaram a escolher pontos de
+
+operac?a?o muito pro?ximos destes limites. Assim, se o controle e? corretamente
+
+calculado para trabalhar muito pro?ximo daquele o?timo, a qualidade e a relac?a?o
+
+custo-benef??cio do processo produtivo sa?o otimizadas [2]. Por estes motivos, a
+
+inclusa?o das restric?o?es na func?a?o objetivo que se deseja minimizar e? importante.
+
+Neste sentido, todos os algoritmos de CPBM permitem inclu??-las no momento da
+
+obtenc?a?o do m??nimo de J considerando um conjunto de equac?o?es do tipo:
+
+12
+
+
+
+umin ? u(t) ? umax ?t
+
+dumin ? u(t) ?u(t? 1) ? dumax ?t
+
+ymin ? y(t) ? ymax ?t
+
+Deve ser mencionado aqui que, nestes casos, a soluc?a?o do m??nimo de J na?o
+
+pode ser obtida analiticamente, e requer uma carga de ca?lculo bem maior que no caso
+
+sem restric?o?es. Apesar da complexidade de ca?lculo, a capacidade do CPBM de levar
+
+as restric?o?es em considerac?a?o e? o principal motivo do seu sucesso nas aplicac?o?es
+
+industriais.
+
+O tratamento do CPBM com restric?o?es apresenta diversas dificuldades, tanto
+
+teo?ricas como de implementac?a?o. A formulac?a?o do problema consiste no correto
+
+equacionamento das restric?o?es e num tratamento posterior que e? conhecido como
+
+“estudo de factibilidade e gesta?o de restric?o?es”. Este tratamento permite o correto
+
+funcionamento do algoritmo de otimizac?a?o, liberando ou suavizando, quando poss??vel,
+
+as restric?o?es. Por outro lado, do ponto de vista da implementac?a?o do algoritmo de
+
+otimizac?a?o, as pesquisas esta?o orientadas a? melhoria da eficie?ncia e a? minimizac?a?o
+
+dos tempos de ca?lculo [8]. Finalmente, os problemas de estabilidade destes sistemas
+
+de controle somente tem sido resolvidos parcialmente e numerosas pesquisas vem
+
+sendo realizadas nos u?ltimos anos (ver [2, 15] e as refere?ncias citadas para um estudo
+
+mais aprofundado destes problemas).
+
+2.1.3: Obtenc?a?o da lei de controle
+
+Em todos os algoritmos de CPBM o objetivo e? calcular u(t + k | t) para minimizar
+J. Para isso e? necessa?rio calcular as predic?o?es y?(t + k | t) como func?a?o do controle
+futuro (a partir do me?todo utilizado por cada algoritmo), e substituir na func?a?o J. No
+
+caso de utilizar um modelo linear e sem restric?o?es, e? poss??vel obter uma soluc?a?o
+
+anal??tica do m??nimo de J. Em outro caso a soluc?a?o e? obtida de forma iterativa por
+
+algum me?todo de otimizac?a?o.
+
+Independente do me?todo utilizado, a soluc?a?o e?, em geral, complexa devido ao
+
+nu?mero de varia?veis envolvidas, principalmente quando os horizontes sa?o grandes.
+
+Para reduzir os graus de liberdade deste problema alguns algoritmos propo?em estru-
+
+turar a lei de controle. Isto pode ser feito como no DMC, GPC, EPSAC e EHAC, ajustando
+
+13
+
+
+
+o horizonte de controle (Nu), o que implica em zerar as variac?o?es do controle apo?s um
+
+certo valor no horizonte Nu &amp;lt;N2:
+
+?u(t + j ? 1) = 0 j &gt; Nu
+
+Outra forma de estruturar o controle, que e? usada no PFC, consiste em calcular
+
+o controle como uma combinac?a?o de func?o?es preestabelecidas:
+
+u(t + k) =
+n?
+i=1
+
+µi(t)Bi(k) (2.5)
+
+onde os Bi sa?o escolhidos de acordo com o tipo de processo e de refere?ncia.
+
+2.2: Controle por Matriz Dina?mica (DMC)
+
+Nesta sec?a?o sera? discutido o algoritmo preditivo chamado Controle por Matriz
+
+Dina?mica (DMC), um dos algoritmos mais difundidos na indu?stria e usado como base
+
+para o controlador CPM da Petrobras. Inicialmente sera? mostrado o algoritmo origi-
+
+nal do DMC proposto em [5], e depois sera? introduzido o DMC com implementac?a?o
+
+recursiva, proposto em [12], que modifica como a resposta livre e? calculada de forma
+
+a obter um algoritmo mais simples de ser implementado e com a vantagem de na?o
+
+afetar o controlador original do DMC.
+
+2.2.1: DMC Original
+
+O algoritmo DMC utiliza os coeficientes da resposta do degrau do sistema para
+
+calcular as predic?o?es:
+
+y?(t + k|t) =
+??
+i=1
+
+gi?u(t + k ? i) + ?(t + k|t) (2.6)
+
+onde ?(t + k|t) e? o erro de predic?a?o no instante t + k. Como, em geral, na?o e? poss??vel
+determinar o erro de predic?a?o futuro, supo?e-se que o erro de predic?a?o se mantera?
+
+constante, enta?o ?(t + k|t) = ?(t|t) = y(t) ? yo(t|t), onde yo e? a predic?a?o em malha
+aberta, ou seja, sem correc?o?es. Substituindo o erro de predic?a?o na Eq. (2.6), e sepa-
+
+rando os termos do somato?rio que dependem das ac?o?es futuras de controle tem-se
+
+14
+
+
+
+y?(t + k|t) =
+k?
+i=1
+
+gi?u(t + k ? i) +
+??
+i=1
+
+gk+i?u(t? i) + y(t) ?
+??
+i=1
+
+gi?u(t? i)
+
+y?(t + k|t) =
+k?
+i=1
+
+gi?u(t + k ? i) +
+??
+i=1
+
+(gk+i ?gi)?u(t? i) + y(t) (2.7)
+
+O somato?rio infinito presente na equac?a?o anterior pode ser truncado apo?s M
+
+termos, isto porque gk+i?gi ?= 0, ?i &gt; M. Isto resulta na seguinte equac?a?o de predic?a?o
+para o DMC:
+
+y?(t + k|t) =
+k?
+i=1
+
+gi?u(t + k ? i) +
+M?
+i=1
+
+(gk+i ?gi)?u(t? i) + y(t) (2.8)
+
+(2.9)
+
+Considerando um horizonte de predic?a?o de N amostras e um horizonte de con-
+
+trole de Nu, pode-se escrever as predic?o?es futuras de forma matricial:
+
+y? = Gu + I?u(t? 1) + 1Ny(t) (2.10)
+
+onde 1N e? um vetor com N linhas cujos elementos sa?o todos iguais a 1,
+
+I?u(t? 1) =
+
+?
+??????
+
+(g2 ?g1) (g3 ?g2) . . . (gM+1 ?gM )
+(g3 ?g1) (g4 ?g2) . . . (gM+2 ?gM )
+
+...
+... · · ·
+
+...
+
+(gN+1 ?g1) (gN+2 ?g2) . . . (gN+M ?gM )
+
+?
+??????
+
+?
+??????
+
+?u(t? 1)
+?u(t? 2)
+
+...
+
+?u(t?M)
+
+?
+?????? ,
+
+Gu =
+
+?
+??????
+g1 0 . . . 0
+
+g2 g1 . . . 0
+...
+
+... · · ·
+...
+
+gN gN?1 . . . gN?Nu
+
+?
+??????
+
+?
+??????
+
+?u(t)
+
+?u(t + 1)
+...
+
+?u(t + Nu ? 1)
+
+?
+?????? ,
+
+e y? = [y?(t + 1|t), . . . , y?(t + N|t)]T .
+
+Nota-se que na matriz I existem coeficientes gi com ??ndice maior que M, quando
+
+isto acontece, faz-se gi = gM,?i &gt; M.
+
+15
+
+
+
+A Eq. (2.10) pode ser reescrita da forma:
+
+y? = Gu + fr (2.11)
+
+onde fr = I?u(t? 1) + 1Ny(t) e? a resposta livre do sistema.
+
+Nesta equac?a?o pode-se observar que se as condic?o?es iniciais sa?o nulas a res-
+
+posta livre e? zero, e que se for aplicado um degrau unita?rio em u,
+
+?u(t) = 1, ?u(t + 1) = 0, · · · , ?u(t + N ? 1) = 0
+
+a seque?ncia de sa??da [y?(t + 1), y?(t + 2), · · · , y?(t + N)]T sera? igual a? primeira coluna de
+G. Isto implica que a primeira coluna de G pode ser calculada a partir da resposta
+
+ao degrau do sistema. Na pra?tica e? interessante escolher um horizonte de controle
+
+Nu &amp;lt;N (normalmente Nu = N/5 gera resultados satisfato?rios) o que simplifica o
+
+problema de controle pois diminui os graus de liberdade. Neste caso na equac?a?o de
+
+ca?lculo das predic?o?es a matriz G tera? dimensa?o N ×Nu e o vetor u dimensa?o Nu × 1.
+
+Para calcular o m??nimo de J e? convenie?nte escrever a expressa?o (2.3) como:
+
+J = (Gu + fr ?w)
+TQy(Gu + fr ?w) + u
+
+TQuu (2.12)
+
+onde Qy e Qu sa?o matrizes diagonais com os valores das ponderac?o?es na
+
+diagonal.
+
+w =
+[
+w(t + d + 1) w(t + d + 2) · · · w(t + d + N)
+
+]T
+A equac?a?o (2.12) pode ser escrita como uma forma quadra?tica:
+
+J =
+1
+
+2
+uTHu + bTu + f0 (2.13)
+
+onde:
+
+16
+
+
+
+H = 2(GTG + ?I)
+
+bT = 2(fr ?w)
+TG
+
+f0 = (fr ?w)
+T (fr ?w)
+
+O m??nimo de J pode ser calculado, quando na?o ha? restric?o?es, igualando o gra-
+
+diente de J a zero. Assim, o controle pode ser calculado atrave?s da equac?a?o a seguir:
+
+u = ?H?1b = (GTG + ?I)?1GT (w ?fr) (2.14)
+
+Como o algoritmo e? de horizonte deslizante, unicamente o primeiro sinal de
+
+controle e? aplicado (primeiro elemento do vetor u), assim a lei de controle final e?:
+
+?u(t) = K(w ?fr) (2.15)
+
+onde K e? a primeira linha da matriz (GTG+?I)?1GT e w o vetor de referencias
+
+futuras.
+
+2.2.2: DMC Recursivo
+
+Em [12], demonstrou-se a propriedade recursiva do DMC, que ser??a? apresen-
+
+tada a seguir. As predic?o?es de malha aberta em t+k dado as informac?o?es em t e t?1
+sa?o dadas a seguir:
+
+yo(t + k|t) =
+??
+
+i=k+1
+
+gi?u(t + k ? i)
+
+yo(t + k|t? 1) =
+??
+
+i=k+2
+
+gi?u(t + k ? i)
+
+A diferenc?a entre a predic?a?o de malha aberta em t + k dado t, e em t + k dado
+
+t ? 1, e? apenas a ac?a?o de controle nova ?u(t ? 1) que na?o se conhecia em t ? 1.
+Subtraindo as equac?o?es anteriores:
+
+17
+
+
+
+yo(t + k|t) ?yo(t + k|t? 1) = gk+1?u(t? 1) +
+??
+
+i=k+2
+
+gi?u(t + k ? i)
+
+?
+??
+
+i=k+2
+
+gi?u(t + k ? i)
+
+yo(t + k|t) = gk+1?u(t? 1) + yo(t + k|t? 1)
+
+A utilizac?a?o do DMC recursivo e? feita da seguinte forma: mante?m-se em memo?ria
+
+um vetor com M elementos: Y livre = [yo(t|t? 1), . . . ,yo(t + M ? 1|t? 1)]T . Seus ele-
+mentos sa?o as repostas livres dadas as ac?o?es de controle conhecidas ate? o instante
+
+t?1. Ao iniciar o controlador DMC no instante t0, dado que o sistema encontra-se em
+regime permanente, considera-se que as predic?o?es de malha aberta sejam constantes
+
+e iguais ao valor de y(t0).
+
+Ao iniciar a execuc?a?o do algoritmo DMC no instante t, e? preciso atualizar o vetor
+
+de resposta livre pois o incremento da ac?a?o de controle ?u(t? 1) agora e? conhecido:
+
+Y livre = Y livre +
+
+?
+??????
+
+g1
+
+g2
+...
+
+gM
+
+?
+?????? ?u(t? 1)
+
+Assim, obte?m-se o vetor Y livre atualizado. Apo?s obter o novo sinal de controle
+
+u(t), e? preciso “deslocar” os valores dentro do vetor Y livre, isto porque no instante
+
+posterior t + 1, sera?o precisas as repostas livres de t + 1 ate? t + M baseadas nos
+
+dados ate? t. Enta?o, o primeiro elemento e? descartado pois e? a predic?a?o relativa ao
+
+instante t que ja? passou. O problema e? que, ao se fazer este deslocamento, o u?ltimo
+
+elemento, no caso a predic?a?o em y(t + M|t), e? desconhecida. Pore?m, no caso esta?vel,
+yo(t + M|t) ?= yo(t + M ? 1|t), assim, o novo vetor Y livre sera? dado por:
+
+Y livre =
+
+?
+?????????
+
+yo(t + 1|t)
+yo(t + 2|t)
+
+...
+
+yo(t + M ? 1|t)
+yo(t + M ? 1|t)
+
+?
+?????????
+
+A condic?a?o yo(t + M|t) ?= yo(t + M ? 1|t) e? mostrada a seguir:
+
+18
+
+
+
+yo(t + M ? 1|t) =
+??
+i=M
+
+gi?u(t + M ? 1 ? i)
+
+yo(t + M|t) =
+??
+
+i=M+1
+
+gi?u(t + M ? i) =
+??
+i=M
+
+gi+1?u(t + M ? 1 ? i)
+
+yo(t + M|t) ?yo(t + M ? 1|t) =
+??
+i=M
+
+(gi+1 ?gi)?u(t + M ? 1 ? i)
+
+Como gi+1 ?gi ?= 0, ?i &gt; M, tem-se que yo(t + M|t) ?= yo(t + M ? 1|t), como se
+queria demonstrar.
+
+Assim, o ca?lculo da resposta livre considerada no DMC-recursivo e? dado da
+
+seguinte forma:
+
+fr =
+
+?
+???
+
+yo(t + 1|t)
+...
+
+yo(t + N|t)
+
+?
+??? + 1N (y(t) ?yo(t|t)) (2.16)
+
+Utilizando esta forma de implementac?a?o, os ca?lculos necessa?rios para obter a
+
+resposta livre se tornam mais simples, na?o sendo necessa?rio o armazenamento dos
+
+incrementos passados de controle. Como este procedimento so altera o modo de
+
+calcular a resposta livre, o restante do algoritmo de controle na?o e? modificado.
+
+2.3: DMC Multivaria?vel
+
+O algoritmo para o caso monovaria?vel, apresentado na sec?a?o 2.2.1, pode ser
+
+facilmente estendido para o caso multivaria?vel. Para um sistema com m entradas e n
+
+sa??das, as predic?o?es sa?o calculadas da seguinte forma:
+
+19
+
+
+
+????????????????????
+???????????????????
+
+y?1(t + k|t) =
+??
+
+i=1 g11,i?u1(t + k ? i) +
+??
+
+i=1 g12,i?u2(t + k ? i)+
+
+. . . +
+??
+
+i=1 g1m,i?um(t + k ? i) + ?1(t + k|t)
+
+... =
+...
+
+y?n(t + k|t) =
+??
+
+i=1 gn1,i?u1(t + k ? i) +
+??
+
+i=1 gn2,i?u2(t + k ? i)+
+
+. . . +
+??
+
+i=1 gnm,i?um(t + k ? i) + ?n(t + k|t)
+
+(2.17)
+
+onde y?h(t + k|t) e? a predic?a?o da h-e?sima sa??da no instante t + k dado os dados em t,
+uj a j-e?sima entrada, ghj,i e? o i-e?simo coeficiente da resposta ao degrau da sa??da h em
+
+relac?a?o a? entrada j, e ?h e? o erro de predic?a?o que e? calculado de maneira ide?ntica ao
+
+caso monovaria?vel, ou seja, ?h(t + k|t) = ?h(t + k|t) = yh(t) ?yoh(t|t).
+
+A predic?a?o de malha aberta sem correc?a?o da sa??da h, yoh(t|t), e? dada por
+
+yoh(t|t) =
+??
+i=1
+
+gh1,i?u1(t? i) +
+??
+i=1
+
+gh2,i?u2(t? i) + . . . +
+??
+i=1
+
+ghm,i?um(t? i),
+
+(2.18)
+
+substituindo a equac?a?o anterior na equac?a?o 2.17, obte?m-se a predic?a?o de uma forma
+
+similar ao apresentado no caso monovaria?vel, excetuando o fato de agora haver mais
+
+varia?veis de controle:
+
+y?h(t + k|t) =
+k?
+i=1
+
+gh1,i?u1(t + k ? i) + . . . +
+k?
+i=1
+
+ghm,i?um(t + k ? i)
+
++
+??
+i=1
+
+(gh1,k+i ?gh1,i)?u1(t? i) + . . . +
+??
+i=1
+
+(ghm,k+i ?ghm,i)?um(t? i)
+
++y(t)
+
+Assim como apresentado anteriormente, os somato?rios infinitos podem ser trun-
+
+cados apo?s M termos pois, para sistemas esta?veis, ghj,k+i ?ghj,i ?= 0 , ?i &gt; M.
+
+Rearranjando os resultados em forma matricial e considerando, sem perda de
+
+20
+
+
+
+generalidade, um horizonte de predic?a?o N e de controle Nu comum a todas as entra-
+
+das, as predic?o?es da h-e?sima sa??da podem ser escritas como a seguir:
+
+y?h =
+
+?
+???
+
+y?h(t + 1|t)
+...
+
+y?h(t + N|t)
+
+?
+??? = [Gh1 Gh2 . . . Ghm]
+
+?
+???
+
+?u1(t) . . . ?um(t)
+...
+
+...
+...
+
+?u1(t + Nu ? 1) . . . ?um(t + Nu ? 1)
+
+?
+???
+
++ [Ih1 Ih2 . . . Ihm]
+
+?
+???
+
+?u1(t? 1) . . . ?um(t? 1)
+...
+
+...
+...
+
+?u1(t?M) . . . ?um(t?M)
+
+?
+???
+
++1Nyh(t), (2.19)
+
+ou, de forma mais compacta,
+
+y?h = [Gh1 Gh2 . . . Ghm] u + [Ih1 Ih2 . . . Ihm] ?u(t? 1) + 1Nyh(t),
+
+onde as matrizes Ghj e Ihj sa?o calculadas de maneira ide?ntica ao caso monovaria?vel.
+
+Combinando as predic?o?es de todas as sa??das, obte?m-se a seguinte representac?a?o
+
+matricial:
+
+y? = Gu + I?u(t? 1) + Iyy(t) (2.20)
+
+onde y? =
+[
+y?1
+
+T , . . . , y?h
+T
+]T
+
+, y = [y1(t), . . . ,yh(t)], e
+
+G =
+
+?
+???
+
+G11 . . . G1m
+...
+
+...
+...
+
+Gh1 . . . Ghm
+
+?
+??? ,I =
+
+?
+???
+
+I11 . . . I1m
+...
+
+...
+...
+
+Ih1 . . . Ihm
+
+?
+??? ,
+
+Iy =
+
+?
+???
+
+1N 0 . . . 0
+
+0 1N . . . 0
+
+0 0 . . . 1N
+
+?
+??? .
+
+Deve ser lembrado que a resposta livre e? dada por fr = I?u(t ? 1) + Iyy(t),
+
+21
+
+
+
+que e? um vetor de ordem h ·N × 1.
+
+2.3.1: DMC Recursivo Multivaria?vel
+
+A propriedade recursiva do DMC apresentada na sec?a?o 2.2.2 continua va?lida
+
+no caso multivaria?vel, com a diferenc?a que agora sera? necessa?rio manter h vetores de
+
+respostas livres correspondentes a cada sa??da.
+
+Da mesma forma que no caso monovaria?vel, mante?m-se em memo?ria h vetores
+
+com M elementos: Y h,livre = [yoh(t|t? 1), . . . ,yoh(t + M ? 1|t? 1)]T . Seus elementos
+sa?o as respostas livres dadas as ac?o?es de controle conhecidas ate? o instante t?1. Ao
+iniciar o controlador DMC no instante t0, dado que o sistema encontra-se em regime
+
+permanente, considera-se que as predic?o?es de malha aberta para todas as sa??das
+
+sejam constantes e iguais ao valor de yh(t0).
+
+Depois de iniciar a execuc?a?o do algoritmo DMC no instante t, e? preciso atualizar
+
+o vetor de resposta livre com o incremento das ac?o?es de controle ?uj(t ? 1) , j =
+1, . . . ,m, que agora sa?o conhecidas:
+
+Y l,livre = Y l,livre +
+
+?
+??????
+
+gh1,1
+
+gh1,2
+...
+
+gh1,M
+
+?
+?????? ?u1(t? 1) + . . . +
+
+?
+??????
+
+ghm,1
+
+ghm,2
+...
+
+ghm,M
+
+?
+?????? ?um(t? 1)
+
+Assim, obte?m-se o vetor Y h,livre atualizado. Apo?s obter o novo sinal de controle
+
+u(t), e? preciso “deslocar” os valores dentro do vetor Y h,livre, isto porque no instante
+
+posterior t + 1, sera?o precisos as repostas livres de t + 1 ate? t + M baseadas nos
+
+dados ate? t. Enta?o, o primeiro elemento e? descartado pois e? a predic?a?o relativa ao
+
+instante t que ja? passou. O problema e? que, ao se fazer este deslocamento, o u?ltimo
+
+elemento, no caso a predic?a?o em yh(t+M|t), e? desconhecida. Pore?m, no caso esta?vel,
+yoh(t + M|t) ?= yoh(t + M ? 1|t), assim, o novo vetor Y h,livre sera? dado por:
+
+22
+
+
+
+Y H,livre =
+
+?
+?????????
+
+yoh(t + 1|t)
+yoh(t + 2|t)
+
+...
+
+yoh(t + M ? 1|t)
+yoh(t + M ? 1|t)
+
+?
+?????????
+
+Desta forma, as predic?o?es no DMC recursivo multivaria?vel sa?o dadas por
+
+y? = Gu + fr. (2.21)
+
+Considerando que yoh = [yoh(t + 1), . . . ,yoh(t + N)], a resposta livre fr e? dada
+
+por
+
+fr =
+
+?
+???
+
+yo1
+...
+
+yoh
+
+?
+??? + Iy [ (y1(t) ?yo1(t)) . . . (yl(t) ?yoh(t)) ] . (2.22)
+
+2.4: Comenta?rios finais
+
+Neste cap??tulo foi feita uma revisa?o da teoria de controle preditivo e dos concei-
+
+tos usados na formulac?a?o dos ??ndices que sera?o apresentados no cap??tulo 3. Ale?m
+
+disso, tambe?m e? apresentada a teoria do controle por matriz dina?mica que e? o tipo
+
+de controle preditivo usado na unidade de processamento analisada neste projeto,
+
+descrita no cap??tulo 4.
+
+23
+
+
+
+Cap??tulo 3: Ferramenta de Aux??lio a
+
+Sintonia Total (FAST MPC)
+
+O desenvolvimento da FAST MPC faz parte de uma dissertac?a?o de mestrado
+
+[13] desenvolvida no projeto de pesquisa e desenvolvimento ”Algoritmos para Identificac?a?o
+
+e Controle Preditivo Na?o Linear de Processos da Indu?stria do Petro?leo de Ga?s Natu-
+
+ral”. Este e? um projeto do Departamento de Automac?a?o e Sistemas em colaborac?a?o
+
+com o Cenpes da Petrobra?s.
+
+Como o objetivo deste trabalho e? validar a metodologia proposta atrave?s de um
+
+estudo de caso, este cap??tulo traz uma explicac?a?o detalhada do ca?lculo dos ??ndices
+
+e da ana?lise do desempenho e da sintonia do controle. O conteu?do deste cap??tulo e?
+
+baseado em relato?rios te?cnicos do projeto e outros materiais internos.
+
+Uma das dificuldades encontradas na aplicac?a?o de Controle Preditivo baseado
+
+em Modelo e? avaliac?a?o da sintonia e do desempenho do sistema de controle. Por isso
+
+a necessidade de me?todos de avaliac?a?o de desempenho de sistemas de controle MPC
+
+e? largamente reconhecida no meio industrial. Algumas abordagens nessa direc?a?o
+
+baseiam-se na comparac?a?o do desempenho do sistema de controle sob ana?lise a
+
+um MPC baseado em varia?ncia m??nima. Entretanto, com essas abordagens na?o se
+
+pode definir qual varia?vel controlada tem o pior seguimento a refere?ncia, porque ela
+
+tem um desempenho ruim ou onde modificar a sintonia do controlador para atingir um
+
+determinado objetivo.
+
+Para conseguir o desempenho desejado do controlador sa?o necessa?rios bons
+
+modelos de predic?a?o e uma boa escolha nas ponderac?o?es das varia?veis, ja? que a
+
+sintonia do controlador e? diretamente dependente das matrizes de ponderac?a?o das
+
+varia?veis controladas Qy e das varia?veis manipuladas Qu, e tambe?m da predic?a?o Y?
+
+calculada a partir do modelo de predic?a?o.
+
+A equac?a?o 3.1 mostra a func?a?o custo na forma para sistemas multivaria?veis,
+
+onde Y? e? a predic?a?o da varia?vel controlada do sistema, W(k) e? a refere?ncia ou valor
+
+24
+
+
+
+desejado da varia?vel controlada (target ), 4U(k) e? a variac?a?o do sinal de controle,
+Qy e Qu sa?o matrizes de ponderac?a?o escolhidas arbitrariamente pelo projetista. As
+
+matrizes My e Mu sa?o matrizes que realizam a normalizac?a?o das varia?veis controladas
+
+e manipuladas. Esta normalizac?a?o pode ser realizada com o valor ma?ximo esperado
+
+para cada varia?vel ou com o range (xmax - xmin), por exemplo. Neste trabalho sera?
+
+definido um valor Un e Yn como valores normalizados onde Un = uss e Yn = w.
+
+J = [Y? ? W]T MTy QyMy[Y? ? W] + 4U
+T MTu QuMu 4 U (3.1)
+
+Com base nos para?metros da func?a?o custo e na importa?ncia de uma boa predic?a?o,
+
+foram criados seis ??ndices que avaliam o desempenho e a sintonia do controlador:
+
+1. I?ndices de Avaliac?a?o:
+
+• Desvios Me?dios;
+
+• I?ndices de Estabilidade.
+
+2. I?ndices de Sintonia:
+
+• I?ndices de Seguimento Relativos;
+
+• I?ndices de Controle Relativos;
+
+• I?ndices de Supressa?o de Movimento;
+
+• I?ndices de Erro de Modelagem.
+
+Os I?ndices de Avaliac?a?o sera?o utilizados para analisar o desempenho da planta
+
+de forma global e verificar a possibilidade de melhoria das respostas das varia?veis
+
+controladas. Ja? os I?ndices de Sintonia sera?o utilizados para analisar o ajuste das
+
+ponderac?o?es Qy e Qu da func?a?o custo e os modelos utilizados. Os I?ndices de Erro
+
+de Modelagem e os Desvios Me?dios sa?o os u?nicos ??ndices que podem ser analisa-
+
+dos como um indicador, ou seja, seus valores tem uma interpretac?a?o f??sica real inde-
+
+pendente. Os outros ??ndices na?o tem sentido analisados isoladamente e devem ser
+
+comparados com todos os ??ndices das demais varia?veis.
+
+Os ??ndices, analisados em conjunto, indicam como o controlador esta? tratando
+
+cada varia?vel em relac?a?o as outras, permitindo uma ana?lise e avaliac?a?o da sintonia do
+
+controlador MPC e fornecendo uma base so?lida para a localizac?a?o dos principais pro-
+
+blemas relacionados com as ponderac?o?es da func?a?o custo utilizada ou com os mode-
+
+los de predic?a?o. O resultado dessa avaliac?a?o visa auxiliar a tomada de decisa?o quanto
+
+25
+
+
+
+a modificar as ponderac?o?es da func?a?o custo do controlador MPC ou re-identificar os
+
+modelos de predic?a?o utilizados.
+
+Os Desvios Me?dios e os I?ndices de Seguimento Relativos na?o ponderados sa?o
+
+os ??ndices que avaliam a qualidade do sistema de controle MPC e servem como ponto
+
+de partida para as ana?lises do desempenho do MPC. Como estes ??ndices sa?o cal-
+
+culados com o erro de seguimento de refere?ncia, a varia?vel controlada com menor
+
+??ndice sera? aquela que esta? fazendo o melhor seguimento de refere?ncia. Os Desvios
+
+Me?dios apresentam uma a me?dia absoluta do erro de seguimento de refere?ncia em
+
+porcentagem de cada varia?vel controlada enquanto os I?ndices de Seguimento Rela-
+
+tivos mostram uma visa?o percentual relativa ao somato?rio de todos erros individuais
+
+para o caso ponderado e na?o ponderado. Em um sistema sob controle e? natural que
+
+algumas varia?veis controladas tenham maior importa?ncia econo?mica que outras. Uma
+
+varia?vel que representa uma concentrac?a?o, por exemplo, pode ter mais necessidade
+
+de seguir uma refere?ncia do que uma varia?vel pressa?o que esta? dentro dos seus limi-
+
+tes aceita?veis. Assim, se a concentrac?a?o apresenta um ??ndice de seguimento pior do
+
+que a pressa?o, alguma ac?a?o precisa ser tomada para melhorar o quadro.
+
+Para identificar onde atuar para melhorar o seguimento de refere?ncia de uma
+
+varia?vel controlada foram criados os ??ndices de seguimento relativos para saber como
+
+atuar nas ponderac?o?es Qy ??ndices de erro de modelagem para verificar a qualidade
+
+dos modelos de predic?a?o, ??ndices de ac?a?o de controle relativos e supressa?o de movi-
+
+mento para verificar como atuar nas ponderac?o?es Qu. Os ??ndices de seguimento e de
+
+controle, que sa?o baseados em uma parcela da func?a?o custo, sa?o calculados para os
+
+casos com e sem ponderac?a?o. Isso permite comparar o efeito da ponderac?a?o com o
+
+resultado verificado nas medic?o?es reais. No caso sem ponderac?a?o pode se ver como
+
+o sistema esta? funcionando na realidade e no caso ponderado pode-se ver a visa?o
+
+que o controle MPC tem do funcionamento do sistema para calcular as futuras ac?o?es
+
+de controle.
+
+Com uma adequada interpretac?a?o desses ??ndices devera? ser poss??vel identifi-
+
+car:
+
+• Quais varia?veis controladas devem ter seus seguimentos de refere?ncia melhora-
+dos,
+
+• Onde deve-se atuar para obter essas melhorias.
+
+26
+
+
+
+3.1: Ca?lculo dos ??ndices
+
+A cada instante de tempo k do controle sa?o calculados os ??ndices Instanta?neos a
+
+partir das equac?o?es 3.2, 3.6,3.8,3.10, 3.11,3.12, mostradas a seguir. Como o objetivo
+
+e? obter valores que refletem o comportamento do sistema ao longo de um determinado
+
+tempo, calcula-se a me?dia dos ??ndices Instanta?neos atrave?s de um algoritmo recursivo.
+
+Neste algoritmo na?o ha? necessidade do ca?lculo de N e pode-se ainda escolher o
+
+tempo da janela de medic?o?es utilizadas para o ca?lculo da me?dia, Nmedia, e a influe?ncia
+
+dos elementos dentro da janela sa?o ponderados por um fator de esquecimento. Ou
+
+seja, o ??ndice calculado no instante k ? Nmedia ? 1 tem efeito zero sobre o ca?lculo
+da me?dia. ja? a influe?ncia no ca?lculo da me?dia cresce desde 0 ate? 1 para os ??ndices
+
+instanta?neos calculados em k ?Nmedia ? 1 ate? k.
+
+A me?dia recursiva e? calculada com o seguinte pseudo-co?digo:
+
+Defina: x =
+5
+
+Nmedia
+e Iiy medio = 0
+
+se k = 1 :
+
+Den(k) = 1
+
+Iiy medio(k) = I
+i
+y inst(k)
+
+sena?o:
+
+Den(k) = Den(k ? 1) ·e?x + 1
+
+Iiy medio(k) =
+e?x · Iiy medio(k ? 1) ·Den(k ? 1) + I
+
+i
+y inst(k)
+
+Den(k)
+
+Todos os valores sa?o normalizados entre 0 e 1 onde e? poss??vel observar a
+
+influe?ncia da sintonia do MPC no sistema para cada varia?vel em comparac?a?o com
+
+as outras em uma mesma amplitude e a normalizac?a?o utilizada e? a mesma da func?a?o
+
+custo apresentada.
+
+3.1.1: Desvios Me?dios
+
+Estes ??ndices avaliam a qualidade do seguimento de refere?ncia das varia?veis
+
+controladas. Seu valor representa o desvio me?dio do erro de seguimento em porcen-
+
+tagem e pode ser analisado individualmente. Nesse caso, na?o se calcula relativamente
+
+os ??ndices pois na?o se tem a intenc?a?o de analisar as ponderac?o?es Qy, mas a possibi-
+
+lidade de melhorar a resposta da varia?vel controlada com a intenc?a?o de diminuir esse
+
+27
+
+
+
+erro. A equac?a?o 3.2 mostra esse ca?lculo.
+
+Diy inst(k) = 100 ·
+?wi(k) ?yi(k)?
+
+wi(k)
+(3.2)
+
+Ao final do per??odo de ana?lise teremos Diy medio para cada varia?vel controlada.
+
+A partir desse valor sera?o montados dois tipos de ??ndices diferentes: Desvios Me?dios
+
+Individuais e o Desvio Me?dio Total. Os Desvios Me?dios Individuais Diy ind sera?o iguais
+
+ao valor final de Diy medio para cada varia?vel controlada. E o Desvio Me?dio Total sera? o
+
+somato?rio desses ??ndices individuais dividido pelo nu?mero de varia?veis controladas n.
+
+Como mostrado na equac?a?o 3.3.
+
+Diy =
+
+?n
+i=1 D
+
+i
+y ind
+
+n
+(3.3)
+
+Esse Desvio Me?dio Total ajudara? o projetista a saber se as mudanc?as feitas
+
+no projeto do controlador diminu??ram o erro me?dio de seguimento de refere?ncia das
+
+varia?veis controladas, o que representa uma melhoria da resposta do sistema. Os
+
+Desvios Me?dios Individuais sa?o analisados quando se tem interesse maior no se-
+
+guimento de alguma varia?vel em particular. E? o caso quando algumas varia?veis do
+
+processo tem grande importa?ncia econo?mica, por exemplo.
+
+3.1.2: I?ndice de Estabilidade
+
+Esse ??ndice avalia o quanto cada varia?vel controlada pode melhorar em desem-
+
+penho no seguimento da refere?ncia sem levar o sistema para a instabilidade. Utiliza-
+
+dos em conjunto com os ??ndices de Seguimento Individuais e os ??ndices de Supressa?o
+
+de Movimento auxiliam o projetista a melhorar o desempenho global do sistema. Con-
+
+siderando que o desempenho final de um sistema de controle e? frequentemente obtido
+
+considerando o compromisso com seguimento de refere?ncia e estabilidade, e? pre-
+
+ciso saber se uma varia?vel controlada esta? pro?xima da sua regia?o de instabilidade. A
+
+equac?a?o 3.6 foi desenvolvida com base no teorema da estabilidade de Lyapunov [11].
+
+Pelo teorema da estabilidade de Lyapunov, uma func?a?o L(t) : Rn ? R repre-
+sentada pela equac?a?o 3.4 e? dita ser positiva definida se atende os requisitos expostos
+
+na equac?a?o 3.5. O que pode ser facilmente provado com a equac?a?o proposta com o o
+
+valor dos erros de seguimento de refere?ncia das varia?veis controladas ei normalizado
+
+pelas refere?ncias wi.
+
+28
+
+
+
+L(t) =
+1
+
+2
+·
+(
+ei(t)
+
+wi
+
+)2
+(3.4)
+
+L(0) = 0 e L &gt; 0 para ? ei 6= 0 (3.5)
+
+Como a energia dos estados do sistema precisa decrescer ao longo do tempo,
+
+sua derivada deve ser negativa ?L(t)
+?t
+
+&amp;lt;0. Portanto, para a derivada e? esperado um
+
+valor negativo. Sabe-se que quanto maior o valor absoluto dessa func?a?o, mais rapi-
+
+damente o sistema decresce sua energia e ’mais’ esta?vel sera? o sistema. E quando o
+
+valor se aproxima de zero ocorre a situac?a?o inversa. Baseado nessas concluso?es foi
+
+criado o I?ndice de Estabilidade, apresentado na equac?a?o 3.6. O objetivo desse ??ndice
+
+e? mostrar o quanto cada varia?vel controlada esta? perto da sua regia?o de instabilidade.
+
+Iiest inst(k) =
+ei(k)
+
+wi(k)2
+· (ei(k) ?ei(k ? 1)) ?
+
+ei(k)2
+
+wi(k)3
+· (wi(k) ?wi(k ? 1)) (3.6)
+
+A gerac?a?o deste ??ndice e? feita calculando uma me?dia recursiva acumulada ao
+
+longo do per??odo de ana?lise, como a utilizada nos ??ndices anteriores. Seu valor
+
+me?dio Iiest medio ao final do per??odo de ana?lise sera? o ??ndice a ser analisado. Para
+
+efeito demonstrativo em uma escala similar aos outros ??ndices, foi usado seu valor em
+
+potenciac?a?o como a equac?a?o 3.7 onde ? e? um valor escolhido para determinar a sen-
+
+sibilidade da variac?a?o entre os ??ndices (normalmente se utiliza o valor 100 ou 1000).
+
+Portanto, conclui-se que quanto mais pro?ximo de 0 este valor mais perto de sua regia?o
+
+de instabilidade essa varia?vel se encontra.
+
+Iiest = 10
+?·
+?
+?Ii
+
+est medio (3.7)
+
+3.1.3: I?ndices de Seguimento de Refere?ncia Relativo
+
+Estes ??ndices avaliam as varia?veis controladas do sistema quanto a qualidade
+
+de seu seguimento de refere?ncia. Baseado na parcela de erro de seguimento de
+
+refere?ncia [Y? ? W]T MTy QyMy[Y? ? W] da func?a?o custo apresentada na equac?a?o 3.1, foi
+montada a equac?a?o 3.8. Onde yi(k) e? o valor medido da varia?vel controlada i e wi(k)
+
+sua refere?ncia no instante de amostragem k. O valor e? normalizado pela refere?ncia
+
+wi(k) para permitir a comparac?a?o com as outras varia?veis controladas. Nota-se que
+
+esse valor indica o erro quadra?tico percentual da varia?vel controlada normalizado. A
+
+29
+
+
+
+normalizac?a?o aqui realizada e? ide?ntica aquela feita pela func?a?o custo apresentada
+
+na equac?a?o 3.1 mas, caso seja necessa?rio, outras formas de normalizac?a?o (scaling)
+
+devem ser implementadas para evitar a divisa?o por zero.
+
+Iiy inst(k) =
+
+(
+100 ·
+
+wi(k) ?yi(k)
+wi(k)
+
+)2
+·Qiy (3.8)
+
+Estes ??ndices sa?o calculados para o caso ponderado e na?o ponderado (Qiy =
+
+1). Com os ??ndices sem ponderac?o?es pode se ver o seguimento real das varia?veis
+
+controladas e com os ??ndices ponderados pode-se ver o seguimento fict??cio que o
+
+controle MPC tem de cada varia?vel controlada.
+
+Ao final do per??odo de ana?lise teremos Iiy medio e I
+i
+y medio p ponderados para cada
+
+varia?vel controlada.
+
+Para permitir um comparativo entre as varia?veis, sa?o calculados os I?ndices de
+
+Seguimento Relativos como mostrado na equac?a?o 3.9, onde n e? o nu?mero de varia?veis
+
+controladas. Este ca?lculo relativo dara? uma visa?o percentual dos erros de seguimento
+
+de refere?ncia das varia?veis. Assim os I?ndices de Seguimento Relativos Iiy rel e I
+i
+y rel p
+
+ponderados permitem comparar a influe?ncia das ponderac?o?es usadas na sintonia do
+
+controlador analisando a diferenc?a no valor entre o ??ndice com e sem ponderac?a?o para
+
+cada varia?vel controlada, como sera? explicado na sec?a?o 3.3.
+
+Iiy rel =
+Iiy medio?n
+j=1 I
+
+j
+y medio
+
+(3.9)
+
+Ambos ??ndices indicam o quanto cada varia?vel controlada representa, em me?dia,
+
+de peso na func?a?o custo do MPC com relac?a?o ao seu erro de seguimento de re-
+
+fere?ncia. Portanto quanto menor este ??ndice, melhor sera? o seguimento da refere?ncia
+
+desta varia?vel controlada.
+
+3.1.4: I?ndices Controle Relativo
+
+Estes ??ndices avaliam as varia?veis manipuladas do sistema quanto a atividade
+
+de sua ac?a?o de controle. Baseado na parcela de esforc?o de controle 4UT MTu QuMu4U
+da func?a?o custo da equac?a?o 3.1. Representado na equac?a?o 3.10 e normalizado pela
+
+ac?a?o de controle em regime permanente (uiss) para permitir a comparac?a?o com as
+
+outras varia?veis manipuladas (tambe?m deve ser normalizada de forma diferente para
+
+30
+
+
+
+os casos de poss??vel divisa?o por zero). Estes ??ndices tambe?m sera?o calculados para
+
+os casos ponderado e na?o ponderado (Qiu = 1) pelo mesmo motivo apresentado para
+
+os I?ndices de Seguimento Relativos.
+
+Iiu inst(k) =
+
+(
+100 ·
+
+4ui(k)
+uiss(k)
+
+)2
+·Qiu (3.10)
+
+Para esses ??ndices tambe?m sera?o aplicadas as fo?rmulas me?dias e relativas da
+
+mesma forma apresentada para os I?ndices de Seguimento. E o valor do ??ndice que
+
+sera? analisado e? o Iiu medio obtido ao final do per??odo de ana?lise, neste caso tambe?m
+
+na forma Iiu rel e I
+i
+u rel p ponderada. O objetivo destes ??ndices e? mostrar quais varia?veis
+
+manipuladas esta?o sendo mais solicitadas baseado no peso que elas representam na
+
+func?a?o custo do MPC. Disso conclui-se que quanto maior o ??ndice, maior a variac?a?o
+
+da varia?vel manipulada.
+
+3.1.5: I?ndices de Supressa?o de Movimento
+
+Estes ??ndices avaliam o quanto uma varia?vel controlada esta? sendo afetada com
+
+relac?a?o a? supressa?o da variac?a?o das varia?veis manipuladas imposta pelas ponderac?o?es
+
+em Qu que se relacionam a ela. Calculados utilizando a equac?a?o 3.11, onde m e? o
+
+nu?mero de varia?veis manipuladas e Kij sa?o os ganhos das func?o?es de transfere?ncias
+
+que sa?o acopladas com aquela varia?vel controlada.
+
+Iism inst(k) =
+[wi(k)]
+
+2?m
+j=1 [4uj(k) ·Kij]
+
+2
+·
+
+1
+
+1000
+(3.11)
+
+A gerac?a?o destes ??ndices e? feita com o ca?lculo de me?dia recursiva como nos
+
+??ndices anteriores e o Iism medio obtido ao final do per??odo de ana?lise sera? o valor a
+
+ser analisado. Neste caso na?o sera? calculado a comparac?a?o relativa das varia?veis.
+
+Quanto maior for este ??ndice, maior sera? a supressa?o de movimento que esta? sendo
+
+aplicada as varia?veis manipuladas que afetam aquela varia?vel controlada. Como pode
+
+ser observado, tambe?m nestes ??ndices, a refere?ncia da varia?vel controlada e? usada
+
+como forma de normalizar. Caso a refere?ncia seja nula deve ser usado outro valor
+
+como, por exemplo, o maior valor esperado da controlada.
+
+31
+
+
+
+3.1.6: I?ndices do Erro de Modelagem
+
+Estes ??ndices avaliam a qualidade dos modelos de predic?a?o usados para predi-
+
+zer o comportamento do sistema. Mostrado na equac?a?o ??, calcula os erros entre as
+
+predic?o?es do modelo y?i e as sa??das reais do processo yi normalizados pela refere?ncia
+
+wi para permitir a comparac?a?o com as outras varia?veis controladas.
+
+Iiem inst(k) = 100 ·
+?y?i(k) ?yi(k)?
+
+wi(k)
+(3.12)
+
+Os valores instanta?neos sa?o aplicados na equac?a?o de me?dia recursiva e o valor
+
+do ??ndice que sera? analisado sa?o os Iiem medio obtidos ao final do per??odo de ana?lise.
+
+O valor destes ??ndices podem ser interpretados como os erros me?dios de predic?a?o de
+
+cada varia?vel controlada. Quanto maior for o ??ndice, maior a quantidade de erros nos
+
+modelos daquela varia?vel controlada ou necessidade de modelagem de perturbac?o?es
+
+ainda na?o modeladas. O mesmo comenta?rio vale aqui, caso a refere?ncia seja nula
+
+pode ser usado o maior valor esperado da controlada na normalizac?a?o.
+
+3.2: Apresentac?a?o Gra?fica dos Resultados
+
+Para facilitar a visualizac?a?o dos ??ndices foi escolhido o gra?fico de barras, por
+
+ser intuitivo e permitir comparar o valor final dos ??ndices de cada varia?vel lado a lado.
+
+Os I?ndices de Seguimento Relativos e de Controle Relativos que possuem ??ndices
+
+ponderados e na?o ponderados sera?o plotados em um mesmo gra?fico mas com valo-
+
+res na?o ponderados no eixo positivo e os valores ponderados no eixo negativo para
+
+permitir visualizar a influe?ncia que as ponderac?o?es esta?o causando em cada varia?vel
+
+analisada.
+
+Quando o sistema apresenta um nu?mero muito grande de varia?veis manipula-
+
+das e controladas e/ou quando na?o ha? acoplamento total entre elas, adicionalmente
+
+aos gra?ficos dos ??ndices gerados podem ser utilizados a relac?a?o de ganhos das func?o?es
+
+de transfere?ncia das vaia?veis para permitir analisar a intensidade que uma poss??vel
+
+mudanc?a nas ponderac?o?es ira? causar na varia?vel em ana?lise e em quais varia?veis
+
+essa mudanc?a tambe?m ira? se refletir.
+
+32
+
+
+
+3.3: Me?todo Proposto para Tomada de Decisa?o
+
+Para ajudar o projetista na ana?lise dos ??ndices, foi criado um me?todo que ana-
+
+lisa a situac?a?o atual e indica que direc?a?o tomar a decisa?o visando uma mudanc?a de
+
+cena?rio. Antes de iniciar o me?todo e? necessa?rio a definic?a?o dos objetivos de controle.
+
+Uma vez gerados os ??ndices, a ana?lise tem dois caminhos: Ana?lise dos ??ndices
+
+de avaliac?a?o (desempenho global do sistema) que pode ser feita com os Desvios
+
+Me?dios, junto com os I?ndices de Estabilidade; e a ana?lise dos ??ndices de sintonia
+
+(desempenho relativos) feita com os I?ndices de Seguimento Relativos, Controle Rela-
+
+tivos, Supressa?o de Movimento e Erro de Modelagem.
+
+Para os ??ndices de avaliac?a?o deve-se iniciar pelos Desvios Me?dios para saber se
+
+o sistema pode ser melhorado. Para a ana?lise dos ??ndices de sintonia, inicia-se pelos
+
+I?ndices de Seguimento Relativos na?o ponderados. O objetivo de controle com relac?a?o
+
+ao seguimento das varia?veis deve ser vis??vel nesses ??ndices. Caso esses ??ndices
+
+na?o sejam satisfato?rios, e? necessa?rio uma ana?lise mais abrangente. O seguimento de
+
+refere?ncia de uma varia?vel controlada depende: da qualidade do modelo de predic?a?o e
+
+das ponderac?o?es Qy e Qu. Para analisar a qualidade dos modelos de predic?a?o deve-
+
+se olhar o I?ndice de Erro de Modelagem. Se este ??ndice possuir um valor elevado,
+
+enta?o pode-se inferir que o erro do modelo tem grande influe?ncia no sistema em malha
+
+fechada e seria necessa?rio uma re-identificac?a?o do modelo utilizado pelo controlador.
+
+Para a ana?lise das ponderac?o?es de Qy deve-se analisar os I?ndices de Seguimento
+
+Relativos e para a ana?lise de Qu os I?ndices de Supressa?o de Movimento.
+
+3.3.1: Ana?lise dos I?ndices de Seguimento Relativos
+
+Caso a diferenc?a D = Iiy rel ? I
+i
+y rel p seja negativa, a ponderac?a?o usada para
+
+esta controlada esta? com grande influe?ncia no sistema de controle, de forma que a
+
+ponderac?a?o pode ser diminu??da em benef??cio de outras controladas com maior im-
+
+porta?ncia ou aumentada para se atingir um melhor seguimento.
+
+3.3.2: Ana?lise dos I?ndices de Supressa?o de Movimento
+
+Se este ??ndice possui um valor grande, enta?o uma poss??vel causa e? a grande
+
+supressa?o das varia?veis manipuladas que afetam esta controlada. E caso contra?rio,
+
+enta?o as referidas manipuladas esta?o com liberdade para agir nesta controlada. Em
+
+33
+
+
+
+ambos os casos para decidir quais ponderac?o?es devem ser modificadas, deve-se ana-
+
+lisar os I?ndices de Controle Relativos de cada manipulada. Assim como no caso dos
+
+I?ndices de Seguimento Relativos, se a diferenc?a D = Iiu rel ? I
+i
+u rel p for negativa, a
+
+ponderac?a?o esta? suprimindo a ac?a?o dessa manipulada e pode ser diminu??da ou vice-
+
+versa. Deve-se analisar somente as varia?veis manipuladas que influenciam a dina?mica
+
+daquela varia?vel controlada e os ganhos das func?o?es de transfere?ncias para se conhe-
+
+cer a intensidade que a mudanc?a deve ser feita.
+
+34
+
+
+
+Cap??tulo 4: Caso de estudo e
+
+ferramentas de simulac?a?o e controle
+
+Os ??ndices mostrados no cap??tulo 3 foram avaliados numa unidade de proces-
+
+samento de ga?s natural (UPGN) da Petrobra?s simulada no software BRLumina, de-
+
+senvolvido pela pro?pria empresa.
+
+4.1: UPGN
+
+O objetivo do processamento do ga?s natural e? recuperar o propano (C3), o
+
+butano (C4) e o pentano e hidrocarbonetos mais pesados (C5+), separando-os dos
+
+hidrocarbonetos leves (C1 e C2). O processamento de ga?s natural gera tre?s produtos
+
+finais: o ga?s industrial (composto por C1 e C2), o GLP (composto por C3 e C4) e a
+
+gasolina natural (composta por C5+).
+
+Figura 4.1: Esquema simplificado da UPGN
+
+Nesta unidade, a separac?a?o dos hidrocarbonetos e? feita atrave?s do processo de
+
+absorc?a?o refrigerada por propano, produzido na pro?pria unidade. Na primeira etapa
+
+o ga?s natural passa pela primeira torre, a torre de absorc?a?o, que separa os hidro-
+
+35
+
+
+
+carbonetos mais pesados (absorvidos pelo o?leo pobre) dos demais. Pelo topo desta
+
+torre sai o ga?s industrial, composto por metano, etano e C3. E pelo fundo saem os
+
+hidrocarbonetos absorvidos. Como este l??quido ainda possui metano e etano em sua
+
+composic?a?o, ele passa pela segunda torre, a desetanizadora, para que estes hidro-
+
+carbonetos leves sejam separados. Pelo topo da coluna desetanizadora sai outro ga?s
+
+industrial tambe?m composto por metano (C1), etano (C2) e propano (C3), mas em
+
+concentrac?o?es diferentes do anterior. O C3 presente no ga?s industrial e? uma perda
+
+que deve ser minimizada. Pelo fundo da torre desetanizadora sai o o?leo rico que e?
+
+destilado na torre fracionadora gerando LGN (liquido do ga?s natural) e o?leo pobre, que
+
+retorna ao in??cio do processo. Depois da torre desetanizadora na?o resta mais metano
+
+na mistura de hidrocarbonetos que continua no sistema. O LGN alimenta o sistema de
+
+desbutanizac?a?o. Na torre desbutanizadora o produto e? separado em GLP (ga?s lique-
+
+feito de petro?leo), composto por etano (10,2%), propano (53,74%), butano (34,76%)
+
+e pentanos (1,3%), e C5+ (gasolina natural). A Figura 4.1 mostra um esquema sim-
+
+plificado do processamento de ga?s natural com as quatro torres e seus respectivos
+
+produtos de topo e de fundo.
+
+Do ponto de vista do controle avanc?ado, esse processo tem 10 entradas, as
+
+varia?veis manipuladas, e 11 sa??das, as varia?veis controladas. Ale?m disso, o processo
+
+esta? sujeiro a 3 perturbac?o?es mensura?veis. As varia?veis controladas, manipuladas e
+
+perturbac?o?es do processo inteiro sa?o mostradas nas tabelas 4.1, 4.2 e 4.3, respecti-
+
+vamente.
+
+Tabela 4.1: Varia?veis Controladas
+
+ID Descric?a?o
+y1 Teor de C3 na torre absorvedora (T01)
+y2 Teor de C3 na torre absorvedora (T02)
+y3 Teor de C2 no GLP
+y4 N??vel da torre (T02)
+y5 N??vel da torre (T02)
+y6 Vaza?o de refluxo
+y7 Abertura da va?lvula de pressa?o da torre T04
+y8 Teor de C5 na torre T04
+y9 Raza?o refluxo torre T04
+y10 Refluxo mais carga T04
+y11 Abertura de va?lvula
+
+Atualmente as varia?veis controladas y5, y9 e y11 na?o esta?o sendo utilizadas no
+
+problema de controle. A relac?a?o entre as varia?veis controladas, as manipuladas e as
+
+36
+
+
+
+Tabela 4.2: Varia?veis Manipuladas
+
+ID Descric?a?o
+u1 Vaza?o de o?leo de absorc?a?o para torre T01
+u2 Vaza?o deo?leo de absorc?a?o para torre T02
+u3 Vaza?o de carga fria para torre T02
+u4 Pressa?o no topo da T02
+u5 Pressa?o no topo da T04
+u6 Temperatura de fundo da T03
+u7 Temperatura de topo da T03
+u8 Vaza?o de Refluxo da T04
+u9 Controle de Temperatura da T04
+u10 Temperatura de fundo da T02
+
+Tabela 4.3: Perturbac?o?es
+
+ID Descric?a?o
+w1 Vaza?o de ga?s natural (carga) a ser processada pela unidade
+w2 Riqueza da carga
+w3 Carga na torre T04
+
+perturbac?o?es e? mostrada na tabela 4.4.
+
+O controle avanc?ado desse processo tem objetivos como maximizar a carga
+
+processada na unidade, minimizar a perda de C3 no ga?s industrial, manter o teor
+
+de C2 do GLP dentro da especificac?a?o, minimizar a perda de hidrocarbonetos para
+
+queima e maximizar o teor de C5+ na gasolina natural. As varia?veis mais dif??ceis de
+
+controlar sa?o o teor de C2 no GLP (y3), abertura da va?lvula de pressa?o (y7) e teor de
+
+C5 na gasolina natural (y7). As sec?o?es seguintes explicam brevemente como algumas
+
+das das varia?veis manipuladas e perturbac?o?es influenciam no comportamento dessas
+
+controladas.
+
+4.1.1: Controle do teor de C2 no GLP - y3
+
+A concentrac?a?o de C2 depende principalmente de varia?veis relacionadas a?s
+
+torres absorvedora e desetanizadora, que sa?o as torres 01 e 02, respectivamente.
+
+O C2 que chega e? torre fracionadora, torre 03, sai pelo topo junto com os demais
+
+hidrocarbonetos na forma de LGN sem sofrer perdas. Na u?ltima torre todo o C2 do
+
+LGN tambe?m sai pelo topo compondo o GLP. A partir da torre 03 nenhuma varia?vel
+
+mensurada e? capaz de alterar a concentrac?a?o final de C2. O objetivo e? produzir GLP
+
+37
+
+
+
+Tabela 4.4: Relac?a?o entre varia?veis controladas manipuladas e perturbac?o?es
+
+Varia?vel controlada Varia?veis manipuladas Perturbac?o?es
+y1 u1 w1,w2
+y2 u1,u2,u3,u10 w1,w2
+y3 u1,u2,u10 w1,w2
+y4 u6,u7 w1,w2
+y5 u1,u3,u4 w1,w2
+y6 u6,u7,u10 -
+y7 u1,u2,u5,u10 w1,w2
+y8 u5,u8,u9 w3
+y9 u8,u9 w3
+y10 u8 w3
+y11 u1,u2,u3,u4,u10 w1,w2
+
+com 15% de C2, mas a?s vezes restric?o?es operacionais impedem esse teor de ser
+
+atingido.
+
+Na torre absorvedora, a varia?vel manipulada que influencia no teor de C2 e? a
+
+vaza?o de o?leo de absorc?a?o (u1). Esta e? uma varia?vel importante na absorc?a?o dos
+
+hidrocarbonetos mais pesados. Ela e? manipulada de acordo com a carga processada.
+
+Se a carga aumenta, e? preciso aumentar a vaza?o de o?leo de absorc?a?o para que a
+
+quantidade de hidrocarbonetos absorvidos se mantenha.
+
+Na torre desetanizadora, as principais varia?veis manipuladas que influenciam
+
+no teor de C2 sa?o:
+
+• Vaza?o da carga fria (u3). Carga fria e? a frac?a?o da corrente de fundo da torre
+01 que vai direto para a torre 02. Sua vaza?o depende da produc?a?o da torre 01.
+
+A outra frac?a?o da corrente passa por um trocador de calor e tambe?m vai pra a
+
+torre. A vaza?o da carga fria e? medida, mas a vaza?o da frac?a?o quente na?o. Ela
+
+pode ser estimada atrave?s do n??vel (y4) e da vaza?o de carga fria.
+
+• Vaza?o de o?leo de absorc?a?o (u2). A vaza?o do o?leo de absorc?a?o varia de acordo
+com a vaza?o de carga fria. Quanto maior a carga, mais o?leo de absorc?a?o e?
+
+necessa?rio.
+
+• Temperatura do fundo da torre (u10). Esta temperatura regula a passagem de C2
+para a pro?xima torre. O aumento dessa temperatura aumenta a quantidade de
+
+C2 que e? retirado do processo e sai pelo topo da coluna, diminuindo a quantidade
+
+de C2 que continua no processo.
+
+38
+
+
+
+E as perturbac?o?es que influenciam no teor de C2 no GLP sa?o:
+
+• Riqueza do ga?s natural vindo de outras plataformas. O ga?s natural processado
+e? uma mistura de gases naturais de va?rias fontes. A?s vezes alguma plataforma
+
+para de fornecer e a composic?a?o, ou riqueza, da mistura muda. Ale?m disso,
+
+a cada 8 horas, a unidade Atalaia tambe?m processa um condensado vindo de
+
+outra unidade junto com o ga?s natural. Esse condensado produz um ga?s muito
+
+rico, o que tambe?m altera a composic?a?o final.
+
+• Vaza?o de ga?s natural processada, ou carga processada, tambe?m varia de acordo
+com o fornecimento. Se, por exemplo, uma fonte para de fornecer, ale?m da
+
+mudanc?a na riqueza da mistura, ha? uma diminuic?a?o da carga.
+
+Ale?m disso, o teor de C2 pode ser alterado por perturbac?o?es na?o mensuradas.
+
+Uma delas e? a carga te?rmica no air cooler (condensador) da desbutanizadora. A planta
+
+Atalaia esta? exposta a variac?o?es de temperatura ao longo do dia. Geralmente durante
+
+o dia faz muito calor e a noite a temperatura diminui. A chuva tambe?m e? um fator que
+
+influencia na temperatura. Com a temperatura externa mais baixa, a condensac?a?o e?
+
+maior, e por isso e? poss??vel conseguir um teor maior de C2 no GLP. Assim, em dias
+
+quentes o teor de C2 no GLP produzido normalmente fica abaixo do desejado. Ale?m
+
+disso, blocos do air cooler podem ser retirados para manutenc?a?o ou limpeza. Isso
+
+diminui a superf??cie de troca de calor, o que resulta em menos ga?s condensado, e, por
+
+consequencia, em menor concentrac?a?o de C2 no GLP.
+
+4.1.2: Controle do teor de C5 na gasolina natural - y8
+
+O teor de C5 na gasolina natural depende das varia?veis manipuladas:
+
+• Pressa?o no topo da torre desbutanizadora (u5), que varia de acordo com a
+concentrac?a?o de hidrocarbonetos leves que chegam a essa torre. Quanto maior
+
+a concentrac?a?o de leves, maior a pressa?o. E quando a pressa?o aumenta, o teor
+
+de C5 diminui.
+
+• Vaza?o de refluxo da desbutanizadora (u8). Quando a vaza?o de refluxo de GLP
+da torre T04 aumenta, a concentrac?a?o de C5 diminui.
+
+• Controle de temperatura da T04 (u9). Quando a temperatura aumenta, mais
+hidrocarbonetos leves sa?o incorporados no GLP, aumentando o teor de C5 do
+
+produto de fundo.
+
+39
+
+
+
+Ale?m disso, o teor de C5 esta? sujeito e? perturbac?a?o de carga na torre T04 (w3).
+
+O teor de C5 aumenta a medida que esta carga aumenta.
+
+4.1.3: Controle da abertura da va?lvula de pressa?o - y7
+
+Va?lvula de pressa?o (y7) na sa??da da desbutanizadora e? uma varia?vel controlada
+
+de extrema importancia e o seu controle tem preferencia em detrimento dos teores,
+
+mesmo que isso significque produzir GLP fora de especificac?a?o. Se o controle da
+
+va?lvula de pressa?o for perdido, a planta pode parar de funcionar. A pressa?o no topo da
+
+torre desbutanizadora varia de acordo com a concentrac?a?o de hidrocarbonetos leves
+
+que chegam a essa torre e causa o fechamento ou abertura da va?lvula. Quando a
+
+pressa?o esta? muito alta, a va?lvula fecha, forc?ando mais ga?s em direc?a?o ao condensa-
+
+dor. La? esse ga?s vira l??quido e seu volume reduz, diminuindo a pressa?o. Se a pressa?o
+
+estiver baixa, a va?lvula abre, deixando mais ga?s passar direto para o acumulador. A
+
+figura 4.2 mostra um esquema simplificado da sa??da da torre desbutanizadora com a
+
+va?lvula, o acumulador e o condensador.
+
+4.2: BRLumina
+
+O BRLumina e? uma ferramenta de simulac?a?o de processos controlados pelo
+
+CPM. Este software permite a avaliac?a?o do funcionamento do controlador em um am-
+
+biente offline atrave?s da criac?a?o de diferentes cena?rios de operac?a?o. Nestes cena?rios
+
+e? possivel alterar os limites de operac?a?o das varia?veis, a sintonia do controlador e o
+
+ponto de operac?a?o. Ale?m disso, os modelos podem ser alterados para introduzir erros
+
+de modelagem e perturbac?o?es na?o medidas e e? poss??vel introduzir ru??dos.
+
+Os cena?rios a serem simulados no BRLumina devem ser criados dentro de um
+
+projeto que conte?m todos os arquivos necessa?rios para a simulac?a?o. Estes arquivos
+
+sa?o:
+
+• As DLLs que implementam os algoritmos de controle e de simulac?a?o.
+
+• Os arquivos de modelos.
+
+• O arquivo que define as varia?veis e perturbac?o?es do problema de controle.
+
+• O arquivo que define os para?metros de sintonia do controle, .
+
+40
+
+
+
+A figura 4.3 mostra a pa?gina de criac?a?o de um cena?rio. Nesta etapa sa?o es-
+
+colhidos os algoritmos de controle e simulac?a?o da planta, os modelos de planta e
+
+de predic?a?o e o tempo de simulac?a?o. O BRLumina permite a utilizac?a?o de dados de
+
+perturbac?o?es reais na simulac?a?o. Isso permite a criac?a?o de um cena?rio mais pro?ximo
+
+do real. Uma vez definidos os algoritmos, a planta e o controlador, e? hora de esco-
+
+lher os para?metros de sintonia do controle. Pode-se usar os para?metros previamente
+
+definidos no projeto ou modifica?-los.
+
+Os resultados no BRLumina sa?o mostrados em gra?ficos. O comportamento das
+
+varia?veis pode ser analisado atrave?s de um gra?fico simples, que mostra o target, o
+
+valor de sa??da e os limites de operac?a?o, ou de gra?ficos multivaria?veis, que agrupam
+
+va?rias varia?veis para comparac?a?o. Diferentes cena?rios tambe?m podem ser compara-
+
+dos atrave?s dos gra?ficos multivaria?veis.
+
+Ale?m dos gra?ficos, uma planilha de resultados .csv e? gerada. Nela ficam grava-
+
+das os targets, as sa??das do processo, os incrementos de controle e outras informac?o?es,
+
+como status e shadow price. Apesar do BRLumina gerar um arquivo de resultados
+
+bastante completo, o erro de predic?a?o na?o e? registrado. Como esta e? uma informac?a?o
+
+necessa?ria para o calculo do ??ndice de erro de modelagem, uma modificac?a? na DLL
+
+de controle foi feita para que arquivos com tais informac?o?es fossem gerados.
+
+4.3: Comenta?rios finais
+
+Neste cap??tulo foram mostradas as ferramentas de simulac?a?o e o processo a
+
+partir do qual foram criados os cena?rios de operac?a?o, mostrados no cap??tulo 5, utiliza-
+
+dos no estudo dos ??ndices.
+
+41
+
+
+
+Figura 4.2: Esquema simplificado torre desbutanizadora
+
+Figura 4.3: Exemplo de cena?rio do BRLumina
+
+42
+
+
+
+Cap??tulo 5: Implementac?a?o do FAST
+
+Este cap??tulo mostra como o ca?lculo dos ??ndices foi implementado, que ferra-
+
+mentas foram usadas e que dificuldades foram encontradas para a obtenc?a?o dos da-
+
+dos necessa?rios. Como mostrado no cap??tulo 3, os dados necessa?rios para o ca?lculo
+
+do ??ndices sa?o:
+
+• Refere?ncia das varia?veis controladas - W
+
+• Valor medido das varia?veis controladas - Y
+
+• Predic?a?o das varia?veis controladas - Y?
+
+• Ponderac?a?o das varia?veis controladas - Qy
+
+• Refere?ncia das varia?veis manipuladas - uss
+
+• Incrementos de controle - ?U
+
+• Ponderac?a?o as varia?veis manipuladas - Qu
+
+Os algoritmos que implementam o CPM, tanto na planta real como no BR-
+
+Lumina, geram ou recebem automaticamente todos esse dados. No entanto, nem
+
+todos ficam armazenados. As predic?o?es calculadas para as varia?veis controladas
+
+eram perdidas de uma iterac?a?o para outra do controle. Foram necessa?rias algumas
+
+modificac?o?es nesses algoritmos para que a predic?a?o fosse salva em arquivos .csv.
+
+Os ??ndices estudados foram calculados a partir dos dados obtidos nas simulac?o?es
+
+de cena?rios no BRLumina. A cada passo de simulac?a?o, que corrensponde a 1 minuto
+
+de operac?a?o, uma planilha .csv contendo diversos dados gerados pelo CPM e? criada
+
+num direto?rio. Uma aplicac?a?o desenvolvida em Python varre este direto?rio e le? cada
+
+planilha, copiando apenas os dados necessa?rios para gerar os vetores W, Y , Y? , Qy
+para cada controlada e uss, ?u e Qu para cada manipulada.
+
+43
+
+
+
+A partir desses vetores sa?o calculados os ??ndices instanta?neos, que por sua vez
+
+sa?o usados para calcular os ??ndices me?dios atrave?s da me?dia recursiva mostrada na
+
+sessa?o 3.1. Estes valores finais sa?o plotados em 5 gra?ficos. Sa?o eles:
+
+• Desvio me?dio total e individual, figura 6.1
+
+• I?ndice de seguimento relativo, figura 6.2
+
+• I?ndices de supressa?o de movimento e controle, figura 6.3
+
+• I?ndice de erro de modelagem, figura 6.4
+
+• I?ndice de estabilidade, figura 6.5
+
+Ale?m dos dados provenientes do BRLumina, foram utilizados dados reais me-
+
+didos na planta e gerados pelo controle da mesma para calcular os ??ndices. Estes
+
+dados reais tambe?m foram armazenados em planilhas .csv e lidos por uma aplicac?a?o
+
+em Python que gera os vetores necessa?rios para os ca?lculos. A partir desses vetores,
+
+os ca?lculos foram feitos da mesma maneira descrita anteriormente.
+
+Para a realizac?a?o deste trabalho, a implementac?a?o do FAST MPC se limita a
+
+co?digos em Python que le?em as planilhas, geram vetores, calculam os ??ndices e plotam
+
+gra?ficos. Posteriormente, estas rotinas do Python e um algoritmo para auxiliar na
+
+tomada de decisa?o estara?o integrados a uma interface que facilitara? o uso dos ??ndices.
+
+5.1: Comenta?rios finais
+
+Neste cap??tulo foram descritas as ferramentas usadas para o ca?lculo dos ??ndices,
+
+assim como o ambiente de simulacao utilizado. No pro?ximo cap??tulo sa?o analisados
+
+os resultados obtidos com estas ferramentas.
+
+44
+
+
+
+Cap??tulo 6: Avaliac?a?o dos ??ndices e
+
+resultados
+
+Para avaliar o comportamento dos ??ndices foram criados cena?rios no BRLumina
+
+a partir de arquivos de configurac?a?o e modelos utilizados na UPGN. No BRLumina
+
+e? poss??vel modificar as informac?o?es importadas desses arquivos para criar cena?rios
+
+com diferentes sintonias e modelos.
+
+O BRLumina simula na?o so? o controle mas tambe?m a camada de otimizac?a?o na
+
+qual sa?o calculados os targets para todas as varia?veis. Neste processo, as perturbac?o?es
+
+medidas w1 e w2 fazem parte do problema de otimizac?a?o. Estas perturbac?o?es sa?o a
+
+vaza?o e a composic?a?o do ga?s natural na entrada do processo. Enta?o quando seus
+
+valores mudam, os targets calculados para as varia?veis tambe?m mudam. Por isso,
+
+os valores de perturbac?a?o utilizados no cena?rio zero sa?o valores obtidos a partir de
+
+medic?o?es reais. Assim, o cena?rio criado se aproxima muito de uma situac?a?o real.
+
+As sesso?es a seguir explicam os resultados obtidos a partir da ana?lise dos
+
+cena?rios para estudar o funcionamento dos ??ndices.
+
+6.1: Caso zero: cena?rio inicial
+
+Este cena?rio, usado como refere?ncia, foi criado a partir dos arquivos de configurac?a?o
+
+do controle e do modelo da UPGN sem que nenhuma modificac?a?o fosse feita. Neste
+
+caso, chamado cena?rio zero, o modelo da planta e o de predic?a?o sa?o iguais e este
+
+modelo e? o mesmo usado como modelo de predic?a?o no controle da planta real. As
+
+matrizes de supressa?o Qy e Qu tambe?m na?o foram alteradas e seus valores sa?o os
+
+mesmos utilizados no controle da UPGN.
+
+O gra?fico de desvios me?dios individuais, figura 6.1, mostra que as varia?veis
+
+controladas y3, y7 e y8 sa?o as que apresentam maior desvio. O objetivo de controle
+
+sera? enta?o diminuir o desvio das varia?veis y3, y7 e y8, sem aumentar o desvio das
+
+45
+
+
+
+outras.
+
+Pelo I?ndice de Estabilidade, figura 6.5, das tre?s varia?veis apenas a y3 possui um
+
+espac?o que podemos acelerar a dina?mica desta resposta sem levar todo o sistema
+
+para a instabilidade. E que a y7 esta? em seu limite e na?o conseguiremos melhorar
+
+muito esta resposta.
+
+Pelo I?ndice de Erro de Modelagem, figura 6.4, vemos que a controlada y8 esta?
+
+mal modelada. Isto pode ser causado tanto por um modelo de predic?a?o ruim quanto
+
+pela presenc?a de perturbac?o?es na?o modeladas influenciando nesta resposta. Vemos
+
+que a controlada y1 tambe?m tem um modelo ruim mas sua resposta apresenta um
+
+baixo desvio me?dio individual. Corrigir esse modelo na?o apresenta muita importa?ncia,
+
+a menos que o objetivo de controle seja manter ela bem controlada.
+
+O I?ndice de supressa?o de movimento, figura 6.3, Pelo ??ndice de supressa?o de
+
+movimento vemos que a maior supressa?o de movimento esta? na varia?vel y4 mas
+
+essa varia?vel ja? esta? fazendo um bom seguimento de refere?ncia, provavelmente pela
+
+dina?mica ra?pida da varia?vel. Das varia?veis propostas inicialmente para serem melho-
+
+radas apenas y3 tem possibilidade de melhoria modificando as ponderac?o?es de Qu.
+
+Para as varia?veis y7 e y8 deve-se dar mais atenc?a?o a ponderac?a?o Qy e aos modelos de
+
+predic?a?o visto que pelas ponderac?o?es de Qu na?o sera? poss??vel nenhuma melhora. As
+
+varia?veis manipuladas que a influenciam y3 sa?o: u1, u2, e u10. Dessas manipuladas,
+
+so? a u2 tem uma parcela alta do esforc?o de controle, como mostra o I?ndice de Con-
+
+trole na figura 6.3. Neste caso, pelos ??ndices de controle na?o ponderados, de u1 e u10
+
+esta?o pouco acionadas e podem ser mais liberadas (diminuindo a ponderac?a?o Qu). A
+
+u2, apesar de bem manipulada, parece esta? mais acionada que o real para o controla-
+
+dor, por causa da ponderac?a?o. Neste caso, ponderac?a?o dela pode ser diminu??da para
+
+permitir que ela seja mais utilizada.
+
+Estas concluso?es foram obtidas seguindo a me?todologia de tomada de decisa?o
+
+proposta. No entanto, cena?rios criados a partir dessas concluso?es na?o mostraram
+
+uma melhora no desempenho do sistema, o que sugere que a sintonia ja? esta? muito
+
+boa para manter o sistema em bom desempenho para os objetivos de controle.
+
+Este cena?rio zero foi enta?o utilizado como o exemplo de boa sintonia e desem-
+
+penho deste controle nesta planta. Os dados obtidos nesta simulac?a?o foram usados
+
+para definir o tamanho da janela de me?dia mo?vel, mostrada na sessa?o 3.1, que sera?
+
+usada nos ca?lculos dos ??ndices nas pro?ximas ana?lises.
+
+A janela mo?vel usada para calcular os ??ndices me?dios tem uma grande influ-
+
+46
+
+
+
+Figura 6.1: Desvios Me?dios
+
+Figura 6.2: I?ndices de Seguimento Relativo
+
+47
+
+
+
+Figura 6.3: I?ndices de Supressa?o de Movimento e Controle Relativo
+
+Figura 6.4: I?ndices de Erro de Modelagem
+
+48
+
+
+
+Figura 6.5: I?ndice de Estabilidade
+
+encia no resultado final. Se a janela escolhida for muito pequena, somente amostras
+
+muito pro?ximas da atual sa?o consideradas e valores de ??ndices instanta?neos muito
+
+diferentes podera?o levar a concluso?es erradas sobre o desempenho do sistema. Se
+
+a janela for muito grande, mudanc?as de sintonia ou ponto de operac?a?o, que podem
+
+afetar o desempenho do controle, podem demorar muito para aparecer, ja? que muita
+
+informac?a?o do passado ainda tem peso no presente. E? preciso enta?o escolher uma
+
+janela com um tamanho ideal que minimize esses dois efeitos.
+
+Para definir o tempo da janela Nmedia foram calculados os ??ndices com janelas
+
+de diferentes tamanhos e o Nmedia que representa o sistema, ou seja, o menor tama-
+
+nho de janela que gera um resultado que na?o mudara? se a janela for aumentada, foi
+
+escolhido.
+
+Assim, foram testados 3 tamanhos de janela: 4, 7 e aproximadamente 15 dias,
+
+ou seja, todo o conjunto de dados. Os resultados mudaram muito entre 4 e 7 dias,
+
+mas de 7 para 15 na?o. Por isso, o tamanho escolhido foi 7 dias e todos os cena?rios
+
+mostrados nas pro?ximas sesso?es tiveram os in?dices calculados com uma janela de 7
+
+dias.
+
+6.2: Caso 1: cena?rios com erros de modelagem
+
+Como o objetivo e? minimizar o erro entre o target e a predic?a?o, um modelo de
+
+predic?a?o que na?o representa muito bem o processo pode prejudicar o seguimento
+
+49
+
+
+
+a? refere?ncia, uma vez que o erro minimizado na?o corresponde ao erro real, enta?o a
+
+diferenc?a entre a refere?ncia e a sa??da pode nunca chegar a zero.
+
+Para verificar o reflexo de erros de modelagem no I?ndice de Erro Modelagem,
+
+foram criados 3 cena?rios com alterac?o?es nos modelos que afetam a varia?vel controlada
+
+y3. No primeiro cena?rio, os ganhos esta?ticos das manipuladas que afetam y3 foram
+
+multiplicados por 1,5. No segundo cena?rio, o atraso foi aumentado em 40 minutos.
+
+No terceiro cena?rio, os modelos de perturbac?a?o para a varia?vel y3 foram exclu??dos,
+
+na tentativa de simular perturbac?e?s na?o medidas. Estas perturbac?o?es, apesar de na?o
+
+representarem as mesmas perturbac?e?s na?o medidas que influenciam no processo
+
+real, servem para mostrar como este erro se reflete no ??ndice.
+
+Os tre?s diferentes erros de modelagem inseridos no processo sa?o facilmente
+
+notados nos I?ndices de erro de modelagem. No caso zero, mostrado na figura 6.6a,
+
+os valores dos ??ndices de todas as varia?veis sa?o baixos e na?o passam de 0,8, inclu-
+
+sive o da varia?vel y3, que e? 0,3. Ja? nos casos com erro de modelagem, os valores dos
+
+??ndices continuam iguais e abaixo de 0,8, mas para a varia?vel y3 os valores aumen-
+
+taram consideravelmente. Como mostra a figura 6.6, atrave?s dos ??ndices e? poss??vel
+
+identificar exatamente quais varia?veis controladas esta?o sendo afetadas por erros de
+
+modelagem.
+
+Apesar dos erros de modelagem aparecem claramente no ??ndice de erro de
+
+modelagem, na?o e? poss??vel identificar a natureza do erro apenas com os ??ndices
+
+propostos. Atualmente esa?o sendo feitos estudos de indicadores que auxiliem na
+
+identificaca?o¸ da origem do erro (ganho, atraso, perturbac?o?es ou ru??dos).
+
+6.3: Caso 2: Cena?rios com alterac?o?es na supressa?o das ac?o?es de
+controle
+
+Os ajustes das ponderac?o?es Qy e Qu tem grande influe?ncia no desempenho
+
+do sistema de controle. A ponderac?a?o do esforc?o de controle Qu pode ser analisada
+
+atrave?s dos I?ndices de Controle Relativos e de Supresa?o de Movimento, lembrando
+
+que o I?ndice de Supressa?o de Movimento mostra a visa?o das controladas e como
+
+suas manipuladas esta?o sendo suprimidas. O I?ndice de Controle Relativo mostra a
+
+visa?o das manipuladas e o quanto elas esta?o sendo acionadas em forma percentual
+
+ao total.
+
+Como mostra a equac?a?o 3.10 do ??ndice de supressa?o no cap??tulo 3, pa?gina 31,
+
+50
+
+
+
+(a) Caso zero (b) Erro no ganho
+
+(c) Erro no atraso (d) Perturbac?a?o na?o medida
+
+Figura 6.6: I?ndices de Erro de Modelagem
+
+51
+
+
+
+a supressa?o de uma varia?vel controlada e? inversamente proporcional aos incrementos
+
+de controle de suas manipuladas. Se o valor de Qu para uma manipulada for aumen-
+
+tado, os incrementos de controle calculados para essa varia?vel sera?o menores e sua
+
+resposta mais lenta. Assim, o aumento de Qu de uma manipulada pode aumentar
+
+o ??ndice de supressa?o da varia?vel controlada a qual ela afeta. O contra?rio acontece
+
+quando o valor de Qu de uma manipulada e? reduzido. Como seus incrementos de
+
+controle calculados sa?o maiores, o ??ndice de supressa?o da sua controlada tende a
+
+dimunuir.
+
+Para verificar esta relac?a?o entre as variac?o?es de Qu e o ??ndice de supressa?o,
+
+foram criados dois cena?rios nos quais as varia?veis manipuladas u1, u2 e u10, que
+
+sa?o as que afetam a controlada y3, destacada em verde, tiveram seus valores de Qu
+alterados. No primeiro, cujo resultado e? mostrado na figura 6.7b, os valores de Qu
+foram aumentados para 50. No segundo, mostrado na figura 6.7c, os valores de Qu
+foram reduzidos para 0,5, 0,5 e 0,2 para u1, u2 e u10, respectivamente.
+
+Os valores iniciais de Qu para essas varia?veis manipuladas sa?o 5, 5 e 2 para
+
+u1, u2 e u10, respectivamente. A figura 6.7a mostra o caso zero, que usa os valores
+
+de Qu iniciais. A varia?vel y3 tem um ??ndice de supressa?o maior no primeiro cena?rio,
+
+figura 6.7b do que no caso zero. Ja? no segundo caso, o ??ndice de supressa?o de y3
+
+e? praticamente zero. Houve uma reduc?a?o em relac?a?o ao caso zero. Estes resultados
+
+sa?o consistentes com o que se esperava teoricamente. Cena?rios parecidos foram
+
+criados envolvendo outros conjuntos de varia?veis controladas e suas manipuladas e
+
+todos apresentaram o mesmo comportamento.
+
+6.4: Comenta?rios finais
+
+Os cena?rios criados para esta etapa do estudo na?o te?m como objetivo validar a
+
+tomada de decisa?o prosposta, mas sim mostrar como problemas de modelo e sintonia
+
+se refletem nos ??ndices. Ale?m disso, as modificac?o?es feitas levaram a um aumento no
+
+desvio me?dio do sistema, o que indica que, apesar de haver erro de seguimento, a
+
+atual sintonia do controle esta? pro?xima da melhor sintonia poss??vel. E? preciso lembrar
+
+que os targets deste sistema mudam frequentemente, enta?o o regime permanente
+
+dificilmente e? atingido. Ainda assim, mesmo em casos bastante complexos, onde ha?
+
+um grande acoplamento entre varia?veis, os ??dices fornecem informac?o?es consistentes
+
+sobre o desempenho e a sintonia do controle.
+
+52
+
+
+
+(a) Caso zero
+
+(b) Qu de u1, u2 e u10 aumentado (c) Qu de u1, u2 e u10 diminu??do
+
+Figura 6.7: I?ndices de Supressa?o e Controle Relativo
+
+53
+
+
+
+Cap??tulo 7: Concluso?es e Perspectivas
+
+Os resultados obtidos a partir dos cena?rios discutidos no cap??tulo 6 mostram
+
+que os ??ndices sa?o capazes de indicar claramente o que esta? afetando o sistema,
+
+mesmo num processo lento, com muitas varia?veis de diferentes dina?micas, com muito
+
+atraso e muitas restric?o?es.
+
+Mas apesar dos ??ndices serem capazes de identificar a poss??vel causa de um
+
+desempenho ruim, eles na?o conseguem sozinhos dar detalhes de como corrigir o pro-
+
+blema. Por exemplo, um alto valor do ??ndice de erro de modelagem pode ser causado
+
+por erros de ganho ou atraso no modelo de predic?a?o, ou por perturbac?o?es na?o medi-
+
+das, ou ainda por ru??dos. E essas diferentes causas aparecem nos ??ndices da mesma
+
+maneira, elas aumentam o valor do ??ndice de erro de modelagem.
+
+Ale?m disso, somente com os ??ndices de supressa?o e controle, na?o e? poss??vel
+
+determinar o quanto se deve alterar os valores de Qu para obter uma resposta me-
+
+lhor. Os ??ndices de supressa?o tambe?m sa?o afetados pela velocidade da resposta das
+
+varia?veis. As mais ra?pidas se aproximam da refere?ncia antes das demais e nessa hora
+
+te?m incrementos de controle menor, afetando o valor do ??ndice.
+
+Um outro ponto importante e particular da planta estudada e? que neste processo
+
+os valores de ponderac?a?o Qy dependem do valor das varia?veis controladas. Existem 3
+
+valores de Qy para cada varia?vel: um para quando o valor esta? acima do limite superior
+
+de operac?a?o, outro para quando ele esta? abaixo do limite inferior e um terceiro para
+
+quando o valor esta? dentro dos limites. Isso torna a ana?lise dos I?ndices de Seguimento
+
+Relativos um pouco complicada. E por isso a ana?lise deste ??ndice na?o foi ta?o explorada
+
+neste trabalho.
+
+Estudos esta?o sendo feitos para criar indicadores que permitam diferenciar os
+
+tipos de erros de modelagem que esta?o prejudicando o seguimento a refere?ncia.
+
+Ale?m disso, ana?lises do comportamento dos ??ndices esta?o sendo feitas para obter um
+
+me?todo de soluc?a?o matema?tico que defina o quanto se deve modificar as ponderac?o?es
+
+do controle ajustado.
+
+54
+
+
+
+Refere?ncias Bibliogra?ficas
+
+[1] L. G. Bergh and J. F. MacGregor. Constrained minimum variance controllers: In-
+
+ternal model structure and robustness properties. Ind. Eng. Chem. Res., 26:1558–
+
+1564, 1987.
+
+[2] E.F. Camacho and C. Bordons. Model Predictive Control. Springer, Berlin, 2007.
+
+[3] D.W. Clarke and C. Mohtadi. Properties of generalized predictive control.
+
+Automatica, 25(6):859–875, 1989.
+
+[4] D.W. Clarke, C. Mothadi, and P.S. Tuffs. Generalized Predictive Control. Part I: the
+
+basic algorithm. Automatica, 23(2):137–148, 1987.
+
+[5] C.R. Cutler and B. L. Ramaker. Dynamic matrix control-a computer control algo-
+
+rithm. AIChE National Meeting, 1979.
+
+[6] A. Datta and J. Ochoa. Adaptive Internal Model Control: Design and stability
+
+analysis. Automatica, 32(2):261–266, 1996.
+
+[7] S. Dormido. Una revisio?n de las tecnolog??as de control predictivo basado en
+
+modelos en la industria. In Wokshop sobre estado y perspectivas del control
+
+predictivo, Valladolid, Spain, 1987.
+
+[8] Rodolfo Ce?sar Costa Flesch. Contribuic?o?es ao Controle de Sistemas
+
+Monovaria?veis e Multivaria?veis com Atraso de Transporte. PhD thesis, Univer-
+
+sidade Federal de Santa Catarina, 2012.
+
+[9] G. Goodwin and K. Sin. Adaptive Filtering Prediction and Control. Prentice Hall,
+
+1984.
+
+[10] R.M.C. De Keyser and A.R. Cuawenberghe. Extended prediction self adaptive
+
+control. In IFAC Simp. on Ident. and Syst. Parameter Estimation, pages 1317–
+
+1322, York, 1985.
+
+[11] H. S. Khalil. Nonlinear Systems. Prentice-Hall, 3rd edition, 2003.
+
+[12] Manfred Morari, Jay H. Lee, and Carlos E. Garc??a. Model Predictive Control.
+
+Prentice Hall, 2002.
+
+55
+
+
+
+[13] D. Miranda Cruz J. E. Normey-Rico P. E. F. Cortez, A. Plucenio. I?ndices de de-
+
+sempenho para auxI?ilio na re-sintonia de controladores preditivos multivariA?veis.
+
+Master’s thesis, Universidade Federal de Santa Catarina, Dissertac?a?o ainda na?o
+
+defendida.
+
+[14] Z.J. Palmor. Properties of optimal stochastic control systems with dead-time.
+
+Automatica, 18:107–116, 1982.
+
+[15] J.B. Rawlings and D.Q. Mayne. Model Predictive Control: Theory and Design.
+
+Nob Hill Publishing, 2009.
+
+[16] J. Richalet, S. Abu el Ata-Doss, C. Arber, H.B. Kuntze, A. Jacubash, and W. Schill.
+
+Predictive functional control. Application to fast and accurate robots. In Proc. 10th
+
+IFAC Congress, Munich, 1987.
+
+[17] J. Richalet, A. Rault, J.L. Testud, and J. Papon. Algorithm control for industrial
+
+processes. In Proc. 4th IFAC Symp. on Identification and System Parameter
+
+Estimation, Tbilisi, URSS, 1976.
+
+[18] I. Skrjanc and D. Matko. Advances in Model Based Predictive Control. Chapter:
+
+Fuzzy Predictive Controller with Adaptive Gain., chapter 10. Oxford University,
+
+1994.
+
+[19] R. Soeterboek. Predictive Control: A unified approach. Prentice Hall, 1992.
+
+[20] Y. Tan and R. De Keyser. Advances in Model Based Predictive Control. Chapter:
+
+Neural Network Based Predictive Control., chapter 8. Oxford University, 1994.
+
+[21] B.E. Ydstie. Extended horizon adaptive control. In 9th IFAC World Congress,
+
+Budapest, Hungary, 1984.
+
+56
+
+
+	Lista de Figuras
+	Introdução
+	Controle Preditivo de Processos da Indústria de Petróleo e Gás
+	Elementos do CPBM
+	O modelo de predição
+	O modelo do processo
+	Modelo das perturbações
+	Resposta livre e forçada
+
+	Função Objetivo
+	Obtenção da lei de controle
+
+	Controle por Matriz Dinâmica (DMC)
+	DMC Original
+	DMC Recursivo
+
+	DMC Multivariável
+	DMC Recursivo Multivariável
+
+	Comentários finais
+
+	Ferramenta de Auxílio a Sintonia Total (FAST MPC)
+	Cálculo dos índices
+	Desvios Médios
+	Índice de Estabilidade
+	Índices de Seguimento de Referência Relativo
+	Índices Controle Relativo
+	Índices de Supressão de Movimento
+	Índices do Erro de Modelagem
+
+	Apresentação Gráfica dos Resultados
+	Método Proposto para Tomada de Decisão
+	Análise dos Índices de Seguimento Relativos
+	Análise dos Índices de Supressão de Movimento
+
+
+	Caso de estudo e ferramentas de simulação e controle
+	 UPGN
+	Controle do teor de C2 no GLP - y3
+	Controle do teor de C5 na gasolina natural - y8
+	Controle da abertura da válvula de pressão - y7
+
+	BRLumina
+	Comentários finais
+
+	Implementação do FAST
+	Comentários finais
+
+	Avaliação dos índices e resultados
+	Caso zero: cenário inicial
+	Caso 1: cenários com erros de modelagem
+	Caso 2: Cenários com alterações na supressão das ações de controle
+	Comentários finais
+
+	Capítulo 7: Conclusões e Perspectivas
+	Referências Bibliográficas
+
+</field>
+	</doc>
+</add>

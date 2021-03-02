@@ -1,0 +1,686 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-BP.03746</field>
+		<field name="filename">07-Jaime_Souza.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">| Jaime Neiva Miranda de Souza | José Luiz de Medeiros | André Luiz Hemerly Costa | Giovani Cavalcanti Nunes
+Alocação ótima de gás em poços com elevação gas lift conectados a redes com qualquer topologia /Gas allocation optimization in gas-lift wells connected to any network topology
+resumo
+PALAVRAS-CHAVE:
+□	gas lift
+□	otimização
+□	escoamento bifásico
+□	dutos
+□	petróleo
+□	alocação de gás
+KEYWORDS:
+□	gas lift
+□	optimization
+□	two-phase flow
+□	pipelines
+□	petroleum
+□	gas allocation
+Neste trabalho, é proposto um arcabouço para a análise de sistemas de elevação artificial por gas lift contínuo usando um algoritmo de otimização acoplado a um modelo estacionário de redes de escoamento bifásico para qualquer topologia de rede. A função objetivo pode considerar os custos de capital anualizado sobre compressor, turbina e gasodutos, os custos operacionais relacionados com o combustível e as receitas provenientes do petróleo produzido, levando em conta as restrições na disponibilidade de gás. As interações entre os poços, linhas de produção e risers são devidamente avaliadas por um modelo estacionário de redes de escoamento bifá-sico composto por balanços de massa em elementos da rede e balanços de
+abstract
+This study proposes a framework to analyze continuous gas lift systems using an optimization algorithm coupled to a stationary two-phase flow network model for any network topology. The objective function can consider the yearly capital costs of the compressor, turbine and gas pipelines, operational costs related to fuel and produced oil revenues taking into account gas availability constraints. The interactions between the wells, production lines and risers are fully evaluated by a stationary two-phase flow simulation model for pipe networks. This is made up of a mass balances of the network elements and the momentum balances in the pipes using the Beggs and Brill empirical correlation. By solving the optimization problem, it is possible to estimate important information for the conceptual project design phase of a petroleum production system. A set of case studies describes the application of the proposed framework to analyze and optimize single and multiple wells with different complexities.
+(Expanded abstract available at the end of the paper).
+momento em tubos utilizando a correlação empírica de Beggs e Brill. Mediante a solução do problema de otimização é possível estimar informações importantes para a fase de projeto conceitual de um sistema de produção de petróleo. Um conjunto de estudos de casos descreve a aplicação da metodologia na análise e otimização de redes de elevação de petróleo com um único poço e com múltiplos poços com diferentes complexidades.
+introdução
+Na produção em águas profundas, em que a pressão do reservatório não é suficiente para garantir a elevação até a superfície com um retorno econômico viável, a necessidade de tecnologias de elevação artificial é mandatória. Uma técnica muito empregada e eficiente é o gas lift, em que a injeção de gás em determinada posição do poço reduz a densidade média da coluna de líquido e a diferença de pressão hidrostática. Duas metodologias são normalmente aplicadas: gas lift contínuo e gas lift intermitente. Como o enfoque deste trabalho é escoamento em regime estacionário, apenas o gas lift contínuo será considerado.
+A quantidade de gás injetado é uma variável operacional crítica, pois um baixo valor pode reduzir significativamente a produção de óleo, e um valor alto pode elevar os custos operacionais de compressão. Em muitos casos, é possível verificar que a produção de óleo atinge um valor máximo para determinada vazão de gás injetado.
+Muitos autores exploraram esse problema de otimização determinando as condições ótimas para a extração da máxima quantidade de óleo, considerando ou não restrições na disponibilidade de gás e usando diferentes formulações: programação linear (Fang e Lo, 1996), programação linear inteira mista (Kosmidis et al., 2005), programação não linear (Alarcon et al., 2002), programação dinâmica (Camponogara e Nakashima, 2006) e algoritmos genéticos (Ray e Sarker, 2007).
+Como descrito por Dutta-Roy e Kattapuram (1997), o problema de otimização de gas lift deve considerar os efeitos de interação entre poços quando estes compartilham a mesma linha de produção. Essa é uma séria limitação da maioria dos softwares comerciais
+de simulação de reservatórios onde a otimização do gas lift é realizada separadamente em cada poço. À exceção dos trabalhos de Dutta-Roy e Kattapuram (1997), Kosmidis et al. (2005) e Barragán-Hernandez et al. (2005), a literatura de otimização de gas lift é restrita à avaliação de cada poço isoladamente utilizando modelos hidrodinâmicos simplificados. Em outras palavras, os efeitos de rede normalmente encontrados em sistemas submarinos complexos, onde dois ou mais poços dividem a mesma linha de produção, não são levados em consideração.
+A ênfase deste trabalho é propor um problema de otimização acoplado a um modelo de redes de escoamento bifásico apto para a simulação de qualquer topologia de rede para determinar a alocação ótima de gás e projeto ótimo de sistemas de gas lift considerando como restrição o índice de produção e a disponibilidade de gás e tendo três tipos de função objetivo: (i) maxi-mização do óleo produzido, (ii) maximização do lucro (diferença de receita com produção de óleo e custos com gás combustível) e (iii) otimização de projeto de sistema de injeção de gás.
+modelagem da rede de escoamento
+definições
+Redes de escoamento são constituídas por um conjunto de elementos como tubulações, válvulas, bombas/ compressores e outros componentes interconectados para promover o transporte de fluido entre pontos de consumo e/ou produção.
+Um exemplo muito complexo dessas redes está presente nos sistemas offshore de produção de petróleo, onde gás, óleo e água escoam desde múltiplos poços através da linha de produção e do riser até a chegada à plataforma de produção. O problema de escoamento gás-líquido foi amplamente estudado nas décadas passadas, acompanhando o crescimento vertiginoso na demanda por soluções de engenharia para desafios tecnológicos cada vez mais complexos.
+Uma metodologia sistemática deve ser implementada com o objetivo de organizar o modelo devido à complexidade da interconexão dos elementos. Uma abordagem muito utilizada para simulação de redes é baseada na representação por meio de dígrafos (um dígrafo é um objeto muito presente no estudo da teoria de grafos). Corresponde a um conjunto de pontos (ou vértices) ligados por arestas direcionadas. Este trabalho utiliza a mesma notação apresentada por Costa et al. (1998), onde uma rede é composta por N nós (pontos de suprimento e/ou consumo e conexões) e S arestas (tubulações, bombas, etc.).
+O escoamento bifásico através da rede de escoamento pode ser representado pelo seguinte conjunto de 4N + 6S variáveis:
+•	variáveis nodais
+-	vetor de vazões mássicas externas de líquido wL (dimensão N x 1, onde wL/ é a vazão mássi-ca externa de líquido no /-ésimo nó, em kg/s);
+-	vetor de vazões mássicas externas de gás wG (dimensão N x 1, onde wG/ é a vazão mássica externa de gás no /-ésimo nó, em kg/s);
+-	vetor de pressões nodais PW (dimensão N x 1, onde PW é a pressão de estagnação no /-ésimo nó, em bar);
+-	vetor de hold-up's nodais de líquido HW (dimensão N x 1, onde HWi é o hold-up de líquido no i-ésimo nó).
+•	variáveis de arestas
+-	vetor de vazões mássicas internas de líquido q_L (dimensão S x 1, onde qLj é a vazão mássica interna de líquido na j-ésima aresta, em kg/s);
+-	vetor de vazões mássicas internas de gás qG (dimensão S x 1, onde qGj é a vazão mássica interna de gás na j-ésima aresta, em kg/s);
+-	vetor de pressões na entrada das arestas P. (dimensão S x 1, onde P^ é a pressão na extremidade de entrada da j-ésima aresta, em bar);
+-	vetor de pressões na saída das arestas PO (dimensão S x 1, onde POj é a pressão na extremidade de saída da j-ésima aresta, em bar);
+-	vetor de hold-up's de líquido na entrada das arestas H. (dimensão S x 1, onde H:j é o hold-up de líquido na entrada da j-ésima aresta);
+-	vetor de hold-up's de líquido na saída das arestas HO (dimensão S x 1, onde HOj é o hold-up de líquido na saída da j-ésima aresta).
+Para as variáveis de vazão mássica interna, um valor positivo indica que a direção de escoamento é a mesma adotada como orientação para o dígrafo, e um valor negativo indica que o escoamento tem direção oposta à orientação do dígrafo. Para as variáveis de vazão mássica externa, um valor positivo indica que fluido está entrando na rede, e um valor negativo indica que fluido está deixando a rede.
+Podem ser consideradas quatro aplicações para os nós: consumidores (valores negativos de vazão mássica externa), fornecedores (valores positivos de vazão mássica externa), conectores (valores nulos para vazão mássica externa) e pressão fixa (valor fixo para a pressão nodal).
+notação matricial
+Uma importante ferramenta para a organização matemática do modelo é a notação matricial baseada nas matrizes de incidência M, M1 e M2 com N linhas e S colunas, com as seguintes regras de formação:
+•	M possui o elemento da /-ésima linha com j-ésima coluna igual a +1 se a j-ésima aresta está conectada ao /-ésimo nó, e o nó está no Anal da linha;
+•	M possui o elemento da /-ésima linha com j-ésima coluna igual a -1 se a j-ésima aresta está conectada ao /-ésimo nó, e o nó está no início da linha;
+• M possui o elemento da i-ésima linha com j-ésima coluna igual a 0 se a j-ésima aresta não está conectada ao i-ésimo nó;
+• M1 possui elementos iguais a +1 nas posições onde os elementos de M são iguais a +1 e 0 para as outras posições;
+• M2 possui elementos iguais a +1 nas posições onde os elementos de M são iguais a -1 e 0 para as outras posições;
+A notação matemática adotada neste trabalho é apresentada no apêndice. Para organizar as variáveis da rede, um vetor coluna y com dimensão 4N + 6S é formado por meio da concatenação de todos os vetores de variáveis conforme a equação 1:
+(m), onde 9, D e e são funções da posição axial ao longo da aresta.
+A complexidade do escoamento bifásico implica um modelo não linear que é resolvido por um método ite-rativo a partir de uma estimativa inicial obtida por meio de um modelo linear simplificado.
+modelo não linear
+As equações do modelo estão divididas em seis classes:
+• balanços de massa nodais (2N equações)
+(2)
+(3)
+y=[_&lt;hT
+HwT
+(1)
+• balanços de momento nas arestas, resultantes da integração do gradiente de pressão ao longo do comprimento das arestas (S equações):
+Com o intuito de representar de maneira simplificada o fenômeno de escoamento bifásico sem a necessidade de resolver balanços de energia, algumas premissas são adotadas: (i) fase líquida é incompres-
+sível e (ii) fase gás com massa específica descrita por uma relação politrópica. Para escoamento isotérmico, o coeficiente politrópico do gás adotado deverá ser igual a 1. Para escoamentos não isotérmicos, o coeficiente politrópico do gás deve ser estimado para cada caso.
+Os parâmetros dos modelos são: aceleração gra-vitacional g (m/s2), massa específica do líquido pL (kg/ m3), massa específica do gás na pressão de referência pG0 (kg/m3), coeficiente politrópico do gás ys pressão de referência p0 (bar), viscosidade do líquido e do gás, p, e pG (Pa-s), tensão interfacial o (Pa-m), matriz de incidência M- matriz de especificação E, vetor de especificações e, vetor de elevações nodais z (m), vetor de inclinações das arestas 9 (rad), vetor de diâmetros das arestas D (m), vetor de comprimentos das arestas L (m), vetor de comprimentos equivalentes das arestas Leq (m) e vetor de rugosidades das arestas e
+(4)
+com:
+A jp
+AP = 10 * 5 [—&lt;*
+í dx
+(5)
+0 z/P
+4 . C . = 1	(6)
+’ I,
+onde o gradiente de pressão J é descrito em Pa e assume valores negativos quando o escoamento ocorre no sentido da i-ésima aresta e valores positivos quando o escoamento é no sentido contrário.
+Foi verificado um aumento significativo no desempenho dos métodos numéricos empregados quando o gradiente de pressão ao longo da aresta é obtido como uma média entre o gradiente de pressão integrado ao longo das duas direções como representado na equação 4. Essa abordagem garante que os balanços de momento nas arestas possuam uma sensibilidade similar para a pressão tanto na saída como na entrada da aresta. A determinação
+de AP;í de acordo com a equação 5 requer a integração do gradiente de pressão desde a entrada (x = 0), onde a pressão é definida como sendo igual a até a saída (x = L). A determinação de AP2Í de acordo com a equação 6 requer a integração do gradiente de pressão desde a saída (x = L), onde a pressão é definida como sendo igual a Poi até a entrada (x = 0).
+•	balanço de momento nos nós (2S equações):
+ÁÇ ~	+ —IJ X Ql + —G.I X = 2	(7)
+(8)
+onde os vetores hLI e hGI estão relacionados à energia cinética do líquido e do gás na entrada das arestas, e os hL0 e hG0 estão relacionados à energia cinética do líquido e do gás na saída das arestas, sendo calculados conforme a equação 9.
+Õ ; =]&amp;amp;’■■ ■■	.. •	■ . &gt;	(9)
+/elCOJ
+onde o coeficiente 10-5 tem como propósito garantir que os elementos dos termos hijx q.: tenham dimensão compatível com os vetores de pressão Rw, e Po (bar).
+Os vetores Ao e A, correspondem às áreas das seções transversais nas extremidades finais e iniciais das arestas, vL0 e vGO correspondem às velocidades de líquido e de gás nas extremidades finais das arestas, e vLI e vGI correspondem às velocidades de líquido e de gás nas extremidades iniciais das arestas.
+•	determinação de hold-up nas extremidades (2S equações):
+//í-//L(0) = 0	(10)
+//í1-//l(a) = o	(11)
+onde Hl corresponde ao hold-up de líquido e é determinado por intermédio do modelo de escoamento multifásico.
+• modelo nodal para hold-up (S equações):
+-£^-£,^ = 0 (12)
+onde RW é uma matriz que identifica quais arestas saem de cada nó (considerando a direção de escoamento da fase líquida, R é uma matriz diagonal que identifica quais arestas possuem vazões positivas de líquido, e Ro é uma matriz diagonal que identifica quais arestas possuem vazões negativas de líquido, descritas, respectivamente, nas equações 13, 14 e15.
+(13)
+• Especificações (2N equações)
+(14)
+(15)
+[yy -e = Q	(16)
+Como o modelo não linear da rede de escoamento bifásico é dotado de 4N + 6S variáveis e 2N + 6S equações oriundas de balanços e/ou modelos de escoamento (2N balanços de massa nodais, S balanços de momento nas arestas, 2S balanços de momento nodais, 2S modelos de hold-up nas arestas e S modelos de hold-up nodais), são requeridas 2N equações de especificação. Com o objetivo de garantir a viabilidade da solução para o modelo proposto, apenas variáveis nodais serão especificadas (por exemplo, pressões e/ou vazões mássicas externas) e pelo menos uma especificação de pressão deve ser definida.
+As especificações do modelo são representadas de acordo com o vetor de especificações e contendo os valores das variáveis especificadas por meio de uma matriz de especificações E, onde o elemento da /-ésima linha e da
+j-ésima coluna é igual a um se a j-ésima variável estiver especificada na i-ésima equação, do contrário é igual a zero.
+É importante reforçar que esse modelo pode ser aplicado na simulação de redes bifásicas cíclicas e não cíclicas com qualquer topologia, inclusive em redes dotadas de nós divergentes (onde duas ou mais arestas deixam o mesmo nó), não sendo encontrado na literatura modelo bifásico de redes de escoamento que possua característica similar.
+modelo linear
+O objetivo desse modelo é gerar uma estimativa inicial para o método iterativo. Esse modelo considera que:
+(i)	uma fase escoa sem a interferência da outra fase, (ii) fases são incompressíveis, (iii) escoamento laminar das fases líquida e gás, (iv) hold-up constante ao longo de cada linha e (v) hold-up's em cada nó são conhecidos e especificados. Com essas simplificações, é possível calcular o gradiente de pressão da mistura como sendo uma combinação linear de cada fase, gerando um sistema linear de equações.
+Mediante estimativas para o vetor de hold-up nos nós é possível determinar as frações de áreas nas arestas H0, segundo a equação 17 com a matriz R definida na equação 18.
+LLn — LLh.ii	(17)
+/?u =0.5(r/As(AV)-/V/)	(18)
+As equações do modelo estão divididas em quatro classes:
+• balanços de massa nodais (2N equações)
+onde as matrizes de coeficientes para determinação da perda de carga FL e FG para regime laminar são dadas pelas equações 22 e 23 e o vetor de termos fonte gra-vitacionais, d, é dado pela equação 24.
+=	—-—— diag (H_o) diag(L} diag 1 (D)
+(22)
+=/.
+d = 10’5 g	(H_o) + diag
+diag(\ -Hz
+(24)
+•	balanço de momento nos nós (2S equações), desconsiderando os termos de velocidade das equações 7 e 8:
+A£l'/^-/^_ = 0	(25)
+AA'/£-/fi=0	(26)
+•	igualdade entre os hold-up's nas extremidades (S equações):
+//^-//£1 = 0	(27)
+•	modelo nodal para hold-up (S equações):
+A'//^-//í = 0	(28)
+•	especificações (N + S equações)
+£, ç - c = Ç	(29)
+Mg, + wr - 0
+= 0
+(19)
+(20)
+• balanços de momento nas arestas considerando regime laminar (S equações):
+/l-/L-A;r7L-/í(,^-ç/ = 0	(21)
+• especificações de hold-up's nodais (N equações)
+=o	(30)
+O modelo simplificado pode ser expresso usando-se uma notação matricial conforme apresentado na equação 31:
+y = A 1 c	(31)
+Onde y é o vetor de variáveis do sistema de equações com dimensão 4N + 6S e estrutura descrita na equação 1, A é uma matriz de coeficientes de dimensão (4N + 6S) x (4N + 6S) composta pela matriz de incidência M, pela matriz de especificações E0, pela matriz identidade I_NN com dimensão N x N, pela matriz identidade ISS com dimensão S x S, pela matriz de zeros 0N com dimensão N x N, pela matriz de zeros 0SS com dimensão S x S, pela matriz de zeros QNS com dimensão N x S e pela matriz de zeros 0S com dimensão S x N, conforme mostrado na equação 32:
+(iii)	ter as vazões internas de uma das fases amarradas em cada nó divergente (que possui mais de uma aresta saindo do nó).
+determinação do gradiente de pressão
+Para a determinação dos termos de gradiente de pressão nas arestas, presentes nas equações 5 e 6, é necessário aplicar um balanço de momento a um volume de controle, conforme representado na figura 1. O modelo estacionário bifásico baseado em um balanço de momento para a mistura pode ser escrito conforme a equação 34:
+,dP	dvL	dvG	. , .
+A-p + ^-T + (lfG — + ÂPsgSln^) + dx	dx	dx
+=	=NS	=NS	=NS	=NS	=NS	=NN	=NN	=NN	=NN
+0	M	0	0	0	0	0	0	0	I
+=NS	=	=NS	=NS	=JV5	=NS	=NN	=NN	=NN	=NN
+-F	-F	I	-I	0	0	0	0	0	0
+=L	=G	=ss	=ss			=SN	=SN	=SN	=SN
+0	0	0	-I	0	0		0	0	0
+=SS	=SS	=ss	=ss	=.w	=sy		—SN	=SN	=SN
+0	0	-I	0	0	0		0	0	0
+=ss	=.S’.S'	=ss	=ss	=£S			=SN	=SN	=SN
+0	0	0	0	I	-I	0	0	0	0
+=ss	=ss	=ss	=ss	=ss	=.w	=SN	=SN	=SN	=SN
+0	0	0	0	-I	0	0	rt	0	0
+=ss	=.S'.S’	=ss	=ss	=ss	=ss	=SN		=SN	=SN
+0	0	0	0	0	0	0	I	0	0
+L —ns	=NS	—NS	—NS	—NS	-NS	-NN	—NN	=SN	—SN J
+(32)
+O vetor c possui dimensão (4N + 6S) x 1 contendo vetores de zeros 0N com dimensão N x 1, vetores de zeros 0S com dimensão S x 1, a parte do vetor d com dimensão S x 1, o vetor de especificação e0 com dimensão (N + S) x 1 e o vetor de especificações de hold-up's nodais HW0 conforme mostrado na equação 33:
+(33)
+(34)
+Figura 1 - Volume de controle para o balanço de momento.
+Figure 1 - Volume control for the momentum balance.
+Cabe ressaltar que o modelo linear requer 2N + S especificações, enquanto o modelo não linear requer apenas 2N equações. A escolha das especificações fisicamente viáveis para o modelo linear deve ser feita de modo a: (i) ter todos os hold-up's nodais especificados,
+(ii)	ter pelo menos uma especificação de pressão nodal,
+onde D é o diâmetro da tubulação em m, A é a área da seção transversal do tubo em m2, L é o comprimento do tubo em m, Leq é o comprimento equivalente de acidentes e acessórios de tubulação em m, P é a pressão no tubo em Pa, qL e qG são as vazões mássicas em kg/s de líquido e gás, respectivamente, vL e vG são velocidades
+em m/s de líquido e gás, respectivamente, 9 é o ângulo de inclinação em rad, ps é a massa específica da mistura em kg/m3 e t é a tensão de cisalhamento em Pa.
+Reorganizando a equação 34, é possível determinar o gradiente de pressão por meio da seguinte equação:
+(35)
+Os termos a, e ar são
+L	G
+compressibilidade do gás:
+coeficientes relacionados à
+(36)
+onde Hl e Hg são hold-up's em termos de fração de área de líquido e gás, respectivamente, vsL e vsG são velocidades superficiais em m/s de líquido e de gás, respectivamente, DP é a derivada da massa específica do gás pG em relação à pressão P, e DvsG é a derivada da fração de área de líquido em relação à velocidade superficial de gás.
+Para efeito de simplificação, nesse trabalho DvsG é calculado através da diferenciação numérica via diferenças centrais, conforme:
+(37)
+A fase gás é descrita por uma relação politrópica onde a massa específica do gás é função da pressão como descrito na equação 38 e a derivada da massa específica do gás em relação à pressão conforme relação descrita na equação 39.
+(38)
+(39) onde pG0 é a massa específica de referência do gás em kg/m3 determinada a uma pressão de referência P0 em Pa, e yg é o coeficiente politrópico.
+A fase líquida é considerada incompressível, e a massa específica (pL) e a viscosidade (pL) da fase líquida devem ser especificadas para o óleo vivo considerando uma solubilidade média de gás no líquido.
+Uma relação de fechamento que permite a determinação de Tm ps e DvsG composta unicamente por equações fenomenológicas e válida para uma grande faixa de vazões das fases é ainda um tema em aberto, principalmente devido à complexidade dos fenômenos de interação e troca de momento entre as fases. Alguns autores apresentam modelos mecanísticos válidos para condições restritas, mas que levam em consideração certos aspectos fenomenológicos. Outro grupo de autores desenvolveu correlações bifásicas válidas para diferentes condições baseadas em dados experimentais obtidos por plantas piloto.
+Neste trabalho, o modelo Beggs e Brill (1973) é adotado porque esta é uma das poucas correlações da literatura aberta que é capaz de descrever com precisão apropriada o comportamento do escoamento bifásico para todos os padrões de escoamento e inclinações de tubulações.
+A correlação de Beggs e Brill foi desenvolvida a partir de dados experimentais obtidos em uma instalação de teste dotada de seções de tubulações acrílicas de 1-1,5 polegada e 90 pés de comprimento com inclinações ajustáveis. Apesar dos valores restritos de diâmetro e de comprimento de tubulação, esta correlação é amplamente utilizada em cálculos preliminares e projeto conceitual, principalmente pela sua fácil representação matemática e por ser válida para todos os padrões de escoamento (distribuído, intermitente, transição e segregado).
+As premissas admitidas quando se utiliza o modelo empírico de Beggs e Brill são: (i) os fluidos são newtonia-nos e com viscosidade constante, (ii) ausência de transferência de massa e calor entre as fases, (iii) ausência de reações químicas, (iv) a solubilidade da fase gás na fase líquida é constante.
+otimização do gas lift
+formulação do problema
+Conforme descrito anteriormente, este artigo propõe um arcabouço de otimização para determinar as condições operacionais ótimas e/ou o projeto ótimo do sistema de gas lift em redes de escoamento bifásico para produção de petróleo. Essa otimização pode ser descrita pela equação 40:
+Maximizar Q
+weü m
+LB &amp;lt;u&amp;lt;UB
+subjected to: &amp;lt;[—well —downhole )-diag~' (PT)Qr =0
+-P,
+QTGl&lt;ClG,mae
+(40)
+onde Oy é a função objetivo do tipo j, LB é o vetor de limites inferiores, UB é o vetor de limites superiores, Pwell é o vetor de pressões do reservatório em bar, P. . , é o vetor de pressões na base do poço (downhole) em bar, PI é o vetor de índices de produção em (kg/s)/bar, qG max é o valor máximo de vazão mássica de gás em kg/s disponível para injeção em todos os poços, u é o vetor das m variáveis de decisão composto por três tipos de variáveis:
+•	vazão mássica de gás injetado denotada pelo vetor QG (onde QGi corresponde à vazão mássica de gás em kg/s injetada no i-ésimo poço);
+•	vazão mássica de óleo produzido denotada pelo vetor Ql (onde QLicorresponde à vazão mássica de óleo em kg/s produzida no i-ésimo poço);
+•	diâmetros das arestas de gás denotadas pelo vetor Dg (onde DGi corresponde ao diâmetro em polegadas das arestas que transportam gás da plataforma até o anular do i-ésimo poço).
+Neste trabalho, não se considerou o diâmetro das linhas de produção como variável de decisão, pela escassez de informações na literatura aberta sobre os custos relacionados à aquisição e instalação das linhas de produção em função do diâmetro destas. Deve-se
+destacar que essa variável é de grande importância no projeto ótimo do sistema de elevação de petróleo. Caso essas informações de custo estejam disponíveis, a metodologia pode ser alterada com pequeno esforço para incorporar essa variável de decisão ao problema de otimização proposto.
+É importante sublinhar que esse problema de otimização requer a simulação da rede de escoamento bifásico como um todo, ou seja, além da simulação das linhas de gás, é necessário simular os trechos de escoamento exclusivamente de líquido e também das linhas em escoamento bifásico.
+A função objetivo Qj pode ser formada por três termos em milhões de dólares por ano correspondentes à receita (R, nesse caso relativo à produção de petróleo), custo de utilidades por ano (AGC, nesse caso apenas gás combustível é considerado) e custo total de capital por ano (Atcc).
+Então, três diferentes tipos de função objetivo podem ser obtidos:
+•	produção máxima (função objetivo O;): determinação da condição operacional ótima que garante a máxima produção de óleo para um determinado valor de índice de produção considerando limitações na disponibilidade de gás.
+Q, = P	(41)
+•	lucro máximo (função objetivo 02): determinação da vazão de gás injetado que garante lucro máximo considerando o custo do gás combustível e o preço de óleo para um determinado valor de índice de produção.
+O;=A-4,(	(42)
+•	projeto ótimo (função objetivo 03): determinação da vazão de gás injetado e dos diâmetros de tubulação de gás que garantem um projeto ótimo do sistema de gas lift contínuo, considerando o custo de capital com compressor, linhas de gás, custos de instalação e manutenção, custos com gás combustível e preço do petróleo.
+D, = R -/1G&amp;lt;- rl/l (	(43)
+O custo inside battery limits, ISBL, determinado pelos custos instalados com compressor, turbina a gás e linhas de gás, é calculado de acordo com a equação 44:
+JSBL = Cc(44) onde CC é o custo instalado de compressor, CT é o custo instalado da turbina, e CP é o custo instalado das linhas de gás (em milhões de dólares).
+Os custos outside battery limits, OSBL, podem ser estimados para processos químicos conforme descrito por Douglas (1988) como sendo aproximadamente iguais a três vezes o ISBL.
+O custo total de capital por ano pode ser calculado via equação 45:
+/1,( ( = CCI- OSlil.	(45)
+onde CCF pode ser estimado como sendo 0,333 ano-1 (Douglas, 1988), considerando uma taxa de mínima atra-tividade de 15% e uma amortização de 12 anos.
+estimativa de custo do compressor
+Considerando um compressor centrífugo, o custo apresentado por Couper et al. (2005) pode ser descrito conforme a equação 46:
+C, = 14.3-10	(46)
+onde wc é a potência da máquina em kW.
+O trabalho de compressão é calculado considerando gás ideal em uma máquina composta por n estágios de compressão usando a equação 47, descrita em Perry e Green (1997):
+(47)
+onde Tn é a temperatura do gás na sucção do compressor em K, PN é a pressão do gás na sucção do compressor em bar, PG é o vetor de pressões nas entradas das linhas de
+gás em bar, QG é o vetor de gás injetado em kg/s, MW é o peso molecular do gás em kg/kmol, n é o número de estágios de compressão, n é a eficiência de compressão, R é a constante universal dos gases (8.314 kJ/kmol/K), e y é o coeficiente politrópico do gás combustível (adimensional).
+estimativa do custo de capital
+da turbina
+Considerando o acionamento por turbina a gás, o custo pode ser estimado de acordo com Couper et al. (2005), conforme descrito na equação 48:
+C,	= 7.19-10 4 h’("si	(48)
+onde wC é a potência da máquina em kW.
+estimativa do custo de capital das linhas de gás
+O custo de capital relacionado à aquisição e à instalação das linhas de gás para o transporte do gás injetado desde a descarga do compressor até o poço pode ser estimado pela equação 49, conforme apresentado por McCoy (2008) para a região sudeste dos EUA.
+(49)
+onde CP é o custo instalado em milhões de dólares, LG,i é o comprimento das linhas de gás desde a plataforma até o i-ésimo poço em m, e DG,i é o diâmetro das linhas de gás do i-ésimo poço em polegadas.
+receita e custos operacionais
+O custo variável com gás combustível, considerando uma eficiência global (turbina a gás e compressor), pode ser determinado pela equação 50:
+4,(. =8.45-10	(50 )
+onde Agc é o custo com combustível em milhões de dólares por ano, wC é a potência do compressor em kW, e cGC é o custo do gás em dólares/Nm3.
+A receita gerada pela produção de petróleo é determinada pela equação 51, dada por:
+(g/í)
+!■■■?■.	-	(51)
+Plo
+onde R é o valor de receita em milhões de dólares por ano, pL0 é a massa específica de óleo nas condições padrão em kg/m3, e cL é o preço do óleo em dólares/barril.
+métodos numéricos
+Os métodos numéricos necessários para a solução do modelo proposto devem atender às seguintes tarefas: (i) solução do sistema de equações algébricas lineares, (ii) solução do sistema de equações diferenciais ordinárias e (iii) solução do sistema de equações algébricas não lineares. Para a solução do sistema de equações diferenciais utilizou-se um método do tipo Runge-Kutta de ordem 3 a 4. Para a solução do sistema não linear programou-se uma rotina baseada no método de Newton-Raphson com Jaco-biana numérica, onde o critério de convergência adotado considerava a norma do vetor de resíduo menor que 10-10.
+O método de otimização empregado é baseado no algoritmo de programação quadrática sequencial (SQP). Restrições nas variáveis de decisão são impostas de modo a evitar especificações inviáveis: (i) diâmetro mínimo de 1 polegada, (ii) diâmetro máximo de 4 polegadas, (iii) vazão mínima de injeção de gás de 0 kg/s e (iv) vazão mínima de produção de óleo de 0 kg/s.
+Todo o desenvolvimento computacional foi realizado através da linguagem de computação científica MATLAB® (The Mathworks, Inc.).
+resultados
+Três estudos de casos são apresentados: (i) o primeiro caso analisa um poço de produção offshore com sistema de gas lift; como resultado, é possível determinar o comportamento da produção de petróleo em função da vazão de gás injetado para diferentes pressões na base do poço, (ii) o segundo exemplo analisa o comportamento de um sistema de produção offshore dotado de múltiplos poços formando uma rede com topologia do tipo árvore e (iii) o terceiro caso simula o comportamento de uma rede submarina complexa dotada de ciclos. As propriedades dos fluidos considerados nessas simulações estão resumidas na tabela 1.
+caso 1 - poço offshore
+Nesta seção, o modelo apresentado será aplicado na avaliação do comportamento de uma rede submarina para produção de petróleo composta por um poço conectado a uma linha de produção com geometria descrita na figura 2. A topologia dessa rede é composta por 10 vértices e 9 arestas de acordo com o dígrafo apresentado na figura 3, onde o quarto nó corresponde ao poço. O poço é representado no dígrafo como um quadrado e contém 6 nós e 5 arestas, conforme mostrado na figura 4.
+As arestas da rede de escoamento são linha de produção (1 e 2), riser (3), do poço à linha de produção (4), e as seguintes arestas (onde n é igual a 5): poço (n e n + 1), anular de gás (n + 2) e linhas de fornecimento de
+Fluido	Densidade do Líquido (kg/m3)	Densidade de Ref. do Gás (kg/m3)	Pressão de Referência (bar)	Coeficiente Politrópico do Gás (-)	Viscosidade (Pa.s)	Tensão Interfacial (Pa«m)
+Óleo	850.0	-	-	-	1.2 10-2	0.071
+Gás	-	80.0	100	1.25	8.0 10-5	
+Tabela 1 - Propriedades dos fluidos.
+Table 1 - Properties of the fluids.
+Figura 2 - Caso 1 - Projeção isométrica simplificada.
+Figure 2 - Case 1 - Simple isometric projection.
+Figura 4 - Dígrafo do poço.
+Figure 4 - Well digraph.
+Comprimento (m)	0	1.500	2.505
+Cota (m)	-1.400	-1.400	-1.500
+Coordenada x (m)	0	0	0
+Coordenada y (m)	1.500	3.000	4.000
+Tabela 3 - Caso 1 - Perfil da aresta 2.
+Table 3 - Case 1 - Profile of the edge variable 2.
+Aresta	Tipo	Diâmetro (in)	Comprimento (m)	Inclinação (°)	Rugosidade (mm)	
+1	Linha de produção	6	1.500	0°	100	
+2	Linha de produção	6	4.005	Ver tabela 3	100	Tabela 2 - Caso
+3	Riser	6	1.500	90°	100	1 - Descrição das
+4	Poço à linha de	5	500	0°	100 100	arestas da rede.
+	produção					Table 2 - Case
+5	Poço	5	1.500	90°	100	1 - Description of
+6	Poço	5	300	90°	100	the network edge
+7	Anular de gás	5a	1.500	-90°	0	variables.
+8	Linha de gás	2	4.505	Ver tabela 3	0	
+9	Linha de gás	2	1.515	0°	0	
+a Diâmetro hidráulico
+Comprimento (m)	0	1.005	2.505	4.005	4.505	
+Cota (m)	-1.495	-1.395	-1.395	-1.395	-1.400	Tabela 4 - Caso 1 - Perfil da aresta 8.
+Coordenada x (m)	0	0	0	0	400	Table 4 - Case 1 - Profile of the edge
+Coordenada y (m)	4.000	3.000	1.500	0	-300	variable 8.
+gás (n + 3 e n + 4). Os parâmetros usados para descrever essas arestas são mostrados nas tabelas de 2 a 4.
+A rede tem um ponto de entrada de líquido, representado pelo nó 7 na cota inferior do poço, e um ponto de entrada de gás na plataforma, representado pelo nó 10. O nó 4 representa a chegada do riser de óleo à plataforma (antes da válvula choke) e está especificado como um ponto de pressão fixa. Os outros nós correspondem a pontos de intercone-xão. A descrição desses nós é apresentada na tabela 5. As especificações nodais da rede estão detalhadas na tabela 6.
+O modelo bifásico para essa rede consiste em 94 equações: 10 balanços de massa de líquido nos vértices, 10 balanços de massa de gás nos vértices, 9 balanços de momento nas arestas, 18 balanços de momento nos nós, 18 equações de hold-up nas extremidades das arestas, 9 equações de transferência de hold-up de vértices e 20 especificações.
+simulação
+Variando-se a vazão mássica de gás injetado e a vazão de óleo produzido, obtém-se o gráfico de curvas de nível para pressão de downhole mostrado na figura 5. Verifica-se que, para uma pressão no downhole de 220 bar, para produzir 10,0 kg/s de óleo é necessário injetar uma vazão de gás de 2,7 kg/s, e a produção máxima é de 10,7 kg/s para uma injeção de 1,8 kg/s.
+A análise desses resultados confirma que o modelo é capaz de prever comportamentos normalmente verificados em operações de elevação de petróleo:
+• considerando um valor fixo de pressão na base do poço, um aumento na vazão de gás injetado é capaz de aumentar a vazão de líquido;
+Pressão na base do poço (bar)
+0,5	1	1,5	2	2,5	3	3,5	4
+Gás injetado (kg/s)
+Figura 5 - Caso 1 - Curvas de nível para pressão na base do poço (downhole).
+Figure 5 - Case 1 - Pressure level curves at the well bottom (downhole).
+Figura 7 - Caso 1 - Curvas de nível da pressão na entrada da linha de gás (linha de 3 polegadas).
+Figure 7 - Case 1 - Pressure level curves in the gas line inlet (3 inch pipe).
+Pressão do gás na plataforma (bar)
+0,5	1	1,5	2	2,5	3	3,5	4
+Gás injetado (kg/s)
+Figura 6 - Caso 1 - Curvas de nível da pressão na entrada da linha de gás (linha de 2 polegadas).
+Figure 6 - Case 1 - Pressure level curves in the gas line inlet (2 inch pipe).
+Outra importante variável a ser considerada é a pressão na descarga do compressor ou a pressão na entrada da linha de gás (nó 10). Os resultados para essa variável são apresentados na figura 6. É possível observar valores elevados de pressão para altas vazões de gás. Para comparação, a simulação considerando as linhas de gás (arestas 8 e 9) com diâmetro de 3 polegadas é apresentada na figura 7.
+máxima produção
+A função objetivo O1 é maximizada considerando diferentes pressões de downhole variando de 180 bar a 260 bar com uma estimativa inicial de 10 kg/s de óleo produzido e 2 kg/s de gás injetado. Para esses cenários, o índice de produção é igual a infinito, que corresponde à pressão de downhole igual à pressão do reservatório. As soluções obtidas estão resumidas nas figuras 8 e 9. É verificado que a vazão ótima de gás injetado varia de 1,55 kg/s a 1,85 kg/s.
+• uma vazão máxima de líquido é obtida para determinada vazão crítica de gás. Se a vazão de gás é elevada a valores superiores a esse valor crítico, uma redução na vazão de líquido é observada.
+máxima produção considerando
+o índice de produção
+A função objetivo O1 é maximizada considerando uma pressão de reservatório de 220 bar, diferentes índices de
+Figura 8 - Caso 1 - Máxima produção para diferentes pressões de downhole.
+Figure 8 - Case 1 - Maximum production for different downhole pressures.
+Locus ds máxima produção
+0,5	1	1,5	2	2,5	3	3,5	4
+Gás injetado (kg/s)
+Figura 9 - Caso 1 - Localização dos pontos de máximo para diferentes pressões de downhole.
+Figure 9 - Case 1 - Location of the maximum points for different downhole pressures.
+produção variando de 0,5-10 (kg/s)/bar com uma estimativa inicial de 10 kg/s de óleo produzido e 2 kg/s de gás injetado. As soluções obtidas estão resumidas na figura 10.
+Figura 10 - Caso 1 - Máxima produção para diferentes índices de produção.
+Figure 10 - Case 1 - Maximum production for different production rates.
+Um comportamento bastante típico para poços de petróleo é a redução do índice de produção com o passar dos anos de exploração. Conforme apresentado na figura 10, a vazão de gás injetado deve ser ajustada de modo a garantir a produção máxima ao longo do tempo de vida do poço.
+máximo lucro
+A função objetivo O2 é minimizada para quatro diferentes cenários de razões entre os preços de óleo (cL) e de gás (cGC). Com os resultados apresentados na figura 11 e detalhados na tabela 7, é possível determinar as
+condições operacionais de acordo com o preço do petróleo em comparação ao preço do gás combustível.
+Figura 11 - Caso 1 - Máximo lucro para diferentes cenários de preços de óleo.
+Analisando-se os resultados da tabela 7, verifica-se uma redução da produção de óleo quando há baixa no preço do petróleo. No caso proposto, o impacto da relação entre o custo de gás e o preço do petróleo é baixo devido ao pequeno custo do gás se comparado ao retorno obtido pela produção de óleo.
+caso 2 - rede tipo árvore com múltiplos poços offshore
+Nesse caso, será feita a aplicação do modelo proposto em uma rede que contém quatro poços de petróleo compartilhando uma linha de produção única em uma topologia do tipo árvore, conforme mostrado na figura 12. Essa rede é composta por 28 nós e 27 tubulações de acordo com o dígrafo mostrado na figura 13 (onde os nós 5, 11, 17 e 23 correspondem a poços e têm estrutura conforme representado na figura 4).
+As arestas da rede de escoamento são: linhas de produção (1 e 2), riser (3), do poço à linha de produção (n - 1), poço (n e n + 1), anular de gás (n + 2) e linhas de gás (n + 3 e n + 4), onde n é igual a 5, 11, 17 ou 23 (ver figura 4). Os parâmetros usados para descrever essas arestas estão mostrados nas tabelas de 8 a 11.
+Essa rede possui quatro pontos de entrada de líquido, representados pelos nós 7, 13, 19 e 25 na base dos poços, e quatro pontos de entrada de gás na plataforma, representados pelos nós 10, 16, 22 e 28. O nó 4 representa a saída do riser (antes da válvula de choke) e é descrito como um ponto de pressão fixa. Os outros nós são pontos de interconexão das arestas. A descrição desses nós está detalhada na tabela 12. As especificações nodais da rede de escoamento estão mostradas na tabela 13.
+Figure 11 - Case 1 - Maximum profits for different oil price scenarios.
+Figura 12 - Caso 2 - Projeção isométrica simplificada.
+Figure 12 - Case 2 - Simple isometric projection.
+Cenário	1	2	3	Máx
+Razão de custo/preço 103((USD / Nm3)/(USD / barril))	14,74	7.37	3.69	0
+Custo do gás (USD / Nm3)	0,1886	0,1886	0,1886	0
+Preço do óleo (USD / barril)	12,79	25,58	51,15	51,15
+Pressão do reservatório (bar)	220	220	220	220
+Índice de produção ((kg/s)/bar)	1,0	1,0	1,0	1,0
+Óleo produzido (kg/s)	9.571	9.591	9.596	9.598
+Gás injetado (kg/s)	1.658	1.730	1.770	1.812
+Pressão no downhole (bar)	210,43	210,41	210,40	210,40
+Potência do compressor (kW)	1.002,7	1.051,8	1.078,9	1.108,1
+Pressão de descarga (bar)	269,18	274,03	276,74	279,68
+Lucro (106 USD/ano)	26,96	55,56	112,82	114,56
+Tabela 7 - Caso 1 - Resultados para busca do máximo lucro.
+Table 7 - Case 1 - Results of the search for maximum profits.
+Aresta	Tipo	Diâmetro (in)	Comprimento (m)	Inclinação (°)	Rugosidade
+1	Linha de produção	6	1.500	0°	100
+2	Linha de produção	6	4.005	Ver tabela 9	100
+3	Riser	6	1.500	90°	100
+(n-1)	Poço à linha de produção	5	500	0°	100
+(n)	Poço	5	1.500	90°	100
+(n+1)	Poço	5	300	90°	100
+(n+2)	Anular de gás	5a	1.500	-90°	100
+(n+3)	Linha de gás	2	4.505	Ver tabela 10 e tabela 11	100
+(n+4)	Linha de gás	2	1.515	0°	100
+a Diâmetro hidráulico
+Tabela 8 - Caso 2 - Descrição das arestas.
+Table 8 - Case 2 - Description of the edge variables.
+	Figura 13 - Caso 2
+©	- Dígrafo da rede de
+1 2	escoamento.
+Q		►©	
+4/	\1O	16X	\22	'	Figure 13 - Case 2 -
+E ÈJ 0 E	Digraph of the flow
+O ô ô o	pipeline network.
+Comprimento (m)	0	1500	2505
+Cota (m)	-1.400	-1.400	-1.500
+Coordenada x (m)	0	0	0
+Coordenada y (m)	1.500	3.000	4.000
+Tabela 9 - Caso 2 - Perfil da linha 2.
+Table 9 - Case 2 - Profile of line 2.
+Comprimento (m)	0	1.005	2.505	4.005	4.505	Tabela 10 - Caso 2 - Perfis das arestas 8 e 14.
+Cota (m)	-1.495	-1.395	-1.395	-1.395	-1.400	
+Coordenada x (m)	0	0	0	0	a	Table 10 - Case 2 - Profiles of the edge variables 8 and 14.
+Coordenada y (m)	4.000	3.000	1.500	0	a	
+a Em função das coordenadas da cabeça do poço
+Comprimento (m)	0	1.005	2.505	4.005	
+Cota (m)	-1.495	-1.395	-1.395	-1.395	Tabela 11 - Caso 2 - Perfis das arestas 20 e 26.
+Coordenada x (m)	0	0	0	a	Table 11 - Case 2 - Profiles of the edge variables 20 and 26.
+Coordenada y (m)	4.000	3.000	1.500	a	
+a Em função das coordenadas da cabeça do poço
+Nó	Descrição	X (m)	Y (m)	Cota (m)
+1	Entrada da linha de produção	0	0	-1.400
+2	Interconexão da linha de produção	0	1.500	-1.400
+3	Conexão entre linha de produção e riser	0	4.000	-1.500
+4	Saída do riser	0	4.000	0
+5	Cabeça do poço 1	400	-300	-1.400
+11	Cabeça do poço 2	400	300	-1.400
+17	Cabeça do poço 3	400	1.200	-1.400
+23	Cabeça do poço 4	400	1.800	-1.400
+(n+1)	Conexão entre anular de gás e poço	a	a	-2.900
+(n+2)	Base do poço (downhole)	a	a	-3.200
+(n+3)	Entrada do anular de gás	a	a	-1.400
+(n+4)	Interconexão das linhas de gás	0	4.000	-1.495
+(n+5)	Entrada de gás	0	4.000	20
+Em função das coordenadas Tabela 12 - Caso 2 - Descrição dos nós. da cabeça do poço
+Table 12 - Case 2 - Description of the nodes.
+O modelo bifásico da rede consiste em 274 equações: 28 balanços de massa da fase líquida nos vértices, 28 balanços de massa da fase gás nos vértices, 27 balanços de momento nas arestas, 54 balanços de momento nos nós, 54 equações de hold-up nas extremidades das arestas, 27 equações de transferência de hold-up de vértices e 56 especificações.
+simulação
+Os resultados das simulações variando-se as vazões de gás injetado e de óleo produzido para cada poço (para uma mesma vazão de óleo e gás em cada poço) estão mostrados nas figuras 14 e 15.
+máxima produção para diferentes
+pressões de reservatório
+A função objetivo Q, é maximizada considerando uma estimativa inicial de 3 kg/s de óleo produzido e 1 kg/s de gás injetado em cada poço. Dois cenários são analisados variando-se a pressão de reservatório. As soluções obtidas são descritas nas tabelas 14 e 15.
+Nó	Tipo	Especificação 1	Especificação 2
+1, 2, 3, (n), (n+1), (n+3) e (n+4)	Conexão	wLi = 0 kg/s	ws = 0 kg/s
+4	Pressão fixa	= 15 bar	= 1.0
+(n+2)	Entrada de óleo	wt;: produção do n-ésimo poço	wGi = 0 kg/s
+(n+5)	Entrada de gás	ws;: injeção no n-ésimo poço	wLi = 0 kg/s
+Tabela 13 - Caso 2 - Especificações nodais.
+Table 13 - Case 2 - Nodal specifications.
+Analisando-se os resultados da otimização do sistema com múltiplos poços para máxima produção, podem-se formular as seguintes considerações:
+• para poços com mesmo índice de produção e geometria similar (poços 1 e 3), mais gás deve ser injetado para os poços mais próximos à plataforma e, consequentemente, esses poços serão mais produtivos;
+Poço Nó	1 7	2 13	3 19	4 25
+Índice de produção ((kg/s)/bar)	1,0	2,5	1,0	0,5
+Pressão no downhole (bar)	215,80	218,03	214,85	211,61
+Óleo produzido (kg/s)	4,204	4,933	5,152	4,197
+Gás injetado (kg/s)	0,743	0,822	0,897	0,795
+Tabela 14 - Caso 2 - Máxima produção para pressão de reservatório de 220 bar.
+Table 14 - Case 2 - Maximum production for a reservoir pressure of 220 bar.
+Poço Nó	1 7	2 13	3 19	4 25
+Índice de produção ((kg/s)/bar)	1,0	2,5	1,0	0,5
+Pressão no downhole (bar)	234,58	237,43	233,44	229,45
+Óleo produzido (kg/s)	5,417	6,423	6,561	5,276
+Gás injetado (kg/s)	0,681	0,744	0,820	0,734
+Tabela 15 - Caso 2 - Máxima produção para pressão de reservatório de 240 bar.
+Table 15 - Case 2 - Maximum production for a reservoir pressure of 240 bar.
+•	para poços que estão a uma distância similar (poços 3 e 4), mais gás deve ser injetado em poços com maior índice de produção;
+•	comparando os cenários 1 e 2, quanto maior a pressão de reservatório, mais óleo é produzido com uma exigência menor de gás de injeção.
+máxima produção com restrições na disponibilidade de gás
+Neste estudo será feita a maximização da função objetivo Q1 com disponibilidade limitada de gás para injeção em poços com pressão de reservatório e índices de produção mostrados na tabela 14. Variando-se a vazão total de gás disponível (,qGmax\ fez-se o mapeamento das condições operacionais ótimas de injeção nos quatro poços. Os resultados estão resumidos na figura 16, onde, no eixo das abscissas, o valor de 100% corresponde à vazão de gás de 3.257 kg/s, obtida somando-se as vazões injetadas para condição de máxima produção mostrada na tabela 14.
+Figura 16 - Caso 2 - Influência da disponibilidade de gás.
+Figure 16 - Case 2 - Effect of gas availability.
+projeto ótimo
+A aplicação da função objetivo Q3 para o caso de rede com múltiplos poços offshore, com parâmetros descritos na tabela 16, tem como objetivo a determinação do projeto ótimo considerando os custos anualizados do compressor, da turbina e das linhas de gás (que transportam o gás desde a plataforma até o anular dos poços) e de gás combustível, considerando dois cenários para pressões de reservatório: 220 bar e 240 bar.
+As variáveis de decisão são as vazões de óleo produzidas de cada poço (wL dos nós 7, 13, 19 e 25), a vazão de gás injetado em cada poço (wG dos nós 10, 16, 22 e 28), o diâmetro das linhas de gás do poço 1 (arestas 8 e 9), do poço 2 (arestas 14 e 15), do poço 3 (arestas 20 e 21) e do poço 4 (arestas 26 e 27).
+As estimativas iniciais das variáveis de decisão foram obtidas por meio da solução da otimização para máxima produção apresentada na tabela 15 e diâmetros das linhas de gás iguais a 2 polegadas.
+Os resultados obtidos para o projeto ótimo estão apresentados nas tabelas de 17 a 19.
+Os parâmetros econômicos usados nas equações 48, 50 e 51 estão sujeitos a desvios de acordo com o mercado e com a complexidade do empreendimento. Além disso, as principais empresas de petróleo tratam os dados econômicos reais relativos a custos de equipamentos, de linhas e de pessoal como segredos de negócio. Isto impede a apresentação da metodologia proposta em um caso real.
+Parâmetros	Valor	Unidade
+Número de estágios de compressão (n)	3	-
+Eficiência global do compressor (rf)	0,8	-
+Coeficiente politrópico do gás (y)	1,25	-
+Temperatura do gás injetado na succção (TN)	300	K
+Pressão do gás injetado na sucção (PIN)	5	bar
+Peso molecular do gás injetado (MW)	25	kg/kmol
+Custo do gás combustível (cG)	0,189	USD/m3
+Preço do óleo (cL)	51,15	USD/barril
+Comprimento (LG1) - arestas 8 e 9	6.020	m
+Comprimento (LG2) - arestas 14 e 15	6.020	m
+Comprimento (LG3) - arestas 20 e 21	4.520	m
+Comprimento (LG4) - arestas 26 e 27	4.520	m
+Limite inferior do diâmetro (LB)	1	polegada
+Limite superior do diâmetro (UB)	4	polegada
+Índice de produção - poço 1	1,0	(kg/s)/bar
+Índice de produção - poço 2	2,5	(kg/s)/bar
+Índice de produção - poço 3	1,0	(kg/s)/bar
+Índice de produção - poço 4	0,5	(kg/s)/bar
+Pressão do reservatório - cenário 1	220	bar
+Pressão do reservatório - cenário 2	240	bar
+Tabela 16 - Caso 2 - Parâmetros de projeto.
+Table 16 - Case 2 - Project parameters.
+É importante reforçar que uma análise mais completa e, consequentemente, uma função objetivo mais detalhada pode ser aplicada de modo a gerar resultados mais precisos ao longo de todas as etapas do projeto de engenharia de um sistema de produção de petróleo. A metodologia apresentada possui precisão adequada para responder importantes questões do projeto con-ceitual de um novo empreendimento de produção de petróleo.
+caso 3 - rede cíclica com múltiplos poços offshore
+Nesse caso será feita a aplicação do modelo proposto em um problema complexo de rede dotada de um ciclo
+e com quatro poços de petróleo compartilhando uma linha de produção única, conforme mostrado na figura 17.
+Essa rede é composta por 30 nós e 30 tubulações de acordo com o dígrafo mostrado na figura 18 (onde os nós 7, 13, 19 e 25 correspondem a poços e têm estrutura conforme representado na figura 4).
+As arestas da rede de escoamento são: linhas de produção (1, 2, 3, 4 e 6), riser (5), do poço à linha de produção (n), poço (n + 1 e n + 2), anular de gás (n + 3) e linhas de gás (n + 4 e n + 5), onde n é igual a 7, 13, 19 ou 25 (ver figura 4). Os parâmetros usados para descrever essas arestas estão mostrados nas tabelas de 20 a 22.
+Essa rede possui quatro pontos de entrada de líquido, representados pelos nós 9, 15, 21 e 27 na base dos poços, e quatro pontos de entrada de gás na plataforma, representados pelos nós 12, 18, 24 e 30. O nó 6 representa a saída do riser (antes da válvula de choke) e é descrito como um ponto de pressão fixa. Os outros nós são pontos de interconexão das arestas. A descrição desses nós está detalhada na tabela 23. As especificações nodais da rede de escoamento estão mostradas na tabela 24.
+O modelo bifásico da rede consiste em 300 equações: 30 balanços de massa da fase líquida nos vértices, 30 balanços de massa da fase gás nos vértices, 30 balanços
+Variáveis de decisão	Cenário 1	Cenário 2	Unidade
+Vazão de gás injetado (QJ - poço 1	0,706	0,647	kg/s
+Vazão de gás injetado (QG2) - poço 2	0,785	0,709	kg/s
+Vazão de gás injetado (QG3) - poço 3	0,854	0,780	kg/s
+Vazão de gás injetado (QG4) - poço 4	0,752	0,697	kg/s
+Vazão de óleo (QL1) - poço 1	4.197	5.411	kg/s
+Vazão de óleo (QL2) - poço 2	4.952	6.444	kg/s
+Vazão de óleo (QL3) - poço 3	5.152	6.559	kg/s
+Vazão de óleo (QL4) - poço 4	4.170	5.246	kg/s
+Diâmetro (De1) - arestas 8 e 9	1,77	1,66	polegada
+Diâmetro (DG2) - arestas 14 e 15	1,89	1,76	polegada
+Diâmetro (DG3) - arestas 20 e 21	1,75	1,63	polegada
+Diâmetro (DG4) - arestas 26 e 27	1,62	1,52	polegada
+Tabela 17 - Caso 2 - Variáveis de decisão para projeto ótimo.
+Table 17 - Case 2 - Decision variables for optimal project design.
+Resultados	Cenário 1	Cenário 2	Unidade	
+Potência do compressor (wC)	1797,5	1691,1	kW	
+Pressão de descarga do compressor	235,44	258,02	bar	Tabela 18 - Caso 2 - Resultados para projeto ótimo de compressor, linhas de gás e turbina.
+Custo do compressor (CC)	1,79	1,72	106 USD	
+Custo da turbina (wT)	3,95	3,76	106 USD	Table 18 - Case 2 - Results for optimal project
+Custo das linhas de gás (wP)	1,05	0,98	106 USD	design of compressor, gas lines and turbine.
+Vazão anual de gás combustível	15,19	14,29	106 m3/ano	
+				
+Resultados	Cenário 1	Cenário 2	Unidade	
+Vazão total de gás injetado	81,39	74,45	106 m3 / ano	
+Vazão total de óleo produzido	4.310	5.521	106 barril / ano	
+Custo anualizado de gás combustível	2,86	2,69	106 USD/ano	1 d kJ k* Id IL?	k_ d okJ Z_	r\ k-0 U1 Ld kJ LJo kJ kJ 1 kJ J ks LkJ ótimo.
+Custo de capital anualizado	6,79	6,46	106 USD/ano	
+				
+ISBL	6,79	6,46	106 USD	Table 19 - Case 2 - Results of optimal project design.
+OSBL	20,36	19,38	106 USD	
+Receita	220,47	282,41	106 USD/ano	
+Lucro	210,82	273,26	106 USD/ano	
+Figura 17 - Caso 3 - Projeção isométrica simplificada.
+Figure 17 - Case 3 - Simple isometric projection.
+Aresta	Tipo	Diâmetro (polegadas)	Comprimento (m)	Inclinação (°)	Rugosidade (pm)
+1	Linha de produção	6	1.581	0°	100
+2	Linha de produção	6	1.581	0°	100
+3	Linha de produção	6	1.581	0°	100
+4	Linha de produção	6	4.005	Ver tabela 21	100
+5	Riser	6	1.500	90°	100
+6	Linha de produção	6	1.581	0°	100
+(n)	Poço à linha de produção	5	500	0°	100
+(n+1)	Poço	5	1.500	90°	100
+(n+2)	Poço	5	300	90°	100
+(n+3)	Anular de gás	5a	1.500	-90°	100
+(n+4)	Linha de gás	2	4.505	Ver tabela 22	100
+(n+5)	Linha de gás	2	1.515	0°	100
+Tabela 20 - Caso 3 - Descrição das arestas.
+a Diâmetro hidráulico
+Comprimento (m)	0	1.005	2.505	4.005	a
+Cota (m)	-1.495	-1.395	-1.395	-1.395	-1.400
+Coordenada x (m)	0	0	0	0	a
+Coordenada y (m)	4.000	3.000	1.500	0	a
+a Em função das coordenadas da cabeça do poço
+Tabela 22 - Caso 3 - Perfis das arestas 11, 17, 23 e 29.
+Table 22 - Case 3 - Profiles of the edge variables 11, 17, 23 and 29.
+Figura 18 - Caso 3 - Dígrafo da rede de escoamento.
+Figure 18 - Case 3 - Digraph of the flow pipeline network.
+Table 20 - Case 3 - Description of the edge variables.
+Comprimento (m)	0	1.500	2.505
+Cota (m)	-1.400	-1.400	-1.500
+Coordenada x (m)	0	0	0
+Coordenada y (m)	1.500	3.000	4.000
+Tabela 21 - Caso 3 - Perfil da aresta 4.
+Table 21 - Case 3 - Profile of the edge variable 4.
+de momento nas arestas, 60 balanços de momento nos nós, 60 equações de hold-up nas extremidades das arestas, 30 equações de transferência de hold-up de vértices e 60 especificações.
+valores e perfis
+Considerando-se as seguintes especificações: (i) vazão externa de líquido (produção nos poços) para os nós 9,
+1 Nó	Descrição	X (m)	Y (m)	Cota (m)
+1	Interconexão da linha de produção	0	-1.500	-1.400
+2	Interconexão da linha de produção	500	0	-1.400
+3	Interconexão da linha de produção	-500	0	-1.400
+4	Interconexão da linha de produção	0	1.500	-1.400
+5	Conexão entre linha de produção e riser	0	4.000	-1.500
+6	Saída do riser	0	4.000	0
+7	Cabeça do poço 1	0	-2.000	-1.400
+13	Cabeça do poço 2	800	0	-1.400
+19	Cabeça do poço 3	-800	0	-1.400
+25	Cabeça do poço 4	0	800	-1.400
+(n+1)	Conexão entre anular de gás e poço	a	a	-2.900
+(n+2)	Base do poço (downhole)	a	a	-3.200
+(n+3)	Entrada do anular de gás	a	a	-1.400
+(n+4)	Interconexão das linhas de gás	0	4.000	-1.495
+(n+5)	Entrada de gás	0	4.000	20
+Table 23 - Case 3 - Description of the nodes.
+a Em função das coordenadas da cabeça do poço
+Vazão interna de líquido	Vazão interna de gás
+Pressão na entrada das linhas	Pressão na saída das linhas
+Hold-up na entrada das linhas	Hold-up na saída das linhas
+Tabela 23 - Caso 3 - Descrição dos nós.
+Figura 19 - Caso 3 - Resultados para as variáveis de aresta.
+Nó
+1, 2, 3, 4, 5, (n), (n+1), (n+3) e (n+4)
+6
+Tipo
+Conexão
+Pressão fixa
+Especificação 1
+Especificação 2
+Figure 19 - Case 3 -Results for the edge variables.
+wLi = 0 kg/s
+(n+2)
+(n+5)
+Entrada de óleo
+Entrada de gás
+PW4 = 15 bar wLi: produção do n-ésimo poço wGi: injeção no n-ésimo poço
+wGi = 0 kg/s
+HW4 = 1.0 wGi = 0 kg/s wLi = 0 kg/s
+Tabela 24 - Caso 3 - Especificações nodais.
+Table 24 - Case 3 - Nodal specifications.
+Pressão nodal
+Hold-up nodal
+Figura 22 - Caso 3 - Perfil de pressão nos poços.
+Figura 20 - Caso 3 - Resultados para as variáveis de nó.
+Figure 20 - Case 3 - Results for the node variables.
+Figura 21 - Caso 3 - Perfil de pressão ao longo do riser.
+Figure 21 - Case 3 - Pressure profile along the riser.
+Figure 22 - Case 3 - Pressure profile in the wells.
+Figura 23 - Caso 3 - Perfil de pressão no transporte de gás entre a plataforma e o poço.
+Figure 23 - Case 3 - Pressure profile in the gas transport between the platform and the well.
+15, 21 e 27 de 3,6, 3,7, 3,8 e 3,9 kg/s, (ii) vazões externas de gás (injeção de gás) para os nós 12, 18, 24 e 30 de 1,2, 1,3, 1,4 e 1,5 kg/s e (iii) demais valores apresentados na tabela 24, os resultados da simulação estão descritos
+detalhadamente nas figuras 19 e 20. O comportamento da pressão ao longo do escoamento dentro dos poços, na linha de produção/ríser e no transporte do gás é mostrado, respectivamente, nos perfis das figuras de 21 a 23.
+curvas de pressão
+Os resultados das simulações variando-se as vazões de gás injetado e de óleo produzido para cada poço (para
+uma mesma vazão de óleo e gás em cada poço) estão mostrados nas figuras de 24 a 27.
+Figura 24 - Caso 3
+-	Curvas de nível da pressão no downhole e na entrada de gás
+-	poço 1.
+Figure 24 - Case
+3 - Pressure level curves of the downhole and the gas inlet - well 1.
+Figura 25 - Caso 3
+-	Curvas de nível da pressão no downhole e na entrada de gás
+-	poço 2.
+Figure 25 - Case
+3 - Pressure level curves of the downhole and the gas inlet - well 2.
+Pressão do nó 21 - downhole (bar)
+Gás injetado (kg/s)
+Pressão do nó 24 - entrada gás (bar)
+Gás injetado (kg/s)
+Figura 26 - Caso 3 - Curvas de nível da pressão no downhole e na entrada de gás - poço 3.
+Figure 26 - Case
+3 - Pressure level curves of the downhole and the gas inlet - well 3.
+Figura 27 - Caso 3 - Curvas de nível da pressão no downhole e na entrada de gás -poço 4.
+Figure 27 - Case 3 -Pressure level curves of the downhole and the gas inlet - well 4.
+conclusões
+Este artigo apresenta uma formulação para o problema de otimização não linear da alocação de gás e do sistema de gas lift contínuo acoplado a um modelo bifá-sico de redes de escoamento, constituindo um arcabouço capaz de responder três questões frequentemente abordadas pelas empresas de petróleo: a máxima produção estimada, as condições operacionais ótimas do sistema de gas lift e o projeto ótimo do sistema de gas lift. A metodologia permite a análise de sistemas de produção complexos, incluindo múltiplos poços compartilhando a mesma linha de produção, dotados ou não de ciclos.
+Este artigo também apresenta uma formulação em redes para a clássica correlação bifásica de Beggs e Brill capaz de simular redes com qualquer topologia, inclusive com a presença de ciclos. A maior motivação desse desenvolvimento se deve à ausência na literatura de trabalhos que descrevam a aplicação de modelos bifásicos em redes de escoamento. Uma vantagem da abordagem proposta é a simplicidade matemática, que garante a geração de resultados precisos com baixa demanda de tempo de computação se comparada a softwares comerciais, corroborando sua utilização junto a algoritmos de otimização.
+A aplicação do modelo na simulação e otimização de diferentes redes de escoamento é ilustrada por três casos: poço offshore, rede offshore tipo árvore e rede offshore com ciclos. No primeiro caso (rede de poços
+offshore), são determinadas as condições operacionais que implicam máxima produção considerando diferentes restrições na disponibilidade de gás e é feito o projeto ótimo do sistema de gas lift considerando os investimentos em compressor, turbina e linhas de injeção de gás.
+A modelagem simplificada a partir das correlações de Beggs e Brill permite o acoplamento entre rotinas de simulação e de otimização, compondo um arcabouço de otimização que requer baixo custo computacional (onde cada iteração do algoritmo de otimização no caso 3 realizado requer 2,0 s em um microcomputador com processador de 1,67 GHz de velocidade e 2 Gb de capacidade de memória RAM), constituindo uma interessante ferramenta para o projeto conceitual de sistemas de elevação de petróleo. Modelos mais complexos, que considerem os efeitos térmicos, a solubilidade do gás na fase líquida e a dependência da massa específica e da viscosidade em função da temperatura, podem ser utilizados sem que sejam necessárias modificações no problema de otimização proposto neste trabalho.
+Cabe reforçar que o principal propósito deste trabalho é a formulação de um arcabouço para alocação ótima de gás em sistemas de produção dotados de gas lift e a definição de uma formulação matemática para esse problema. A principal simplificação da função objetivo apresentada refere-se à estimativa dos custos OSBL diretamente a partir do ISBL. Em suma, este artigo não tem como principal produto a resolução de um caso
+real, visto que as empresas de petróleo tratam os dados econômicos reais relativos a custos de equipamentos, de linhas e de pessoal como segredos de negócio.
+Trabalhos futuros baseados na metodologia proposta podem explorar a utilização do diâmetro das linhas de produção como variáveis de decisão no projeto ótimo do sistema de elevação de petróleo. Funções objetivos mais complexas que levem em conta informações econômicas mais precisas também devem ser exploradas.
+A metodologia pode ser alterada com pequeno esforço para incorporar novas variáveis de decisão e funções objetivos ao problema de otimização proposto.
+agradecimentos
+Este trabalho foi apoiado e financiado pela Petróleo Brasileiro S.A. (Petrobras).
+referências bibliográficas
+I ALARCON, G.; TORRES, C.; GOMEZ, L. Global optimization of gas allocation to a group of wells in artificial lift using nonlinear constrained programming. Journal of Energy Resources Technology, Baton Rouge, v. 124, p. 262-268, 2002.
+I BARRAGÁN-HERNÁNDEZ, V.; VÁZQUEZ-ROMÁN, R.; ROSALES-MARI -NES, L.; GARCÍA-SÁNCHEZ, F. A strategy for simulation and optimization of gas and oil production. Computers and Chemical Engineering, Amsterdan, v. 30, n. 2, p.215-227, 15 Dec. 2005.
+I BEGGS, H. D.; BRILL, J. P. A study of two-phase flow in inclined pipes. Journal of Petroleum Technology, Richardson, v. 25, n. 5, p. 607617, May 1973.
+I CAMPONOGARA, E.; NAKASHIMA, P. Optimizing gas lift optimization problem using dynamic programming. European Journal of Operational Research, Amsterdanv. 174, n. 3, p.1220-1246, 1 Aug. 2006.
+I COSTA, A. L. H.; MEDEIROS, J. L., PESSOA, F. L. P. Steady-state modeling and simulation of pipeline networks for compressible fluids. Brazilian Journal of Chemical Engineering, São Paulo, v. 15, n. 4, p. 344-357, 1998.
+I COUPER, J. R.; PENNEY, W. R.; FAIR, J. R.; WALAS, S. M. Chemical process equipment, selection and design. 2. ed. Houston: Gulf, 2005. 726p.
+I DOUGLAS, J. M. Conceptual design of chemical processes.
+McGraw-Hill: New York. 1988
+I DUTTA-ROY, K.; KATTAPURAM, J. A new approach to gas-lift allocation optimization. In: SPE WESTERN REGIONAL MEETING, 67., 1997, Long Beach. Proceedings... Richardson: Society of Petroleum Engineers, 1997. SPE 38333.
+I FANG, W. Y.; LO, K. K., A generalized well-management scheme for reservoir simulation. SPE Reservoir Engineering, Richardson, v.11, n.2, p. 116-120, May 1996.
+I KOSMIDIS, V.; PERKINS, J.; PISTIKOPOULOS, E. A mixed integer optimization formulation for the well scheduling problem on petroleum fields. Computers &amp;amp; Chemical Engineering, Amsterdan, v. 29, n.
+7, p. 1523-1541, Jun. 2005.
+I MCCOY, A. T. The economics of co2 transport by pipeline and storage in saline aquifers and oil reservoirs. 2008. 267 p. Thesis (Doctorate) - Carnegie Mellon University, Pittsburgh. 2008.
+I PERRY, R. H.; GREEN, D. W. (Eds.). Perry's chemical engineers' handbook. 7. ed., McGraw-Hill: New York. 1997 .
+I RAY, T.; SARKER, R. Genetic algorithm for solving a gas lift optimization problem. Journal of Petroleum Science and Engineering, Amsterdan, v. 59, n. 1-2, p. 84-96. Oct. 2007.
+apêndice - notação matemática
+Vetores são representados por letras sublinhadas (u, U) e são definidos como vetores coluna. Matrizes são representadas por letras com sublinhado duplo (v V). A operação de transposição da matriz V é representada pelo sobrescrito Tcomo em VT. A dimensão dos vetores e matrizes é descrita utilizando letras e números em negrito; por exemplo, a dimensão da matriz M é N x S se M possuir N linhas e S colunas.
+O símbolo x denota multiplicação elemento a elemento (produto de Hadamard ou Schur).
+O operador diag(u) gera uma matriz diagonal V na qual os elementos da diagonal são compostos pelos elementos do vetor u. O operador diag-1(u) gera a matriz diagonal V que possui os elementos da diagonal igual ao inverso dos elementos do vetor u. O operador max(u) retorna o maior elemento do vetor u. O operador max(a,b) retorna a se a &gt; b, do contrário retorna b. O operador sign(u) gera um vetor com elementos iguais a +1 nas posições onde os elementos de u são positivos e elementos iguais a -1 nas posições onde os elementos de u são negativos.
+autores
+Jaime Neiva Miranda de Souza
+I Escola de Química/UFRJ
+I Instituto Nacional da Propriedade Industrial (INPI)
+jaimenms@yahoo.com.br
+José Luiz de Medeiros
+I Universidade Federal do Rio de Janeiro
+jlm@eq.ufrj.br
+Jaime Neiva Miranda de Souza é engenheiro químico formado pela Escola de Química da UFRJ. Obteve os títulos de mestre e doutor em Tecnologia de Processos Químicos e Bioquímicos pela Escola de Química da UFRJ com foco em modelagem dinâmica de escoamento multifásico em redes de dutos. Atualmente, trabalha no Instituto Nacional da Propriedade Industrial (INPI) como pesquisador em propriedade industrial. Entre 2002 e 2007 atuou como líder de projetos na Chemtech, onde adquiriu experiência de campo em projetos de consultoria nas áreas de simulação de escoamento, engenharia de processos e engenharia de controle e automação para as indústrias de petróleo, petroquímica, siderúrgica e de mineração. Entre 2007 e 2009 participou do projeto de desenvolvimento de modelos de escoamento multifásico em uma parceria entre o Laboratório H2Cin da Escola de Química da UFRJ e a Petrobras.
+José Luiz de Medeiros é graduado em Engenharia Química pela Universidade Federal do Rio de Janeiro (1980), possui Mestrado em Engenharia Química pela Coppe-UFRJ (1982) e Doutorado em Engenharia Química pela Coppe-UFRJ (1990). Atualmente, é professor adjunto na Escola de Química da Universidade Federal do Rio de Janeiro. Tem experiência em vários setores da Engenharia Química, com ênfase em petróleo e petroquímica, atuando principalmente nas seguintes disciplinas e linhas de pesquisa: termodinâmica aplicada; processos de separação; modelagem, simulação e otimização de processos químicos; estatística aplicada. Os cenários de aplicação concentram-se em hidrotratamento e hidrocraqueamento de frações de petróleo, modelagem composicional de frações de petróleo, redes de escoamento compressível e incompres-sível, captura de CO2 e H2S.
+autores
+André Luiz Hemerly Costa
+I Universidade do Estado do Rio de Janeiro
+andrehc@uerj.br
+Giovani Cavalcanti Nunes
+I E&amp;amp;P Engenharia de Produção
+I Gerência de Processamento e Medição de Fluidos
+giovanicn@petrobras.com.br
+André Luiz Hemerly Costa é engenheiro químico formado pela Universidade Federal do Rio de Janeiro em 1994, possuindo Mestrado e Doutorado em Tecnologia de Processos Químicos e Bioquímicos pela Escola de Química da Universidade Federal do Rio de Janeiro (1997 e 2000). É professor adjunto no Instituto de Química da Universidade do Estado do Rio de Janeiro desde 2002, atuando no ensino e na pesquisa em engenharia química, particularmente em problemas ligados a modelagem, simulação e otimização de processos.
+Giovani Cavalcanti Nunes é engenheiro químico, formado pela Universidade do Estado do Rio de Janeiro - UERJ (1986), mestre em Engenharia Química pela Universidade Federal do Rio de Janeiro - Coppe/UFRJ (1994) e doutor em Engenharia Química pela Universidade da Flórida - EUA (2001). Ingressou na Petrobras em 1987, por meio do Curso de Engenharia de Processamento. Trabalhou por 18 anos no Cenpes, atuando nas áreas de Engenharia Básica, e Pesquisa e Desenvolvimento da Produção. Desde 2005 é gerente de Processamento e Medição de Fluidos na ENGP/TPP.
+expanded abstract
+In deepwater production, where the reservoir pressure is not sufficient to ensure the oil lift to the surface with a viable economic return, there is a mandatory need for artificial lift technologies. A widely used and very efficient technique is the gas lift, where the gas injected into a determined position of the well reduces the average density of the liquid column and the hydrostatic pressure difference. The amount of gas injected is a critical operational variable, because a too low volume can significantly reduce oil production and a too high volume can increase compression-operating costs. In many cases, it is possible to check if the oil production reaches a maximum quantity for a given flow rate of injected gas.
+This paper proposes a framework to analyze artificial lift systems by continuous gas lift using an optimization algorithm coupled with a stationary model for two-phase flow networks for any network topology. The objective function can consider the yearly capital costs of the compressor, turbine and gas pipelines, operational costs related to fuel and produced oil revenues, taking into account the gas availability restrictions. The interactions between the
+wells, production lines and risers are fully evaluated by a stationary model of two-phase flow networks. This is made up of a mass balance of the network elements and the momentum balances in the pipes using the Beggs and Brill empirical correlation. By solving the optimization problem, it is possible to estimate important information for the conceptual project design phase of an oil production system.
+A set of case studies describes the methodology application to analyze and optimize oil lift networks with a single and multiple wells with different complexities.
+This article also presents a formulation in networking for the classic biphasic correlation of Beggs and Brill, which is able to simulate networks with any topology including the presence of cycles. The main motivation for this study is the lack of cases in the literature describing the application of two-phase flow models in networks. One advantage of the proposed approach is its mathematical simplicity that ensures the generation of accurate results with a low demand of computation runtime compared to commercial software, supporting its use in conjunction with optimization algorithms.
+</field>
+	</doc>
+</add>

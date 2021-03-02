@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-BP.03771</field>
+		<field name="filename">11-Yv_n_Jes_s_T_pac_Valdivia.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">| Yván Jesús Túpac Valdivia | Luciana Faletti Almeida | Marco Aurélio Cavalcanti Pacheco |
+| Marley Maria Bernardes Rebuzzi Vellasco
+EXPLOT - Sistema de apoio à decisão para a otimização da explotação de petróleo /explot
+- Decision support system for optimization of oil exploitation
+resumo
+PALAVRA-CHAVE:
+□	otimização
+□	análise de projetos
+□	sistemas de apoio à decisão
+KEYWORDS:
+□	optimization
+□	project analysis
+□	de cision support systems
+Este trabalho apresenta um sistema de apoio à decisão que integra diversas técnicas (algoritmos genéticos, algoritmos culturais, co-evolução, redes neurais, modelo neurofuzzy e processamento distribuído) para a otimização da explotação de reservatórios petrolíferos. O sistema EXPLOT identifica alternativas de explotação e determina a quantidade, posição, tipo (produtores ou injetores) e estrutura (horizontal ou vertical) de poços que maximizam o valor presente líquido da alternativa (VPL). O sistema
+I abstract
+The present work offers a decision supporting system, integrated in different techniques (genetic algorithms, cultural algorithms, co-evolution, neural networks, neurofuzzy model and distributed processing) for optimization of exploitation of oil reservoirs. The EXPLOT system identifies exploitation alternatives and determines the quantity, position, type (producers or injectors) and structure (horizontal or vertical) of wells, that maximize the present net value of the alternative (VPL). The EXPLOT system is composed of three main modules: the optimizer (genetic algorithms, cultural algorithms and co-evolution), the Production Curves Obtention (approximator neurofuzzy-NFHB of the production curve) and the present net value calculation. To estimate the VPL of each developmental alternative, the system utilizes a reservoir simulator, specifically the IMEX, although other simulators may be utilized. In addition to these technologies, the system also utilizes distributed processing, based on the CORBA architecture for distributed execution of the reservoir simulator in a computer network, which significantly reduces the total optimization time. The EXPLOT system was already tested in different examples of oil fields. Results obtained so far are considered consistent according to the opinion of specialists, who con-
+EXPLOT é composto de três módulos principais: o oti-mizador (algoritmos genético, cultural e co-evolução), o de Obtenção de Curvas de Produção (aproximador neurofuzzy-NFHB da curva de produção) e o de cálculo do valor presente líquido. Para estimar o VPL de cada alternativa de desenvolvimento, o sistema emprega um simulador de reservatório, no caso IMEX, embora outros simuladores possam ser usados. Além dessas tecnologias, o sistema ainda emprega o processamento distribuído baseado na arquitetura CORBA para a execução distribuída do simulador de reservatório em uma rede de computadores, o que reduz significativamente o tempo total de otimização. O sistema EXPLOT já foi testado em diferentes exemplos de campos petrolíferos. Os resultados obtidos até o momento são considerados consistentes na visão de especialistas que o vêem como um novo conceito de ferramenta de apoio à decisão na área. O diferencial do EXPLOT está não só no seu eficiente modelo de otimização, mas também na sua interface por meio do qual os especialistas
+abstract
+sider the system as a new decision support tool concept in the area. The differences of EXPLOT are not only to be found in its efficient optimization model, but also in its interface, through which the specialists interact with the system, introducing project recommendations (e.g., five-spot wells), commanding a localized search for best solutions, sizing the simulation network and monitoring simulation distribution by means of available networks. The EXPLOT system is the result of joint research between Cenpes and the Applied Computational Intelligence Lab, PUC-Rio, accomplished during the past three years. The continuation of this research project expands the system towards optimization of angular wells and non conventional wells and towards monitoring and optimization of intelligent wells with sensors.
+(Expanded abstract available at the end of the paper).
+interagem com o sistema introduzindo sugestões de projeto (e.g., poços em five-spot etc), comandando busca local de melhores soluções, dimensionando a malha de simulação e controlando a distribuição da simulação por meio das redes disponíveis. O sistema EXPLOT é fruto de pesquisa conjunta entre o Cenpes e o Laboratório de Inteligência Computacional Aplicada da PUC-Rio, realizada nos últimos três anos. A continuação deste projeto de pesquisa estende o sistema para a otimização de poços angulares direcionais e de poços não convencionais e o controle e a otimização de poços inteligentes com sensores.
+introdução
+Na engenharia de reservatórios, uma das tarefas importantes é o desenvolvimento de uma estratégia para alcançar a produção da maior quantidade de hidrocarboneto possível, dentro dos limites físicos e econômicos existentes (Bittencourt, 1997; Bittencourt e Horne, 1997; Guyaguler et al. 2000; Guyaguler e Horne, 2000).
+Freqüentemente, a solução operacional para o problema de desenvolvimento de um campo de petróleo não é ótima, mas apenas um resultado viável que satisfaz as restrições operacionais em um momento específico. Isto porque o engenheiro de reservatório deve considerar várias hipóteses para alcançar a melhor estratégia para o problema de desenvolvimento do campo. Cada hipótese pode gerar outras e, sendo assim, o processo produz uma árvore de hipóteses, gerando cada vez mais dados a serem analisados.
+A solução deste problema envolve a análise de duas questões principais: o sistema de exploração (plataforma e poços) e um reservatório geológico a ser explorado. Cada uma dessas entidades tem um número de variáveis e a escolha de seus valores é um problema de otimização. Dependendo do número de variáveis, é inviável tentar enumerar todas as possíveis combinações.
+Com relação ao reservatório, deve-se determinar a disposição dos poços de petróleo, que é um problema complexo que depende das propriedades do reservatório e de critérios econômicos, entre outros fatores.
+O poço pode ser vertical ou horizontal. Para um poço vertical é necessário definir sua localização no reservatório, ou seja, sua posição i, j, k dentro do reservatório e sua função (injetor ou produtor), sendo seu sentido de crescimento sempre na direção k e o seu comprimento todas as camadas de k válidas para explotação (completação em todas as camadas para o poço vertical). Já para um poço horizontal defini-se sua posição inicial i, j, k dentro do reservatório, o comprimento, o sentido da sua trajetória - podendo ser na direção i ou j - e sua função (injetor ou produtor).
+Atualmente, o processo de escolha do valor de cada uma das variáveis citadas acima é feito de forma manual por um engenheiro de reservatório.
+Do reservatório é necessário conhecer suas dimensões. Como o reservatório é discretizado em uma malha, precisa-se conhecer o número de células que compõem as dimensões i, j, k, bem como as dimensões de cada célula.
+Para se aplicar um processo de otimização nesse problema é necessário definir uma função-objetivo a ser maximizada pelo processo. No problema em questão, a função-objetivo escolhida é o valor presente líquido (VPL) (Brealey e Myers, 1981; Túpac et al. 2002). Devido à complexidade do perfil de produção de petróleo, é necessária a utilização de simuladores de reservatório para poder calcular a produção de óleo, gás e água e, assim, calcular esta estimativa. Deste modo, o simulador de reservatórios é parte integrante da função de avaliação. O uso de simuladores torna o custo computacional muito elevado, fazendo com que a obtenção do resultado seja muito demorada.
+Neste trabalho foram utilizados os seguintes algoritmos: algoritmos genéticos (GA) (Mitchell, 1994; Michalewicz, 1996; Goldberg, 1989; Back, 1996); algoritmos culturais (CA) (Reynolds, 2002; Reynolds e Chung, 1996a, 1996b); co-evolução (Durham, 1994; Potter e De Jong, 2000) para selecionar a melhor alternativa de exploração para o desenvolvimento de um campo de petróleo e empregando processamento distribuído. Dentre as técnicas de computação, esses algoritmos são métodos de busca e otimização utilizados para procurar soluções de problemas complexos e/ou com espaço grande de
+soluções. Problemas estes de difícil modelagem e solução quando se aplicam métodos de otimização convencionais. Esses algoritmos evolucionários conseguem convergir para boas soluções. O emprego do processamento distribuído permite aproveitar o poder computacional de um conjunto de processadores em uma rede de computadores, reduzindo, consideravelmente, o tempo computacional requerido para realizar a otimização.
+Com o objetivo de diminuir ainda mais o tempo requerido para realizar um processo de otimização neste trabalho, foi empregado um módulo de inferência de curvas de produção baseado no modelo neurofuzzy hierárquico (NFHB) (De Souza, 1999; De Souza et al. 2002). Este módulo, após ser treinado com amostras de alternativas e suas curvas de produção, permite obter respostas bem aproximadas da produção de forma rápida comportando-se como um proxy do simulador de reservatório.
+sistema explot de otimização de alternativas
+O sistema proposto é composto de três módulos principais: o otimizador (algoritmo genético, cultural, co-evolução), o de obtenção de curvas de produção (simulador de reservatórios e aproximador NFHB) e o de cálculo do valor presente líquido. O módulo otimizador, que contém os algoritmos evolucionários, determina os valores adequados para cada uma das variáveis e parâmetros que conFiguram uma certa alternativa. Essa alternativa é então submetida ao módulo de obtenção de curvas de produção. A curva de produção obtida é utilizada pelo módulo de cálculo do valor presente líquido (VPL) para efetuar a avaliação da alternativa. Por fim, o VPL calculado é enviado para o módulo otimizador, que o utiliza como valor de avaliação da alternativa (cromossomo) formando-se assim o ciclo de otimização. A Figura 1 mostra a arquitetura do sistema de otimização desenvolvido.
+Nesta Figura, aparecem claramente os módulos que compõem o sistema proposto como se descreve nas seções seguintes com maiores detalhes.
+módulo otimizador
+O módulo otimizador é composto pelo algoritmo evolucionário que otimizará a estratégia de exploração de um dado reservatório.
+Na implementação deste módulo foram empregados três tipos de algoritmo evolucionário existentes na literatura: algoritmos genéticos, algoritmos culturais e co-evolução, de forma a avaliar o desempenho de cada um destes na solução do problema de otimização de alternativas. A seguir, é feita uma breve descrição de cada algoritmo e da sua respectiva modelagem para o problema em questão.
+algoritmos genéticos
+Algoritmos genéticos (GA) são algoritmos probabi-lísticos que fornecem um mecanismo de busca paralela e adaptativa baseados no princípio de sobrevivência dos mais aptos e na reprodução genética (Mitchell, 1994; Michalewicz, 1996; Goldberg, 1989; Back, 1996). O
+mecanismo é obtido a partir de uma população de indivíduos (soluções), representados por cromossomos (e.g., palavras binárias, vetores, matrizes), cada um associado com uma aptidão (resposta ajustada da solução proposta quando aplicada ao problema), que são submetidos a um processo de evolução (seleção, reprodução, cruzamento e mutação) por vários ciclos.
+Um indivíduo ou cromossoma deve representar uma alternativa de explotação e a aptidão do indivíduo corresponde ao valor de VPL dessa alternativa.
+Nas subseções seguintes, detalha-se o modelo do cromossoma e dos operadores genéticos empregados na evolução. O modelo econômico empregado na avaliação da alternativa será detalhado na seção referente ao bloco de cálculo de VPL.
+representação do cromossomo
+A representação do cromossomo na modelagem do GA deve ser capaz de descrever corretamente uma solução proposta no espaço de busca relevante do problema, considerando que os genes do cromossoma se relacionam com os parâmetros propostos para solução proposta.
+No problema em questão, o cromossomo (Almeida, 2003) descreve uma alternativa completa de explota-
+ção. Isto é, uma lista de poços petrolíferos e suas respectivas especificações.
+Os detalhamentos destes poços estão descritos nos genes do cromossoma,. Assim, cada gene contém as informações da localização na malha (i, j, k) do poço no reservatório, a sua geometria (horizontal, vertical), o tipo (produtor, injetor), o comprimento e a direção da trajetória quando se trata de poços horizontais. A quantidade total de poços da alternativa pode ser variada, empregando a estratégia de máscara de ativação (Zebulum, 1997). A Figura 2 ilustra o modelo de cromossomo desenvolvido para este problema.
+Cruzamentos:
+•	cruzamento de um ponto;
+•	cruzamento de dois pontos;
+•	cruzamento aritmético.
+Mutações:
+•	mutação uniforme;
+•	mutação local;
+•	mutação de fronteira.
+Em Michalewicz (1996) podem ser vistos mais detalhes sobre estes operadores.
+Máscara de ativação
+0	1	0	1	1	0	1	0
+Figura 2 - Representação do cromossoma.
+Cromossomo
+Verticais
+Horizontais
+Injetores
+Produtores
+Injetores
+I J	I J	I J	I J	I JK Dir Dist	1 J K Dir Dist	1 J K Dir Dist	1 J K Dir Dist
+		-						&gt;		
+Produtores
+Figure 2 - Representation of chromosomes.
+Note-se que os valores de localização do poço na malha, a direção da trajetória e o comprimento para os poços horizontais ficam definidos explicitamente no gene respectivo. Entretanto, o tipo e a geometria ficam determinados pela posição do gene no cromossoma. Assim, poços verticais estão na primeira metade do cromossoma e poços horizontais na segunda. Dentro da metade de poços verticais, a primeira quarta parte corresponde aos poços injetores e a outra aos produtores, ocorrendo uma situação similar para a metade correspondente aos poços horizontais.
+operadores genéticos
+Para o problema de otimização de alternativas foram empregados os seguintes operadores genéticos:
+Nas seções seguintes serão descritos os outros modelos de algoritmos evolucionários empregados no desenvolvimento do sistema, como algoritmos culturais e algoritmos de co-evolução, e suas respectivas modelagens para o problema de otimização de alternativas.
+hibridização dos algoritmos genéticos
+- algoritmos culturais
+Algoritmos culturais (CA) (Reynolds, 2002; Reynolds e Chung, 1996a, 1996b) consistem de três componentes básicos (Durham, 1994): a população a ser evoluída, juntamente com seus operadores e mecanismo de avaliação de forma similar aos algoritmos genéticos; o espaço de crença (Reynolds e Chung, 1996a), que representa a experiência que está sendo adquirida pela
+população durante o processo de solução do problema; e o protocolo de comunicação que determina a interação entre a população e o espaço de crença.
+Na modelagem feita para o problema de otimização de alternativas, o componente "população", do CA, segue o mesmo modelo empregado para os algoritmos genéticos, como descrito no item módulo otimizador. Os operadores genéticos são os mesmos empregados no modelo de algoritmos genéticos.
+O espaço de crenças é composto por padrões que representam as características dos melhores indivíduos da população (Reynolds e Chung, 1996a).
+O protocolo de comunicação é composto por dois processos:
+•	Processo de votação: escolhe os melhores indivíduos de uma geração do algoritmo cultural para que estes influenciem o espaço de crença. Os melhores indivíduos são escolhidos em termos de porcentagem.
+•	Processo de promoção: determina como o espaço de crenças é capaz de influenciar um componente da população. Essa influência ocorre através da alteração das avaliações dos indivíduos da população no sentido de melhorar o valor desta avaliação.
+algoritmo de co-evolução
+Na co-evolução tem-se a decomposição do problema para que se possa ter a evolução de subcomponen-tes interdependentes. Assim, sempre que for possível decompor o problema em subcomponentes independentes, cada um deles poderá evoluir sem haver necessidade de se preocupar com os outros. A maioria dos problemas só pode ser decomposta em subcompo-nentes que possuem uma interdependência complexa, onde o efeito de mudar um desses subcomponentes provoca uma "deformação" no espaço de buscas dos outros subcomponentes que estão acoplados por esta interdependência (Potter e De Jong, 2000).
+No problema de otimização de alternativas foi empregado o modelo co-evolucionário cooperativo genérico (Potter e De Jong, 2000). Nesta arquitetura, duas ou mais espécies diferentes formam um ecossistema.
+As espécies estão geneticamente isoladas (indivíduos só podem se reproduzir com outros indivíduos da mesma espécie). As espécies somente interagem umas com as outras por meio de um domínio compartilhado e têm uma relação apenas de cooperação. O modelo co-evolu-cionário cooperativo genérico é mostrado na Figura 3.
+Como pode se observar na Figura 3, o modelo de co-evolução especificado para o problema de otimização de alternativas possui duas populações a serem evoluídas: uma composta por poços horizontais da alternativa e outra por poços verticais. Essa escolha foi feita segundo as diferenças inerentes de capacidade de recuperação de óleo, custo de perfuração e manutenção entre poços verticais e horizontais.
+módulo de curvas de produção
+Este é um dos blocos da função de avaliação que envolve o uso do simulador de reservatório e o uso de inferências de curva de produção a partir dos aproxima-dores de função de produção. O objetivo deste módulo é determinar as curvas de produção de óleo, gás e água correspondentes à conFiguração de poços dada pelo cromossoma do algoritmo evolucionário. Os elementos
+principais são: o simulador de reservatórios e os modelos de aproximação de curva de produção
+Como existem dois motores para obter curvas de produção, há a decisão de usar o simulador ou os modelos de aproximação. Esta escolha é determinada por meio de um sorteio com uma taxa de uso de simulador y. A finalidade é a redução do custo computacional necessário para realizar o conjunto de avaliações de uma certa população, e ter controle do uso do simulador e o módulo de aproximação.
+simulador de reservatórios
+Para se obter o valor de avaliação (VPL) de um cromossoma, primeiramente é necessário obter as curvas de produção de óleo, gás e água da conFiguração dos poços do cromossoma. Neste trabalho é utilizado o Simulador black-oil IMEX da CMG (Computer Modelling Group, 2000a).
+Neste simulador, a comunicação com o usuário é efetuada por meio de arquivos de entrada e saída. O usuário deve possuir um arquivo de entrada (.DAT) que contém as seguintes informações: a conFiguração da malha do reservatório, informação geológica, tipo de fluxo de óleo, condições iniciais, métodos numéricos, lista de poços e tempos de simulação, entre outras. O simulador, após a execução, fornece os resultados da simulação em um grupo de arquivos.
+Para o trabalho, a única informação do arquivo .DAT a ser constantemente alterada em avaliações de diferentes cromossomas é a que se refere às definições dos poços: locação, número, tipo e geometria. Como esta informação encontra-se em uma seção bem localizada do arquivo .DAT, é possível empregar o comando INCLUDE, que permite "quebrar" a leitura seqüencial do arquivo de entrada .DAT primário para começar a leitura de um arquivo secundário. Uma vez finalizada a leitura do segundo arquivo (EOF is reached), continua-se com a leitura a partir da linha seguinte a que continha o comando *INCLUDE. Desta forma, facilita-se muito a criação de um arquivo secundário contendo apenas as definições de poços extraídas desde um dado cromossoma, sem necessidade de alterar o arquivo principal .DAT, que normalmente é de grande tamanho, acarretando uma desnecessária perda de tempo computacional.
+aplicativo results report
+Todos os resultados numéricos da simulação são armazenados em arquivos de extensão .IRFe .MRF, sendo que todo o detalhamento destes resultados não é necessário para se obter as curvas de produção do campo. O aplicativo results report (Computer Modelling Group, 2000b) permite a escolha de apenas os dados necessários de acordo com a aplicação, servindo como um gerador de relatórios.
+No problema em questão são necessários os seguintes valores:
+•	óleo acumulado em condições de superfície no grupo de poços produtores do campo;
+•	gás acumulado em condições de superfície no grupo de poços produtores do campo;
+•	afluência de água em condições de superfície no grupo de poços produtores do campo;
+•	taxa de produção diária de óleo, gás e água do campo em condições de superfície.
+Portanto, ao se usar o results report com um script adequado às necessidades do trabalho, obtém-se as informações de produção que serão empregadas pelo módulo que calcula o valor presente líquido.
+modelo de aproximação
+Uma desvantagem do uso intensivo do simulador é o tempo requerido para obter respostas sobre a produção de óleo, gás e água. Este foi o principal motivo para se propor o uso de aproximações da curva de produção.
+Para isto, é necessário ter um procedimento de aprendizado a partir das informações de produção fornecidas pelo próprio simulador. Como foi visto, o simulador fornece uma curva de óleo acumulado gerada a partir da conFiguração da alternativa. Esta curva é composta por uma série de pontos (t, Cumm(t)), onde ti é o tempo de simulação, e Cumm(t) é o valor de óleo acumulado para o tempo t.
+No modelo de aproximação desenvolvido, o sistema de inferência de produção de óleo deve fornecer alguns pontos fixos da curva de óleo acumulado. Isto é, os
+valores (t Cumm(tl)) para alguns valores de t. Dado que o tempo de produção simulado para este trabalho é de 20 anos ou 7 200 dias, os valores t escolhidos são: 90, 180, 360, 720, 1 800, 3 600, 5 400 e 7 200, como mostra a Figura 4.
+Estes pontos foram escolhidos devido à característica exponencial e monotônica das curvas de produção acumulada de óleo, onde normalmente existem grandes diferenças nos tempos iniciais e, à medida que se aproximam dos 20 anos, os valores variam muito menos. Este tipo de amostragem permite mapear curvas de produção de óleo sem cronograma de poços.
+padrões para curva de óleo acumulado
+No modelo de padrões de entrada-saída utilizado para o aprendizado de pontos de curva de óleo acumulado, cada poço é definido por um par de dados (/, j ). Devido à ausência do valor k, esse formato atual comporta apenas conFigurações com poços verticais. Como resultado desta modelagem, os modelos de aprendizado a serem usados devem conter 2n entradas e 8 saí-p
+das, onde np é o número de poços sendo considerado na aproximação. Este modelo de padrões é apresentado na Figura 5.
+Figura 4 - Curvas de produção acumulada e pontos escolhidos.
+Figure 4 - Accumulated production curves and chosen points.
+r
+Poços produtores
+________A_______
+
+Poços injetores
+________A_______
+Saídas
+__
+I	J	i	J	i	J	i	J	i	J	i	J	i	J	i	J	i	J	i	J	SAÍDAS							
+1	3	6	15	3	1	1	15	15	1	15	15	1	30	1	1	30	30	1	27								
+5	4	1	27	12	30	25	12	8	17	29	9	3	10	20	14	11	22	16	5								
+1	1	5	6	23	7	3	4	2	9	7	12	4	15	13	8	21	3	23	6								
+Figura 5 - Formato dos padrões de entrada-saída para o modelo de aproximação.
+Figure 5 - Format of input-outputt patterns for approximation model.
+módulo de cálculo do valor presente líquido
+Como foi visto, o processo de otimização, baseado em algoritmos evolucionários, calcula um valor de aptidão para cada cromossomo da população. No problema da otimização de alternativas de desenvolvimento, o cálculo desta aptidão é feito por meio de uma avaliação de VPL da alternativa, e o cálculo do VPL é obtido pelo valor presente do fluxo de caixa VP ocorrido durante os 20 anos de produção, menos o valor presente do custo de desenvolvimento VD (Túpac et al. 2002; Almeida, 2003), como mostra a seguinte expressão (equação 1):
+VPL = VP-VD	(1)
+Para obter o custo de desenvolvimento D, são considerados todos os investimentos realizados para começar a explotação do campo, que incluem as perfurações e completações dos poços, linhas de condução e a plataforma, conforme a seguinte expressão (equação 2):
+D =(a+r)np +b+X|Pj -PPt|.c
+M
+(2)
+onde a lista destes parâmetros, que são conhecidos como CAPEX (Capital Expenditure), é descrita na Tabela 1.
+Usualmente, para uma dada alternativa, os custos de investimento da equação 2 são conhecidos no tempo inicial. Isto significa que o valor presente do desenvolvimento VD é o próprio valor do desenvolvimento D sem amortecimento exponencial, pois não há deslocamento de tempo.
+Para o problema de reservatório, o valor presente dos fluxos de caixa é composto pela diferença entre os valores presentes da receita VPR e dos custos operacionais VPCOP que acontecerão durante o período de produção especificado e a aplicação da alíquota de impostos e encargos sociais I de aproximadamente 34%, como se mostra na equação 3:
+VP=(VPR-VPCop)(1-/)	(3)
+O valor da receita depende da produção de óleo Q(t) mais a produção equivalente-barril de gás (G(t) /100) para os tempos ti multiplicados pelos preços do petróleo Poil (t) a cada momento t. Neste caso, como as condições de mercado são de certeza, o preço do petróleo Poll (t) é uma função constante com valor ajustado em US$ 20 por barril. Assim, para cada tempo t, o valor da receita é obtido como (equação 4):
+R(t) = (Q(t)+G(í)/1000)Pol7(t)	(4)
+Parâmetro	Descrição
+a	Custo médio de perfuração para cada poço mais o custo da árvore de natal.
+r	Custo do riser que corresponde ao custo da lâmina d'água multiplicado pelo custo de linha / quilômetro.
+b	Custo de transferência mais o custo da plataforma e planta.
+Pj	Posição do poço j.
+PPL	Posição da plataforma.
+c	Custo de linha / quilômetro.
+nP	Número de poços da alternativa.
+Tabela 1 - Descrição dos parâmetros CAPEX.
+Table 1 - CAPEX parameters description .
+Para obter o valor presente, aplica-se desconto ex-ponencial com a taxa de desconto p. A expressão resultante é como se segue (equação 5):
+VPR	(5)
+r=i
+onde p é fixado em 0.1, T é o tempo máximo de atividade lucrativa do reservatório, determinado pelo último tempo ti em que o valor da receita R(ti) resulte maior que o valor do custo operacional. O valor ti é o i-ésimo passo de tempo no valor de produção de óleo ou gás. Cabe ressaltar que ti avança em passos de tempo que dependem das respostas obtidas pelo simulador de reservatório. Estes passos, normalmente, não são constantes.
+O valor do custo operacional é dado pelo somatório dos custos de manutenção dos poços, custos fixos, custos variáveis dados pela produção, royalties da receita para cada tempo ti e custo de retirada da água, como na seguinte expressão (equação 6):
+C0P (tf) = (m.np )^- +Cf	+C, QÇ,)+RyR(t;) +CwW (t,)
+□03	003
+(6)
+Onde todos os parâmetros, conhecidos como OPEX (Operation Expenditure), são descritos na Tabela 2.
+O valor presente para um custo é dado aplicando-se a taxa de desconto exponencial, resultando na equação 7:
+(7) i = 1
+Neste caso, a taxa mínima de atratividade p também é fixada em 0.1.
+Com a determinação dos valores VPR e VPCOP obtém-se o valor presente VP da equação 3 e, conseqüente-mente, o valor presente líquido VPL.
+algoritmos evolucionários com avaliação distribuída
+Uma das principais questões no sistema de otimização proposto é o tempo computacional requerido, pois uma simulação de reservatório pode levar minutos ou horas para ser realizada. Assim, para aproveitar a força computacional conjunta de um grupo de processadores, utiliza-se dentre os algoritmos evolucionários estendidos para vários processadores, o algoritmo global (Cantú-Paz, 1997), que consiste em um processador-mestre que contém o algoritmo evolucionário em si (a população, técnicas de inicialização e seleção, operadores genéticos) e um grupo de processadores escravos que se dedicam apenas a realizar a avaliação de um cromossomo que lhes é enviado, retornando o valor de avaliação para o mestre. Este tipo de arquitetura é conhecido como master-slave, mostrada na Figura 6.
+Parâmetro	Descrição
+t,	Tempo de simulação / (em dias)
+m	Custo de manutenção anual de um poço
+nP	Número de poços
+cv	Custos variáveis que dependem da produção
+cf	Custos fixos anuais
+cw	Custo de retirada de água por cada m3
+Ry	Royalties
+Qtt)	Produção de óleo no tempo f,
+W(t)	Produção de água no tempo f,
+	Receita no tempo f,
+Tabela 2 - Descrição dos parâmetros OPEX.
+Table 2 - OPEX parameters description.
+Para adequar o sistema desenvolvido para usar o algoritmo global, o sistema foi dividido em três grandes módulos:
+•	Módulo de dados: que contém as informações necessárias para realizar a otimização: campos, alternativas existentes e parâmetros para calcular o VPL.
+•	Módulo de engenharia: que contém os algoritmos utilizados na otimização, algoritmos genéticos, algoritmos culturais, co-evolução.
+•	Módulo de cenários: que contém as rotinas referidas à avaliação de alternativas como o link com o simulador de reservatórios e cálculo do VPL.
+Dada a arquitetura master-slave, fica claro que os módulos de dados e engenharia estão instanciados no master e o módulo de avaliação deve ser instanciado em cada um dos slaves existentes. Assim, surge a necessidade de se criar interfaces de comunicação (Túpac, 2005) entre os módulos instanciados em processadores distantes. Neste caso requerem-se duas interfaces:
+•	Interface para envio de dados de cenário e inicialização;
+•	Interface para envio de cromossoma e retorno da avaliação.
+Estas interfaces foram especificadas empregando a arquitetura CORBA (Object Management Group, 1997) e implementadas em C++ (Henning e Vinoski, 1999). Na Figura 7 estão os módulos e interfaces de comunicação implementados.
+
+
+interface 1
+Recebe
+Parâmetros para o VPL Parâmetros de campo e poços Arquivos .DAT e .INC Requisição para inicialização Requisição de status
+
+"x
+Retoma status do módulo avaliador
+\____________________________
+interface 2
+Recebe
+Lista de poços do cromossoma Requisição de status
+Retoma
+VPL (Avaliação)
+Custo de desenvolvimento (D) Óleo acumulado
+Receita, Custo operacional status atual do módulo
+Módulo de cenário
+SceneryManager
+Módulo de engenharia ■
+Módulo de dados
+DataManager			1 i&lt;*f|	EngineManager
+			■H	
+Figura 7 - Módulos e interfaces de comunicação implementados no sistema EXPLOT.
+Figure 7 - Modules and communication interfaces implemented in the EXPLOT system.
+uso de conhecimento prévio
+O sistema desenvolvido permite a utilização de conhecimento prévio. Ou seja, é possível aproveitar as respostas obtidas em otimizações anteriores, ou mesmo em soluções propostas pelo especialista, e evoluir a partir delas, introduzindo estas alternativas na população inicial do novo experimento. Esse conhecimento é chamado de semente inicial. Isto é importante quando a
+avaliação tem um alto custo computacional pois, além de possibilitar a adição do conhecimento do especialista, permite iniciar novos experimentos a partir de resultados obtidos em experimentos anteriores, favorecendo o encontro de melhores soluções. Dada a característica elitista dos algoritmos evolucionários, a solução resultante sempre será melhor ou igual a melhor semente inicial inserida.
+estudo de casos
+Para a realização dos experimentos foram utilizados um modelo de reservatório com características heterogêneas, o que é chamado de campo-1.
+O campo-1 possui características não homogêneas no que diz respeito a saturação de óleo no campo, existindo seções com alto potencial de extração de óleo e seções com pouco potencial. Cabe ressaltar que existe uma seção de saturação total de água que forma um aqüífero. As dimensões da malha do campo-1 são 33 X 57 X 3. Sendo assim, o campo-1 possui 33 blocos na direção i, 57 blocos na direção j e 3 na direção k. O campo-1 não possui blocos nulos. Todavia, o campo-1 não possui células com as mesmas dimensões; elas diferem entre si. A Figura 8 ilustra o campo-1 com uma vista em três dimensões.
+Figura 8 - Visão em 3D do campo-1.
+Figure 8 - 3D vision of field-1.
+Neste estudo de casos foram realizados experimentos empregando algoritmos genéticos, algoritmos culturais e co-evolução para o campo descrito acima. A Tabela 3 possui os parâmetros dos algoritmos evolucionários.
+Parâmetros	GA		GA/CA		Co-evolução			Tabela 3 - Parâmetros
+	Exp 1	Exp 2	Exp 3	Exp 4	Exp 5	Exp 6	Exp 7	
+Tipo de poço	Vert Hori	Vert Hori	Vert Hori	Vert	Hori	Vert Hori	Vert Hori	
+Gerações	150	80	150	100	100	50	70	
+População	100	80	100	50	50	50	60	
+Genes	80	80	80	50	50	80	40	da evolução.
+Steady state	0.4	0.4	0.4	0.4	0.4	0.4	0.4	Table 3 - Evolution
+pWell	0.3	0.3	0.3	0.3	0.3	0.3	0.3	parameters.
+Bonus	-	-	3	3	3	-	-	
+pBest	-	-	0.1	0.1	0.1	-	-	
+Operator	All	All	All	All	All	All	All	
+Proc, distrib.	No	No	No	No	No	No	Yes	
+1, p. 107-129 □	*
+' ‘	DE ncniDLDGlA
+apresentação dos resultados
+algoritmo genético
+A Tabela 4 contém os melhores resultados encontrados, mostrando o seu valor de VPL e o número de poços correspondentes para todos os experimentos realizados para o campo-1.
+A seguir, são detalhados os resultados descritos na Tabela 4. Para cada experimento são fornecidos: o VPL alcançado, a curva de desempenho dos algoritmos de
+No experimento 1 foram empregados algoritmos genéticos para evoluir as conFigurações com poços horizontais e verticais. O melhor VPL encontrado neste teste foi de US$ -13,788,509.7; correspondente a: 5 poços injetores e 6 poços produtores.
+A Figura 9 mostra a conFiguração de poços encontrada no experimento 1. A Figura 10 apresenta a curva
+otimização e a distribuição de poços encontrada. A curva de desempenho dos algoritmos de otimização, denominada curva score, mostra a avaliação da melhor alternativa a cada geração. Por meio dela pode-se visualizar como ocorre a convergência do algoritmo.
+de desempenho do algoritmo. O tempo gasto neste experimento foi de aproximadamente 27 horas.
+Algoritmos genéticos			
+Exp	Tipo de poço	N° de poços	Melhor VPL
+1	Vert/Hori	5 injec / 6 prod	-1.38* 107
+2	Vert/Hori	6 injec /12 prod	9.47* 107
+Genetic algorithms / Cultural algorithms			
+Exp.	Tipo de poço	N° poços	Melhor VPL
+3	Vert/Hori	5 injec /11 prod	1.55* 108
+4	Vertical	15 injec /16 prod	-1.9* 108
+5	Horizontal	1 injec / 2 prod	1.9* 108
+Co-evolução			
+Exp.	Tipo de poço	N° poços	Melhor VPL
+6	Vert/Hori	2 injec / 6prod	1.97* 108
+7	Vert/Hori	2 injec / 5prod	2.25* 108
+Tabela 4
+- Resultados obtidos nos experimentos.
+Table 4
+- Results obtained during experiments.
+Figure 10 - Evolution graphic Exp-1.
+Figura 9 - ConFiguração obtida Exp-1.
+Figure 9 - ConFiguration obtained Exp-1.
+Figura 10 - Gráfico de evolução Exp-1.
+algoritmo genético/algoritmo cultural
+No experimento 3 foi empregado o algoritmo híbrido GA/CA. Neste experimento consideraram-se poços verticais e horizontais. O melhor VPL obtido foi de US$ 155,414,702.7; correspondente a: 5 poços inje-
+A Figura 11 mostra a disposição de poços encontrada neste teste. A Figura 12 apresenta o gráfico de desempenho do algoritmo. O tempo gasto neste experimento foi de aproximadamente 25 horas.
+tores e 11 poços produtores.
+ROD1
+^INJ10
+?INJ9
+Figura 11 - ConFiguração obtida Exp-3.
+Figure 11 - ConFiguration obtained Exp-3.
+Prém/oll
+co-evolução
+O experimento 6 foi realizado com o uso de co-evolução. Neste experimento foram considerados poços verticais e horizontais. O melhor VPL encontrado foi de US$ 197,649,844.8; correspondente a:
+2 poços injetores e 6 poços produtores.
+A Figura 13 mostra a conFiguração encontrada neste teste em uma vista 3D. A Figura 14 apresenta o gráfico de desempenho do algoritmo. O tempo gasto neste experimento foi de aproximadamente 30 horas.
+Figura 13 - ConFiguração obtida Exp-6.
+Figure 13 - ConFiguration obtained Exp-6.
+Score
+c ,o
+,3 § m
+2.15E+08
+1.95E+08
+1.75E+08
+1.55E+08
+1.35E+08
+1.15E+08
+9.50E+07
+7.50E+07
+5.50E+07
+Figure 14 - Evolution graphic Exp-6.
+Figura 14 - Gráfico de evolução Exp-6.
+algoritmos evolucionários distribuídos
+Este experimento consistiu em utilizar a plataforma de avaliações distribuídas com o modelo de algoritmo evolucionário que obteve melhor desempenho: a co-evolução. Os parâmetros de evolução continuaram os mesmos do experimento 6, porém, foram empregados 20 computadores das redes dos laboratórios da Inteli
+gência Computacional Aplicada e do Departamento de Engenharia Elétrica da PUC-Rio.
+A Figura 15 mostra o gráfico de desempenho do algoritmo e a Figura 16 apresenta o gráfico de percentuais de avaliações feitas pelos computadores da rede.
+Cabe ressaltar que o tempo gasto para rodar o algoritmo de co-evolução com 70 gerações foi reduzido de 30 horas para 2h30.
+Score
+3.E+14
+g2’E+14 ■2 2,E+14 §
+■8 1.E+14
+Ul
+7.E+13
+2.E+13
+Figura 15 - Gráfico de evolução do Exp-7.
+Figure 15 - Evolution graphic of Exp-7.
+Remote hosts use in distributed evaluating by CORBA
+Figura 16 - Computadores usados na avaliação distribuída.
+Figure 16 - Computers used in distributed evaluation.
+conclusões
+Os resultados encontrados indicam que as técnicas de computação evolucionárias empregadas (algoritmo genético e algoritmo cultural e co-evolução) são eficientes num sistema de apoio para encontrar melhores alternativas de exploração de um campo de petróleo, confirmando o objetivo deste estudo. Isto fica claro por meio de uma otimização consistente durante a evolução visualizada pelas curvas score.
+Este trabalho oferece, portanto, uma perspectiva promissora para o processo decisório e de análise de alternativas de explotação de campos petrolíferos, proporcionando informações que auxiliarão os especialistas no processo de busca das melhores alternativas. Ao interagir com o sistema EXPLOT por meio da introdução de sugestões de projeto, o especialista unifica, de modo favorável, a sua expertise com uma máquina de busca eficiente.
+Das técnicas inteligentes utilizadas, a co-evolução oferece maior desempenho (melhores resultados com um menor número de gerações), alcançando alternativas que apresentaram maiores valores de VPL. Isto pode ser visto comparando os testes feitos por meio das curvas de desempenho. Assim, a convergência para os melhores resultados ocorre de forma mais rápida para o algoritmo de co-evolução.
+Os experimentos 4 e 5 foram propostos por um especialista e os resultados encontrados foram compatíveis com o esperado. No experimento 5, onde se tem somente o uso de poços horizontais, os valores de VPL encontrados foram mais altos do que para o experimento 3, onde se tem o uso de poços verticais e horizontais. Comparando o experimento 5 com o 4, a diferença é ainda maior. No experimento 4, com poços verticais apenas, foram sempre obtidos valores de VPL negativos. Esse re
+sultado era esperado, pois o uso de poços horizontais permite uma maior recuperação de óleo sem um grande incremento no custo de perfuração.
+Outro requisito importante - quanto à proporção do número de poços injetores e produtores observados por especialistas - foi verificado nos experimentos. Os resultados indicam que o número de poços injetores nunca é maior que o número de poços produtores. No máximo deve existir uma proporção de 1 para 1.
+A representação do cromossomo, proposta e utilizada no sistema EXPLOT, consegue tratar várias particularidades do problema:
+•	permite a criação de poços verticais e/ou horizontais;
+•	permite delimitar um número máximo de poços a ser empregado na exploração do campo e trabalhar dentro deste limite, evitando soluções indesejáveis como, por exemplo, poços em todas as localizações do grid;
+•	considera a existência de áreas impróprias para exploração dentro dos limites da malha do reservatório e não deixa que poços sejam criados nessas regiões;
+•	permite aproveitar o conhecimento prévio. Ou seja, é possível aproveitar as alternativas apresentadas pelos especialistas e evoluir a partir delas no sentido de encontrar melhores alternativas, reforçando ainda mais a utilidade desta ferramenta como uma ferramenta no apoio à decisão.
+Com o uso de avaliações distribuídas, o tempo computacional foi reduzido consideravelmente, ocorrendo speed-ups de até 34 vezes se forem empregados 42 processadores.
+referências bibliográficas
+| ALMEIDA, L. F. Otimização de alternativas para desenvolvimento de campo de petróleo utilizando computação evolucio-nária. Dissertação (Mestrado) - Pontifícia Universidade Católica do Rio de Janeiro, Rio de Janeiro, 2003.
+| BACK, T. Evolutionary algorithms in theory and practice. New York: Oxford University Press, 1996. 314 p.
+| BARIS, G.; ROLAND, N. H. Optimization of Well Placement. Journal of Energy Resources Technology, Nova York, v. 122, n. 2, p. 64-70, June 2000.
+| BARIS, G.; ROLAND, N. H.; LEAH, R.; JACOB, L. R. Optimization of well placement in a Gulf of Mexico water flooding project. In: SPE TECHNICAL CONFERENCE AND EXHIBITION, 2000, Dallas. Proceedings... Houston: Society of Petroleum Engineers, 2000. p. 1-10 (SPE 63221).
+| BITTENCOURT, A. C. Optimizing hydrocarbon field development using a genetic algorithm based approach. Tese (Doutorado) - Stanford University, Stanford, 1997.
+| BITTENCOURT, A. C.; HORNE, R. N. Reservoir development and design optimization. In: SPE TECHNICAL CONFERENCE AND EXHIBITION, 1997, San Antonio. Proceedings. Houston: Society of Petroleum Engineers, 1997. p. 1-14 (SPE 38895).
+| BREALEY, R.; MYERS, S. Principles of corporate finance. New York: McGraw-Hill, 1981.794 p.
+| CANTÚ-PAZ, E. Designing efficient master-slave parallel genetic algorithms: technical report 95004. Illinois: Illinois Genetic Algorithms Laboratory, 1997. 12 p.
+| COMPUTER MODELLING GROUP. IMEX: advanced OI, gas reservoir simulator, version 2000, user's guide. Calgary, 2000a.
+| COMPUTER MODELLING GROUP. IMEX: results visualization and animation post-processing modules, version 2000, user's guide. Calgary, 2000b. 746 p.
+| DURHAM, W. Co-evolution: genes, culture and human diversity. Stanford: Stanford University Press, 1994.
+| GOLDBERG, D. E. Genetic algorithms in search, optimization, and machine learning. New York: Addison-Wesley, 1989. 412 p.
+| HENNING, M.; VINOSKI S. Advanced CORBA® Programming with C++. Reading: Addison-Wesley, 1999. 1084 p. (Addison-Wesley professional computing series).
+| MICHALEWICZ, Z. Genetic algorithms + data structures = evolution programs. 3. ed. New York: Springer-Verlag, 1996. 387 p.
+| MITCHELL, M. An Introduction to genetic algorithms. Cambridge: MIT Press, 1994.
+| OBJECT MANAGEMENT GROUP. CORBA services: common object services specification. Framingham, 1997. (OMG Document formal/97-07-04).
+| POTTER, M. A.; DE JONG, K. A. Cooperative co evolution: an architecture for evolving co adapted subcomponents. Evolutionary Computation, Cambridge, v. 8, n. 1, p. 1-29, 2000.
+| REYNOLDS, R. G. An introduction to cultural algorithms. In: WORLD CONGRESS ON COMPUTATIONAL INTELLIGENCE, 2002, Honolulu. [Papers from.] [S.l.]: Institute of Electrical and Electronics Engineers, 2002.
+| REYNOLDS, R. G.; CHAN, J. C. A self-adaptive approach to representation shifts in cultural algorithms. In: INSTITUTE OF ELECTRICAL AND ELECTRONICS ENGINEERS INTERNATIONAL CONFERENCE ON EVOLUTIONARY COMPUTATION, 1996, Nagoya. Proceedings. Piscataway: Institute of Electrical and Electronics Engineers, 1996. 891 p.
+| REYNOLDS, R. G.; CHAN, J. C. A testbed for solving optimization problems using cultural algorithms. In: CONFERENCE ON EVOLUTIONARY PROGRAMMING, 5., 1996, San Diego. Evolutionary Programming V. Cambridge: MIT Press, 1996. 488 p.
+Premia il
+referências bibliográficas
+| SOUZA, F. J. Modelos neuro-fuzzy hierárquicos. Tese (Doutorado)
+- Pontifícia Universidade Católica do Rio de Janeiro, Rio de Janeiro, 1999.
+| SOUZA, F. J.; VELLASCO, M. B. R.; PACHECO, M. A. C. Load forecasting with the hierarchical neuro-fuzzy binary space partitioning model.
+International Journal of Computers Systems and Signals, South
+Africa, v. 3, n. 2, p. 1 18-132, 2002.
+| TÚPAC, Y. J. Sistema inteligente de otimização de alternativas de desenvolvimento de campos petrolíferos. Tese (Doutorado) -
+Pontifícia Universidade Católica do Rio de Janeiro, Rio de Janeiro, 2005.
+| TÚPAC, Y. J.; VELLASCO, M. B. R.; PACHEXO, M. A. C. Selection of alternatives for oil field development by genetic algorithms. Revista de Engenharia Térmica, Curitiba, n. 2, p. 51-54, 2002. Edição especial.
+| ZEBULUM, R. S. Síntese de circuitos eletrônicos por computação evolutiva. Tese (Doutorado) - Pontifícia Universidade Católica do Rio de Janeiro, Rio de Janeiro, 1997.
+apêndice (interface visual do sistema explot)
+Nesta interface visual mostram-se as informações dos campos petrolíferos cadastrados, das alternativas existentes no campo selecionado (Field_B_30 x 30),
+da malha do campo, dos parâmetros empregados nos poços produtores e injetores dos parâmetros relacionadas à otimização de alternativas como as restrições de número máximo de poços, escolha de geometria, distância mínima e trajetória máxima de poços horizontais. Também aparece a opção de inserir, retirar e visualizar uma lista de alternativas como sementes iniciais.
+Figura 17 - Interface principal, sistema EXPLOT.
+Figure 17 - Main interface, EXPLOT system.
+Figure 18 - Main interface, EXPLOT system - alternatives.
+Se for marcada uma alternativa de um dado campo (Alternativa 5-Spot INJ do campo Field_B_30 x 30, no exemplo da Figura 18), aparecem as informações desta alternativa, como o custo de investimento, valor de óleo acumulado nos 20 anos de simulação e o VPL obtido. Também existe a possibilidade de inserir, retirar ou alterar poços da alternativa e a opção de simulá-la novamente, além da opção de criar apenas o arquivo .INC contendo os poços e realizar a otimização de cro-nograma de poços para esta alternativa.
+Figura 18 - Interface principal, sistema EXPLOT - alternativas.
+A’ZEWSSF.;	-		 X			
+Simulador	Proc. Distribuído |3. VPL) Coevolução)			NFH8 Proxy]
+	adores para CORSA		
+Nome		Comentários	HP I
+0 £ BAIAO		ICA P2-300 (No user)	133.8...
+0 5 DIABIAOA		ICA Penlum4 HT 3000 (Leone)	
+0 3 HEAWMETAL		ICA Penlium41900 (Dan)	
+0 3 HUAYLAS		ICA AthtoriXP 2800 (Juan)	
+0 3 JAZZ		ICA AthloriXP 2200 (Junior)	
+0 3 LAMBADA		ICA AthloriXP 2800 (Ludana)	
+0 3 MINUETO		ICA Pentium4HT 3000 (Oan)	
+0 5 REGGAE		ICA Pentium4HT 3000 (Gabriel)	
+0 3 SIQURI		ICA AthloriXP 2400 (Yván)	
+i Novo i|		Excluir |	Editar |	Testar	|
+	Aceitar	|		Cancelar
+	Figura 19	- Diálogo de conFiguração, sistema EXPLOT	
+	- processamento distribuído.		
+Figure 19 - ConFiguration dialogue box, EXPLOT system - distributed processing.
+Por meio deste diálogo é possível conFigurar a lista de computadores envolvidos durante a avaliação ou simulações distribuída, de forma a inserir, editar, retirar e ativar/desativar processadores da lista.
+Figura 20 - Diálogo de conFiguração, sistema EXPLOT - parâmetros para VPL.
+Figure 20 - ConFiguration dialogue box, EXPLOT system - VPL parameters.
+Por meio deste diálogo podem ser conFigurados os parâmetros empregados para o cálculo do VPL, como o preço de petróleo, valores CAPEX e OPEX e também as taxas sociais, os royalties e a taxa de desconto.
+Premia
+Este diálogo permite conFigurar os parâmetros mais relacionados com o algoritmo evolucionário, que é o processo de co-evolução, podendo editar os valores de evolução e as taxas de operadores genéticos.
+Figura 22 - Diálogo de simulações durante a otimização - sistema EXPLOT.
+Figure 22 - Simulation dialogue box, during optimization - EXPLOT system.
+Este diálogo aparece apenas quando o sistema EXPLOT está em processo de otimização de alternativas. Isto é, executando o algoritmo de otimização co-evo-lucionária. Aqui pode ser visto o estado de cada uma das avaliações correspondentes a uma dada geração da
+Figura 21 - Diálogo de conFiguração, sistema EXPLOT - parâmetros da co-evolução.
+Figure 21 - ConFiguration dialogue box, EXPLOT system -co-evolution parameters.
+co-evolução. No exemplo, observa-se o processo de avaliação da população de poços verticais de 20 indivíduos a partir de um poço horizontal colaborador. São quatro computadores que avaliam, simultaneamente, os indivíduos indicados com "AVALIANDO". Para os indivíduos já avaliados mostra-se o computador que o avaliou, o estado da avaliação "OK" e o tempo que levou o processo que envolve a comunicação, a montagem dos arquivos, a execução da simulação pelo IMEX, a execução do REPORT, a leitura do arquivo de saída do REPORT e o cálculo do VPL. Finalmente, mostra-se o valor VPL calculado.
+Figura 23 - Sistema EXPLOT - interface do servidor de simulações.
+Figure 23 - EXPLOT system - server simulation interface.
+Esta interface pertence à parte servidora do sistema EXPLOT, que contém a instância do módulo do cenário e fica aguardando pelas requisições do módulo principal do sistema EXPLOT, que se comporta como um cliente. Cabe ressaltar que a interface servidora pode ser executada em vários computadores da rede, formando a arquitetura master-slave na qual foi concebido o algoritmo de evolução deste trabalho.
+autores
+| Pontifícia Universidade Católica do Rio de Janeiro (PUC-Rio)
+| Departamento de Engenharia Elétrica
+| Laboratório de Inteligência Computacional
+yvantv@ele.puc-rio.br
+Yván Jesús Túpac Valdivia
+Luciana Faletti Almeida
+| Pontifícia Universidade Católica do Rio de Janeiro (PUC-Rio)
+| Departamento de Engenharia Elétrica
+| Laboratório de Inteligência Computacional faletti@ele.puc-rio.br
+Yván Jesús Túpac Valdivia possui graduação em Ingeniería Electrónica - Universidad Nacional de San Agustín de Arequipa (Peru, 1994), Mestrado em Engenharia Elétrica pela Pontifícia Universidade Católica do Rio de Janeiro (2000) e Doutorado em Engenharia Elétrica pela Pontifícia Universidade Católica do Rio de Janeiro (2005). Recebeu o 2° lugar na categoria Tecnologia de Recuperação de Petróleo da 1a edição do Prêmio Petrobras de Tecnologia em 2005. Atualmente é engenheiro de pesquisa da Pontifícia Universidade Católica do Rio de Janeiro, atuando principalmente em Inteligência Computacional, Avaliação de Projetos e Engenharia de Petróleo
+Marco Aurélio Cavalcanti Pacheco
+| Pontifícia Universidade Católica do Rio de Janeiro (PUC-Rio)
+| Departamento de Engenharia Elétrica | Laboratório de Inteligência Computacional marco@ele.puc-rio.br
+Marco Aurélio Cavalcanti Pacheco é Doutor em Ciência da Computação pela University College London, em 1991. Atualmente é professor do Departamento de Engenharia Elétrica da PUC-Rio, onde coordena o Laboratório de Inteligência Computacional Aplicada (ICA). Suas áreas de interesse incluem Computação Evolucionária, Hardware Evolucionário, Nanotecnologia Computacional, Redes Neurais, Sistemas Fuzzy e Inteligência Computacional Aplicada.
+Luciana Faletti Almeida possui graduação em Engenharia Elétrica pela Universidade do Estado do Rio de Janeiro (1999), Mestrado em Engenharia Elétrica pela Pontifícia Universidade Católica do Rio de Janeiro (2003) e Doutorado em Engenharia Elétrica pela Pontifícia Universidade Católica do Rio de Janeiro (2007). Atua, principalmente, nos seguintes temas: Inteligência Computacional, Reservatório Petrolífero e Campos Inteligentes.
+Marley Maria Bernardes Rebuzzi Vellasco
+| Pontifícia Universidade Católica do Rio de Janeiro (PUC-Rio)
+| Departamento de Engenharia Elétrica
+| Laboratório de Inteligência Computacional
+marley@ele.puc-rio.br
+Marley Maria Bernardes Rebuzzi Vellasco possui graduação em Engenharia Elétrica ênfase Eletrônica pela Pontifícia Universidade Católica do Rio de Janeiro (1984), Mestrado em Engenharia Elétrica pela Pontifícia Universidade Católica do Rio de Janeiro (1987) e Doutorado em Computer Science - University of London (UK 1992). Atualmente é professora assistente da Pontifícia Universidade Católica do Rio de Janeiro e professora adjunto da Universidade do Estado do Rio de Janeiro.
+Boletim técnico da Produção de Petróleo, Rio de Janeiro - volume 2, n° 1, p. 1 07 -1 2 9 □
+5	'	'	' “	OE TECNOLOGIA
+I expanded abstract
+In reservoir engineering, an important task is the development of a strategy to attain higher production levels of hydrocarbons, feasible within the realm of existing physical and economical limits. The presently utilized operational solution is not at an optimum level, but is only a feasible result that satisfies operational restrictions in a specific moment. This is due to the fact that the reservoir engineer should consider different options to attain the best strategy for the field development issue. The solution of this problem involves an analysis of the production system (platform and wells) and a geological reservoir. Each one of these entities features a host of variables and the choice of their values is an optimization issue. Contingent upon the number of variables, it is impossible to cover all possible combinations.
+The location of oil wells should, thus, be determined, since this is a complex problem, depending on reservoir properties and economical criteria, amongst other factors. For the well, we have the geometry, which may be vertical or horizontal. For a vertical well, we have to define its location in the reservoir, considering completion in all layers in the vertical section and the function. For a horizontal well, we have to define its initial position in the reservoir, its length, direction of trajectory, which may be direction i or j and its function, injector or producer. Concerning the reservoir, it will be required to know the type of mesh, number of mesh cells, as well as sizes of each cell.
+It is also required to define an objective-function to be maximized by the process. In the present issue, the objective - function chosen is the net present value (NPV). In view of the complexity of the oil production profile, the utilization of reservoir simulators is required to be able to calculate oil, gas and water production, thus being capable of calculating this estimate. In this way, the reservoir simulator is a whole part of the evaluation function. The use of simulators renders the computational cost very high, and consequently the achievement of a result is quite delayed.
+The objective of this paper is to present EXPLOIT, a decision support system integrating several techniques (genetic algorithms, cultural algorithms, co-evolution, neural nets, neurofuzzy model and distributed processing) to optimize exploitation of oil reservoirs. EXPLOT identifies exploitation alternatives, i.e. it determines amount, position, type (producers or injectors) the structure (horizontal or vertical) of wells which maximize the net present value of the alternative (NPV).
+The EXPLOT system is composed of three main modules: the optimizer module (genetic, cultural algorithms, co-evolution), the net present value model. To estimate the NPV of each developmental alternative, the system utilizes a commercial reservoir simulator. In addition to these technologies, the system also utilizes distributed processing for distributed execution of the reservoir simulator in a computer network, which significantly reduces the total optimization time.
+The EXPLOT system has already been tested in different examples of oil fields. Results obtained until the present moment are considered consistent, in consonance with the opinion of specialists, who visualize the system as a new tool for support tools for decision in the area. The difference of EXPLOT resides not only in its efficient optimization model, but also in its interface through which specialists interact with the system, introducing project recommendations or commanding a local search for better solutions, sizing the simulation mesh and monitoring the simulation distribution through available networks.
+</field>
+	</doc>
+</add>

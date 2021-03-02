@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.07340</field>
+		<field name="filename">12016_CongressoMetodosNumericosEmEngenharia_CMNE2011_Pinheiro_et_al.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">Congresso de Métodos Numéricos em Engenharia 2011
+Coimbra, 14 a 17 de Junho, 2011
+© APMTAC, Portugal, 2011
+DESEMPENHO DO MODELO BOUSS3W NA REBENTAÇÃO DE
+ONDAS
+Pinheiro L. V.1, Rodriguez, V.1, Fortes C. J. E. M.1, Fernandes J. L. M.2
+1: Laboratório Nacional de Engenharia Civil
+Av. do Brasil 101, Lisboa
+e-mail: {lpinheiro, vcrodriguez, jfortes}@lnec.pt, web: http://www.lnec.pt
+2: Departamento de Engenharia Mecânica
+Instituto Superior Técnico
+Av. Rovisco Pais, 1 - 1049-001 Lisboa
+e-mail: leonel@dem.ist.utl.pt web: http://www.ist.utl.pt
+Palavras-chave: Elementos Finitos, Rebentação de Ondas, Boussinesq
+Resumo. Esta comunicação descreve a implementação da formulação da dissipação de energia por rebentação da onda no modelo de elementos finitos BOUSS3W e respectiva validação. Este modelo de elementos finitos é baseado nas equações de Boussinesq estendidas deduzidas por Nwogu válidas desde águas de profundidade intermédia a águas pouco profundas. O modelo permite simular a propagação não linear e dispersiva de ondas regulares ou irregulares tendo em conta alguns dos fenómenos mais importantes presentes nas regiões costeiras. A implementação da rebentação da onda no modelo BOUSS3W é efectuada através da inclusão de termos de viscosidade turbulenta nas equações de conservação da quantidade de movimento, que é dependente de um conjunto de parâmetros relacionados com o início, fim e duração da rebentação, que têm de ser calibrados para cada caso de estudo. A validação da implementação da rebentação foi efectuada recorrendo a casos de propagação e rebentação de ondas regulares em batimetrias de complexidade diferente (perfis de praia de inclinação constante e do tipo barra-fossa). Para estes casos, existem resultados experimentais, considerando diferentes condições de agitação. É realizada uma análise estatística de modo a caracterizar o desempenho do modelo e a sua capacidade na simulação da rebentação e dos efeitos não-lineares.
+1.	INTRODUÇÃO
+O modelo BOUSS3W [14], é um modelo de elementos finitos que resolve as equações estendidas de Boussinesq deduzidas por Nwogu [8]. Este modelo teve como ponto de partida o modelo de ondas regulares BOUSS, desenvolvido por Walkley [18], ao qual foram adicionadas algumas funcionalidades que permitem: a) o controlo das instabilidades numéricas [14]; b) a geração de ondas regulares e irregulares no interior do domínio de cálculo [13]; c) a absorção e a reflexão total ou parcial das ondas nas fronteiras do domínio
+[10]; e d) a dissipação de energia por atrito de fundo [11]. Assim, o actual modelo BOUSS3W permite simular a propagação não linear e dispersiva de ondas regulares e irregulares em zonas costeiras e portuárias, tendo em conta alguns dos fenómenos mais importantes presentes nestas regiões: difracção, refracção, reflexão (total ou parcial), empolamento, dispersão em frequência, dispersão em direcção, a geração de harmónicas e a dissipação de energia por atrito de fundo. O modelo usa o método de Galerkin com uma malha não estruturada de elementos finitos.
+Uma importante funcionalidade não incluída até aqui no modelo é a simulação da rebentação das ondas na aproximação à costa, pelo que, a introdução da dissipação de energia por rebentação na formulação do modelo numérico constitui o objectivo do presente trabalho.
+Nas próximas secções, descreve-se primeiramente o modelo BOUSS3W, as suas equações base, o método numérico, as condições iniciais e as condições de fronteira. Descrevem-se as modificações efectuadas no modelo numérico com vista à introdução da dissipação de energia por rebentação. Finalmente apresenta-se a validação do modelo modificado utilizando dois casos de propagação e rebentação de ondas em batimetrias de complexidade diferente.
+2.	O MODELO BOUSS3W
+2.1	Equações base
+As equações estendidas de Boussinesq deduzidas por Nwogu [8] são dados por: &gt;+(“-v)u+2 &amp;lt;v'&gt;)+'	h £))=0
+^h + V((h + h)u)+V-dt
+' 2	-b^hv(v• u)+(Za + |p(v • (hu))
+(1)
+(2)
+= 0
+em que o vector de velocidade u = u(x, y, t) = (u, v) representa o campo de velocidades bidimensional, calculado numa determinada profundidade, Za, r = r(x,y,t) representa a elevação da superfície livre, h é a profundidade do fundo e g é a aceleração da gravidade.
+Trata-se de um modelo indicado para a propagação de ondas não lineares e dispersivas que permite reproduzir alguns dos processos mais importantes envolvidos na propagação de ondas
+marítimas em regiões costeiras: a difracção, a refracção, a reflexão, o empolamento, a dispersão de frequência, a dispersão de amplitude e a geração de harmónicas.
+Com a adição dos termos adicionais relacionados com a reflexão parcial e transmissão através de estruturas porosas, o atrito de fundo, a rebentação, a função fonte e a viscosidade numérica, as novas equações do modelo BOUSS3W ficam:
++ (u-V)u + gÑh + Zf~ V-^J + - V V-(h |U- JJ = nfi u + nft u|u| + Fb + Rb
++	+ h)u)+V
+((Z 2 h 2 1	í
+2-h^hV(V-u)+1 Za +
+[Za+ |JhV(V'(hu)) = Sf + vs Vh
+(3)
+(4)
+
+
+em que f e ft são coeficientes de fricção laminar e turbulenta devidos à presença de uma estrutura porosa, Fb e Rb são termos de viscosidade turbulenta devidos ao atrito de fundo e à rebentação, respectivamente, Sf é a função fonte geradora de ondas regulares e irregulares no interior do domínio e vs é o termo de difusão artificial.
+2.2	Método numérico
+A resolução espacial das equações de Boussinesq estendidas por Nwogu [8] é efectuada pelo étodo dos elementos finitos. No entanto, estas equações não podem ser resolvidas directamente, com funções de interpolação lineares, à presença de derivadas espaciais de 3a ordem presentes na equação (2). De forma a solucionar este problema, é introduzida uma variável auxiliar, w, e uma terceira equação no sistema.
+Para a discretização e integração temporal, recorre-se ao pacote de integração temporal SPRINT [1] combinado com o pacote DASPK (Differential Algebraic Systems Preconditioned Krylov), [2], que usa o método iterativo GMRES (Generalized Minimum Residual) com um pré-condicionador do tipo ILU (Factorização LU incompleta). Este software fornece um método geral de resolução de sistemas de equações diferenciais parciais ordinárias utilizando passos de tempo e ordens de integração variáveis e adaptáveis a cada caso.
+É importante salientar que é de grande vantagem para o método de resolução de equações, que a malha de elementos finitos tenha uma resolução espacial adequada aos fenómenos a simular e que tenha a numeração nodal ordenada de modo que a largura de banda seja mínima. O gerador de malhas GMALHA, [12], foi desenvolvido especialmente para modelos de propagação de ondas em zonas costeiras (nomeadamente para os modelos BOUSS3W e DREAMS [3]e produz malhas com resolução variável de acordo com o comprimento de onda e com numeração nodal reordenada.
+2.3	Condições iniciais, de fronteira e geração de ondas
+As condições iniciais definidas no modelo são as de repouso, isto é, a elevação da
+superfície livre é igual a zero assim como a velocidade em todos os pontos do domínio. Para evitar instabilidades numéricas, a introdução da onda no domínio é feita de forma gradual nos primeiros passos de tempo.
+As condições de fronteira implementadas são as condições de radiação, absorção total de reflexão parcial e de reflexão total. As condições de radiação e de absorção total permitem a saída das ondas que se propagam no domínio. A primeira é baseada na condição de radiação de Sommerfeld enquanto na segunda se aplica o método da zona absorvente (sponge layer). A condição de reflexão parcial representa casos em que existem fronteiras físicas que reflectem apenas parcialmente a energia das ondas incidentes (quebra-mares rugosos, praias reflectivas, etc.). A condição de reflexão total representa uma parede vertical sólida e impermeável (como é o caso de um cais vertical, quebra-mar vertical, etc.). Para a condição de absorção total introduz-se uma zona de absorção nas fronteiras onde se pretende a absorção total das ondas incidentes. Trata-se de uma zona onde se adiciona um termo difusivo à equação de conservação de massa que cresce exponencialmente em direcção à fronteira e é capaz de absorver a energia das ondas que saem do domínio com diferentes frequências. A largura da zona de absorção deve ser entre duas e três vezes o maior comprimento de onda.
+A geração de ondas (regulares e irregulares) no interior do domínio é feita através de uma função fonte,[13]. Este método permite que as ondas reflectidas no domínio possam passar através da zona de geração sem alterar as suas características e propagarem-se para fora do domínio. O método utilizado baseia-se no trabalho de Wei et al. [19].
+2.4	Controlo da estabilidade numérica
+O modelo, em casos mais complexos, apresenta frequentemente oscilações espúrias, que amplificam e inviabilizam a obtenção duma solução numérica. Para atingir a estabilidade numérica foi introduzido um termo de difusão artificial semelhante ao de origem viscosa à equação de conservação da massa. Esta técnica baseia-se na constatação de que a fricção causada pela viscosidade elimina, selectivamente, as oscilações de frequência elevada.
+O termo de difusão artificial, vs, (m2/s) é dado por:
+(2 ■ p ■ Dx)3
+(5)
+em que l (m) é o comprimento de onda, Dx (m) é a distância média entre pontos do domínio e o parâmetro g (m/s) é uma constante de proporcionalidade que varia consoante o caso. Se a difusão artificial for bem dimensionada, permite eliminar as ondas de pequena escala sem alterar significativamente as ondas de maior escala da solução.
+2.5	Implementação da dissipação de energia
+2.5.1	Atrito de fundo
+A dissipação de energia por atrito no fundo desempenha um papel importante na transformação de onda perto da linha de costa, em zonas de baixa profundidade.
+O efeito de dissipação de energia devido a uma camada limite turbulenta no fundo do mar é simulado através da adição de um termo de tensão tangencial de fundo, Fb, à equação de conservação da quantidade de movimento, seguindo o procedimento adoptado por Nwogu e Demirbilek[9]. Fb é dado por:
+Fb =-—fwUa\Ua\	(6)
+h + h
+Para mais detalhes sobre a implementação deste termo ver Pinheiro et al. [11].
+2.5.2	Rebentação da onda
+Neste trabalho, foi implementada a dissipação de energia devido à rebentação de acordo com o procedimento de Kennedy et al. [5] através da inclusão de um termo de viscosidade turbulenta na equação de conservação da quantidade de movimento, dado por:
+Rb =—1— VvV(h + h)u	(7)
+h + h
+em que u é o coeficiente de viscosidade turbulenta, localizado na face frontal da onda. Este coeficiente é dado por:
+u = B8\h + hh	(8)
+em que ô é o coeficiente do comprimento de mistura, h é a derivada da elevação da superfície livre em ordem ao tempo. O parâmetro B controla a ocorrência de dissipação de energia e é dado por:
+1,
+B = 1
+°,
+~ *
+h &gt; 2ht
+h&lt;h£ 2h
+h £ ht
+(9)
+O início e fim da rebentação da onda é determinado utilizando o valor de referência h* definido por:
+hF F
+*
+t &gt; T *
+h = h )+í-kh)), ° £t-1°&amp;lt;T*
+h - .r
+(1°)
+em que t0 é o instante de tempo em que a rebentação da onda ocorre, t-t0 é a idade do
+evento de rebentação e T* é o tempo de transição, ou seja, o instante em que se considera que a rebentação cessa.
+O início e o fim da rebentação são definidos por:
+ht1 )= cbnjgü e	)= cbji^gh
+Os valores de cbini e cbflm situam-se entre 0.35 a 0.65 e 0.06 a 0.20, respectivamente.
+2.6	Dados e resultados
+O modelo BOUSS3W requer como dados de entrada:
+•	Características da agitação incidente:
+o ondas regulares: período e amplitude da onda, localização da zona de geração;
+o ondas irregulares: série temporal das ondas incidentes, localização da zona de geração;
+•	Características da malha de elementos finitos com que foi discretizado o domínio:
+o coordenadas dos pontos e respectivas profundidades;
+o a topologia dos elementos;
+•	Condições de fronteira;
+•	Distribuição de viscosidades no domínio e nas zonas absorventes;
+•	Parâmetros de saída do modelo.
+O modelo BOUSS3W produz como resultados:
+•	Mapas da elevação da superfície livre e componentes da velocidade em todo o domínio em determinados instantes de cálculo;
+•	Séries temporais da elevação da superfície livre em determinados pontos;
+•	Diagramas de isolinhas dos índices de agitação máximos em todo o domínio.
+Para facilitar a construção do ficheiro de dados, execução do modelo e visualização de resultados, foi criada uma interface com o utilizador para o modelo BOUSS3W. Esta interface foi desenvolvida numa folha de cálculo da Microsoft Excel™ recorrendo à linguagem de programação Visual Basic for Applications™.
+3.	VALIDAÇÃO DO MODELO
+Na validação da rebentação, o modelo BOUSS3W foi aplicado a dois casos de propagação e rebentação de ondas regulares, nomeadamente:
+•	Caso de Hansen e Svendsen [4];
+•	Caso de perfil barra-fossa, [15]e[16];
+Em todos os casos de teste, foi utilizada a versão unidimensional do modelo numérico. Para cada caso de teste, nas secções seguintes, apresentam-se as condições de cálculo e os resultados numéricos obtidos com o modelo numérico BOUSS3W. Estes resultados são comparados com resultados obtidos experimentalmente e de outro modelo numérico, cuja formulação de rebentação foi já validada. Note-se que em todos os casos de estudo foram efectuados uns cálculos preliminares para calibração dos parâmetros relacionados com a viscosidade numérica e com a rebentação.
+Os cálculos foram efectuados num PC com quatro processadores AMD Opteron™ 265 de 2GHz e com 8GB de memória RAM.
+3.1.	Parâmetros estatísticos
+Para quantificar o desempenho dos modelos numéricos, são utilizados alguns parâmetros estatísticos, como o desvio ou viés (BIAS), o erro médio quadrático (RMSE) e o índice de concordância de Wilmott (IC) dados por:
+n
+1 (y,~ x,
+BIAS = —
+n
+)
+—, RMSE =
+n
+1(y - x)	1 y - 4
+--------, IC = - -	i=------
+n	1 (y-x|+|x,-
+i=1
+|2
+x I)2
+(12)
+em que x, são os valores experimentais, y, são os valores numéricos, x é a média dos valores experimentais e n é o numero de pontos. O índice de concordância varia entre 0 e 1, e quanto maior o valor melhor a concordância entre valores numéricos e experimentais.
+3.2.	Caso de Hansen e Svendsen (1979)
+O modelo BOUSS3W foi aplicado a um caso simples de propagação e rebentação de ondas regulares sobre um perfil de praia de inclinação constante, para o qual existem resultados experimentais levados a cabo por Hansen e Svendsen [4].
+As ondas são geradas numa profundidade de 0.36 m e empolam numa rampa com declive de 1:34.26 até rebentarem, Figura 1. Os casos de teste n° 031041, 041041 e 051041 de Hansen e Svendsen [4] foram reproduzidos neste trabalho, o que corresponde às características das ondas indicadas na tabela 1.
+Figura 1. Caso Hansen e Svendsen (1979): Batimetria e localização da fonte, das zonas absorventes e das sondas.
+Teste	Período (s)	Altura de onda (cm)
+031041	3.33	4.30
+041041	2.50	3.90
+051041	2.00	3.60
+Tabela 1. Caso Hansen e Svendsen (1979): Características da agitação incidente.
+O tempo de simulação foi de 40 s. O domínio tem 63 m de comprimento e a fonte situa-se em x=30.0 m. Duas zonas absorventes foram colocadas nas extremidades do canal. O domínio foi discretizado por 4816 elementos finitos lineares com 0.09 m de espaçamento entre nós. Ao longo do domínio, 35 sondas numéricas foram colocadas de modo a se obter a altura de onda sobre a rampa e na zona de rebentação. De modo a evitar problemas de instabilidade numérica, o parâmetro de viscosidade em todo o domínio foi considerado 3.0x10-3, para os casos 031041 e 0341041 e 2.2X10-3 para o caso 051041.
+0
+0.05
+0.1
+0.15
+0.25
+0.3
+0.2
+h (m)
+Figura 2. Calibração dos parâmetros de início e fim da rebentação para o teste 031041.
+Dado que se dispõe de dados experimentais para estes casos, optou-se por começar por
+calibrar os vários parâmetros relacionados com a rebentação de modo a se obter os melhores resultados possíveis. Os parâmetros que determinam o início e o fim da rebentação (designados por ini e fin nas figuras) foram calibrados fazendo variar o seu valor e avaliando qual o que proporciona o melhor ajuste aos dados experimentais.
+h (m)
+Figura 3. Calibração dos parâmetros tempo de transição e coeficiente de mistura para o teste 031041.
+Da análise dos gráficos das Figura 2 e Figura 3 os valores adoptados são:
+h	T * = 5.^/Hjg Sb = 1.20	(13)
+Sendo que os valores recomendados por Kennedy para praias de declive constante são:
+oh1)	0n(F)
+-J— = 0.73 g.Ha	-!— = 0.08 g.Ha	T* = 5.0 Ha g	Sb = 1.20
+dt	dt
+(14)
+HS (m)	HS (m)	HS (m)
+Figura 4. Alturas significativas HS (m) para os testes 031041, 041041 e 051041.
+1.00	0.80	0.60	0.40	0.20	0.00
+h / h0
+Figura 5. Alturas de onda adimensionais com a profundidade inicial para os testes 031041, 041041 e 051041.
+Nas Figura 4 e Figura 5 apresentam-se os resultados numéricos e experimentais obtidos para cada condição de agitação incidente. De um modo geral, para todos os casos testados, os resultados numéricos acompanham bem os valores experimentais, quer antes da rebentação, na rebentação ou após esta. Com efeito, para cada caso de teste, verifica-se que a onda sofre o empolamento devido à diminuição da profundidade e acaba por rebentar sensivelmente nos mesmos locais que os obtido nos ensaios experimentais. Após dar-se início à rebentação a altura da onda diminui devido à dissipação de energia resultante do fenómeno turbulento da rebentação.
+No entanto, existem algumas diferenças, a dissipação de energia do modelo numérico é superior nos casos 031041 e principalmente no caso 051041. No caso 041041, a rebentação não se efectuou na mesma profundidade.
+As principais conclusões deste teste foram:
+o o modelo simula correctamente o comportamento da onda na sua propagação ao longo do domínio;
+o o modelo prevê correctamente a altura da onda antes da rebentação da onda, na rebentação e a dissipação de energia após esta, embora seja um pouco superior à verificada experimentalmente;
+o a posição da rebentação foi bem simulada pelo modelo numérico, havendo apenas uma ligeira diferença na profundidade. De qualquer forma essas diferenças dependem muito do caso de teste.
+3.3.	Caso do perfil de praia do tipo barra-fossa de Sancho (2002)
+Neste caso, o modelo BOUSS3W foi aplicado a um dos testes em modelo físico descritos em [15]e[16], que foram efectuados num canal de 100 m de comprimento, de 3 m de largura e de 5 m de profundidade, existente na Universidade Politécnica da Catalunha. O teste simulado foi o teste A, correspondente a uma onda regular com 0.112m de de altura e 2.5 s de período.
+A batimetria considerada nos cálculos é mostrada na Figura 6. O comprimento total é de
+119.6	m e foi construído de modo a ter 5 vezes o comprimento de onda inicial antes do 1° declive e 2 vezes depois do último declive, sendo z a coordenada vertical. A parte mais profunda tem -2.05 m de profundidade e a menos profunda tem -0.012m.
+Figura 6. Perfil barra-fossa: Batimetria, localização da fonte e das zonas absorventes.
+Para obter a altura de onda correcta no início do 1° declive, a amplitude inicial foi igual a 0.056. O período da onda foi de 2.5 s, o comprimento de onda inicial é de 8.77 m e a função fonte foi colocada em x= 26 m
+O domínio foi discretizado com elementos finitos lineares com dois nós sendo o espaçamento entre nós de Dx = 0.05m. O número de nós foi de 2393 nodes. O tempo de simulação foi de 70 s. Ao longo do domínio foram colocados 43 sondas numéricas.
+O primeiro parâmetro a ser calibrado é o da viscosidade numérica pois garante a estabilidade do método numérico mas não deve afectar quantitativamente os resultados. Por conseguinte, deve ser tão pequeno quanto possível dentro dos valores que permitam uma corrida estável até ao final da simulação. Daí os valores deste parâmetro testados irem diminuindo até se encontrar o valor ideal. Testaram-se valores de 5x10-3, 4x10-3, 3x10-3, 2x10-3 e 1x10-3, Figura 7. Sendo que este último já não conseguiu controlar as instabilidades numéricas e consequentemente o valor adoptado foi de 2x10-3.
+Figura 7. Perfil barra fossa. Variação da viscosidade numérica.
+De seguida foram efectuados alguns testes de sensibilidade para avaliar a influência da variação dos parâmetros de rebentação nos resultados e, como se dispõe de resultados experimentais, foi possível calibrar esses mesmos parâmetros.
+O parâmetro de início da rebentação é um dos mais importantes pois permite fixar a localização da 1a rebentação, o que pode modificar significativamente os resultados subsequentes. A Figura 8. representa os valores de altura de onda para valores do parâmetro de início da rebentação variando de 0.40 a 0.65. Uma análise estatística dos resultados revela que o valor de 0.50 é o que leva a uma melhor aproximação entre resultados numéricos e experimentais, Figura 9.
+0.35
+0.3
+0.25
+■ ini = 0.65 ■■■*■■■ ini = 0.50	• ini = 0.45 ini = 0.42 ■■■*■■■ ini = 0.40	+ Medições experimentais
+&lt;/&gt;
+1 0.15
+0.1
+0.05
+0
+0	20	40	60	80	100	120
+x (m)
+Figura 8. Perfil barra fossa. Variação do parâmetro de início da rebentação.
+Figura 9. Estatísticas dos erros para a variação do parâmetro de início da rebentação.
+O parâmetro de fim da rebentação foi variado entre 0.08 e 0.15 mas verifica-se que altera
+muito pouco os resultados. O valor mais adequado a este caso coincide com o de Kenendy et al. [5] e foi de 0.15, Figura 10.
+O mesmo se passa com o tempo de transição e o coeficiente de mistura que têm pouca influência nos resultados.
+Figura 10. Perfil barra fossa. Variação do parâmetro de fim da rebentação.
+0.35
+0.3
+0.25
+&lt;/&gt;
+1 0.15
+0.1
+0.05
+—■—tcst = 5.0 o tcst = 6.0 - * - tcst = 9.0 + Medições experimentais
+0
+0	20	40	60	80	100	120
+x (m)
+Figura 11. Perfil barra fossa. Variação do parâmetro do tempo de transição.
+0.35
+0.3
+0.25
+—®— delta = 1.00 —■— delta = 1.20 x delta = 1.40 delta = 1.60 + Medições experimentais
+0.15
+0.1
+0.05
+0
+0	20	40	60	80	100	120
+x (m)
+Figura 12. Perfil barra fossa. Variação do coeficiente de mistura.
+Assim, os valores dos quatro parâmetros da rebentação utilizados foram:
+(F)	i-----
+0.15 g.Ha
+T * = 5.^/ Hjg	db = 1.20
+(15)
+Note-se que os valores recomendados Kenendy et al. [5] para casos de perfis do tipo barra-fossa são os seguintes:
+3h( F)
+dt
+T * = 5.0^/Ha/g	d = 1.20
+(16)
+= o.1^gJH~a
+Com os parâmetros todos calibrados, procedeu-se à simulação numérica.
+Na Figura 13 representa-se a elevação da superfície livre em nos instantes de tempo 20s, 26s, 30s, 34s, 38s e 42s que correspondem ao intervalo de tempo em que as primeiras ondas completamente desenvolvidas chegam ao final da praia. Nestes gráficos pode ver-se a onda a empolar percorrendo a barra, a rebentar e a recuperar altura sobre a fossa e a rebentar novamente sobre a praia (este último fenómeno é mais visível no último gráfico em t=42s).
+Figura 13. Perfil barra fossa. Elevação da superfície livre em vários instantes de tempo.
+A Figura 14. apresenta a comparação entre os valores experimentais e numéricos obtidos ao longo do domínio. Os resultados numéricos foram obtidos com os modelos BOUSS3W e FUNWAVE, [6], que é um modelo de diferenças finitas, baseado nas equações de Boussinesq completamente não-lineares. Este modelo é de natureza mais complexa que o modelo BOUSS3W, no entanto a formulação da rebentação é em si muito semelhante e já previamente testada.
+Figura 14. Perfil barra fossa. Variação da altura de onda ao longo do domínio de cálculo.
+O modelo BOUSS3W simula bem o comportamento da onda até à localização da rebentação, que acontece um pouco antes do que ocorreu nos testes experimentais. A altura de onda na rebentação por parte do modelo numérico é um pouco inferior ao obtido nos dados experimentais. Após esta rebentação, as diferenças acentuam-se quer em termos de andamento geral quer em termos de valores absolutos. Apesar disso, a localização da última rebentação é bem reproduzida.
+	BIAS	RMSE	IA
+BOUSS3w	-0.0014	0.0208	0.9460
+FUNWAVE	0.0002	0.0452	0.9220
+Tabela 2. Perfil barra fossa: Desvio, erro médio quadrático e índice de concordância de Wilmott.
+Na Tabela 2, verifica-se que os valores de BIAS e de RMSE são baixos e que um índice de concordância é próximo de 1, o que mostra, que em geral, existe um boa concordância entre modelos numéricos e dados experimentais. Um viés de -0,0014 para o modelo BOUSS3W significa que o modelo tende a subestimar a altura da onda, enquanto que o viés de FUNWAVE significa que aquele modelo a sobreestima. No entanto, ambos os valores são muito pequenos verificando-se que o modelo FUNWAVE é um pouco melhor. Por outro lado, o erro quadrático médio e o índice de concordância do modelo BOUSS3W são melhores do que o do modelo FUNWAVE. De qualquer forma, note-se que ambos os modelos apresentam valores muito idênticos de bias, rmse e índice de concordância o que dá confiança na formulação introduzida no modelo BOUSS3W.
+4.	CONCLUSÕES
+Nesta comunicação, descreveu-se o modelo BOUSS3W resultante da inclusão da dissipação de energia por rebentação da onda.
+A metodologia seguida para inclusão do termo dissipativo baseou-se no procedimento adoptado por Kenendy et a/.[5], em que é adicionado um termo de viscosidade turbulenta na equação de conservação da quantidade de movimento.
+O modelo assim desenvolvido foi aplicado a casos de teste estudados em laboratório, de propagação de ondas em fundo de declive constante, [4], e sobre um fundo do tipo barra-fossa, [15] e[16], para validação da metodologia. Os resultados do BOUSS3W foram comparados com os resultados de ensaios experimentais nos dois primeiros casos ou numéricos obtidos com o modelo FUNWAVE.
+A implementação da rebentação no modelo BOUSS3W foi bem sucedida e o modelo conseguiu reproduzir de forma adequada o empolamento e a consecutiva rebentação da onda com a dissipação de energia esperada.
+Em mais detalhe, verificou-se que o modelo mostrou uma grande concordância com os dados experimentais, simulando quer a localização, a altura de onda na rebentação e depois a dissipação de energia especialmente no caso simples de rebentação da onda sobre um declive constante. No caso do perfil do tipo barra-fossa, verificaram-se boas concordâncias na
+localização da rebentação e na altura de onda constatada, mas ocorreram algumas diferenças após a rebentação, principalmente na dissipação de energia.
+Como trabalho futuro prevê-se melhorar a forma como o modelo lida com as instabilidades numéricas, retirando os termos artificiais e substituindo o esquema de interpolação linear por um esquema de interpolação mista linear/quadrático o que já provou ser eficaz noutros modelos semelhantes, [17].
+AGRADECIMENTOS
+Os autores agradecem ao Eng.° Francisco Sancho pela cedência dos resultados experimentais referidos em [15] e [16]. Agradecem também à FCT pelo financiamento concedido através dos projectos PTDC/ECM/67411/2006 e PTDC/ECM/73145/2006e PTDC/ECM/73145/2006.
+REFERÊNCIAS
+[1]	Berzins M., Furzeland R.M., Scales L.E. A user's manual for SPRINT -a versatile software package for solving systems of algebraic, ordinary and partial differential equations: Part 3 - advanced use of SPRINT. Technical Report TNER.85.058, Thornton Res. C, Chester. (1985).
+[2]	Brown P. N., Hindmarsh A.C. And Petzold L.R. “Using Krylov methods in the solution of large-scale differential-algebraic systems”. SIAM Journal on Scientific Computing. 15, 6, pp.1467 - 1488. (1989).
+[3]	Fortes, C.J.E.M. Transformações não-lineares de ondas marítimas em zonas portuárias. Análise pelo método dos Elementos Finitos. Tese de mestrado, IST/DEM. (1993).
+[4]	Hansen B. J. and Svendsen, I. A. Regular waves in shoaling water, experimental data. Series paper 21, Inst. Hydr. Engr., Tech. Univ. Denmark. (1979)
+[5]	Kennedy A. B., Chen Q., Kirby J. T., Dalrymple R. A. Boussinesq Modeling of Wave Transformation, Breaking, and Runup. I: 1D. J. Waterway, Port, Coastal, and Ocean Eng. P. 39-47, (2000).
+[6]	Kirby, J.T., G. Wei; Q. Chen, A. B. Kennedy e R. A. Dalrymple “FUNWAVE 1.0 -Fully Nonlinear Boussinesq Wave Model Documentation and User's Manual”, Research Report No.CACR 98-06, University of Delaware. (1998)
+[7]	Lynett, P. A Multi-Layer Approach to Modeling Generation, Propagation, and Interaction of Water Waves. PhD Thesis. Cornell University, August. (2002).
+[8]	Nwogu, O. Alternative form of Boussinesq equations for near-shore wave propagation. J. Waterway, Port, Coastal, and Ocean Engineering, 119 (6), p. 618 638. (1993)
+[9]	Nwogu, O. E Demirbilek, Z. BOUSS-2D: A Boussinesq Wave Model for Coastal Regions and Harbors. Report 1 Theoretical Background and User.s Manual. ERDC/CHL TR-01-25, U.S. Army Corps of Engineers (2001).
+[10]	Pinheiro L. V., Fortes C.J., Santos J.A. E Walkley, M. “Implementation of partial reflection boundary conditions in wave propagation model BOUSS3W”, in
+International Coastal Symposium ICS 2009. Lisbon. (2009).
+[11]	Pinheiro L. V., Rodriguez V. e Fortes C. J. E. Implementação do atrito de fundo e rebentação no modelo BOUSS3W. 1as Jornadas de Engenharia Hidrográfica. Lisboa, 21-22 de Junho (2010)
+[12]	Pinheiro, L. V.; Fernandes, J.L.M.; .Fortes, C.J. E.M. “Finite Element Mesh Generator with Local Density Conditioned to Bathymetry for Wave Propagation Models in Coastal Zones”. IMACS Series in Comp. and Applied Mathematics, Proc. of EUA4X@IAC 06, Roma Italy, October 2006. Vol.12, pp. 71 - 80. (2007a).
+[13]	Pinheiro, L. V.; Fortes, C. J. Geração de Ondas Irregulares com o Modelo de Elementos Finitos BOUSSIIW. II Conferência Nacional de Métodos Numéricos em Mecânica de Fluidos e Termodinâmica, Universidade de Aveiro, 08 e 09 de Maio (2008)
+[14]	Pinheiro. L. V. Um método de elementos finitos para a discretização das equações de Boussinesq estendidas. Tese de mestrado. Engenharia Mecânica, 1ST. (2007b).
+[15]	Sancho F.E, P.A. Mendes, J.A Carmo, M.G. Neves, G.R. Tomasicchio, R. Archetti, L. Damiani, M. Mossa, A. Rinaldi, X. Gironella e A. Sanchez-Arcilla “Wave hydrodynamics over a barred beach”, Proc. 4th Int. Symp. on Ocean Wave Measurement and Analysis - Waves 2001, S. Francisco, ASCE, 1170-1179. (2001)
+[16]	Sancho, F.E. “Surface wave statistics past a barred beach”, 6th Congress of SIMAI, Chia Laguna. (2002)
+[17]	Sorensen O. R.; Schãffer H. A.; Sorensen. L. S. Boussinesq-type modelling using an unstructured finite element technique. Coastal Engineering Volume 50, Issue 4 , Pages 181-198 February (2004)
+[18]	Walkley, M. A. A Numerical Method for Extended Boussinesq Shallow-Water Wave Equations. Doctor of Philosophy Thesis. The University of Leeds, School of Computer Studies, Sept., 174pp. (1999).
+[19]	Wei G., Kirby J. T. E Sinha A. “Generation of waves in Boussinesq models using a source function method”, in Coastal Engineering, 36, pp. 271 - 299. (1999).</field>
+	</doc>
+</add>

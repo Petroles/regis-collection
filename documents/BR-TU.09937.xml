@@ -1,0 +1,1353 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.09937</field>
+		<field name="filename">14972_TESE%20Juliana%20Valadares.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">UNIVERSIDADE FEDERAL DE PERNAMBUCO - UFPE CENTRO DE TECNOLOGIA E GEOCIÊNCIAS - CTG DEPARTAMENTO DE ENGENHARIA CIVIL - DECIV PÓS-GRADUAÇÃO DE ENGENHARIA CIVIL
+IMPLEMENTAÇÃO DA FORMULAÇÃO IMPES-MODIFICADO EM PROBLEMAS DE ELEMENTOS FINITOS COM VOLUME DE CONTROLE PARA SIMULAÇÃO DE FLUXO BIFÁSICO COM ACOPLAMENTO GEOMECÂNICO
+TESE DE DOUTORADO
+Julliana de Paiva Valadares Fernandes
+Recife, 30 de abril de 2013.
+IMPLEMENTAÇÃO DA FORMULAÇÃO IMPES-MODIFICADO EM PROBLEMAS DE ELEMENTOS FINITOS COM VOLUME DE CONTROLE PARA SIMULAÇÃO DE FLUXO BIFÁSICO COM ACOPLAMENTO GEOMECÂNICO
+Julliana de Paiva Valadares Fernandes
+Tese submetida ao corpo docente do programa de pós-graduação em engenharia civil da Universidade Federal de Pernambuco como parte integrante dos requisitos necessário à obtenção do grau de Doutor em Engenharia Civil.
+Recife,30 de abril de 2013.
+Catalogação na fonte Bibliotecária Margareth Malta, CRB-4 / 1198
+F363i Fernandes, Julliana de Paiva Valadares.
+Implementação da formulação impes-modificado em problemas de elementos finitos com volume de controle para simulação de fluxo bifásico com acoplamento geomecânico / Julliana de Paiva Valadares Fernandes. - Recife: O Autor, 2013.
+iv, 88 folhas, il., gráfs., tabs.
+Orientador: Prof. Dr. Leonardo José do Nascimento Guimarães.
+Tese (Doutorado) - Universidade Federal de Pernambuco. CTG. Programa de Pós-Graduação em Engenharia Civil, 2013.
+Inclui Referências.
+1. Engenharia Civil. 2. Elementos Finitos, IMPES modificado, Acoplamento Hidro-geomecânico I. Guimarães, Leonardo José do Nascimento. (Orientador). II. Título.
+UFPE
+624 CDD (22. ed.)
+BCTG/2014-180
+PROGRAMA DE PÓS-GRADUAÇÃO EM ENGENHARIA CIVIL
+A comissão examinadora da Defesa de Tese de Doutorado
+IMPLEMENTAÇÃO DA FOMULAÇÃO IMPES-MODIFICADO EM PROGRAMA DE ELEMENTOS FINITOS COM VOLUME DE CONTROLE PARA SIMULAÇÃO DE FLUXO BIFÁSICO COM ACOPLAMENTO GEOMECÂNICO
+defendida por
+Julliana de Paiva Valadares Fernandes
+Considera a candidata APROVADA
+Recife, 30 de abril de 2013
+Banca Examinadora:
+Prof. Dr. Leonardo José do Nascimento Guimarães - UFPE
+(orientador)
+Prof. Dr. Sidarta Araújo de Lima - LNCC
+(examinador externo)
+Prof.- Dr.- Analice França Lima Amorim - UFPE (examinadora externa)
+Prof.- Dr.- Lícia Mouta da Costa - UFPE
+(examinadora interna)
+Prof. Dr. Ivaldo Dario da Silva Pontes Filho - UFPE
+(examinador interno
+AGRADECIMENTOS
+Sempre serei grata ao meu Deus amado por ter me dado à vida e capacidade para vencer os desafios.
+Aos meus amados pais, Ana e Artur, por sempre ter me incentivado, financiado e apoiado como também aos meus irmãos, Fabiana, Luciana e Artur Filho.
+Ao meu eterno amor Igor. Sem você nada disso teria acontecido você é minha inspiração e porto seguro.
+A você meu irmão e cunhado Ewerton Pimentel obrigada por ser o meu referencial de pessoa e profissional.
+Aos meus príncipes Pedro e Samuel por terem suportado tão bem a ausência da mamãe.
+Aos meus sobrinhos queridos que titia ama tanto Daniel e Jonathan.
+Aos meus sogros, Rildo e Giselda, e aos cunhados Ildo, Helena, Ísis e Diego por terem acreditado no meu trabalho.
+Ao professor e orientador Leonardo Guimarães pela paciência e apoio.
+As amigas queridas Nayra, Luciana, Rose, Analice, Cecília por todo apoio, paciência e carinho.
+Aos demais amigos do LMCG por terem aguentado tanto desespero.
+A Jonathan Texeira que foi mais que um amigo, um verdadeiro irmão que tanto me ajudou e ensinou.
+Ao Dr. Daniel Pires por ter me ajuda a conseguir finalizar esse trabalho através das seções de terapia, elas foram essenciais.
+A todos que direta e indiretamente cooperaram para realização desse sonho.
+Ao PRH 26, a ANP e ao CNPQ pelo apoio financeiro à pesquisa.
+RESUMO
+A Engenharia de Petróleo tem como um de seus objetivos de estudo otimizar a produção de hidrocarbonetos através da previsão do comportamento do reservatório durante todo o tempo de produção, e com isso, a simulação numérica vem desenvolvendo um papel fundamental nesta previsão procurando entender os fenômenos físicos e químicos associados ao escoamento de fluido no interior dos mesmos. A determinação precisa da produção de um reservatório de petróleo, principalmente em rochas sensíveis a variações no estado de tensões, necessita da modelagem tanto do fluxo de fluido (água, óleo e/ou gás) quanto das deformações ocorridas no processo de produção (Minkoff et al, 2003). Trata-se de uma análise acoplada que pode ser empregada em estudos de reservatórios considerando os fenômenos de compactação e subsidência, fraturamento hidráulico e reativação de falhas e fraturas naturais. Tais fenômenos podem ter impacto direto na produção e levar a problemas ambientais. Devido então a esses fatores identificamos a necessidade de desenvolver um modelo que representasse não só o comportamento hidráulico, mas também mecânico de fluidos em rochas. Logo o presente trabalho consiste na implementação de uma formulação de fluxo bifásico tipo IMPES Modificado (IMplicit Pressure Explicit Saturation) onde o campo de pressões de fluido é calculado implicitamente (utilizando o método dos elementos finitos) e o campo de velocidades das fases fluidas é usado para o cálculo explícito do balanço de massa das fases (aqui usando o método do volume de controle e a determinação na aresta). Esta formulação foi, portanto, implementada e validada utilizando o Método dos Elementos Finitos com Volume de Controle -CVFEM no código numérico CODE_BRIGHT (Coupled Deformation Brine Gas and Heat Transport) considerando o acoplamento geomecânico, uma vez que o comportamento tensão-deformação da rocha é influenciado pela alteração dos campos de pressões e saturações dos fluidos.
+Palavras chave: Elementos finitos, IMPES modificado, acoplamento hidro-geomecânico.
+ABSTRACT
+In Petroleum Engineering the numerical simulation has been applied to study the rock reservoir behavior due to hydrocarbon production. It is a fundamental tool for prediction of mechanical processes associated with the fluid flow through hydraulic gradient between injector and producer wells. Then, the accurate determination of these phenomena, particularly in stress sensitive rocks, require the modeling of the multiphase fluid flow (water, oil and / or gas) coupled with rock mechanical behavior (Minkoff et al , 2003) and can be applied to important problems as compaction and subsidence, hydraulic fracturing, fault reactivation and natural fractures reopening. It can induce direct impact on production and environmental problems. Then, is essential the application of accurately models which represents the hydraulic phenomena for different fluid phases as well as the mechanical response of rocks, in a coupled manner. In the present work we present the implementation of two phase (water and oil) fluid flow formulation IMPES Modified (IMplicit Pressure Explicit Saturation) where the fluid pressure field is computed implicitly (using the finite element method) and the velocity field of the fluid phases is used to the explicit calculation of the mass balance of the phases (here using the method of volume control and determination on the edge). This formulation was implemented in a Finite Element Method with Volume Control (CVFEM) in house code CODE_BRIGHT (Coupled Deformation Brine Gas and Heat Transport) considering the geomechanical coupling, since the stress-strain behavior of the rock is influenced by the change of the fields of pressures and fluid saturations. The model was validated with literature problems and applied to a large number of problems of reservoir engineering related to geomechanics.
+Keywords: Finite elements, IMPES modified, Hydro-geomechanical Coupling.
+Sumário
+1.	INTRODUÇÃO	1
+1.1.	INTRODUÇÃO E MOTIVAÇÃO	1
+1.2.	OBJETIVOS	4
+1.3.	ORGANIZAÇÃO DO TRABALHO	4
+2.	REVISÃO BIBLIOGRÁFICA	6
+2.1.	RESERVATÓRIOS COM FALHAS GEOLÓGICAS	7
+2.2.	RESERVATÓRIOS NATURALMENTE FRATURADOS	11
+3.	FORMULAÇÃO MATEMÁTICA E HIDRO-GEOMECÂNICA	15
+3.1.	EQUAÇÕES DE FLUXO E DE TRANSPORTE	15
+3.2.	ESQUEMA IMPES E O IMPES MODIFICADO	19
+3.3.	EQUAÇÕES DO PROBLEMA MECÂNICO	21
+3.4.	ACOPLAMENTO HIDRO-GEOMECÂNICO	24
+3.4.1.	EQUAÇÕES DE ACOPLAMENTO - TERMO DA POROSIDADE	24
+3.4.2.	INTRODUÇÃO DA POROSIDADE NA EQUAÇÃO DA PRESSÃO	26
+3.4.3.	INTRODUÇÃO DA POROSIDADE NA EQUAÇÃO DA SATURAÇÃO	26
+4.	FORMULAÇÃO NUMÉRICA	28
+4.1.	MÉTODO DOS ELEMENTOS FINITOS COM VOLUME DE CONTROLE (CVFEM)	28
+4.2.	TRATAMENTO NUMÉRICO DA EQUAÇÃO DE FLUXO	29
+4.3.	TRATAMENTO DO TERMO VOLUMÉTRICO	31
+4.4.	EQUAÇÃO DA SATURAÇÃO	32
+4.5.	TRATAMENTO NUMÉRICO DA EQUAÇÃO MECÂNICA	34
+4.6.	TÉCNICA DE UPWIND DE PRIMEIRA ORDEM	35
+5.	RESULTADOS OBTIDOS	36
+5.1.	VALIDAÇÃO DA FORMULAÇÃO IMPES MODIFICADO: PROBLEMA DE BUCKLEY-LEVERETT 36
+5.1.1.	DESCRIÇÃO DO CASO	37
+5.2.	SIMULAÇÃO DE FLUXO BIFÁSICO EM PROBLEMA % DE FIVE-SPOT: ANÁLISE DE INFLUÊNCIA
+DE MALHA NA FRENTE DE SATURAÇÃO	39
+5.2.1.	DESCRIÇÃO DO CASO	39
+5.3.	DESLOCAMENTO DE FLUIDO EM UMA ROCHA HETEROGÊNEA	44
+5.3.1.	DESCRIÇÃO DO CASO	44
+5.4.	FLUXO BIFÁSICO EM MEIO NATURALMENTE FRATURADO	50
+5.4.1.	DESCRIÇÃO DO CASO	51
+5.5.	FLUXO BIFÁSICO EM RESERVATÓRIO COM PRESENÇA DE FALHA GEOLÓGICA
+CONSIDERANDO ZONAS DE DANO: CENÁRIO PÓS-REATIVAÇÃO	60
+5.5.1.	DESCRIÇÃO DO CASO	63
+5.6.	MODELAGEM ACOPLADA HIDRO-MECÂNICA DE COMPACTAÇÃO EM UM RESERVATÓRIO
+DE PETRÓLEO: MODELO SINTÉTICO DE GRANDE ESCALA	71
+5.6.1.	DESCRIÇÃO DO CASO	71
+5.7.	MODELAGEM ACOPLADA HIDRO-MECÂNICA DE COMPACTAÇÃO EM UM RESERVATÓRIO
+DE PETRÓLEO: ESTUDO DA INFLUÊNCIA DA VARIAÇÃO DE PERMEABILIDADE COM A
+POROSIDADE	74
+5.7.1.	DESCRIÇÃO DO CASO	75
+6.	CONCLUSÃO	81
+TRABALHOS FUTUROS	83
+REFERÊNCIAS	84
+LISTA DE FIGURAS
+Figura 1.1 - Representação de um corte de um reservatório submetido a um processo de recuperação secundária de petróleo. (Thomas, 2001)
+Figura 2.1. Tipos de falha: (a) normal ou gravidade, (b) inversa ou reversa, (c)
+Transcorrente ou direcional
+Figura 2.2. Detalhamento das zonas de dano em uma falha.
+Figura 2.3. Esboço conceitual de uma zona de falha seccionado perpendicular à direção de corte (sem escala) - (Billi et al, 2003).
+Figura 2.4. Modelo conceitual para a evolução da falha através do estudo da arquitetura nas rochas carbonáticas altamente porosas. (a) Falhas com deslocamentos menores do que 1 m. (b) Falhas com deslocamentos entre 1 a 5 m. (c) falhas com deslocamentos maiores do que 5 m. (Micarelli et al, 2006).
+Figura 2.5. (a) Diagrama esquemático da estrutura das zonas de dano e modelo conceitual da distribuição (b) da permeabilidade e (c) Módulo de Young. (Cappa, 2010).
+Figura 2.6. Modelo esquemático de meio fraturado em diferentes escalas (Modificado de Silberhorn-Hemminger, 2002).
+Figura 3.1 - Curva representativa das permeabilidades relativas da fase água e óleo.
+Figura 3.2 - Esquema Representativo da metodologia IMPES.
+Figura 4.1 - Representação dos elementos e dos volumes de controle adotados pelo CVFEM. (Cordazzo, 2006).
+Figura 4.2 - Representação do Volume de Controle (região hachurada): formada pelo programa CODE_BRIGHT. (Gomes, 2009).
+Figura 4.3 - Representação do fluxo através dos elementos de uma malha de elementos finitos.
+Figura 5.1 - Solução do problema de Buckley-Leverett. Comparação entre soluções para T=2000 dias.
+Figura 5.2 - Solução do problema de Buckley-Leverett. Avanço da frente de saturação utilizando o Método IMPES
+Figura 5.3 - Representação dos poços injetores e produtores para casos % de five-spot. (a) Caso 1, (b) Caso 2, (a) Caso 3 e (b) Caso 4.
+Figura 5.4 - Mapas de distribuição espacial da frente de saturação para o tempo de 3 anos: (a) caso 1, (b) caso 2, (c) caso 3 e (d) caso 4.
+Figura 5.5 - Produção acumulada de água e óleo para estudo do efeito de orientação de malha. Figura 5.6 - Produção acumulada de água e óleo para estudo do efeito de refinamento de malha.
+Figura 5.7- Representação de um reservatório de petróleo submetido à produção de óleo por injeção de água (Santana, 2008).
+Figura 5.8 - Mapas de distribuição espacial de (a) permeabilidade absoluta e (b) porosidade, para uma seção longitudinal de uma amostra de rocha.
+Figura 5.9 - Malha de elementos finitos.
+Figura 5.10 - Mapas de distribuição da saturação de água: (a) tempo inicial; (b) tempo de 6 dias; (c) tempo de 13 dias; (d) tempo de 60 dias.
+Figura 5.11 - Curvas de vazão e produção acumulada: (a) produção acumulada de água e óleo; (b) vazão de água e óleo.
+Figura 5.12 - Mapas de distribuição espacial da saturação de óleo para (a) tempo inicial, (b) tempo de 6 dias, (c) tempo de 13 dias e (d) tempo de 60 dias, para uma seção longitudinal.
+Figura 5.13 - Mapas de distribuição espacial da pressão de óleo, para uma seção longitudinal de uma amostra de rocha, juntamente com o mapa de distribuição da permeabilidade.
+Figura 5.14 - Malha de Elementos Finitos e condições de injeção para problema de injeção de água (a) em meio fraturado (b) sem fratura.
+Figura 5.15 - Distribuição da saturação de óleo para o tempo (a) 0 hora, (b) 10 horas, (c) 23 horas e (d) 48 horas.
+Figura 5.16 - Distribuição da saturação de água para o tempo (a) 0 hora, (b) 10 horas, (c) 23 horas e (d) 48 horas.
+Figura 5.17 - Distribuição da pressão para o tempo de 48 horas.
+Figura 5.18 - Vetores de velocidade de água para um tempo de 23 dias: (a) fratura; (b) fratura impermeável e (c) sem fratura.
+Figura 5.19 - Produção acumulada de água e óleo comparando os diferentes cenários simulados. Figura 5.20 - Fotografia de exemplo de zonas de dano e núcleo de uma falha na Formação Jandaíra - Icapuí-RN, Brasil (visita de campo com os geólogos da Petrobras, Claudio Lima e Anderson Moraes).
+Figura 5.21 - Exemplo de principais componentes da arquitetura da Falha de Bartlett - Bacia Paradox em Utah - EUA (Modificado de Berg e Skar, 2005).
+Figura 5.22 - Modelo (seção transversal vertical) de evolução de uma zona de falha com permeabilidade e circulação de fluido associados: (a) Falha geológica com concentração de zonas de dano e núcleo em definição; (b) Falha geológica com zona de dano e núcleo selante (condição estática); (c) condição de permeabilidade e fluxo (flechas pretas) para compartimentação por falha com região do núcleo permeável; (d) condição de permeabilidade e fluxo para compartimentação por núcleo selante. (Modificado de Billi et al, 2003).
+Figura 5.23. Descrição do Caso sintético: geometria do caso da falha com zonas de dano.
+Figura 5.24 - Malha de elementos finitos: (a) malha completa; (b) detalhe mostrando o refinamento da malha na falha e as zonas de dano e núcleo.
+Figura 5.25 - Mapa de permeabilidade relativa adotado nos casos com e sem comunicação entre reservatório de óleo.
+Figura 5.26 - Vetores de velocidade da fase óleo para tempo de cerca de 9 dias: (a) caso com comunicação entre reservatórios; (b) caso sem comunicação entre reservatórios.
+Figura 5.27 - Distribuição da saturação de água: (a) caso com comunicação de reservatórios para um tempo de cerca de 2 horas, (b) caso com comunicação de reservatórios para um tempo de 11 dias; (c) caso sem comunicação entre reservatórios para um tempo de cerca de 2 horas; (d) caso sem comunicação entre reservatórios para um tempo de 11 dias.
+Figura 5.28 - Perfil de saturação ao longo do reservatório para o caso com comunicação entre reservatórios.
+Figura 5.29 - Esquema representativo dos fenômenos de compactação e subsidência (Pereira, 2007).
+Figura 5.30 - Descrição do problema: (a) geometria e condições de contorno; (b) malha de elementos finitos.
+Figura 5.31 - Distribuição das pressões: (a) inicialmente geostático e (b) para o tempo final de simulação.
+Figura 5.32 - Deslocamentos verticais para tempo de cerca de 3 anos: compactação e subsidência.
+Figura 5.33 - Distribuição do campo de deslocamentos: (a) permeabilidade constante; (b) permeabilidade variável.
+Figura 5.34 - Comparação da bacia de compactação para o caso com permeabilidade constante e o de permeabilidade variável.
+Figura 5.35 - Distribuição da saturação de água: (a) permeabilidade constante - tempo inicial; (b) permeabilidade variável - tempo inicial; (c) permeabilidade constante para t= 1 ano; (d) permeabilidade variável para t=1 ano.
+Figura 5.36 - Distribuição da porosidade: (a) porosidade inicial; (b) caso sem variação de permeabilidade; (c) caso com variação de permeabilidade.
+Figura 5.37 - Distribuição da saturação de óleo: (a) permeabilidade constante - tempo inicial; (b) permeabilidade variável - tempo inicial; (c) permeabilidade constante para t= 100 dias; (d) permeabilidade variável para t=100 dias.; (e) permeabilidade constante para t=1 ano; permeabilidade variável para t=1 ano.
+Figura 5.38 - Curva representativa: (a) dos deslocamentos verticais ocorrentes no topo do reservatório para o tempo final; (b) Distribuição da pressão de óleo para diversos tempos de análise.
+LISTA DE TABELAS
+Tabela 5.1 - Condições de contorno e iniciais.
+Tabela 5.2 - Valores de permeabilidade.
+Tabela 5.3 - Propriedades para cálculo da densidade das fases.
+LISTA DE SÍMBOLOS
+SW
+Pc
+Po
+Pw
+P
+Vp&amp;lt;p 'Pvc a
+Pa
+Pw
+Po
+Ps
+sa
+V
+a
+saturação de água Saturação de óleo Pressão capilar Pressão de óleo Pressão de água Gradiente da pressão Porosidade Porosidade do volume de controle Representa a fase água ou óleo Densidade do meio Densidade da fase água Densidade da fase óleo Densidade dos grãos Saturação da fase a
+Saturação da água do passo preditor Velocidade da fase a
+V qa K Kra vDa G Pa Vz SWi Sor Aa Aw Ao A A fa N a'	Velocidade total Termo fonte/sumidouro Tensor de permeabilidade absoluta Permeabilidade relativa da fase a Velocidade de Darcy da fase a Gravidade Viscosidade da fase a saturação irredutível da fase de água saturação residual de óleo Mobilidade da fase a Mobilidade da água Mobilidade do óleo Mobilidade total Fluxo fracionário Vetor normal Tensor de tensões efetivas
+o I	Tensor de tensão total Tensor identidade de segunda ordem
+£ Ê e' B C U ú u Ü K vT E K N mT Bi	Tensor de deformações Deformação da fase sólida Deformação da matriz porosa Forças de corpo Matriz constitutiva Campo de deslocamento Vetor velocidade da fase sólida Vetor deslocamento aproximado Matriz de Rigidez Global Volume de vazios Volume total Índice de vazios Permeabilidade intrínseca Função de forma Vetor auxiliar Matriz de gradientes da função de forma
+\vcv\ ni I	Área do volume de controle Somatório dos segmentos do contorno j do volume finito Vi
+j=l CFL Fi	Condição de Courant-Friedrichs-Lewis Fluxo nos volumes de controle
+PV àts At	Volume poroso Passo de tempo da saturação Parâmetro da curva de retenção
+1. INTRODUÇÃO
+1.1.	INTRODUÇÃO E MOTIVAÇÃO
+Na indústria de petróleo existem diversas variáveis que devem ser levadas em consideração quanto à determinação da viabilidade ou não de produção em um reservatório de petróleo. Para contribuir com essa decisão podem ser empregadas diversas ferramentas que forneçam boas estimativas de produção de óleo e gás dados os cenários de distribuição de poços de produção e/ou injeção e vazões adotados. Neste contexto, destacam-se as ferramentas numéricas, pois são instrumentos eficazes na previsão do comportamento do reservatório, somados as análises de laboratório. Dessa maneira, os simuladores de reservatórios desenvolvem um papel fundamental na indústria e por isso vem sendo alvo de muita atenção nos centros de pesquisa públicos ou privados.
+Os simuladores de reservatórios têm sido utilizados desde a década de 50. No início, tratava-se de modelos rústicos capazes de reproduzir apenas escoamento monofásico em uma direção. Com o desenvolvimento de computadores digitais de alta velocidade e de métodos numéricos sofisticados, foi possível aperfeiçoá-los, a ponto de hoje modelarem escoamento trifásico tridimensional (Falcão, 2002).
+Os reservatórios de petróleo são constituídos por rochas porosas e localizam-se no subterrâneo, onde encontra-se o petróleo na forma crua. (Figura 1.1). A formação do petróleo se dá na rocha geradora e este migra, principalmente por capilaridade e forças de empuxo, para o reservatório que é cercado por rochas capeadoras. Estas que possuem baixa permeabilidade e fazem com que o óleo fique aprisionado.
+Existem estruturas geológicas que também contribuem para o aprisionamento do petróleo tanto na rocha geradora quanto no reservatório, sendo estas as falhas geológicas e fraturas, que no momento de sua formação constituem-se de zonas de alta permeabilidade, favorecendo a migração do óleo para camadas superiores. Porém, ao longo do tempo estas passam a ser preenchidas por detritos de rocha, com cimentações ou precipitação de minerais, reduzindo sua permeabilidade, levando a uma condição de trapa ou armadilha para os fluidos.
+Finalmente, se as rochas nas quais as falhas e fraturas estão inseridas sofrem alteração do seu estado de tensões por movimentações tectônicas, por exemplo, ou devido à alteração dos campos de pressões e saturações, induzida por um processo de recuperação de óleo e gás, poderá ocasionar a reativação das falhas e das fraturas. Com isso estas estruturas geológicas podem novamente ter sua permeabilidade aumentada, em função da quebra do selo hidráulico por cisalhamento (dilatância), tração ou compressão.
+Nesta tese, a área de estudo será restrita à rocha reservatório, que é onde se encontra o óleo, sendo que em alguns casos, considera-se a existência de falhas e fraturas, juntamente com sua influência no fluxo de fluidos.
+Acumulação
+Oleo
+Migração
+asíJígHJS
+Rocha reservatório
+130°
+Rocha geradora
+80°
+Janela de Geração
+Figura 2.1 - Representação de um corte de um reservatório submetido a um processo de recuperação secundária de petróleo. (Thomas, 2001).
+Para retirada do óleo das rochas reservatórios é necessário impor valores elevados de pressão e de vazão que promovem o fluxo de óleo e gás na direção do poço produtor.
+O mecanismo de recuperação mais simples é o de produção primária onde o óleo e gás é retirado apenas empregando-se poços produtores que operam a uma pressão abaixo da pressão inicial do reservatório. Porém, após certo tempo há um declínio da produção de óleo que poderá depender do tempo de explotação do reservatório, do tipo de rocha e de outros fatores (fechamento de poros e redução de permeabilidade pela compactação, por exemplo). Logo, para isso, foram criados mecanismos denominados de processo de recuperação secundária.
+Um dos métodos de recuperação secundária é a injeção de água, pois esta ajuda na estabilização das pressões do reservatório e auxilia no varrido do óleo até o poço produtor. Essa técnica, como todas as demais utilizadas, envolve custos elevados no seu processo de recuperação do óleo. Tendo em vista que nos dias de hoje esses métodos são possíveis de ser modelados, destaca-se novamente a importância da simulação numérica de fluxo multifásico em reservatórios de petróleo, mesmo havendo ainda um leque de incertezas que permeiam a caracterização do reservatório e a determinação das propriedades físicas.
+Em geral, o conjunto de equações resultantes do modelo matemático empregado para representar o comportamento do reservatório de petróleo quando sujeito a injeção de água é bastante complexo para ser resolvido analiticamente, utiliza-se então os métodos numéricos que aproximam as equações diferenciais parciais em sistemas lineares de
+equações algébricas. No emprego desses métodos aproximados, os domínios espacial e temporal são discretizados de forma a permitir uma eficiente solução computacional do problema.
+Na indústria de petróleo, tradicionalmente as equações principais do problema de fluxo multifásico (água, óleo e/ou gás) têm sido resolvidas pelo método das diferenças finitas, sendo depois adotado o método dos volumes finitos e por seguinte o método dos elementos finitos (Aziz &amp;amp; Settari 1979). O método das diferenças finitas é o mais utilizado devido, principalmente, a simplicidade de compreensão como também pela facilidade de implementação e por ser um método que utiliza malhas estruturadas, tornando-o assim, bastante econômico do ponto de vista de memória e de utilização de CPU. Diversos trabalhos tem abordado este método dentre os quais se pode citar Peaceman (1977), Ewing (1983), Chavent e Jaffre (1986), Chen et al. (1994) e Carvalho (2005).
+Outros métodos de simulação foram sendo estudos à medida que se necessitava da modelagem de estruturais com maior complexidade, tais como falhas selantes, reservatórios fraturados, poços inclinados, etc. Métodos como o dos elementos finitos (MEF) e o dos volumes finitos (MVF) foram desenvolvidos tornando-se possível a aplicação de malhas não-estruturadas, como também técnicas de adaptação de malhas melhorando a modelagem das características físicas e geométricas de alta complexidade.
+Mais recentemente, estudos vêm sendo feitos considerando a combinação do método dos elementos finitos com o método dos volumes finitos (Durlofsky, 1993; Geiger et al., 2003; Geiger et al., 2004). Nestas formulações, o problema da pressão é resolvido através do MEF-Galerkin com as velocidades calculadas nos centroides do elemento de uma malha primal, enquanto que o problema de transporte (equação da saturação) é resolvido por volumes finitos centrado no vértice, através de uma malha dual, levando em conta o campo de velocidades do fluido, sendo estas descontínuas nas interfaces dos elementos e contínuas nos volumes de controle (Geiger et al., 2003; Geiger et al., 2004; Carvalho, 2005).
+No estudo de fluxo de fluido em reservatórios é importante também considerar que as variações de pressões, temperatura e saturações podem afetar o estado de tensões das rochas e descontinuidades (falhas, fraturas, etc.), levando a deformações que podem modificar as propriedades de porosidade e permeabilidade absoluta da rocha reservatório, bem como afetar as rochas adjacentes. Trata-se, portanto, de um problema acoplado onde o fluxo de fluidos no reservatório e o comportamento geomecânico da rocha se influenciam mutuamente. Isto pode levar a ocorrência de problemas como compactação e subsidência, ativação e propagação de fraturas e reativação de falhas (Rutqvist et al, 2007; Soltanzadeh &amp;amp; Hawkes, 2008; Gomes, 2009).
+De uma forma geral os simuladores de reservatórios convencionais adotam os modelos geomecânico e de fluxo desacoplados e admitem a compressibilidade da rocha como a única propriedade responsável pela variação de volume de poroso, levando a uma independência do estado de tensões atuante (Pereira, 2007).
+O emprego de métodos numéricos para este caso consiste em se resolver o problema de fluxo de fluidos em meios porosos deformáveis, através do estudo do processo de produção de reservatórios de hidrocarbonetos (Onaisi et al, 2002; Minkoff et al, 2003; Tran et al, 2005; Pereira, 2007; Guimarães et al, 2009; Gomes, 2009).
+Em uma análise acoplada, o problema geomecânico tem o comportamento tensão-deformação da rocha dependente das tensões atuantes e dos campos de pressões e saturações dos fluidos. Já no problema de fluxo, as permeabilidades e porosidades da rocha são atualizadas (pelo módulo geomecânico) em cada intervalo de tempo.
+Enfim, neste trabalho foi implementada uma formulação acoplada hidromecânica, onde para o fluxo bifásico em meio poroso saturado empregou-se o esquema IMPES modificado, envolvendo duas fases imiscíveis e incompressíveis utilizando o método dos elementos finitos com volume de controle (Control Volume Finite Element Method -CVFEM). O problema hidráulico é acoplado ao mecânico através do termo de pressão e saturação, na equação de tensões efetivas, e da deformação volumétrica no problema hidráulico, sendo a porosidade e permeabilidade parâmetros de acoplamento.
+Esta formulação numérica foi aplicada a diversos problemas que envolvem a engenharia de reservatórios de petróleo, como por exemplo, o fluxo de fluidos em meio heterogêneo, em meios fraturados, em reservatórios com falhas geológicas considerando zonas de dano e, mostrando o acoplamento hidro-geomecânico, em um caso de compactação de reservatório. A ferramenta computacional utilizada foi o código in house em elementos finitos CODE_BRIGHT (COupled DEformation, BRIne, Gás and Heat Transport), descrito em Olivella et al (1995).
+1.2.	OBJETIVOS
+A Partir do exposto na seção anterior, tem-se como objetivo principal deste trabalho desenvolver uma metodologia numérica para simulação de reservatórios de petróleo que utiliza o esquema IMPES modificado a partir da estrutura do Método dos Elementos Finitos com Volume de Controle (CVFEM) e testar esta formulação implementada em casos hipotéticos que representam o comportamento dos reservatórios de petróleo quando submetidos à produção secundária.
+Os objetivos específicos são resumidos a seguir:
+•	Discretizar as equações do modelo matemático que foram implementadas utilizando o CVFEM;
+•	Apresentar as soluções das equações resultantes através do esquema IMPES modificado para malhas estruturadas e não estruturadas;
+•	Implementar o termo de acoplamento hidro-geomecânico para ser empregado em problemas que simulem a influência do fluxo de fluido na deformabilidade da rocha reservatório e vice-versa;
+E por fim, avaliar a metodologia numérica através de casos que simulem o comportamento dos reservatórios de petróleos quando depletados a partir da recuperação secundária.
+1.3.	ORGANIZAÇÃO DO TRABALHO
+Após a introdução e contextualização do trabalho, foram definidos os objetivos no capítulo 1. No capítulo 2 apresenta-se a revisão bibliográfica referente ao problema de fluxo de fluido em reservatórios de petróleo, trazendo uma descrição geral sobre falhas geológicas e fraturas, que foram estudados no presente trabalho.
+O capítulo 3 apresenta a formulação matemática do problema hidráulico e mecânico, sendo expostas as deduções das equações principais do escoamento em meios porosos deformáveis.
+No capítulo 4 é detalhada a formulação numérica descrevendo as equações através do Método dos Elementos Finitos com Volume de Controle.
+Os resultados da validação do modelo implementado, bem como a aplicação em casos sintéticos que simulam o comportamento do reservatório de petróleo sujeito a depleção em reservatórios fraturados, reservatório com presença de falha e casos de compactação com acoplamento hidro-geomecânico, foram expostos no capítulo 5.
+Por fim, no capítulo 6 apresentam-se as conclusões finais e sugestões para desenvolvimentos futuros relacionados com o conteúdo deste trabalho.
+2.	BIBLIOGRÁFICA
+A simulação de reservatórios convencional aborda o fluxo multifásico em reservatórios adotando diferentes formulações como modelos bifásicos água-óleo, modelos trifásicos imiscíveis e do tipo Black-Oil que consistem em um sistema trifásico com a miscibilidade entre a fase óleo e a fase gás, modelos composicionais que são adotados para simulação de processos de recuperação terciária e que envolvem problemas não-isotérmicos (injeção de vapor, por exemplo). O modelo Black-Oil considera as fases água, óleo e gás, ou para a condição saturada onde a fase gás se encontra livre, ou para a condição subsaturada onde apenas as fases água e óleo estão presentes estando a fase gás dissolvida no óleo. Os estados de saturação de um modelo Black-Oil dependem da pressão de ponto de bolha que quanto maior que a pressão do reservatório desprende o gás do óleo. De uma forma geral, a condição de subsaturação do reservatório indica um cenário de fluxo bifásico água-óleo.
+Os reservatórios consistem em meios porosos deformáveis cuja estrutura dos vazios pode apresentar interferências no regime de fluxo de fluidos no seu interior. Logo as propriedades de porosidade e de permeabilidade da rocha são essenciais para a qualidade produtiva de um reservatório. Além disto, as propriedades dos fluidos, como compressibilidade, densidade e viscosidade, também influenciam no deslocamento dos fluidos na rocha.
+Portanto, para a simulação de escoamento em reservatórios de petróleo, estas características devem ser cuidadosamente estudas e consideradas na construção do modelo físico a ser analisado, sendo necessárias equações que representem cada um destes fenômenos. Desta forma, o problema de fluxo multifásico, em reservatórios de petróleo, é resolvido através da solução de equações obtidas a partir de uma formulação matemática que consiste em equações de conservação de massa de fluido, para cada componente do reservatório, com a aplicação de relações constitutivas, equações da saturação dos fluidos e pressão capilar, como funções da fase, e condições iniciais e de contorno.
+Além disso, outros aspectos devem ser levados em consideração para a simulação de fluxo em reservatórios, entre eles, os modelos geológicos envolvidos que poderão implicar num aumento do grau de complexidade das análises. Isto se deve especialmente à possibilidade de uma grande variação espacial das camadas de rochas, aliadas à existência de estruturas de falhas e de fraturas, que poderão atuar como selos hidráulicos ou como canais de condutividade dos fluidos a depender da sua condição de preenchimento.
+Trata-se, portanto de um estudo complexo onde não só o conhecimento dos modelos matemáticos e numéricos é importante, mas também o entendimento dos aspectos geológicos envolvidos como as propriedades petrofísicas, existência de zonas de falhas e redes de fraturas naturais, rochas capeadoras, aquíferos no entorno do reservatório, etc.
+Baseado nisto descreve-se a seguir dois tipos de estruturas geológicas que tem papel essencial no comportamento do fluxo de fluido no interior de reservatórios, sendo estas as falhas e as fraturas. Consideram-se aqui não só os aspectos hidráulicos como também os mecânicos.
+2.1.	Reservatórios com falhas geológicas
+Define-se falha como sendo uma superfície de fratura, ao longo da qual ocorreu um movimento relativo entre dois blocos e pode ser proveniente de uma extensão, distensão ou torção. As falhas selantes têm grande importância na criação de armadilhas (trapas) de hidrocarbonetos, pois a rocha selante tem baixa permeabilidade impedindo o escape de flúido da rocha reservatório. A causa geral do selo das falhas é devido à quantidade de argila presente na rocha. Este selo da falha ocorre quando a mesma entra em atividade provocando o fraturamento dos grãos da rocha original produzindo finos maiores que a fração argila, os quais provocam uma grande redução da porosidade e assim produzindo o selo.
+Quando rochas reservatório são seccionadas por falhas, estas podem compartimentar as regiões do reservatório através da sua propriedade selante e, no caso de uma eventual reativação, recomunicá-las.
+Em geral estas estruturas apresentam uma superfície de ruptura plana (ou praticamente plana) semelhante à obtida em ensaios laboratoriais de amostras submetidas a tensões compressivas. Elas correspondem, tipicamente, a uma deformação em regime frágil e podem ocorrer em dimensões de escala microscópica até a proporção de grandes falhas regionais, com extensões na escala de centenas ou de milhares de quilômetros (Gomes, 2009).
+Em função do tipo de forças envolvidas, as falhas podem sofrer vários tipos de movimentos, que se podem ser dividias em três tipos básicos (Figura 2.1): Falha Normal, quando o bloco superior de rocha se eleva sem se sobrepor ao bloco inferior, ocorrendo devido a forças de distensão, provocando assim o aumento da área horizontal da zona afetada; Falha Inversa, quando o bloco superior se eleva e sobrepõe-se parcialmente ao inferior. Estas se formam devido a forças de compressão provocando a redução da área da superfície horizontal; Desligamento ou Transcorrente, o movimento dá-se na horizontal e ocorrem quando existem campos de forças horizontais com sentidos opostos dos dois lados da falha (forças de cisalhamento).
+(a)
+(c)
+(b)
+Figura 2.1. Tipos de falha: (a) normal ou gravidade, (b) inversa ou reversa, (c) Transcorrente ou direcional.
+O movimento de falhas no interior e na vizinhança de um reservatório de petróleo pode ser induzido, num processo de explotação, pela redução da poro-pressão e seu efeito sobre a tensão efetiva normal e ruptura por cisalhamento. Além disso, este movimento é
+função direta do estado tensional atuante no campo e nos planos de falha. Quando ocorre a reativação, a permeabilidade da falha é aumentada permitindo o fluxo de fluido através dela, comprometendo a integridade hidráulica das rochas capeadoras que selam o reservatório. Outro aspecto decorrente da reativação de falha é a abertura de fraturas e o surgimento de novas zonas de fluxo através de formações capeadoras de alta capilaridade e baixa permeabilidade. Isto releva a necessidade de uma previsão precisa do efeito de injeção/produção de fluidos sobre o comportamento mecânico das rochas e da falha, bem como a influência da falha reativada no regime de fluxo de hidrocarboneto no interior do reservatório. Vários trabalhos envolvendo modelagem numérica hidro-mecânica de problemas de reativação de falhas tem sido desenvolvidos tais como os de Guimarães et al, (2009), Gomes (2009), Ducellier et al. (2010), Righetto (2012), entre outros.
+Estudos geológicos subdividem a falha em zonas de cisalhamento, sendo estas chamadas de núcleo da falha e zonas de dano (Billi et al, 2003), conforme observado na Figura 2.2. Cada uma destas zonas da falha tem características próprias quanto a sua composição como também, quanto à heterogeneidade da permeabilidade. Embora o conceito genérico de zonas de cisalhamento exista há muito tempo, principalmente no vocabulário geológico ligado à mineração (Hills 1972), o conhecimento e sistematização dos conceitos fundamentais acerca da zona de cisalhamento podem ser atribuídos ao trabalho de Ramsay e Graham (1970) e posteriormente a Ramsay (1980), conforme descrito por Moraes (2004).
+Figura 2.2. Detalhamento das zonas de dano em uma falha.
+Outros trabalhos também tratam a falha como uma estrutura de meio contínuo constituída por diferentes elementos. Por exemplo, Seront et al (1998) definem os elementos de uma falha como protólito, sendo a rocha indeformada adjacente à falha, o núcleo é a parte ativa onde grandes deformações são encontradas e a zona de dano, que é de difícil definição. Além disso, consideram como sendo a região onde há o acúmulo de deformações, ou onde se localizam os menores deslizamentos, porém a deformação é maior que as que envolvem o protólito.
+As zonas de dano tipicamente incluem fraturas extensivas e uma rede de veios, mas podem geralmente incluir falhas subsidiárias e zonas localizadas onde ocorre a cataclase. O contorno de transição entre a zona de dano e o protólito é marcado pelo decréscimo na intensidade da fratura fazendo com que seja difícil localizar, precisamente, o contato entre as zonas (Figura 2.3).
+Outra definição para estas zonas de falha é dada em Shipton et al (2001/ o qual define que estas zonas geralmente consistem de um núcleo da falhas em que a maior parte dos deslocamentos é acomodada, rodeada por uma zona de deformação, referida como a zona de dano. Já Billi et al (2003/ afirmam que dois componentes estruturais caracterizam as zonas da falha como uma zona de dano e um núcleo da falha. O núcleo da falha consiste de rochas cataclásticas de baixa permeabilidade, onde o deslocamento é localizado e pré-existente, estruturas sedimentares e tectônicas são totalmente destruídas pelo fluxo cataclástico. A zona de dano consiste do volume de rocha afetado pelas falhas relacionadas com fratura.
+Portanto, as zonas de falha são tradicionalmente divididas, conforme o esquema na Figura 2.3, em zonas de dano envolvendo uma estrutura definida como núcleo de falha. Entre a zona de dano e o núcleo existe uma zona de transição que é mais permeável que estes. Por outro lado, a zona de dano tem sua permeabilidade diminuída à medida que se aproxima do núcleo da falha, o que pode para fins de análise numérica, ser representado ao se subdividir esta zona de danos em mais de uma zona, cada qual com permeabilidades distintas entre si (Figura 2.5).
+Zonas da Falha
+Figura 2.3. Esboço conceitual de uma zona de falha seccionado perpendicular à direção de corte (sem escala) - (Billi et al, 2003).
+No caso de rochas carbonáticas, Micarelli et al (2006) dizem que é possível determinar a arquitetura da evolução da falha neste tipo de rocha, sendo assim possível visualizar a formação das zonas de dano dependentes do nível de deslocamento (Figura 2.4). Para deslocamentos (horizontais) entre as camadas com menos de 1m de espessura não há a ocorrência de núcleo da falha, mas há redução da porosidade na fração mais fina da rocha e
+redução da permeabilidade restrita a poucos milímetros da rocha adjacente à superfície do sedimento. As falhas com deslocamentos entre 1 e 5 metros apresentam núcleo de falha descontínuo com início da cataclase, redução da permeabilidade dentro de 1 a 2 centímetros da rocha próximo a superfície da falha e redução da porosidade. Já para deslocamentos maiores do que 5 metros há ocorrência de núcleo de falha contínuo e decréscimo da permeabilidade.
+Banda nrotobrecia Núcleo da falha contínuo
+Zonas de dano
+(C)
+Figura 2.4. Modelo conceitual para a evolução da falha através do estudo da arquitetura nas rochas carbonáticas altamente porosas. (a) Falhas com deslocamentos menores do que 1 m. (b) Falhas com deslocamentos entre 1 a 5 m. (c) falhas com deslocamentos maiores do que 5 m. (Micarelli et al, 2006).
+No caso das análises realizadas neste trabalho, adotou-se uma simplificação quanto a isto, considerando cada zona da falha como meio contínuo homogêneo. Dados de laboratório sugerem que o fluxo hidráulico e de armazenamento estão concentrados nas fraturas da zona de dano, com permeabilidade de várias ordens de grandeza superior ao protólito e ao núcleo de falhas (Figura 2.5). É pouco provável que o excesso de pressão de poros possa ser mantido nas zonas de dano altamente permeáveis, a menos que haja fluxo maciço de fluidos.
+Fracture
+k(m7) +
+Fault zone
+10’14-10'16
+I___I
+N^Damage
+zone
+i___i
+Damage / zone Core
+Protolith \
+/■P'Vf/
+- Xz &gt;X
+&gt;.////
+A Protolith
+1-10
+E (GPa) A
+1O',7-1O'31
+lo'^w18
+50-70
+Figura 2.5. (a) Diagrama esquemático da estrutura das zonas de dano e modelo conceituai da distribuição (b) da permeabilidade e (c) Módulo de Young. (Cappa, 2010).
+Neste trabalho, as zonas da falha serão então chamadas de zona de dano externa, zona de dano interna e núcleo, como mostrado na Figura 2.2.
+2.2.	Reservatórios naturalmente fraturados
+Tem sido crescente o estudo da influência do fraturamento natural das rochas reservatório sobre a produção de óleo e gás. Para auxiliar o estudo do impacto dos reservatórios fraturados na produção de petróleo é necessária a utilização da simulação numérica com a finalidade de estudar o deslocamento dos fluidos no interior da rocha fraturada.
+Um reservatório é definido como fraturado, não apenas pela presença de fraturas, mas sim, pelo impacto que estas podem causar no comportamento do fluxo do reservatório sujeito a extração de fluido (Bourbiaux et al, 2005). O fluxo de fluido no interior destes reservatórios é devido, principalmente, à permeabilidade elevada das fraturas em torno dos blocos de matriz rochosa. Deste modo, a taxa de recuperação de petróleo e gás é função de variáveis como o tamanho e as propriedades permoporosas do bloco da matriz rochosa e das fraturas, onde a estas últimas consideram-se também sua distribuição, abertura, preenchimento, entre outros fatores.
+O fraturamento pode influenciar no fluxo de fluido de uma rocha, gerando porosidade e permeabilidade no meio fraturado ou apenas gerando permeabilidade no meio fraturado. Porém é possível que as fraturas não produzam porosidade e permeabilidade adicionais no maciço rochoso, mas criem significante anisotropia na permeabilidade. Discussões sobre os efeitos das fraturas sobre a permeabilidade e porosidade do meio têm sido apresentadas em trabalhos como Muñoz (2005), Bourbiaux et al (2005).
+Recentemente tem-se também observado uma corrida no desenvolvimento de tecnologias para o estudo dos chamados reservatórios não convencionais de óleo e gás, que envolve o problema de fluxo de fluido em meio fraturado e seu acoplamento ao comportamento mecânico das rochas e fraturas. Existem basicamente três fontes de gás não convencional sendo elas: Tight Gas Sands (gás de areias compactas); Shale Gas (gás de folhelho) e Coal Bed Methane (metano de carvão). Entre estes o Shale Gas ou gás de folhelho é o mais complicado e mais caro para desenvolver, porém reservas deste tipo têm sido as principais responsáveis pelo atual cenário encontrado nos Estados Unidos onde o desenvolvimento de shale gas e shale oil é uma realidade com uma produção superior aos 5,0 Mmbblpe/dia (milhões de barris por dia) (Barneda, 2012).
+O sucesso do shale gas nos Estados Unidos tem inspirado muitos na indústria através da tentativa de reproduzir o fenômeno ao redor do mundo. No Brasil existem indícios de recursos não convencionais nas Bacias do Parnaíba, Parecis, Amazonas, Paraná e Recôncavo. Um cálculo preliminar da Agência Nacional do Petróleo (ANP) indica que o volume recuperável de gás não convencional em três bacias sedimentares terrestres -Parnaíba, Parecis e Recôncavo - poderia chegar a 200 trilhões de pés cúbicos (TCFs) se fossem repetidas as mesmas condições encontradas na área pioneira de Barnett (Gale et al, 2007), no Texas, Estados Unidos (Valor Econômico, 2012).
+Logo, tanto os reservatórios convencionais de óleo e gás quanto os não convencionais geralmente apresentam-se naturalmente fraturados, porém, com suas fraturas naturais em diferentes condições de preenchimento por minerais precipitados e fragmentos de rochas cimentados. Em alguns casos estas se encontram seladas, e assim não contribuem para a permeabilidade do reservatório, porém em outros casos estas podem estar total ou parcialmente abertas, formando uma rede de fluxo de fluido intercomunicada.
+No caso dos reservatórios não convencionais de gás, por exemplo, estes tem que ser fraturados hidraulicamente e estimulados para produzir comercialmente. O controle destas fraturas induzidas está diretamente ligado à possibilidade de estas se comunicarem com as fraturas naturais do reservatório. Nestes casos, o fluxo de fluido a alta pressão (pressão acima da fratura) poderá, além de induzir fraturas na rocha, reativar fraturas naturais seladas ou parcialmente seladas, pela ruptura do material de preenchimento destas fraturas, seja por tração ou por cisalhamento, criando zonas de fluxo que, se ligadas às camadas superiores ou a falhas geológicas, podem se tornar canais de contaminação de aquíferos, rios, mares, etc., gerando um problema ambiental comumente tratado como um dos principais riscos da produção de hidrocarbonetos neste tipo de formação.
+Portanto, a simulação numérica de fluxo de fluidos em rochas naturalmente fraturadas tem sido uma ferramenta largamente empregada para a previsão do comportamento destes reservatórios. Trata-se de uma tarefa difícil devido à complexidade da distribuição espacial e das propriedades geométricas das redes de fraturas (Figura 2.6).
+Aquífero
+Fratura
+Rede de fraturas em matriz rochosa
+Figura 2.6. Modelo esquemático de meio fraturado em diferentes escalas (Modificado de Silberhorn-Hemminger, 2002).
+Quanto ao estudo de fluxo em meios fraturados tem-se observado vários trabalhos desenvolvidos sem a necessidade de refinamento da rede de fraturas, onde o modelo mais clássico é o de porosidade dupla introduzida por Barenblatt et al. (1960), assumindo que a matriz e fratura se comportam de forma contínua ou meio equivalente. Uma opção simplificada deste modelo foi proposta por Warren e Root (1963), que parte do princípio de que o meio de matriz é constituído por blocos descontínuos com intercâmbios de fluidos com a rede de fratura em qualquer local do reservatório. Warren e Root também adotaram a representação conhecida de blocos de matriz como conjuntos de paralelepípedos idênticos, a fim de formular, com mais facilidade, a transferência matriz-fratura (Bourbiaux et al, 2005).
+Vários outros trabalhos em reservatórios fraturados envolvendo modelagem numérica e ensaios laboratoriais têm sido desenvolvidos tais como os apresentados por Putra et al. (1999), Babadagli (2001), Reis (2002), Bourbiaux et al. (2005), Geiger et al. (2007), Tatomir (2007).
+De acordo com Tatomir (2007) existem três principais modelos para simulação numérica de meios fraturados: os modelos discretos, os multi-contínuos e os híbridos. No estudo de transporte em meios porosos fraturados, a maior parte do esforço de investigação tem sido dedicada ao transporte em modelos discretos. Estes estudos têm provado ser útil para a compreensão do fenômeno de transporte e modelos discretos e são necessários quando a abordagem do contínuo para a descrição do problema de transporte não é aplicável.
+Nos modelos discretos as fraturas são consideradas como estruturas discretas. Com esse modelo, existe a possibilidade de simular o fluxo de fluidos e processos de transporte de forma muito semelhante à natureza (Reichenberger et al. 2004).
+Como a abertura da fratura é muito pequena comparada com a extensão dos blocos de rocha e como as velocidades de fluxo nas fraturas são muito mais elevadas do que na rocha matriz devido à alta permeabilidade, a modelagem de fluxo em meios porosos fraturados é muito difícil.
+As fraturas podem ser modeladas como elementos equidistantes (o que implica exigências muito altas sobre a geração da malha e as ferramentas numéricas para resolver o sistema de equações) ou elementos dimensionais menores (também conhecido na literatura como elementos dimensionais mistos).
+Segundo Tatomir (2007), o modelo de fratura discreta é numericamente superior ao modelo clássico que usa o modelo de porosidade simples, especialmente devido à falta de um termo de troca entre as fraturas e a rocha matriz que podem ser considerados como uma vantagem conceitual importante. No entanto, a aplicabilidade de modelos discretos continua sendo bastante limitada a problemas de campo que requerem a determinação precisa das características das redes de fraturas em seu completo detalhe. Assim, em muitos problemas práticos de campo vale a pena usar modelos contínuos quando as condições necessárias, para adotar esta abordagem, sejam atendidas. A solução para isso é usar os dados geoestatísticos gerados juntamente com os dados determinísticos para a modelagem numérica.
+Neste trabalho, considera-se no problema que trata de fluxo em meio fraturado uma abordagem clássica, admitindo tanto a rocha matriz como as fraturas como meios contínuos de porosidade e permeabilidade simples, com uma discretização concentrada nas regiões do interior das fraturas.
+3.	FORMULAÇÃO MATEMÁTICA HIDRO-GEOMECÂNICA
+Modelos matemáticos que representem reservatórios de petróleo vêm sendo utilizados desde o final de 1980. Esses modelos descrevem o fluxo de fluido em reservatório de petróleo, juntamente com as condições de contorno e iniciais. (Chen et al., 2006).
+Como já discutido nos capítulos anteriores, a simulação numérica vem sendo correntemente empregada no estudo de fluxo multifásico em reservatórios, considerando, de forma acoplada ou não, seus efeitos sobre diversos problemas físicos envolvidos, tais como na resposta geomecânica das rochas e estruturas geológicas, nas reações químicas rocha-fluido, etc.
+De uma forma geral os códigos numéricos desenvolvidos para a simulação de reservatórios empregam modelos matemáticos que representam o deslocamento dos fluidos na rocha, tratado como meio poroso saturado. Nos casos dos problemas de fluxo bifásico abordados neste trabalho, a água e o óleo são fases imiscíveis e incompressíveis cuja formulação consiste em um sistema de equações diferenciais parciais elípticas (equação da pressão) e hiperbólicas (equação da saturação), considerando a pressão e a saturação dos fluidos como variáveis primárias, sendo estas equações fracamente acopladas através do campo de velocidades total.
+Emprega-se para isto o esquema IMPES modificado que trata a equação de pressão implicitamente, podendo esta ser resolvida em largos passos de tempo, de forma que em cada solução da equação da pressão, a hiperbólica precisa ser reavaliada várias vezes, sempre respeitando as condições de CFL, um fator limitante do método explícito (Teixeira et al, 2010). Este esquema permite então desacoplar de forma simples as equações discretizadas, tendo em vista que este desacoplamento facilita a sua resolução através da adoção de um método segregado.
+O modelo de fluxo pode ser modificado para se considerar o acoplamento do problema hidráulico ao mecânico. Neste caso são incorporados termos de acoplamento geomecânico nas equações de pressão e saturação, levando o efeito da deformação das rochas aos fluidos, enquanto que na equação de equilíbrio, que governa o problema mecânico através da equação de tensões efetivas, o campo de pressões e de saturações é considerado. A permeabilidade e porosidade passam a ser propriedades de acoplamento.
+Neste capítulo serão apresentadas as formulações dos modelos matemáticos que representam os problemas anteriormente descritos.
+3.1. Equações de Fluxo e Transporte
+O modelo matemático proposto neste trabalho considera a descrição macroscópica do fluxo bifásico de fluido imiscível em meio poroso saturado. Para fluxo bifásico, duas fases coexistem que são a fase molhante, neste caso a fase água e a fase não molhante, a fase óleo.
+A saturação da fase fluida é definida como a fração do volume vazio do meio poroso preenchido pelas fases. Inicialmente definimos a relação entre as saturações das fases fluidas através da relação abaixo:
++ s0 — 1
+(3.1)
+Onde sw e s0 representam as saturações das fases água e óleo, respectivamente. Outra importante relação é expressa através da diferença entre as pressões das fases:
+PC(sw) ~ PO- Pw	(3.2)
+A pressão da fase água é dada por pw e pO é a pressão do óleo, já pC representa a pressão capilar. Neste trabalho os efeitos capilares são desprezados, logo a relação entre as pressões das fases é considerada na Equação 3.3:
+Pw=Po=P	(3.3)
+É importante salientar que o efeito que a capilaridade desempenha na plastificação e resistência dos solos é crucial, no entanto, na maioria dos casos envolvendo meios rochosos, os efeitos da pressão capilar sobre a tensão efetiva são de menor intensidade. (Fredlund et al. 1999; Mendes,2008).
+As principais equações que representam o fluxo de fluido em meios porosos são a conservação de massa da fase e a equação empírica de Darcy generalizada. A equação de fluxo é escrita da seguinte maneira:
+= -’■ M.	« e {w, o}	1 :|1
+A dedução completa desta equação pode ser vista no trabalho de Peaceman, (1977). Nesta equação, pa, sa e va são densidade, saturação e a velocidade da fase a, respectivamente, p a porosidade do meio e qa o termo fonte/sumidouro. Já a representa a fase água (w) e a fase óleo (o).
+O vetor velocidade de cada fase é dado pela lei de Darcy podendo esta ser expandida para o meio bifásico através da lei de Darcy generalizada (Equação 3.5). Em meios porosos, as velocidades das fases va podem relacionar-se com o gradiente da pressão da fase como vemos a seguir:
+k
+vDa = -K— [ Vp - padV z\.	a e {w, o}	(3.5)
+Pa
+Sendo K o tensor de segunda ordem da permeabilidade absoluta do meio poroso, kra a permeabilidade relativa da fase a, g a gravidade e ga a viscosidade da fase a. A permeabilidade relativa kra representa o quanto uma fase influencia o comportamento da outra fase e vice-versa. O fator que multiplica o gradiente de pressão na equação é composto por termos que apenas dependem das propriedades da rocha (permeabilidade absoluta), das
+propriedades do fluido (viscosidade) e das propriedades de interação de ambas as fases (permeabilidade relativa), (Cordazzo, 2006).
+Pela definição da permeabilidade relativa kra, podemos estabelecer a relação entre a condutividade da fase a, Ka, e a permeabilidade intrínseca, K, a qual é dependente do fluido.
+Ka = kraK	a e {w, 0}	(3.6)
+A permeabilidade relativa é considerada como uma função da saturação da fase molhante e pode ser representada através de curvas como vemos apresentada na Figura 3.1. Essas curvas mostram para que valores de saturação as permeabilidades relativas das duas fases não são nulas.
+)
+(3.7)
+Onde swi é a saturação de água chamada de irredutível e sor é a saturação residual de óleo. Já, krw,kro são funções escalares da saturação denominadas de coeficientes de permeabilidade relativa da água e do óleo com 0 &amp;lt;krw &amp;lt;1. Esses parâmetros tem como função quantificar a resistência adicional que um fluido exerce sobre o movimento do outro.
+A Figura 3.1 mostra um comportamento típico dos coeficientes de permeabilidade relativa em função da saturação sw. À medida que se aumenta a saturação de água, a resistência a percolação do óleo torna-se maior fazendo com que a permeabilidade relativa kro diminuia. Da mesma forma, krw com sw.
+Figura 3.1 - Curva representativa das permeabilidades relativas da fase água e óleo.
+Os modelos mais comuns que determinam as permeabilidades relativas são Brooks -Corey e Van Genuchten (Helming, 1997; Chen, 2006).
+Introduzindo também as funções da mobilidade da fase através da Equação 3.8,
+temos:
+kra
+a e {w, o}
+(3.8)
+E a mobilidade total:
+A- —
+(3.9)
+Outro parâmetro importante para descrever o fluxo em meios porosos é o fluxo fracionário, que relaciona as mobilidades da fase a e a mobilidade total. Esse parâmetro é então definido através da Equação 3.11.
+a e {w, o}
+(3.10)
+Combinando as equações 3.1 e 3.4 determina-se a equação de balanço global:
+V-v = 0
+(3.11)
+Na qual, v é a velocidade total, sendo esta definida pela soma das velocidades das fases água e óleo:
+Aplicando o conceito de velocidade total, sendo esta expressa através da relação entre velocidade de Darcy das fases, obtém-se a Equação 3.12.
+v = vw + v0
+(3.12)
+A equação da velocidade é de suma importância já que ela é o meio de conexão entre a equação da pressão e a da saturação. A Equação 3.12 pode ser escrita também introduzindo a lei de Darcy (Equação 3.5). Chega-se então a expressão mostrada a seguir:
+v = - K[ÂVp - (Âwpw + ÂoPo)^Vz]
+(3.13)
+Para obtenção da equação da pressão, combina-se as equações de conservação de massa, a lei de Darcy generalizada e as equações de acoplamento, sendop a variável de uma das partes da equação resultante. A outra parte da equação possui como variável dominante a saturação de uma das fases e então é denominada de equação da saturação.
+Isolando o termo do gradiente de pressão da Equação 3.13 obtemos a expressão:
+- K
+C^wpw "b ■^opo) lzr7
++--------:------pK Vz
+(3.14)
+A&lt;
+Â
+Na equação 3.14, o termo gravitacional foi considerado como termo fonte da equação da pressão e as fases água e óleo como incompressíveis. Esta equação trata-se de uma equação elíptica por ser equivalente à equação de condução em regime estacionário. A
+As condições iniciais e de contorno apropriadas dependem do problema particular a ser resolvido. As mais comuns são as de Neuman e as de Dirichlet. Para as condições de Neuman prescreve-se o fluxo de fluido no contorno, em geral aplica-se uma vazão de água vw • n para o poço injetor e uma vazão de óleo v0 • n para o poço produtor, sendo n o vetor normal exterior ao contorno onde a condição é prescrita. Já as de Dirichlet prescrevem-se pressões na fronteira de injeção e no poço produtor.
+Introduzindo a Equação 3.14 na equação da lei de Darcy (Equação 3.5), considerando a=w, e após algumas manipulações algébricas, chega-se a expressão da velocidade de Darcy da água (Equação 3.14).
+Vw
+= /Wv-
+(Pw - Po^KVz = 0
+(3.15)
+Após manipulações algébricas das equações de balanço de massa e a lei de Darcy, e aplicadas na Equação 3.13, chega-se a forma da equação da pressão que é expressa a seguir:
+V-(ÃKVp) = -V-K(Pw+Po)gVz
+(3.16)
+Segundo Hurtado (2005), a equação de transporte e de fluxo pode ser escrita em função da equação de velocidade total. Essa forma de escrever a equação da saturação é denominada na literatura como a forma de Buckley-Leverett da equação da saturação. Portanto, determina-se a equação da saturação a partir da equação da conservação de massa (Equação 3.4) com a introdução do conceito de velocidade total (Equação 3.17).
+0	+ V. (ZwV) - V. [Ã K(Pw - Po)^Vz] = -Sw
+Uma vez determinada às equações matemáticas do problema passa-se então a determinar as equações discretizadas, uma particularidade da solução numérica deste problema é sua discretizaqção temporal, que se dá de forma segregada onde cada equação (pressão e saturação) é resolvida com seu passo de tempo característico. As equações discretizadas serão detalhadas no capítulo seguinte.
+(3.17)
+3.2.	Esquema IMPES e o IMPES modificado
+O esquema IMPES é determinado pelas equações da pressão e saturação que são calculadas de forma sequencial. Para isto, inicialmente é dada uma distribuição da saturação de fluidos no reservatório sw(ü, t = 0) = sw0, partindo-se então para a determinação do campo de pressão através da Equação 3.16. Com a resposta desta, passa-se ao cálculo do campo de velocidades através da Equação 3.15 e esse é então utilizado para alimentar a equação da saturação, Equação 3.17, tendo como resposta o campo das saturações. Dessa
+forma, as equações da pressão e da saturação estão acopladas de forma fraca através do campo de velocidades.
+Com a nova distribuição de saturação, retorna-se a equação de pressão e então é repetido o processo no próximo intervalo de tempo. Abaixo, a Figura 3.2 representa de
+forma esquemática a metodologia IMPES.
+solução implícita da equação de pressão
+solução explicita da equação da saturação T(k+1)=T(k)+AT
+cálculo do campo de velocidades
+At(p)=ZAt(s)
+At(s)
+Figura 3.2 - Esquema Representativo da metodologia IMPES.
+Pode-se ressaltar as principais vantagens do esquema IMPES como sendo:
+•	Simplicidade de Implementação;
+•	Baixo custo computacional devido à solução explícita da saturação.
+Porém, como desvantagens do método, a determinação explícita da saturação pode impor severas restrições no intervalo de tempo a ser usado durante a integração temporal, principalmente quando o termo capilar é considerado importante, já que este representa a difusão. Segundo Carvalho (2005), essa limitação do passo de tempo pode-se constituir numa restrição tão severa que inviabiliza a utilização do método IMPES.
+Com o objetivo de se contornar este problema, diversos estudos sobre versões modificadas da técnica IMPES tem sido propostas na literatura (Chen et al.; 2004, Hurtado et al., 2005; Silva, 2008). Esses estudos baseiam-se no fato de que o campo de pressão e as
+velocidades variam pouco ao longo do tempo em relação à saturação, por isso, propõe-se que a saturação seja calculada de forma desacoplada das pressões e das velocidades, de modo que a integridade temporal da equação de saturação seja respeitada.
+Como o cálculo do campo de pressão toma maior parte do tempo computacional para solução do sistema de equações, esse desacoplamento faz com que haja uma queda brusca neste tempo de solução, tornando viável a aplicação do método em problemas considerados de difícil resolução com o esquema IMPES original. Para maiores detalhes, ver trabalho de Chen et al. (2004).
+Logo, a diferença básica entre os dois esquemas numéricos se dá através da adoção da forma de controle do intervalo de tempo no qual o campo de pressões e de velocidades devem ser atualizados. Esse novo esquema permite então que a equação da pressão seja resolvida um número menor de vezes e com um passo de tempo maior, porém limitado, permitindo assim a precisão da solução numérica obtida. O cálculo da saturação continua dependente da condição de CFL.
+No presente trabalho, é então apresentado um procedimento adaptativo do esquema IMPES (esquema IMPES modificado) com a finalidade de reduzir o tempo total de simulação para problemas de fluxo bifásico água e óleo e que tenham alta complexidade quanto a sua geometria (problemas de reativação de falhas com zonas de dano, reservatórios fraturados, etc.).
+3.3.	Equações do Problema Mecânico
+De acordo com o princípio das tensões efetivas, proposto por Terzaghi na década de 20 do século passado, as deformações sofridas por um corpo sob condição saturada é função exclusiva da variação da tensão efetiva, caracterizada por:
+CT' = CT - pil
+(3.18)
+Onde ct representa o tensor de tensão total, ct ' o tensor das tensões efetivas, (parcela da tensões responsável pela deformação do meio poroso, pi a pressão exercida pelo fluido contido nos poros e I o tensor identidade de segunda ordem.
+Segundo Skempton (1954), a equação 3.18, sendo observada experimentalmente, descreve o comportamento dos solos saturados a partir da condição de incompressibilidade dos grãos. Se esta condição não é satisfeita, a resposta mecânica dos geomateriais é controlada por uma tensão efetiva que é função da tensão total aplicada e da poro-pressão, segundo a seguinte expressão:
+ct' = o — apil
+(3.19)
+onde o parâmetro a (coeficiente de Biot-Willis) está relacionado com a compressibilidades do meio e do mineral da rocha e é caracterizado por:
+a - 1_ k/ks
+(3.20)
+Sendo K e Ks os módulos volumétricos da matriz porosa e dos grãos, respectivamente. Quando as partículas sólidas (grãos) são consideradas incompressíveis com relação à matriz porosa, tem-se a — 1. Em meios porosos tais como solos, tal condição é comumente observada, enquanto que em meios rochosos isso nem sempre se verifica (Selvadurai &amp;amp; Nguyen, 1995).
+Admitindo-se a incompressibilidade das partículas do solo e do fluido contido nos poros, a deformação do meio saturado quando submetido a carregamento é resultado da expulsão do fluido presente nos poros (Bishop e Blight, 1963; Lambe e Withman, 1976). Esse fluxo do líquido resulta no acréscimo das tensões efetivas devido à transferência da pressão da água para os sólidos. O fenômeno do regime de fluxo estabelecido por acréscimo de carga, que pode ser representado pela lei da Darcy, foi estudado por Terzaghi com o desenvolvimento da teoria do adensamento unidimensional.
+Posteriormente a teoria unidimensional do adensamento foi estendida por Biot para materiais elásticos sob condições tri-dimensionais em meios isotrópicos e anisotrópicos. Uma característica do comportamento deste material poroelástico está na decomposição do tensor de deformações em duas parcelas: uma associada à ação da poro-pressão sobre a fase sólida (Ê) e a outra relacionada à deformação da matriz porosa ( e '):
+E — Ê + e'	(3.21)
+Sabendo-se que:
+Pi
+Ê-3KS	(3'22)
+Na teoria das tensões efetivas proposta por Terzaghi, a primeira parcela da Equação 3.21 não é considerada e o comportamento tensão-deformacão-resistência da matriz porosa é dependente apenas do estado tensões efetivas, o que é geralmente válido para solos, porém pode resultar de forma inadequada para meios porosos tais como rochas.
+Neste trabalho foram consideradas algumas hipóteses simplificadoras para a modelagem numérica da poroelasticidade:
+•	O meio é considerado homogêneo e isotrópico;
+•	É considerada a hipótese de pequenas deformações;
+•	Os casos analisados estão sob a condição axissimétrica e de estado plano de deformação;
+•	O fluxo é considerado bifásico;
+•	O meio é considerado totalmente saturado.
+•	Considera-se uma porosidade efetiva, ou seja, os poros são considerados interconectados;
+•	Os grãos são considerados incompressíveis.
+As relações macroscópicas da matriz sólida são caracterizadas pela condição de equilíbrio do meio, da cinemática do contínuo e das relações constitutivas apropriadas. Neste sentido, o estado de tensão em cada ponto do meio poroso (o), representado por um tensor de segunda ordem, deve cumprir a condição de equilíbrio representada pela equação:
+V-a + b = 0	(3.23)
+Onde b é o vetor que representa as forças de corpo atuantes em cada ponto do meio.
+O comportamento mecânico do meio deve ser caracterizado por modelos constitutivos apropriados para descrever as observações experimentais. No caso de meios porosos saturados, as deformações observadas são resultantes do campo de tensões efetivas definido pelo Princípio das Tensões. A relação tensão-deformação pode ser caracterizada por:
+a ' = C :e	(3.24)
+Sendo C é a matriz constitutiva que caracteriza o comportamento mecânico do material.
+As variáveis primárias do problema mecânico, em análise numérica, são geralmente representadas pelo campo de deslocamento (u) em cada ponto do corpo. Por outro lado, as componentes do tensor de deformações podem ser consideradas como funções contínuas das componentes de deslocamento. Para o caso de pequenas deformações, tal relação assume uma configuração linear de acordo com a seguinte relação:
+e = V2( V u + V u r)	(3.25)
+Neste contexto, será considerada a equação de conservação de massa da fase sólida, que, admitindo a hipótese de deformabilidade do meio (Bear, 1988), pode ser representada de acordo com a seguinte relação:
+[( 1 - 0 )Psl + V •[( I - 0 )M1 = o	(3.26)
+Onde U o vetor de velocidade da fase sólida devido à deformabilidade do meio, 0 é a porosidade e ps é a densidade dos grãos. A porosidade, por sua vez, é definida como a razão entre o volume dos vazios ( Vv) e o volume total de uma amostra ( VT):
+, Vv/
+0 = / VT	(3.27)
+A relação com o índice de vazios (e) é:
+0 = 71 + e	(3.28)
+3.4.	Acoplamento Hidro-Geomecânico
+O acoplamento hidro-geomecânico se dá através da combinação entre as equações principais do problema de fluxo bifásico e as equações que regem o comportamento mecânico do material e vice-versa, através de varáveis definidas como “variáveis de acoplamento”. Logo, o problema geomecânico terá o comportamento tensão-deformação da rocha dependente das tensões atuantes e dos campos de pressões e saturações dos fluidos. Porém, no problema de fluxo, as permeabilidades e porosidades da rocha serão atualizadas pelo módulo geomecânico em cada intervalo de tempo.
+A seguir serão expostas as equações que acoplam as equações fluxo com o modelo geomecânico.
+3.4.1. Equações de Acoplamento- termo da porosidade
+As equações de fluxo bifásico passam agora a considerar um termo divergente adicional, através da adição da componente de deformação do meio poroso (Biot) que envolve a velocidade de deslocamento da fase sólida ú. Este corresponde ao fluxo de fluido com relação à configuração de referência (rocha indeformada). Logo, a Equação 3.4 é agora definida como:
+d(0gta5a) + V. (Pa^a) + V • ( pSapaÚ) = 0	a € {w, o}	(3.29)
+Agora, as variáveis primárias são a pressão, a saturação de água e o vetor deslocamento u. Aqui, a porosidade p e a permeabilidade intrínseca k também podem ser consideradas como variáveis de acoplamento já que estas são atualizadas pelo módulo geomecânico, introduzindo nas equações de fluxo o efeito das deformações vindas dos primeiro.
+No problema geomecânico, o campo de pressões e as saturações da fase água alimentam o módulo mecânico através das atualizações da porosidade e da permeabilidade do meio através do novo de estado de tensões determinado. O comportamento mecânico do reservatório modifica a porosidade através da deformação volumétrica (Wan, 2002), que por sua vez é utilizada na determinação da permeabilidade intrínseca k do meio poroso. (Gomes, 2009).
+Mendes 2008, em seu trabalho relata que como a escala de tempo da hidrodinâmica é muito mais rápida que a da poromecânica, os dois subsistemas são fracamente acoplados podendo ser tratados por algoritmos de sequenciamento simples e eficientes sem o comprometimento da convergência numérica.
+Este tipo de abordagem é bastante utilizada devido à comodidade de acoplar simuladores precisos e eficientes previamente desenvolvidos para modelo geomecânicos com simuladores de fluxo em reservatórios (Mendes, 2008; Samier et al., 2003; David e Settari, 2002; Li et al., 2004; Minkoff et al., 2003a; Rhaman e Lewis, 1999; Yale 2002).
+A variação da porosidade ocorre na equação de conservação de massa de sólido através do vetor deslocamento da fase sólida U.
+|[( l —0)ps]+V-[( l —0)ps U] = 0	(3.3°)
+Onde a densidade da fase sólida é representada por , sendo esta dependente da compressibilidade da matriz. Aplica-se agora o conceito de derivada material na Equação 3.30, com relação à velocidade da fase sólida. Com isso, obtém-se a equação da variação da porosidade do meio:
+- _.uV.:	- .(l	;.V u
+Dt at	V7 Dt L ps OtJ
+Agora determina-se a variação da porosidade em função da deformação volumétrica ( £ J:
+£0 _ [( i-0)£Psl . (i — .) dep	(3.32)
+Dt L Ps ot J . VV dt
+Na Equação 3.32, o primeiro termo após a igualdade representa a compressibilidade da rocha, enquanto o segundo termo é devido à deformação do meio (termo geomecânico).
+No presente trabalho, como dito antes, os grãos são considerados incompressíveis, ou seja, Dps/Dt _ 0, logo a de Biot é igual a zero e por consequência fcs _ oo. A equação 3.31 pode então ser reescrita da seguinte maneira:
+— _	+uV-(•) . ^ _ ( l —V )V-U	(3.33)
+ot at	v 7 ot v '
+Como dito antes, o acoplamento hidro-geomecânico deve ser caracterizado através de uma relação direta entre a variação de uma variável mecânica e a evolução de uma propriedade do comportamento hidráulico. Na literatura as relações comumente encontradas permitem determinar as variações de permeabilidade intrínseca através de leis que relacionam esta grandeza com a porosidade (Sousa, 2004). Entre as relações mais utilizadas encontra-se a de Kozeny-Carman que relaciona a permeabilidade intrínseca com a porosidade através de considerações geométricas da estrutura microscópica do meio poroso:
+K =
+03( 1-0 o)2
+0o ( 1-0)2 K '
+(3.34)
+onde o e k0 são, respectivamente, os valores iniciais da porosidade e permeabilidade intrínseca do meio poroso. Por outro lado, as variações de porosidade em função das variáveis primárias são obtidas a partir da Equação (3.32). A permeabilidade do meio poroso, no entanto, não depende unicamente da porosidade e uma série de fatores devem ser considerados (tamanho e distribuição dos poros, percentual e distribuição dos finos, diâmetro efetivo dos grãos, etc). Em decorrência desta complexidade é muito comum o uso
+de relações experimentais que representam estimativas aproximadas. No programa CODE_BRIGHT, que foi utilizado neste trabalho, está implementada uma equação que representa a dependência da permeabilidade intrínseca com a porosidade por meio de uma lei exponencial empírica (Guimarães, 2002).
+k = k0 • exp[h(0 — 0O)]	(3.35)
+Sendo b é um parâmetro de ajuste que serve para regular a amplitude da influência da variação na porosidade do meio sobre a permeabilidade. A magnitude dos valores assumidos por este parâmetro se justifica pela maior ou menor densidade do material. Em geral, valores elevados de b são empregados para rochas densas dada a pequena magnitude da variação da porosidade. Essa lei permite representar, de maneira aproximada, o comportamento hidro-mecânico de diversas classes de meios porosos, mediante a escolha do valor do parâmetro de ajuste.
+3.4.2.	Introdução da variação da porosidade na Equação da Pressão
+Introduzindo o termo de acoplamento diretamente na Equação 3.16, que representa a equação da pressão, para o esquema IMPES modificado implementada neste trabalho, é expressa através da Equação 3.36.
+V • (AK7p) = -V • K(pw + p0)g - V • U
+Sendo u transmitida a equação da pressão da seguinte maneira:
+uk - uk 1 tk+1 - tk
+(3.36)
+(3.37)
+3.4.3.	Introdução da variação da porosidade na Equação da Saturação
+Como dito anteriormente, a equação da saturação é então determinada explicitamente através do Método dos Volumes Finitos com conservação a massa local com o objetivo de preservar a física associada ao efeito provocado do fluxo de fluido no reservatório juntamente com o acoplamento geomecânico.
+Existe uma gama de estudos sobre qual sistema de Volumes Finitos deva ser utilizado em problemas hiperbólicos que regulam o fluxo de duas fases em meios rígidos na ausência dos efeitos capilares. O maior desafio é a generalização de tal esquema para incorporar o acoplamento geomecânico, que é representado pela derivada temporal da porosidade no termo de armazenamento, juntamente com a velocidade da fase sólida no fluxo total na equação, representada abaixo, sem deterioração da conservação de massa local (Mendes, 2012):
+dsw	r_	,	{	dü\	d b
+(p~dtL + ^-(/wV) _	v-	K(Pw	~	Po)g]+	v-	(s^b	= -sw
+(3.38)
+Em seu trabalho, Mendes (2012) explica que para realizar o cálculo mostrado na Equação 3.38, somando ao cálculo preciso da velocidade, uma aproximação correta da porosidade é obrigatória, a fim de se representar corretamente a influência da deformação da rocha no fluxo de fluido. O tempo utilizado no cálculo do termo da saturação (hiperbólico) é determinado através de esquemas explícitos com o intervalo de tempo limitado pela condição de CFL. Isso reforça a necessidade da adoção do sincronismo correto entre os subsistemas quando evoluem com o tempo, podendo ser realizado através de um esquema preditor-corretor.
+Para tratar o termo da direita da igualdade da Equação 3.38 é aplicada a decomposição de operadores baseado num esquema de predição e correção do termo da saturação, com o objetivo de contabilizar separadamente a parcela convectiva da saturação e a parcela que representa o movimento provocado pela reação ao fluxo na rocha, parcela da porosidade, tendo em vista que a porosidade é contabilizada num tempo anterior na equação da saturação.
+Como o primeiro passo, tem-se inicialmente o campo de saturação e os campos (p,vs = dus/dt, v, determina-se o problema preditor, s^ no tempo tk+1 através da Equação 3.39.
+b ^7 + V ' (^V) - V- P K(P'- - P + V ' (S^b	= 0	(3.39)
+A mobilidade da fase água, na equação da saturação (Equação 3.39), é dependente da s^. Como condição inicial tem-se que (s^)k = sv" e como condição de contorno s^( t) = s.
+O segundo passo é a correção da porosidade. Isso se dá através da determinação de Sw+ 1 como mostrado na equação 3.40:
+çk+1 _
+b&gt;k(Sw)k+1
+(3.40)
+&lt;bk+1
+Segundo Mendes (2008), o passo corretor é importante para preservar a fração de volume de água,	, já que a porosidade varia temporalmente. Isso faz com que haja a
+garantia da diminuição do erro.
+4.	FORMULAÇÃO NUMÉRICA
+Neste capítulo, as equações numéricas do modelo de fluxo multifásico adotado e também do modelo mecânico utilizado nos problemas propostos serão detalhadas, com a adição do termo de acoplamento hidro-geomecânico e o esquema numérico utilizado.
+Neste trabalho foi utilizado o Método dos Elementos Finitos-Galerkin para resolver numericamente os problemas de aplicação do esquema IMPES modificado. Para visualização dos resultados (pós-processo), utilizou-se o programa Paraview.
+A ferramenta computacional adotada (processador) foi o programa de elementos finitos CODE_BRIGHT (Coupled Deformation Brine Gas and Heat Transport). Este programa é capaz de resolver problemas termo-hidro-químico-mecânicos de maneira acoplada em meios porosos. Inicialmente ele foi desenvolvido para meios salinos e posteriormente adaptado para outros geomateriais.
+4.1. Método dos Elementos Finitos com Volume de Controle (CVFEM)
+Estudos sobre qual a melhor técnica para calcular velocidades de fluido a partir do campo da pressão utilizando o método de elementos finitos tem sido objeto dos trabalhos de Cordes &amp;amp; Kinzelbach 1992; Durlofsky 1994; Mose' et al.1994; Cordes &amp;amp; Kinzelbach 1996.
+Geiger (2004) afirma que há duas possíveis aproximações baseadas no método dos elementos finitos. A primeira é a que utiliza a formulação de elemento misto, a qual determina as pressões de fluidos no centro dos elementos e os fluxos de fluidos no ponto médio das arestas. Neste método, o fluxo é contínuo entre elementos finitos adjacentes. Esse método é bastante utilizado no esquema IMPES, como se pode constatar nos trabalhos de Eymardet al. 1989; Durlofsky 1993; Bergamaschi et al. 1998; Huber &amp;amp; Helmig 1999. A segunda abordagem determina o campo de velocidades dos fluidos pela diferenciação da pressão entre dois volumes de controles adjacentes. Essa abordagem tem bastante sucesso quando empregada a problemas de fluxo de fluido em reservatórios com complexo faturamento, como também em problemas de meios porosos que usam funções de interpolação linear e quadrática entre elementos finitos. Mais detalhe sobre essas técnicas nos trabalhos de Matthãi &amp;amp; Roberts 1996; Matthãi et al. 1998.
+Combinações entre o método dos elementos finitos e o método dos volumes finitos (CVFEM) são comumente utilizados (Eymard et al. 1989; Durlofsky 1993; Bergamaschi et al. 1998; Huber &amp;amp; Helmig 1999) . Essa combinação de métodos cria uma malha de volumes finitos como complemento da malha de elementos finitos. O MEF (Método dos Elementos Finitos) apresenta flexibilidade geométrica, porém em termos de precisão e tempo de execução o CVFEM produz melhores resultados do que o MEF totalmente acoplado e com upwind (Geiger, 2004).
+Uma das formas de calcular o fluxo em meios porosos, a partir do CVFEM, é determinar a equação parabólica da pressão de forma implícita (utilizando o MEF) enquanto o campo de saturação é fixado obtendo-se as velocidades das fases fluidas. Esses campos de velocidades são então usados para calcular a equação hiperbólica de balanço de massa de
+fluidos (utilizando o método de volumes finitos), enquanto o campo de pressão permanece fixo.
+O esquema IMPES agrega o que tem de melhor nos métodos de elementos finitos e volume finitos, principalmente a flexibilidade de se poder adotar malhas não estruturadas, pois o método dos elementos finitos permite resolver campo de fluxo não homogêneo com várias ordens de magnitude de escala (Geiger, 2004). A Figura 4.1 representa as malhas utilizadas no esquema IMPES.
+Elemento de malha /
+\
+Volume de controle
+Ponto de integração
+Figura 4.1 - Representação dos elementos e dos volumes de controle adotados pel
+CVFEM. (Cordazzo, 2006).
+Algumas aproximações são adotadas no CVFEM. A primeira delas é que as pressões de fluidos são calculadas no centro dos elementos enquanto que os fluxos de fluido são obtidos simultaneamente nos pontos médios das arestas dos elementos finitos. Esses fluxos são contínuos entre elementos finitos adjacentes. A segunda aproximação é calcular as velocidades dos fluidos de elemento a elemento, o que difere das pressões.
+Segundo Durlofsky (1994), ao integrar o fluxo em cada segmento, ou seja, o produto da velocidade, vector normal e o comprimento do segmento sobre toda a superfície do volume finito, a conservação da massa é obtida nos volumes finitos.
+Aqui, serão apresentadas as equações de fluxo bifásico em meios porosos utilizando o método de volumes finitos que é acoplado a um método de elementos finitos de Galerkin com o esquema IMPES modificado e a adição do termo de acolpamento hidro-geomecânico.
+4.2.	Tratamento Numérico da Equação de Fluxo
+Para discretização dos parâmetros de transporte como k, p, q, utiliza-se o Método dos Elementos Finitos - Galerkin, onde estes são definidos no elemento e discretizados no espaço e no tempo. Para discretização no tempo utiliza-se o método de Euler, sendo o campo de pressões de fluidos dados nos nós de cada elemento a cada passo de tempo.
+A determinação da equação da pressão se dá através da discretização da velocidade total a partir da lei de Darcy generalizada (Equações 3.5 e 3.13, respectivamente). É importante salientar que o fluxo de fluido conserva massa através das arestas dos volumes finitos nos elementos finitos associados.
+Na Figura 4.2 pode-se ver com mais detalhe a discretização do domínio □ que é estabelecida através da malha triangular. As funções polinomiais adotadas são lineares e são consideradas em todo espaço V. Estas funções são restritas em cada triângulo da malha de elementos finitos. As funções de forma adotadas são apresentadas abaixo:
+Nt =
+1 se í = j
+0 se i j
+(4.1)
+Onde, i e j são índices referentes aos nós n dos elementos e, respectivamente.
+Figura 4.2 - Representação do Volume de Controle (região hachurada): formada pelo programa CODE_BRIGHT. (Gomes, 2009).
+Aplicando o Método dos Resíduos ponderados à equação 3.37 e substituindo as funções de forma Ni chegamos à equação 4.2 que é mostrada a seguir.
+I	A VpKVNtd í! + I K(Ânpn + Âwpw)gWjd í! + I Vúd í! — I qtNtd í! = 0	(4.2)
+Jq.	Jq.	Jq.	Jq.
+Sendo p, representada pela função de interpolação no elemento p(x,t) = rp j( t)Nj. Na equação acima, o primeiro termo consiste num termo de segunda ordem sendo assim necessário o emprego do Teorema da Divergência para reduzir esta ordem (Forma Fraca do MRP - Galerkin). Os termos advectivos representam o fluxo de massa lateral ao volume de controle associado ao nó i a partir dos elementos vizinhos.
+Considerando então a contribuição do m-ésimo elemento para o fluxo lateral na direção do nó i é expressa através da Equação 4.3.
+ÍÀ,.C' í WC’V'' [p]*
+- em
+k+0
+(4.3)
+A matriz de condutância presente na equação 4.3 é mostrada de forma separada através da equação 4.4.
+K
+em
+VNi(k)kemVNjdV
+(4.4)
+Já o termo gravitacional que também encontra-se na equação 4.3 é discretizado da seguinte forma:
+(4.5)
+Por fim, a forma discretizada do termo da velocidade da fase após resolvida a Equação 4.5, é mostrada abaixo:
+n,d
+^aj — ’ ’ —Pík-íjVNjíAa + ^-ij^aSPa	(4.6)
+í,j
+Sendo Xa e pa assumidos, por questão de simplificação, como constantes no elemento.
+4.3.	Tratamento do Termo Volumétrico na Pressão
+O termo de acoplamento pode ser considerado com um termo de armazenamento V • ú, que representa a taxa de deformação volumétrica. Este termo é escrito em termos de um vetor auxiliar mT — (l,l,l,0,0,0) e da matriz de gradientes da função de forma B;- usada na aproximação de elementos finitos para o problema mecânico. Portanto, o termo de acoplamento é discretizado da seguinte maneira:
+L
+NfV-
+(ü)dtt = I N¡V-
+q
+údft = I mTNiBiÍLd^
+Jq
+(4.7)
+Onde:
+rdNif
+/ dx
+0
+B¿ =
+dNt/
+/dy
+dNt/
+/dy
+dNu
+/ dx
+(4.8)
+0
+Essa matriz de função de forma está representada para problemas bi-dimensional.
+Fazendo a aproximação da forma integral tem-se que a contribuição do m-ésimo elemento para o volume de controle centrado no nó i é:
+J	í! « (
+£ A¿mrB¿dv)
+ufc  u
+fc- i
+(4.9)
++1 _
+-V
+Sendo j o somatório dos nós do elemento e u é o vetor de deslocamentos nodais.
+4.4.	Equação da Saturação
+Como mencionado no capítulo anterior, a equação de transporte foi discretizada seguindo o esquema de decomposição de operadores, onde a equação 3.37 foi transformada em duas equações, utilizando-se de uma solução preditora onde são considerados os termos de convecção segregação gravitacional, o termo volumétrio e a solução corretora, que considera apenas o termo de variação da porosidade, tendo como condição inicial para o problema a solução do passo preditor.
+Passo Preditor
+Para explicar o passo corretor, toma-se por base a equação 3.40. Como são conhecidos&amp;lt;/&gt;, vs e vt e são considerados estacionários ao longo do intervalo de tempo [ tfc, +1 ], determina-se s^ em tal que, como condição inicial tem-se que s^( tfc) = e como condição de contorno s^( tfc) = s. Discretizando a equação 3.40 adotamos o método dos volumes finitos e consideramos A t = +1 _ . É preciso enfatizar que o passo de tempo adotado agora é bem menor que o passo de tempo utilizado no passo corretor devido ao fato da escala de tempo de escoamento ser bem menor que o da poromecânica.
+^d V = _ I V.(^vt)dV + I K(Ânpn + Awpw)gVA¿d ! 0
+_ I V.[sw¿0ü]d V
+JVi
+Dentro de cada volume finito Vi a saturação sa é assumida com sendo constante. Aplicando o teorema da divergência na equação acima temos:
+s í	ns í	ns
+J 0 i ^dF = -^[^vty]-ny + ^[K(2npn + 2wAv)g]-ny-^[^í0ü] • n,-	(4.11)
+Ví	i	i	i
+Sendo Â =	= Ânfw. Resolvendo as integrais da equação 4.12 chegamos à
+equação 4.13.
+t1 — gk	y—ynsi	T¡—ais i
+^.Vcv+Z (fwVt).n-Z [K^nPn + Àvftjg]
+—,n si
++ ¿. (^i^^.n = 0
+(4.13)
+Reorganizando a equação 4.13 e fazendo algumas simplificações algébricas temos a equação 4.14. Esta equação numérica é a implementada no código numérico CODE-BRIGHT.
+çk+1
+¿wi
+At Tv^ n si	y—,n si
+[S^kVs].nÍ+[^/Vc].n7
+—i n s i	—i n s i
++ / . [^C^nPn "f ÀvftJg] "f / , .	Ü). nj
+(4.14)
+Onde Syii é o somatório de todos os segmentos de contorno j do volume finito Ei, A t é o passo de tempo, \Vcv\ é a área do volume de controle e nj é o vetor normal apontando para fora do segmento j-th, escalado pelo comprimento do segmento.
+Para assegurar a estabilidade numérica da solução da equação 4.14 que segue um esquema explicito deve-se utilizar passo de tempo que satisfaça o critério de estabilidade (CFL - condição de Courant-Friedrichs-Lewis) de forma que o número é adimensional não exceda a unidade. Este número é adimensional é definido como:
+CFL
+Ftàt
+PV
+(4.15)
+&amp;lt;1
+Onde PV é o volume poroso da célula i. Ft = 'Efij com ftj iniciando o fluxo através da intersecção dos volumes de controle i e j.
+Nos problemas em que as malhas possuem pequenos volumes de controle o campo de velocidades é muito elevado, fazendo com que haja limitações na iteração e o método IMPES fique impossível de ser utilizado (Mattax e Dalton, 1990).
+Como dito anteriormente, a saturação é determinada separadamente da equação da pressão, de foram explícita, e então é preciso determinar o passo de tempo da mesma, já que este é distinto do passo da pressão. Logo, o A t s utilizado na Equação 3.18 é mostrado como
+se segue:
+Ats
+(pVcVp
+v • n
+(4.16)
+(\dfw '
+( ds
+Sendo (pvc porosidade do volume de controle p; Vp volume do volume de controle p e v • nvc )	a máxima velocidade da onda sobre o volume de controle.
+' max
+4.5.	Tratamento Numérico da Equação Mecânica
+A resolução das equações diferenciais mecânicas dos modelos constitutivos através do MEF é feita através das equações de equilíbrio do meio contínuo.
+Corresponde a uma análise global do problema envolvendo as equações de carga-descarga. Neste caso, parte-se da equação de equilíbrio de tensões de um corpo qualquer (Equação 3.25), formulando um problema de contorno definido pelas condições de contorno e as condições iniciais.
+V • a + b = 0 e
+„ r	(4.16)
+a • n = t e
+onde representam o domínio e a fronteira do meio em estudo, as componentes do tensor de tensões, b as componentes do vetor forças de corpo, t é o vetor representativo das condições de carregamento na fronteira e n o vetor unitário normal à superfície.
+No Método dos Elementos Finitos, para cada elemento, consideram-se as propriedades materiais e as relações governantes do fenômeno em estudo e então se representa em termos de incógnitas nodais. Essas incógnitas, no contexto mecânico, são expressas através de uma combinação linear das funções das coordenadas espaciais, sendo os coeficientes dependentes dos deslocamentos nodais nestes elementos.
+O vetor de deslocamentos é aproximado linearmente utilizando funções de forma e somando para todos os nós do elemento. Logo:
+e
+u=^A¿-u¿	(4.17)
+í
+Considerando a solução aproximada expressa abaixo e após definidas as funções de forma Ni, aplica-se MEF-Galerkin para o problema de contorno obtendo a forma integral da equação de equilíbrio de tensões. Esta equação pode ser aplicada a qualquer relação constitutiva e que governa o comportamento de cada elemento finito:
+| BT-adíl-í NT-td r-í NT • b dí! = 0	(4.18)
+Jn	Jr	Jn
+Onde B Texpressa a matriz que representa a relação deformação-deslocamento, para cada material considerando pequenas deformações, e uma matriz de funções de forma característica do MEF. A equação 4.18 foi obtida após de aplicado o método dos resíduos ponderados e diminuído o termo de segunda ordem através do teorema da divergência (forma fraca).
+A matriz de rigidez D e é definida pelos termos da integral das tensões internas é definida a seguir:
+e
+D e=f BfD^Bjdí!
+Portanto, o problema é solucionado através da obtenção dos deslocamentos em função das cargas, por meio da relação constitutiva carga-deslocamento, que depende da matriz de rigidez global. Esta relação pode ser expressa por:
+(4.19)
+Ü = D e 1 • Fext
+(4.20)
+4.6.	Técnica de Upwind de primeira ordem.
+Neste trabalho é utilizada uma expressão em que a saturação sjk é avaliada nas interfaces dos volumes de controle j e k a partir da correta interpretação de qual é a direção a montante do escoamento nesta interface. Isso é possível analisando-se o sinal do seguinte produto escalar:
+fc =	se	[ÀKVp]	•	n;fc	&amp;lt;0	(4.24)
+{S/fc = Sfc	se	[ÀKVp ]	•	n;fc	&gt; 0
+Onde o nó j considerado nas expressões anteriores corresponde ao sub-volume de controle onde o vetor normal associado a n/fc aponta para fora. Este procedimento assegura que as saturações utilizadas pelo esquema numérico sejam realmente aquelas obtidas a partir dos valores à montante, mesmo nos casos onde o meio é anisotrópico, isto é, em casos onde o vetor velocidade pode não estar alinhado na direção do vetor gradiente de potencial.
+W3=0
+1^0
+X2 •W;
+Figura 4.3 - Representação do fluxo através dos elementos de uma malha de elementos finitos.
+5.	RESULTADOS OBTIDOS
+A simulação de reservatórios de petróleo tem provado ser uma ferramenta bastante promissora no aprendizado sobre o comportamento do reservatório quando este é submetido à produção. A necessidade de se ter modelos que sejam capazes de simular problemas de reservatórios com acoplamento hidro-geomecânico se dá devido à possibilidade de influência do fluxo de fluido no comportamento das rochas e vice-versa. Comportamentos como a mudança da permeabilidade e da porosidade do meio, através da mudança do estado de tensão do meio quando submetido a produção, influenciam significativamente todo o processo de produção de óleo, por exemplo, favorecendo a abertura de falhas pré-existentes que encontravam-se selantes e o surgimento de novas fraturas, podendo assim fazer com que ocorra a perda de óleo através das mesmas, este processo fica dificil de simular quando o meio em que se encontra a rocha reservatorio é considerado estático ou apenas a compressibilidade da fase sólida é levada em conta. Em geral, as alterações das propriedades do reservatório induzidas pelos efeitos de maciço tem impacto sobre a produção e recuperação de óleo. (Zao, 2012).
+5.1.	Validação da formulação IMPES modificado: Problema de Buckley-Leverett
+Apresenta-se a validação da formulação de fluxo bifásico imiscível implementada no presente trabalho empregando-se uma análise para o problema de Buckley-Leverett (Buckley &amp;amp; Leverett, 1942; Pinto, 1991; Helming, 1997) que fornece a solução analítica para o deslocamento imiscível de óleo pela água em um meio poroso rígido unidimensional e homogêneo. Consiste em um método classicamente empregado para o estudo de problemas de fluxo bifásico imiscível.
+A solução analítica pode ser obtida partindo-se da equação de conservação de massa de fluido para o deslocamento unidimensional de óleo pela água, desconsidera-se o efeito da gravidade, da capilaridade e fonte, assumindo assim a velocidade do fluido q constante. Desta forma chega-se à equação de Buckley-Leverett:
+dsw	dfwd
+q	= 0
+dt	H dsw dx
+(5.1)
+Onde defini-se como fluxo fracionário que determina a fração de fluxo total devido à água em qualquer ponto do reservatório. Admitindo que a saturação é conhecida neste ponto, temos:
+c 1
+r o
+kro fto
+(5.2)
+Maiores detalhes sobre a teoria do problema de Buckley-Leverett encontram-se descritos nos trabalhos de Buckley e Leverett (1942), Helming (1997), Santos (2002) e Carvalho (2005).
+Após uma breve exposição da teoria do problema de Buckley-Leverett, apresentam-se algumas análises através da simulação numérica utilizando a formulação IMPES modificado comparando os resultados com solução analítica de Buckley-Leverett e com os resultados dos trabalhos de Santos (2002) e Gomes (2009) para o mesmo problema.
+Em seu trabalho, Santos (2002) empregou uma formulação de fluxo bifásico do tipo pressão-pressão, no código em elementos finitos CODE_BRIGHT. Já Gomes (2009), analisou o mesmo cenário que Santos (2002) utilizando uma formulação de fluxo bifásico do tipo pressão-saturação, totalmente implícita via método CVFEM (Control Volume Finite Element Method) implementada em seu trabalho também no código em elementos finitos CODE_BRIGHT.
+5.1.1.	Descrição do Caso
+Como dito anteriormente, o problema de Buckley-Leverett consiste no fluxo bifásico imiscível em meio poroso rígido, desconsiderando termos de gravidade e capilaridade. Foi empregada aqui uma malha unidimensional horizontal de comprimento de 300 metros, com 60 elementos na direção x. O tempo de simulação adotado foi de 10.000 dias com um A t de 1,55x103. a permeabilidade do meio poroso adotada foi de = 3 x 1 0- 1 3 m 2, porosidade de 0,20 e CFL de 0,35.
+O modelo de variação da permeabilidade relativa empregado foi o expresso na Equação 5.3, adotando-se os parâmetros de ajustes adimensionais da curva, A l = 1 e Â l = 2. Admitiram-se as saturações residuais de água e do óleo	0,0 .
+k
+rw
+= A is
+e kro=Al( 1 - sw)Âí
+(5.3)
+w
+As densidades de água e óleo adotadas são de 996,319 kg/m3 e 739,913 kg/m3, respectivamente. Os fluidos são aqui considerados como tendo a mesma viscosidade para os valores de = p0 = 1 x 1 0-9 MPa • s.
+Quanto às condições de contorno e iniciais, foram consideradas:
+•	Condições Iniciais: 0 = 0,0 1 e p 0 0 = 9,6 M p a;
+•	Condições de Contorno: Qjn;eçã0 = 1,49 x 1 0-4 Kg/ s em x=0 m.
+pprodutor	9,6 M p a em x=300 m.
+A configuração do problema é a mesma dos trabalhos de Santos (2002) e Gomes (2009) de forma a permitir a comparação dos resultados obtidos com a solução analítica de Buckley-Leverett e com as simulações feitas por estes autores empregando outras formulações de fluxo do código in house CODE_BRIGHT.
+Através da figura 5.1 é possível ver a comparação das soluções numéricas e analítica. Como resposta, para formulação IMPES modificado implementada, observa-se a frente de saturação que apresenta uma boa aproximação com as demais formulações como também com a solução de Buckley-Leverett para este problema. A análise foi feita para um tempo de 2000 dias.
+1.2
+1
+0.8
+0.6
+0.4
+0.2
+0
+100	150	200
+Distância [m]
+300
+250
+i-1-1-1-1-1-1-1-1-1--1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-r
+Solução analítica ----
+Pressão-Pressão CODEBRIGHT (Santos, 2002) -
+Pressão-Saturação CODE BRIGHT (Gomes, 2009) --------
+CVFEM-IMPES --------
+IMEX ------
+Figura 5.1 - Solução do problema de Buckley-Leverett. Comparação entre soluções para T=2000 dias.
+Analisando também as frentes de saturação para diferentes tempos (Figura 5.2), verifica-se a ausência de oscilações espúrias ao longo do tempo de simulação. Para cada instante de tempo selecionado observa-se que a curva de saturação de água parte do valor máximo do nó de injeção e após o choque esta assume o seu valor inicial. São necessários 2000 dias para que a frente de saturação atinja o nó de produção, distante 300 metros do injetor.
+Desta forma, entende-se que os resultados do programa CODE_BRIGHT, empregando esta formulação, apresentaram-se consistentes com as demais soluções permitindo assim a validação do código numérico.
+A seguir passa-se ao estudo de problemas bidimensionais considerando também o fluxo bifásico.
+1
+0.9
+0.8
+0.7
+0.6
+0.5
+0.4
+0.3
+0.2
+0.1
+Saturação de água [-]
+100
+200
+250
+300
+150
+Distância [m]
+—e&gt;— tempo inicial
+-----188 dias
+-----665 dias
+-----790 dias
+-----1918 dias
+2000 dias
+Figura 5.2 - Solução do problema de Buckley-Leverett. Avanço da frente de saturação utilizando o Método IMPES.
+5.2.	Simulação de fluxo bifásico em problema V* de Five-Spot: análise de influência de malha na frente de saturação
+Neste item será apresentado o problema de % de five-spot bidimensional submetido a injeção de água, com a finalidade de analisar a aplicação do método numérico implementado, bem como a influência da configuração da malha. Problemas deste tipo são comumente empregados em trabalhos envolvendo estudo de fluxo multifásico em reservatórios e representam a extração de petróleo com 5 poços perfurados, onde um é produtor e localiza-se no centro do domínio e os outros quatro são injetores, localizados cada um em uma extremidade de uma malha quadrada de distribuição de poços.
+As análises foram realizadas com o objetivo de aplicar a formulação de fluxo bifásico implementada em um problema bidimensional, realizando o estudo da influência de orientação de malha sobre a frente de saturação, bem como investigar o efeito de malha quanto ao seu refinamento.
+5.2.1.	Descrição do Caso
+Para os casos analisados, as dimensões dos problemas consideradas foram de 100 x 100 m com uma permeabilidade de 1x10-14 m2 e porosidade de 0,33. Como condição inicial,
+3
+adotou-se a saturação de água de 10%, densidade do óleo de 9,64x10 kg/m3, densidade da
+3	9
+água de 1,00x10 kg/m3, viscosidade do óleo de 1,05x10- MPa/s e viscosidade da água de 2,05x10-9 MPa/s.
+Como condição de contorno aplicou-se um gradiente de 5MPa no sentido do poço injetor ao produtor, e uma vazão no poço injetor e produtor de 1,157e10-5 m3/s.
+Analisaram-se quatro casos, sendo eles nomeados como:
+Caso 1: Malha estruturada com injeção de água na face inferior esquerda e produção na face superior direita do problema;
+Caso 2: Malha estruturada com injeção de água na face inferior direita e produção na face superior esquerda do problema;
+Caso 3: Malha não estruturada com injeção de água na face inferior direita e produção na face superior esquerda do problema;
+Caso 4: Malha não estruturada com injeção de água na face inferior direita do problema e produção na face superior esquerda e com refinamento de malha (2 vezes mais elementos na direção x e y do que o caso 4);
+A figura 5.3 mostra de forma esquemática a distribuição dos poços injetores e produtores com suas respectivas malhas de elementos finitos.
+O tempo de simulação adotado foi de 10 anos, com A t de 1x105 e CFL de 0,30 para os casos 1 e 2 (com malhas estruturadas) e A t de 1x104 para os casos 3 e 4 (com malhas não estruturadas).
+Figura 5.3 - Representação dos poços injetores e produtores para casos % de five-spot. (a) Caso 1, (b) Caso 2, (a) Caso 3 e (b) Caso 4.
+Os resultados finais da distribuição da saturação de água para os quatro casos estão apresentados na figura 5.4. Para a análise da influência da orientação de malha neste problema, observou-se uma alteração do contorno da frente de saturação levando a uma chegada mais rápida para o caso 1. Porém, quanto ao volume de óleo acumulado produzido (Figura 5.5), esta influência não se apresentou representativa.
+Já no caso do estudo da influência da malha, quanto ao refinamento, observou-se um retardo da frente de saturação para a malha mais refinada com relação a menos refinada. Isto ocorreu por se adotar um mesmo passo de tempo para ambos os casos, onde na prática há a influência do tamanho do elemento sobre o passo de tempo do problema.
+Na figura 5.6 observa-se este efeito através da curva de produção acumulada de óleo, onde o caso 3 apresenta um volume produzido final pouco inferior ao do caso 4, uma vez que a água chega mais rapidamente para o caso menos refinado. Os valores de produção foram normalizados e apresentados na forma de porcentagem em relação à produção
+acumulada máxima obtida para o tempo final de forma a se ter uma melhor dimensão da chegada de água no poço produtor para os diferentes casos.
+(a)
+(c)
+Sw
+(b)
+(d)
+Figura 5.4 - Mapas de distribuição espacial da frente de saturação para o tempo de 3 anos: (a) casol, (b) caso2, (c) caso3 e (d) caso4.
+120
+Tempo [s]
+3500
+100
+1000
+1500
+2000
+2500
+3000
+	produção acumulada de água (caso 1) 	produção acumulada de óleo (Caso 1) produção acumulada de água (caso 2) — produção acumulada de óleo (Caso 2)							
+							
+							
+							
+							
+							
+							
+500
+Figura 5.5 - Produção acumulada de água e óleo para estudo do efeito de orientação de malha.
+Produção Acumulada [%]
+Figura 5.6 - Produção acumulada de água e óleo para estudo do efeito de refinamento de malha.
+Portanto, considera-se que o efeito de orientação de malha se deu de forma pouco considerável quanto ao varrido de óleo, embora tenha apresentado uma mudança moderada da frente de saturação.
+Já para a análise de diferença de malhas quanto ao refinamento, entende-se que o
+esquema IMPES modificado apresenta sensibilidade neste sentido, sendo importante considerar uma relação entre o passo de tempo e a dimensão do elemento finito. Isto implica em algumas restrições quando a geometria do problema é complexa, o que o caso de meios fraturados e falhados, uma vez que a diferença do refinamento da malha para os materiais pode ser expressiva, levando à necessidade do uso de baixos valores de passo de tempo, podendo tornar o tempo de processamento elevado.
+5.3.	Deslocamento de Fluido em uma Rocha Heterogênea
+Neste problema será avaliado escoamento de água e óleo no interior de um reservatório sintético heterogêneo (Figura 5.7), sendo os fluidos incompressíveis, desconsiderando o termo de capilaridade e gravitacional.
+Produção de óleo
+Óleo
+Campo de permeabilidade
+Injeção de água
+Figura 5.7- Representação de um reservatório de petróleo submetido à produçãc
+de óleo por injeção de água (Santana, 2008).
+5.3.1. Descrição do Caso
+Um dos fenômenos que pode ocorrer em reservatórios de petróleo, em se tratando do comportamento entre o contato água e óleo, há o surgimento de um fenômeno denominado de digitação viscosa (“fingers”), que se dá através de um campo de óleo que possua uma grande variação da permeabilidade, devido a sua formação geológica, fazendo com que esta tome caminhos preferenciais em direção ao poço produtor, formando canais em meio à fase óleo. Este fenômeno afeta a depleção de óleo tendo em vista que o mesmo provoca uma produção excessiva de água e uma baixa eficiência do óleo.
+No problema simulado, considerou-se um campo de dimensões 130 x 70 metros e o tempo total de simulação adotado foi de 60 dias.
+As curvas de permeabilidades relativa de água e óleo adotas são definidas através da Equação 5.3. Os mapas de distribuição da permeabilidade e da porosidade são mostrados
+através da Figura 5.8. Neste caso, o campo de porosidade foi considerado correlacionado ao da permeabilidade.
+(a)
+Figura 5.8 - Mapas de distribuição espacial de (a) permeabilidade absoluta e (b) porosidade,
+para uma seção longitudinal de uma amostra de rocha.
+As densidades adotadas dos fluidos, água e óleo, são 996,319 e 739,913 (kg/m3) respectivamente. Foram admitidas as viscosidades da água igual a do óleo como sendo iguais no valor de 1x10" Mpa.s, sendo esta propriedade constante com a pressão. O valor de CFL utilizado aqui foi de 0,55 e DVTOL de 1x10-6.
+Com relação às condições iniciais e de contorno, estas são descritas na Tabela 2 mostrada a seguir:
+Tabela 5.1 - Condições de contorno e iniciais. Condições Iniciais: sw 0 = 0, 1 e p 0 = 9,6 MPa
+Condições de Contorno:
+Pressão de Injeção: pw = 1 2 MPa em x = 0m
+Pressão de fundo de poço (poço produtor): pw = 8 MPa em x = 130m
+A malha de elementos finitos do problema em questão está representada pela figura 5.9. A condição de contorno de injeção está prescrita em todos os nós da face esquerda do reservatório, enquanto que a condição de produção é prescrita nos nós da face direita.
+Os resultados obtidos são apresentados para os tempos de 6, 13 e 60 dias, de forma a exibir o deslocamento dos fluidos ao longo do reservatório.
+o
+		X		X	X	X		X		X		X		X			•	X	X	X	x	X	x		X		X			X	
+X			X						X				X		X			X		x		X		X					X	X	
+		X	X	s		X.										X		X	X		X	X			X.	X	X	x		x	
+						X																	X				'■		X		
+v		X	X																						X	X	X	x	X	x	X
+		X		X																					X						
+					X																										
+																						X									
+																								X							
+X				X																				X	X						
+		X		X																											
+					X																										
+																															
+																															
+				X																											
+	X			L\	X	X						X		X		X		X		X		X	X	X	X						
+		•	X																		X						X				
+X																						X					X				
+	X			X		X																	X	X		X		X		X	
+		X		X			X														X				X				X		X
+	X	X		X	X																				■x	X	X	x	X.	X	
+		X																						X	X		X			X	
+			X																												
+				X																											
+X																								X							
+S	X			X.	\																			X	X						
+	X	X																							X	X		X			
+																															
+				X																											
+				X																											
+																															
+						'x								X				X		X		X		■X							
+		X				X									X										X		X	X	X		
+				■■■		x		x		X		X		x		x		'■		X				X		X		X		■	
+X		■		■	X	X		X		x		x		x		x			x				x		X				X		
+X	X		■					X						A		A				X		X		X		X	X	À		X	X
+	X		X		X		X		X		X		X		X	X	X			X		X		X		-	X	x		X	
+		X						X		X					X	V	X			X	X				X	X			X	X	
+					X								x		X		X	■					■X	x	X		x				
+						X																X							X	X	
+X																						X	■x	X	"X	X	x	X	\	X	
+																							X	X		X		X		X	
+																								X		X	X				
+																					x.				X		X				
+																		X		X											
+																					x	X				X				X	
+																						X			\	X		X		X	
+																															•
+																															
+																												X			
+																				X											
+									X		X		X		X		X		x		X		X				X	X	X	X	
+																				-					X	■		■			
+																					X				■						
+																			X			X	X		X	X	X	X	X		
+																	X	X		X	■	X	X	X						X	
+																					s		X	X.	X		X	X		X	
+																								X	X			X			X
+																								X	X		X				
+																									X	X					
+																				X						X					
+																					X						X		X	X	
+																						X					X	X		X	
+																										X	v				x
+																										X		■			
+																		X		X											
+																															
+											X		X		X		X		x		X					X		■■			
+		X												X				X		X			X		X	X	X		X		
+	x		X		x	■	X		x		x		x		x									•		X		■		X	
+	x		x		x		X		X		x	-		X	x	X		X		X		X		X		x					
+		X	X		1.			x	X			X	X	X	X	X				X			¡X	¡X		X		X	X		X
+0	20	40	60	80	100	120
+X-Axis
+Figura 5.9 - Malha de elementos finitos.
+Através dos mapas de distribuição das saturações mostrados na Figura 5.10, podemos observar a formação de caminhos preferenciais para escoamento, devido a heterogeneidade do meio, como também o surgimento dos “fingers” (dedos) através do escoamento dos fluidos. O surgimento dos fingers provoca um chegada antecipada da água no poço produtor, influenciando consideravelmente a produção de óleo e de água. Esse resultado pode ser visto também através da curva de produção acumulada de óleo (Figura 5.11).
+Nessas curvas verifica-se a ocorrência do breakthrough para um tempo de 50 dias. Com esta análise é possível observar que até para um meio com grande variação na permeabilidade a formulação IMPES modificado implementada neste trabalho se comporta de forma estável representando bem a frente de saturação de água, mesmo empregando um método de upwind de 1a ordem.
+(a)
+(b)
+(d)
+Figura 5.10 - Mapas de distribuição da saturação de água: (a) tempo inicial; (b) tempo de 6 dias;
+(c) tempo de 13 dias; (d) tempo de 60 dias.
+90
+L
+água
+80
+óleo
+70
+60
+50
+40
+30
+20
+10
+10
+20
+30
+40
+50
+60
+0
+0
+Tempo [dia]
+(a)
+(b)
+Figura 5.11 - Curvas de vazão e produção acumulada: (a) produção acumulada de água e óleo; (b) vazão de água e óleo.
+Como consequência do avanço da frente de injeção no reservatório, pode-se observar na figura 5.12 o deslocamento de óleo pela água, através da distribuição da saturação de óleo no reservatório para os diferentes tempos de análise.
+É possível então verificar que a saturação de óleo diminui nas zonas de alta permeabilidade, atingindo seu valor residual de 10%. Percebe-se que no tempo de 60 dias boa parte do óleo das regiões permeáveis interconectadas é produzida, porém ainda há o deslocamento do óleo aprisionado nas zonas de baixa permeabilidade, a uma velocidade inferior.
+Sn
+(a)
+Sn
+Sn
+0.2	0.4	0.6	0.8
+N 1 I I I I I H mm
+	0.9
+0.1	
+(c)
+(d)
+Figura 5.12 - Mapas de distribuição espacial da saturação de óleo para (a) tempo
+inicial, (b) tempo de 6 dias, (c) tempo de 13 dias e (d) tempo de 60 dias, para uma seção
+longitudinal.
+O gradiente de pressões entre as faces de injeção e produção pode ser observado através da figura 5.13, que apresenta a distribuição de pressão de fluido ao longo do reservatório, para o tempo final de simulação de 60 dias. Neste caso, verifica-se que após este tempo de análise as zonas de baixa permeabilidade passam a ser pressurizadas pela frente de injeção, promovendo assim uma recuperação adicional de óleo que se dá de forma bastante lenta quando comparada à promovida pelo varrido nas regiões permeáveis interconectadas.
+Figura 5.13 - Mapas de distribuição espacial da pressão de óleo, para uma seção longitudinal de uma amostra de rocha, juntamente com o mapa de distribuição da permeabilidade.
+Com esta análise foi possível observar que mesmo para um meio com grande variação na permeabilidade o método implementado se comporta de forma coerente representando bem a frente de saturação de água.
+5.4.	Fluxo Bifásico em Meio Naturalmente Fraturado
+Como discutido no Capítulo 1, os reservatórios de petróleo, sejam convencionais ou não convencionais, apresentam-se em sua grande maioria naturalmente fraturados, onde estas fraturas poderão contribuir para a permeabilidade do meio de acordo com características como abertura, interconexão (rede de fraturas), preenchimento, densidade e frequência de fraturas, etc.
+Quando a fratura encontra-se aberta ou parcialmente aberta, esta apresenta uma condutividade hidráulica que imprime ao meio uma maior condição de circulação de fluidos segundo um gradiente de pressão. Neste caso, quando o meio apresenta uma grande densidade de micro ou meso fraturas, pode-se tratar o problema como de dupla porosidade/dupla permeabilidade, o que dependerá da permeabilidade das famílias destas fraturas e da matriz intacta. Existem ainda as fraturas que se apresentam como grandes estruturas com aberturas acima dos 10 centímetros onde, quando abertas, podem ser tratadas como canais de fluxo e desta forma tendem a afetar significativamente o fluxo de fluido no interior do reservatório. O impacto disto também dependerá fortemente do grau de interconexão entre as fraturas, levando à formação de uma rede, e da sua orientação quanto à
+direção do fluxo de fluido.
+Já no caso em que as fraturas encontram-se fechadas (como veios e falhas selantes), estas passam a atuar como armadilhas de óleo e gás e também como barreiras para o deslocamento de fluidos em um processo de injeção e/ou produção.
+Portanto, neste item busca-se verificar, a partir de um problema sintético de um reservatório com a presença de uma rede de fraturas naturais localizada entre um poço injetor e o produtor, a influência deste fraturamento sobre o regime de fluxo bifásico, quanto à eficiência do varrido de óleo pela água de injeção.
+Para isto foram simulados, para a mesma configuração, três casos sendo o primeiro considerando as fraturas parcialmente abertas (com permeabilidade maior que a do meio), funcionando como uma rede de canais. Para o segundo adotou-se para as fraturas uma condição de barreira empregando-se uma permeabilidade muito baixa, e para o terceiro cenário não se considerou a rede de fraturas, mantendo-se apenas as propriedades do reservatório e as condições iniciais e de contorno.
+Trata-se, portanto, de um problema de fluxo bifásico em reservatórios naturalmente fraturados, porém aqui considerando apenas fraturas de grande porte, sendo as fraturas tratadas com uma abordagem de contínuo, onde tanto a matriz da rocha reservatório quanto as fraturas são considerados como meios de porosidade e permeabilidade simples.
+5.4.1. Descrição do Caso
+A configuração destes modelos é análoga à de problemas do tipo % de 5-spot. O reservatório tem dimensões de 30x30 metros e as fraturas possuem aberturas de aproximadamente 15 centímetros.
+A malha de elementos finitos, apresentada na Figura 5.14a, para os casos com fraturas, possui 5955 nós e 11780 elementos do tipo triângulo linear. Já para o cenário sem fraturamento, esta apresenta 1089 nós e 2048 elementos, conforme pode ser visto na Figura 5.14b.
+Ainda na Figura 5.14 observa-se a posição dos poços injetor e produtor, onde a água é injetada considerando um gradiente de pressão de 2 MPa com relação ao nó do poço produtor. No poço injetor é prescrita uma saturação de água de 0,9, onde considera-se uma saturação residual de óleo de 10%. A saturação inicial do meio (fratura e reservatório) é de 0,1 e foram adotadas as mesmas curvas de permeabilidade relativa dos casos anteriores.
+Figura 5.14 - Malha de Elementos Finitos e condições de injeção para problema de injeção de água
+(a) em meio fraturado (b) sem fratura.
+Quanto às propriedades dos fluidos foram consideradas as densidades do óleo e da água de 1000 kg/m3 e 964 kg/m3, respectivamente, bem como as viscosidades de 2,0 5 x 10-6 MPa/s para o óleo e de 1,0 5x 1 0-6 MPa/s para a água. O reservatório apresenta porosidade de 10% e as fraturas de 20%, sendo ambos considerados como materiais homogêneos e isotrópicos, onde as permeabilidades empregadas foram as seguintes:
+Tabela 5.2 - Valores de permeabilidade.
+Cenário	kfratura (m2)	kreservatorio (m2)
+Reservatório com fraturas parcialment abertas (canal)	e lx10-11	5xl0-13
+Reservatório com fraturas fechadas (barreira)	lx l 0- 16	5xl0-13
+Reservatório sem fraturamento	—	5xl0-13
+Como discutido anteriormente, foi adotado um gradiente de pressão de 2 MPa entre os poços. Os resultados são discutidos em termos de variação da frente de saturação de água e de óleo e de vetores de velocidade para diferentes períodos. O tempo total de simulação foi de trinta dias.
+Observou-se nas análises que a frente de injeção leva ao aumento da saturação de água na região da injeção provocando o deslocamento do óleo no sentido do poço produtor. Percebe-se, no entanto, que a resposta de avanço da frente de saturação de água é diferente para cada cenário, conforme mostrado nas Figuras 5.15 que apresenta este resultado para o tempo inicial, de 10 horas, 01 e 02 dias de simulação.
+No tempo inicial toda a região possui 10% de saturação de água (Figura 5.15a). Para 10 horas após a ativação dos poços (Figura 5.15b), verifica-se que a água se desloca pelas fraturas para o caso de canal, provocando um salto da frente de injeção na direção do poço produtor quanto aos demais cenários. Neste mesmo tempo, no caso da barreira, a água se depara com as fraturas impermeáveis e começa a contornar a rede de fraturas. Já quando não há fraturas no meio, a frente de saturação avança normalmente sem nenhuma alteração de sua forma.
+Fica ainda mais evidente o que foi discutido anteriormente quando se analisam os resultados para um tempo de 1 dia (Figura 5.15c) onde é possível observar o fluxo de água prioritariamente nas fraturas, para o caso de canal, com a frente de saturação avançada, em relação aos demais casos, no sentido do poço injetor. Verifica-se ainda que no caso de barreira, a água contorna a rede de fraturas. Em ambos os casos há uma redução no volume de óleo a ser varrido devido à rápida chegada de água no poço produtor.
+Para este mesmo tempo observa-se que a frente de injeção para o caso de reservatório não fraturado ainda encontra-se na metade do trajeto de fluxo, uma vez que, embora o volume de óleo a deslocar seja o mesmo que no caso de canal, a permeabilidade é constante em toda a área do reservatório.
+Fraturas seladas
+Fraturas abertas
+Campo homogêneo
+— 0.Ó
+^0.4
+0.1-
+B°2
+Sw
+0.9--&gt;1 F
+Time: O.OOOOe+OO sec
+(a)
+Time: 3.0158e+04 se
+Fratura selada
+Fratura abert
+Campo homogêneo
+Fratura aberta
+Fratura selada
+Campo homogêneo
+Time: 8.0158e+04 sec
+(c)
+Fratura fechada
+Time: 2.42óóe+05 sec
+Campo homogêneo
+Fratura aberta
+¿0.4
+(d)
+Figura 5.15 - Distribuição da saturação de óleo para o tempo (a) 0 hora, (b) 10 horas, (c) 23 horas e (d) 48 horas.
+As mesmas considerações podem ser feitas com relação à saturação de óleo, cujo resultado é consequência direta do avanço da frente de injeção de água. As análises para o deslocamento de óleo estão apresentadas na Figura 5.16.
+Para o tempo inicial (Figura 5.16a), a saturação de óleo é de 90% e esta cai para seu valor residual de 10% à medida que a água avança. Conforme discutido anteriormente, para os tempos de 10 horas e 1 dia (Figuras 5.16b e 5.16c), o óleo é deslocado pela água preferencialmente através das fraturas, para o caso de canal, e contornando-as no caso de barreira, enquanto que se observa o retardo em relação aos demais, para o cenário sem fraturas. Observa-se ainda que, para o caso de barreira, há um volume de óleo aprisionado nos blocos de rocha delimitados pelo cruzamento das famílias de fraturas de baixa permeabilidade.
+Time: O.OOOOe+OO sec
+(a)
+Time: 3.0158e+04 sec
+(b)
+Time: 8.0158e+04 sec
+Fratura fechada
+Campo homogêneo
+Fratura aberta
+Fratura fechada
+Fratura aberta
+Campo homogêneo
+Time: 2.4266e+05 sec
+(d)
+Figura 5.16 - Distribuição da saturação de água para o tempo (a) 0 hora, (b) 10 horas, (c) 23 horas e (d) 48 horas.
+Apresenta-se também, na Figura 5.17, a distribuição da pressão de fluido para o tempo de 2 dias onde observa-se para o caso de barreira que a frente de injeção começa a fazer o varrido do óleo aprisionado no interior da rede de fraturas.
+Campo homogênei
+Fratura aberi
+Fratura fechada
+Figura 5.17 - Distribuição da pressão para o tempo de 48 horas.
+Outra forma de se observar o comportamento discutido anteriormente é pela distribuição dos vetores de velocidade das fases, sendo aqui apresentados os resultados para a água na figura 5.18.
+1.5e-07J
+¿4e-5
+aberta
+3,ó3e-ll
+E0.0001Ó
+E0.00012
+-8e-5
+velocity
+0.000 198-b:
+w
+Magnitude
+Fratura
+1.9899e+06s
+(a)
+0.000175
+velocity.
+0.0001
+,w Magnitude
+Fratura fechada
+Time: 1.9902e+06s
+velocity_w Magnitude
+0.000175--
+(b)
+Campo homogêneo
+I
+-0.0001
+(c)
+Figura 5.18 - Vetores de velocidade de água para um tempo de 23 dias: (a) fratura; (b) fratura impermeável e (c) sem fratura.
+Finalmente, apresentam-se as curvas de produção acumulada de água e óleo, expressas em termos do tempo de simulação (Figura 19). Os valores de produção foram normalizados e apresentados na forma de porcentagem em relação à produção acumulada máxima obtida para o tempo final de forma a se ter uma melhor dimensão da chegada de água no poço produtor para os diferentes casos.
+Verifica-se que no caso em que as fraturas encontram-se abertas (curvas verdes), a produção acumulada de óleo é prejudicada em relação aos demais casos devido ao curto tempo de chegada da água no poço produtor (tempo de breakthrough) que se dá em cerca de 2 dias. Já o problema em que as fraturas funcionam como barreira (curvas azuis), há um retardo da chegada da água no poço e com isso o breakthrough ocorre para um tempo de
+cerca de 4 dias, permitindo uma produção acumulada de óleo um pouco superior à do caso com fraturas abertas.
+Finalmente, quando o meio não tem a presença de fraturas, obtém-se uma produção acumulada mais expressiva uma vez que o breakthrough ocorre em cerca de 14 dias.
+Produção Acumulada [%]
+120
+100
+80
+60
+40
+20
+0
+	produção	acumulada de água (barreira impermeável) 	produção acumulada de óleo (barreira impermeável) —	produção acumulada de água (sem fratura) —	produção acumulada de óleo (sem fratura) —	produção acumulada de água (com fratura) —	produção acumulada de óleo (com fratura)	i i i i i i	\ i i
+■ ■	
+	
+	
+5	10	15	20	25	30
+Tempo [dias]
+0
+Figura 5.19 - Produção acumulada de água e óleo comparando os diferentes cenários simulados.
+5.5.	Fluxo bifásico em reservatório com presença de falha geológica considerando zonas de dano: cenário pós-reativação.
+Neste item apresentam-se os resultados obtidos pela simulação numérica de problema de fluxo de fluidos em um reservatório de petróleo considerando a existência de falha geológica com diferentes valores de permeabilidade em função da existência de zonas de dano (damage zones) e núcleo (core), conforme discutido no capítulo 2 deste trabalho.
+Este problema consiste em duas análises do fluxo de fluidos através de uma falha geológica com zonas de dano e núcleo empregando uma configuração destas regiões e suas dimensões compatíveis com o observado na literatura e na prática de campo conforme pode ser observado na figura 5.20, onde uma falha caracterizada por estas estruturações pode ser identificada seccionando as camadas de rochas.
+Figura 5.20 - Fotografia de exemplo de zonas de dano e núcleo de uma falha na Formação Jandaíra - Icapuí-RN, Brasil (visita de campo com os geólogos da Petrobras, Claudio Lima e Anderson Moraes).
+Considera-se aqui um cenário pós-reativação, sendo estes casos baseados nos resultados obtidos pela modelagem acoplada hidromecânica do problema de reativação de falhas no trabalho de Guimarães et al. (2009), onde os autores aplicaram o modelo de dano contínuo isotrópico para capturar o mecanismo de reativação considerando o fluxo monofásico. Neste caso, os autores discutem que a alteração significativa da permeabilidade ocorreu na região da falha em contato com a rocha reservatório.
+As análises aqui apresentadas tratam de um estudo inicial de fluxo de água e óleo em um campo com uma falha reativada. Casos de reativação de falhas com acoplamento geomecânico, quando abordado na literatura, geralmente adota-se o fluxo como sendo monofásico devido à complexidade que envolve este problema.
+Ao se empregar um modelo numérico que considera os fluidos imiscíveis e incompressíveis, que é o caso da formulação aqui implementada, sem efeito capilar (importante no estudo de fluxo em falhas e fraturas) o aumento da pressão devido ao deslocamento de uma fase em relação a outra, é proporcional ao gradiente de pressão empregado e que pode levar a problemas numéricos nas regiões confinadas da falha, seja devido às rochas capeadoras, ou pela própria permeabilidade que deverá variar de valores muito baixos a elevados.
+Desta forma, possivelmente, o campo de permeabilidades seja o maior desafio na previsão e análise do problema de reativação de falhas e seu efeito sobre o fluxo no interior do reservatório. A complexidade disto aumenta consideravelmente ao se tentar empregar uma configuração mais realista das falhas que, no caso de estruturas de grande porte, envolve sua estratificação em zonas de dano e núcleo que apresentam cenários distintos de
+permeabilidade em função da rede multiescala de fraturas nas mais variadas direções, conforme pode ser observado na figura 5.21.
+Zona interna
+Figura 5.21 - Exemplo de principais componentes da arquitetura da Falha de Bartlett - Bacia Paradox em Utah - EUA (Modificado de Berg e Skar, 2005).
+Em seu trabalho, Billi et al (2005) apresentam esquematicamente configurações de falhas geológicas em seu processo de ativação e estágio estático (Figura 5.22). No primeiro, que pode ser assemelhado ao de reativação, as zonas de dano apresentam, com relação às rochas matriz, um grau de fraturamento elevado que gera um campo heterogêneo de permeabilidade criando uma rede de fluxo cuja direção dependerá diretamente do gradiente de pressões, da interconexão das fraturas e da condição selante do núcleo, especialmente. Isto pode ser observado nas figuras 5.22a e 5.22c.
+No estágio estático, figuras 5.22b e 5.22c, o núcleo da falha tende a apresentar valores baixíssimos de permeabilidade em função do teor de material argiloso em função da deformação dúctil sofrida, ou pela cimentação dos fragmentos de rochas que o preenchem. A configuração deste estágio é alterada quando ocorrem movimentações sísmicas e por alterações do estado de tensões induzidos por processos de produção em reservatórios de petróleo próximos ou em contato com as falhas selantes.
+Um fator que pode ainda contribuir para o fluxo ao longo de reservatórios seccionados por falhas geologias, são as descontinuidades horizontais definidas por planos de acamamento, por exemplo.
+Aumento da . permeabilidade
+JI_______________II____________________II_______________________________
+Rocha Zona de Núcleo da	Zona de
+Dano	Falha	Dano
+Aumento da . permeabilidade
+— Aumento da
+- permeabilidade
+Aumento da permeabilidade
+Figura 5.22 - Modelo (seção transversal vertical) de evolução de uma zona de falha com permeabilidade e circulação de fluido associados: (a) Falha geológica com concentração de zonas de dano e núcleo em definição; (b) Falha geológica com zona de dano e núcleo selante (condição estática); (c) condição de permeabilidade e fluxo (flechas pretas) para compartimentação por falha com região do núcleo permeável; (d) condição de permeabilidade e fluxo para compartimentação por núcleo selante. (Modificado de Billi et al, 2003).
+Com isso, baseado nas discussões anteriores, nas análises aqui apresentadas adotou-se uma configuração de anisotropia do tensor de permeabilidade para o fluxo bidimensional, empregando-se uma razão entre a permeabilidade horizontal e vertical de cada região da falha.
+5.5.1. Descrição do Caso
+O exemplo de aplicação trata-se de um cenário sintético, considerando um evento pós-reativação onde a permeabilidade das regiões da falha sofre um aumento em função do cisalhamento ocorrido. É definido por uma seção transversal vertical de um campo com
+reservatório de óleo seccionado por uma falha geológica subdividida em três partes: núcleo, zona de dano interna (mais próxima ao núcleo) e zona de dano externa (Figura 5.23).
+Considerou-se um poço produtor localizado a 232m da falha (lado esquerdo) com uma profundidade de 469 metros, e um poço injetor que está á 46 m da falha (lado direito), a uma profundidade de 490m. O overburden e underburden são rochas impermeáveis.
+Figura 5.23. Descrição do Caso sintético: geometria do caso da falha com zonas de dano.
+Foram simulados dois casos (cenários), sendo que no primeiro simula-se a comunicação através da falha do reservatório depletado com um reservatório de óleo localizado na base do underburden. No segundo caso este cenário não é abordado, onde a falha é acomodada em sua base sobre uma rocha impermeável.
+O reservatório foi submetido a um gradiente de pressão de 15 MPa no sentido do poço injetor ao produtor e considerou-se uma saturação inicial de água de 0,1. Neste problema a aceleração da gravidade é aplicada.
+Foram considerados diferentes valores de saturação inicial de água para as zonas de dano externa, interna e o núcleo da falha, sendo estes 20,1%, 25% e 25%, respectivamente.
+No caso da comunicação com reservatório inferior, considerou-se uma vazão de exsudação de óleo na falha de 10-4 m3/s, prescrita nos nós da base da falha. No topo da falha adotou-se uma vazão de 10-6 m3/s de forma a representar uma taxa de exsudação de fluido para o fundo do mar.
+O campo de permeabilidade adotado para as zonas da falha, como as demais propriedades, para os dois casos, estão apresentadas através da Tabela 5.3. Destaca-se que os problemas foram simulados considerando água e óleo com densidades e viscosidades distintos.
+Para essas análises, adotou-se um valor para o CFL de 0,35 e DVTOL de 10-6. O tempo de simulação considerado foi de 12 dias.
+Tabela 5.3 - Propriedades para cálculo da densidade das fases.
+PROPRIEDADES	VALORES
+Viscosidade da água (MPa/s)	1,05x10-9
+Viscosidade do óleo (MPa/s)	2,05x10-9
+Densidade da Água (kg/m3)	9,995x102
+Densidade do Óleo (kg/m3)	9,635x102
+RESERVATÓRIO	
+Permeabilidade Intrínseca kx	5x10-11
+Permeabilidade Intrínseca ky	1x10-11
+Porosidade inicial	30%
+FALHA (zona de dano externa)	
+Permeabilidade Intrínseca kx	8x10-12
+Permeabilidade Intrínseca ky	1x10-12
+Porosidade inicial	20%
+FALHA (zona de dano interna)	
+Permeabilidade Intrínseca kx	5x10-12
+Permeabilidade Intrínseca ky	1x10-12
+Porosidade inicial	25%
+FALHA (núcleo)	
+Permeabilidade Intrínseca kx	1x10-12
+Permeabilidade Intrínseca ky	1x10-12
+Porosidade inicial	10%
+OVERBURDEN	
+Permeabilidade Intrínseca kx=ky	1x10-22
+Porosidade inicial	20%
+UNDERBURDEN	
+Permeabilidade Intrínseca kx=ky	1x10-15
+Porosidade inicial	20%
+A figura 5.24 apresenta a malha de elementos finitos adotada sendo esta composta de 6102 nós e 211976 elementos do tipo triângulo linear.
+(a)
+(b)
+Figura 5.24 - Malha de elementos finitos: (a) malha completa; (b) detalhe
+mostrando o refinamento da malha na falha e as zonas de dano e núcleo.
+O mapa de distribuição da permeabilidade adotado para os dois casos, com e sem comunicação entre reservatórios, é mostrado através da Figura 5.25.
+log 10_K Magnitude
+Figura 5.25 - Mapa de permeabilidade relativa adotado nos casos com e sem comunicação entre reservatório de óleo.
+Como resultados destacam-se inicialmente, na figura 5.26, os vetores de velocidade de óleo para um tempo de cerca de 9 dias comparando os dois cenários modelados.
+Observa-se que para o caso com comunicação entre reservatórios (Figura 5.26a) ocorre o fluxo de óleo do reservatório depletado devido à frente de injeção de água, na direção do poço produtor atravessando a falha, e também se observa o deslocamento de um volume de óleo ao longo da falha sendo promovido pela sua migração a partir do reservatório inferior, seguindo o gradiente de pressão na região de produção.
+Já no caso sem comunicação entre reservatórios, para o mesmo tempo de análise, observa-se que o óleo é deslocado pela água para o outro compartimento do reservatório, onde se localiza o poço produtor, cruzando-se a falha. Neste caso há também o fluxo de óleo na direção do topo e base da falha, concentrando-se essencialmente nas zonas de dano interna e núcleo.
+(b)
+Figura 5.26 - Vetores de velocidade da fase óleo para tempo de cerca de 9 dias: (a) caso com comunicação entre reservatórios; (b) caso sem comunicação entre reservatórios.
+A distribuição inicial e final da saturação de água está apresentada na figura 5.26, onde é possível observar a diferença entre os dois casos. Ao se considerar a comunicação entre os reservatórios percebe-se que a frente de saturação de água proveniente da injeção atua como uma barreira para o escoamento do óleo para a parte superior da falha, conduzindo-o ao poço produtor. Já no outro caso a água desloca o óleo no sentido das porções superior e inferior da falha, bem como na direção do poço produtor.
+É possível observar também que o óleo é deslocado no sentido do contorno do reservatório na porção direita, o que leva à ocorrência de um erro na ordem de 10-4 quando à saturação residual de água uma vez que o óleo fica aprisionado submetido à pressão de injeção sendo este incompressível. De qualquer forma, dado o cenário, entende-se que uma técnica de upwind de ordem maior pode contribuir para a eliminação deste tipo de problema, embora se considere satisfatória a solução apresentada neste trabalho.
+(a)
+(b)
+(c)
+(d)
+Figura 5.27 - Distribuição da saturação de água: (a) caso com comunicação de reservatórios para um tempo de cerca de 2 horas, (b) caso com comunicação de reservatórios para um tempo de 11 dias; (c) caso sem comunicação entre reservatórios para um tempo de cerca de 2 horas; (d) caso sem comunicação entre reservatórios para um tempo de 11 dias.
+A Figura 5.28 apresenta os valores de saturação de água e óleo para o caso com comunicação entre reservatórios para o tempo de 11 dias obtidas em uma linha de uma face a outra do reservatório. É possível verificar que na região que corta a falha ocorre um pico de aumento na saturação de óleo e de redução na saturação de água exatamente devido à influência do fluxo de óleo proveniente do reservatório inferior.
+Figura 5.28 - Perfil de saturação ao longo do reservatório para o caso com comunicação entre reservatórios.
+Para análises futuras com o acoplamento hidro-mecânico para fluxo bifásico no estudo de reativação de falhas selantes, considera-se importante um desenvolvimento da formulação implementada neste trabalho com um termo equivalente à pressão capilar que fornecerá um caráter difusivo ao problema, bem como a consideração da compressibilidade dos fluidos, com a finalidade de viabilizar tal solução.
+No entanto, o método se mostrou totalmente capaz de simular o fluxo bifásico em um reservatório com presença de falha, já que este adota a metodologia CVFEM, com o uso do volume de controle e utilizando uma estrutura de dados por aresta, sendo o cálculo da velocidade dado na aresta.
+5.6.	Modelagem acoplada hidro-mecânica de compactação em um Reservatório de Petróleo: modelo sintético de grande escala.
+Pretende-se aqui aplicar a formulação de fluxo bifásico IMPES modificado considerando o acoplamento ao problema mecânico conforme descrito nos capítulos 3 e 4. O objetivo é estudar o problema de compactação de um reservatório de petróleo e a subsidência das rochas superiores devido à produção de óleo.
+Pode-se entender o fenômeno de compactação como o efeito correspondente à redução de volume da rocha-reservatório pela redução da pressão de fluidos no seu interior, implicando na diminuição da espessura do reservatório, principalmente na zona onde os poços produtores se localizam.
+Como efeito destas deformações pode-se observar o movimento das camadas acima do reservatório, onde este fenômeno é definido como subsidência, que ocorre em áreas maiores que a região no entorno do reservatório afetada pela compactação (Figura 5.29).
+Segundo Fjaer (2008), um nível de subsidência admissível pode ser observado caso se verifique uma ou várias das seguintes condições: o alívio de pressões no interior do reservatório deve ser significante; a rocha reservatório precisa ser bastante compressível, sendo a ocorrência da compactação mais representativa em rochas brandas; a compactação do reservatório deve ser significante e deve-se observar o seu impacto nas rochas capeadoras, o que dependerá da geometria do reservatório, de sua profundidade e do contraste entre suas propriedades mecânicas com relação às das rochas adjacentes.
+Figura 5.29 - Esquema representativo dos fenômenos de compactação e subsidência (Pereira, 2007).
+5.6.1.	Descrição do Caso
+Este problema apresenta um campo sintético considerando o reservatório de óleo e as rochas adjacentes (overburden, reservatório e underburden). A produção de óleo ocorre
+através da injeção de água pelo poço injetor, no valor de 15 MPa acima de pressão da formação, já no poço produtor adotou-se uma pressão de de 5MPa abaixo da inicial.
+Utilizou-se um modelo constitutivo elástico linear para representar o comportamento mecânico das rochas, considerando uma análise em deformação plana com pequenos deslocamentos. O estado de tensões inicial foi obtido através de um estágio geostático e o campo de pressões inicial é hidrostático.
+O campo sintético encontra-se confinado lateralmente e em sua base por restrições de deslocamento nas direções normais a face do campo, sendo considerada a lâmina de água referente ao nível do mar.
+As rochas adjacentes apresentam um módulo de elasticidade 10 vezes maior que o reservatório e são impermeáveis. A geometria e condições de contorno, bem como a malha de elementos finitos adotada são mostradas na Figura 5.30. A malha de elementos finitos adota é não estruturada, com elementos do tipo triangulo de três nós, com 816 nós e 1577 elementos. O valor de CFL utilizado aqui foi de 0,15 e DVTOL de 1x10-7
+A
+5000 m
+(a)
+(b)
+Figura 5.30 - Descrição do problema: (a) geometria e condições de contorno; (b) malha de elementos finitos.
+Inicialmente o reservatório possui o campo de pressões mostrado através da Figura 5.31a e após a abertura do poço e início da injeção, ocorre uma descompressão na região do poço produtor e um aumento de pressão na região do injetor.
+Neste caso, quando a pressão de fluidos cai, as tensões efetivas aumentam levando à ocorrência de deformações na rocha no sentido da compressão, levando à compactação do reservatório.
+Já no caso da região próxima do poço injetor, há um aumento da pressão dos fluidos e consequente expansão das rochas.Isto é potencializado nesta análise uma vez que a formulação empregada considera os fluidos e a rocha incompressíveis onde apenas a deformação volumétrica contribui para a variação da porosidade.
+(a)	(b)
+Figura 5.31 - Distribuição das pressões: (a) inicialmente geostático e (b) para o tempo final de simulação.
+Portanto, pode-se observar na figura 5.32, que há uma distribuição diferencial dos deslocamentos verticais em toda a formação, onde isto está associado ao avanço da frente de injeção na direção do poço produtor. Nas regiões sobre a zona pressurizada apresentam deslocamentos negativos (aqui tratados como de expansão) levando a uma subsidência invertida, enquanto que nas regiões onde há perda de pressão os deslocamentos observados são positivos indicando compressão.
+Por esse motivo, o mecanismo de injeção água é uma das maneiras adotadas pela indústria de petróleo para manutenção das pressões do reservatório, como também como recuperação secundária de óleo.
+Figura 5.32 - Deslocamentos verticais para tempo de cerca de 3 anos: compactação e subsidência.
+As respostas obtidas neste caso foram condizentes com as encontradas na literatura em casos clássicos da geomecânica e como ideia para continuação desse trabalho será evoluir para modelos constitutivos mais realistas para rocha, adotando modelos plásticos como camclay, ducker-prager, etc.
+5.7.	Modelagem acoplada hidro-mecânica de compactação em um reservatório de petróleo: estudo da influência da variação de permeabilidade com a porosidade.
+Entre os efeitos observados na geomecânica de reservatórios, pode-se destacar a alteração da porosidade e permeabilidade da rocha, o que leva à impactos na produção de hidrocarbonetos bem como no grau de intensidade da compactação e subsidência. Durante o processo de depleção, consideráveis reduções no volume de poros podem ocorrer auxiliando assim na expulsão do óleo (“compaction drive”), onde se torna também imprescindível definir o grau em que a redução da porosidade afeta a permeabilidade do reservatório. Além disto, a permeabilidade pode ser reduzida de tal forma que comprometa o avanço da frente de injeção e o seu efeito no varrido de óleo.
+Logo, o problema aqui modelado tem o objetivo de analisar a influência da variação de permeabilidade com a porosidade sobre o problema de transporte que por sua vez, através do campo de pressão e saturações, altera o comportamento mecânico do reservatório.
+Neste caso, simulou-se um problema análogo ao anteriormente descrito, porém com dimensões reduzidas, sendo tratados dois cenários, onde um deles considerando a variação da permeabilidade do reservatório com a porosidade através da adoção da lei exponencial empírica descrita na Equação (3.33) deste trabalho, e o outro apenas considerando a variação da porosidade, mas com permeabilidade constante.
+5.7.1.	Descrição do Caso
+Este problema apresenta um campo sintético considerando o reservatório de óleo e as rochas adjacentes (overburden, reservatório e underburden). A produção de óleo ocorre através da injeção de água pelo poço injetor, no valor de 15 MPa, já no poço produtor adotou-se uma pressão de de 5MPa.
+No topo do overburden foram prescritas uma tensão vertical e uma pressão de fluido de 15 MPa representando o montante de camadas de rocha saturada acima desta formação. Com isso gerou-se um estado geostático de tensões e o campo inicial de pressões.
+As propriedades empregadas para as rochas são:
+-	Overburden/Underburden:
+Módulo de elasticidade E de 6000 MPa e Coeficiente de Poisson de 0,30; Permeabilidade de 1x10- m2 e porosidade de 0,27.
+-	Reservatório:
+Módulo de elasticidade E de 3000 MPa e Coeficiente de Poisson de 0,30;
+30 Permeabilidade de 1x10-30 m2 e porosidade de 0,30.
+As curvas de permeabilidade relativa e as densidades da água e do óleo são as mesmas adotadas nos casos anteriores, porém aqui se empregou uma viscosidade de 1,05x10-9 MPa/s para a água e 4,05x10-9 MPa/s para o óleo. Foram adotados os valores de CFL=0,45 e DVTOL=10-6.
+O tempo total de simulação foi de 1 ano, onde a saturação inicial de água foi de 10%. Como condições de contorno empregou-se uma pressão de 18 MPa com uma vazão de água prescrita de 3,47x10-4 m3/s para o poço injetor, e pressão de 3 MPa para o poço produtor.
+Para o caso em que se emprega a lei exponencial de variação da permeabilidade adotou-se o valor do coeficiente b igual a 50.
+Analisando-se os resultados apresentam-se os campos de deslocamentos verticais para ambos os casos na Figura 5.33, onde os valores positivos indicam compressão e os negativos expansão. Nestes casos verifica-se que os deslocamentos são maiores quando se considera a lei de variação da permeabilidade com a porosidade.
+Displacements Y
+-0.06081	0.019317
+Time: 3.1500e+007 s
+(a)
+Displacements Y
+0.05Ó73	0.023476
+Time: 3.1500e+007 s
+(b)
+Figura 5.33 - Distribuição do campo de deslocamentos: (a) permeabilidade
+constante; (b) permeabilidade variável.
+A Figura 5.34 apresenta as bacias de compactação para ambos os casos, onde pode ser visto que para o caso com permeabilidade constante os deslocamentos verticais, na região do poço injetor, são maiores e na zona de descompressão são menores que no caso onde há a variação da permeabilidade. A compactação será menor no caso de permeabilidade constante, pois a frente de saturação se propaga com maior facilidade levando de forma mais rápida a uma manutenção das pressões na região do poço produtor, o que minimiza o aumento das tensões efetivas da rocha.
+3
+£
+Ê
+E
+3
+□
+K ®
+Q
+Figura
+0,03
+0,02
+0,01
+0,00 -0,01 -0,02 -0,03 -0,04 -0,05 -0,06 -0,07
+5.34
+— Permeabilidade Constante Permeabilidade Variando
+Comprimento (m)
+Comparação da bacia de compactação para o caso com permeabilidade constante e o de permeabilidade variável.
+(a)	(b)
+(c)	(d)
+Figura 5.35 - Distribuição da saturação de água: (a) permeabilidade constante -tempo inicial; (b) permeabilidade variável - tempo inicial; (c) permeabilidade constante para t= 1 ano; (d) permeabilidade variável para t=1 ano.
+O caso que se considerou a permeabilidade constante apresenta deslocamentos maiores devido à variação do campo de pressões, já que esta variação leva há um aumento da porosidade e consequentemente da permeabilidade nas regiões de maior pressão, porém uma redução de ambas as propriedades nas zonas de descompressão. Com isso, quando a permeabilidade sofre redução, gera-se uma heterogeneidade no reservatório com a criação de zonas de baixa condutividade hidráulica que impedem uma maior velocidade do avanço da frente de saturação de água e o consequente deslocamento de óleo.
+porosity
+0,268237	0.330104
+(a)
+(b)	(c)
+Figura 5.36 - Distribuição da porosidade: (a) porosidade inicial; (b) caso sem variação de permeabilidade; (c) caso com variação de permeabilidade.
+A figura 5.37 mostra uma varrição mais rápida do óleo ocorrendo no caso com permeabilidade constante, tendo em vista que a alteração da permeabilidade causa uma diminuição na porosidade e uma influência negativa na produção de óleo.
+(a)
+Sn
+(b)
+0.10	0.90
+(c)
+Sn
+(d)
+0.10 0.61
+(e)	(f)
+Figura 5.37 - Distribuição da saturação de óleo: (a) permeabilidade constante - tempo inicial; (b) permeabilidade variável - tempo inicial; (c) permeabilidade constante para t= 100 dias; (d) permeabilidade variável para t=100 dias.; (e) permeabilidade constante para t=1 ano; permeabilidade variável para t=1 ano.
+A injeção de água leva a expansão do reservatório próximo ao poço injetor, pois através dessa injeção, as pressões são reestabelecidas provocando um maior varrido do óleo. Por outro lado, próximo ao poço produtor ocorre o efeito contrário, devido a depleção, as pressões são diminuídas e por conseguinte há a ocorrência da compactação do reservatório. A Figura 5.38a mostra a os deslocamentos verticais para tempo final de simulação e a Figura 5.38b a distribuição das pressões no topo do reservatório para diferentes tempos de
+Figura 5.38 - Curva representativa: (a) dos deslocamentos verticais ocorrentes no topo do reservatório para o tempo final; (b) Distribuição da pressão de óleo para diversos tempos de análise.
+Por fim, verifica-se a importância das análises acopladas hidro-geomecânica no impacto da produção de óleo, bem com a influência da variação da permeabilidade na resposta mecânica do reservatório.
+CONCLUSÃO
+No presente trabalho foi implementada e aplicada uma formulação de fluxo bifásico em meios porosos saturados deformáveis. Essa formulação combina o método dos elementos finitos -Galerkin com método de volumes finitos e a utilizada para problemas de escoamento de fluidos incompressíveis em meios porosos.
+A escolha da formulação em CVFEM para a implementação do método IMPES modificado deu-se pelo fato do código utilizado, CODE_BRIGHT, já ter em sua estrutura implementado o método CVFEM em uma formulação do tipo pressão-pressão.
+Adotou-se neste trabalho, para o problema de fluxo de fluido, uma formulação segregada do tipo pressão-saturação, onde as incógnitas do problema são a pressão (pressão capilar foi desconsiderada) e a saturação de água.
+Através da metodologia IMPES, determinaram-se as pressões de forma implícita enquanto que as saturações foram resolvidas explicitamente. As pressões e as saturações foram determinadas em passos de tempos distintos, através do método IMPES modificado, permitindo a maior rapidez na resolução dos problemas como também uma economia de memória computacional através do desacoplamento das equações.
+A técnica de upwind implementada mostrou-se de forma satisfatória eliminando os possíveis problemas de oscilações numéricas, porém, por se tratar de upwind de primeira ordem, um com ordem superior seria necessário para a simulação de problemas com maior complexidade de geometria, como campos que envolvem estruturas complexas como falhas, especialmente considerando zonas de dano devido a heterogeneidade do campo de permeabilidade e porosidade. Para este tipo de simulação onde há o acoplamento com reativação de falhas, as variações da permeabilidade acontecem de elemento a elemento. Apesar disso, neste trabalho foi possível simular um caso com falha previamente reativada, submetida a fluxo bifásico, tendo resposta satisfatória.
+Para o cálculo do passo de tempo, adotado na equação da saturação, foi respeitada a condição CFL. Esta condição influência diretamente no controle do passo de tempo da saturação sendo o valor a ser adotado dependente do problema estudado, mas com valores menor que 1 (Equação 4.15) . Logo, a formulação adotada apresenta sensibilidade a esta condição quanto à velocidade da solução.
+A formulação implementada foi validada, com respostas satisfatórias, através do problema de Buckley-Leverett, que se trata de um problema unidimensional clássico da literatura para validação de simuladores de fluxo.
+Através da simulação de um reservatório de óleo com permeabilidade heterogênea, submetido à injeção de água, observou-se a formação de caminhos preferenciais (fingers) onde estes afetam diretamente a produção de óleo através da chegada antecipada da frente de água. Esse fenômeno também foi observado através das análises dos problemas em que um reservatório de óleo naturalmente fraturado foi submetido a injeção de água e comparado ao mesmo caso com as fraturas impermeáveis e para o caso do mesmo campo sem fratura. Claramente verificou-se, através das curvas de produção acumulada de água e óleo, que as fraturas e barreiras influenciam diretamente na produção de óleo. Nestes casos a formulação garantiu respostas satisfatórias.
+Também foi possível simular dois problemas sintéticos de falhas, sendo estas consideradas reativadas, baseado no trabalho de Guimarães et al., (2009), onde em um dos casos o reservatório de óleo encontrava-se submetido a ação de um aquífero e outro sem sofrer essa influência. Percebeu-se que o aquífero aumenta o varrido de óleo do reservatório influenciando também a produção de óleo. A resposta da metodologia também foi satisfatória, tendo em vista que na literatura, esse tipo de problema encontra-se apenas como sendo analisado como monofásico.
+Por fim, analisaram-se dois problemas sintéticos ligados ao fenômeno de compactação de reservatório de petróleo utilizando um acoplamento hidro-geomecânico, através da simulação de um campo submetido à injeção de água. Como resposta, obteve-se a ocorrência do fenômeno de compactação do reservatório devido ao alívio das tensões provocado pela depleção.
+Contudo, a formulação numérica desenvolvida se mostrou eficiente em todas os cenários dos problemas estudados, envolvendo inclusive geometrias complexas, considerando diferenças entre viscosidades dos fluidos e sem considerar um termo de pressão capilar.
+TRABALHOS FUTUROS
+•	Aperfeiçoamento do modelo de fluxo bifásico através da inclusão do termo de capilaridade e consideração de compressibilidade dos fluidos;
+•	Implementação de um método de estabilização upwind de segunda ordem de forma a tornar o modelo mais robusto e aplicável a problemas de maior complexidade e que envolvam outras físicas acopladas;
+•	Extensão a um modelo black-oil que é o modelo padrão dos simuladores de reservatórios;
+•	Ampliar a formulação para problemas tridimensionais;
+•	Modelagem de problemas acoplados hidromecânicos com fluxo bifásico para os problemas de compactação, de reativação de falhas e fraturas, considerando modelos constitutivos mecânicos mais realistas para as rochas e estruturas geológicas;
+•	Aplicação da formulação a problemas buscando sua comparação com diversos benchmarks;
+•	Simulação de problemas de fluxo bifásico em problemas com geometrias e dados reais;
+•	Estudo de sensibilidade quanto ao valor dos parâmetros de CFL, DVTOL e passo de tempo sobre a resposta do fluxo de água e óleo;
+•	Atualizar deformação nas equações de fluxo seguindo Murad (2013).
+REFERÊNCIAS BIBLIOGRÁFICA
+AZIZ K., SETTARI A., Petroleum Reservoir Simulation. Applied Science Publishers, London, UK. 1979.
+BABADAGLI, T. 2001. Selection of Proper EOR Method for Efficient Matrix Recovery in Naturally Fractured Reservoirs. In: SPE Latin American and Caribbean Petroleum Engineering Conference, Buenos Aires, Argentina, SPE Paper 69564.
+BARENBLATT, G.I., ZHELTOV, IU P., and KOCHINA I.N. (1960). Basic Concepts in the Theory of Seepage of Homogeneous Liquids in Fissured Rocks, J. Appl. Math, 24, 1286.
+BARNEDA, D. 2012. Shale na América Latina: a revolução menos pensada. Oil &amp;amp; Gas Journal Latino Americana. pp. 10-15.
+BEAR, J. Dynamics of fluids in porous media. American Elsevier, New York 1972.
+BERG, S. S., SKAR, T. Controls on damage zone asymmetry of a normal fault zone: outcrop analyses of a segment of the Moab Fault, SE Utah. Journal of Structural Geology, 27:1803-1822 (2005).
+BERGAMASHI, L.; MANTICA, S; MANZINI, G., A mixed finite element-finite volume formulation of the black-oil model. SIAM Journal on Scientific Computing, 20, 97097. 1998
+BILLI, A., SALVINI, F., STORTI F., The damage zone-fault core transition in carbonate rocks: implications for fault growth, structure and permeability. Journal of Structural Geology 25 (2003) 1779-1794.
+BISHOP, A. W.; BLIGHT, G. E., Some aspects of effective stress in Saturated and Party Saturated Soils. Geotechnique, v.13, p.177-197, September, 1963.
+BOURBIAUX, B.; BASQUET, R.; DANIEL, J.M.; HU, L.Y.; JENNI, S.; LANGE, A. and RASOLOFOSAON, P. (2005). Fractured reservoirs modelling: a review of the challenges and some recent solutions. First break, vol. 23.
+BUCKLEY, S. E. and LEVERETT, M. C. Mechanism of fluid displacements in sands. Transactions of the AIME, 146:107 - 116, 1942.
+CAPPA F. Modeling of coulpled deformation and permeability evolution during fault reactivation induced by deep underground injection of CO2. International Journal of Greenhouse Gas Control., 2010.
+CARVALHO, D. K. E., Uma Formulação do Método dos Volumes Finitos com Estrutura de Dados por Aresta para a Simulação de Escoamentos em Meios Porosos . 188 f. Tese de Doutorado em Engenharia Civil - Universidade Federal de Pernambuco (UFPE), Recife-PE, 2005.
+CHAVENT, G.; JAFFRE, J., In: Mathematical Models and Finite Elements for Reservoir Simulation: Single Phase, Multiphase and Multicomponent Flows Through Porous Media. Amsterdam, North-Holland, 1986.
+CHEN, Z.; EWING, R; ESPEDAL, M., Multiphase Flow Simulation with Various Boundary Conditions. Computational Methods in Water Resources Kluwer Academic Publishers, Netherlands, pp. 925-932, 1994.
+CHEN, Z.; HUAN, G.; LI, B. An Improved IMPES Method for Two-Phase Flow in Porous Media. Transport in Porous Media, v. 54, p. 361-376, 2004.
+CHEN, Z.; HUAN, G.; MA, Y. Computational methods for multiphase flows in porous media. SIAM, Computational Science &amp;amp; Engineering, 2006.
+CORDAZZO, J., Simulação de Reservatório de Petróleo utilizando o Método EbFVM e Multigrid Algébrico . 272 f. Tese de Doutorado em Engenharia Mecânica -Universidade Federal de Santa Catarina (UFSC), Florianópolis-SC, 2006.
+CORDES C, KINZELBACH W (1992). Continuous groundwater velocity fields and path lines in linear, bilinear, and trilinear finite elements. Water Resources Research, 28, 2903-11.
+CORDES C, KINZELBACH W. (1996), Comment on ‘Application of the mixed hybrid finite element approximation in a groundwater flow model: luxury or necessity? by R. Mose', P Siegel, P. Ackerer, and G. Chavent. Water Resources Research, 32, 1905-9.
+DAVID, A.; SETTARI, A. New iterative coupling between a reservoir simulation and a geomechanics module. SPE/ISRM Rock Mechanics Conference, 2002.
+DURLOFSKY LJ (1993). A triangle based mixedfinite-element-finite volume technique for modeling two phase flow through porous media. Journal of Computational Physics, 105, 252-66.
+DURLOFSKY LJ (1994). Accuracy of mixed and control volume finiteelement approximations to Darcy velocity and related quantities. Water Resources Research, 30, 965-73.
+EWING, R. E. In: EWING, R. E. (editor), The Mathematics of Reservoir Simulation. Philadelphia, SIAM, 1983.
+EYMARD R., GALLOUET T., JOLY P., Hybrid finite element techniques for oil recovery simulation. Computer Methods in Applied Mechanics and Engineering, 74, 83-98. 1989.
+FALCÃO, F. L., Efeitos Geomecânicos na Simulação de Reservatórios de Petróleo. Rio de Janeiro, 2002.
+FREDLUND, D.G. and RAHARDJO, H. (1993) Soil mechanics for unsaturated soils. John Wiley and Sons, INC., New York.
+FERNANDES, J. P. V., Implementação e Aplicação do Modelo de Visco-Dano para Problemas Geomecânicos. Dissertação de Mestrado, Universidade Federal de Pernambuco, Recife. 20098.
+GALE, J. F. W., REED, R. M., HOLDER, J. (2007). Natural fractures in the Barnett Shale and their importance for hydraulic fracture treatments. AAPG Bulletin, v. 91, n° 4, pp. 603-622.
+GEIGER, S.; MATTHAI, K.; ROBERTS S.; ZOPPOU, C., Combining Finite Volume and Finite Element Methods to Simulate Fluid Flow in Geologic Media. Australian &amp;amp; New Zealand Industrial and Applied Mathmatics Journal, v. 44, p. c180-c201, 2003.
+GEIGER, S.; ROBERTS S.; MATTHAI, K.; ZOPPOU, C.; BURRI, A., Combining Finite Element and Finite Volume for Efficient Multiphase Flow Simulations in Highly Heterogeneous and Structuraly Complex Geologic Media. Geofluids, v. 4, p. 284-299, 2004.
+GEIGER S., NIESSNER J., MATTHÃI S., HELMIG R. 2007. Black-Oil Simulations for Three-Component Three- Phase Flow in Fractured Porous Media; SPE International, (2007).
+GOMES, I. F., Implementação em Elementos Finitos das Equações de Pressão e Saturação para Simulação de Fluxo Bifásico em Reservatórios de Petróleo Deformáveis. Tese de Doutorado, Universidade Federal de Pernambuco, Recife. 2009.
+GUIMARÃES, L. J. N., Análisis multi-componente no isotermo em médio poroso deformable no saturado. Tesis Doctoral, Universitat Politécnica Catalunya, Barcelona, 195 pp. 2002.
+GUIMARÃES, L. J. N., GOMES, I. F., FERNANDES, J. P. V. Influence of Mechanical Constitutive Model on the Coupled Hydro-Geomechanical Analysis of Fault Reactivation. 2009 SPE Reservoir Simulation Symposium. SPE 119168-PP. The Woodlands. Texas. USA. 2009.
+HELMIG R. (1997). Multi-phase Flow and Transport Processes in the Subsurface. Springer Verlag, Berlin, Germany.
+HICKMAN, S., SIBSON, R. and BRUHN, R. L. (1995) Introduction to special section: Mechanical involvement offluids in faulting. Journal of Geophysical Research 100, 12,831±12,840.
+HILLS, E. (1972). Elements of Structural geology. Chapman and Hall, London.
+HUBER, R.; HELMING R., Multi-phase flow in heterogeneous porous media: A classical finite element method versus and implicit pressure-explicit saturation-based mixed finite element finite volume approach. International Journal for Numerical Methods in Fluids, 29, 899-920. 1999.
+HURTADO, F. S. V; MALISKA, C. R. S.; SILVA, A. F. C; CORDAZZO, J., Na elemento-based finite volume formulation for reservoir simulation. .Proceedings of the XXVI Iberian Latin-American Congresso n Computational Methods in Engineering -CILAMCE 2005,Gurarpari/ES, Brazil, October 19-21, 2005.
+LAMBE, T. L.; WHITMAN, R. V., Mecánica de Suelos. 2a Reimpressão. México: Ed. Limus, 1976. 528p.
+LI, C.; BORJA, R. e REGUEIRO, R. Dynamics of porous media at finite strain. Computer Methods in applied Mechanics and Engineering, 193:3837, 2004.
+MATTAX, C. C. e DALTON, R. L., 1990. Reservoir Simulation. SPE Monograph Series, Volume 13, Society of Petroleum Engineers.
+MATTHA'T S. K., ROBERTS S. G., (1996) The influence of fault permeabil ity on single phase fluid flow near fault-sand intersections: Results from steady state high-resolution models ofpressure driven fluid flow. AAPG Bulletin, 80, 1763-79.
+MATTHAT SK, AYDIN A, POLLARD DD, ROBERTS SG (1998). Numerical simulation of departures from radial drawdown in a faulted sandstone reservoir with joints and deformation bands. In: Faulting, Fault Sealing and Fluid Flow in Hydrocarbon Reservoirs (eds Jones G, Fisher QJ, Knipe RJ ), Geological Society of London Special Publications, 147, 157-91.
+MENDES, M. A., Modelagem Computacional de Escoamento Bifásico em Meios Porosos Heterogêneos com Acoplamento Geomecânico. Tese de Doutorado, Laboratório Nacioanl de Computação Científica, Petrópolis. 2008.
+MENDES, M. A.; MURAD, M. A.; PEREIRA, F., A New Computation Strategy for Solving two-phase Flow in Strongly Heterogeneous Poroelastic Media of Evolving Scales. International Journal for Numerical and Analytical Methods in Geomechanics. 36: 1683-1716, 2012.
+MICARELLI, L., BENEDICTO, A., WIBBERLEY, C. A. J., Structural evolution and permeability of normal fault zones in highly porous carbonate rocks. Journal of Structural Geology 1-15, (2006).
+MINKOFF, S. E.; STONE, C. M.; BRYANT, S; PESZYNSKA, M e WHEELER, M. F. Coupled fluid flow and geomechal deformation modeling. Petroleum Science and Engineering, 38:37-56, 2003a.
+MORAES, A. (2004). Comportamento Mecânico de Zonas de Falha. Tese de Doutorado, Universidade Federal do Rio de Janeiro, Pós-graduação em Geologia, 300 p., Rio de Janeiro. Brasil.
+MOSE' P, SIEGEL P, ACKERER P, CHAVENT G (1994) Application of themixed hybrid finite element approximation in a groundwater flow model: Luxury or necessity? Water Resources Research, 30, 3001-12.
+MUÑOZ, M., EDUIN, O. Estratégias de Produção em Reservatórios Naturalmente Fraturados. Campinas: Faculdade de Engenharia Mecânica, Universidade Estadual de Campinas, 2004. 83 p. Dissertação.
+MURAD, A. M.; BORGES, M.; OBREGÓN, J. A.; CORREA, M. A New Locally Conservative Numerical Method for Two-phase Flow in Heterogeneous Poroelastic Media. Computers and Geotechnics, 48, 192-207, 2013.
+OLIVELLA, S., CARRERA, J., GENS, A., ALONSO, E. E.. Numerical formulation for a Simulator (CODE BRIGHT) for the coupled analysis of saline media. Engineering Computations, vol. 7, pp. 87-112. 1995.
+ONAISI, A.; SAMIER, P.; KOUTSABELOULIS, N.; LONGUEMARE,
+P. Management of stress sensitive reservoirs using two coupled stress-reservoir simulation tools : ECL2VIS and ATH2VIS. Paper SPE 78512, 2002.
+PEACEMAN, D. W., In: Fundamentals of Numerical Reservoir Simulation. New York, Elsevier, 1977.
+PEREIRA, L. C. Simulação de Fluxo em Reservatórios sob Efeito da Compactação. Dissertação de Mestrado, Universidade Federal do Rio de Janeiro, COPPE. Rio de Janeiro, 2007.
+PUTRA, E., FIDRA, Y, SCHECHTER, D. 1999. Use of Experimental and Simulation Results For Estimating critical and Optimum Water Injection Rates in Naturally Fractured Reservoirs. In: SPE Annual Technical Conference and Exhibition, Houston, Texas, EUA, SPE Paper 56431.
+RAHMAN, N. e LEWIS, R. W. Finite element Modelling of multiphase immiscible flow in deforming porous media for subsurface systems. Computers and Geotechnics, 24:41-63, 1999.
+RAMSAY, J. e GRAHAM, R. (1970). Strain variation in shear belts. Canadian J.Earth Sci.7: 786-813.
+RAMSAY, J. (1980). Shear zone geometry: a review. J Struc. Geol. 2: 83-99.
+REICHENBERGER V., JAKOBS H., BASTIAN P., HELMIG R., NIESSNER J. 2004. Complex Gas-Water Processes in Discrete Fracture-Matrix Systems: Up-scaling, MassConservative Discretization and Efficient Multilevel Solution; Institut für Wasserbau, Universitat Stuttgart, Heft 130.
+REIS, J. 2002. Water advance and Oil Production Rate in a Naturally Fractured Reservoir during Waterflooding, Journal of Petroleum Science and Engineering N° 36, Elsevier Science B. V.
+RIGHETTO, G. L. Simulação Hidromecânia de Reativação de Falhas em Reservatórios de Petróleo: Abordagens por Iterações de Contato e Plasticidade. Dissertação de Mestrado, Pontifica Universidade Católica do Rio de Janeiro, PUC-RJ. Rio de Janeiro, 2012.
+RUTQVIST, J., BIRKHOLZER, J., CAPPA, F. &amp;amp; TSANG, C. -F. Estimating maximum sustainable injection pressure during geological sequestration of CO2 using coupled fluid flow and geomechanical fault-slip analysis. Energy Conversion and Management, 48, (March). pp. 1798-1807, 2007.
+SAMIER, P.; Onaisi, A. e Fontaine, G. Coupled analysis of geomechanics and fluid flow in reservoir simulation. SPE Reservoir symposium, 2003.
+SANTOS, E. A. Estudo de casos utilizando o método dos elementos finitos para simulação de reservatórios de petróleo. Dissertação de Mestrado. Universidade Federal de Pernambuco. Departamento de Engenharia Civil. Recife. 2002.
+SELVADURAI, A. P. S.; NGUYEN, T. S., Computational Modellingnof Isothermal Consolidation of Fractured Porous Media. Computers and Geotechnics, v. 17, p.39-73, 1995
+SERONT, B., WONG, T., CAINE, J. S., FORSTER, BRUHN, R. L., FREDRICH, J. T., Laboratory characterization of hydromechanical properties of a seismogenic normal fault system. Journal of Structural Geology, Vol. 20, No. 7, pp. 865 to 881, 1998.
+SHIPTON, Z. K.; COWIE, P. A.; Damage zone and slip-surface evolution over pm to km scales in high-porosity Navajo sandstone, Utah. Journal of Structural Geology, 23 (2001) 1825-1844, 2001.
+SILBERHORN-HEMMINGER.	A. Modellierung von Kluftaquifersystemen:
+Geostatistische Analyse und deterministisch-stochastische Kluftgenerierung. PhD thesis, IWS, Universifat. Stuttgart, 2002.
+SOUSA, R. M., Modelagem Acoplada Hidro-Geomecânica da Perfuração de Poços em Rochas Frágeis. Dissertação, Universidade Federal de Pernambuco, Recife. 2004.
+SKEMPTON, A. W., The Por-Pressure Coefficients A and B. Géotechinque - V 4 - n° 4 -pg 143-147, 1954.
+SOLTANZADEH, H., HAWKES, C. D. Semi-analytical models for stress change and fault reactivation induced by reservoir production and injection. Journal of Petroleum Science and Engineering, 60, (May). pp. 71-85. 2008.
+TATOMIR, A.B. 2007. Numerical Investigations of Flow through Fractured Porous Media. Master's Thesis, Universitat Stuttgart. 79p.
+TRAN, D.; NGHIEM, L.; BUCHANAN, L. An overview of iterative coupling between geomechanical deformation and reservoir flow. Paper SPE/PS-CIM/CHOA 97879 PS2005-396, 2005.
+THOMAS, J.E. Fundamentos da Engenharia de Petróleo. Ed. Interciência Ltda., 2001, 271 pp.
+VALOR ECONÔMICO. Setembro, 2012.
+VASCONCELOS, R. B., Implementação do Modelo de Dano Isotrópico Aplicado a Problemas Acoplados Hidro-Geomecânicos. Dissertação de Mestrado (Mestrado em Ciências em Engenharia Civil), UFPE, Recife, 136p., 2007.
+WAN, J. Stabilized finite element methods for coupled geomechanics and multiphase flow. Dissertation for the degree of Doctor of Philosophy. Stanford University, november 2002.
+WARREN, J. E. &amp;amp; ROOT, P.J. 1963. ‘The Behavior of Naturally Fractured Reservoirs,” Soc. Pet. Eng. J. 245-55.
+YALE, D. P. Coupled geomechanics-fluid flow modeling:effects of plasticity and permeability alteration. SPE/ISRM Rock Mechanics Conference, 2002.
+ZHAO, Nan. Integration of reservoir simulation and geomechanics. 2012. Tese de Doutorado. The University of Utah.</field>
+	</doc>
+</add>

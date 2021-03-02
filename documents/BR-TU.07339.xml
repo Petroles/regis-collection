@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.07339</field>
+		<field name="filename">12015_OAtritoDeFundoBOUSS3WAplicacaoPraiaDeFaro.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">O Atrito de Fundo no Modelo BOUSS3W. Aplicação à Praia de Faro.
+Liliana V. PINHEIRO
+Eng. Civil, LNEC, Av. do Brasil, 101, 1700-066 Lisboa, +351.218443 448, lpinheiro@lnec.pt
+Conceição Juana E. FORTES
+Eng. Civil, LNEC, Av. do Brasil, 101, 1700-066 Lisboa, +351.218443446, jfortes@lnec.pt
+Theo MOURA
+Oceanógrafo, LNEC, Av. do Brasil, 101, 1700-066 Lisboa, +351.218443446, tmoura@lnec.pt
+Paulo TEIXEIRA
+Professor, Universidade Federal do Rio Grande, Escola de Engenharia, Av. Itália, km8, Campus Carreiros, 96201-900 Rio Grande, RS, Brasil pauloteixeira@furg.br
+RESUMO
+O modelo BOUSS3W permite simular a propagação de ondas não lineares e dispersivas em zonas abrigadas de profundidade variável e tem em conta os fenómenos de refracção, difracção, empolamento, dispersão em frequência, dispersão em direcção, geração de harmónicas e reflexão total ou parcial. Este modelo resolve uma extensão das equações de Boussinesq deduzidas por Nwogu (1993) com termos adicionais para modelar a geração das ondas no interior do domínio, a absorção e reflexão das ondas nas fronteiras e para controlar as oscilações numéricas. É válido desde águas de profundidade intermédia a águas pouco profundas. O modelo usa o método de Galerkin com uma malha não estruturada de elementos finitos para a discretização espacial e foi desenvolvido para aplicações a uma ou duas dimensões (em planta), permitindo obter resultados da elevação da superfície livre e da velocidade horizontal (representativa) em cada ponto do domínio de aplicação.
+Foi implementado no modelo BOUSS3W a dissipação de energia por atrito de fundo. Este fenómeno é particularmente importante em zonas de baixa profundidade. A metodologia utilizada consiste em adicionar um termo de tensão tangencial de fundo à equação de conservação da quantidade de movimento, simulando assim a dissipação de energia causada por uma camada limite turbulenta.
+Nesta comunicação, primeiramente valida-se a nova condição de atrito de fundo num canal de profundidade constante. De seguida, aplica-se o modelo na zona da praia de Faro. Para este último caso, os resultados do modelo BOUSS3W são comparados com resultados de outro modelo numérico que resolve um sistema de equações de tipo-Boussinesq, o modelo COULWAVE.
+Palavras-chave - Propagação de ondas, Atrito de fundo, Ondas não lineares e dispersivas, Elementos finitos, Zonas costeiras e portuárias, BOUSS3W
+1 INTRODUÇÃO
+O modelo BOUSS3W (Pinheiro et al., 2009) é um modelo de elementos finitos que resolve uma extensão das equações de Boussinesq derivadas por Nwogu (1993). Este modelo baseou-se no modelo de ondas regulares BOUSS, desenvolvido por Walkley (1999), ao qual foram aperfeiçoados os aspectos relacionados, entre outros, com a geração de ondas regulares e irregulares no interior do domínio de cálculo (Pinheiro, 2007b). O modelo BOUSS3W permite simular a propagação não linear e dispersiva de ondas regulares e irregulares em zonas costeiras e portuárias, tendo em conta alguns dos fenómenos mais importantes presentes nestas regiões: difracção, refracção, reflexão (total ou parcial), empolamento, dispersão em frequência, dispersão em direcção e geração de harmónicas. O modelo usa o pacote SPRINT, Berzins et al. (1985), para a integração temporal e o método de Galerkin
+com uma malha não estruturada de elementos finitos para a discretização espacial. As malhas de elementos finitos são geradas com o gerador automático GMALHA, Pinheiro et al. (2007a), especialmente criado para modelos de propagação de ondas marítimas.
+Para a geração das ondas no domínio encontra-se implementada uma condição de geração no interior do domínio por intermédio de uma função fonte. Esta condição permite não só a geração das ondas mas também que as ondas reflectidas nas fronteiras físicas do domínio e que se propagam na direcção da fonte, possam ser absorvidas evitando a sua permanência no domínio e consequente adulteração das características das ondas geradas.
+Como condições de fronteira, são admitidas condições de reflexão total, reflexão parcial ou de absorção total. Para a simulação da saída das ondas do domínio por uma fronteira utiliza-se uma condição de absorção total conseguida através da colocação de uma zona absorvente (“sponge layer”). Para a simulação da interacção das ondas com uma fronteira física (como é o caso de um quebra-mar ou um cais, falésias rochosas, etc.) é imposta uma condição de fronteira de reflexão parcial ou total.
+Existe no modelo uma difusão numérica para controlar as instabilidades numéricas. No entanto, não é tida em conta a dissipação de energia por atrito de fundo. Este fenómeno é particularmente importante em zonas de baixas profundidades. É, pois, o objectivo desta comunicação, a implementação da dissipação de energia por atrito de fundo no modelo BOUSS3W e sua validação.
+A metodologia utilizada consiste em adicionar um termo de tensão tangencial de fundo à equação de conservação da quantidade de movimento, simulando assim a dissipação de energia causada por uma camada limite turbulenta.
+Nas próximas secções descreve-se o modelo BOUSS3W e a metodologia utilizada para implementação da dissipação de energia por atrito de fundo. Seguidamente descrevem-se os casos de teste utilizados na validação do modelo assim desenvolvido. São também apresentados e discutidos os resultados obtidos.
+2	O MODELO BOUSS3W
+2.1	Descrição do modelo
+O modelo BOUSS3W resulta do aperfeiçoamento do modelo de elementos finitos de propagação de ondas, BOUSS, desenvolvido por Walkley (1999), que é baseado nas equações de Boussinesq estendidas por Nwogu (1993).
+t+&lt;- • v’u++v(v •»+-vv • ("-0
++ V-h — )+V-
+(7 2 ,2 A	(
+-f- _ _ hvV u)+l Za + kl	6 7	'■
+(1)
+(2)
+A
+7
+em que o vector de velocidade u - u( x, y, t) - (u, v) representa o campo de velocidades bidimensional, calculado numa determinada profundidade, za; ---x,y,t) representa a elevação da superfície livre; h é a profundidade do fundo e g é a aceleração da gravidade.
+A resolução espacial das equações de Boussinesq estendidas por Nwogu (1993) é efectuada pelo método dos elementos finitos. No entanto, estas equações não podem ser resolvidas directamente, com funções de interpolação lineares, devido às derivadas espaciais de 3a ordem
+presentes na equação (2). De forma a solucionar este problema, é, então, introduzida uma variável auxiliar, w, e uma terceira equação no sistema.
+Para a discretização temporal, recorre-se ao pacote de integração temporal SPRINT, Berzins et al. (1985) com o pacote DASPK (Differential Algebraic Systems Krylov Preconditioned), Brown et al. (1989), que usa o método iterativo GMRES (Generalized Minimum Residual) com um pré-condicionador do tipo ILU (Factorização LU incompleta). Este software fornece um método geral de resolução de sistemas de equações diferenciais parciais ordinárias utilizando passos de tempo e ordens de integração variáveis e adaptáveis a cada caso.
+É importante salientar que é de grande vantagem para o método de resolução de equações, que a malha de elementos finitos tenha a numeração nodal ordenada de modo que a largura de banda seja mínima. O gerador de malhas utilizado com o BOUSS3W é o GMALHA, Pinheiro et al. (2007a). Este gerador produz malhas optimizadas para modelos de propagação de ondas, uma vez que tem densidade de pontos proporcional ao comprimento de onda em todo o domínio com numeração nodal reordenada.
+2.2	Condições iniciais e de fronteira
+As condições iniciais definidas no modelo BOUSS3W são as de repouso, isto é, a elevação da superfície livre é igual a zero assim como a velocidade em todos os pontos do domínio. Esta condição pode levar a descontinuidades no tempo significativas quando as ondas começam a ser introduzidas no sistema e, consequentemente, a passos temporais muito pequenos. Para que tal não se verifique, a introdução da onda no domínio é feita de forma gradual nos primeiros passos de tempo.
+As condições de fronteira implementadas são as condições de absorção total de reflexão parcial e de reflexão total. A condição de absorção total permite a saída das ondas que se propagam no domínio através do método da zona absorvente (sponge layer). Trata-se de uma zona onde se adiciona um termo difusivo à equação de conservação de massa que cresce exponencialmente em direcção à fronteira e é capaz de absorver a energia das ondas que saem do domínio com diferentes frequências. A largura da zona de absorção deve ser entre duas e três vezes o comprimento de onda. A condição de reflexão total simula a interacção das ondas com uma parede vertical sólida e impermeável (como é o caso de um cais vertical, quebra-mar vertical, etc.) A condição de reflexão parcial aplica-se nos casos em que existem fronteiras físicas que reflectem apenas parcialmente a energia das ondas incidentes (quebra-mares rugosos, praias reflectivas, etc.).
+2.3	Geração de ondas e estabilidade numérica
+A geração de ondas (regulares e irregulares) no interior do domínio é feita através de uma função fonte. Este método permite que as ondas reflectidas no domínio possam passar através da zona de geração sem alterar as suas características e propagarem-se para fora do domínio. O método proposto baseia-se no trabalho de Wei et al. (1999) para um modelo de diferenças finitas.
+Para atingir a estabilidade numérica em casos mais complexos foi introduzido um termo de difusão artificial de origem viscosa à equação de conservação da massa. Esta técnica baseia-se na constatação de que a fricção causada pela viscosidade elimina as oscilações de frequência elevada.
+O termo de difusão artificial, vs, (m2/s) é dado por:
+r-^4
+(2 • n - Ax )3
+(3)
+em que 2 (m) é o comprimento de onda, Ax (m) é a distância média entre pontos do domínio e o parâmetro y (m/s) é uma constante de proporcionalidade que deve ser calibrada consoante o caso. Se a difusão artificial for bem dimensionada, permite eliminar as ondas de pequena escala sem alterar grandemente as ondas de maior escala da solução. Estabeleceu-se empiricamente que, de modo a atingir bons resultados, o parâmetro y deve ter como ordem de grandeza valores entre [10-6 ; 10-7] m/s.
+2.4	Dados e resultados
+O modelo BOUSS3W foi desenvolvido para aplicações a uma e duas dimensões (em planta), e requer como dados de entrada:
+•	as características da agitação incidente para:
+o ondas regulares: o período e altura da onda;
+o ondas irregulares: a série temporal das ondas incidentes;
+•	as características da malha de elementos finitos com que foi discretizado o domínio;
+•	a batimetria nos pontos da malha;
+•	a localização da linha de fonte das ondas
+•	as condições de fronteira, que incluem fronteiras absorventes, parcialmente reflectivas ou totalmente reflectivas
+•	a largura das camadas absorventes (caso existam)
+•	as características das estruturas parcialmente reflectivas/transmissivas (caso existam)
+•	o número de Chezy ou as características das partículas do fundo (D50 e densidade)
+Para construir a malha de elementos finitos, é utilizado o gerador GMALHA, Pinheiro et al. (2007a).
+O modelo BOUSS3W produz como resultados:
+•	Elevação da superfície livre (n) e componentes (ux,uy) da velocidade em todo o domínio em determinados instantes de cálculo;
+•	Séries temporais da elevação da superfície livre em determinados pontos;
+•	Índices de agitação em todo o domínio.
+A validação do modelo BOUSS3W foi efectuada com casos de teste da literatura com um caso de propagação de ondas regulares e irregulares na bacia de adução de Sines, para testar o modelo numa situação real, Pinheiro et al. (2007b).
+2.5	Implementação da dissipação de energia por atrito de fundo
+A camada limite do fundo do escoamento associado à passagem de ondas está normalmente confinada a uma pequena região acima do fundo do mar, ao contrário do que acontece em escoamentos em rios e de marés, onde se estende por todo percurso até a superfície livre. Há, portanto, muito pouca dissipação de energia da onda devido ao atrito de fundo em distâncias de propagação das ondas típicas da ordem de O(1km) usados em modelos do tipo Boussinesq. A dissipação de energia por atrito no fundo, no entanto, desempenha um papel importante na transformação de onda perto da linha de costa, em zonas de baixa profundidade e na definição de padrões de circulação junto à costa, Jonhson e Kofoed-Hansen (2000).
+O efeito de dissipação de energia devido a uma camada limite turbulenta no fundo do mar é simulado através da adição de um termo de tensão tangencial de fundo, Fb, à equação de conservação da quantidade de movimento, seguindo o procedimento adoptado por Nwogu &amp;amp; Demirbilek (2001).
+Fb =	fU |Ua|	(4)
+em que fw é o factor de atrito. A equação (4) foi expressa em termos de Ua em vez da velocidade no fundo de modo a minimizar o esforço computacional dispendido em determinar esta última.
+O factor de atrito permite estimar a tensão de atrito no fundo induzida pela passagem da onda. Existem diversas abordagens para estimar este factor. A maneira mais expedita é escrevê-lo em termos do coeficiente de Chezy (cf):
+( 5 )
+Na Figura 1 apresenta-se a variação do número de Chezy calculado com os valores de Soulsby (1997) para diferentes profundidades e tipos de fundo (lama, arenoso liso, arenoso com rugas e gravilha). Na Figura 2 mostra-se como varia o factor de atrito com o número de Chezy.
+f =-g-
+2
+Cf
+Mud
+Sand (unrippled)
+Sand (rippled)
+Gravel
+Figura 1. Variação do número de Chezy calculado com os valores de Soulsby (1997) para diferentes profundidades e tipos de fundo. Retirado de Lambkin (2010).
+Figura 2. Variação do factor de atrito com o número de Chezy.
+No entanto, diversos autores têm tentado estabelecer formas mais ou menos analíticas baseadas em diversos parâmetros. Para escoamentos laminares na camada limite de fundo, fw pode ser calculado analiticamente (Schlichting, 1968):
+2	4*1
+	
+wcr
+(6)
+onde a é a frequência angular (2x/t ), T é o período da onda, p viscosidade dinâmica da água e uwcr é a velocidade orbital crítica.
+Jonsson (1966) propôs a seguinte equação:
+fw = 2
+P-
+0.5PUwcrd 0
+(7)
+em que d 0 é o diâmetro orbital junto ao fundo.
+Para escoamentos turbulentos na camada limite de fundo, Jonsson (1965) propõe o uso de um diagrama semelhante ao diagrama de Moody para escoamentos permanentes.
+Komar e Miller (1973) utilizaram a dimensão das partículas do fundo de 0.05 cm para separar escoamentos laminares e turbulentos.
+Duas das equações mais usadas são as de Jonsson (1963) e Swart (1974):
+fw
+0.0604
+(8)
+Z U TI 0.19
+5.211 w I
+fw = 0.00251e	V )
+(9)
+onde 8 é a espessura da camada limite e ks = d = d50 o comprimento turbulento de Nikuradse assume-se igual ao diâmetro equivalente das partículas do fundo. Estes parâmetros não podem ser obtidos com precisão. Não surpreende, portanto, que os valores de fw calculados pelas equações existentes possam diferir por um factor de 3.
+Mais recentemente, Leroux (2003) propôs uma forma de relacionar fw com a tensão de atrito de fundo adimensional, o chamado parâmetro de Shields, p, para correntes unidireccionais. Tal permite chegar a uma equação mais rigorosa para os sedimentos de diferente densidade em qualquer fluido, variando apenas em função do diâmetro equivalente das partículas do fundo, D, e do período da onda, T.
+fw =
+2pgP'D
+UWcr P
+(10)
+em que p e p são as densidades das partículas submersas e da água respectivamente e o parâmetro de Shields, p ,é dado por:
+P = i
+0.0717l.g(Wds) + 0.0625	Wds &amp;lt;2.5
+0.0717 l.g(Wds)+ 0.0272
+2.5 &amp;lt;Wds
+&amp;lt;11
+(11)
+0.045
+Wds &gt; 11
+A velocidade orbital crítica, uwcr é dada por:
+Uwcr =-0.002Z(8wcrgDP,)2
+Z
++1.0702 0wcrgDP.
+V
+com 8wcr = 0.027Wds -0-6757
+( 12 )
+í m \0.5 I
+ZpI
+1
+em que wds é a velocidade de sedimentação adimensional e pode ser calculada de acordo com a formulação empírica de Dietrich (1982):
+D2
+Wds = 0.68
+5832
+(13)
+Na Figura 3 apresenta-se a variação do factor de atrito com o diâmetro das partículas do fundo e com o período da onda, calculado com o método de LeRoux (2003), considerando uma densidade das partículas de 2.65x103kgm-3.
+Figura 3. Variação do factor de atrito com o diâmetro das partículas do fundo e com o período da onda, calculado com o método de LeRoux (2003).
+3	VALIDAÇÃO DO MODELO COM ATRITO DE FUNDO
+Nesta secção, descrevem-se os casos de teste utilizados para a validação do modelo numérico, nomeadamente a propagação num canal de profundidade constante e na zona marítima da praia de Faro. Para cada caso de teste, apresentam-se as condições de cálculo e os resultados numéricos obtidos com o modelo numérico BOUSS3W. Efectuam-se também comparações entre aqueles resultados numéricos e resultados numéricos de outro modelo de tipo-Boussinesq.
+Os cálculos foram efectuados numa estação de trabalho LINUX CORVUS com quatro processadores AMD Opteron™ 265 de 2GHz e com 8GB de memória RAM.
+3.1	Canal de profundidade constante 2D
+De modo a validar a nova metodologia para implementação da dissipação da energia devido ao atrito de fundo, o modelo unidimensional BOUSS3W foi aplicado a um caso simples de propagação de ondas regulares sobre um fundo plano, fazendo variar o coeficiente de fricção.
+3.1.1	Definição do domínio e condições de cálculo
+O modelo BOUSS3W foi aplicado a um caso simples de propagação de ondas regulares sobre um fundo plano, o mesmo caso de teste usado para validar a condição de reflexão parcial (Pinheiro et al., 2009). O canal tem 35 m de comprimento, 2 m de largura e uma profundidade de 0.4 m, Figura 4. A onda incidente gerada é uma onda regular de 0.01 m de amplitude e 2.0 s de período. O comprimento de onda é de 3.7 m. O domínio foi discretizado por 10428 elementos finitos e 5511 pontos, sendo a largura de banda da malha de 34.
+A função fonte situa-se em x = 8 m. A zona de geração tem 3.7 m de largura, o que equivale a um comprimento de onda. Foram colocadas duas zonas absorventes com 2 m de largura nas duas extremidades do domínio.
+Testaram-se dois conjuntos de valores para o coeficiente de fricção, Tabela 1:
+•	fw= 10.00, 3.00, 1.00, 0.60, 0.40, 0.30, 0.20, 0.15, 0.12 e 0.10;
+•	fw= 0.0436, 0.0157, 0.0080, 0.0048, 0.0032, 0.0023, 0.0017, 0.0014, 0.0011, 0.0009.
+O tempo total de simulação foi de 60 s.
+Tabela 1. Coeficiente de atrito para diferentes valores do número de Chezy.
+chezy	fw	chezy	fw
+1	9.81	15	0.0436
+2	2.45	25	0.0157
+3	1.09	35	0.0080
+4	0.61	45	0.0048
+5	0.39	55	0.0032
+6	0.27	65	0.0023
+7	0.20	75	0.0017
+8	0.15	85	0.0014
+9	0.12	95	0.0011
+10	0.10	105	0.0009
+3.1.2	Apresentação e análise de resultados
+Os resultados apresentados na Figura 5 são os valores de índice de altura de onda (H/H0) ao longo do domínio e a redução da altura de onda em percentagem, para os diferentes valores de fw.
+Figura 5. Índice de altura de onda (H/Ho) e percentagem da redução da altura de onda, para diferentes valores de fw.
+A onda é gerada na coordenada x=8m e sai da zona de geração aproximadamente em x=10m. A partir daí a onda propaga-se até x=25m onde começa a sentir a zona de absorção. Entre x=10m e x=25m o índice de agitação máximo sofre algumas oscilações variando entre 1 e 1.2.
+No primeiro conjunto de valores de fw testados (valores elevados) pode ver-se a redução dos índices de agitação máximos e a gradual perda de energia da onda à medida que se propaga, que para um factor de atrito de 10 chega a atingir cerca de 45%.
+No segundo conjunto de valores de fw (valores normais) a perda de energia não é visível no gráfico dos índices, mas existem perdas de energia da ordem de 0.01% a 0.4%. A perda de energia aumenta com a extensão da propagação da onda, à medida que a onda se propaga vai perdendo cada vez mais energia devido à fricção do fundo.
+As reduções máximas de energia verificam-se em todos os casos aproximadamente em x=25m, local onde se começa a sentir a zona de absorção e a partir do qual a energia é absorvida totalmente (não representado nos gráficos). Na Figura 6 representa-se a redução da altura de onda máxima em x=25m, para este caso, em função do n° de Chezy e de fw.
+Estes resultados confirmam que a implementação do atrito de fundo foi bem sucedida e que o modelo responde de forma adequada à variação do factor de atrito, assim como à perda de energia com a propagação da onda.
+Como era de esperar, a introdução deste termo de tensão tangencial de fundo dissipa energia e como tal não introduz instabilidades numéricas no modelo, quando muito até ajuda a controlá-las. Deverá ser investigado se a introdução deste termo permite diminuir o parâmetro de difusão numérica necessário ao controlo das instabilidades.
+Figura 6. Redução máxima (x=25m) da altura de onda em função do número de Chezy e do coeficiente de atrito.
+3.2	Caso real: praia de faro
+3.2.1	Zona de estudo
+A praia de Faro, também conhecida por “Ilha de Faro”, situa-se na Península do Ancão que delimita a Ria Formosa a poente, no concelho de Faro, na região do Algarve (Figura 7). Com uma extensão em areal de vários quilómetros, é uma praia de origem sedimentar, com declives de cerca de 1/70 a 1/500 na zona de espraiamento.
+Figura 7. Localização da Praia de Faro.
+A batimetria da zona caracteriza-se por batimétricas geralmente paralelas à linha de costa, Figura 8, e foi obtida com base em dois levantamentos topográficos adquiridos no âmbito do projecto do 7° PQ europeu MICORE (Morphological Impacts and Coastal Risks Induced by Extreme Storms).
+MICORE 25m pontos redundantes * MICORE 10m
+Figura 8 - a) Levantamentos batimétricos; b) Batimetria interpolada, domínio de cálculo e localização do sensor Infinity (IFT).
+A agitação marítima ao largo da praia de faro caracteriza-se por alturas de onda significativas que variam entre 0.14 m e 4.4 m, sendo o intervalo de 0.5 m a 1.0 m aquele para o qual se verificou o maior número de ocorrências; os períodos de zero ascendente variam entre 3.0 s e 10.7 s, sendo os valores no intervalo de 3.0 s a 4.0 s os mais frequentes; as direcções espectrais médias estão compreendidas entre 0° e 340°, sendo as direcções mais frequentes provenientes dos sectores entre os 120° a 140° e 250° a 270°. Na gama de 250° a 270° verificou-se o maior número de ocorrências. Estes dados foram obtidos na bóia de Faro, para os anos de 1986 a 1995, Raposeiro et al. (2009).
+3.2.2	Metodologia
+Neste segundo caso de teste pretende-se avaliar o desempenho do modelo BOUSS3W na simulação da propagação da agitação marítima na zona da praia de Faro para o qual existem resultados obtidos com o modelo numérico de tipo-Boussinesq COULWAVE, Lynett (2002). Este modelo é baseado numa extensão das equações de Boussinesq (Wei et al., 1995), inclui a dissipação
+de energia por atrito de fundo e já foi previamente testado para diferentes situações. Constitui por isso uma forma de validar o modelo BOUSS3W.
+Para a aplicação do modelo numérico BOUSS3W, efectuaram-se os seguintes procedimentos:
+1.	Definição do domínio de cálculo e sua discretização por uma malha de elementos finitos com o gerador automático GMALHA;
+2.	Propagação de ondas regulares na zona em estudo:
+o Cálculos com o modelo BOUSS3W;
+o Processamento e análise dos resultados do modelo, que incluem:
+•	Diagrama da elevação da superfície livre em todo o domínio em determinados instantes de cálculo;
+•	Série temporal da elevação da superfície livre em 6 pontos;
+Os resultados em termos da altura de onda foram comparados com os resultados numéricos de COULWAVE que foi aplicado para as mesmas condições numéricas.
+Os cálculos foram efectuados numa estação de trabalho LINUX CORVUS com quatro processadores AMD Opteron™ 265 de 2GHz e com 8GB de memória RAM.
+3.2.3	Condições de cálculo
+Os cálculos de agitação com o modelo numérico foram realizados para uma onda incidente de direcção de onda de S37°O (217°) e período de 8 s. O nível de maré correspondeu ao nível de preia-mar à cota +2.0 m (Z.H.). A altura de onda é igual a 0.3m.
+O domínio de cálculo, ver Figura 9, foi discretizado por uma malha de elementos finitos com 110 828 nós e 220 470 elementos. A construção desta malha de elementos finitos foi realizada com o programa GMALHA. A densidade de nós da malha deve ser tal que assegure a estabilidade do método, por um lado, e a qualidade dos resultados, por outro. Para tal, foi definida uma média de 22 pontos por comprimento de onda em todo o domínio, para um período de 8 s. A área dos elementos varia entre 0.22 m2 e 17.77 m2, correspondendo às zonas menos (cerca de 1 m) e mais profundas (cerca de 8 m), respectivamente. O GMALHA assegura uma renumeração da malha de modo a minimizar a largura de banda, que nesta malha resultou numa largura de banda de 509, isto é, a numeração nodal de cada elemento nunca ultrapassa esta diferença, em toda a malha.
+Na Figura 9 ilustra-se a fronteira do domínio e a localização das zonas absorventes e da zona de geração das ondas. A zona de geração localiza-se na ordenada y = 100 m e tem uma largura de 66 m. As zonas absorventes têm uma largura de 2 vezes o comprimento de onda, isto é, 132 m.
+Na praia e na fronteira por trás da geração impuseram-se condições de absorção total.
+O passo de tempo utilizado foi de 0.1 s, o que origina números de Courant que variam na malha entre 0.20 e 1.76. Utilizou-se um parâmetro de difusão artificial, r, igual a 7.0 10 6 m2/s, definido após vários testes preliminares. O tempo total de cálculo foi de 200 s.
+O coeficiente de atrito utilizado foi de fw=0.0023.
+Foram definidos seis pontos para análise e comparação de resultados.
+Tabela 2 - Localização dos pontos de cálculo.
+Ponto	Coordenadas reais		Coordenadas de cálculo	
+	X	Y	X	Y
+P1	12342.17	-296305.18	425	150
+P2	12434.03	-296186.60	425	300
+P3	12556.52	-296028.49	425	500
+P4	12679.01	-295870.39	425	700
+P5	12511.02	-295740.25	212.5	700
+P6	12846.99	-296000.53	637.5	700
+Figura 9 - Localização da linha de geração das ondas, das fronteiras absorventes e dos pontos no domínio de cálculo.
+3.2.4 Apresentação, análise e interpretação de resultados
+Na Figura 10 apresentam-se os valores da elevação da superfície livre e as isolinhas dos índices de agitação ao fim de 200 s de simulação para o caso simulado. Esta figura mostra as alterações na onda devido aos efeitos da refracção do fundo.
+Figura 10 - Elevação da superfície livre (vista 3D e 2D) e isolinhas dos índices de agitação no instante t = 200 s de simulação.
+3.2.5	Comparação com resultados numéricos de COUWLAVE
+A Figura 11 apresenta a elevação da superfície livre nos seis pontos de cálculo obtidas pelos modelos BOUSS3W e COULWAVE.
+Em termos gerais, os modelos numéricos conseguem reproduzir bastante bem o andamento e transformação das ondas esperados. Com efeito, ambos os modelos numéricos conseguem simular o empolamento da onda na zona de aproximação à praia. Ambos os modelos reproduzem o aparecimento de harmónicas de ordem superior devido à configuração do fundo irregular e progressiva diminuição da profundidade, o que indica que o BOUSS3W tem, em geral, um comportamento adequado. No entanto, existem algumas diferenças, nomeadamente nos pontos junto à praia onde a segunda harmónica aparece com mais intensidade no BOUSS3W do que no COULWAVE.
+Para uma validação mais rigorosa serão utilizados, num trabalho futuro, dados medidos nesta mesma praia de Faro no âmbito do projecto do 7° PQ europeu MICORE (Morphological Impacts and Coastal Risks Induced by Extreme Storms).
+0 6	Ponto P1	
+	
+i	WXAAAAA	
+		BOUSS3W — COULWAVE
+140	155	170	185	200 t (s)	
+0 6	Ponto P3	
+A A A A A A A A	
+-0.3-		BOUSS3W — COULWAVE
+140	155	170	185	200 t (s)	
+0 6	Ponto P5	
+	
+&lt;:ywww	u 	BOUSS3W — COULWAVE
+140	155	170	185	200 t (s)	
+0 6	Ponto P2	
+0.3 •	
+í-WVWXZ	\/\ 	BOUSS3W — COULWAVE
+14	155	17	185	2 t (s)	
+Ponto P4	
+— 0 . 0- í	f kys í tt/\ / A // \/\. /	1		BOUSS3W 	 COULWAVE
+140	155	170	185	200 t (s)	
+0 6	Ponto P6	
+	
+		BOUSS3W — COULWAVE
+140	155	170	185	200 t (s)	
+Figura 11 - Elevação da superfície livre nos pontos P1 a P6. BOUSS3W (azul), COULWAVE (laranja).
+4	CONCLUSÕES
+Nesta comunicação, apresentou-se o modelo baseado nas equações de Boussinesq estendidas por Nwogu (1993), BOUSS3W resultante da inclusão da dissipação de energia por atrito de fundo.
+A metodologia seguida para inclusão do termo dissipativo baseou-se no procedimento adoptado por Nwogu &amp;amp; Demirbilek (2001), em que é adicionado um termo de tensão tangencial de fundo à equação de conservação da quantidade de movimento. Deve ter-se especial cuidado na forma como se calcula o factor de atrito, uma vez que este é normalmente sobre ou sub estimado pelas equações existentes. Neste trabalho utilizou-se a forma mais expedita de o calcular, através do número de Chezy, mas o modelo permite determinar este factor de forma mais rigorosa seguindo a formulação de LeRoux (2003), sendo neste caso necessário dados precisos sobre a constituição do fundo.
+O modelo assim desenvolvido foi aplicado a um caso de teste simples de propagação de ondas num canal de fundo constante e a um caso real: a Praia de Faro. Os resultados do modelo foram comparados com os resultados de outro modelo numérico, COULWAVE.
+A implementação do atrito de fundo foi bem sucedida e o modelo responde de forma adequada à variação do factor de atrito, assim como à perda de energia com a propagação da onda. A introdução do atrito de fundo dissipa energia ajudando a controlar as instabilidades numéricas.
+O modelo numérico escolhido para a comparação de resultados, COULWAVE, inclui o fenómeno da dissipação de energia por atrito de fundo e é totalmente não-linear, sendo por isso indicado para
+testar os resultados do BOUSS3W. Os resultados obtidos por ambos modelos são muito semelhantes, o que indica que o BOUSS3W tem um comportamento adequado.
+Como trabalho futuro, deverá ser feita uma validação mais rigorosa utilizando dados medidos nesta mesma praia de Faro no âmbito da campanha do projecto BRISA. Deverá ainda ser investigado se a introdução do atrito de fundo no modelo permite diminuir o parâmetro de difusão numérica necessário ao controlo das instabilidades numéricas.
+AGRADECIMENTOS
+Os autores expressam o seu agradecimento à Fundação para a Ciência e Tecnologia (FCT) pelo financiamento concedido através dos projectos ptdc/ecm/67411/2006 e ptdc/ecm/73145/2006.
+REFERÊNCIAS
+BERZINS M., FURZELAND R.M. e SCALES L.E. (1985). A user's manual for SPRINT -a versatile software package for solving systems of algebraic, ordinary and partial differential equations: Part 3 - advanced use of SPRINT. Technical Report TNER.85.058, Thornton Res. C, Chester.
+BROWN P. N., HINDMARSH A.C. e PETZOLD L.R. (1989). “Using Krylov methods in the solution of large-scale differential-algebraic systems”, in SIAM Journal on Scientific Computing. 15, 6, pp.1467 - 1488.
+DIETRICH W. E. (1982). “Settling Velocity of Natural Particles”, in Water Resources Research, Vol. 18, No. 6, pp1615-1626. December.
+JOHNSON H.K. e KOFOED-HANSEN H. (2000). “Influence of Bottom Friction on Sea Surface Roughness and Its Impact on Shallow Water Wind Wave Modeling”, in Journal of physical oceanography. American Meteorological Society. Vol 30. pp 1743-1756.
+JONSSON, I.G. (1963). “Measurements in the turbulent wave Boundary layer”, in Proc. 10th IAHR Conf., London, 85- 92.
+JONSSON, I.G. (1965). Friction factor diagrams for oscillatory Boundary layers. Coastal Engr. Lab., Tech. Univ. Denmark, Copenhagen Basic Res. Prog. Rept. 10, 10- 21.
+JONSSON, I.G. (1966). On the existence of universal velocity distribution in an oscillatory turbulent boundary layer. Coastal Engr. Lab., Tech. Univ. Denmark, Copenhagen Basic Res. Prog. Rept. 12, 2 - 10.
+KAMPHUIS, J.W. (1975). “Friction Factor under Oscillatory Waves”, in Journal of the Waterways Harbors and Coastal Engineering Division, Vol. 101, No. 2, May, pp. 135-144.
+KOMAR, P.D. e MILLER, M.C., (1973). “The threshold of sediment movement under oscillatory water waves”, in J. Sediment. Petrol. 4, 1101-1110.
+LAMBKIN D. (2010). A Review of the Bed Roughness Variable in MIKE 21 FLOW MODEL FM, Hydrodynamic (HD) and Sediment Transport (ST) modules. Component part of: Dix, J.K., Lambkin, D.O. and Cazenave, P.W. (In preparation) 'Development of a Regional Sediment Mobility Model for Submerged Archaeological Sites'. University of Southampton, English Heritage ALSF Project N° 5224. Retirado de:
+http://faq.dhigroup.com/images/FAQ164/Bottom_roughness_parameter_study.pdf
+LE ROUX, J.P., (2003). “Wave friction factor as related to the Shields parameter for steady currents”, in Sedimentary Geology 155 (2003): 37-43.
+LYNETT, P. (2002). A Multi-Layer Approach to Modeling Generation, Propagation, and Interaction of Water Waves. PhD Thesis. Cornell University, August.
+NWOGU, O. (1993). “Alternative form of Boussinesq equations for near-shore wave propagation”, in J. Waterway, Port, Coastal, and Ocean Engineering. 119, 6, pp. 618 - 638.
+NWOGU, O. e DEMIRBILEK, Z. (2001) . BOUSS-2D: A Boussinesq Wave Model for Coastal Regions and Harbors. Report 1 Theoretical Background and User.s Manual. ERDC/CHL TR-01-25, U.S. Army Corps of Engineers
+PINHEIRO L., FORTES C.J., SANTOS J.A. e WALKLEY, M. (2009). “Implementation of partial reflection boundary conditions in wave propagation model BOUSS3W”, in International Coastal Symposium ICS 2009. Lisbon.
+PINHEIRO, L.; FERNANDES, J.L.M. e .FORTES, C.J. E.M. (2007a). “Finite Element Mesh Generator with Local Density Conditioned to Bathymetry for Wave Propagation Models in Coastal Zones”. IMACS Series in Comp. and Applied Mathematics, Proc. of EUA4X@IAC 06, Roma Italy, October 2006. Vol.12, pp. 71 - 80.
+PINHEIRO. L. (2007b). Um método de elementos finitos para a discretização das equações de Boussinesq estendidas. Tese de mestrado. Engenharia Mecânica, IST, 105pp.
+RAPOSEIRO, P.D.; FORTES, C.J.E.M. e REIS, M.T. (2009). “Ferramenta de cálculo e análise do espraiamento em estruturas de enrocamento: caso de estudo Praia de Vale do Lobo”, in Proc. 3° Encontro Nacional de Riscos, Segurança e Fiabilidade, Lisboa, 3 a 5 de Novembro.
+SCHLICHTING, H. (1968). Boundary Layer Theory. 6th edn. McGraw-Hill, New York.
+SOULSBY (1997). Dynamics of Marine Sands. Thomas Telford, London, pp249.
+SWART, D.H. (1974). Offshore sediment transport and equilibrium beach profiles. Delft Hydraul. Lab. Publ., 131.
+WALKLEY, M. A. (1999). A Numerical Method for Extended Boussinesq Shallow-Water Wave Equations. Doctor of Philosophy Thesis. The University of Leeds, School of Computer Studies, Sept., 174pp.
+WEI G., KIRBY J. T. e SINHA A. (1999). “Generation of waves in Boussinesq models using a source function method”, in Coastal Engineering, 36, pp. 271 - 299.
+WEI, G.; KIRBY, J.T.; GRILLI, S.T.; SUBRAMANYA, R. (1995). “A fully non linear Boussinesq model for surface waves. Part 1. Highly non-linear unsteady waves”, in J. Fluid Mechanics, 294:71-92.</field>
+	</doc>
+</add>

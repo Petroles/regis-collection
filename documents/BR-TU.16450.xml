@@ -1,0 +1,9759 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.16450</field>
+		<field name="filename">23089_RicardoCesareRomanAmigoCorr18.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+Ricardo Cesare Roman Amigo
+
+Design of Adsorption Systems
+by Topology Optimisation
+
+Sa?o Paulo
+2018
+
+
+
+Ricardo Cesare Roman Amigo
+
+Design of Adsorption Systems
+by Topology Optimisation
+
+Submitted to the Escola Polite?cnica of
+
+the Universidade de Sa?o Paulo in partial
+
+fulfilment of the requirements for the degree
+
+of Doutor em Cie?ncias.
+
+A?rea de Concentrac?a?o:
+
+Control and Mechanical Automation
+
+Engineering
+
+Orientador:
+
+Prof. Dr. Emilio Carlos Nelli Silva
+
+Co-orientador:
+
+Dr. Robert William Hewson
+
+Sa?o Paulo
+2018
+
+
+
+ Autorizo a reprodução e divulgação total ou parcial deste trabalho, por qualquer meio
+convencional ou eletrônico, para fins de estudo e pesquisa, desde que citada a fonte.
+
+Este exemplar foi revisado e corrigido em relação à versão original, sob 
+responsabilidade única do autor e com a anuência de seu orientador.
+
+São Paulo, ______ de ____________________ de __________
+
+Assinatura do autor:         ________________________ 
+
+Assinatura do orientador:  ________________________ 
+
+Catalogação-na-publicação
+
+Amigo, Ricardo Cesare Roman
+        Projeto de Sistemas de Adsorção por Otimização Topológica / R. C. R.
+Amigo -- versão corr. -- São Paulo, 2018.
+        118 p. 
+
+        Tese (Doutorado) - Escola Politécnica da Universidade de São Paulo.
+Departamento de Engenharia Mecatrônica e de Sistemas Mecânicos.
+
+        1.Topologia (Otimização) 2.Método dos Elementos Finitos 3.Adsorção
+4.Combustíveis Gasosos I.Universidade de São Paulo. Escola Politécnica.
+Departamento de Engenharia Mecatrônica e de Sistemas Mecânicos II.t.
+
+
+
+Ao meu pai.
+
+
+
+Acknowledgments
+
+I would like to thank my supervisors Dr. Rob Hewson and Prof. Emilio Silva for their
+help and guidance over the past years. I would also like to thank Dr. Jose? Paiva for his
+important contributions to this work.
+
+In addition, I gratefully acknowledge the support of the RCGI Research Centre for
+Gas Innovation, sponsored by FAPESP (2014/50279-4) and Shell, and CNPq (National
+Council for Research and Development), under grants 140664/2013-0 and 200404/2014-8.
+
+I would like to thank my research friends at USP and at Imperial for their essential and
+intangible contribution to this doctorate, especially on the non-academic side. Naturally,
+I must extend my thanks to London and all the great people I have met there for some
+of the best days of my life.
+
+Finalmente, agradec?o a? minha nonna, a? minha ma?e, a?s minhas irma?s Carolina e
+Cristina, e ao meu cachorra?o Kepler, pelo essencial apoio que me deram a? dista?ncia
+durante este trabalho.
+
+
+
+Resumo
+
+Adsorc?a?o e? um mecanismo de retenc?ao de mole?culas de um fluido em superf??cies
+solidas e apresenta um vasto campo de aplicac?o?es, como em refrigerac?a?o, processos de
+separac?a?o e armazenamento de combust??vel. Este trabalho descreve o modelo de adsorc?a?o
+de ga?s em meios porosos e define uma abordagem de otimizac?a?o de sistemas de adsorc?a?o
+baseada no Me?todo de Otimizac?a?o Topolo?gica (MOT). Uma formulac?a?o abrangente para
+os feno?menos de adsorc?a?o e dessorc?a?o e? apresentada, detalhando a deduc?a?o de seus formas
+fracas e montagem das matrizes para a implementac?a?o do Me?todo dos Elementos Finitos
+(MEF). As sensibilidades das func?o?es-objetivo em relac?a?o a?s variaveis de projeto sa?o
+obtidas pelo me?todo adjunto, que tambe?m e? apresentado em detalhe. A implementac?a?o
+numerica e? auxiliada pelos pacotes FEniCS e Dolfin Adjoint, originando uma ferramenta
+gene?rica para a otimizac?a?o de sistemas de adsorc?a?o. Este me?todo e? aplicado ao projeto de
+tanques de Gas Natural Adsorvido (GNA) visando transporte, armazenamento e consumo.
+Tanques otimizados sa?o propostos e comparados com tanques tradicionais, apresentando
+melhora dos objetivos de projeto.
+
+Palavras-Chave – Topologia (Otimizac?a?o), Me?todo dos Elementos Finitos, Adsorc?a?o.
+
+
+
+Abstract
+
+Adsorption is a retention mechanism of fluid molecules on solid surfaces and presents
+a wide range of applications, such as refrigeration, separation processes and fuel storage.
+This work describes the modelling of gas adsorption on porous media and presents an op-
+timisation approach for the design of adsorption systems based on topology optimisation.
+A comprehensive formulation for the adsorption and desorption phenomena is presented,
+detailing the derivation of their weak forms and assembling the matrices for the imple-
+mentation of the Finite Element Method (FEM). The sensitivities of objective functions
+to topology optimisation design variables are obtained by the adjoint method, which is
+presented in detail. The numerical implementation is aided by FEniCS and Dolfin Adjoint
+packages, resulting in a generic software for the optimisation of adsorption systems. The
+method is applied for the design of Adsorbed Natural Gas (ANG) tanks for on-demand
+consumption. Optimised tank layouts are proposed and compared with standard tanks,
+presenting improvement of the design objectives.
+
+Keywords – Topology Optimisation, Finite Elements Method, Adsorption.
+
+
+
+List of Figures
+
+1.1 Distribution of molecules in gaseous (?) and adsorbed (•) phases. . . . . . 2
+
+1.2 Adsorption cooling process. . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+
+1.3 Topology optimisation procedure. . . . . . . . . . . . . . . . . . . . . . . . 10
+
+2.1 Continuum modelling of porous media based on Representative Elementary
+
+Volume (REV). . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+
+2.2 Adsorption and desorption processes. . . . . . . . . . . . . . . . . . . . . . 14
+
+2.3 Adsorption energetics. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+
+2.4 Classes of isotherms. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+
+2.5 Adsorption domain. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+
+2.6 Inlet pressure (P?L) during (a) adsorption and (b) desorption cycles. . . . . 23
+
+3.1 Optimisation of ANG tanks through the addition of non-adsorbent materials. 29
+
+3.2 Isomassic curves given by the variation of adsorbent temperature and rel-
+
+ative non-adsorbent volume in adsorption cycle. . . . . . . . . . . . . . . . 30
+
+3.3 Cycle considered for the optimisation of ANG tanks applied to on-demand
+
+consumption. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+
+3.4 SIMP for Steel and Carbon properties. . . . . . . . . . . . . . . . . . . . . 34
+
+3.5 Borrvall’s material model for Steel and Carbon Permeability (K). . . . . . 35
+
+3.6 Hyperbolic tangent material model for Steel and Carbon properties with
+
+ec = 0.5. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 37
+
+3.7 Material model for properties A and B. . . . . . . . . . . . . . . . . . . . . 38
+
+4.1 Custom axisymmetric tank domain (SAHOO et al., 2011). . . . . . . . . . 47
+
+4.2 Flow rate of 1 L min?1: Comparison with the experimental results in (SA-
+
+HOO et al., 2011). . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+
+4.3 Flow rate of 10 L min?1: Comparison with the experimental results in (SA-
+
+HOO et al., 2011). . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+
+
+
+4.4 Flow rate of 30 L min?1: Comparison with the experimental results in (SA-
+
+HOO et al., 2011). . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+
+4.5 Temperature distribution at the end of the adsorption cycle. . . . . . . . . 49
+
+4.6 Adsorption domain adopted for verifying the sensitivity of adsorption cycles
+
+to the smoothness factor ?. . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+
+4.7 Total mass of gas along the adsorption cycle for different smoothness factors. 50
+
+4.8 Smoothness factor convergence. . . . . . . . . . . . . . . . . . . . . . . . . 51
+
+4.9 Adsorption domain constituted by Activated Carbon and Steel. . . . . . . 51
+
+4.10 Pressure distribution on Carbon-Steel domain. . . . . . . . . . . . . . . . . 52
+
+4.11 Adsorption domain adopted for verifying mesh and timestep convergence. . 53
+
+4.12 Mesh convergence. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 53
+
+4.13 Timestep convergence. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+
+4.14 Methods for obtaining the adjoint code (FUNKE, 2012). . . . . . . . . . . 55
+
+4.15 Optimisation activity diagram. . . . . . . . . . . . . . . . . . . . . . . . . . 57
+
+4.16 Original (top) and Perturbed Pseudo-Porosity fields for (from the top)
+
+h = 1.00 × 10?3, h = 5.00 × 10?4, h = 2.50 × 10?5, h = 1.25 × 10?5,
+h = 6.25 × 10?6. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+
+5.1 Pseudo-porosity fields evolution (top-down) for SIMP (left), non-offset hy-
+
+perbolic tangents (centre) and offset hyperbolic tangents (right) material
+
+models for prismatic tank optimisation. . . . . . . . . . . . . . . . . . . . . 66
+
+5.2 Functional convergence for different material models. . . . . . . . . . . . . 67
+
+5.3 Pseudo-porosity fields evolution for homogeneous (left) and arbitrary (right)
+
+initial guesses for prismatic tank optimisation starting with pini = 1. . . . . 69
+
+5.4 Pseudo-porosity fields evolution for homogeneous (top image on each block)
+
+and arbitrary (bottom) initial guesses for cylindrical tank optimisation
+
+starting with pini = 20. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 71
+
+5.5 Pseudo-porosity fields evolution for homogeneous (top image on each block)
+
+and arbitrary (bottom) initial guesses for cylindrical tank optimisation
+
+starting with pini = 1. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+
+
+
+5.6 Optimised design for a cylindrical domain subjected to natural convection. 75
+
+5.7 Optimised design for a cylindrical domain with non-adsorbent material
+
+with high thermal conductivity. . . . . . . . . . . . . . . . . . . . . . . . . 77
+
+5.8 Optimised design for a cylindrical domain with non-adsorbent material
+
+with high heat capacity. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 80
+
+5.9 Optimised design for a cylindrical domain with non-adsorbent material
+
+with high heat capacity in 3600 s filling cycle. . . . . . . . . . . . . . . . . 81
+
+5.10 Optimised design for a cylindrical domain with non-adsorbent material
+
+with high heat capacity in 1200 s filling cycle. . . . . . . . . . . . . . . . . 83
+
+5.11 Optimised design for a prismatic domain subjected to forced convection. . 85
+
+5.12 Optimised design for a custom axisymmetric domain subjected to forced
+
+convection with h = 100 Wm?2K?1. . . . . . . . . . . . . . . . . . . . . . . 88
+
+5.13 Optimised design for a custom axisymmetric domain subjected to forced
+
+convection with h = 700 Wm?2K?1. . . . . . . . . . . . . . . . . . . . . . . 89
+
+5.14 Optimised design for a cylindrical domain with forced convection. . . . . . 91
+
+5.15 Optimised design for a cylindrical domain with forced convection in 10 800 s
+
+filling cycle. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 93
+
+5.16 Optimised design for a cylindrical domain with forced convection in 3600 s
+
+filling cycle. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 95
+
+5.17 Optimised design for a cylindrical domain with natural convection and cold
+
+finger. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 96
+
+5.18 Optimised design for a small prismatic domain subjected to forced convection. 99
+
+5.19 Optimised design for a large prismatic domain subjected to forced convection.100
+
+5.20 Optimised design for a custom axisymmetric domain subjected to 3 MPa
+
+filling pressure and forced convection with h = 100 Wm?2K?1. . . . . . . . 102
+
+5.21 Optimised design for a custom axisymmetric domain subjected to 5 MPa
+
+filling pressure and forced convection with h = 100 Wm?2K?1. . . . . . . . 103
+
+
+
+List of Tables
+
+4.1 Taylor Remainder Convergence. . . . . . . . . . . . . . . . . . . . . . . . . 59
+
+5.1 Standard domain and cycle for prismatic tanks. . . . . . . . . . . . . . . . 61
+
+5.2 Standard domain and cycle for cylindrical tanks. . . . . . . . . . . . . . . . 62
+
+5.3 Standard domain and cycle for a custom axisymmetric tank. . . . . . . . . 63
+
+5.4 Optimisation definitions for a prismatic tank subjected to forced convection. 65
+
+5.5 Optimisation definitions for a prismatic tank subjected to forced convection. 68
+
+5.6 Optimisation definitions for a cylindrical domain with non-adsorbent ma-
+
+terial with high heat capacity. . . . . . . . . . . . . . . . . . . . . . . . . . 70
+
+5.7 Optimisation definitions for a cylindrical domain subjected to natural con-
+
+vection. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 74
+
+5.8 Optimisation definitions for a cylindrical domain with non-adsorbent ma-
+
+terial with high thermal conductivity. . . . . . . . . . . . . . . . . . . . . . 76
+
+5.9 Optimisation definitions for a cylindrical domain with non-adsorbent ma-
+
+terial with high heat capacity. . . . . . . . . . . . . . . . . . . . . . . . . . 79
+
+5.10 Optimisation definitions for a cylindrical domain with non-adsorbent ma-
+
+terial with high heat capacity in 3600 s filling cycle. . . . . . . . . . . . . . 79
+
+5.11 Optimisation definitions for a cylindrical domain with non-adsorbent ma-
+
+terial with high heat capacity in 1200 s filling cycle. . . . . . . . . . . . . . 82
+
+5.12 Optimisation definitions for a prismatic domain subjected to forced con-
+
+vection. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 84
+
+5.13 Optimisation definitions for a custom axisymmetric domain subjected to
+
+forced convection with h = 100 Wm?2K?1. . . . . . . . . . . . . . . . . . . 87
+
+5.14 Optimisation definitions for a custom axisymmetric domain subjected to
+
+forced convection with h = 700 Wm?2K?1. . . . . . . . . . . . . . . . . . . 87
+
+5.15 Optimisation definitions for a custom axisymmetric domain subjected to
+
+natural convection and connected to a cold finger. . . . . . . . . . . . . . . 90
+
+
+
+5.16 Optimisation definitions for a cylindrical domain with forced convection in
+
+10 800 s filling cycle. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 92
+
+5.17 Optimisation definitions for a cylindrical domain with forced convection in
+
+3600 s filling cycle. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 94
+
+5.18 Optimisation definitions for a cylindrical domain subjected to natural con-
+
+vection and connected to a cold finger. . . . . . . . . . . . . . . . . . . . . 94
+
+5.19 Optimisation definitions for a small prismatic domain subjected to forced
+
+convection. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 98
+
+5.20 Optimisation definitions for a small prismatic domain subjected to forced
+
+convection. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 98
+
+5.21 Optimisation definitions for a custom axisymmetric domain subjected to
+
+3.00 MPa filling pressure and forced convection with h = 100 Wm?2K?1. . . 101
+
+5.22 Optimisation definitions for a custom axisymmetric domain subjected to
+
+5.00 MPa filling pressure and forced convection with h = 100 Wm?2K?1. . . 101
+
+B.1 Methane properties (SAHOO et al., 2011; SAHOO; RAMGOPAL, 2014). . 117
+
+B.2 Activated Carbon properties (SAHOO et al., 2011). . . . . . . . . . . . . . 117
+
+B.3 Adsorption parameters for Methane on Activated Carbon (SAHOO et al.,
+
+2011; SAHOO; RAMGOPAL, 2014). . . . . . . . . . . . . . . . . . . . . . 118
+
+B.4 Steel properties. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 118
+
+
+
+Acronyms
+
+ANG Adsorbed Natural Gas
+CCS CO2 Capture and Storage
+CNG Compressed Natural Gas
+DA Dubinin-Astakhov
+DR Dubinin-Radushevich
+ECP Element Connectivity Parametrisation
+ESO Evolutionary Structural Optimisation
+ETM Electro-Thermo-Mechanical Actuator
+FEM Finite Element Method
+FFC FEniCS Form Compiler
+FFD Free-Form Deformation
+FIAT FEniCS Finite Element Automatic Tabulator
+FVM Finite Volume Method
+GITT Generalised Integral Transform Technique
+GWP Global Warming Potential
+L-BFGS-B Limited Memory Broyden-Fletcher-Goldfarb-Shanno with Box Constraints
+LDF Linear Driving Force Model
+LNG Liquefied Natural Gas
+MOF Metal-Organic Framework
+ODE Ordinary Differential Equation
+OHT Offset Hyperbolic Tangents Material Model
+PCM Phase Change Material
+PDE Partial Differential Equation
+PLIC Piecewise Linear Interface Calculation
+PSA Pressure Swing Adsorption
+RBF Radial Basis Function
+REV Representative Elementary Volume
+SIMP Solid Isotropic Material with Penalisation
+TSA Temperature Swing Adsorption
+UFC FEniCS Unified Form-Assembly Code
+VoF Volume of Fluid
+
+
+
+Notation
+
+A Polanyi’s adsorption potential
+C Solute concentration
+Cpg Specific heat capacity of gaseous phase
+Cps Specific heat capacity of solid phase
+D Intra-particle diffusional time constant
+D Adsorption kinetics weak form
+D0 Diffusivity of gaseous phase
+e Pseudo-porosity
+e| Non-filtered pseudo-porosity
+E Energy balance weak form
+E0 Characteristic energy of adsorption
+Ea Activation energy of adsorption
+Ed Activation energy of desorption
+G Kinetic coefficient of adsorption and desorption reactions
+hW Heat convection coefficient on external walls
+itmax Maximum iterations per continuation step
+?H Isosteric heat of adsorption
+J Functional of interest
+ka Kinetic coefficient of adsorption
+kd Kinetic coefficient of desorption
+kf Thermal conductivity of phases combined
+kg Thermal conductivity of gaseous phase
+kintra Intra-particle diffusion rate constant
+ks Thermal conductivity of solid phase
+Ks Permeability of the solid phase
+M Continuity weak form
+m?let Mass flow
+Mg Molecular mass of gaseous phase
+ns Micro-pores dispersion
+p Material model penalisation
+P Pressure
+P Generic material property
+Patm Atmospheric pressure
+Pcr Critical pressure
+Plet Pressure at inlet/outlet regions
+Psat Saturated pressure
+q Concentration of adsorbed phase
+Q Density of adsorbed phase
+qeq Equilibrium concentration of adsorbed phase
+Qeq Equilibrium density of adsorbed phase
+r Radial coordinate in axisymmetric domains
+Rg Universal gas constant
+T Temperature
+
+
+
+Tatm Atmospheric temperature
+Tlet Temperature at inlet/outlet regions
+Tboil Temperature of gaseous phase at boiling point
+Tcr Critical temperature
+ug Specific internal energy of gaseous phase
+uq Specific internal energy of adsorbed phase
+us Specific internal energy of solid phase
+vg Velocity of gaseous phase
+V Volume
+w State variable
+ws Specific volume of micro-pores
+Ws Volume ratio of micro-pores
+z Design variable filtering radius
+øs Characteristic particle diameter of the solid phase
+?e Mean value of the thermal expansion of liquefied gases
+? Affinity coefficient of adsorbent-adsorbate pair
+?D Domain regions subjected to Dirichlet boundary conditions
+?F Domain regions subjected to fixed temperature
+?L Domain regions subjected to inlet/outlet of gases
+?N Domain regions subjected to Robin boundary conditions
+?W Domain walls
+?m Micro-porosity
+?M Macro-porosity
+?t Total porosity
+? Adjoint variable
+µg Viscosity of the gaseous phase
+? Continuous shape function for adsorbed gas and pseudo-porosity fields
+? Shape function matrix for adsorbed gas and pseudo-porosity fields
+?adg Local density of adsorbed phase
+?boil Density of gaseous phase at boiling point
+?f Density of phases combined
+?g Density of gaseous phase
+?s Density of bulk solid phase
+? Smoothness factor
+? g Viscous stress tensor
+?s Pores tortuosity
+? Continuous shape function for pressure field
+? Shape function matrix for pressure field
+? Continuous shape function for temperature field
+? Shape function matrix for temperature field
+?min Optimisation tolerance
+
+
+
+Contents
+
+1 Introduction 1
+
+1.1 Concept and Applications of the Adsorption Phenomenon . . . . . . . . . 1
+
+1.2 Adsorbed Natural Gas Tanks . . . . . . . . . . . . . . . . . . . . . . . . . 4
+
+1.2.1 Design Approaches . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+
+1.2.2 Numerical Modelling . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+
+1.3 Optimisation Methods applied to Fluids and Heat Transfer Problems . . . 7
+
+1.4 Motivation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+
+1.5 Objectives . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+
+1.6 Scientific Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+
+1.7 Thesis Outline . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+
+2 Modelling of Adsorption Systems 12
+
+2.1 Modelling Flow in Porous Media . . . . . . . . . . . . . . . . . . . . . . . . 12
+
+2.2 Modelling Adsorption Equilibrium and Kinetics . . . . . . . . . . . . . . . 14
+
+2.3 Governing Equations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+
+2.3.1 Natural Material Models . . . . . . . . . . . . . . . . . . . . . . . . 20
+
+2.3.2 Adsorption and Desorption Kinetics . . . . . . . . . . . . . . . . . . 20
+
+2.3.3 Continuity . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+
+2.3.4 Energy Balance . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+
+2.4 Weak Formulation of Adsorption Systems . . . . . . . . . . . . . . . . . . 25
+
+3 Optimisation of ANG Tanks 28
+
+3.1 Design Concept . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+
+3.2 Manufacturing Considerations . . . . . . . . . . . . . . . . . . . . . . . . . 29
+
+
+
+3.3 Objective Function . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+
+3.4 Material Model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+
+3.4.1 Material Models with Penalisation . . . . . . . . . . . . . . . . . . 32
+
+3.4.2 Offset Hyperbolic Tangents (OHT) Material Model . . . . . . . . . 33
+
+4 Numerical Implementation and Verification 39
+
+4.1 Discrete Adsorption Problem . . . . . . . . . . . . . . . . . . . . . . . . . 39
+
+4.2 Discrete Adjoint System for the Adsorption Problem . . . . . . . . . . . . 41
+
+4.3 Adsorption Problem Implementation . . . . . . . . . . . . . . . . . . . . . 45
+
+4.3.1 System Decoupling Verification . . . . . . . . . . . . . . . . . . . . 45
+
+4.3.2 Pressure Loading Verification . . . . . . . . . . . . . . . . . . . . . 47
+
+4.3.3 Impermeability Verification . . . . . . . . . . . . . . . . . . . . . . 49
+
+4.3.4 Mesh and Timestep Convergence . . . . . . . . . . . . . . . . . . . 52
+
+4.4 Topology Optimisation Implementation . . . . . . . . . . . . . . . . . . . . 53
+
+4.4.1 Design Variables Filtering . . . . . . . . . . . . . . . . . . . . . . . 54
+
+4.4.2 Optimisation Algorithm . . . . . . . . . . . . . . . . . . . . . . . . 56
+
+4.4.3 Adjoint Sensitivites Verification . . . . . . . . . . . . . . . . . . . . 57
+
+5 Results and Discussion 60
+
+5.1 Definition of Standard Domains and Cycles for the Design of ANG Tanks . 60
+
+5.2 Evaluation of the OHT Material Model for the Design of ANG Tanks . . . 64
+
+5.2.1 OHT vs. Traditional Material Models . . . . . . . . . . . . . . . . . 64
+
+5.2.2 Dependency on the Initial Guess and Penalisation . . . . . . . . . . 68
+
+5.3 Design of ANG Tanks with Passive Thermal Management . . . . . . . . . 70
+
+5.3.1 Tanks Subjected to Natural Convection . . . . . . . . . . . . . . . . 73
+
+5.3.2 Sensitivity to Thermal Conductivity . . . . . . . . . . . . . . . . . 76
+
+5.3.3 Sensitivity to Heat Capacity . . . . . . . . . . . . . . . . . . . . . . 78
+
+5.4 Design of ANG Tanks with Active Thermal Management . . . . . . . . . . 84
+
+
+
+5.4.1 Tanks Subjected to Forced Convection . . . . . . . . . . . . . . . . 84
+
+5.4.2 Sensitivity to Forced Convection and Cold Walls . . . . . . . . . . . 86
+
+5.4.3 Sensitivity to Shape Complexity . . . . . . . . . . . . . . . . . . . . 92
+
+5.4.4 Sensitivity to Tank Dimensions . . . . . . . . . . . . . . . . . . . . 97
+
+5.4.5 Sensitivity to Filling Pressure . . . . . . . . . . . . . . . . . . . . . 97
+
+6 Conclusions 104
+
+References 107
+
+Appendix A – Finite Element Coefficients 113
+
+A.1 Full Adsorption Problem . . . . . . . . . . . . . . . . . . . . . . . . . . . . 113
+
+A.2 Adsorption Problem after Decoupling the Adsorbed Density Field . . . . . 114
+
+A.3 Adsorption Problem after Decoupling the Pressure Field . . . . . . . . . . 115
+
+A.4 Helmholtz Filtering . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 116
+
+Appendix B – Material Properties 117
+
+
+
+1
+
+1 Introduction
+
+In this Chapter, basic concepts of the adsorption phenomenon are introduced along
+
+with some applications, emphasizing Adsorbed Natural Gas (ANG) tanks. Thereafter,
+
+a brief review on optimisation methods applied to fluids and heat transfer problems is
+
+presented. Finally, the motivation, objectives and expected scientific contributions are
+
+stated, based on the lack of previous works approaching the design of adsorption systems
+
+by topology optimisation.
+
+1.1 Concept and Applications of the Adsorption Phe-
+
+nomenon
+
+The flow of gases or liquids in porous media are subjected to the retention and release
+
+of molecules on the solid phase. One of the retention mechanisms is the sorption phe-
+
+nomenon, which is a general term adopted for both adsorption and absorption reactions.
+
+The former is a surface reaction in which gas molecules accumulate on the surface of solid
+
+particles attracted by disrupted bonds (MOTA et al., 2004), while the latter is a bulk
+
+phenomenon, in which gas molecules diffuse through another phase, accumulating at the
+
+grain boundaries and often forming a new phase (BLANCO et al., 2014).
+
+Adsorption is divided into two categories: (i) physical adsorption, based on weak van
+
+der Waals forces, which is also know as physisorption, and (ii) chemical adsorption, based
+
+on covalent bondings, also know as chemisorption. While the former is easily reversible
+
+and leaves the adsorbent intact, the latter involves a chemical reaction that affect the
+
+surfaces, as is the case of corrosion phenomenon. Figure 1.1 illustrates the mechanism of
+
+adsorption, where molecules concentrate on micro-pores walls.
+
+The capacity of adsorption of porous media is dependent on characteristics such as the
+
+distribution and characteristic of micro-pores on the adsorbent, the affinity of adsorbent
+
+
+
+2
+
+Figure 1.1: Distribution of molecules in gaseous (?) and adsorbed (•) phases.
+
+and adsorbate, gas pressure and temperature (BILOE et al., 2002). Considering a given
+
+pair adsorbent-adsorbate, the capacity of adsorption increases as pressure increases and
+
+temperature decreases.
+
+Several engineering applications are based on the adsorption process. For instance,
+
+it is widely employed for fluid separation, both for removing trace contaminants, which
+
+is known as purification processes, and for recovering components from a mixture, which
+
+is known as a bulk separation processes. Examples of purification are the separation of
+
+sulphurous compounds from natural gas, solvents from air and SO2 from vent streams
+
+(CAVALCANTE, 2000). Among bulk separations, the following pairs can be encountered:
+
+N2-O2, Water-Ethanol and Fructose-Glucose (CAVALCANTE, 2000).
+
+The operation of adsorption separation processes can be undertaken as a batch pro-
+
+cess, by percolating fluid through the adsorbent until saturation and then purging it. The
+
+purge, also known as adsorbent regeneration, is usually undertaken by varying the tem-
+
+perature, which is termed Temperature Swing Adsorption (TSA), or by controlling the
+
+pressure, in a method called Pressure Swing Adsorption (PSA), or by purging the adsor-
+
+bent with an inert desorbate, which could be easily separated by later processes, such as
+
+distillation. It is possible to have an adsorption separation in a continuous counter-current
+
+approach, by submitting adsorbents to adsorption and desorption at the same time, and
+
+also in a chromatographic way, which is based on the moving bed concept where the fluid
+
+flows in the opposite direction to the solid phase (CHARTON; NICOUD, 1995).
+
+Adsorption can also be used for refrigeration, by using use solid adsorbents such
+
+as silica-gel and zeolite, to produce the cooling effect (WANG; VINEYARD, 2011). In
+
+this class of refrigerators, an adsorbent is dried out by applying heat, which increases
+
+its pressure and temperature and causes the desorption of refrigerant vapour. This step
+
+is equivalent to the compression step in compressor refrigerators. The vapour is then
+
+
+
+3
+
+liquefied in the condenser, while heat is rejected to a cooling tower. When the adsorbent
+
+is sufficiently dried out, the heat intake stops and heat dissipation takes place. Next, the
+
+adsorbent connection switches from the condenser to the evaporator, where the saturated
+
+liquid boils, vapour is adsorbed and chilled water is generated, which is used for air-
+
+conditioning. Given that this cycle is intermittent, continuous cooling output is achieved
+
+by associating two adsorbents driven anti-cyclically, as illustrated by Figure 1.2.
+
+Figure 1.2: Adsorption cooling process (SOLARNEXT, 2009).
+
+Adsorption systems present low electrical energy consumption in comparison to other
+
+refrigeration methods and can be activated by temperatures as low as 323 K, while ab-
+
+sorption systems require at least 363 K (WANG; VINEYARD, 2011). This opens up the
+
+possibility of using low-grade heat such that derived from solar energy. The refrigerants
+
+used in adsorption cycles have zero ozone depletion potential and low Global Warming Po-
+
+tential (GWP), which is an index dependent on the strength with which certain greenhouse
+
+gas absorbs infrared radiation, on the spectral location of its absorbing wavelengths and
+
+on its atmospheric lifetime (ELROD, 1999). They can also operate in environments with
+
+significant vibrations, since the adsorbent is solid (in contrast with the liquid used in ab-
+
+sorbent refrigerators) and the systems have fewer mechanical parts. The main drawbacks
+
+of adsorbent refrigerators are their low coefficient of performance (quantity of achieved
+
+cooling effect per unit of heat delivered), intermittent operation (when not associated in
+
+two or more generators) and their large size and weight (WOLAK; KRASZEWSKI, 2016).
+
+Adsorption is also promising in CO2 Capture and Storage (CCS). The greenhouse
+
+
+
+4
+
+effect is drawing more and more attention from researchers worldwide. Although carbon
+
+dioxide naturally exists in the atmosphere, it is one of the greenhouse gases and its
+
+concentrations have increased due to human actions, such as burning fuels. In fact,
+
+according to Toledo et al. (2013), by the year 2100, CCS will be responsible for 15%
+
+to 55% of greenhouse gases reduction. One of the proposed methods for CCS consists
+
+in the capture of CO2 in installations where it can be placed for long-term storage in
+
+the earth crust. However, the pressure rise due to CO2 injection is a major concern
+
+regarding this technology. Finding a safe and effective method that can be feasible in
+
+industrial scale at competitive costs is the challenge regarding this topic. When it comes
+
+to CO2 capture, several solid adsorbents such as alumina, silicates, silica, silica-alumina,
+
+activated carbon, zeolites and also MOFs (Metal-Organic Frameworks) are known to be
+
+capable of adsorbing CO2. Aspects such as gas impurity (CO2 mixed with other gases)
+
+(WETENHALL et al., 2014) and thermal behaviour hinders the operation of such systems
+
+and must be addressed during design process. These studies show not only adsorption
+
+systems can handle CCS but also they can be enhanced by adjusting characteristics of
+
+their geometry and composition. Optimizing such systems may bring more possibilities
+
+and capabilities for the CCS via adsorption.
+
+Fuel storage also present a prolific area of application for adsorption. Given the low
+
+density of gas fuel, it is usual to store them in high-pressure or low-temperature vessels.
+
+In the case of natural gas storage, Compressed Natural Gas (CNG) is ordinarily stored
+
+at 200 atm, offering a capacity of 245 V/V, which means a density 245 higher than at
+
+atmospheric temperature and pressure. In turn, Liquefied Natural Gas (LNG) requires
+
+cryogenic temperatures to force gas condensation, which happens, for methane, at around
+
+113 K and provides a storage capacity of 600 V/V (HIRATA et al., 2009). On the other
+
+hand, Adsorbed Natural Gas (ANG) tanks consist of natural gas adsorbed in a solid matrix
+
+of coal, accumulated in its pores. Due to the relatively high density of the adsorbed phase,
+
+an overall storage capacity around 164 V/V can be achieved at room temperature with
+
+pressure ranging from 35 atm to 50 atm (HIRATA et al., 2009). These characteristics
+
+place ANG vessels as a promising method to maintain gas confinement, as it works at
+
+atmospheric temperature and much lower pressure then CNG.
+
+1.2 Adsorbed Natural Gas Tanks
+
+The ease of storing gas by the ANG method allows the expansion of the current
+
+applications of natural gas, both for just-in-time consumption and for long-term storage.
+
+
+
+5
+
+The possibility of storing gas at lower pressure enables the adoption of wrappers made of
+
+lighter materials and with complex shapes, which would be prohibitive in high-pressure
+
+tanks due to stress concentration. The concept of box-shaped vessel for LNG storage
+
+(KAIST, 2014) can also be adopt in the ANG method, improving the efficiency in the use
+
+of space in comparison to cylindrical and spherical alternatives.
+
+Supplying natural gas to consumption sites often present challenging logistics when the
+
+construction of a pipeline is not economically feasible. Gas supply is then guaranteed via
+
+virtual pipelines, which currently consist of trucks carrying CNG tanks to deliver natural
+
+gas to customers. ANG tanks demand less energy on gas compression, save transport
+
+costs for being lighter than CNG and reduce gas flare losses (INGEVITY, 2017).
+
+Several companies have been designing ANG tanks for vehicular use. It is claimed
+
+that it can reduces in 50% the costs of refuelling stations and improve safety due to its
+
+controlled release of gas at low pressure (ANGP, 2017).
+
+1.2.1 Design Approaches
+
+The major drawback of ANG tanks is that their internal temperature variation pre-
+
+vents them from reaching their full capacity of gas adsorption in fast filling and emptying
+
+cycles. Since the adsorption reaction is exothermic, when a molecule of gas is adsorbed
+
+by the surface, heat is released. This behaviour is detrimental to the storage of gas by
+
+means of adsorption because the saturation of adsorbed gas decreases with the increase
+
+of temperature. Conversely, when filling an adsorbent bed, the probability of a molecule
+
+being adsorbed is increasingly lower, because of the heat generated by previous adsorp-
+
+tion reactions. In turn, the desorption reaction is endothermic, consuming heat when
+
+molecules detaches from the surface. This behaviour is also disadvantageous, since it
+
+makes the desorption of molecules harder due to the fall in temperature, hindering the
+
+gas recovery from the adsorbent.
+
+Therefore, effective ANG tanks can not rely on materials presenting high capacity of
+
+adsorption only. It is necessary to ensure appropriate thermal management in order to
+
+allow reasonable short filling and emptying cycles. Given the poor conductivity typically
+
+presented by adsorbent materials, thermal management is essential to the feasibility of
+
+ANG tanks.
+
+Shorter cycles can be achieved by varying the tank shape and boundary conditions.
+
+Sahoo et al. (2011) analysed different inlet flow rates, aspect ratios and convection co-
+
+
+
+6
+
+efficients. Naturally, the achieved storage density has shown to be higher for slim tanks
+
+subjected to high heat convection with the surroundings.
+
+Cooling elements can also be added to the tank. Mota et al. (2004) relies on a cooling
+
+jacket traversed by hot exhaust gases, imposing forced convection to the tank during a
+
+desorption cycle. Subjected to exhaust gases at 80 ?C, the jacketed tank has presented a
+
+final average temperature 30 ?C hotter than the conventional reference tank in a 3-hour
+
+cycle, which results in an important increase of the net deliverable capacity. It is also
+
+reported that the inclusion of radially-extruded fins, arbitrary distributed throughout the
+
+adsorbed bed, has improved the deliverable capacity in 5% more. Based on such results,
+
+Mota et al. (2004) recommends future optimisation of fins distribution.
+
+The distribution of fins across the adsorbent bed is also recommended by Vasiliev et
+
+al. (2014) on the adsorption of hydrogen on Busofit activated carbon. In this case, fins are
+
+connected to a double-pipe heat exchanger traversed by a cooling fluid at 233 K, which is
+
+built in the centre of the adsorbent bed. Similar to Mota et al. (2004), fins have allowed
+
+25% more gas to be adsorbed, despite being arbitrarily distributed.
+
+It is important to remark, however, that the models presented by Mota et al. (2004)
+
+and Vasiliev et al. (2014) are dependent on intense active cooling, based on cooling fluids
+
+at 80 ?C and ?40 ?C, respectively, flowing across the whole adsorbent bed length. The
+gains achievable with such methods are naturally high, although the energy required to
+
+run such systems can make them less efficient per unit of gas stored. Therefore, an exergy
+
+assessment would be necessary in order to determine the feasibility of such ANG tanks.
+
+When active cooling is inefficient or infeasible, some alternative methods based on
+
+passive thermal management are interesting. Toledo et al. (2013) studies the adsorption
+
+and desorption of CO2 on systems containing spheres of Phase Change Materials (PCM).
+
+These materials behave as heat sinks, due to their high latent heat, and can be distributed
+
+across the adsorbent bed in order to control temperature variations.
+
+1.2.2 Numerical Modelling
+
+Several numerical methods have been applied to model adsorption systems. Hirata
+
+et al. (2009) adopts an hybrid numerical-analytical method based on the Generalised
+
+Integral Transform Technique (GITT) for modelling a simple one-dimensional problem
+
+considering the energy balance only, which is overly simplified for the scope of this work.
+
+In Thacker et al. (2014) and Mota et al. (1996), the Partial Differential Equations
+
+
+
+7
+
+(PDE) are reduced to a set of Ordinary Differential Equations (ODE) by interior orthog-
+
+onal collocation, in which the non-symmetry of the collocation matrix is disadvantageous
+
+(SUN et al., 1996).
+
+The Finite Volume Method (FVM) is adopted in Santos et al. (2009), Mota et al.
+
+(2004) and Vasiliev et al. (2014) and the Finite Element Method (FEM) in Yonge (1992)
+
+and Sahoo et al. (2011). FVM and FEM are the most popular techniques for solving
+
+problems with coupled heat transfer and fluid flow, sharing the same fundamental idea
+
+of satisfying a weak form, differing on the choice of the weighting function (CHAO et al.,
+
+2002). Given the vast literature of latter methods, the FEM method is adopted in this
+
+work.
+
+1.3 Optimisation Methods applied to Fluids and Heat
+
+Transfer Problems
+
+Optimisation methods are suitable to the design of devices subjected to thermofluidic
+
+interaction, such as in adsorption systems. A key aspect when designing such systems is
+
+the way trial geometries are represented through the design variables. According to Hall
+
+et al. (2017), there are five main groups of parametrisation, based on (i) surface points, (ii)
+
+control points, (iii) level sets, (iv) descriptive functions or (v) volumetric representation.
+
+Methods in the first group considers the mobility of every node on the surface mesh,
+
+such that their coordinates are the design variables of the optimisation problem (REUTHER
+
+et al., 1999). This method requires that the gradient of the objective function must be
+
+smoothed to avoid noisy surface shapes. It is widely adopted for aerodynamic optimi-
+
+sation, although presenting high computational cost and slow convergence rates. In the
+
+second group, control points are defined in order to reduce the problem size. Splines,
+
+Bezier curves or B-Splines are some of the possibilities for interpolating smooth surfaces
+
+based on fewer points. Free-Form Deformation (FFD) (SEDERBERG; PARRY, 1986)
+
+and Radial Basis Function (RBF) (MORRIS et al., 2008) are methods in which control
+
+points are used to deform the mesh through a relationship between the position of these
+
+points and the mesh nodes. In the third group, surface boundaries are defined by level
+
+sets of a function related to the sensitivity of each region to the objective function. The
+
+level set function is evolved according to a time step analogy, in which at every step a new
+
+geometry is defined at the chosen level (usually zero) (DIJK et al., 2013). In the fourth
+
+group, shape functions are associated with class functions, which represent basic types of
+
+bodies. In methods belonging to this group, the design variables can scale shape func-
+
+
+
+8
+
+tions, which will define the body constrained to class functions, or be used as coefficients
+
+to multiply perturbation functions (HALL et al., 2017).
+
+In the last group, free boundaries are represented by the concept of fractional Volume
+
+of Fluid (VoF), where the fraction of material stored in grid cells defines solid and fluid
+
+regions. The Piecewise Linear Interface Calculation (PLIC) method (ANISZEWSKI et
+
+al., 2014) uses the fluxes of the fraction function to determine a well-defined solid-fluid
+
+interface. Other methods ignore the notion of surfaces by only controlling the extent to
+
+which a given point is solid, as is the case of the density approach in topology optimisation.
+
+Volume-based methods present the advantage of handling any topology change, allowing
+
+the creation and disappearance of surfaces across the domain.
+
+Topology optimisation seeks optimised distributions of different materials inside a
+
+fixed design domain in order to maximise or minimise an objective function. Topology
+
+optimisation is usually implemented in association with FEM, considering a design vari-
+
+able in each finite element or node in the domain. The design variables are generally called
+
+pseudo-densities and range from 0 to 1, in order to represent the presence of material and
+
+absence of material (void) or two different materials. It is considered one of the most
+
+generic methods of optimisation as it is able to represent any material contour inside the
+
+design domain.
+
+In structural problems, 0 and 1 often denotes the absence and presence of material,
+
+respectively. In thermal problems, a common optimisation problem is to distribute mate-
+
+rials with different conductivities along the design domain, being one material represented
+
+by 0 and the other by 1. The optimisation of fluidic problems is addressed based on the
+
+governing equation of porous media flow to represent solid regions. Solid materials are rep-
+
+resented by pseudo-densities equal to 0 and are considered to be a porous medium with a
+
+very low permeability, while fluid regions are denoted by 1 and governed by Navier-Stokes
+
+equations.
+
+The implementation of topology optimisation methods to heat transfer problems was
+
+introduced by Xie et al. (1999), which adopt an Evolutionary Structural Optimisation
+
+(ESO) approach by removing under-utilised elements from the domain mesh. In the ESO
+
+method, elements are removed according to a rejection criterion until reaching a steady
+
+state. Such criterion is then iteratively updated following an evolution rate, culminating
+
+in the final topology. In Turteltaub (2001), the optimisation of transient heat conduction
+
+problems is studied by varying the material properties inside a fixed design domain by
+
+following the SIMP scheme and including a regularisation term on the objective function.
+
+
+
+9
+
+However, the results presented did not cover the solid-void optimisation case, which is later
+
+addressed by Sigmund (2001) by designing thermal and electro-thermal micro-actuators
+
+subjected to top heat convection only.
+
+In order to take the side convection into account in the design of electro-thermal actu-
+
+ators, the work of Yoon &amp;amp; Kim (2005) is based on the Element Connectivity Parametrisa-
+
+tion (ECP) method, where the design variables are the links between elements instead of
+
+their densities. Bruns (2007) gives special attention to convection-dominated problems,
+
+by discussing their susceptibility to numerical instabilities inherent to the density depen-
+
+dent interpolation schemes commonly used in topology optimisation. Such instabilities
+
+are dealt with by ensuring that the convection term contributions are lumped matrices.
+
+Borrvall &amp;amp; Petersson (2003) applied topology optimisation to the design of fluid sys-
+
+tems seeking to minimise the power dissipation in fluid flow channels. A well-posed
+
+optimisation problem is introduced, presenting solution convergence to a binary function
+
+space as the mesh is refined. It is based on a material model with a different penalisation
+
+scheme, which will be detailed further in Section 3.4.1. Gersborg-Hansen et al. (2005) ini-
+
+tially extended this approach to incompressible laminar viscous flow at moderate Reynolds
+
+numbers, thus solving a non-linear problem. Then, Guest &amp;amp; Prevost (2006) proposed a
+
+new generalized method, by combining and scaling the Stokes and Darcy equations.
+
+Yoon (2010) coupled heat transfer to the fluid problem, optimising heat dissipating
+
+structures with forced convection. This multiphysics optimisation is also approached by
+
+Koga et al. (2013) and Matsumori et al. (2013) with similar purposes. Kontoleontos
+
+et al. (2012) widened the set of problems tested, including three-dimensional manifolds.
+
+Yoon (2012) optimised Electro-Thermo-Mechanical (ETM) actuators by considering their
+
+interaction with the surrounding fluid.
+
+Despite the theory of topology optimisation applied to fluid mechanics being based on
+
+the variation of porosity, where media presenting very low porosity emulate impermeable
+
+solid regions, few works applied the method to the optimisation of actual porous media.
+
+The concept of impermeability adopted in Guest &amp;amp; Prevost (2006) and in Borrvall &amp;amp;
+
+Petersson (2003) considers that a material presenting permeability K = 1.00 × 10?8 m2
+
+behaves like a wall, while in typical ANG tanks the fluid flow permeates an activated
+
+carbon presenting K = 3.70 × 10?10 m2 (SAHOO et al., 2011).
+
+On structural design, Andreasen &amp;amp; Sigmund (2013) presents an implementation of
+
+topology optimisation for saturated poroelastic media, with respect to the macroscopic
+
+material distribution based on the homogenisation theory. The method is applied to the
+
+
+
+10
+
+design of shock absorbers, where the energy dissipation is due to the flow resistance.
+
+The use of topology optimisation for the design of adsorbed systems is not yet reported
+
+in literature. Figure 1.3 presents the topology optimisation procedure for designing ANG
+
+tanks. A fixed initial domain with given boundary conditions is discretised in finite ele-
+
+ments. Pseudo-porosities are associated with each element and their values are optimised
+
+aiming to maximise or minimise a given objective function, resulting in a final topology.
+
+A post-processing step is then necessary, in order to recover the discrete nature of the
+
+problem and to smoothen the contours of the material distribution. Finally, the post-
+
+processed topology can be verified numerically through other software before proceeding
+
+to manufacturing.
+
+INITIAL DOMAIN FINAL TOPOLOGY
+
+POST-PROCESSING VERIFICATION
+
+1 2
+
+3 4
+
+Figure 1.3: Topology optimisation procedure.
+
+1.4 Motivation
+
+Adsorption systems play an important role in a wide range of applications, with a vast
+
+range of commercial products reliant on the process. Aiming to improve the performance
+
+of adsorption devices, past research has been limited to the improvement of adsorbent
+
+characteristics, such as the pores geometry and distribution (BILOE et al., 2002). The
+
+
+
+11
+
+design of adsorption systems by stating and solving an actual optimisation problem has
+
+not been reported in literature. Topology optimisation is suitable to address the design
+
+of such systems and expand their current applications.
+
+1.5 Objectives
+
+This work proposes a method for the design of adsorption systems based on topology
+
+optimisation by seeking the following objectives:
+
+• To formulate a comprehensive numerical model of gas adsorption on porous media;
+
+• To formulate topology optimisation problems regarding the maximisation of the
+mass of gas adsorbed in Adsorbed Natural Gas (ANG) tanks;
+
+• To obtain optimised ANG tank layouts able to adsorb gas more efficiently.
+
+1.6 Scientific Contributions
+
+This research addresses some previously unexplored topics, presenting the following
+
+scientific contributions:
+
+• Statement of weak and discrete formulations of the adsorption problem and its
+adjoint system;
+
+• Development of an optimisation method for adsorption systems;
+
+• Definition of a novel material model based on offset hyperbolic tangents;
+
+• Presentation of optimised Adsorbed Natural Gas (ANG) tanks based on the distri-
+bution of cooling materials;
+
+1.7 Thesis Outline
+
+This document is organized as follows. In Chapter 2, the governing equations of the
+
+adsorption phenomenon are presented. In Chapter 3, topology optimisation problems
+
+regarding ANG tanks are defined. Chapter 4 details the numerical implementation of the
+
+proposed model. In Chapter 5, layouts of ANG tanks obtained by topology optimisation
+
+are presented. Chapter 6 reports overall conclusions on the optimisation of adsorption
+
+systems.
+
+
+
+12
+
+2 Modelling of Adsorption
+Systems
+
+The adsorption problem is governed by typical fluidic and thermal equations applied
+
+to porous media coupled with equations defining the interactions between adsorbent and
+
+adsorbate. This Chapter presents the general assumptions and the governing equations
+
+considered when modelling the adsorption problem. The weak formulation of the govern-
+
+ing equations is also derived.
+
+2.1 Modelling Flow in Porous Media
+
+The modelling of the actual flow in porous media is very challenging, given the complex
+
+network of channels presented by such materials. By regarding the porous media as a
+
+continuum, it is possible to approximate the macroscopic fluid motion through its channels
+
+by taking an average of the microscopic flow within a Representative Elementary Volume
+
+(REV) (WHITAKER, 1986). Figure 2.1 shows on the right the continuum interpretation
+
+of the porous medium presented on the left. The averaged velocity of the flow inside each
+
+REV is represented by the arrows.
+
+The Darcy’s law is an approximation which describes the fluid flow in porous media
+
+that is valid for a limited range of low velocities. Deviations presented by experimental
+
+results motivated the consideration of microscopic inertial effects, as in the Forchheimer
+
+equation (MULJADI et al., 2016), in which
+
+? ?p =
+µf
+K
+
+vg + ??g|ug|2n, (2.1)
+
+where ?g denotes the fluid density, ? is the non-Darcy coefficient and n is a unit vector
+
+in the direction of ?P .
+
+
+
+13
+
+REVREV
+
+Figure 2.1: Continuum modelling of porous media based on Representative Elementary
+Volume (REV).
+
+In order to determine the cases when non-Darcy effects are meaningful, the Reynolds
+
+number was the first criterion to be used. It is based on the assumption that non-Darcy
+
+effects in porous media are similar to turbulence in conduits, in which Reynolds number
+
+is given by (ZENG; GRIGG, 2006)
+
+Re =
+?gøpvg
+µ
+
+, (2.2)
+
+where the conduit diameter is considered to be in the same magnitude of the average
+
+particle diameter øp in the porous medium.
+
+Previous research present a wide range for the transition region between Darcy and
+
+non-Darcy porous media flow. Different authors report discrepant transition regions, with
+
+Reynolds number ranging from 0.1 to 1000 (MULJADI et al., 2016). Due to the lack of
+
+a precise delimitation of this region, criteria based on Reynolds number are not widely
+
+adopted (ZENG; GRIGG, 2006).
+
+A second criterion is based on the Forchheimer number, which is given by (ZENG;
+
+GRIGG, 2006)
+
+Fo =
+?gK?vg
+
+µ
+, (2.3)
+
+where ? denotes the non-Darcy coefficient.
+
+While the measurement of the particle diameter øp in the Reynolds number is not
+
+trivial, the permeability K and the coefficient ? involved in the Forchheimer number are
+
+easily obtained experimentally by measuring the pressure drop in a specimen for a range
+
+of different flow rates (ZENG; GRIGG, 2006). It has been found that a Forchheimer
+
+number equal to 0.11 is a good reference for the acceptance of Darcy’s law approximation
+
+in porous media. The meaning of a flow presenting Fo = 0.11 is that non-Darcy effects
+
+represent 10% of the forces involved.
+
+
+
+14
+
+In modelling ANG tanks, Mota et al. (2004) and Sahoo et al. (2011) consider all
+
+inertial and viscous effects negligible and adopt pure Darcy’s law. Mota et al. (1996),
+
+Rahman et al. (2011) and Vasiliev et al. (2014) consider additional terms for accounting
+
+the inertial effects by following Ergun or Forchheimer equations. In general, models
+
+neglecting non-Darcy effects have presented good agreement with experimental validation,
+
+being preferred in order to reduce computational cost.
+
+2.2 Modelling Adsorption Equilibrium and Kinetics
+
+Adsorption is modelled as the retention of molecules from a solute with concentration
+
+C0 (relative to the fluid phase volume) on solid particles at a concentration q (relative
+
+to the solid phase mass). Such retention reduces the number of molecules on the mobile
+
+phase, resulting in a new solute concentration C. Given a fixed temperature, a relationship
+
+q = f(C) is observed, which is named the sorption isotherm. This process is expressed
+
+by (LIMOUSIN et al., 2007)
+
+q =
+V
+
+M
+
+(
+
+C0 ? C
+)
+
++ q0, (2.4)
+
+where V is fluid phase volume, M is the solid phase mass and q0 is the initial concentration
+
+of adsorbed molecules on solid particles.
+
+The desorption process is the release of solute molecules from the solid particles,
+
+increasing the concentration of the liquid phase. It can be noted that the same equation
+
+is valid for modelling both adsorption and desorption processes, given that for adsorption
+
+C0 &gt; C and q0 &amp;lt;q while for desorption C0 &amp;lt;C and q0 &gt; q. Figure 2.2 illustrates these
+
+processes.
+
+Figure 2.2: Adsorption and desorption processes.
+
+Adsorption process requires an energy of activation, Ea, and is exothermic, presenting
+
+an isosteric heat of adsorption ?H. In turn, the desorption reaction is endothermic and
+
+requires an energy of activation, Ed. Figure 2.3 the variation of energy in an exothermic
+
+reaction along the reaction pathway.
+
+
+
+15
+
+Figure 2.3: Adsorption energetics (MCBRIDE, 1994).
+
+Giles (1974) divides the isotherms into four classes according to their initial slope
+
+termed as S, L (Langmuir), H (high affinity), and C (constant partition), which are
+
+depicted in Figure 2.4. C-isotherm considers a simple linear function for expressing q =
+
+f(C), which means that the sorbate has infinite adsorption sites. L-isotherm assumes
+
+steady decrease on the concentrations ratio, presenting a well defined plateau in some
+
+cases. H-isotherm is suitable when the affinity between adsorbate and adsorbent is very
+
+high and the available sites are occupied promptly. S-isotherm presents an inflection
+
+point which is the result of the opposition of two mechanisms: the low rate observed
+
+for low concentrations reproduces the difficulty that some adsorbates have to attach to
+
+the adsorbent and after the adsorption of the first molecules the adsorption of others is
+
+favoured through a phenomenon named cooperative adsorption.
+
+L-isotherm and H-isotherm are also know as concave isotherms and several different
+
+models are based on them, such as Freundlich, Langmuir, Dubinin, Polanyi, Kisarov and
+
+Vacancy Solution Model (WOOD, 2002).
+
+According to the Freundlich models, a plateau is never reached, even for very high
+
+concentrations. It is given by (LIMOUSIN et al., 2007)
+
+q = FCn, (2.5)
+
+where F and n are constants obtained experimentally, being n &amp;lt;1.
+
+Langmuir models are based on the assumption that the adsorbate presents a limited
+
+capacity of adsorption qmax. It is derived from the kinetics of adsorption and desorption.
+
+
+
+16
+
+Q
+
+C
+
+H
+
+L
+
+C
+
+S
+
+Figure 2.4: Classes of isotherms (GILES, 1974).
+
+Given that the rate of adsorption is proportional to the vacant sites for adsorption, it can
+
+be expressed as (PATIHA et al., 2016)
+
+?q
+
+?t
+= ka(qmax ? q)C, (2.6)
+
+where ka is the kinetic coefficient of adsorption obtained experimentally for each adsorbent-
+
+adsorbate pair.
+
+The desorption rate is proportional to the occupied sites (PATIHA et al., 2016), which
+
+is expressed as
+?q
+
+?t
+= kdq, (2.7)
+
+where kd is the kinetic coefficient of desorption.
+
+At equilibrium, the rates of adsorption and desorption are equal and q is given by
+
+(PATIHA et al., 2016)
+
+q =
+qmaxC
+
+kd
+ka
+
++ C
+
+. (2.8)
+
+The Dubinin models are the most versatile methods of expressing adsorption equilib-
+
+rium, being expressed by means of adsorbate and adsorbent properties and temperature
+
+(WOOD, 2002). It relies on the Polanyi’s adsorption potential theory, which defines a
+
+potential equal to the change in free energy from the bulk liquid to the adsorbed state,
+
+taking the vapour saturation pressure psat as reference (WOOD, 2001). It is expressed as
+
+A = RT
+
+(
+
+Psat
+P
+
+)
+
+. (2.9)
+
+
+
+17
+
+The Dubinin isotherm is then defined in terms of volume of micro-pores W occupied
+
+by adsorbate (WOOD, 2001), given by
+
+W = W0 exp
+
+(
+
+?
+(
+
+A
+
+?E0
+
+)n)
+
+, (2.10)
+
+where W0 is the total volume of micro-pores and the exponent n can assume differ-
+
+ent values depending on the specific model, being equal to 2 for Dubinin-Radushkevich
+
+isotherms. E0 and ? denote, respectively, the characteristic adsorption energy for the ref-
+
+erence vapour and the affinity of the adsorbate to the adsorbent, usually taking benzene
+
+as reference (?benzene = 1).
+
+The kinetics of adsorption consists of a sequence of three steps: (i) mass transfer of
+
+the adsorbate from the solution to the external surface of the adsorbent, (ii) diffusion
+
+through the adsorbent and (iii) adsorption itself (LARGITTE; PASQUIER, 2016). When
+
+modelling adsorption kinetics, it is usual to assume that either the diffusion or the actual
+
+adsorption is the rate limiting and dictates the rate of the process as a whole.
+
+Two main models are reported for adsorption kinetics taking the intra-particle diffu-
+
+sion as the limiting step: Crank and Weber-Morris. Crank model considers homogeneous
+
+diffusion across an adsorbate consisting of spheres, which is defined as (LARGITTE;
+
+PASQUIER, 2016)
+?q
+
+?t
+=
+DS
+r2
+
+?
+
+?r
+
+(
+
+r2
+q
+
+r
+
+)
+
+, (2.11)
+
+where DS is the surface diffusivity and r denotes the radial distance.
+
+Weber-Morris model is based on the empirical observation that the uptake varies
+
+nearly proportionally with
+?
+t (ALKAN et al., 2007). It is expressed by (QIU et al., 2009)
+
+q = kintra
+?
+t, (2.12)
+
+where kintra is the intra-particle diffusion rate constant.
+
+When the adsorption itself is the rate limiting step, Elovich or Lagergren equations
+
+are often used to model the phenomenon. Elovich models are expressed by (LARGITTE;
+
+PASQUIER, 2016)
+?q
+
+?t
+= a exp
+
+(
+
+? bq
+)
+
+, (2.13)
+
+where a is the initial rate of adsorption and b is a constant obtained experimentally related
+
+to the variation of the energy of adsorption.
+
+Lagergren models present an asymptotic approach to the equilibrium of the adsorbed
+
+
+
+18
+
+phase qeq through a pseudo first order equation given by (LARGITTE; PASQUIER, 2016)
+
+?q
+
+?t
+= ka(qeq ? q), (2.14)
+
+where ka is the adsorption rate constant.
+
+Some other models are derived from the original Lagergren model. One variation
+
+consists of the extension of the pseudo first-order form to the pseudo n-order laws given
+
+by (LARGITTE; PASQUIER, 2016)
+
+?q
+
+?t
+= ka(qeq ? q)n, (2.15)
+
+where n defines the pseudo order of the equation.
+
+Another Lagergren derived model, know as Langmuir, includes the consideration of the
+
+reversibility of the adsorption reaction by adding the desorption kinetics as (LARGITTE;
+
+PASQUIER, 2016)
+?q
+
+?t
+= ka(qeq ? q) ? kdq, (2.16)
+
+where kd is the desorption rate constant.
+
+In ANG tanks, the equation of Dubinin-Astakhov (DA), or its variation Dubinin-
+
+Radushevich (DR), is adopted by most authors for predict the amount of gas adsorbed at
+
+the equilibrium and the kinetics of adsorption is approximated by the Lagergren model
+
+(RAHMAN et al., 2011; SAHOO et al., 2011; VASILIEV et al., 2014). Alternatively,
+
+Mota et al. (1996) adopts a Langmuir-type prediction for the equilibrium and suggests
+
+that the kinetics of adsorption can be neglected for the typical intraparticle diffusional
+
+time constants of adsorbent beds. This assumption is generally valid, but also depends
+
+on other factors, such as the energy of activation, and it will be studied further in this
+
+work.
+
+2.3 Governing Equations
+
+A typical sorption domain ? is illustrated in Figure 2.5, where ?W and ?L denote sub-
+
+regions of ?? where boundary conditions of wall and inlet/outlet are imposed, respectively.
+
+In this work, the following assumptions are made:
+
+Ideal gases: in the systems considered, gases are considered to present ideal thermo-
+
+
+
+19
+
+W
+
+G
+W
+
+G
+L
+
+Figure 2.5: Adsorption domain.
+
+dynamic behaviour (SAHOO et al., 2011), therefore, their densities are described by
+
+?g =
+MgP
+
+RgT
+, (2.17)
+
+where Mg is the molecular gas mass, Rg is the universal gas constant, P is the gas pressure
+
+and T is the gas temperature.
+
+Darcy’s Porous Media: non-Darcy effects are neglected in the fluid flow, according to
+
+Eq. (2.1) with ? = 0.
+
+Local thermal equilibrium: the sorbent bed is locally in thermal equilibrium with the
+
+gas (MOTA et al., 2004). All intra-particle and film resistances in heat and mass transfer
+
+are neglected.
+
+Negligible viscous forces: the viscous forces are neglected due to the low gas viscosity
+
+and the relatively large bed-particle diameter ratio (MOTA et al., 2004).
+
+Constant specific heat capacity: the specific heat capacity is considered to be constant
+
+within the typical range of temperatures observed in sorption systems. Its variation is
+
+neglected since it usually varies around only 8% (MOTA et al., 2004) in a range of 100 K.
+
+Constant adsorption enthalpy: this work considers an approximation in which ?H
+
+assumes a constant mean value within the range of pressures and temperatures studied
+
+(SAHOO et al., 2011).
+
+Lagergren adsorption model: For the studied cases, it is considered that the film
+
+diffusion is dominant and the rate of sorption is governed by Lagergren model (VASILIEV
+
+et al., 2014).
+
+
+
+20
+
+2.3.1 Natural Material Models
+
+Effective properties of porous media are determined by material models based on
+
+macro-porosity (?M) and micro-porosity (?m). Given these two classes of porosity, the
+
+total porosity (?t) is defined as
+
+?t = ?M + (1 ? ?M)?m. (2.18)
+
+Density: the density of the system is given by the sum of gaseous and solid phase
+
+weighted by the total porosity, ?t, with the addition of the density of the adsorbed phase,
+
+based on its concentration, q, as
+
+?f(?t) = ?t?g + (1 ? ?t)?s + (1 ? ?t)?sq. (2.19)
+
+Permeability: dependent on the macro-porosity, following the Kozeny-Carman’s model
+
+for spherical particles (CARMAN, 1937), given by
+
+Ks(?M) =
+ø2s?
+
+3
+M
+
+72?s(1 ? ?M)2
+, (2.20)
+
+where øs is the effective characteristic particle diameter and ?s denotes the pores tortuosity.
+
+Thermal Conductivity: it can be given by both Maxwell-Eucken’s or Russel’s rela-
+
+tions (SMITH et al., 2013). The former considers the effect of large spherical pores with
+
+thin walls and the latter the effect of a cubic pore inclusion in the material matrix by con-
+
+sidering a parallel/series resistor. Here, the conductivity of the thin film of gas adsorbed,
+
+kq, is neglected and the Maxwell-Eucken relation is adopted to interpolate the gaseous
+
+and solid conductivities (SMITH et al., 2013), given by
+
+kf(?t) = ks
+kg + 2ks + 2?t(kg ? ks)
+kg + 2ks ? ?t(kg ? ks)
+
+, (2.21)
+
+where ks and kg are the thermal conductivities for the solid and gas, respectively.
+
+2.3.2 Adsorption and Desorption Kinetics
+
+The concentration q represents the mass of adsorbed phase per mass of adsorbent.
+
+Therefore, the density of adsorbed phase in reference to the volume of the adsorbent bed,
+
+Q, is given by
+
+Q = (1 ? ?t)?sq. (2.22)
+
+
+
+21
+
+The specific volume of micro-pores, ws, represents the volume of micro-pores per mass
+
+of adsorbent. The ratio of micro-pores volume per adsorbent bed volume, Ws, is then
+
+given by
+
+Ws = (1 ? ?t)?sws. (2.23)
+
+From the equilibrium concentration of adsorbed gas, qeq, (SAHOO et al., 2011), the
+
+equilibrium density of adsorbed gas is given by
+
+Qeq = ?adgWs exp
+
+(
+
+?
+(
+
+A
+
+?E0
+
+)nf
+)
+
+, (2.24)
+
+where ? is the affinity coefficient of the adsorbent-adsorbate pair, E0 is the characteristic
+
+energy of adsorption and ns stands for the effective micro-pores dispersion.
+
+The local adsorbed gas density, ?adg, is given by (SAHOO et al., 2011)
+
+?adg =
+?boil
+
+exp(?e(T ? Tboil))
+, (2.25)
+
+where ?boil is the gas density at boiling point temperature (Tboil) and ?e is the mean value
+
+of the thermal expansion of liquefied gases.
+
+Polanyi’s adsorption potential, A, is given by
+
+A = RgT ln
+
+(
+
+Psat
+P
+
+)
+
+, (2.26)
+
+which saturated pressure Psat is given by
+
+Psat = Pcr
+
+(
+
+T
+
+Tcr
+
+)2
+
+, (2.27)
+
+where Pcr and Tcr are, respectively, the critical pressure and temperature of the gas.
+
+The rate of adsorption decreases as more gas is adsorbed, following the Linear Driving
+
+Force (LDF) model given by(MOTA et al., 1996)
+
+?Q
+
+?t
+= G(Qeq ? Q) in ? × [0, tf]
+
+Q = Qini in ? at t = 0,
+(2.28)
+
+where the coefficient G, which dictates the adsorption and desorption kinetics, is given
+
+by (VASILIEV et al., 2011)
+
+G = D exp
+
+(
+
+?E[a,d]
+RgT
+
+)
+
+, (2.29)
+
+where the activation energy of adsorption (Ea) is considered when Q ? Qeq and the
+activation energy of desorption (Ed) otherwise. D is the intra-particle diffusional time
+
+
+
+22
+
+constant, given by (SAHOO et al., 2011)
+
+D = 4
+D0
+ø2s
+, (2.30)
+
+where øs is the characteristic particle diameter and D0 is the gas diffusivity.
+
+2.3.3 Continuity
+
+In adsorption systems, the coupled continuity equation of gaseous, solid and adsorbed
+
+phases is expressed by
+
+?
+
+?t
+
+(
+
+?t?g + (1 ? ?t)?s + Q
+)
+
++ ? ·
+(
+
+?gvg
+
+)
+
+= 0 in ? × [0, tf], (2.31)
+
+where ?s is the bulk adsorbent density, which is constant.
+
+The continuity equation considering ideal gases and Darcy’s laws becomes (SAHOO
+
+et al., 2011)
+
+?tMg
+Rg
+
+?
+
+?t
+
+(
+
+P
+
+T
+
+)
+
++
+?Q
+
+?t
+?
+
+Mg
+Rgµg
+
+? ·
+(
+
+Ks
+P
+
+T
+?P
+
+)
+
+= 0 in ? × [0, tf], (2.32)
+
+where the solid density ?s is considered constant.
+
+By expanding the transient derivative term, continuity is given by
+
+?tMg
+Rg
+
+(
+
+1
+
+T
+
+?P
+
+?t
+? P
+T2
+
+?T
+
+?t
+
+)
+
++
+?Q
+
+?t
+? Mg
+Rgµg
+
+? ·
+(
+
+Ks
+P
+
+T
+?P
+
+)
+
+= 0 in ? × [0, tf],
+
+P = Pini in ? at t = 0,
+
+T = Tini in ? at t = 0,
+
+Q = Qini in ? at t = 0.
+
+(2.33)
+
+For determining a fixed mass inflow or outflow, a Robin boundary condition is applied
+
+on ?L as
+
+?MgKs
+Rgµg
+
+P
+
+T
+
+?P
+
+?n
+= ?gvg · n = m?let on ?L × [0, tf], (2.34)
+
+where the mass flow is denoted by m?let
+
+Despite the imposition of a fixed mass inlet making sense for adsorption, the depletion
+
+of a fixed amount of gas during desorption cycles is not possible as the tank is emptied.
+
+Therefore, pressure inlet can be set, which represents the connection of the tank to a
+
+infinity reservoir at fixed pressure for adsorption or the opening of the tank outlet to the
+
+atmosphere for desorption. In order to model the gradual pressure transition inside the
+
+tank, a possible approach is to smoothly vary the pressure on ?L according to a sinusoidal
+
+
+
+23
+
+profile given by
+
+P?L(t) =
+
+?
+
+?
+
+?
+
+?
+
+?
+
+Pini + sin
+2
+
+(
+
+?
+
+2
+
+t
+
+?tf
+
+)
+
+(Plet ? Pini) on ?L × [0,?tf]
+
+Plet on ?L × [?tf, tf],
+(2.35)
+
+where Pini and Plet denote initial and filling/emptying pressures, tf is the final time and
+
+0 &amp;lt;? ? 1.0 is a smoothness factor. Figure 2.6 illustrates P?L curves for adsorption and
+desorption cycles.
+
+Pini
+
+stf
+
+Plet
+
+tf
+
+(a) (b)
+
+Figure 2.6: Inlet pressure (P?L) during (a) adsorption and (b) desorption cycles.
+
+2.3.4 Energy Balance
+
+The energy balance of the gaseous phase is given in terms of internal energy, ug, by
+
+(BIRD et al., 2007)
+
+??gug
+?t
+
++ ? · (?gugvg) ? ? · (kg?T) + P? · vg + ? g : ?vg = 0, (2.36)
+
+where ? g is the viscous stress tensor.
+
+Such balance is rewritten in terms of Cpg and T as (BIRD et al., 2007)
+
+??gCpgT
+
+?t
++?·(?gCpgTvg)??·(kg?T)+?g : ?vg?
+
+? lnV
+
+? lnT
+
+?
+
+?
+
+?
+
+?
+
+P
+
+DP
+
+Dt
+??gT
+
+DCpg
+Dt
+
+= 0, (2.37)
+
+where D denotes the Lagrangian derivative, Cpg is considered constant and
+? lnV
+
+? lnT
+= 1
+
+for ideal gases.
+
+Following the assumption that viscous forces are negligible, the energy balance reduces
+
+to
+??gCpgT
+
+?t
++ ? · (?gCpgTvg) ? ? · (kg?T) ?
+
+?P
+
+?t
+? vg · ?P = 0, (2.38)
+
+
+
+24
+
+which is rearranged as
+
+?gCpg
+?T
+
+?t
++ CpgT
+
+{
+
+??g
+?t
+
++ ? · (?gvg)
+}
+
+C
+
++ ?gCpgvg · ?T
+
+?? · (kg?T) ?
+?P
+
+?t
+? vg · ?P = 0,
+
+(2.39)
+
+where the continuity equation is observed in C, making these terms to vanish.
+
+By substituting the momentum equation based on the Darcy’s law, the balance be-
+
+comes
+
+?gCpg
+?T
+
+?t
+? ?gCpg
+
+Ks
+µg
+
+?P · ?T
+
+?? · (kg?T) ?
+?P
+
+?t
++
+
+{
+
+Ks
+µg
+
+?P · ?P
+}
+
+?0
+
+= 0,
+
+(2.40)
+
+where the last term is neglected, given the very small pressure gradients observed in the
+
+range of permeabilities of interest in this work.
+
+Analogously, the energy balance of the solid phase is given by
+
+?sCps
+?T
+
+?t
+? ? · (ks?T) = 0. (2.41)
+
+The energy balance associated to the adsorbed phase includes a source term due to
+
+the exothermic adsorption reaction, being expressed as
+
+CpqQ
+?T
+
+?t
+? ? · (kq?T) = |?H|
+
+?Q
+
+?t
+, (2.42)
+
+where ?H is the isosteric heat of adsorption.
+
+The energy balance for coupled gaseous, solid and adsorbed phases assuming local
+
+thermal equilibrium between phases and ideal gas is then given by (MOTA et al., 2004)
+
+?t
+
+(
+
+CpgMg
+Rg
+
+P
+
+T
+
+?T
+
+?t
+? ?P
+
+?t
+
+)
+
++ (1 ? ?t)
+(
+
+?sCps
+?T
+
+?t
+
+)
+
++ CpgQ
+?T
+
+?t
+
+?CpgMg
+Rgµg
+
+Ks
+P
+
+T
+?P · ?T ? ? ·
+
+(
+
+kf?T
+)
+
+= |?H|?Q
+?t
+
+in ? × [0, tf],
+
+P = Pini in ? at t = 0,
+
+T = Tini in ? at t = 0,
+
+Q = Qini in ? at t = 0,
+
+(2.43)
+
+where the effective thermal conductivity, kf, is given by Eq. (2.21).
+
+Due to the local thermal equilibrium assumption, the temperature on ?L can be
+
+considered equal to the inlet gas temperature, which is imposed by a Dirichlet boundary
+
+
+
+25
+
+condition defined as
+
+T = Tlet on ?L × [0, tf]. (2.44)
+
+Alternatively, an inlet heat flux can be considered on ?L, which is expressed by a
+
+Robin boundary condition (SAHOO et al., 2011) given by
+
+?kf
+?T
+
+?n
+= ??gCpgvg · n (T ? Tlet) =
+
+MgCpgKs
+Rgµg
+
+P
+
+T
+?P · n (T ? Tlet) on ?L × [0, tf].
+
+(2.45)
+
+Assuming that heat convection takes place on the walls, a Robin boundary condition
+
+is also defined on ?W . Such condition is imposed by
+
+?kf
+?T
+
+?n
+= hW (T ? T?) on ?W × [0, tf]. (2.46)
+
+On the region ? \ (?W ? ?L), since no boundary terms are explicitly defined, the heat
+flux is null, which represents adiabatic condition.
+
+2.4 Weak Formulation of Adsorption Systems
+
+Weak formulations are used to obtain solutions for a set of PDEs by satisfying the
+
+integral of the solution on the domain for a family of test functions. Consider the domain
+
+? ? Rn, illustrated in Figure 2.5 for n = 2. The weak formulation of L(w) is given by its
+actuation on the test function v as (KARNIADAKIS et al., 2005)
+
+?
+
+L(w),v
+
+?
+
+=
+
+?
+
+?
+L(w) v dx ?v ? H1(?), (2.47)
+
+where H1 denotes the Hilbert space, whose functions have their first derivatives belonging
+
+to the Lebesgue space L2.
+
+For axisymmetric domains, it is multiplied by 2?r and given by
+
+?
+
+L(w),v
+
+?
+
+= 2?
+
+?
+
+?
+r L(w) v dx ?v ? H1(?), (2.48)
+
+where r is the radial coordinate.
+
+On ?N ? ??, where Robin boundary condition applies, the weak term is given by
+(KARNIADAKIS et al., 2005)
+
+?
+
+L(w),v
+
+?
+
+?N
+
+=
+
+?
+
+?N
+L(w) · n v ds ?v ? H1(?), (2.49)
+
+
+
+26
+
+where n denotes an outward unit vector normal to ?.
+
+Analogously, for axisymmetric domains, it is given by
+
+?
+
+L(w),v
+
+?
+
+?N
+
+= 2?
+
+?
+
+?N
+r L(w) · n v ds ?v ? H1(?). (2.50)
+
+Considering the Dirichlet boundary condition given by
+
+w = wD on ?D, (2.51)
+
+the unknown w belongs to the space W defined as
+
+W = {w ? H1(?) : w = wD on ?D}, (2.52)
+
+in which wD ? H1/2(?) (SA et al., 2016).
+
+Thus, from Eqs. (2.33), (2.43) and (2.28) and integrating by parts the terms involving
+
+a divergent operator, the weak forms for continuity, energy balance and adsorption kinetics
+
+are given by
+
+M(P,T,Q) =
+
+?
+
+?tMg
+Rg
+
+1
+
+T
+
+?P
+
+?t
+,vM
+
+?
+
+?
+?
+
+?tMg
+Rg
+
+P
+
+T2
+?T
+
+?t
+,vM
+
+?
+
++
+
+?
+
+?Q
+
+?t
+,vM
+
+?
+
++
+
+?
+
+MgKs
+Rgµg
+
+P
+
+T
+?P, ?vM
+
+?
+
+?
+?
+
+MgKs
+Rgµg
+
+P
+
+T
+?P,vM
+
+?
+
+?N
+
+= 0,
+
+?vM ? H1(?),
+
+(2.53)
+
+E(P,T,Q) =
+
+?
+
+?tCpgMg
+Rg
+
+P
+
+T
+
+?T
+
+?t
+,vE
+
+?
+
++
+
+?
+
+CpgQ
+?T
+
+?t
+,vE
+
+?
+
++
+
+?
+
+(1 ? ?t)?sCps
+?T
+
+?t
+,vE
+
+?
+
+?
+?
+
+?t
+?P
+
+?t
+,vE
+
+?
+
++
+
+?
+
+CpgMgKs
+Rgµg
+
+P
+
+T
+?P · ?T, ?vE
+
+?
+
++
+
+?
+
+kf?T, ?vE
+?
+
+?
+?
+
+|?H|
+?Q
+
+?t
+,vE
+
+?
+
+?
+?
+
+CpgMgKs
+Rgµg
+
+P
+
+T
+?P · ?T,vE
+
+?
+
+?N
+
+?
+?
+
+kf?T,vE
+?
+
+?N
+
+= 0,
+
+?vE ? H1(?),
+
+(2.54)
+
+D(P,T,Q) =
+
+?
+
+?Q
+
+?t
+,vD
+
+?
+
++
+
+?
+
+GQ,vD
+
+?
+
+?
+?
+
+GQeq,vD
+
+?
+
+= 0, ?vD ? H1(?). (2.55)
+
+
+
+27
+
+Considering convective heat transfer on the walls,
+
+?
+
+kf?T,vE
+?
+
+?N
+
+= ?
+?
+
+hW (T ? T?),vE
+?
+
+?W
+
+. (2.56)
+
+Considering mass flow imposition,
+
+?
+
+MgKs
+Rgµg
+
+P
+
+T
+?P,vM
+
+?
+
+?N
+
+=
+
+?
+
+m?let,vM
+
+?
+
+?L
+
+. (2.57)
+
+In the case that no Dirichlet condition is imposed on temperature field, another term
+
+remains from the integration by parts on the energy balance, accounting for the heat flux
+
+observed on ?L due to the inlet/outlet of gases, given by
+
+?
+
+kf?T,vE
+?
+
+?N
+
+=
+
+?
+
+CpgTm?let,vE
+
+?
+
+?L
+
+. (2.58)
+
+Given that vM, vE and vD are arbitrary test functions, Eqs. (2.53)-(2.55) are coupled
+
+and the problem reduces to
+
+M(P,T,Q) + E(P,T,Q) + D(P,T,Q) = 0. (2.59)
+
+The approximated solution of such weak problem is obtained via FEM as presented
+
+in Chapter 4, where a discrete system is derived based on shape functions interpolation.
+
+Before addressing this and other numerical matters, the next Chapter is focused on the
+
+definition of the theoretical concepts of the optimisation problems studied in this work.
+
+
+
+28
+
+3 Optimisation of ANG Tanks
+
+This Chapter is focused on the design of adsorption systems via topology optimisation.
+
+The optimisation concept is discussed, followed by the definition of the objective function
+
+for the optimisation of ANG tanks. Finally, traditional material models are reviewed and
+
+a novel Offset Hyperbolic Tangents (OHT) model is proposed.
+
+3.1 Design Concept
+
+An ANG tank is considered empty when the equilibrium mass of adsorbed gas for
+
+atmospheric pressure and temperature (Patm and Tatm) is achieved. Similarly, it is con-
+
+sidered full when reaching the adsorption equilibrium for the inlet pressure (Plet) and
+
+atmospheric temperature. Those quantities are expressed by
+
+Qempty =
+
+?
+
+?ads
+
+Qeq(Patm,Tatm) dx, (3.1)
+
+Qfull =
+
+?
+
+?ads
+
+Qeq(Plet,Tatm) dx, (3.2)
+
+where ?ads is the adsorbent domain inside the tank.
+
+At the end of an adsorption or desorption cycle, the actual mass of gas adsorbed inside
+
+the tank is given by
+
+Qf =
+
+?
+
+?ads
+
+Qeq(Pf,Tf) dx, (3.3)
+
+which is well approximated by
+
+Qf ?
+?
+
+?ads
+
+Qeq(Pf,Tf) dx, (3.4)
+
+where Pf and Tf denote the average pressure and temperature within the domain ?ads at
+
+the end of the cycle.
+
+
+
+29
+
+The goal when designing ANG tanks, is to make the temperature Tf as near as possible
+
+to the atmospheric temperature Tatm at the end of both adsorption and desorption cycles.
+
+This is often very time demanding due to the adsorbent poor conductivity mentioned
+
+above. A possible approach to shorten the cycle length is not to occupy the full volume of
+
+the tank with adsorbent, replacing it per some high conductive material in certain regions,
+
+as demonstrated in the tank depicted in Figure 3.1. The design trade-off is to not remove
+
+too much adsorbent when introducing non-adsorbent material to make the temperature
+
+Tf nearer to the atmospheric value.
+
+Figure 3.1: Optimisation of ANG tanks through the addition of non-adsorbent materials.
+
+The gain in gas adsorbed obtained in an optimised tank (opt) in relation to a tank
+
+constituted purely by adsorbent material (pure) is represented by ? and denotes the
+
+increment in the percentage of mass adsorbed. It is correlated to the variation of adsorbent
+
+volume inside the tank by
+
+(1 + ?a) =
+Qeq(Pf,opt,Tf,opt) ? Qeq(Patm,Tatm)
+Qeq(Pf,pure,Tf,pure) ? Qeq(Patm,Tatm)
+
+(
+
+1 ?
+Vnon
+Vtank
+
+)
+
+. (3.5)
+
+Figure 3.2 illustrates the case of a tank which is presenting a final average temperature
+
+of 323 K at the end of the adsorption cycle. It is shown how much volume is possible
+
+to occupy with non-adsorbent materials according to the reduction of the temperature in
+
+order to achieved certain gain in the mass of gas adsorbed. For instance, if the replacement
+
+of 5% of the adsorbent bed with some non-adsorbent material leads to the reduction of
+
+final average temperature to 300 K, it would be possible to adsorb 30% more gas.
+
+3.2 Manufacturing Considerations
+
+According to Menon &amp;amp; Komarneni (1998), the packing density of adsorbent particles is
+
+a key factor for the overall capacity of gas storage in ANG systems. The most promising
+
+
+
+30
+
+295 300 305 310 315 320
+
+Final Average Adsorbent Temperature (K)
+
+0
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+N
+o
+n
+-A
+
+d
+so
+rb
+en
+t
+V
+o
+lu
+m
+e
+(%
+
+)
+
+0% more gas adsorbed
+
+10% more gas adsorbed
+
+20% more gas adsorbed
+
+30% more gas adsorbed
+
+40% more gas adsorbed
+
+Figure 3.2: Isomassic curves given by the variation of adsorbent temperature and relative
+non-adsorbent volume in adsorption cycle.
+
+approaches involve the fabrication of monolithic carbon based on the extrusion, cold
+
+pressing or hot isostatic pressing of the activated carbon powder associated with some
+
+binder. As a monolith, the void volume between particles is reduced and, therefore, the
+
+relative volume of micropores with respect to the total vessel volume is increased, resulting
+
+in more gas being adsorbed (QUINN et al., 1994). The fabrication method described in
+
+Bose et al. (1991) comprises mixing high surface area carbon particles with a solution
+
+of a binder in a solvent, forming a slurry. The use of binders, typically thermoplastic
+
+polymers, is important to prevent future powdering of the adsorbent bed when subjected
+
+to vibration or strong gas flow. The solvent is then removed, resulting in binder-coated
+
+carbon particles, which are compressed to form a compacted adsorbent mass of any desired
+
+geometric shape (BOSE et al., 1991).
+
+Hence, ANG tanks can present features of any complexity without prejudice to the
+
+manufacturing process. Non-adsorbent parts, can be manufactured through traditional
+
+methods, such as machining or casting, and assembled at the desired position inside the
+
+tanks. The binder-coated carbon particles can then be poured into segments of the tank
+
+and compressed, occupying the whole void space left.
+
+
+
+31
+
+3.3 Objective Function
+
+The optimisation of ANG storing systems can be addressed by focusing on several
+
+different objectives. Figure 3.3 illustrates the typical variation of the adsorbed gas mass,
+
+pressure and temperature of an ANG tank serving as an on-demand source of fuel, such
+
+as in gas-powered vehicles or in residences. Starting from the average density of total
+
+gas at the equilibrium, (Q + ?g)ini,a, the tank admits gas while pressure and temperature
+
+increase during the filling cycle, reaching the final average total density of (Q + ?g)fin,a.
+
+Such average density is conserved inside the tank until its future depletion. While the tank
+
+is kept quiescent, its temperature slowly approaches the equilibrium with the atmospheric
+
+temperature, Tatm, causing its internal pressure to drop due to the gas phase change
+
+from gaseous to adsorbed. The stored gas is then delivered through a nearly isothermal
+
+desorption, maintaining equilibrium with Tatm during the whole emptying cycle.
+
+Figure 3.3: Cycle considered for the optimisation of ANG tanks applied to on-demand
+consumption.
+
+The goal when designing such tanks is to maximise the total intake of gas during the
+
+
+
+32
+
+filling cycle by mitigating the rise of the adsorbent bed temperature. The optimisation
+
+problem consists of
+
+Maximise : Ja(e) =
+
+[?
+
+?
+(Q + ?g) dx
+
+]tfin,a
+
+tini,a
+
+,
+
+subjected to : 0 ? e ? 1,
+M(P,T,Q) + E(P,T,Q) + D(P,T,Q) = 0.
+
+(3.6)
+
+3.4 Material Model
+
+The design variables are defined as pseudo-porosities representing two materials: ad-
+
+sorbent and non-adsorbent. Given the poor conductivity presented by typical adsorbents,
+
+suitable non-adsorbent materials present relatively high conductivity or heat capacity,
+
+aiming to improve the heat transfer of the system.
+
+The alternation between adsorbent (ads) and non-adsorbent (non) materials through
+
+the domain can be expressed by a pseudo-porosity e as
+
+P(e) =
+
+?
+
+?
+
+?
+
+Pnon, if e = 0,
+
+Pads, if e = 1,
+(3.7)
+
+where the actual property P is given by Pads or Pnon depending on e value.
+
+3.4.1 Material Models with Penalisation
+
+A binary law of material defines an ill-posed problem, with multiple local minima.
+
+Such issue can be avoided by relaxing the definition and assuming intermediate values,
+
+ranging from 0 to 1. Since only 0 and 1 represent existent materials, it is desirable
+
+to recover the discrete nature of this material law. The Solid Isotropic Material with
+
+Penalisation (SIMP) (BENDSØE; SIGMUND, 1999) addresses this problem by including
+
+a penalisation coefficient p, resulting in
+
+P(e) = (1 ? ep)Pnon + (ep)Pads. (3.8)
+
+For structural cases, where Pnon ? Pvoid and Pads ? Psolid, Bendsøe &amp;amp; Sigmund (1999)
+recalls that the interpolated material property should not exceed the Hashin-Shtrikman
+
+upper bound for any value of the design variable e. In order to meet this requirement
+
+it is sufficient that p ? 3. However, such penalisation creates multiple local minima and
+
+
+
+33
+
+makes the final topology very dependent on the initial guess (BENDSØE; SIGMUND,
+
+1999). Thus, a continuation scheme is advisable, by which the penaliser p is slowly
+
+increased through the computations.
+
+Figure 3.4 shows the impact of the penalisation coefficient to the property being
+
+interpolated by SIMP. Taking the pair Steel-Carbon as an example, it can be seen that
+
+the resulting property for intermediate values of the design variable, e, tends to Steel
+
+(k = 47.00 Wm?1K?1 and W = 0.00 cm3g?1) as p ? ? , while it tends to Activated
+Carbon (k = 0.21 Wm?1K?1 and W = 0.33 cm3g?1) as p ? 0.
+
+Borrvall &amp;amp; Petersson (2003) introduced a scheme more suitable to deal with the
+
+interpolation of permeabilities, which are separated by several orders of magnitude and
+
+would require extremely high values for p. This material model is based on the inverse
+
+permeability, S, and it is given by
+
+S(e) =
+1
+
+K(e)
+= Snon + (Sads ? Snon)
+
+1 + p
+
+e + p
+e, (3.9)
+
+where Sads and Snon are given by
+
+S[ads,non] =
+1
+
+K[ads,non]
+. (3.10)
+
+The adsorbent permeability (Kads) is in the order of 1.00 × 10?10 m2 (SAHOO et
+al., 2011), while the non-adsorbent (Knon) material must be an impermeable medium,
+
+in which the permeability should be as low as 1.00 × 10?22 m2. For such properties, the
+resulting permeability based on Borrvall’s scheme is shown in Figure 3.5.
+
+3.4.2 Offset Hyperbolic Tangents (OHT) Material Model
+
+SIMP and Borrvall’s models present some disadvantages when dealing with discrepant
+
+properties, such as the interpolation from Kads = 1.00 × 10?10 m2 to Knon = 1.00 × 10?22 m2.
+A material model based on hyperbolic tangents is able to offer a better discrimination of
+
+materials, being defined as
+
+P(e) =
+
+(
+
+1 ? m(e)
+)
+
+Pnon + m(e)Pads, (3.11)
+
+in which
+
+m(e) =
+
+tanh
+
+(
+
+p(e ? ec)
+)
+
++ 1
+
+2
+, (3.12)
+
+where the transition from one material to the other is centred on the value ec.
+
+
+
+34
+
+0.0 0.2 0.4 0.6 0.8 1.0
+
+Pseudo-Porosity
+
+0
+
+10
+
+20
+
+30
+
+40
+
+T
+h
+er
+m
+a
+l
+C
+o
+n
+d
+u
+ct
+iv
+it
+y
+(
+
+W m
+K
+)
+
+p = 0.1
+
+p = 0.5
+
+p = 1.0
+
+p = 2.0
+
+p = 10.0
+
+(a) Thermal Conductivity (k)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+
+Pseudo-Porosity
+
+0.00
+
+0.05
+
+0.10
+
+0.15
+
+0.20
+
+0.25
+
+0.30
+
+S
+p
+ec
+ifi
+c
+M
+ic
+ro
+-P
+o
+re
+
+V
+o
+lu
+m
+e
+(
+c
+m
+
+3
+
+g
+)
+
+p = 0.1
+
+p = 0.5
+
+p = 1.0
+
+p = 2.0
+
+p = 10.0
+
+(b) Specific Micro-Pore Volume (W)
+
+Figure 3.4: SIMP for Steel and Carbon properties.
+
+In the case of Steel-Carbon pair, it can be seen that the hyperbolic tangent approach
+
+is suitable to interpolate all the material properties with its generic form, as seen in Figure
+
+3.6.
+
+When optimising adsorption systems, materials presenting intermediate properties
+
+often constitute the best solution from the optimiser’s perspective. For instance, in the
+
+case of seeking an optimised placement of Steel on a Carbon bed, the conductivity of
+
+
+
+35
+
+0.0 0.2 0.4 0.6 0.8 1.0
+
+Pseudo-Porosity
+
+10?21
+
+10?19
+
+10?17
+
+10?15
+
+10?13
+
+10?11
+
+10?9
+
+P
+er
+m
+ea
+b
+il
+it
+y
+(m
+
+2
+)
+
+p = 1.0e-10
+
+p = 1.0e-8
+
+p = 1.0e-6
+
+p = 1.0e-4
+
+Figure 3.5: Borrvall’s material model for Steel and Carbon Permeability (K).
+
+the non-adsorbent material is more than 200 times larger than adsorbent’s and Steel
+
+adsorption capacity is null. Therefore, a material presenting half of Steel’s conductivity
+
+and half of Carbon’s adsorption would be a good choice, if feasible.
+
+It is then necessary to adopt a material model which forces the optimiser to clearly
+
+choose one or other material. The material model based on hyperbolic tangents presented
+
+in Eq. (3.11) is suitable for this sort of requirement. However, when choosing the material
+
+change centred on the same ec for all the properties, the existence of hybrid materials
+
+prevails despite the penalisation imposed, as shown in Figure 3.7a. Such issue is solved
+
+by defining different values of ec for different properties. For the property A, where the
+
+functional of interest J(Aads) (adsorbent property in the whole domain) is higher than
+
+J(Anon) (non-adsorbent property in the whole domain), the phase change is centred on
+
+ec = 0.5 + ?. Conversely, for a property B which presents J(Bnon) higher than J(Bads),
+
+ec = 0.5?? is adopted. In the absence of an offset, there would be intermediate properties
+at e = 0.5 regardless of the penalisation value. Figure 3.7 illustrates such material model
+
+for the offset ? = 0.02. The function m(e) in the Offset Hyperbolic Tangents (OHT)
+
+material model is then given by
+
+m(e) =
+
+tanh
+
+(
+
+p(e + s? ? 0.5)
+)
+
++ 1
+
+2
+, (3.13)
+
+
+
+36
+
+where
+
+s = sgn
+
+(
+
+J(Pnon) ? J(Pads)
+)
+
+, (3.14)
+
+with sgn denoting the signum function.
+
+A comparison between OHT and traditional material models is presented in Chapter
+
+5, highlighting its advantages for the problems studied in this work. In the next Chapter,
+
+the numerical implementation of the adsorption problem and the topology optimisation
+
+algorithm is detailed, along with the necessary verifications.
+
+
+
+37
+
+0.0 0.2 0.4 0.6 0.8 1.0
+
+Pseudo-Porosity
+
+0
+
+10
+
+20
+
+30
+
+40
+
+T
+h
+er
+m
+a
+l
+C
+o
+n
+d
+u
+ct
+iv
+it
+y
+(
+
+W m
+K
+)
+
+p = 2.0
+
+p = 8.0
+
+p = 64.0
+
+(a) Thermal Conductivity (k)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+
+Pseudo-Porosity
+
+0.00
+
+0.05
+
+0.10
+
+0.15
+
+0.20
+
+0.25
+
+0.30
+
+S
+p
+ec
+ifi
+c
+M
+ic
+ro
+-P
+o
+re
+
+V
+o
+lu
+m
+e
+(
+c
+m
+
+3
+
+g
+)
+
+p = 2.0
+
+p = 8.0
+
+p = 64.0
+
+(b) Specific Micro-Pore Volume (W)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+
+Pseudo-Porosity
+
+10?21
+
+10?19
+
+10?17
+
+10?15
+
+10?13
+
+10?11
+
+10?9
+
+P
+er
+m
+ea
+b
+il
+it
+y
+(m
+
+2
+)
+
+p = 2.0
+
+p = 16.0
+
+p = 64.0
+
+p = 200.0
+
+(c) Permeability (K)
+
+Figure 3.6: Hyperbolic tangent material model for Steel and Carbon properties with
+ec = 0.5.
+
+
+
+38
+
+0.42 0.44 0.46 0.48 0.50 0.52 0.54 0.56 0.58
+
+Pseudo-Porosity
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+A, p=20
+
+A, p=100
+
+B, p=20
+
+B, p=100
+
+(a) ec = 0.5 for A and B
+
+0.42 0.44 0.46 0.48 0.50 0.52 0.54 0.56 0.58
+
+Pseudo-Porosity
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+A, p=20
+
+A, p=100
+
+B, p=20
+
+B, p=100
+
+(b) ec = 0.52 for A and ec = 0.48 for B
+
+Figure 3.7: Material model for properties A and B.
+
+
+
+39
+
+4 Numerical Implementation and
+Verification
+
+In this Chapter, the discretisation of the weak forms is presented in detail and an
+
+adjoint system is derived in view of the implementation of a gradient-based topology
+
+optimisation. The solution of the adsorption problem and the optimisation algorithm are
+
+then described along with several numerical verifications.
+
+4.1 Discrete Adsorption Problem
+
+The weak forms of the adsorption problem derived in Section 2.4 are approximated
+
+over a finite element, ?, by (REDDY; GARTLING, 2010)
+
+P(x, t) ?=
+N
+?
+
+n=1
+
+?n(x)Pn(t) = ?
+T P, (4.1)
+
+T(x, t) ?=
+M
+?
+
+m=1
+
+?m(x)Tm(t) = ?
+T T, (4.2)
+
+where P and T are, respectively, the vectors with the nodal values of pressure and tem-
+
+perature, N and M denotes the number of nodes used for each unknown and ? and ? are
+
+the shape functions, which are assembled in matrices ? and ?.
+
+Analogously, the mass of adsorbed gas per volume of adsorbent (Q) is interpolated
+
+over finite elements by the shape function ? as
+
+Q(x, t) ?=
+L
+
+?
+
+l=1
+
+?l(x)Ql(t) = ?
+T Q. (4.3)
+
+
+
+40
+
+The interpolation of the total porosity (?) and all other material properties (?s, Cps,
+
+Ks and Ks) is also done by using ?, which is given by
+
+?(x, t) ?=
+L
+
+?
+
+l=1
+
+?l(x)?l(t) = ?
+T
+?. (4.4)
+
+Making vM = ?, vE = ? and vD = ?, results in the discrete equations given by
+
+W(T) P? + S(P, T) T? + YM Q? + Z(P, T) P = 0, (4.5)
+
+J P? + N(P, T, Q) T? + YE Q? + L(P, T) T + K T = 0, (4.6)
+
+YD Q? + R(T)Q = V(P, T), (4.7)
+
+which results in the following system:
+
+?
+
+?
+
+?
+
+?
+
+W(T) S(P, T) YM
+
+J N(P, T, Q) YE
+
+0 0 YD
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+P?
+
+T?
+
+Q?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
++
+
+?
+
+?
+
+?
+
+?
+
+Z(P, T) 0 0
+
+0 L(P, T) + K 0
+
+0 0 R(T)
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+P
+
+T
+
+Q
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+=
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+0
+
+0
+
+V(P, T)
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+,
+
+(4.8)
+
+whose matrices are assembled based on the coefficients defined in Appendix A.1.
+
+The system given in Eq. (4.8) is rewritten for the n-th timestep as
+
+Ft(wn)w?n + Fs(wn)wn = Fr(wn), (4.9)
+
+where the state variable wn, constituted by pressure, temperature and adsorbed gas, is
+
+given by
+
+wn =
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+Pn
+
+Tn
+
+Qn
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+. (4.10)
+
+The discretisation of the equations in time by using backward Euler method results
+
+
+
+41
+
+in a lower-triangular system given by
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+I 0 · · · 0 0
+CP (w0) CC(w1) · · · 0 0
+
+...
+...
+
+...
+...
+
+...
+
+0 0 · · · CP (wN?1) CC(wN)
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+w0
+
+w1
+...
+
+wN?1
+
+wN
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+=
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+Wini
+
+Fr(w1)
+...
+
+Fr(wN?1)
+
+Fr(wN)
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+,
+
+(4.11)
+
+where Wini denotes the initial state conditions and
+
+CP(wn) = ?
+Ft(wn)
+
+?t
+, (4.12)
+
+CC(wn) =
+Ft(wn)
+
+?t
++ Fs(wn). (4.13)
+
+4.2 Discrete Adjoint System for the Adsorption Prob-
+
+lem
+
+In the optimisation problem given in Eq. (3.6), the functional of interest J(w(e), e)
+
+is constrained to the PDE system F(w, e) = 0 given in Eq. (4.11). Such problem is
+
+expressed by the following augmented Lagrangian as
+
+J =
+
+? tfin
+
+tini
+
+(
+
+?tfin ? ?tini
+)
+
+B + ?T
+(
+
+Ftw? + Fsw ? Fr
+)
+
+dt, (4.14)
+
+where B denotes the total gas mass, given by:
+
+?
+
+?
+
+(Q + ?g)dx, (4.15)
+
+and, for simplicity
+
+?tfin ? ?tini = ?(t ? tfin) ? ?(t ? tini), (4.16)
+
+where ? denotes Dirac’s delta operator, making the term (?tfin ? ?tini)B to be equal to
+the difference in the total gas mass between the beginning and the end of the adsorption
+
+cycle.
+
+The vector of Lagrange multipliers, ?, is given by
+
+? =
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?M
+
+?E
+
+?D
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+. (4.17)
+
+
+
+42
+
+The derivative of the reduced functional J in respect to a design variable ei is given
+
+by
+
+dJ
+
+dei
+=
+
+? tfin
+
+tini
+
+(
+
+?tfin ? ?tini
+)(
+
+?B
+
+?ei
++
+?B
+
+?w
+
+dw
+
+dei
+
+)
+
+dt
+
++
+
+? tfin
+
+tini
+
+?
+T
+
+((
+
+?Ft
+?ei
+
++
+?Ft
+?w
+
+dw
+
+dei
+
+)
+
+w? + Ft
+dw?
+
+dei
++
+
+(
+
+?Fs
+?ei
+
++
+?Fs
+?w
+
+dw
+
+dei
+
+)
+
+w
+
++Fs
+dw
+
+dei
+? ?Fr
+
+?ei
+? ?Fr
+?w
+
+dw
+
+dei
+
+)
+
+dt.
+
+(4.18)
+
+Integrating the term involving dw?/dei by parts, it results in
+
+dJ
+
+dei
+= ?sen + ?b,ini + ?b,fin + ?adj, (4.19)
+
+where
+
+?sen =
+
+? tfin
+
+tini
+
+(
+
+?tfin ? ?tini
+)
+
+?B
+
+?ei
++ ?T
+
+(
+
+?Ft
+?ei
+
+w? +
+?Fs
+?ei
+
+w ?
+?Fr
+?ei
+
+)
+
+dt, (4.20)
+
+?b,ini = ? ?T Ft
+dw
+
+dei
+
+?
+
+?
+
+?
+
+?
+
+tini
+
+, (4.21)
+
+?b,fin = ?
+T Ft
+
+dw
+
+dei
+
+?
+
+?
+
+?
+
+?
+
+tfin
+
+, (4.22)
+
+?adj =
+
+? tfin
+
+tini
+
+dw
+
+dei
+
+[(
+
+?tfin ? ?tini
+)
+
+?B
+
+?w
+? ?(?
+
+T Ft)
+
+?t
++ ?T
+
+(
+
+Fs +
+?Ft
+?w
+
+w? +
+?Fs
+?w
+
+w ? ?Fr
+?w
+
+)]
+
+dt.
+
+(4.23)
+
+Since the term dw/dei is unknown for t &gt; tini, the terms ?b,fin and ?adj cannot
+
+be evaluated explicitly. Given that ? is arbitrary, it can be chosen in order to nullify
+
+these terms (DAHL et al., 2008). To ensure ?b,fin = 0 it is necessary to choose ? such
+
+that ?(tfin) = 0. In adsorption systems, although Pini and Tini are imposed and do not
+
+depend on the design variables, the initial density of gas adsorbed, Qini, is dependent on
+
+the volume of adsorbent material inside the domain. The derivative of the state variable
+
+in respect to ei is given by
+
+dw
+
+dei
+
+?
+
+?
+
+?
+
+?
+
+tini
+
+=
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+0
+
+0
+
+Qeq(Pini,Tini)
+dm(ei)
+
+dei
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+, (4.24)
+
+where the equilibrium adsorbed density Qeq is given in Eq. (2.24) and the material model
+
+interpolation function m(ei) is given in Eq. (3.13).
+
+The term ?adj is null when the expression between brackets is equal to zero, which
+
+
+
+43
+
+can be rewritten as
+(
+
+?tfin ? ?tini
+)
+
+?B
+
+?w
+? ??
+
+T
+Ft ? ?T
+
+?Ft
+?w
+
+dw
+
+dt
++ ?T
+
+(
+
+Fs +
+?Ft
+?w
+
+dw
+
+dt
++
+?Fs
+?w
+
+w ?
+?Fr
+?w
+
+)
+
+= 0,
+
+(4.25)
+
+resulting in
+
+(
+
+?tfin ? ?tini
+)
+
+?B
+
+?w
+? ??
+
+T
+Ft + ?
+
+T
+
+(
+
+Fs +
+?Fs
+?w
+
+w ?
+?Fr
+?w
+
+)
+
+= 0. (4.26)
+
+The Lagrange multiplier ? is obtained by the solution of the adjoint problem given
+
+by
+
+(
+
+Ft(w)
+
+)T
+
+??(t) ?
+(
+
+Fs(w) +
+?Fs(w)
+
+?w
+w ?
+
+?Fr(w)
+
+?w
+
+)T
+
+?(t) =
+
+(
+
+?tfin ? ?tini
+)
+
+?B
+
+?w
+,
+
+?(tfin) = 0.
+
+(4.27)
+
+Such system poses a terminal value problem, which can be converted in an initial
+
+value problem by substituting the time variable t per ? = tfin ? t. A new system is then
+defined in terms of ??(?) = ?(tfin ? t), given by
+
+(
+
+Ft(w)
+
+)T
+???(?) +
+
+(
+
+Fu(w)
+
+)T
+
+??(?) =
+
+(
+
+??fin ? ??ini
+)
+
+?B
+
+?w
+,
+
+??(?ini) = 0,
+
+(4.28)
+
+where, for simplicity
+
+Fu(w) = Fs(w) +
+?Fs(w)
+
+?w
+w ? ?Fr(w)
+
+?w
+. (4.29)
+
+Let the Laplace transform of ??(?) to be expressed as
+
+L{??(?)} = ??(s). (4.30)
+
+The Laplace transformation of each term in the Eq. (4.28) results in
+
+L
+{
+
+(
+
+Ft(w)
+
+)T
+???(?)
+
+}
+
+=
+
+(
+
+Ft(w)
+
+)T (
+
+s??(s) ? ??(?ini)
+)
+
+, (4.31)
+
+L
+{
+
+(
+
+Fu(w)
+
+)T
+
+??(?)
+
+}
+
+=
+
+(
+
+Fu(w)
+
+)T
+
+??(s), (4.32)
+
+
+
+44
+
+L
+{(
+
+??fin ? ??ini
+)
+
+?B
+
+?w
+
+}
+
+=
+
+?
+
+?
+
+0
+
+e?s?
+(
+
+??fin ? ??ini
+)
+
+?B
+
+?w
+d? =
+
+(
+
+e?s?fin ? e?s?ini
+)
+
+L
+{
+
+?B
+
+?w
+
+}
+
+.
+
+(4.33)
+
+Following, the inverse Laplace transform must be performed to go back to the reverse
+
+time domain ?, which for the last term is given by
+
+L?1
+{(
+
+e?s?fin ? e?s?ini
+)
+
+L
+{
+
+?B(?)
+
+?w
+
+}}
+
+= H(???fin)
+?B(? ? ?fin)
+
+?w
+?H(???ini)
+
+?B(? ? ?ini)
+?w
+
+,
+
+(4.34)
+
+where H denotes the Heaviside step function, which is applied to the function B shifted
+
+by ?fin and ?ini.
+
+The adjoint problem in Eq. (4.28) is then given by
+
+(
+
+Ft(w)
+
+)T
+???(?) +
+
+(
+
+Fu(w)
+
+)T
+
+??(?) = H?fin
+?B?fin
+?w
+
+? H?ini
+?B?ini
+?w
+
+,
+
+??(?ini) = 0,
+
+(4.35)
+
+where, for simplicity
+
+H?fin
+?B?fin
+?w
+
+? H?ini
+?B?ini
+?w
+
+= H(? ? ?fin)
+?B(? ? ?fin)
+
+?w
+? H(? ? ?ini)
+
+?B(? ? ?ini)
+?w
+
+. (4.36)
+
+The discretisation of the adjoint system in time via backward Euler method results
+
+in
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+I 0 · · · 0 0
+AP (w0) AC(w1) · · · 0 0
+
+...
+...
+
+...
+...
+
+...
+
+0 0 · · · AP (wN?1) AC(wN)
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+??0
+
+??1
+
+...
+
+??N?1
+
+??N
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+=
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+0
+
+AR(w1)
+
+...
+
+AR(wN?1)
+
+AR(wN)
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+,
+
+(4.37)
+
+where
+
+AP (wn) =
+
+(
+
+? Ft(wn)
+?t
+
+)T
+
+, (4.38)
+
+AC(wn) =
+
+(
+
+Ft(wn)
+
+?t
++ Fs(wn) +
+
+?Fs(wn)
+
+?wn
+wn ?
+
+?Fr(wn)
+
+?wn
+
+)T
+
+, (4.39)
+
+AR(wn) = H?fin
+?B?fin
+?wn
+
+? H?ini
+?B?ini
+?wn
+
+. (4.40)
+
+
+
+45
+
+The solution of the system above, in terms of ??(?), is then reversed in time to obtain
+
+?(t). Therefore, the derivative of the functional J in respect to ei is now known and given
+
+by
+dJ
+
+dei
+= ?sen + ?b,ini. (4.41)
+
+4.3 Adsorption Problem Implementation
+
+Several open source software are available for computational fluid dynamics. Some
+
+examples are OpenFOAM (WELLER et al., 1998), based on the Finite Volume Method
+
+(FVM); FEniCS (LOGG, 2007) and Fluidity (PIGGOTT et al., 2008), based on Finite
+
+Element Method (FEM); SU2 (PALACIOS et al., 2013), able to handle both FVM and
+
+FEM; PyFR (WITHERDEN et al., 2014), based on flux reconstruction. This work adopts
+
+FEniCS and its module Dolfin-Adjoint, which are described in this Section.
+
+FEniCS (LOGG, 2007) is open-source software focused on the automated solution
+
+of differential equations. Its form compiler (FFC) interprets a discrete form of the weak
+
+variational equation, which is written in a high-level language similar to the mathematical
+
+syntax, and generates a C++ code for finite element assembly conforming to the Unified
+
+Form-Assembly Code (UFC) (ALNÆS et al., 2014). This process relies on the Finite
+
+Element Automatic Tabulator (FIAT) (KIRBY, 2004), which numerically builds the finite
+
+element basis functions used by FFC. The process is concluded by combining the UFC code
+
+with mesh and coefficient data, in order to assemble the FEM tensors. The tensors from
+
+the resulting FEM system are given in SciPy format, enabling its solution by several linear
+
+algebra packages. However, FEniCS offers native support to PETSc, Epetra, uBLAS and
+
+MTL4, allowing to easily specify the desired linear solvers and pre-conditioners. The
+
+communication between all FEniCS modules is handled by Dolfin library, providing a
+
+unified environment.
+
+4.3.1 System Decoupling Verification
+
+It is reported by several authors (SAHOO et al., 2011; MOTA et al., 2004; VASILIEV
+
+et al., 2014) that the gradient of pressure observed inside ANG tanks is very small.
+
+Therefore, the validity of decoupling the full system presented in Eq. (4.8) is assessed
+
+in this Section. Such decoupling is interesting with respect to the topology optimisation
+
+implementation, in order to reduce the computational cost.
+
+When decoupling the full adsorption problem in sub-problems, each timestep is formed
+
+
+
+46
+
+by a sequence of variables updates. The decoupled solution starts with the solution of
+
+the continuity equation to obtain the pressure (P) distribution in the domain by keeping
+
+the temperature (T) and the adsorbed density (Q) fixed. Based on the new pressure
+
+field, the adsorbed density is updated based on the adsorption kinetics, which does not
+
+involve spatial derivatives and is explicitly given by pressure and temperature. Finally,
+
+the temperature field is obtained by solving the energy balance considering fixed pressure
+
+and adsorbed density from the previous step.
+
+The solution of the adsorption problem is then given by
+
+W P? + Z P = F, (4.42)
+
+N T? + L T + K T = H, (4.43)
+
+whose matrices are assembled based on the coefficients given in Appendix A.3.
+
+The numerical implementation of such system is verified by reproducing the results
+
+obtained in Sahoo et al. (2011). The adsorption of Methane on Activated Carbon in an
+
+axisymmetric tank for the flow rates of 1 L min?1, 10 L min?1 and 30 L min?1 (volume
+
+of methane at 300 K and Patm) is considered. The domain depicted in Figure 4.1 has
+
+Lo = 0.20 m, Li = 0.03 m, Ro = 0.05 m and Ri = 0.01 m. The convection heat transfer
+
+coefficient on the wall ?W is considered to be h = 5 W m
+?2K?1. Due to axisymmetry
+
+assumptions, the simulations are based on two-dimensional domains meshed in 43 781
+
+triangular finite elements. The material adopted are listed in Appendix B.
+
+The maximum temperature at the center of the tank and the total mass of gas ad-
+
+sorbed for each flow rate case are presented in Figures 4.2-4.4. The plots of the evolution
+
+of the central temperature include the datasets of two experiments per each flow rate
+
+reported in Sahoo et al. (2011). It can be seen that the numerical implementation of the
+
+adsorption problem proposed in this Section approximates satisfactorily the experimental
+
+results reported.
+
+Numerical simulations are also reported in Sahoo et al. (2011), which reinforce the
+
+accuracy of the results obtained here. The distributions of temperature inside the tanks
+
+after each one the flow rates imposed are presented in Figure 4.5. Such distributions
+
+present good agreement with the plots reported in the aforementioned work.
+
+
+
+47
+
+Figure 4.1: Custom axisymmetric tank domain (SAHOO et al., 2011).
+
+0 1000 2000 3000 4000 5000 6000 7000
+
+Time (s)
+
+300
+
+305
+
+310
+
+315
+
+320
+
+325
+
+330
+
+M
+a
+x
+im
+
+u
+m
+
+T
+em
+
+p
+er
+a
+tu
+re
+
+(K
+)
+
+Model
+
+Sahoo Dataset 01
+
+Sahoo Dataset 02
+
+(a) Tank central temperature
+
+0 1000 2000 3000 4000 5000 6000 7000
+
+Time (s)
+
+20
+
+30
+
+40
+
+50
+
+A
+d
+so
+rb
+ed
+
+G
+a
+s
+M
+a
+ss
+
+(g
+)
+
+(b) Total adsorbed gas mass
+
+Figure 4.2: Flow rate of 1 L min?1: Comparison with the experimental results in (SA-
+HOO et al., 2011).
+
+4.3.2 Pressure Loading Verification
+
+This Section verifies the sensitivity of adsorption cycles to the smoothness factor ?
+
+defined in Eq. (2.35). Let consider the domain depicted in Figure 4.6, where Ri =
+
+0.05 m, Ro = 0.20 m, Lo = 1.00 m, subjected to a smooth pressure increase from Pini =
+
+0.10 MPa to Plet = 1.00 MPa in a 3600 s cycle. The temperature at the inlet region ?L
+
+
+
+48
+
+0 100 200 300 400 500 600
+
+Time (s)
+
+300
+
+310
+
+320
+
+330
+
+340
+
+350
+
+360
+
+M
+a
+x
+im
+
+u
+m
+
+T
+em
+
+p
+er
+a
+tu
+re
+
+(K
+)
+
+Model
+
+Sahoo Dataset 01
+
+Sahoo Dataset 02
+
+(a) Tank central temperature
+
+0 100 200 300 400 500 600
+
+Time (s)
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+A
+d
+so
+rb
+ed
+
+G
+a
+s
+M
+a
+ss
+
+(g
+)
+
+(b) Total adsorbed gas mass
+
+Figure 4.3: Flow rate of 10 L min?1: Comparison with the experimental results in (SA-
+HOO et al., 2011).
+
+0 50 100 150 200
+
+Time (s)
+
+300
+
+310
+
+320
+
+330
+
+340
+
+350
+
+360
+
+M
+a
+x
+im
+
+u
+m
+
+T
+em
+
+p
+er
+a
+tu
+re
+
+(K
+)
+
+Model
+
+Sahoo Dataset 01
+
+Sahoo Dataset 02
+
+(a) Tank central temperature
+
+0 50 100 150 200
+
+Time (s)
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+A
+d
+so
+rb
+ed
+
+G
+a
+s
+M
+a
+ss
+
+(g
+)
+
+(b) Total adsorbed gas mass
+
+Figure 4.4: Flow rate of 30 L min?1: Comparison with the experimental results in (SA-
+HOO et al., 2011).
+
+during adsorption is kept constant and equal to the entering gas due to the local thermal
+
+equilibrium assumption with the gas entering the tank at 293 K.
+
+Figure 4.7 shows the evolution of the total gas mass inside the tank for three different
+
+values of ?. It can be seen that the curves are nearly coincidental after 500 s, demon-
+
+strating a low sensitivity to the history of pressure increase at the inlet. As smoothness
+
+is decreased, the cycle approaches the case in which the pressure variation is imposed
+
+
+
+49
+
+(a) 1 L min?1 at t = 7200s
+
+(b) 10 L min?1 at t = 630 s
+
+(c) 30 L min?1 at t = 204 s
+
+Figure 4.5: Temperature distribution at the end of the adsorption cycle.
+
+promply. Figure 4.8 shows how the final total gas mass converges to this case as ? ? 0.
+Therefore, in the scope of this work, it is considered that any ? ? 0.1 (??1 ? 10) ensures
+negligible impact to the functional of interest.
+
+4.3.3 Impermeability Verification
+
+When distributing a impermeable material, such as Steel, in an ANG tank, it is im-
+
+portant to ensure that gas will not flow across it. The impermeability can be numerically
+
+represented by assigning very low values to Ks, given that ideal impermeable media would
+
+
+
+50
+
+Figure 4.6: Adsorption domain adopted for verifying the sensitivity of adsorption cycles
+to the smoothness factor ?.
+
+0 500 1000 1500 2000 2500 3000 3500
+
+Time (s)
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+3.5
+
+4.0
+
+T
+o
+ta
+l
+G
+a
+s
+(k
+g
+)
+
+? = 0.01
+
+? = 0.05
+
+? = 0.10
+
+Figure 4.7: Total mass of gas along the adsorption cycle for different smoothness factors.
+
+have Knon = 0. Consider the domain in Figure 4.9 representing a section of an axisymmet-
+
+ric tank, constituted of impermeable non-adsorbent and permeable adsorbent phases. The
+
+region ?L denotes the inlet region (Ri = 0.05 m) and ?W denotes walls subjected to heat
+
+convection (Ro = 0.20 m and Lo = 1.00 m). The domain is subjected to a smooth pressure
+
+rise on ?L following Eq. (2.35) from Pini = 0.10 MPa to Plet with ? = 0.05. The perme-
+
+abilities of Kads = 3.67 × 10?10 m2 for Activated Carbon and Knon = 1.00 × 10?22 m2 for
+Steel are considered.
+
+Figure 4.10b demonstrates the inaccessibility of the squared Carbon region on the right
+
+to the gas for Plet = 1.00 MPa in a cycle lasting tf = 600 s. The pressure on the full right
+
+
+
+51
+
+0 20 40 60 80 100
+
+??1
+
+3.81
+
+3.82
+
+3.83
+
+3.84
+
+3.85
+
+3.86
+
+3.87
+
+T
+o
+ta
+l
+G
+a
+s
+(k
+g
+)
+
+Figure 4.8: Smoothness factor convergence.
+
+Figure 4.9: Adsorption domain constituted by Activated Carbon and Steel.
+
+half of the domain stays approximately unchanged during the whole cycle, being equal to
+
+Pini. The permeability of 1.00 × 10?22 has shown to be able to reproduce impermeability
+even for high pressures and long cycles. In Figure 4.10c a cycle with Plet = 8.00 MPa
+
+and tf = 3600s is considered, demonstrating that that the Carbon region on the right
+
+is still not accessed by the gas, although it permeated a slightly larger portion of Steel
+
+insulation.
+
+
+
+52
+
+(a) Permeability divided by viscosity (Ksµ
+?1
+
+g )
+
+(b) Plet = 1.00 MPa at tf = 600 s
+
+(c) Plet = 8.00 MPa at tf = 3600 s
+
+Figure 4.10: Pressure distribution on Carbon-Steel domain.
+
+4.3.4 Mesh and Timestep Convergence
+
+The accuracy of the FEM model is dependent on the mesh and timestep resolutions
+
+adopted. The goal of this Section is to identify suitable refinement schemes for the adsorp-
+
+tion problems studied here. Let consider the domain depicted in Figure 4.11 subjected
+
+to an adsorption cycle following a smooth pressure variation from Pini = 0.10 MPa to
+
+Plet = 1.00 MPa in a 3600 s cycle with ? = 0.1.
+
+This convergence study is based on the total gas mass intake observed in the adsorp-
+
+tion cycle, according to the functional defined in Eq. (3.6). Figure 4.12 presents the
+
+variation in the value of such functional for different element sizes, where h
+?1
+
+denotes the
+
+inverse of the average mesh cell diameter. Very small changes in the functional value are
+
+seen for resolutions higher than 50, implying that such value is sufficient for obtaining
+
+
+
+53
+
+Figure 4.11: Adsorption domain adopted for verifying mesh and timestep convergence.
+
+accurate results. It is important to remark that in topology optimisation problems, higher
+
+resolutions can be adopted depending on the desired complexity of the resulting topology.
+
+25 50 75 100 125 150 175 200
+
+h
+?1
+
+(m?1)
+
+2.6930
+
+2.6935
+
+2.6940
+
+2.6945
+
+2.6950
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+Figure 4.12: Mesh convergence.
+
+Similarly, the timestep adopted in the implicit Euler method for time discretisation
+
+can influence the model accuracy. Figure 4.13 presents the total gas mass intake functional
+
+for different timesteps ?t. It can be seen that satisfactory convergence is achieved for
+
+?t = 10 (?t?1 = 0.1).
+
+4.4 Topology Optimisation Implementation
+
+An important aspect of topology optimisation implementation is the method of ob-
+
+taining the sensitivities of the functional with respect to the design variables. In this
+
+
+
+54
+
+0.0 0.1 0.2 0.3 0.4 0.5
+
+?t?1 (s?1)
+
+2.688
+
+2.689
+
+2.690
+
+2.691
+
+2.692
+
+2.693
+
+2.694
+
+2.695
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+Figure 4.13: Timestep convergence.
+
+work, it is based on the solution of an adjoint problem, which is derived in Section 4.2.
+
+Figure 4.14 presents three different approaches for obtaining the adjoint code starting
+
+from the continuous forward equations, in the context of the FEniCS packages UFL and
+
+UFC. It can be derived by symbolic differentiation of the forward PDE, through packages
+
+such as SAGE (STEIN; JOYNER, 2005). The derivation can also be addressed at source
+
+code level, treating the forward model as a sequence of elementary instructions by source-
+
+to-source compiler tool for algorithmic differentiation, such as Tapenade (HASCOET;
+
+DAUVERGNE, 2008). Another method consists in the derivation of the discrete forward
+
+equations, representing a middle-level approach that can be easily automated without de-
+
+pending on low-level implementation details. This work adopts the latter approach aided
+
+by the libadjoint library (FUNKE, 2012).
+
+4.4.1 Design Variables Filtering
+
+Topology optimisation presents inherent issues such as checker-board instability and
+
+mesh dependency, which are usually mitigated by filtering the sensitivities as described
+
+in Sigmund &amp;amp; Petersson (1998). Such method modifies the sensitivity of each design
+
+variable based on the values of its neighbours. An alternative approach is to modify the
+
+design variables based on the solution of a modified Helmholtz-type PDE, as introduced
+
+
+
+55
+
+Continuous
+Forward
+Equations
+
+— Symbolic Diff ??
+Continuous
+Adjoint
+
+Equations
+|
+
+UFL
+?
+
+|
+UFL
+?
+
+Discrete
+Forward
+Equations
+
+— Libadjoint ??
+Discrete
+Adjoint
+
+Equations
+|
+
+FFC
+?
+
+|
+FFC
+?
+
+Forward
+Code
+
+— Algorithmic Diff ?? Adjoint
+Code
+
+Figure 4.14: Methods for obtaining the adjoint code (FUNKE, 2012).
+
+in Lazarov &amp;amp; Sigmund (2011), given by
+
+? z2?2e + e = e|, (4.44)
+
+where the distribution e| is smoothed to e, according to the filter length parameter z.
+
+The weak form of the modified Helmholtz-type PDE is given by
+
+H =
+
+?
+
+e,vH
+
+?
+
++
+
+?
+
+z2?e, ?vH
+?
+
+=
+
+?
+
+e|,vH
+?
+
+,
+
+?vH ? H1(?).
+(4.45)
+
+The discrete filtering system is given by
+
+Ze =e|, (4.46)
+
+where Z and e| are defined in Appendix A.4.
+
+When applying the Helmholtz filter, despite the functional and PDE systems being
+
+expressed in terms of filtered pseudo-densities, ej, the optimisation problem is performed
+
+on the field of non-filtered pseudo-densities, e|j, resulting in
+
+Maximise : Ja(e|) =
+[?
+
+?
+
+(
+
+Q(e) + ?g(e)
+
+)
+
+dx
+
+]tfin,a
+
+tini,a
+
+,
+
+subjected to : 0 ? e| ? 1,
+M(P,T,Q) + E(P,T,Q) + D(P,T,Q) = 0,
+
+?z2?2e + e = e| .
+
+(4.47)
+
+
+
+56
+
+Such variable change impacts functionals sensitivities. The implicit derivative of Eq.
+
+(4.46) with respect to e|j results in
+
+dZ
+
+de|j
+e + Z
+
+de
+
+de|j
+=
+
+de|
+de|j
+
+, (4.48)
+
+where the first term is null, given that Z is not dependent on pseudo-porosities, and the
+
+right-hand side is
+de|
+de|j
+
+= ?jk, (4.49)
+
+in which ?jk denotes the Kronecker’s delta column vector, being null in all lines, except
+
+for the j-th, which is equal to 1.
+
+The sensitivity of the functional J to the non-filtered pseudo-porosity e|j is then given
+by
+
+dJ
+
+de|j
+=
+
+(
+
+dJ
+
+de
+
+)T
+de
+
+de|j
+=
+
+(
+
+dJ
+
+de
+
+)T
+
+Z?1?jk. (4.50)
+
+4.4.2 Optimisation Algorithm
+
+The optimisation algorithm follows the flow represented in Figure 4.15. In the opti-
+
+misation loop, the sensitivities are obtained via Dolfin-Adjoint (FUNKE, 2012) based on
+
+the equilibrium equations solved on FEniCS. An optimiser receives the sensitivities and
+
+output a new distribution of design variables, aiming to improve the functional of interest.
+
+The relative functional variation is defined by considering the last two iterations by
+
+? =
+Jit ?
+
+Jit?1 + Jit?2
+2
+
+Jit?1 + Jit?2
+2
+
+. (4.51)
+
+When the functional relative variation is non-negative and smaller than a tolerance
+
+?min or when the maximum number of iterations itmax is reached, the loop is broken. The
+
+penalisation p is then increased by ?p, following the continuation method, and the loop
+
+is restarted. This algorithm is performed until reaching the maximum penalisation pmax,
+
+when the final topology is defined.
+
+The optimiser adopted in all the cases presented in this work is the limited memory
+
+Broyden-Fletcher-Goldfarb-Shanno optimiser with box constraints (L-BFGS-B) (BYRD
+
+et al., 1995) implemented in scipy.optimize package (JONES et al., 2011). Optimisa-
+
+tion problems requiring volume constraints can be approached based on other optimisers
+
+contained in this package, such as SLSQP and COBYLA, or via an IPOpt (WACHTER;
+
+
+
+57
+
+Figure 4.15: Optimisation activity diagram.
+
+BIEGLER, 2006) interface also available in Dolfin-Adjoint.
+
+4.4.3 Adjoint Sensitivites Verification
+
+The topology optimisation relies on the accurate computation of the sensitivity of the
+
+objective functions to the design variables. The gradients computed based on the adjoint
+
+problem described in Section 4.2 can be verified through a Taylor remainder convergence
+
+test. Given a reduced functional J?(m) subjected to an arbitrary perturbation ?m, the
+
+first-order Taylor remainder tends to zero at O(h) while the second-order tends at O(h2).
+That means that by halving h the first-order error also halves while the second-order
+
+error is divided by four. Taylor remainders expressions are given in Eq. (4.52). By
+
+evaluating the second-order remainder based on the ?J? obtained via adjoint approach,
+its correctness can be determined by observing O(h2) convergence.
+
+|J?(m + h?m) ? J?(m)| ? 0 at O(h),
+|J?(m + h?m) ? J?(m) ? h?J? · ?m| ? 0 at O(h2).
+
+(4.52)
+
+Due to current Dolfin-Adjoint limitations, varying Dirichlet boundary conditions will
+
+produce inaccurate gradients. Thus, the variation of the inlet pressure on ?L is done
+
+
+
+58
+
+through the Nitsche’s method (JUNTUNEN; STENBERG, 2012) by
+
+?P
+
+?n
+=
+
+1
+
+?
+(Plet ? P) on ?L, (4.53)
+
+in which P ? Plet as ? ? 0.
+
+Such condition is imposed to the system by enforcing
+
+?
+
+MgKs
+Rgµg
+
+P
+
+T
+?P,vM
+
+?
+
+?N
+
+=
+
+?
+
+MgKs
+Rgµg
+
+P
+
+T
+
+1
+
+?
+(Plet ? P),vM
+
+?
+
+?L
+
+. (4.54)
+
+Let consider the same cycle adopted in Section 4.3.2, with ? = 0.1, and the functional
+
+of total gas mass intake along such cycle, given by Eq. (3.6). From an initial homogeneous
+
+distribution of design variables e = 0.5 the domain is subjected to a pseudo-random
+
+perturbation ?e scaled to different values of h as shown in Figure 4.16.
+
+Figure 4.16: Original (top) and Perturbed Pseudo-Porosity fields for (from the top)
+h = 1.00 × 10?3, h = 5.00 × 10?4, h = 2.50 × 10?5, h = 1.25 × 10?5, h = 6.25 × 10?6.
+
+Table 4.1 presents the errors for each perturbation following the first and second
+
+Taylor remainder expressions. It demonstrates the correctness of ?J? as the convergence
+order of second-order Taylor remainders are approximately 2.0.
+
+Such verification of the sensitivities, associated with the afore presented verifications
+
+concerning the adsorption problem, sustains the numerical implementation in all its as-
+
+pects. In the following Chapter, optimisation problems are approached based on the
+
+
+
+59
+
+Table 4.1: Taylor Remainder Convergence.
+
+h Taylor Remainder Convergence Order
+
+1st Order 1.00 × 10?3 1.47 × 10?3
+
+1st Order 5.00 × 10?4 7.36 × 10?4 0.99929
+1st Order 2.50 × 10?5 3.68 × 10?4 0.99964
+1st Order 1.25 × 10?5 1.84 × 10?4 0.99982
+1st Order 6.25 × 10?6 9.21 × 10?5 0.99991
+2nd Order 1.00 × 10?3 1.43 × 10?6
+
+2nd Order 5.00 × 10?4 3.58 × 10?7 1.99989
+2nd Order 2.50 × 10?5 8.94 × 10?8 1.99996
+2nd Order 1.25 × 10?5 2.23 × 10?8 2.00007
+2nd Order 6.25 × 10?6 5.59 × 10?9 2.00013
+
+method derived here, resulting in several optimised adsorbent bed topologies.
+
+
+
+60
+
+5 Results and Discussion
+
+This Chapter starts by comparing the OHT and traditional material models. There-
+
+after, the topology optimisation method derived in this work is adopted for designing
+
+ANG tanks for on-demand consumption of fuel.
+
+5.1 Definition of Standard Domains and Cycles for
+
+the Design of ANG Tanks
+
+The following Sections are focused on the design of ANG tanks for on-demand fuel
+
+consumption based on the idea presented in Section 3.1, in which which non-adsorbent
+
+materials are distributed in the adsorbent bed. The objective function adopted is given by
+
+the total mass intake of gas during adsorption cycles of pre-defined length, as presented
+
+in Section 3.3. The major drawback when designing these tanks is the exothermic nature
+
+of the adsorption reaction, which increases the adsorbent bed temperature and hinders
+
+reaching of the equilibrium density of adsorbed gas. Such behaviour poses several limita-
+
+tions to the range of applicability of ANG tanks and asks for some thermal management,
+
+which can be done passively or actively. A passive method is based merely on the heat
+
+transfer with the environment, without the addition of any external work for cooling. In
+
+the case of aiding the tank filling by the imposition of forced convection, cold walls or any
+
+other sort of cooling method which requires additional work, the thermal management is
+
+considered to be active. In the latter, exergy analyses must be done in order to quantify
+
+how efficient is the system as a whole, although such analyses are beyond the scope of
+
+this work.
+
+The domains considered here represent tanks constituted by adsorbent beds wrapped
+
+by a thin sheet of metallic material subject to heat exchange through convection on its
+
+walls, denoted by ?W . The contribution of such wall is assumed to be negligible (SAHOO
+
+
+
+61
+
+et al., 2011) and it is not included in the model. In fact, being a thin metallic sheet, its
+
+Biot number (Bi) is very small and the heat conduction inside it is much faster than the
+
+heat convection away from the surface.
+
+The domains studied here represent two-dimensional reductions of three-dimensional
+
+tanks. The first domain, presented in Table 5.1, consists in an approximation of a very
+
+long prismatic tank with fixed cross-section. Since ANG tanks operate in a much lower
+
+pressure than its CNG pairs, prismatic tanks can offer a good trade-off between stress
+
+concentration and packing density or efficiency in space usage. Based on symmetry, only
+
+one quarter of such section is optimised. The gas inlet is considered to be distant from
+
+such section, making the pressure homogeneous on the whole domain and, consequently,
+
+the convective term in the energy balance null.
+
+Domain
+Dimensions: L = 0.25 m
+Materials: Appendix B
+
+Cycle
+Temperatures: Tini,? = 293 K
+
+Initial Pressure: Pini = 0.10 MPa
+Final Pressure: Plet = 1.00 MPa
+
+Smoothness: ? = 0.1, Eq.(2.35)
+
+FEM
+Mesh Elements: 31 999(simplex)
+
+Mesh Cell Diameter: 2.50 × 10?3 m
+Timestep: ?t = 10 s
+
+Table 5.1: Standard domain and cycle for prismatic tanks.
+
+The second domain is presented in Table 5.2, consisting of an axisymmetric tank
+
+represented by its radial section. In this case, pressure gradient is observed across the
+
+domain, originated by the gas inlet region denoted by ?L. In some of the optimisation
+
+studies presented in this Chapter, low temperature is imposed on the region denoted by
+
+
+
+62
+
+?F .
+
+Domain
+Dimensions: L = 1.00 m, R = 0.15 m
+Materials: Appendix B
+
+Cycle
+Temperatures: Tini,let,? = 293 K
+
+Initial Pressure: Pini = 0.10 MPa
+Final Pressure: Plet = 1.00 MPa
+
+Smoothness: ? = 0.1, Eq.(2.35)
+Time Length: tfin,a = 3600 s, Fig. (3.3)
+
+FEM
+Mesh Elements: 31 999 (simplex)
+
+Mesh Cell Diameter: 2.50 × 10?3 m
+Timestep: ?t = 10 s
+
+Table 5.2: Standard domain and cycle for cylindrical tanks.
+
+The third and last domain adopted in this work is presented in Table 5.3. It follows
+
+the axisymmetry assumption but is focused on assessing the influence of complex shapes
+
+on the optimisation of ANG tanks beds. Despite not modelling any specific scenario,
+
+such domain presents typical features observed in tanks fitted along other components in
+
+constrained spaces. Similar to the previous domain, gas inlet occurs on the region ?L and
+
+cold temperature is imposed on ?F in some of the optimisation cases studied. As it will
+
+be seen in the sequence of this Chapter, concave and convex corners play an important
+
+role in the behaviour of ANG tanks, being, therefore, essential for the scope of this work.
+
+
+
+63
+
+Domain
+Dimensions: R1 = 0.05 m, R2 = 0.10 m
+
+L = 0.20 m
+
+Cycle
+Temperature: Tini,let,? = 293 K
+
+Initial Pressure: Pini = 0.10 MPa
+Final Pressure: Plet = 1.00 MPa
+
+Smoothness: ? = 0.1, Eq.(2.35)
+Time Length: tfin,a = 3600 s, Fig. (3.3)
+
+FEM
+Mesh Elements: 34 211 (simplex)
+
+Mesh Cell Diameter: 1.63 × 10?3 m (min)
+Timestep: ?t = 10 s
+
+Table 5.3: Standard domain and cycle for a custom axisymmetric tank.
+
+
+
+64
+
+5.2 Evaluation of the OHT Material Model for the
+
+Design of ANG Tanks
+
+This Section is focused on studying the properties of the OHT material model. It is
+
+initially compared with SIMP and then tested for the dependency on the initial guess and
+
+penalisation continuation when adopted in the design of ANG tanks.
+
+5.2.1 OHT vs. Traditional Material Models
+
+The OHT material model proposed in Section 3.4.2 aims to mitigate the theoretical
+
+advantage of intermediate materials arising from the relaxation of the optimisation prob-
+
+lem. This Section compares OHT with the traditional SIMP, emphasazing the relevance
+
+of the offset imposed to the model.
+
+The optimisation of a prismatic tank, defined in Table 5.4 is chosen to test different
+
+material models. Figure 5.1 shows the evolution of the distribution of the design variables
+
+for three different material models. The first column is based on SIMP, in which the
+
+penalisation was continuated from p = 1 to p = 5, with ?p = 1. The central column
+
+shows the evolution for a material model based on hyperbolic tangents without an offset,
+
+expressed by the Eq. (3.13) with ? = 0.0, in which the penalisation is continued from p = 1
+
+to p = 51, with ?p = 5. The right column shows the evolution of the same problem when
+
+an offset is defined by imposing ? = 0.02. It is important to note that the penalisation
+
+coefficients in SIMP and OHT material models do not present a clear correlation, in a
+
+way that p = 51 in OHT does not represent, necessarily, a more penalised material model
+
+than p = 5 in SIMP.
+
+It can be seen that the adoption of SIMP causes the pseudo-porosity values to be near
+
+e = 0.92, given that such value offers a reasonable increase of the thermal conductivity for
+
+an adsorption capacity near the full-carbon phase. Even when very high penalisation is
+
+imposed to the material model, such anomaly will still occur around the phase transition
+
+region. If such region is translated from e = 1.0 to e = 0.5 by adopting an hyperbolic
+
+tangent material model, the resulting evolution of the optimisation will be similar to the
+
+central column in Figure 5.1. Again, the values of the design variables are all concentrated
+
+around the phase transition region, taking advantage from the desired properties from
+
+each phase. In this optimisation problem, the offset tangents material model, presented
+
+in the third column, is the only one able to avoid unfeasible intermediate properties and
+
+define a clear topology. In this last case, as the penalisation increases the intermediate
+
+
+
+65
+
+pseudo-porosity of e = 0.5 becomes increasingly less advantageous for the functional of
+
+interest.
+
+Figure 5.2 complements the points aforementioned by presenting the convergence of
+
+each one of the optimisations performed. Each drop seen in the curves are due to the
+
+increase of the penalisation, following the continuation scheme adopted. In SIMP and non-
+
+offset hyperbolic tangents material models, a theoretical maximum based on unfeasible
+
+materials is carried along the iterations, unaffected by the penalisation increase. In the
+
+case of OHT, the functional value decreases along the iterations as it recovers the binary
+
+nature of the problem as the penalisation is increased.
+
+Prismatic Tank
+(Table 5.1)
+
+Domain
+Heat Convection: h?W = 100 Wm
+
+?2K?1
+
+Cycle
+Time Length: tfin,a = 10 800 s, Fig. (3.3)
+
+Optimisation
+Iterations per Step: itmax = 20
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.4: Optimisation definitions for a prismatic tank subjected to forced convection.
+
+
+
+66
+
+Figure 5.1: Pseudo-porosity fields evolution (top-down) for SIMP (left), non-offset hy-
+perbolic tangents (centre) and offset hyperbolic tangents (right) material models for pris-
+matic tank optimisation.
+
+
+
+67
+
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+1.15
+
+1.20
+
+1.25
+
+1.30
+
+1.35
+
+1.40
+
+1.45
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(a) SIMP
+
+0 50 100 150 200
+
+Functional Evaluations
+
+1.15
+
+1.20
+
+1.25
+
+1.30
+
+1.35
+
+1.40
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Non-offset hyperbolic tangents
+
+0 50 100 150 200
+
+Functional Evaluations
+
+1.10
+
+1.15
+
+1.20
+
+1.25
+
+1.30
+
+1.35
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(c) Offset hyperbolic tangents
+
+Figure 5.2: Functional convergence for different material models.
+
+
+
+68
+
+5.2.2 Dependency on the Initial Guess and Penalisation
+
+Topology optimisation problems are non-convex and often lead to different solutions
+
+depending on the initial guess and on the strategy adopted for the penalisation contin-
+
+uation on the OHT material model. This Section is limited to the numerical study of
+
+such dependency, while the subsequent Sections are focused on the actual design of ANG
+
+tanks.
+
+Let consider the optimisation of the prismatic tank defined in Table 5.5. Figure 5.3
+
+demonstrates the independency of the final topology with respect to the initial guess. The
+
+evolution of the optimisation starting from an homogeneous pseudo-porosity distribution
+
+e = 0.5 is shown on the left column while one starting from an arbitrary initial guess is
+
+shown on the right. In both cases, the distribution of pseudo-porosities goes towards a full-
+
+carbon domain during the first optimisation iterations, following an identical evolution
+
+after that toward the same final layout. The optimisation of this tank is resumed in
+
+Section 5.4.1, where a thorough analysis is presented.
+
+Prismatic Tank
+(Table 5.1)
+
+Domain
+Heat Convection: h?W = 100 Wm
+
+?2K?1
+
+Cycle
+Time Length: tfin,a = 10 800 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [1, 51], ?p = 5
+Iterations per Step: itmax = 20
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.5: Optimisation definitions for a prismatic tank subjected to forced convection.
+
+The cylindrical tank optimisation presented in Table 5.6 is ran from a material model
+
+which is already significantly penalised (pini = 20). In this case, different initial guesses
+
+result in different final layouts as seen in Figure 5.4, where the distributions on the top
+
+of each block show the evolution of the homogeneous initial guess, while the bottom ones
+
+refers to an arbitrary initial distribution of pseudo-porosity. Despite the different layouts
+
+obtained for each case, the final objective function values are very similar: 2.31 kg of total
+
+
+
+69
+
+Figure 5.3: Pseudo-porosity fields evolution for homogeneous (left) and arbitrary (right)
+initial guesses for prismatic tank optimisation starting with pini = 1.
+
+
+
+70
+
+gas intake for the homogeneous initial guess and 2.28 kg for the arbitrary.
+
+Cylindrical Tank
+(Table 5.2)
+
+Domain
+Materials: Cpnon = 1880 J kg
+
+?1K?1
+
+Heat Convection: h(?W ??F ) = 5 W m
+?2K?1
+
+Cycle
+Time Length: tfin,a = 3600 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.6: Optimisation definitions for a cylindrical domain with non-adsorbent material
+with high heat capacity.
+
+The dependence of the final layouts on the initial guesses can be mitigated by follow-
+
+ing a continuation approach starting from a material model presenting low penalisation.
+
+Figure 5.5 shows the evolution of the pseudo-porosity distribution for an optimisation
+
+starting with penalisation pini = 1. Similar to the prismatic case, shown in Figure 5.3,
+
+the initial optimisation steps take the pseudo-porosities to a full-carbon distribution, fol-
+
+lowing the same evolution from then on. The final layout for this case results in a total
+
+gas intake of 2.30 kg, which is very similar to the 2.31 kg observed for the case starting the
+
+penalisation from pini = 20. This particular case also highlights the non-convexity of such
+
+optimisation problem, where a particular distribution of pseudo-porosities in a moderately
+
+penalised material model complies the objective function better than a less penalised one
+
+following a smooth continuation. The optimisation of this tank is approached in detail in
+
+Section 5.3.3.
+
+5.3 Design of ANG Tanks with Passive Thermal Man-
+
+agement
+
+In this Section, tanks filled without the aid of any external work for managing the
+
+temperature of the adsorbent bed are studied.
+
+
+
+71
+
+Figure 5.4: Pseudo-porosity fields evolution for homogeneous (top image on each block)
+and arbitrary (bottom) initial guesses for cylindrical tank optimisation starting with pini =
+20.
+
+
+
+72
+
+Figure 5.5: Pseudo-porosity fields evolution for homogeneous (top image on each block)
+and arbitrary (bottom) initial guesses for cylindrical tank optimisation starting with pini =
+1.
+
+
+
+73
+
+5.3.1 Tanks Subjected to Natural Convection
+
+The optimisation of a cylindrical tank subjected to natural convectionis is defined in
+
+5.7. It starts from an homogeneous distribution of the design variables at e = 0.5 and the
+
+penalisation is smoothly increased from pini = 20 to pmax = 100, following the flowchart
+
+shown in Figure 4.15 with itmax = 10 and ?min = 1.0 × 10?6. The pseudo-porosity
+distribution is subjected to Helmholtz filtering with radius z = 5 × 10?3, which is equal
+to the double of the characteristic mesh cell diameter.
+
+In Figure 5.6, the resulting topology is shown along with its three-dimensional rev-
+
+olution. The distribution of the pseudo-porosities obtained from the optimiser is shown
+
+in Figure 5.6a, where the colour scale ranges from grey, representing Steel (e = 0.0), to
+
+black, representing Activated Carbon (e = 1.0). Given the properties of the material
+
+model adopted, the interpretation of binary distribution of materials inside the domain is
+
+made on the 0.5 threshold. Figure 5.6b shows the convergence of the objective function,
+
+which presents a very smooth behaviour. The total density of gas, that is, the sum of
+
+gaseous and adsorbed phase density, is shown in Figure 5.6c for a domain fully occupied
+
+by Carbon (e = 1.0) and for the optimised distribution of Steel. It can be seen that the
+
+gas inlet was reduced approximately in 3/4 in order to allow the growth of a metallic
+
+region along the center of tank extending the zone of high density of gas adsorbed, which
+
+was before limited to the inlet neighbourhood. It is due to the fact that the gas enter-
+
+ing the domain is at room temperature (293 K) and creates a region of low temperature,
+
+which was extended because of the higher thermal conductivity of the Steel in relation
+
+to Activated Carbon, as shown in the temperature distribution plotted in Figure 5.6d.
+
+However, the increase of the gas density in this zone comes with the loss of adsorbent
+
+volume, as detailed in Section 3.1, making the net gain in the total mass of gas admitted
+
+being only 1.06%.
+
+
+
+74
+
+Cylindrical Tank
+(Table 5.2)
+
+Domain
+Heat Convection: h(?W ??F ) = 5 W m
+
+?2K?1
+
+Cycle
+Time Length: tfin,a = 10 800 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.7: Optimisation definitions for a cylindrical domain subjected to natural con-
+vection.
+
+
+
+75
+
+(a) Pseudo-porosity distribution
+
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+2.00
+
+2.05
+
+2.10
+
+2.15
+
+2.20
+
+2.25
+
+2.30
+
+2.35
+
+2.40
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Funtional convergence
+
+(c) Total gas of homogeneous and optimised
+tanks at tfin
+
+(d) Temperature of homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+2.30 kg 2.32 kg 1.06%
+
+Figure 5.6: Optimised design for a cylindrical domain subjected to natural convection.
+
+
+
+76
+
+5.3.2 Sensitivity to Thermal Conductivity
+
+The non-adsorbent material considered when designing ANG tanks is not restricted
+
+to Steel only. Other metals with higher thermal conductivity, such as Aluminium, may
+
+be suitable in some cases. Aiming to verify that, a hypothetical material presenting
+
+conductivity four times higher than Steel is considered in the cycle defined in Table
+
+5.8. Figure 5.7 shows a clear increase in the complexity of the metallic region connected
+
+to the inlet. Besides advancing further along the domain, this region presents more and
+
+thinner legs when compared to the optimisation performed with standard Steel properties
+
+- Figure 5.6. A new non-adsorbent region is also created from the wall opposite to the gas
+
+inlet, which would not compensate the loss in volume in the previous case. Figure 5.7d
+
+shows a clear reduction of the overall temperature within the domain, resulting in a net
+
+gain of 2.13% in the total mass of gas admitted. Therefore, the increase of the thermal
+
+conductivity of the non-adsorbent material has a positive impact on the optimisation of
+
+the ANG tanks considered in this work.
+
+Cylindrical Tank
+(Table 5.2)
+
+Domain
+Materials: knon = 188 Wm
+
+?2K?1
+
+Heat Convection: h(?W ??F ) = 5 W m
+?2K?1
+
+Cycle
+Time Length: tfin,a = 10 800 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.8: Optimisation definitions for a cylindrical domain with non-adsorbent material
+with high thermal conductivity.
+
+
+
+77
+
+(a) Pseudo-porosity distribution
+
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+2.00
+
+2.05
+
+2.10
+
+2.15
+
+2.20
+
+2.25
+
+2.30
+
+2.35
+
+2.40
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+2.30 kg 2.35 kg 2.13%
+
+Figure 5.7: Optimised design for a cylindrical domain with non-adsorbent material with
+high thermal conductivity.
+
+
+
+78
+
+5.3.3 Sensitivity to Heat Capacity
+
+Extending the previous Section, the impact of the increase of the heat capacity of the
+
+non-adsorbent material is studied here. Materials presenting enough high heat capacity
+
+can be used to roughly approximate the impact of the insertion of Phase Change Materials
+
+(PCM) regions inside the domain - see Toledo et al. (2013) for more details about PCM
+
+operation. The specific heat capacity of Steel is multiplied by four, resulting in the
+
+problem defined in Table 5.9. Figure 5.8 shows the resulting topology for this case, where
+
+the non-adsorbent regions are not necessarily connected to the gas inlet or to the walls.
+
+The occurrence of this layout is due to the fact that materials with high heat capacity act
+
+as heat sinks. This approach seems more promising than using high conductive materials
+
+as it is reflected in the high gas density through the whole domain observed in Figure 5.8c.
+
+In the comparison with the homogeneous case, the the amount of gas admitted during
+
+the filling cycle is 6.30% higher when compared with the domain filled with Carbon only.
+
+The relative gain is even higher for shorter cycles. Table 5.10 defines a cycle lasting
+
+3600 s, keeping all the other parameters the same. It can be seen in Figure 5.9 that more
+
+non-adsorbent islands were formed in order to take advantage of its high heat capacity.
+
+Such islands represent hoops as depicted in the revolved three-dimensional topology. It
+
+is important to highlight that this optimised domain admits more gas in 3600 s (2.31 kg)
+
+than the homogeneous does in 10 800 s (2.30 kg). This fact makes the use materials with
+
+high heat capacity very promising in fast-filling ANG tanks. Table 5.11 defines an even
+
+shorter cycle of 1200 s. In Figure 5.10, it can be seen that the non-adsorbent islands
+
+becomes smaller and are located nearer the axis of symmetry, in order to reduce the loss in
+
+adsorbent volume. However, the improvement is much smaller than on the previous ones:
+
+2.89%. In this case, the cooling effect is constrained by the poor thermal conductivity
+
+of the Activated Carbon, given that the cycle is very short. That is, the non-adsorbent
+
+islands posses a very small radius of influence around them, as can be clearly seen in
+
+Figure 5.10d.
+
+
+
+79
+
+Cylindrical Tank
+(Table 5.2)
+
+Domain
+Materials: Cpnon = 1880 Jkg
+
+?1K?1
+
+Heat Convection: h(?W ??F ) = 5 W m
+?2K?1
+
+Cycle
+Time Length: tfin,a = 10 800 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.9: Optimisation definitions for a cylindrical domain with non-adsorbent material
+with high heat capacity.
+
+Cylindrical Tank
+(Table 5.2)
+
+Domain
+Materials: Cpnon = 1880 Jkg
+
+?1K?1
+
+Heat Convection: h(?W ??F ) = 5 W m
+?2K?1
+
+Cycle
+Time Length: tfin,a = 3600 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.10: Optimisation definitions for a cylindrical domain with non-adsorbent mate-
+rial with high heat capacity in 3600 s filling cycle.
+
+
+
+80
+
+(a) Pseudo-porosity distribution
+
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+2.0
+
+2.1
+
+2.2
+
+2.3
+
+2.4
+
+2.5
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+2.30 kg 2.44 kg 6.30%
+
+Figure 5.8: Optimised design for a cylindrical domain with non-adsorbent material with
+high heat capacity.
+
+
+
+81
+
+(a) Pseudo-porosity distribution
+
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+1.4
+
+1.6
+
+1.8
+
+2.0
+
+2.2
+
+2.4
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+2.10 kg 2.31 kg 10.20%
+
+Figure 5.9: Optimised design for a cylindrical domain with non-adsorbent material with
+high heat capacity in 3600 s filling cycle.
+
+
+
+82
+
+Cylindrical Tank
+(Table 5.2)
+
+Domain
+Materials: Cpnon = 1880 Jkg
+
+?1K?1
+
+Heat Convection: h(?W ??F ) = 5 W m
+?2K?1
+
+Cycle
+Time Length: tfin,a = 1200 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.11: Optimisation definitions for a cylindrical domain with non-adsorbent mate-
+rial with high heat capacity in 1200 s filling cycle.
+
+
+
+83
+
+(a) Pseudo-porosity distribution
+
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+1.6
+
+1.7
+
+1.8
+
+1.9
+
+2.0
+
+2.1
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+2.01 kg 2.07 kg 2.89%
+
+Figure 5.10: Optimised design for a cylindrical domain with non-adsorbent material
+with high heat capacity in 1200 s filling cycle.
+
+
+
+84
+
+5.4 Design of ANG Tanks with Active Thermal Man-
+
+agement
+
+This Section considers tanks filled with the aid of some external work for the thermal
+
+management, such as the imposition of forced convection or low temperature at some
+
+point of the domain. The latter approach is adopted in Vasiliev et al. (2014), where fins
+
+linked to a very cold wall, at 233 K, are distributed radially along an adsorbent cylinder.
+
+5.4.1 Tanks Subjected to Forced Convection
+
+The resulting topology depicted in Figure 5.11 shows perfectly symmetric fins con-
+
+necting the central region of the section to the walls subjected to forced convection. Such
+
+symmetry is due to the use of a regular mesh constituted by equal elements. Figure 5.11d
+
+shows that the fins made the maximum temperature inside the domain drop from 325 K
+
+to 310 K, allowing 5.46% more gas to be admitted during the filling cycle. An instability
+
+is seen on Figure 5.11b for the convergence of the objective function due to the increase
+
+of the penaliser from pini = 20 to p = 30.
+
+Prismatic Tank
+(Table 5.1)
+
+Domain
+Heat Convection: h?W = 100 Wm
+
+?2K?1
+
+Optimisation
+Material Model: ? = 0.02
+
+p = [1, 51], ?p = 5, Eq. (3.13)
+Iterations per Step: itmax = 20
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.12: Optimisation definitions for a prismatic domain subjected to forced convec-
+tion.
+
+
+
+85
+
+(a) Pseudo-porosity distribution
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+1.2
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+1.16 kg 1.22 kg 5.46%
+
+Figure 5.11: Optimised design for a prismatic domain subjected to forced convection.
+
+
+
+86
+
+5.4.2 Sensitivity to Forced Convection and Cold Walls
+
+In order to study the impact of different thermal boundary conditions, the complex-
+
+shaped axisymmetric domain defined in 5.3 is adopted. Initially, forced convection is
+
+considered by imposing h = 100 Wm?1K?1, as defined in Table 5.13. The resulting
+
+topology shown in Figure 5.12 presents the trend of growing Steel fins from concave
+
+corners. Such behaviour is justified by the temperature distribution in the homogeneous
+
+case observed in Figure 5.12d. These corners are the regions with steepest temperature
+
+gradient from points on the wall towards the inside of the domain. Accordingly, the curved
+
+shape acquired by the fins coincide almost perfectly with the path of maximum gradient.
+
+Based on this approach, the optimised domain is able to admit 1.23% more gas than the
+
+homogeneous one. By increasing the convective coefficient to h = 700 Wm?1K?1, small
+
+changes are observed. The most prominent change in the topology shown in Figure 5.12
+
+is the fork of one of the fins. However, a very reticent relative gain is obtained in relation
+
+to the first case: 1.94% in total gas mass admitted. Therefore, the energy required to
+
+increase the convective heat transfer in the second case is reasonable. The case defined
+
+in Table 5.15 keeps the natural convection on the walls expect for the region ?F , which
+
+is kept at the fixed temperature of 273 K. As seen in Figure 5.14, the low temperature
+
+makes the corners on ?F preferred for the creation of fins. In Figure 5.14c, it can be clearly
+
+seen that the vicinity of the fins connected to the cold wall becomes the zone presenting
+
+the highest densities of gas, improving the total gas admission during the filling cycle in
+
+7.51% when compared to the homogeneous case.
+
+
+
+87
+
+Custom Axisymmetric Tank
+(Table 5.3)
+
+Domain
+Heat Convection: h(?W ??F ) = 100 W m
+
+?2K?1
+
+Cycle
+Time Length: tfin,a = 3600 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.13: Optimisation definitions for a custom axisymmetric domain subjected to
+forced convection with h = 100 Wm?2K?1.
+
+Custom Axisymmetric Tank
+(Table 5.3)
+
+Domain
+Heat Convection: h(?W ??F ) = 700 W m
+
+?2K?1
+
+Cycle
+Time Length: tfin,a = 3600 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.14: Optimisation definitions for a custom axisymmetric domain subjected to
+forced convection with h = 700 Wm?2K?1.
+
+
+
+88
+
+(a) Pseudo-porosity distribution
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+0.8
+
+1.0
+
+1.2
+
+1.4
+
+1.6
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+1.58 kg 1.60 kg 1.23%
+
+Figure 5.12: Optimised design for a custom axisymmetric domain subjected to forced
+convection with h = 100 Wm?2K?1.
+
+
+
+89
+
+(a) Pseudo-porosity distribution 0 20 40 60 80 100 120
+Functional Evaluations
+
+0.8
+
+1.0
+
+1.2
+
+1.4
+
+1.6
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+1.59 kg 1.62 kg 1.94%
+
+Figure 5.13: Optimised design for a custom axisymmetric domain subjected to forced
+convection with h = 700 Wm?2K?1.
+
+
+
+90
+
+Custom Axisymmetric Tank
+(Table 5.3)
+
+Domain
+Heat Convection: h?W = 5 Wm
+
+?2K?1
+
+Cold Finger: T?F = 273 K
+
+Cycle
+Time Length: tfin,a = 3600 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.15: Optimisation definitions for a custom axisymmetric domain subjected to
+natural convection and connected to a cold finger.
+
+
+
+91
+
+(a) Pseudo-porosity distribution 0 20 40 60 80 100 120
+Functional Evaluations
+
+1.0
+
+1.1
+
+1.2
+
+1.3
+
+1.4
+
+1.5
+
+1.6
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+1.42 kg 1.52 kg 7.51%
+
+Figure 5.14: Optimised design for a cylindrical domain with forced convection.
+
+
+
+92
+
+5.4.3 Sensitivity to Shape Complexity
+
+The cases tested in the previous Section are repeated for a cylindrical tank, in order
+
+to identify the contribution of the external shape complexity to the optimisation. Forced
+
+convection is imposed on the cylindrical tank, as defined in Table 5.16. As seen in Figure
+
+5.15, such convection urges the appearance of metallic fins on the wall opposite to the
+
+inlet. The main reason for such fins appearing there is the adiabatic condition imposed
+
+on the bottom line due to the axisymmetry. In the temperature distribution shown for
+
+the homogeneous case in Figure 5.15d it can be seen that the axisymmetry makes the
+
+gradient along the bottom line near the walls to be the steepest.
+
+By shortening the cycle defined in Table 5.16 to 3600 s, the volume occupied by the
+
+fins are slight smaller, although maintaining the roughly the same layout. The fins on
+
+the middle of the vertical walls are longer because the gradient of temperature there is
+
+approximately the same of the one observed on the bottom line for a short cycle, as shown
+
+in Figure 5.16d.
+
+Keeping natural convection on the short cycle and imposing a cold region on ?F
+
+results in the topology shown in Figure 5.17. The presence of such condition stimulate
+
+the grow of fins from ?F and leads to a net gain in the mass of gas admitted of 2.47%.
+
+Cylindrical Tank
+(Table 5.2)
+
+Domain
+Heat Convection: h(?W ??F ) = 700 W m
+
+?2K?1
+
+Cycle
+Time Length: tfin,a = 10 800 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.16: Optimisation definitions for a cylindrical domain with forced convection in
+10 800s filling cycle.
+
+
+
+93
+
+(a) Pseudo-porosity distribution
+
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+1.6
+
+1.8
+
+2.0
+
+2.2
+
+2.4
+
+2.6
+
+2.8
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+2.49 kg 2.52 kg 1.32%
+
+Figure 5.15: Optimised design for a cylindrical domain with forced convection in 10 800 s
+filling cycle.
+
+
+
+94
+
+Cylindrical Tank
+(Table 5.2)
+
+Domain
+Heat Convection: h(?W ??F ) = 700 W m
+
+?2K?1
+
+Cycle
+Time Length: tfin,a = 3600 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.17: Optimisation definitions for a cylindrical domain with forced convection in
+3600 s filling cycle.
+
+Cylindrical Tank
+(Table 5.2)
+
+Domain
+Heat Convection: h?W = 5 Wm
+
+?2K?1
+
+Cold Finger: T?F = 273 K
+
+Cycle
+Time Length: tfin,a = 3600 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.18: Optimisation definitions for a cylindrical domain subjected to natural con-
+vection and connected to a cold finger.
+
+
+
+95
+
+(a) Pseudo-porosity distribution
+
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+1.6
+
+1.8
+
+2.0
+
+2.2
+
+2.4
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+2.29 kg 2.32 kg 1.31%
+
+Figure 5.16: Optimised design for a cylindrical domain with forced convection in 3600 s
+filling cycle.
+
+
+
+96
+
+(a) Pseudo-porosity distribution
+
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+1.80
+
+1.85
+
+1.90
+
+1.95
+
+2.00
+
+2.05
+
+2.10
+
+2.15
+
+2.20
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+2.10 kg 2.16 kg 2.47%
+
+Figure 5.17: Optimised design for a cylindrical domain with natural convection and
+cold finger.
+
+
+
+97
+
+5.4.4 Sensitivity to Tank Dimensions
+
+Prismatic tanks with different sizes of cross section are optimised aiming to evaluate
+
+the sensitivity of the method to tank dimensions. The optimisation of the narrow tanks
+
+defined in Table 5.20 is performed with the proportional reduction of the Helmholtz filter
+
+radius. In the resulting topology presented in Figure 5.18, it is seen a smaller penetration
+
+of the fins towards the center of the domain. However, the distance between the tips
+
+of opposite fins are barely the same when compared to the optimised topology for the
+
+analogous 0.25 m tank presented in Figure 5.11. This distance is determined by Activated
+
+Carbon heat conduction. Figure 5.18c shows very small gradients in the distribution of
+
+gas density when compared to the 0.25 m reference. While in the homogeneous reference
+
+the minimal density observed is 24.74 kg, here it is 29.47 kg, making the loss of adsorbent
+
+volume to fins less advantageous. In fact, the improvement of gas intake is much smaller
+
+in the small domain: 0.39 kg.
+
+Table 5.19 defines a large prismatic tank, with the proportional increase of the Helmholtz
+
+radius filter. The resulting topology shown in Figure 5.19 presents many more fins than
+
+in the smaller tanks. The pseudo-porosity distribution in Figure 5.19a shows the forma-
+
+tion of perfect squared region on the middle of the domain where the value of the design
+
+variables is very near to e = 1.0. The grey margin presents a thickness of approximately
+
+0.12 m, suggesting that beyond this point the loss in volume for fins is not compensatory.
+
+It can be seen in Figure 5.19b that many pseudo-porosity distributions were rejected by
+
+L-BFGS-B while the penalisation was weak, evolving to a smooth convergence for higher
+
+penalisation. Figure 5.19c makes clear that little improvement could be achieved in the
+
+central tank region. The focus of the optimisation was to adsorb more gas near the
+
+walls, leaving the central region almost unchanged. The improvement in the mass of gas
+
+admitted is roughly equivalent to the gain presented for the 0.25 m reference: 5.54%.
+
+5.4.5 Sensitivity to Filling Pressure
+
+The optimisation of ANG tanks are highly dependent on its filling pressure. Aiming to
+
+demonstrate the topology changes caused by the pressure increase, the problem described
+
+is Table 5.13 is used as reference. By increasing the filling pressure from 1.00 MPa to
+
+3.00 MPa, the topology shown in Figure 5.20 is obtained. In contrast to the resulting
+
+topology for 1.00 MPa, it can be seen that the higher gas flow rate is enough to cool
+
+down a large area around the inlet. Therefore, fins connected to the inlet region are less
+
+interesting in this case, given that a large volume of cold adsorbent would be lost. Fins
+
+
+
+98
+
+Prismatic Tank
+(Table 5.1)
+
+Domain
+Dimensions: L = 0.10 m
+
+Heat Convection: h?W = 100 Wm
+?2K?1
+
+Cycle
+Time Length: tfin,a = 10 800 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 2 × 10?3 m, Eq.(4.44)
+
+Table 5.19: Optimisation definitions for a small prismatic domain subjected to forced
+convection.
+
+Prismatic Tank
+(Table 5.1)
+
+Domain
+Dimensions: L = 0.40 m
+
+Heat Convection: h?W = 100 Wm
+?2K?1
+
+Cycle
+Time Length: tfin,a = 10 800 s, Fig. (3.3)
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 8 × 10?3 m, Eq.(4.44)
+
+Table 5.20: Optimisation definitions for a small prismatic domain subjected to forced
+convection.
+
+are then place on the nearest concave corner, producing a slight temperature reduction
+
+in the region, which results in an improvement of 0.23% on the intake mass of gas. Such
+
+gain is much smaller than the one obtained for the reference case, demonstrating that the
+
+addition of fins are more suitable on the design of low pressure ANG tanks.
+
+By increasing the filling pressure to 5.00 MPa, as defined in Table 5.22, the fins are
+
+
+
+99
+
+(a) Pseudo-porosity distribution
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+0.15
+
+0.16
+
+0.17
+
+0.18
+
+0.19
+
+0.20
+
+0.21
+
+0.22
+
+0.23
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+0.21 kg 0.22 kg 0.39%
+
+Figure 5.18: Optimised design for a small prismatic domain subjected to forced convec-
+tion.
+
+placed farther than the inlet region, as shown in Figure 5.21. This shift is explained by
+
+extending the points listed on the 3.00 MPa case. The 5.00 MPa pressure intensified the
+
+cooling effect produced near the inlet region, as seen in Figure 5.21d. Interestingly, the
+
+improvement achieved here is slightly higher than in the 3.00 MPa case: 0.58%. Such
+
+improvement is mainly due to the creation of a fin on the next concave corner, which was
+
+able to reduce the maximum temperature inside the optimised tank to around 320 K.
+
+
+
+100
+
+(a) Pseudo-porosity distribution 0 20 40 60 80 100 120 140
+Functional Evaluations
+
+1.00
+
+1.25
+
+1.50
+
+1.75
+
+2.00
+
+2.25
+
+2.50
+
+2.75
+
+3.00
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+2.80 kg 2.95 kg 5.54%
+
+Figure 5.19: Optimised design for a large prismatic domain subjected to forced convec-
+tion.
+
+
+
+101
+
+Custom Axisymmetric Tank
+(Table 5.3)
+
+Domain
+Heat Convection: h(?W ??F ) = 100 W m
+
+?2K?1
+
+Cycle
+Time Length: tfin,a = 3600 s, Fig. (3.3)
+
+Final Pressure: Plet = 3.00 MPa
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.21: Optimisation definitions for a custom axisymmetric domain subjected to
+3.00 MPa filling pressure and forced convection with h = 100 Wm?2K?1.
+
+Custom Axisymmetric Tank
+(Table 5.3)
+
+Domain
+Heat Convection: h(?W ??F ) = 100 W m
+
+?2K?1
+
+Cycle
+Time Length: tfin,a = 3600 s, Fig. (3.3)
+
+Final Pressure: Plet = 5.00 MPa
+
+Optimisation
+Material Model: ? = 0.02, Eq. (3.13)
+
+p = [20, 100], ?p = 10
+Iterations per Step: itmax = 10
+
+Tolerance: ?min = 1.0 × 10?6
+Filter Radius: z = 5 × 10?3 m, Eq.(4.44)
+
+Table 5.22: Optimisation definitions for a custom axisymmetric domain subjected to
+5.00 MPa filling pressure and forced convection with h = 100 Wm?2K?1.
+
+
+
+102
+
+(a) Pseudo-porosity distribution
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+2.800
+
+2.825
+
+2.850
+
+2.875
+
+2.900
+
+2.925
+
+2.950
+
+2.975
+
+3.000
+
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+2.95 kg 2.96 kg 0.23%
+
+Figure 5.20: Optimised design for a custom axisymmetric domain subjected to 3 MPa
+filling pressure and forced convection with h = 100 Wm?2K?1.
+
+
+
+103
+
+(a) Pseudo-porosity distribution
+0 20 40 60 80 100 120
+
+Functional Evaluations
+
+3.60
+
+3.65
+
+3.70
+
+3.75
+
+3.80
+
+3.85
+
+3.90
+
+3.95
+
+4.00
+F
+u
+n
+ct
+io
+n
+a
+l
+V
+a
+lu
+e
+(k
+g
+)
+
+(b) Functional convergence
+
+(c) Total gas in homogeneous and optimised
+tanks at tfin
+
+(d) Temperature in homogeneous and opti-
+mised tanks at tfin
+
+Ja Homogenous Ja Optimised Improvement
+3.89 kg 3.91 kg 0.58%
+
+Figure 5.21: Optimised design for a custom axisymmetric domain subjected to 5 MPa
+filling pressure and forced convection with h = 100 Wm?2K?1.
+
+
+
+104
+
+6 Conclusions
+
+The main goal of the research presented in this work was to formulate and evaluate
+
+the use of topology optimisation for designing adsorption systems. Among the several
+
+applications of such systems, Adsorbed Natural Gas (ANG) tanks have been chosen to be
+
+the focus of this work. Accordingly, a comprehensive model for ANG tanks is presented,
+
+including the kinetics of adsorption and the variation of adsorbent properties in function to
+
+the porosities. The solution of the resulting set of PDEs governing the adsorption problem
+
+is obtained via the Finite Element Method (FEM). The procedure to assemble the FEM
+
+matrices from the PDEs weak form is described in detail. The concept of including non-
+
+adsorbent materials inside ANG tanks aiming to improve their thermal management is
+
+then introduced. The optimisation of the distribution of adsorbent and non-adsorbent
+
+materials inside the tank is approached via topology optimisation. The implementation
+
+of this method is based on the calculation of the sensitivities via the adjoint method for
+
+transient systems, which is comprehensively presented. Resulting optimised topologies are
+
+presented for ANG tanks applied to on-demand consumption. The optimisation of tanks
+
+with different shapes is tackled and the impact of parameters such as material properties,
+
+filling pressure, cycle duration and tank dimensions are studied.
+
+A major scientific contribution presented in this work is the derivation of the full for-
+
+mulation of a gradient-based PDE-constrained optimisation of adsorption systems. Such
+
+derivation includes the statement of the weak and discrete formulation of the adsorption
+
+problem for FEM implementation and the derivation of the adjoint problem from the
+
+augmented Lagrangian form of the functional of interest. Additionally, a material model
+
+based on hyperbolic tangents (OHT) is introduced. Such model has shown to be more
+
+efficient than traditional ones for the design of biphasic structures. It is due to its novel
+
+penalisation approach combined with offsets.
+
+Several ANG tanks optimised according to the distribution of cooling material across
+
+
+
+105
+
+the adsorbent bed are presented in this work. Designs include axisymmetric and prismatic
+
+tanks subjected to natural convection and active thermal boundary conditions. By the
+
+results presented, it is concluded that small improvement is achievable by the addition of
+
+metallic fins in tanks subjected to natural convection. For the cycles and domain sizes
+
+considered, tanks subjected to natural convection presented insufficient improvement in
+
+order to justify the cost of including regions constituted by non-adsorbent material across
+
+the adsorbent bed. Similarly, small improvement is observed in high pressure tanks. The
+
+relative improvement achievable in high pressure tanks is smaller than the ones working
+
+at low pressure. It suggests that the design concept adopted by this work is more suitable
+
+for low pressure ANG tanks.
+
+In contrast, the insertion of non-adsorbent regions in ANG tanks is very effective when
+
+associated with cold regions. It is due to the fact that materials with high conductivity
+
+depend on meaningful temperature gradients in order to aid heat transfer across the tank.
+
+Such fact is reinforced by the resulting topologies presenting metallic regions around tanks
+
+concave corners, where the temperature gradients are higher. Also, materials presenting
+
+high heat capacity constitute a suitable solution for passive thermal management. In
+
+opposition to phases presenting typical metallic properties, materials with high heat ca-
+
+pacity are not dependent on the existence of cold regions in the domain. Results have
+
+shown that islands constituted by materials presenting high heat capacity act as a heat
+
+sink, creating a zone of influence in the temperature field.
+
+Altogether, adsorbent’s low conductivity can represent a limiting issue. In fast ad-
+
+sorption cycles, any optimisation attempt is hindered by the extremely low conductivity of
+
+adsorbent materials. It is demonstrated by the reduction of the zone of influence of regions
+
+constituted by high capacity materials as the cycles considered gets shorter. Therefore,
+
+the design concept presented in this work is complementary to further development of
+
+adsorbent materials.
+
+This thesis provides the basis for several future work. The formulation presented here
+
+is easily extended to storage and transport applications, by including the desorption cycle
+
+in the objective function. Additionally, since results have shown that complex-shaped
+
+tanks present better performance than traditional ones. Therefore, it is promising to
+
+complement the optimisation of the adsorbent bed with the optimisation of the external
+
+shape, by either shape or topology optimisation. Furthermore, given the promising results
+
+obtained for non-adsorbent material with high heat capacity, the use of Phase Change
+
+Materials (PCMs) is very promising for any application. It consists of including an ad-
+
+ditional governing equation in order to model the phase change kinetics, leading to new
+
+
+
+106
+
+source terms in the energy balance.
+
+Due to the numerical focus of this work, manufacturing issues have been addressed
+
+marginally only. Yet, the literature review in this matter indicated relative ease for con-
+
+forming adsorbent beds in any desired geometry by pouring and compacting a slurry
+
+constituted by binder-coated carbon particles inside tank segments. Manufacturing com-
+
+plexity depend mainly on the construction of non-adsorbent parts, which can be done
+
+via traditional methods such as machining and casting, in the case of metals. However,
+
+despite such preliminary indications, further research on this topics is necessary.
+
+Finally, the work presented here is naturally extendible to any other adsorption appli-
+
+cation. Fluid separation, refrigeration and Carbon Capture and Storage (CCS) are some
+
+of the possible applications for adsorption systems that could be explored based on this
+
+research.
+
+
+
+107
+
+References
+
+ALKAN, M.; DEMIRBAS, O.; DOGAN, M. Adsorption kinetics and thermodynamics
+of an anionic dye onto sepiolite. Microporous and Mesoporous Materials, v. 101, n. 3, p.
+388–396, abr. 2007. ISSN 13871811.
+
+ALNÆS, M. S. et al. Unified form language. ACM Transactions on Mathematical
+Software, v. 40, n. 2, p. 1–37, nov. 2014. ISSN 00983500.
+
+ANDREASEN, C. S.; SIGMUND, O. Topology optimization of fluid–structure-
+interaction problems in poroelasticity. Computer Methods in Applied Mechanics and
+Engineering, Elsevier B.V., v. 258, p. 55–62, maio 2013. ISSN 00457825.
+
+ANGP. Low-Pressure is the Future of Natural Gas Vehicles. 2017. Dispon??vel em:
+?http://www.angpinc.com/phangv/?.
+
+ANISZEWSKI, W.; MENARD, T.; MAREK, M. Volume of fluid (vof) type advection
+methods in two-phase flow: A comparative study. Computers &amp;amp; Fluids, Elsevier Ltd,
+v. 97, p. 52–73, 2014. ISSN 00457930.
+
+BENDSØE, M. P.; SIGMUND, O. Material interpolation schemes in topology
+optimization. Archive of Applied Mechanics, v. 69, n. 9-10, p. 635–654, 1999. ISSN
+0939-1533.
+
+BILOE, S.; GOETZ, V.; GUILLOT, A. Optimal design of an activated carbon for an
+adsorbed natural gas storage system. Carbon, v. 40, n. 8, p. 1295–1308, 2002. ISSN
+00086223.
+
+BIRD, R. B.; STEWART, W. B.; LIGHTFOOT, E. N. Transport Phenomena. 2nd. ed.
+[S.l.: s.n.], 2007. ISBN 978-0470115398.
+
+BLANCO, M. V. et al. Hydrogen sorption kinetics of la-ni-sn storage alloys. International
+Journal of Hydrogen Energy, Elsevier Ltd, v. 39, n. 11, p. 5858–5867, 2014. ISSN
+0360-3199.
+
+BORRVALL, T.; PETERSSON, J. Topology optimization of fluids in stokes flow.
+International Journal for Numerical Methods in Fluids, v. 41, n. 1, p. 77–107, 2003.
+ISSN 02712091.
+
+BOSE, T. K.; CHAHINE, R.; ST-ARNAUD, J. M. High-density adsorbent and method
+of producing same. US Patent 4999330A, 1991.
+
+BRUNS, T. E. Topology optimization of convection-dominated, steady-state heat
+transfer problems. International Journal of Heat and Mass Transfer, v. 50, n. 15-16, p.
+2859–2873, 2007. ISSN 00179310.
+
+BYRD, R. et al. A limited memory algorithm for bound constrained optimization. SIAM
+Journal on Scientific Computing, v. 16, n. 5, p. 1190–1208, 1995.
+
+http://www.angpinc.com/phangv/
+
+
+108
+
+CARMAN, P. C. Fluid flow through granular beds. Chemical Engineering Research and
+Design, Institution of Chemical Engineers, v. 75, p. S32–S48, 1937. ISSN 02638762.
+
+CAVALCANTE, C. L. Industrial adsorption separation processes: Fundamentals,
+modeling and applications. Latin American Applied Research, v. 30, n. 4, p. 357–364,
+2000. ISSN 03270793.
+
+CHAO, T. Y.; CHOW, W. K.; KONG, H. A review on the applications of finite element
+method to heat transfer and fluid flow. International Journal on Architectural Science,
+v. 3, n. 1, p. 1–19, 2002.
+
+CHARTON, F.; NICOUD, R. M. Complete design of a simulated moving bed. Journal
+of Chromatography A, v. 702, n. 1-2, p. 97–112, maio 1995. ISSN 00219673.
+
+CHRISTMANN, K. Introduction to Surface Physical Chemistry. [S.l.]: Springer Berlin
+Heidelberg, 1991. ISBN 0195105893.
+
+DAHL, J.; JENSEN, J. S.; SIGMUND, O. Topology optimization for transient wave
+propagation problems in one dimension : Ddesign of filters and pulse modulators.
+Structural and Multidisciplinary Optimization, v. 36, n. 6, p. 585–595, 2008. ISSN
+1615147X.
+
+DIJK, N. P. et al. Level-set methods for structural topology optimization: A review.
+Structural and Multidisciplinary Optimization, v. 48, n. 3, p. 437–472, 2013. ISSN
+1615147X.
+
+ELROD, M. J. Greenhouse warming potentials from the infrared spectroscopy of
+atmospheric gases. Journal of Chemical Education, v. 76, n. 12, p. 1702, 1999.
+
+FUNKE, S. W. The automation of PDE-constrained optimisation and its applications.
+Tese (Doutorado) — Imperial College London, 2012.
+
+GERSBORG-HANSEN, A.; SIGMUND, O.; HABER, R. B. Topology optimization of
+channel flow problems. Structural and Multidisciplinary Optimization, v. 30, n. 3, p.
+181–192, jun. 2005. ISSN 1615147X.
+
+GILES, C. H. A general treatment and classification of the solute adsorption isotherm.
+Journal of Colloid and Interface Science, v. 47, n. 3, 1974.
+
+GUEST, J. K.; PREVOST, J. H. Topology optimization of creeping fluid flows using a
+darcy-stokes finite element. International Journal for Numerical Methods in Engineering,
+v. 66, n. 3, p. 461–484, abr. 2006. ISSN 00295981.
+
+HALL, J. et al. A volumetric geometry and topology parameterisation for fluids-based
+optimisation. Computers and Fluids, Elsevier Ltd, v. 148, p. 137–156, 2017. ISSN
+00457930.
+
+HASCOET, L.; DAUVERGNE, B. Adjoints of large simulation codes through automatic
+differentiation. European Journal of Computational . . . , p. 1–24, 2008. ISSN 17797179.
+
+HIRATA, S. C. et al. Modeling and hybrid simulation of slow discharge process of
+adsorbed methane tanks. International Journal of Thermal Sciences, Elsevier Masson
+SAS, v. 48, n. 6, p. 1176–1183, jun. 2009. ISSN 12900729.
+
+
+
+109
+
+INGEVITY. Turning complex challenges into powerful possibilities. 2017. Dispon??vel em:
+?http://www.ingevity.com/markets/adsorbed-natural-gas/?.
+
+JONES, E.; OLIPHANT, T.; PETERSON, P. SciPy: Open Source Scientific Tools for
+Python. 2011. Dispon??vel em: ?http://www.scipy.org?.
+
+JUNTUNEN, M.; STENBERG, R. General boundary conditions. v. 78, n. 267, p.
+1353–1374, 2012.
+
+KAIST. Box-shaped Pressure Vessel for LNG Developed by KAIST Research Team. 2014.
+Dispon??vel em: ?http://www.kaist.edu?.
+
+KARNIADAKIS, G. et al. Spectral/hp Element Methods for Computational Fluid
+Dynamics: Second Edition. [S.l.]: OUP Oxford, 2005. (Numerical Mathematics and
+Scie). ISBN 9780198528692.
+
+KIRBY, R. C. Algorithm 839. ACM Transactions on Mathematical Software, v. 30, n. 4,
+p. 502–516, 2004. ISSN 00983500.
+
+KOGA, A. A. et al. Development of heat sink device by using topology optimization.
+International Journal of Heat and Mass Transfer, Elsevier Ltd, v. 64, p. 759–772, set.
+2013. ISSN 00179310.
+
+KONTOLEONTOS, E. A. et al. Adjoint-based constrained topology optimization for
+viscous flows, including heat transfer. Engineering Optimization, v. 0273, n. December,
+p. 1–21, ago. 2012. ISSN 0305-215X.
+
+LARGITTE, L.; PASQUIER, R. A review of the kinetics adsorption models and their
+application to the adsorption of lead by an activated carbon. Chemical Engineering
+Research and Design, v. 109, p. 495–504, 2016. ISSN 18766102.
+
+LAZAROV, B. S.; SIGMUND, O. Filters in topology optimization based on helmholtz-
+type differential equations. International Journal for Numerical Methods in Engineering,
+v. 86, n. 6, p. 765–781, maio 2011. ISSN 00295981.
+
+LIMOUSIN, G. et al. Sorption isotherms: A review on physical bases, modeling and
+measurement. Applied Geochemistry, v. 22, n. 2, p. 249–275, 2007. ISSN 08832927.
+
+LOGG, A. Automating the finite element method. Archives of Computational Methods
+in Engineering, v. 14, n. 2, p. 93–138, dez. 2007. ISSN 11343060.
+
+MATSUMORI, T. et al. Topology optimization for fluid-thermal interaction problems
+under constant input power. Structural and Multidisciplinary Optimization, v. 47, n. 4,
+p. 571–581, fev. 2013. ISSN 1615147X.
+
+MCBRIDE, M. B. Environmental Chemistry of Soils. Oxford University Press,
+1994. ISBN 9780195070118. Dispon??vel em: ?https://books.google.co.uk/books?
+id=jgZhQgAACAAJ?.
+
+MENON, V. C.; KOMARNENI, S. Porous adsorbents for vehicular natural gas storage:
+a review. Journal of Porous Materials, v. 5, n. 1, p. 43–58, 1998. ISSN 13802224.
+
+http://www.ingevity.com/markets/adsorbed-natural-gas/
+http://www.scipy.org
+http://www.kaist.edu
+https://books.google.co.uk/books?id=jgZhQgAACAAJ
+https://books.google.co.uk/books?id=jgZhQgAACAAJ
+
+
+110
+
+MORRIS, A. M.; ALLEN, C. B.; RENDALL, T. C. S. Cfd-based optimization of
+aerofoils using radial basis functions for domain element parameterization and mesh
+deformation. International Journal for Numerical Methods in Fluids, v. 58, n. 8, p.
+827–860, nov. 2008. ISSN 02712091.
+
+MOTA, J. P. B.; ESTEVES, I. A. A. C.; ROSTAM-ABADI, M. Dynamic modelling
+of an adsorption storage tank using a hybrid approach combining computational fluid
+dynamics and process simulation. Computers and Chemical Engineering, v. 28, n. 11, p.
+2421–2431, out. 2004. ISSN 00981354.
+
+MOTA, J. P. B. et al. Charge dynamics of a methane adsorption storage system:
+Intraparticle diffusional effects. Adsorption, v. 3, n. 2, p. 117–125, 1996. ISSN 0929-5607.
+
+MULJADI, B. P. et al. The impact of porous media heterogeneity on non-darcy flow
+behaviour from pore-scale simulation. Advances in Water Resources, Elsevier Ltd., v. 95,
+p. 329–340, 2016. ISSN 03091708.
+
+PALACIOS, F. et al. Stanford university unstructured (su2): An open-source integrated
+computational environment for multi-physics simulation and design. 51st AIAA
+Aerospace Sciences Meeting, n. January, p. 1–60, 2013.
+
+PATIHA et al. The langmuir isotherm adsorption equation: The monolayer approach.
+IOP Conference Series: Materials Science and Engineering, v. 107, p. 012067, 2016.
+ISSN 1757-8981.
+
+PIGGOTT, M. D. et al. A new computational framework for multi-scale ocean modelling
+based on adapting unstructured meshes. International Journal for Numerical Methods in
+Fluids, v. 56, n. 8, p. 1003–1015, mar. 2008. ISSN 02712091.
+
+QIU, H. et al. Critical review in adsorption kinetic models. Journal of Zhejiang
+University SCIENCE A, v. 10, n. 5, p. 716–724, maio 2009. ISSN 1673-565X.
+
+QUINN, D. F.; MACDONALD, J. A.; SOSIN, K. Microporous carbons as adsorbents for
+methane storage. 207th ACS national meeting, v. 39, p. 1304, 12 1994.
+
+RAHMAN, K. A. et al. Thermal enhancement of charge and discharge cycles for
+adsorbed natural gas storage. Applied Thermal Engineering, Elsevier Ltd, v. 31, n. 10, p.
+1630–1639, jul. 2011. ISSN 13594311.
+
+REDDY, J. N.; GARTLING, D. K. The Finite Element Method in Heat Transfer and
+Fluid Dynamics, Third Edition. Taylor &amp;amp; Francis, 2010. (Computational Mechanics and
+Applied Analysis). ISBN 9781420085983. Dispon??vel em: ?https://books.google.co.uk/
+books?id=sv0VKLL5lWUC?.
+
+REUTHER, J. J. et al. Constrained multipoint aerodynamic shape optimization using
+an adjoint formulation and parallel computers, part 1. v. 36, 1999.
+
+SA, L. F. N. et al. Topological derivatives applied to fluid flow channel design
+optimization problems. Structural and Multidisciplinary Optimization, v. 54, n. 2,
+p. 249–264, Aug 2016. ISSN 1615-1488. Dispon??vel em: ?https://doi.org/10.1007/
+s00158-016-1399-0?.
+
+https://books.google.co.uk/books?id=sv0VKLL5lWUC
+https://books.google.co.uk/books?id=sv0VKLL5lWUC
+https://doi.org/10.1007/s00158-016-1399-0
+https://doi.org/10.1007/s00158-016-1399-0
+
+
+111
+
+SAHOO, P. K. et al. Filling characteristics for an activated carbon based adsorbed
+natural gas storage system. Industrial and Engineering Chemistry Research, v. 50, n. 23,
+p. 13000–13011, 2011. ISSN 08885885.
+
+SAHOO, S.; RAMGOPAL, M. A simple regression equation for predicting charge
+characteristics of adsorbed natural gas storage systems. Applied Thermal Engineering,
+Elsevier Ltd, v. 73, n. 1, p. 1093–1100, 2014. ISSN 13594311.
+
+SANTOS, J. C.; MARCONDES, F.; GURGEL, J. M. Performance analysis of a new tank
+configuration applied to the natural gas storage systems by adsorption. Applied Thermal
+Engineering, Elsevier Ltd, v. 29, n. 11-12, p. 2365–2372, ago. 2009. ISSN 13594311.
+
+SEDERBERG, T. W.; PARRY, S. R. Free-form deformation of solid geometric models.
+ACM SIGGRAPH Computer Graphics, v. 20, n. 4, p. 151–160, 1986. ISSN 00978930.
+
+SIGMUND, O. Design of multiphysics actuators using topology optimization - part i:
+One material structures. Computer Methods in Applied Mechanics and Engineering,
+v. 190, n. 49-50, p. 6577–6604, 2001. ISSN 00457825.
+
+SIGMUND, O.; PETERSSON, J. Numerical instabilities in topology optimization: A
+survey on procedures dealing with checkerboards, mesh-dependencies and local minima.
+Structural Optimization, v. 16, n. 1, p. 68–75, 1998. ISSN 0934-4373.
+
+SMITH, D. S. et al. Thermal conductivity of porous materials. Journal of Materials
+Research, v. 28, n. 17, p. 2260–2272, jul. 2013. ISSN 2044-5326.
+
+SOLARNEXT. Adsorption Cooling Technology. [S.l.], 2009. 1 p.
+
+STEIN, W.; JOYNER, D. Sage: System for algebra and geometry experimentation. . . .
+Algebra (SIGSAM Bulletin)(July 2005), v. 39, n. 2, p. 61–64, 2005.
+
+SUN, W.; HUANG, W.; RUSSELL, R. D. Finite difference preconditioning for solving
+orthogonal collocation equations for boundary value problems. SIAM Journal on
+Numerical Analysis, v. 33, n. 6, p. 2268–2285, 1996. ISSN 0036-1429.
+
+THACKER, W. E. et al. Modeling variable comparison adsorber performance :
+concentration and influent of adsorbents. v. 56, n. 3, p. 243–250, 2014.
+
+TOLEDO, M. et al. Use of phase change materials on an adsorbed carbon dioxide
+storage system. Applied Thermal Engineering, Elsevier Ltd, v. 51, n. 1-2, p. 512–519,
+2013. ISSN 13594311.
+
+TURTELTAUB, S. Optimal material properties for transient problems. Structural and
+Multidisciplinary Optimization, v. 22, n. 2, p. 157–166, 2001. ISSN 1615147X.
+
+VASILIEV, L. L.; KANONCHIK, L. E.; BABENKO, V. A. Thermal management of the
+adsorption-based vessel for hydrogenous gas storage. Journal of Engineering Physics . . . ,
+p. 12–15, 2011.
+
+VASILIEV, L. L.; KANONCHIK, L. E.; RABETSKY, M. I. Thermally regulated
+cylinder for adsorption storage of a hydrogenous gas. International Journal of Heat and
+Mass Transfer, Elsevier Ltd, v. 71, n. 2014, p. 125–132, 2014. ISSN 00179310.
+
+
+
+112
+
+WACHTER, A.; BIEGLER, L. T. On the implementation of an interior-point filter
+line-search algorithm for large-scale nonlinear programming. Mathematical Programming,
+v. 106, n. 1, p. 25–57, 2006. ISSN 00255610.
+
+WANG, B. K.; VINEYARD, E. A. Adsorption refrigeration. Ashrae, v. 1, n. September,
+p. 14–24, 2011.
+
+WELLER, H. G. et al. A tensorial approach to computational continuum mechanics
+using object orientated techniques. Computers in Physics, v. 12, n. 6, p. 620–631, 1998.
+
+WETENHALL, B. et al. Impact of co2 impurity on co2 compression, liquefaction and
+transportation. Energy Procedia, v. 63, p. 2764–2778, 2014. ISSN 18766102.
+
+WHITAKER, S. Flow in porous media i: A theoretical derivation of darcy’s law.
+Transport in Porous Media, v. 1, n. 1, p. 3–25, 1986. ISSN 01693913.
+
+WITHERDEN, F. D.; FARRINGTON, A. M.; VINCENT, P. E. Pyfr: An open source
+framework for solving advection-diffusion type problems on streaming architectures using
+the flux reconstruction approach. Computer Physics Communications, Elsevier B.V.,
+v. 185, n. 11, p. 3028–3040, 2014. ISSN 00104655.
+
+WOLAK, E.; KRASZEWSKI, S. An overview of adsorptive processes in refrigeration
+systems refrigerating appliances. E3S Web of Conferences, v. 10, p. 1–6, 2016. ISSN
+22671242.
+
+WOOD, G. O. Affinity coefficients of the polanyi/dubinin adsorption isotherm equations.
+a review with compilations and correlations. Carbon, v. 39, n. 3, p. 343–356, 2001. ISSN
+00086223.
+
+WOOD, G. O. Review and comparisons of d/r models of equilibrium adsorption of
+binary mixtures of organic vapors on activated carbons. Carbon, v. 40, n. 3, p. 231–239,
+2002. ISSN 00086223.
+
+XIE, Y. M. et al. Shape and topology design for heat conduction by evolutionary
+structural optimization. International Journal of Heat and Mass Transfer, v. 42, n. 1999,
+p. 3361–3371, 1999. ISSN 0017-9310.
+
+YONGE, D. R. Finite element modelling of multisolute activated carbon adsorption.
+Applied mathematical modelling, v. 16, p. 630–637, 1992.
+
+YOON, G. H. Topological design of heat dissipating structure with forced convective
+heat transfer. Journal of Mechanical Science and Technology, v. 24, n. 6, p. 1225–1233,
+jun. 2010. ISSN 1738494X.
+
+YOON, G. H. Topological layout design of electro-fluid-thermal-compliant actuator.
+Computer Methods in Applied Mechanics and Engineering, Elsevier B.V., v. 209-212, p.
+28–44, fev. 2012. ISSN 00457825.
+
+YOON, G. H.; KIM, Y. Y. The element connectivity parameterization formulation for
+the topology design optimization of multiphysics systems. International Journal for
+Numerical Methods in Engineering, v. 64, n. 12, p. 1649–1677, 2005. ISSN 00295981.
+
+ZENG, Z.; GRIGG, R. A criterion for non-darcy flow in porous media. Transport in
+Porous Media, v. 63, n. 1, p. 57–69, 2006. ISSN 01693913.
+
+
+
+113
+
+Appendix A. Finite Element Coefficients
+
+This chapter presents the integral form of the coefficients of the FEM systems given
+
+in Chapter 4.
+
+A.1 Full Adsorption Problem
+
+W(T) =
+
+?
+
+?
+
+[2?r]
+Mg(?
+
+T ?t)
+
+Rg(?T T)
+??Tdx. (A.1)
+
+S(P,T) =
+
+?
+
+?
+
+[2?r]
+Mg(?
+
+T ?t)(?
+T P)
+
+Rg(?T T)2
+??Tdx. (A.2)
+
+Z(P,T) =
+
+?
+
+?
+
+[2?r]
+Mg(?
+
+T Ks)(?
+T P)
+
+Rgµg(?T T)
+????Tdx
+
+?
+?
+
+?W
+
+[2?r]
+Mg(?
+
+T Ks)(?
+T P)
+
+Rgµg(?T T)
+???Tds.
+
+(A.3)
+
+J =
+
+?
+
+?
+
+[2?r] (?T ?t)??
+Tdx. (A.4)
+
+N(P,T,Q) =
+
+?
+
+?
+
+[2?r]
+CpgMg(?
+
+T?t)
+
+Rg
+
+(?T P)
+
+(?T T)
+??Tdx
+
++
+
+?
+
+?
+
+[2?r] Cpg(?
+T Q)??Tdx
+
++
+
+?
+
+?
+
+[2?r] (1 ? ?T ?t)(?T Cps)(?T ?s)??Tdx.
+
+(A.5)
+
+
+
+114
+
+L(P,T) = ?
+?
+
+?
+
+[2?r]
+CpgMg(?
+
+T Ks)(?
+T P)
+
+Rgµg(?T T)
+(??T P)????Tdx. (A.6)
+
+K =
+
+?
+
+?
+
+[2?r] (?T kf)????Tdx ?
+?
+
+?W
+
+[2?r] (?T kf)???Tds. (A.7)
+
+YM =
+
+?
+
+?
+
+[2?r] ??Tdx. (A.8)
+
+YE =
+
+?
+
+?
+
+?[2?r] |?H|??Tdx. (A.9)
+
+YD =
+
+?
+
+?
+
+[2?r] ??Tdx. (A.10)
+
+R(T) =
+
+?
+
+?
+
+[2?r] (?T G)??Tdx. (A.11)
+
+V (P,T) =
+
+?
+
+?
+
+[2?r] (?T G)(?T Qeq)?dx. (A.12)
+
+A.2 Adsorption Problem after Decoupling the Ad-
+
+sorbed Density Field
+
+F = ?
+?
+
+?
+
+[2?r]
+
+(
+
+?T
+?Q
+
+?t
+
+)
+
+?dx. (A.13)
+
+H =
+
+?
+
+?
+
+[2?r] |?H|
+(
+
+?T
+?Q
+
+?t
+
+)
+
+?dx. (A.14)
+
+
+
+115
+
+A.3 Adsorption Problem after Decoupling the Pres-
+
+sure Field
+
+W =
+
+?
+
+?
+
+[2?r] (?T ?t)(?
+T
+??g
+?t
+
+)??Tdx. (A.15)
+
+Z =
+
+?
+
+?
+
+[2?r]
+(?T Ks)(?
+
+T ?g)
+
+µg
+????Tdx
+
+?
+?
+
+?W
+
+[2?r]
+(?T Ks)(?
+
+T ?g)
+
+µg
+???Tds.
+
+(A.16)
+
+F = ?
+?
+
+?
+
+[2?r]
+
+(
+
+?T
+?Q
+
+?t
+
+)
+
+?dx. (A.17)
+
+N =
+
+?
+
+?
+
+[2?r] (?T ?t)Cpg(?
+T ?g)??
+
+Tdx
+
++
+
+?
+
+?
+
+[2?r]
+
+(
+
+1 ? (?T ?t)
+)
+
+(?T Cps)(?
+T ?s)??
+
+Tdx
+
++
+
+?
+
+?
+
+[2?r] Cpg(?
+T Q)??Tdx.
+
+(A.18)
+
+L = ?
+?
+
+?
+
+[2?r]
+CpgMg(?
+
+T Ks)(?
+T P)
+
+Rgµg(?T T)
+(??T P)????Tdx. (A.19)
+
+K =
+
+?
+
+?
+
+[2?r] (?T kf)????Tdx
+
+?
+?
+
+?W
+
+[2?r] (?T kf)???T ds.
+(A.20)
+
+H =
+
+?
+
+?
+
+[2?r] (?T ?t)
+
+(
+
+?T
+?P
+
+?t
+
+)
+
+?dx +
+
+?
+
+?
+
+[2?r] |?H|
+(
+
+?T
+?Q
+
+?t
+
+)
+
+?dx. (A.21)
+
+
+
+116
+
+A.4 Helmholtz Filtering
+
+The interpolation of the pseudo-porosities is done over a finite element by using the
+
+shape function ? as
+
+e(x, t) ?=
+L
+
+?
+
+l=1
+
+?l(x)e(t) = ?
+T e. (A.22)
+
+Making vH = ?, the FEM system is assembled based on the coefficients
+
+Z =
+
+?
+
+?
+
+??Tdx +
+
+?
+
+?
+
+z2????Tdx, (A.23)
+
+e|=
+?
+
+?
+
+(?T e|)?dx. (A.24)
+
+
+
+117
+
+Appendix B. Material Properties
+
+Table B.1: Methane properties (SAHOO et al., 2011; SAHOO; RAMGOPAL, 2014).
+
+Property Symbol Value Unit
+
+Specific Heat Cpg 14 890 J kg
+?1K?1
+
+Thermal Conductivity kg 34.30 × 10?3 W m?1K?1
+
+Molar Mass Mg 16.03 × 10?3 kg mol?1
+
+Critical Pressure Pcr 4.60 × 106 Pa
+Boiling Point Temperature Tboil 111.2 K
+
+Critical Temperature Tcr 191 K
+
+Thermal Expansion of Liquefied Gases ?e 2.50 × 10?3 K?1
+
+Density at Boiling Point ?boil 422.62 kg m
+?3
+
+Viscosity µg 12.50 × 10?6 Pa s
+
+Table B.2: Activated Carbon properties (SAHOO et al., 2011).
+
+Property Symbol Value Unit
+
+Bulk Specific Heat Cps 650 J kg
+?1K?1
+
+Bulk Thermal Conductivity ks 0.54 W m
+?1K?1
+
+Micro-Pores Dispersion ns 1.8
+
+Specific Volume of Micro-Pores w 0.33 × 10?3 m3 kg?1
+
+Particle Diameter øs 1.00 × 10?3 m
+Macro-Porosity ?M 0.3
+
+Micro-Porosity ?m 0.5
+
+Bulk Density ?s 1428.57 kg m
+?3
+
+Micro-Pore Tortuosity ?s 2.08
+
+
+
+118
+
+Table B.3: Adsorption parameters for Methane on Activated Carbon (SAHOO et al.,
+2011; SAHOO; RAMGOPAL, 2014).
+
+Parameter Symbol Value Unit
+
+Effective Gas Diffusivity D0 8.00 × 10?7 m2 s?1
+
+Characteristic Energy E0 25 040 J mol
+?1
+
+Activation Energy of Adsorption Ea 6000 J mol
+?1
+
+Activation Energy of Desorption 1 Ed 22 000 J mol
+?1
+
+Affinity Coefficient ? 0.35
+
+Isosteric Heat of Adsorption ?H ?16 000 × 103 J mol?1
+1 Calculated from Ea and ?H values (CHRISTMANN, 1991).
+
+Table B.4: Steel properties.
+
+Parameter Symbol Value Unit
+
+Specific Heat Cps 470 J kg
+?1K?1
+
+Thermal Conductivity ks 47 W m
+?1K?1
+
+Density ?s 7900 kg m
+?3
+
+Permeability 1 Ks 1.00 × 10?22 m2
+1 Approximation adopted for representing impermeable medium.
+
+
+	poli-tese
+	'EPUSP-Catalogacao-na-Fonte.pdf'
+	poli-tese
+
+</field>
+	</doc>
+</add>

@@ -1,0 +1,662 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-BT.04928</field>
+		<field name="filename">BTP_2002_45_2_04_Deteccao_em_tempo.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">DETECÇÃO EM TEMPO REAL DE VAZAMENTOS EM REDES DE ESCOAMENTO PARA FLUIDOS INCOMPRESSÍVEIS: UMA ABORDAGEM EM SÉRIES TEMPORAIS
+REAL TIME DETECTION OF LEAKS IN NON-COMPRESSIBLE FLUID FLOW SYSTEMS: A TIME
+SERIES APPROACH
+DETECCIÓN EN TIEMPO REAL DE PÉRDIDAS EN REDES DE
+TRANSPORTE DE FLUIDOS INCOMPRESIBLES: UN
+ABORDAJE EN SERIES TEMPORALES
+César Augusto Fernandes de Oliveira Laboratório SDV- Dutos Escola de Química Universidade Federal do Rio de Janeiro (UFRJ) e-mail:j lm@eq.ufrj .br
+RESUMO
+Foram desenvolvidos algoritmos para a detecção, quantificação e localização em tempo real de vazamentos em redes de escoamento operando com fluidos incompressíveis. Entradas e saídas do processo são assumidas disponíveis por meio de sensores de campo, tratadas por procedimentos de reconciliação e armazenadas em séries históricas temporais. O processo aqui apresentado foi modelado como uma rede pseudo-estacionária para a geração de dados do processo nas variáveis de interesse: pressões nodais, vazões de escoamento nos tubos e nós de entrada ou saída. O procedimento consiste em gerar séries sob a ocorrência de eventos programados e empregá-las para treinamento de preditores MIMO em estrutura ARX/ARMAX, permanentemente atualizados. Um vazamento repentino é detectado pelo afastamento instantâneo, estatisticamente significativo, entre um conjunto de predições e as medições do processo correspondentes às respostas dos preditores. Identificado o evento, a próxima etapa é localizá-lo e quantificá-lo por meio de outro grupo de preditores treinados por dados simulados do processo para eventos de vazamento conhecidos. Estes preditores têm parâmetros de vazamento (i.e. sua localização e diâmetro do orifício) como entradas suplementares, de tal forma que possam ser estimados para predizerem as respostas reais do processo que se afastam das predições originalmente monitoradas na manifestação do evento.
+ABSTRACT
+Algorithms were developed for real time detection, estimation and location of leaks in flow systems operating with non-compressible fluids. Process inputs and outputs are assumed to be available by means of field sensing, treated through historical time series reconciliation and storage. The process presented herein was built as a pseudo stationary system for process data generation at the selected variables: nodal pressures, flow rates in pipes and input and output nodes. The procedure consists in generating data series during the occurrence of programmed events and use them during the training of ARX/ARMAX structure MIMO predictors, with constant update. A sudden leak is detected by a statistically significant instant deviation between a group ofpredictions and the measures of the process associated with the predictors' answers. Once the event is identified, the next step is to locate and estimate its size using another group of predictors trained through simulated process data of known leak events. These predictors use leak parameters (i.e., its location and orifice diameter) as additional inputs so that estimation can be performed in order to predict real
+answers to the process that are being deviated from the original predictions monitored during the manifestation of the event.
+RESUMEN
+Se han desarrollado algoritmos para la detección, cuantificación y localization, en tiempo real de pérdidas o fugas en las redes de transporte de flujo que operan con fluidos incompresibles. Las entradas y salidas del proceso se asumen que están disponibles por medio de sensores de campo, estas informaciones son tratadas por procedimientos de reconciliation y son almacenadas en series históricas temporales. El proceso aquí presentado fue modelado como una red pseudo estacionaria para la generación de datos del proceso de las siguientes variables de interés: presiones nodales, caudales de descarga en los tubos y en los nodos de entrada o salida. El procedimiento consiste en generar series considerando la ocurrencia de eventos programados y emplearlas para el entrenamiento de predictores MIMO en estructura ARX/ARMAX, que son permanentemente actualizados. Una pérdida repentina es detectada por el distanciamiento instantâneo, estadísticamente significante, entre el conjunto de predicciones y las mediciones del proceso correspondientes a las respuestas de los predictores. Identificado el evento, la próxima etapa es localizarlo y cuantificarlo, por medio de otro grupo de predictores entrenados por datos simulados del proceso verificado en eventos de pérdida o fuga conocidos. Estos predictores poseen parâmetros de pérdida (es decir, su localización y diámetro del orifício) que son utilizados como entradas suplementarias, de tal forma que puedan ser estimados para predecir las respuestas reales del proceso que se ha distanciado de las predicciones originalmente monitoreadas en la manifestación del evento.
+OBJETIVO
+Desenvolvimento de ferramentas computacionais para detecção, quantificação (tempo de vazamento, vazão de vazamento e quantidade vazada) e localização de padrões anormais de operação.
+RELEVÂNCIA
+Redes de escoamento são estruturas importantes na sociedade moderna, sendo responsáveis pelo transporte e distribuição de água, combustíveis líquidos e gasosos além de matérias-primas industriais como petróleo e gás natural. Falhas e vazamentos nestes sistemas podem ocasionar, além de perdas econômicas decorrentes da inutilização de material de valor comercial, desastres urbanos, industriais e ambientais. Em conseqüência, o desenvolvimento de sistemas confiáveis e rápidos para a detecção de vazamentos assume grande importância no cenário da tecnologia de operação de dutos e redes de escoamento.
+1.	INTRODUÇÃO
+Estratégias de monitoração suportadas por sistemas de aquisição de dados em tempo-real permitem a detecção de vazamentos pela identificação de alteração repentina do padrão de comportamento temporal de variáveis do processo (como vazões e pressões). A localização de vazamentos é obtida como conseqüência da alta incidência de pontos de medição no sistema. A quantificação do vazamento é obtida pelo registro de vazões em ponto a montante e a jusante da zona do evento (1). Claramente, esta abordagem tem forte impacto no investimento da planta, além de necessitar de constantes e onerosas rotinas de manutenção de sensores. Medeiros (1) ressalta que a confiabilidade desta classe de Sistema de Detecção de Vazamentos (SDV) está assegurada apenas para sistemas caracterizados por uma grande linha de escoamento. No caso de redes de escoamento com topologia em árvore, ou possuindo ciclos, estas estratégias, além de caras, mostram-se insuficientes.
+Outras classes de SDVs são apresentadas na literatura (2-4) como mais promissoras, confiáveis e associadas a menores investimentos de implantação. Nestas, a qualidade da detecção obtida depende de modelos apropriados ao processo, sejam eles de natureza estocástica, gerados por estratégias de identificação sobre séries temporais de variáveis de entrada e saída (estados), ou construídos com base em princípios e leis fenomenológicos. Geiger etal.(5 apresentam métodos de detecção e localização de vazamentos com base em
+observadores de estado derivados pela linearização de um modelo matemático básico. O sistema foi capaz de detectar vazamentos de 2% da vazão do duto.
+Foram desenvolvidos, aqui, algoritmos para a detecção, quantificação e localização, em tempo real, de vazamentos em redes de escoamento operando com fluidos incompressíveis. Assume-se que o processo opera sob a influência de entradas variantes no tempo que contêm ruídos de processo ou de medição de acordo com vários padrões de ruído possíveis. As entradas do processo, assim como algumas saídas selecionadas, são assumidas disponíveis através de sensores de campo, tratadas por procedimentos de reconciliação e armazenadas em séries históricas temporais. Para se gerarem estas séries, que permitem a elaboração e teste de procedimentos de detecção, o processo foi modelado como uma rede de dutos pseudo-estacionária respondendo sem atrasos às entradas. As variáveis de processo de interesse são pressões nodais, vazão de escoamento no tubo e vazões de escoamento nodais de entrada ou saída. As relações do modelo incluem equações de estado estacionário para balanço de massa nodal e equações de balanço de momentum para os tubos. Os graus de liberdade estacionários remanescentes são atribuídos às entradas do processo, que são compostas por um conjunto de pressões nodais e vazões de escoamento nodais de entrada ou saída. Esta descrição do processo pode se apresentar como não realista, mas exibe propriedades altamente desejáveis para teste e desenvolvimento de estratégias com base em séries temporais de dados do processo para detecção, localização e quantificação em tempo-real de escoamento.
+O procedimento típico consiste em gerar séries temporais de entradas e respostas de operação de redes, sob a ocorrência de eventos pré-programados como vazamentos, partidas e paradas de alimentação e suprimentos. Estas séries são empregadas para treinamento de preditores MIMO em estrutura ARX/ARMAX. Os preditores auxiliares são permanentemente treinados e atualizados ao longo do tempo. A qualidade do treinamento é medida por meio de entidades estatísticas como intervalo de confiança para predições corretas e estimadores. Uma manifestação repentina de vazamento é detectada como um afastamento instantâneo, estatisticamente significativo, entre um conjunto de predições selecionadas e as medições do processo correspondentes às respostas dos preditores. A precisão da detecção depende do conjunto de respostas treinadas e sua proximidade física com respeito à localização do evento na rede: quanto maior o número de respostas monitoradas e processadas na rede mais fácil a detecção do evento.
+Na hipótese de identificação do evento, a próxima etapa é localizá-lo e quantificá-lo. Estes objetivos são atingidos por um outro grupo de preditores treinados por dados simulados do processo para eventos de vazamento conhecidos. Estes preditores têm parâmetros de vazamento (i.e. sua localização e diâmetro do orifício) como entradas suplementares, de tal forma que possam ser estimados para predizer as respostas reais do processo que se afastam das predições originalmente monitoradas na manifestação do evento.
+2.	DETECÇÃO DE VAZAMENTOS E EVENTOS VIA ACOMPANHAMENTO DO PROCESSO COM PREDITORES ARX-MIMO
+As saídas do processo são acompanhadas por respostas calculadas pro meio de modelos estocásticos anteriormente treinados com dados estocásticos históricos, i.e., séries temporais. Define-se como Séries Temporais um conjunto de observações geradas seqüencialmente no tempo . Empregou-se, aqui, estrutura ARX (Auto Regressive EXogenous Input) com múltiplas entradas e múltiplas saídas (MIMO).
+2.1.	Preditores ARX-MIMO
+• Variáveis básicas
+y(t)	: vetor (ny x 1) de saídas do processo sob acompanhamento em t;
+y(t)	: predição para y(t) (ny x 1);
+w(t)	: vetor (nu x 1) de entradas do processo sob acompanhamento em t;
+q(.)	: operador de deslocamento;
+Ak	: matriz ny x nu constante;
+Bk	: matriz ny x nu constante;
+n	: ordem do filtro de auto-regressão (AR) do ARX-MIMO;
+m	: ordem do filtro de entrada (X) do ARX-MIMO;
+Ak (q) : operador matricial do filtro AR (ny x ny);
+Bk (q) : operador matricial do filtro X (ny x nu).
+n k
+A(q)=1+ X Akq k(•)	(1)
+-	k=1- k
+n k
+B(q)=1+S Bkq k(•)	(2)
+-	k=1- k
+•	Equações do Preditor para Instante t + 1
+y(t +1) = B(q)u (t) + q|1 - A(q)iy(t)	(3)
+•	Abrindo operadores e estendendo predição para instantes t + 1, t + N
+y(t +1) = B1 u(t) +... + Bmu(t - m +1) - A1 y(t) - ••• - Bny(t - n +1)
+y(t + N) = BÁu.(t + N - 1) + ••• + BmU.(t + N - m) - A y(t + N - 1) - ••• - An y(t + N - n)
+"	m	~	" -	(4)
+•	Metodologia
+A metodologia de detecção de eventos consiste em construir preditores da classe (equações 3 ou 4) e colocá-los para prever estados do processo com respeito a apenas uma pequena parte do grande elenco plausível de variáveis^ Teoricamente, na ausência de anormalidades, e sob influência de ruídos estocásticos ordinários, o preditor deverá rastrear com sucesso as variáveis sob acompanhamento^ Entende-se por isto que a predição distará do valor correspondente medido algo inferior à largura do intervalo de confiança da predição^ Na ocorrência de evento anormal e não-estocástico (re^ associado a ruídos) a predição se afastará do valor medido em uma distância muito superior à largura do intervalo de confiança correspondente^ Têm-se, assim, os fundamentos de um detector de anormalidades^
+As fases principais da metodologia são:
+T geração do preditor via treinamento com dados de processo em t + 1, • ••, t + N;
+2^ acompanhamento do processo com preditor gerado em t + N + 1, • ••, t + N + NI;
+3^ construção de limites estásticos de confiança para preditores;
+4^ detecção de evento na faixa temporal t + N + 1, • ••, t + N + NI quando houver disparidade entre predição e medição além dos limites de confiança;
+5^ após t + N + NI regenerar o preditor com nova sessão de treinamento com N instantes (normalmente NI &gt;&gt; N);
+Repetir etapas (ii) a (v), após fazer t = t + N + NL
+A seguir, serão apresentados os principais fundamentos e procedimentos numéricos das fases acima, que constituem o MÉTODO DE DETECÇÃO DE EVENTOS EM PROCESSOS DESCRITOS EM SÉRIES TEMPORAL Este método está sendo desenvolvido no Laboratório SDV-Dutos da Escola de Química da UFRL
+A coleção matricial para treinamento do ARX-MIMO está apresentada no Apêndice 1 (equações de 1T a L6É
+• Estimação de Parâmetros para Saída i
+Hipóteses
+(i)	Modelo ARX é correto para representar o processo:
+h i = XÈi
+(5)
+onde:
+0 i é o valor correto de parâmetros;
+h ié o vetor correto de predições (t + 1,...,t + N) para a saída i.
+(ii)	Amostragem experimental para a saída i, O i (coluna i de ), segue padrão normal não correlacionado em torno de h :
+i
+1
+(2p ) N
+exp[-2(^i -1)R_1(^ -1.)]
+(6)
+R, = COV(^i) = 1idiag(r&lt;);	(r : Nx1)
+(7)
+Definindo-se i
+(conhecida), tem-se:
+(8)
+Para se estimar q_i constrói-se a função verossimilhança para a saída i a partir da equação 8
+.	Jdet(^,)	1 A	A
+l(*iq) = ’-'2 exp[--Yi)tW!&amp;amp; -Y)]
+(9)
+Estima-se maximizando a função densidade conjunta dos valores medidos através de L(Ot ,f)t) :
+Max . L(Oi ,qi)
+(10)
+que corresponde a (W, conhecida):
+Min{ } 2&lt;£-ít) W(t,S.,)
+(11)
+■ i
+onde:
+Y i é o vetor de preditores para a saída i dado em pela equação 1.6 - Apêndice 1. Substituição de (1.6 -Apêndice 1) seguida de busca de ponto estacionário em (2.1 - Apêndice 2), resulta em:
+0i = [X‘W X]-1 XW o,
+(12)
+A caracterização da Estimação, Região de Confiança de Parâmetros, Região de Confiança para Predições Corretas na Janela de Treinamento do ARX-MIMO e Fora da Janela de Treinamento estão apresentadas no Apêndice 2.
+3.	LOCALIZAÇÃO E QUANTIFICAÇÃO DE VAZAMENTOS E EVENTOS APÓS DETECÇÃO
+Este procedimento é implementado em duas fases:
+(1)	treinamento de preditor ARX-MIMO dual para reprodução de resposta do processo sob ação de eventos;
+(2)	obtenção de estimadores para localização e quantificação do evento detectado via estimação do feixe dual de entradas do preditor de modo a reproduzir o comportamento do processo antes e após sua ocorrência.
+3.1.	Preditor ARX-MIMO DUAL
+Trata-se do mesmo preditor usado para detecção dotado de filtro extra da classe X (entrada) para processar feixe dual de entradas que correspondem à alteração do sistema devido à ocorrência de eventos.
+• Variáveis Básicas
+y(tY-
+vetor (ny x 1) de saídas do processo sob acompanhamento em t;
+y(t) :	predição para y(t) (ny x 1);
+U(t) :	vetor de entradas clássicas do processo em t (nu x 1);
+z(t) :	vetor de entradas duais do processo em t, correspondendo a
+alterações do processo (nz x 1);
+A(q), B(q), C(q): operadores matriciais dados por:
+nb
+A(q)=1+X Akq ~k (•);
+k=1
+nb
+B(q) = 1+X Bkq ~k (•);
+k=1
+nc
+C (q) = 1+X Ckq ~k (•)
+k=1
+• Propostas de Variáveis-chaves
+y (t Y u (t):	pressões de nós típicos da rede dotados de medidores; pressões especificadas em nós de entrada da rede devido a bombas, compressores. Idem para nós com vazões de entradas especificadas. z(t) = [zD1 zL1 zD2	zL2	... zDnt zLnt ]ntx1
+onde:
+nt é o número de tubos da rede em consideração, e (zDí,zLí ) são 2 valores numéricos para descrição de furo na linha i. As seguintes expressões são propostas:
+zD1= (Df /Dt )2,5
+zLi= (Df / Dt )(1 + Lf / Lt)
+(13)
+onde:
+Dit Li são o diâmetro e comprimento da linha, DF é o diâmetro do furo e Lf sua posição segundo orientação pré-definida do tubo. As equações 13 evidenciam que um tubo sem anormalidade (DF = 0) corresponde à entrada do sinal:
+z
+Di
+= 0
+z
+l _
+Analogamente, à rede em condição normal em t corresponderá z(t) = 0 . Neste caso, o preditor deverá responder como o anteriormente descrito para detecção de eventos.
+•	Equação do Preditor para t + 1
+y(t + f) = B(q)u(t +1) + C(q)z(t +1) + q[1 - A(q)ly(t)	(14)
+•	Abrindo Operadores e Estendendo Predição para t + 1, ..., t + N
+y(t +1) = Bu(t +1) +... + B u(t ~ m +1) +
+C1 z(t) + ...Cpz(t - p +1) +
+Aiy(t) _..._ Any(t ~ n+1)
+...	(15)
+y(t + N) = B u(t + N -1) +... + B u(t + N - m) +
+Cz(t + N-1) + ...C z(t + N-p) +
+Ajy(t+n -1) -... - Any(t+n - n)
+•	Metodologia para Treinamento de Preditor ARX-MIMO-DUAL
+Multi-eventos de furos de vários diâmetros e posições são simulados ao longo de grande período operacional, podendo haver concomitância de eventos, sendo que estes se aplicam apenas durante certo intervalo de tempo após o que são desligados. O Preditor ARX-MIMO-DUAL é levado a reproduzir o comportamento das variáveis acompanhadas ( y(t) ) à medida que o sistema adquire entradas ( y(t) ) clássicas e eventos (ou entradas duais) (z(t)).
+No Apêndice 3 apresentam-se as Coleções Matriciais para Treinamento para o ARX-MIMO Dual, enquanto que o Apêndice 4 reúne a Caracterização Estatística do ARX-MIMO Dual.
+4.	MODELO DE REDES DE ESCOAMENTO INCOMPRESSÍVEL PSEUDO-ESTACIONÁRIO
+As Séries Temporais utilizadas para treinamento e teste dos detectores foram geradas por modelo de escoamento pseudo-estacionário descrito no Apêndice 5.
+5.	DESCRIÇÃO DA METODOLOGIA VIA APLICAÇÃO EM REDE DE ESCOAMENTO DE 13 TUBOS
+•	Rede Básica
+A rede básica em consideração é mostrada na figura 1. Consiste em 13 linhas com 0.1 m de diâmetro no plano de cota virtual zero. A viscosidade e densidade do fluido são respectivamente 1cP e 1 g/cm3. A rugosidade de parede é de 10-7m. As dimensões das linhas (marcadas com círculos) e as posições dos nós (marcados com losangos) podem ser obtidas na figura. As oito especificações deste sistema são: P1=250bar, P4=10bar, P6=P8=1bar, W2=0Kg/s, W3=0Kg/s, W5=0Kg/s, w7=200Kg/s. As variáveis de entrada (u) são um subconjunto das especificações sujeitas a comportamento dinâmico (u1=P1, u2=P4, u3=W7). As entradas são produzidas por geradores de séries temporais que superpõem ruído pseudo-randômico aos calores nominais de P1, P4 e W7. As amplitudes dos ruídos são limitadas a 10% dos valores nominais, sendo adotado 70% de probabilidade do sinal (t + 1) repetir o valor do sinal (t). Estes geradores de entrada emulam o
+comportamento característico de sistemas deste tipo, impulsionados por máquinas alternativas ou rotativas. Cabe lembrar que o modelo do sistema é extremamente simples, consistindo da resposta pseudo-estacionária das equações de balanço material e de energia mecânica às entradas acima descritas. Apesar de simples, o desempenho geral do modelo é satisfatório para aplicação de metodologias de detecção/localização de vazamentos via uma abordagem em séries temporais. As variáveis de saída (y) do sistema foram selecionadas como y1=P2, y2=P3, y3=P4 e y4=P7. Sobre as séries destas variáveis são aplicados os procedimentos de detecção/localização de eventos de vazamento.
+Fig. 1 - Rede básica.
+Fig. 1 - Basic system.
+Fig. 2 - Rede de escoamento com três eventos em 1000 instantes.
+Fig. 2 - Three events flow system at 1,000 moments.
+Fig. 3 - Séries temporais de quatro pressões da rede com três eventos.
+Fig. 3 - Four pressure time series of three events system.
+• Rede Perturbada por três Eventos de Vazamento
+A rede básica será simulada ao longo de 1000 instantes com incidência de três eventos (código de sistema alterado: CAD3FS1). Na tabela I apresentam-se dados dos eventos que podem ser identificados na figura 2.
+TABELA I EVENTOS IMPOSTOS À REDE
+TABLE I
+EVENTS SUBMITTED TO SYSTEM
+EVENTO	TUBO	DIÂMETRO (mm)	POSIÇÃO %	INSTANTE PARTIDA (E)	INSTANTE DESLIGAMENTO (D)
+1	2	10	40	250	930
+2	4	13	60	550	960
+3	8	10	80	700	985
+O comportamento das variáveis de saída de CAD3F$1 é mostrado na figura 3, onde estão assinalados os instantes de incidência (E) e de desligamento (D) dos eventos.
+• Detector ARX-MIMO 4x3
+As séries de registros dos três valores “u” e dos quatro valores “y” foram utilizadas para treinar preditor ARX-MIMO 4 x 3 que, quando devidamente utilizado, pode funcionar como detector de eventos de alta sensibilidade. Esta sensibilidade estará garantida desde que os intervalos de treinamento do detector não contenham partida/desligamento de eventos. Assim, a incidência de um ou mais eventos será fortemente evidenciada quando o detector está monitorando o sistema após o encerramento de uma sessão de treino. O código do detector gerado é Det1. Sua janela de treino contém 90 instantes, sendo seguida de janela de trabalho de 210 instantes. Estas janelas alternam-se até totalização da série de CAD3FS1. O Filtro “AR” e o Filtro “X” têm ambos ordem três. Det1 foi gerado pelo procedimento descrito no item 3 e Apêndice 2. As figuras 4-a,b,c,d evidenciam a sensibilidade de Det1 atuando sobre CAD3FS1. Os instantes de incidência de eventos e de seus desligamentos são assinalados com “E” e “D”. Os instantes de início de treino são marcados com
+Fig. 4 - Detecção de vazamentos na rede de três eventos com detector Det1. Fig 4 - Leak detection in three events system using Det1 detector.
+A detecção é marcada por forte disparidade entre a variável de processo sob acompanhamento (y) e a respectiva predição gerada pelo ARX-MIMO. Esta divergência cessará quando o detector for convocado para novo treino, quando então estará apto para nova detecção (fig. 4).
+• Rede Multi-eventos para Treinamento de Localizador
+A localização e quantificação de um vazamento serão tentadas por preditor ARX-MIMO-DUAL 4 x 3 x nz, após a detecção do evento obtida por Deti (item 3). No entanto, o localizador necessita de treino sobre a manifestação de eventos. Adotou-se, aqui, que o grupo de entradas “z” será formado por dois sinais numéricos caracterizadores de evento por tubo em consideração, sendo seis os tubos desta classe, respectivamente, 2, 4, 5, 6, 7 e 8. Sendo assim, o feixe de entradas ”z” contém 12 componentes (nz = 12). Os sinais de caracterização adotados por tubo estão na equação i3. Note-se que zD e zL são independentes e se anulam. Quando não existir furos, os sinais “y” e “u” do localizador são os mesmos dos detectores. Propõe-se treinar o localizador com extensa seqüência de eventos sobre os seis tubos citados acima. No caso, são formados três eventos por tubo, com diâmetro aleatório entre 5 mm e 20 mm, e posições equi-espaçadas com corrupção aleatória. Os eventos foram sorteados seqüencialmente por tubo, com duração de aproximadamente 100 instantes cada e superposição entre vizinhos de = 20%, de modo que a rede permanece, ora sob a ação de um evento, ora sob a ação de dois eventos. O programa de eventos foi lançado após 100 instantes de operação normal e, após encerrado, também seguido por 100 instantes normais. Este procedimento também gerou a cadeia temporal CADM6x3S1 (ou CADEIA 1), com 2 150 instantes. A rede alterada pelos eventos é mostrada na figura 5. Os valores zD e zL gerados são vistos na figura 6 ao longo do tempo. As quatro saídas do processo sob CADM6x3S1 são mostrados na figura 7 contra o tempo.
+• Treino do Localizador
+Foi gerado o localizador LOCM6x3S1 com os dados de CADM6x3S1 pelo procedimento do item 3 (Apêndices 3 e 4). Percebe-se a sensibilidade de LOCM6x3S1 ao feixe “z” pela figura 8. A aderência de LOCM6x3S1 a CADM6x3S1 é de qualidade inferior quando “z” é enviado como nulo (fig. 8-a,b,c), onde 8-c apresenta histograma de resíduos de aderência indicando 4 000 resíduos de pequeno tamanho. Quando o feixe “z” é preenchido corretamente com os valores zD e zL de CADM6x3S1 (fig. 6), a aderência de LOCM6x3S1 cresce (figs. 8-d,e,f), onde 8-f aponta 5 000 resíduos de pequeno valor. Apesar disto, a sensibilidade do localizador aos sinais “z” não parece grande, o que implicará em menor poder de localização de eventos. Isto pode ser conseqüência das funções propostas para zD e zL que, em princípio, podem ser melhoradas.
+• Localização e Quantificação de Eventos
+Após a preparação do localizador com a bateria de eventos simulados, volta-se à cadeia de três eventos e 1 000 instantes sobre a rede original: CAD3FS1. A ação dp detector Deti sobre CAD3FS1 revela os eventos (E1, E2, E3) mostrados na figura 9. LOCM6x3S1 será utilizado para localizar E1, que, como visto, ocorreu sobre o tubo 2 com DF = 10 mm, LF/L = 40%.
+Fig. 5 - Rede de treinamento do localizador com 6 X 3 eventos em 2 150 instantes.
+Fig. 5 - Localizer training system with 6 x 3 events at 2,150 moments.
+Entradas de Sinais de Furos (Tipo1)(T= 2150)
+Fig. 6 - Modelo proposto para sinais de furos na rede de 6 X 3 eventos.
+Fig. 6 - Suggested model for signs of holes in 6 x 3 events system.
+Fig. 7 - Séries temporais de quatro pressões da rede com 6 X 3 eventos.
+Fig. 7 - Four pressure time series of 6 x 3 events system.
+É feito extrato de 300 instantes ao redor de Eb em CAD3FS1. Este extrato é submetido a LOCM6x3S1 que procurará maximizar sua aderência ao extrato manipulando as entradas (zD , zL) de cada um de seus tubos de treino (ao todo seis). Isto implicará na minimização dos quadrados dos resíduos gerados entre a predição de LOCM6x3S1 e os valores no extrato ao redor de Eb para zD , zL de cada tubo de treino. O par (zD , zL) que obtiver melhor aderência de LOCM6x3S1 evidencia: (1) o tubo da ocorrência; (2) seu diâmetro de furo, por zD; (3) sua posição aproximada, por zL.
+Fig. 8 - Sensibilidade do localizador após treino com rede 6 X 3 eventos.
+Fig. 8 - Localizer sensitivity after training with 6 x 3 events system.
+Na figura 10 são apresentados os resultados desta otimização para cada um dos tubos de treino, sendo gerada na tela de resultados do sistema desenvolvido. A otimização para o tubo dois foi a mais bem sucedida, sendo estimados DF = 13,7 mm, LF /L = 27,3%, com função-objetivo (FOB) = 5674,8. Na figura 11- a, b, c, d, e, f consolidam-se as otimizações para variáveis (zD , zL) dos seis tubos de treino, onde os histogramas referem-se às distribuições de resíduos em cada caso; “yR”, “yPR” referem-se ao extrato “y” e os respectivos preditores. Também são apresentados zD , zL ao longo da busca (feita com método SIMPLEX).
+Fig. 9 - Detecção de vazamentos com Det1 na rede de três eventos.
+Fig. 9 - Leak detection using Det1 in three events system.
+Fig. 10 - Resumo das buscas de localização e quantificação de vazamentos relativas ao primeiro evento da rede de três eventos.
+Fig .10 - Summary of the localization and estimation searches of leaks associated with the first event in the three events system.
+Otimização Tubo 6
+6300
+O 6200
+6150
+6100
+6050
+5	10
+■ í.
+100
+80
+60
+40
+Fig. 11 - Resultados individualizados da localização e quantificação de vazamentos relativos ao primeiro evento da rede de três eventos.
+Fig. 11 - Individual results of the localization and estimation of leaks associated with the first event in the three events system.
+5.	CONCLUSÕES
+Apresentou-se uma metodologia para detecção, localização e quantificação de vazamentos em tempo real para redes de escoamento incompressível. A metodologia é baseada em séries temporais de processo e em preditores ARX-MIMO.
+Estruturas ARX-MIMO mostraram-se excelentes como detectores e eventos a partir da discrepância entre valores de processo e as respectivas predições.
+Estruturas ARX-MIMO expandidas com um filtro de entradas duais foram elaboradas para cursar o caminho inverso, isto é, após a detecção do evento, determinar em qual tubo e que posição e diâmetro caracterizam o vazamento. Os resultados são promissores, embora demandem ainda ajustes para aumento de sensibilidade.
+REFERÊNCIAS BIBLIOGRÁFICAS
+(1)	. MEDEIROS, J., L.; ARAÚJO, O. “Identificação de Processos: O Uso de Dados para Modelagem de
+Processos”, Apostila de Curso de Identificação de Processos, Escola de Química da UFRJ (2000).
+(2)	. MURKHEJEE, J.; NARASIMHAN, S. “Leak Detection in Networks of Pipelines by the Generalized
+Likelihood Ratio Method”, Ind. Eng. Chem. Resa., 35, 1889-1893 (1996).
+(3)	. BAGASEWICZ, M.; JIANG, Q. “Gross Error Modeling and Detection in Plant Linear Dynamic
+Reconciliation”, Computers and Chemical Engineering, 22 (12), 1789-1809 (1998).
+(4)	. COELHO, R. M. L.; MEDEIROS, J. L. “Detecção de Vazamento em Redes de Escoamento
+Incompressível via Reconciliação Não-Linear”. Anais do II ENPROMER - II Congresso de Engenharia de Processos do Mercosul, Outubro de 1999, Florianópolis, Brasil (1999).
+(5)	. GEIGER, G.; GREGORITZA, W.; MATKO, D. “Leak Detection and Localisation in Pipes and
+Pipelines”. European Symposium on Computer Aided Process Engineering - 10, Ed; S. Pierucci, 781786 (2000).
+(6)	. BOX, G.; JENKINS, G.; REINSEL, C. “Time Series Analysis, Forecasting and Control”, Prentice Hall
+(1994).
+APÊNDICE 1
+COLEÇÃO MATRICIAL PARA TREINAMENTO DOS PREDITORES ARX
+As séries temporais são organizadas matricialmente:
+U =
+u (t - (m -1))
+M
+u (t)
+M
+u (t + N -1)
+(N + m-1 x nu)
+y (t - (m -1))
+M
+Y = y (t)
+(N + m-1 x ny)
+M
+y (t + N -1)
+y ‘(t+1)		y (t +1)
+M		M
+y'(t)		y (t)
+M		M
+_ yt (t+n )_		_ y (t+n )_
+(N x ny)
+onde:
+u (t), y(t) são os vetores de entrada (nu x 1) e de saídas (ny x 1) do processo. Considera-se a predição da resposta “i”, yi(t) (i =1... ny). Será, portanto, necessário operar com as linhas “i”de B...,Bm,A,...An • Sejam AA e Bk as linhas “i” de Ak e . Assim por (1.2), tem-se:
+y(t +1) =	u (t) +... + Bm, u (t - m +1) - Ay(t) -... - An y(t - n +1)
+M	(1.1)
+y(t+n )=Bmu(t+n -1)+...+Bmtu(t+n -m) - Am^+n - o -... - Amy (t+n -n)
+Sejam:
+bkij : elemento ij de B^ akij : elemento ij de A^ uj(t), yj(t) : elemento j de	u(t) e y(t)
+Assim:
+ny
+••_=anijyj(t - (n _ 1))
+y i
+nu	nu	ny
+(t + 1) =	j (t) + ... + J=bmiju j(t - (m -1)) - = aj j(t) - •
+nu
+]= bmiju j (t + N - m)) -
+ny X j=1
+a1ijy j(t+N -1) _ •
+ny
+.. - X anijy j(t + N - n)) j=1
+Escrevendo a coluna i de Y(t) como:
+y t (t+1)
+Y(t) =
+(N x 1)
+y i (t+n )
+as equações anteriores tornam-se:
+nu		u j(t)		u j (t - (m -1))
+X j=1	b1ij	u j (t + N -1)	+...+ bmij	u j (t + N - m)
+ny		yj«)		yj(t -(n -1))
+Y í j=1	a1ij	}j (t + N - 1)	+...+ amij	y j (t + N - n)
+(1.2)
+Analogamente, escreve-se a coluna j de Ue Y como:
+	ut (t - (m -1))		yt (t -(n -1))
+Uj =		(N+m-1 x 1); Yj =	
+	ut (t + N -1)		y&amp;lt;(t+n -1)
+(N+n-1 x 1)
+São definidos os seletores esparsos:
+S!,..., Sm ;[S, ]: Nx( N + m -1) $ ,...,$ ;[$ ]:Nx(N + n-1) =1	=n =k
+N + m - 1
+Estes seletores garantem:
+uj(t)
+u(t + N -1)
+= [S1 ]Uj
+y()
+y(t+n -1)
+= [ $1 li.
+u(t - (m -1))
+uj(t + N - m)
+=[S ]Uj ;
+*- =m —J
+y (t -(n -1))
+y}(t + N - n)
+= [$ ]Yj
+= n J
+Assim, (1.2) torna-se:
+A m	nu	n	ny
+Yi -Z S- 1Z Ujbkij -Z [$ k 1Z Yjonj k=1	j=1	k=1	j=1
+(1.3)
+ou ainda:
+N + n - 1
+J
+A m	n
+Yi -Z [£k lUBki + Z [$k li-	(1.4)
+k=1	k=1
+Define-se a matriz (Nx (nx * ny + m* nu)):
+X = [- $1y ... - $nY	s1u... SmUJ
+e o vetor de parâmetros do ARX-MIMO para geração da predição i:
+0i ( (nx * ny + m* nu) x 1), dado por sua vez por: = [AH - AtnJB11 -B!m]
+&lt;--------&gt;
+aÍ
+
+=mr
+--&gt;
+Assim, tem-se a relação de predição da saída i:
+Y = X],, e_i
+No formato de estimação de parâmetros:
+Observações:
+ai
+bi
+(1.5)
+b _
+Y = [x] , (i=1,---,ny)
+(1.6)
+a)	matriz X é única para todas as saídas do ARX-MIMO;
+b)	cada saída (i=1,...,ny) diferencia-se apenas pelo vetor de parâmetros correspondentes;
+c)	identificações / estimações podem ser feitas separadamente para cada saída do ARX, incluindo estimativas de incertezas e intervalos de confiança.
+APÊNDICE 2
+BASE ESTATÍSTICA DO PREDITOR ARX-MIMO
+• Caracterização da Estimação
+(i)	*Êi é normal, logo 0i como função linear de também é normal;
+(ii)	ê_i é estimativa não-tendenciosa: E(Òi) = [X WyX]X WiE($j) sendo
+E(—i) =	= XPi, tem-se que:
+E( ê i) = e_ i
+(2.1)
+(iii)
+0i é estimativa coerente:
+COV(ê_t) = E[qi -ê.i)(ê.i -ê.t)t
+com a equação 12 escreve-se:
+0i ~Q_i = [XWiX] 1XWj^-i ~^i), resultando, com a equação 7, em COV(Òi) = ^ \XWX]	(2.2)
+(2.2)
+transparecendo a coerência quando N .
+(iv)
+Comportamento de A i:
+Ai = (ê i -ê.i/ [COV(êi)]- i -ê i)
+(2.3)
+Ora, COV (Oi) é simétrica positiva-definida podendo ser fatorada segundo:
+cov(êi) = peX =&gt; [ov(Òj)]1
+(2.4)
+onde e é diagonal de autovalores positivos e P é ortogonal de autovalores ortonormais. Assim:
+a i = (ê i -ê. i) tpeT 1/2e_ 1/2 Pt (ê i -ê. i)
+A i =	;	z_i =e~1/2 Pt (êi - )
+(2.5)
+(2.6)
+Mas zi é combinação de normais, logo é normal;
+E (z) = 0
+COV (zj) = E () = I
+Portanto, cada componente de z_i segue distribuição normal padronizada sem correlação entre eles. Disto resulta que Ai segue, por (2.6), distribuição c2 com nx*ny + m*nu graus de liberdade:
+A i ~&gt;C
+2
+n = n*ny+m*nu
+(2.7)
+• Estimação de_ 1j: Xj (saída i)
+Í i -h i = ti i - Li )+ Y i ~’li )
+onde, com: R. = 1zW. 1
+’	=z	z=z
+(2.8)
+Ora, usando-se z- ~h)=	z- -0z-) verifica-se que o último termo à direita em (2.8) é nulo devido à
+equação de ponto estacionário (equação 11). Com a mesma substituição, verifica-se que o segundo termo à direita é Ai (2.2 e 2.3). Finalmente, o termo à esquerda segue distribuição C com N graus de liberdade (via hipótese (ii) da estimação, equação 7 e álgebra similar à usada em (2.3) a (2.7). Portanto, a equação 2.8 traduz-se em:
+Cn = SR
+(N - n * ny - m * nu)
++ Cn = n*ny+m*nu
+(2.9)
+1i
+onde:
+1
+S2 =
+SR =
+N - n * ny - m * nu
+(Oi - Y )tWi	i - Y?i )t
+(2.10)
+2
+Ora, pelo teorema da Partição c resulta que o primeiro termo à direita é:
+S2 (N - n * ny - m * nu) Rz
+■&gt;C2 Ar *	*	(2.11)
+A'V=N -n*ny - m*nu'	'
+1i
+ou
+
+1i
+SR
+\
+C2 AZ *	*	(2.12)
+'■v = N - n*ny - m*nu'	'
+N - n * ny - m * nu )
+Dando que
+E(S2 ) = 1z (2.13)
+i
+(
+Var (SR ) =
+21i2
+N - n * ny - m * nu è /
+(2.14)
+Além de ser independente de z-.
+2
+Em outras palavras, S
+é um estimador coerente e não-tendencioso para lj: li = S
+Disto resulta também que
+CO V (Ô i)=sR
+Xwix
+(2.15)
+2 R '
+• Região de Confiança de Parâmetros Corretos para a Saída i i
+Ai = (9-q))[COV(èt)]-9-9) ^X2r=„,„y+m.nu P.I6)
+S2 (N - n * ny - m * nu)
+RX '	2
+li	Ay= N - n*ny - m*nu
+2 Dada a independência entre estas quantidades, dada (2.2), e com o teorema F sobre a razão de variáveis % , chega-se a:
+(9-9 z- )t [ X/W.X ]" 1(9-í?i)
+------ -------i-------------&gt; F(n * ny + m * nu,N -n * ny - m * nu) (2.17) S _ (n * ny + m * nu)
+Ri
+Isto é, a razão à esquerda segue distribuição F com graus de liberdade indicados.
+Seja f 1 _ a a abscissa Fisher obtida para a distribuição F tal que a probabilidade dela ser ultrapassada é de Prob(h&gt;&amp;lt;&amp;amp;1_a) = (1 -a)*100%,	a = 0.1,0.05,0.01,... ou menos. Assim:
+(Ô.i -e.i/[X^w.xr\êi -e_i) &amp;lt;sR (n * ny + m * nu)f1_a (2.18)
+região de confiança para com probabilidade (1 -a)*100% .
+• Região de Confiança para Predições Corretas na Janela de Treinamento do ARX-MIMO
+Com, as equações 1.6; 2.1 e 5
+E(Yi) = XÔi =h . (2.19)
+Portanto:
+COV(Yi) = E[(Yi -hi)(Yi -hi)](2.20)
+Com (Y_i ~hi) = X(9 i - 9i) chega-se a:
+COV(Yi) =li[XtWiX]~1 Xf (2.21)
+onde:	COV (Is i) =liX[XtWiX] 1 Xt (2.22)
+Ora, por (1.6), Y_i é função linear de Qj cujo comportamento é normal. Logo, Y_i também tem comportamento normal. Admitindo pequena ou nenhuma correlação de Y_j, tem-se com (2.19) e (2.21):
+Yik	N(hik,liXk- 1[XtWiX] 1 Xk
+onde:
+N(a,b) representa comportamento normal com média “a” e variância “b”; Xk é a k-ésima linha de X; e
+Yik é o k-ésima componente de Yz-, isto é:
+Yik = yi (t + k )(ver (1.1). Tem-se assim:
+___________Yik hik____________
+iXkt [ X^X ]-1 Xk
+N(0i ,1)
+S2 * (N - n * ny - m * nu)
+2
+n= N - n*ny - m*nu
+
+2 * Pela independência entre S„ e 6 r7	i, e por (1.6), tem-se independência entre os dois termos à esquerda acima.
+2
+Com o Teorema t, sobre a razão da variável normal padronizada e raiz quadrada de variável X , chega-se a:
+t=
+■» tr=n-n*ny-m*nu (2.23)
+Isto é, a razão acima segue distribuição t com grau de liberdade indicado.
+Seja t1-a/2 a abcissa obtida na distribuição tal que a probabilidade dela ser ultrapassada é de a/2*100% (a=0,05; 0,01; etc). Assim, com (2.23)
+Yik	t1-a/2^SRFik -Vik -Yik + t1-a/2^SRFik (2.24)
+que é o intervalo de confiança para Vikcom probabilidade (1-a)*100%, onde:
+Fik = Xkt [XtWiX] 1 Xk (2.25)
+ou, equivalentemente,
+Y (t + k)-t1_a/^ SRFik&amp;lt;Vi (t + k) &amp;lt;Y (t + k) + t1_a/2^sR,Fik (2.26)
+que é o intervalo de confiança para predição correta da saída “i” no instante t+k, (1 &amp;lt;k &amp;lt;N),na janela de treinamento, com probabilidade (1 -a)*100% .
+• Região de Confiança para Predições Corretas Fora da Janela de Treinamento do ARX-MIMO
+Após estimação de 0_j (i=1...ny), o preditor operará fora da janela de treinamento segundo equação de predição da forma (5). Para predizer saída “i” em instante k+1, tem-se:
+Y (k +1) = Zfk 0i (2.27)
+Z
+t _ k _
+-Y (k) -Yt (k -1).... - Yf (k - (n - 1)Ut (k)Ut (k -1)...U(k - (m -1))
+(2.28)
+(k+1&gt;t+N)
+Assim, dada a normalidade de (z- , tem-se que Yj (k +1) também segue comportamento normal, dando:
+E(fi (k +1)) _ Zfk Ôi _ h. (k +1) (2.29) var(Y i(K+1) _ E {Zk (i-e ii-e i Z
+VAR(Yi (K +1) _ ZkCOV(i ')k
+VAR(Y i (K + 1) _l iZfk
+A partir disto, pode-se escrever analogamente ao caso anterior
+Y (k +1) -hi (k +1) ^liZk [ XtWiX ]-1 Zk
+N(0,1)
+S2 (N - n * ny - m * nu)
+Rt	2
+li	/-\&gt;_ N - n*ny - m*nu
+Pela independência entre os termos à esquerda, e seguindo processo idêntico ao anterior via teorema t, chega-se à expressão do intervalo de confiança para a predição correta da resposta”i” em instante k+1 (k+1&gt;t+N) com probabilidade (1 -a)100% (a _ 0.05,0.01, etc):
+Yi (k +1) - t1_a /^ SR F*&amp;lt;h i (k +1) &amp;lt;Yi (k +1) +	/^ sR F* (2.31)
+(k+1&gt;t+N)
+onde:
+* t
+■ _ Zk
+t 1-1
+XtWX
+Zk (2.32)
+Yi (k +1) _ Zfk(i (2.33)
+(t\-a /2 exatamente a mesma da fórmula (2.26))
+APÊNDICE 3
+COLEÇÃO MATRICIAL PARA TREINAMENTO DE PREDITORES ARX-DUAL
+• Coleções Matriciais para Treinamento
+U,Y, Y,idênticos às anteriores.
+Ã (t - p +1)
+J (t)
+Z =
+(N+p-1 x nz)
+zt (t + N -1)
+Procedendo exatamente conforme preditor ARX-MIMO, chega-se a:
+y. (t +1) = Bi tu(t +1) +... + Bm^ u(t — m +1) +
+C tz(t) + ...C	tz(t -p +1) +
+=1	=Pi
+A1 ty(t) -... - An fy(t -n+1)
+y i (t + N) = B1 t u(t + N -1) +... + Bmt u(t + N - m) +
+CA tz(t + N — 1) + ...C tz(t + N — p) + =1-	=Pi
+A1 ty(t + N -1) -... - An ty(t + N - n) li —	rlj —
+(3.1)
+Definindo-se:
+Y	i : U J :
+Y	J : ô j :
+Z J :
+Coluna i de T , com predições para a saída i
+Coluna j de U
+Coluna j de Y
+Coluna j de O, com medições para saída i
+Coluna j de Z
+y i(t +1)		ui (t - (m -1))		yj (t - (n -1))
+	, U =		, Y , =	
+	’ —1		’-J	
+_ yi (t+n ')		u- (t + N -1)		u j (t + N -1)
+yi (t+1)		zj (t - (m -1))
+	,Z =	
+	’-j	
+_ yi (t+n )_		zj (t + N -1)
+e os seletores seguintes (esparsos):
+S,,...,S ;[S, ]: Nx(N + m -1) =1’	=m =k
+$,,...,$ ;[$.]: Nx(N + n -1)
+=1	=n =k
+M1,...,Mp;[Mk]: Nx(N + p -1) (Sk, $ k idênticos aos anteriores)
+Tem-se assim:
+N (K=1,..p)
+m	p	n
+Yi = L[£k ]UBk. + S[Mk ]Z£k - L[$k ]YAk.&amp;lt;3-2) k=1	1 k=1	1 k=1	1
+onde:
+bk,‘-	linha i de
+Ck‘:	linha i de C, =k
+Ak‘:	linha i de A^
+Define-se a matriz (N x n * ny + m*nu + p*nz):
+X = [-$1y	... -$nY S1U... SmU
+M.Z... M Z](3.3) 1m
+e o novo vetor de parâmetros do ARX-MIMO-D para geração da saída i: 0 i
+0i :	(n*ny + m*nu + p*nz) x 1
+01 = [At ... At Bt ... Bt	Ct ... Ct ](3.4)
+-z	L=1i	=nj	= 1i	=mi	=1i	=pi
+&lt;--------&gt;	&lt;---------&gt;	&lt;----------&gt;
+
+tem-se a relação de predição para a saída i:
+d.
+ai
+Y =	]i; qi = b_i (3.5)
+L c-i J
+No formato da estimação de parâmetros:
+Y =	&amp;amp;, (i=1,...,ny)(3.6)
+Seguem-se resultados análogos para a nova estimação. Matrizes R W são idênticas às anteriores. tem a mesma definição anterior, h ; é novamente o valor correto de O, e de Yi ■
+APÊNDICE 4
+BASE ESTATÍSTICA DOS PREDITORES ARX-MIMO-DUAL
+• Estimação de Parâmetros para a Saída “i” do ARX-MIMO-D
+Resultam:
+? r t	i-1
+q? i = xtWiX
+i (4.1)
+I-1
+(4.2)
+—i
+cov(ói) = ii xtWiX
+S1 =------------1-----------(Oi - Yi )tW. (Oi -Yi) (4.3)
+S2 =------------1-----------C2	*	*	*	(4.4)
+Ri	N - n * ny - m * nu - p * nz N~n*ny~m*nu~P*nz
+(0i -d_i) &amp;lt;SR (N - n * ny - m * nu - p * nz)f 1_a (4.5)
+(q i -0 i) xlwix
+(f^_a abscissa da distribuição F( n * ny + m * nu + p * nz , N - n * ny - m * nu - p * nz)) ?	r t	4-1
+COV(Yi) = 1iXXtW.X
+X (4.6)
+• Intervalos de Confiança para Predições Corretas na Janela de Treinamento
+1?ik : h ik :	Predição yi (t + k) Valor correto hi (t + k) Yik ~ t1-a/2^SRFik ~hik - Yik + t1-a/2^SRFik (4.7) Fik = Xkt [xtwix] XXk (4.8)
+onde:
+Xkl:	Linha k de X
+t1-a /2:	Abscissa da distribuição tv = N - n * ny - m * nu - p * nz
+• Intervalos de Confiança para Predições Corretas Fora da Janela de Treino do ARX-MIMO-D
+y(k +1):	predição da saída i em instante k+1 (k+1) &gt; t+ N) y(k +1) = 40i (4.9) z\ = [—yt (k)... -yt(k - (n -1)) ut(k) ... ut(k -(m -1)) zt(k)... k	-	-	(4.10) z (k - (p -1))]
+Obtém-se:	yi(k +1) _ t1—a/2^SRFik ~hi(k +1) - yi(k +1) +11—a/2^SRFik (4.11)
+onde:	k + 1 &gt; t + N $	t r t	"1 1 Fik = Zk [XW-X]	Zk (4.12) yi (k +1) = Z^i (4.13)
+APÊNDICE 5
+MODELO DE REDE DE ESCOAMENTO INCOMPRESSÍVEL PSEUDO-ESTACIONÁRIA
+•	Número de Vértices: N
+•	Número de Arestas: m
+•	Matriz de Incidência da Rede: M (N x M)
+Mij = 1 se aresta j chega no vértice i
+Mij = -1 se aresta j sai no vértice i
+Mij = 0 se arestaj não contata o vértice i
+•	Vetor de Vazões Mássicas na Rede (m x 1): q
+qj &gt; 0 se aresta j contém corrente no mesmo sentido da aresta
+qj &amp;lt;0 se aresta j contém corrente no sentido oposto da aresta
+•	Vetor de Vazões Mássicas Nodais (Kg/s) indo para vindo do exterior (N x 1): w
+wi &gt; 0 se vértice i recebe corrente externa
+wi &amp;lt;0 se vértice i perde corrente externa
+•	Vetor de Pressões Nodais (Pa = N/m2 = Kg/m.s2) (N x 1): P
+•	Vetor de Cotas Verticais Nodais (m) (Nx 1): z
+•	Vetor de Fatores de Atrito de Darcy das Arestas (m x 1): f
+•	Vetor de Parâmetros Hidráulicos de arestas (Kg.m)-1(m x 1):
+8PLj p2D2p2
+onde:
+Lj: Comprimento(m) da aresta j
+D,: Diâmetro(m) da aresta j p : Densidade (Kg/m3) do fuido
+•	Gravidade (m/s2): g
+•	Vetor de Reynolds de arestas (m x1):
+Re =
+4 • \qj\ p .d j m
+•	Viscosidades (Kg/m.s) do fuido: p
+•	Cálculo do fator de atrito para aresta j
+1
+12
+fj = 8 •í
+12
+(Equação de Churchill (1977))
+sendo:
+Aj =í
+					y
+2.457 • ln			1		
+					0.9
+	0.27	e j	+	7	
+		Dj \ J )		Re j è J )	)-
+&gt;
+16
+Bj =
+37530
+Re j
+16
+£j : rugosidade relativa (m) da aresta j
+• Equações da rede
+M ■ q + w = 0
+Balanço material nodal (N x 1)
+M ■ P+F(q) + p-g■ Mt ■ z = 0
+Balanço de energia mecânica
+onde:
+Fk(qk) = fk ■ Kk ■ |qk|• qk
+Kk
+8 ■ Lk p 2 Dkp
+(k=1,,,m)
+e
+total de equações :	N+m
+variáveis : P q, w : 2N+m
+Especificações necessárias : N (1 para cada vértice)
+Situações :
+i.	São dados wk (k=1,,,N) e um valor de pressão Pk .
+Calcular Pk (k=1,,,N) e qk (k=1,,,m)
+ii,	São dados Pk (k=1,,,N)
+Calcular wk (k=1,,,N) e qk (k=1,,,m)
+</field>
+	</doc>
+</add>

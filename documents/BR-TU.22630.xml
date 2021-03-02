@@ -1,0 +1,1512 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.22630</field>
+		<field name="filename">6643_Ribeiro_RubensFaustoJoseMesquitadaCunha_M.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">ESTE EXEMPLAR CORRESPONDE A REDAÇÃO FiNAL DA _
+TESE DEFENDIDA	-r^U^ CO Vtgfc
+WWA R)K£íRx?E APROVADA PELA
+COMISSÃO JULGADORA EM í../
+____ _ ímJ ' c ^i^tador
+UNIVERSIDADE ESTADUAL DE CAMPINAS FACULDADE DE ENGENHARIA MECÂNICA
+DEPARTAMENTO DE ENGENHARIA DE PETRÓLEO
+Dissertação Apresentada à
+Faculdade de Engenharia Mecânica como Requisito Parcial para à Obtenção do Título de Mestre em Engenharia de Petróleo
+Cálculo da Permeabilidade Equivalente em Meios Heterogêneos pelo Método dos Elementos Finitos Híbridos
+Autor : Rubens Fausto José Mesquita da Cunha Ribeiro Orientador: Régis Kruel Romeu
+Co-Orientador: Osvair Vidal Trevisan
+Dezembro de 1996
+R3S4c
+29597/BC
+
+WTWA aHTML
+
+FICHA CATALOGRÁFICA ELABORADA PELA BIBLIOTECA DA ÁREA DE ENGENHARIA - BAE - UNICAMP
+Ribeiro, Rubens Fausto José Mesquita da Cunha R354c Cálculo da permeabilidade equivalente em meios heterogêneos pelo método dos elementos finitos híbridos / Rubens Fausto José Mesquita da Cunha Ribeiro.— Campinas, SP: [s.n.], 1996.
+Orientador: Régis Kruel Romeu.
+Dissertação (mestrado) - Universidade Estadual de
+Campinas, Faculdade de Engenharia Mecânica.
+1. Petróleo. 2. Reservatórios. 3. Análise numérica. 4. Permeabilidade. 5. Método dos elementos finitos. I. Romeu, Régis Kruel. II. Universidade Estadual de Campinas. Faculdade de Engenharia Mecânica. III. Título.
+UNIVERSIDADE ESTADUAL DE CAMPINAS
+FACULDADE DE ENGENHARIA MECÂNICA DEPARTAMENTO DE ENGENHARIA DE PETRÓLEO
+A dissertação “Cálculo da Permeabilidade Equivalente em Meios Heterogêneos pelo Método dos Elementos Finitos Híbridos”, elaborada por Rubens Fausto José Mesquita da Cunha Ribeiro e aprovada por todos os membros da Banca Examinadora, foi aceita pela Subcomissão de Pós-Graduação em Engenharia de Petróleo como requisito parcial à obtenção do Título de Mestre em Engenharia de Petróleo.
+Campinas, 09 de dezembro de 1996
+Banca Examindora:
+Martín Tygel, Ph.D.
+Daniel Nunes de Miranda Filho, Ph.D.
+Para Raisa, minha menina
+Para Cláudia e Rodrigo
+Agradecimentos
+Ao meu orientador, Régis Kruel Romeu, pela proposição do tema, pelo interesse, pelo incentivo, pelos ensinamentos e pela paciência.
+Agradeço ao co-orientador, professor Osvair Vidal Trevisan, pelo acompanhamento na realização do trabalho e pelo incentivo.
+Agradeço ao professor Frederico Furtado pelas sugestões e pela bibliografia fornecida na fase inicial do trabalho.
+Agradeço à quatro grandes mestres, que muito me orientaram na fase dos créditos e na escolha do assunto dessa dissertação: César Santana, Euclides Bonet, Martin Tygel e Philippe Devloo.
+Agradeço à um amigo muito especial, que tanto me ajudou durante esses dois anos: Antônio Alberto de Souza dos Santos.
+Agradeço à Petrobrás, na figura de todos aqueles que trabalharam pela minha indicação, pela oportunidade.
+Agradeço aos demais professores, colegas e funcionários da Unicamp (principalmente do CEPETRO, do DEP e do IMECC), pelos ensinamentos, pela convivência e pelo apoio.
+Agradeço ao Centro Nacional de Processamento de Alto Desempenho em São Paulo, pela conta para utilizar seu ambiente computacional e pelos cursos fornecidos.
+Pesquisa desenvolvida com o auxílio do CENAPAD-SP
+Nomenclatura
+Argila
+CG
+CVFE
+DF
+DS-CG
+{e}
+EDP
+EF
+EFH, EFMH
+EFM
+ekf(i,j)
+gdl
+IC-CG ou
+ICCG
+ICCG(O)
+[J]
+J
+JCG
+Folhelho. Rocha sedimentar de granulação fina, argilosa, com baixíssima permeabilidade.
+Família de métodos para resolução de sistemas de equações lineares por gradientes conjugados.
+Formulação de elementos finitos tipo volume de controle Método (Esquema) de Diferenças Finitas
+Método de gradiente conjugado pré-condicionado por diagonal scaling, processo mais eficiente do que JCG.
+Vetor com Todas as Componentes Unitárias
+Equação Diferencial Parcial
+Elementos Finitos
+Formulação Híbrida de Elementos Finitos, o mesmo que Elementos Finitos Híbridos.
+Formulação Mista de Elementos Finitos, o mesmo que Elementos Finitos Mistos.
+Elemento na linha i e na coluna j da matriz [EKF]
+Graus de liberdade (geralmente o número de variáveis) Método CG com pré-condicionamento pela decomposição de Cholesky incompleta da matriz quadrada do sistema linear.
+Decomposição incompleta de Cholesky que não opera em nenhum dos elementos originalmente nulos da matriz quadrada do sistema linear (não há o chamado fill-in). E a decomposição IC mais usualmente encontrada.
+Matriz Jacobiana
+Jacobiano, valor absoluto do determinante da matriz Jacobiana Método CG de Jacobi: pré-condicionamento mais simples que existe, multiplicação apenas pelo inverso do elemento da diagonal na mesma linha.
+K K,	Permeabilidade, propriedade física Permeabilidade local de um dos N blocos da discretização
+k	Elemento mestre quadrado
+MEF	Qualquer um dos diversos métodos baseados em elementos finitos.
+MP	Média de Potência de expoente y : Itr n J
+n	Vetor normal a um lado (face) do elemento
+P	Pressão
+PERMEQ	Simulador DF de fluxo monofásico e incompressível em meios porosos, desenvolvido na PETROBRAS/CENPES.
+PVC	Problema de Valor de Contorno
+ÃT0	Espaço de aproximação (híbrido) de Raviart-Thomas de mais baixa ordem.
+S	Contorno do elemento
+SSOR-CG	Método CG com pré-condicionamento SSOR. Geralmente é feita inicialmente a operação de diagonal scaling (DS) para melhorar a convergência.
+t	Elemento mestre triangular
+V	Domínio do elemento
+V	Campo de velocidades utilizado na Lei de Darcy
+X	Posição do um ponto no espaço
+x,y,z	Coordenadas de um ponto no espaço
+	Função (polinómio) vetorial
+w _w	Componente x da função vetorial número i
+WyJ	Componente y da função vetorial número j
+{}	Identificador de vetor
+[]	Identificador de matriz, ou tensor
+	Desvio-padrão do logaritmo neperiano do conjunto de valores locais de pemeabilidades.
+	Delta de Kronecker
+AZ, A K, AZ	Dimensões geométricas de um bloco (elemento) do domínio
+n	Elemento Real (Deformado)
+Q	Elemento Mestre (de Referência)
+an	Contorno do Elemento Real (Deformado)
+aâ	Contorno do Elemento Mestre
+A /-Tiro/? A KSCAL-í/t V	Número Real (Fator Escalar) Gradiente (Vetor), Operador Nabla
+V.	Divergente, operador matemático
+Resumo
+As modernas técnicas de modelagem geológica e geoestatística permitem a descrição das heterogeneidades dos reservatórios de petróleo em um nível de detalhamento incompatível com a capacidade de cálculo dos programas de simulação numérica de fluxo. Com isso, o processo de transferência de escala - ou seja, a determinação de propriedades efetivas ou equivalentes para uma malha mais grosseira, preservando o máximo de informações da malha fina - tomou-se uma etapa crítica dos estudos de reservatórios.
+Nesse trabalho, implementa-se uma formulação de elementos finitos híbridos (EFH) para o cálculo da permeabilidade equivalente de meios porosos heterogêneos, a partir da simulação do campo de pressões e de velocidades do fluxo monofásico e incompressível em regime permanente. Utiliza-se o espaço de aproximação de Raviart-Thomas de mais baixa ordem. São explicados os detalhes da formulação para o tratamento de elementos deformados. Construíram-se dois programas: uma versão 2D, capaz de combinar elementos triangulares e retangulares; e uma versão 3D, para paralelepípedos regulares.
+Esses programas são aplicados a diversos casos de meios heterogêneos, comparando-se a precisão dos resultados e o desempenho computacional com outros métodos analíticos e numéricos. Observa-se o efeito do refinamento da malha numérica sobre a precisão do resultado. Nessa comparação, verifica-se que o método EFH é superior tanto ao esquema de diferenças finitas (5 pontos em 2D e 7 pontos em 3 D) como ao esquema de elementos finitos de Galerkin com funções de forma lagrangeanas lineares, considerando que produz resultados mais precisos para o mesmo número de incógnitas do sistema linear.
+Por fim, com base no padrão de convergência desses diferentes métodos numéricos, propõe-se um novo estimador para o cálculo da permeabilidade equivalente.
+PALAVRAS-CHAVE:
+Reservatórios de Petróleo Meios Porosos Heterogêneos Permeabilidade Equivalente Propriedades Efetivas
+Transferência de Escala Elementos Finitos Híbridos Espaço de Raviart-Thomas Computação Científica
+Abstract
+Recent and sophisticated geological and geostatistical modeling tools allow a very small scale petroleum reservoir heterogeneities description that cannot be directly used by numerical flow simulation codes due to restrictions imposed by the available computing power. Then, the upscaling process - i.e., the determination of effective or equivalent properties on a coarser grid, maintaining the integrity of the fine scale description - turned out a critical step for the reservoir studies.
+In this study, we implement a hybrid finite element formulation (HFEM) to calculate the equivalent permeability of heterogeneous porous media subject to steady-state singlephase incompressible flow. The lowest order Raviart-Thomas approximation space is used. The details on how to apply deformed elements are explained. Two codes have been developed: a 2D version, capable of using triangular and rectangular elements; and a 3D option, for rectangular parallelepipeds.
+These codes are applied to several heterogeneous media cases, and we compare the results precision and computational requirements against other numerical and analytical methods. We verify that the hybrid formulation is more accurate than both the 5/7-point finite difference schemes and the lowest order Galerkin finite element method, for the same number of unknowns.
+Eventually, based on the convergence behavior of the different numerical schemes, we propose a new estimator for the determination of the equivalent permeability.
+KEY WORDS:
+Petroleum Reservoirs Heterogeneous Porous Media
+Equivalent Permeability
+Effective Properties
+Upscaling
+(Mixed-)Hybrid Finite Element Raviart-Thomas Space Scientific Computing
+Indice
+Agradecimentos..................................................        iv
+Nomenclatura..................................................           v
+Resumo ..........................•............................        viii
+Abstract...................................................             ix
+índice.....................................................              x
+Lista de Figuras ............................................         xiii
+Lista de Gráficos........................................              xiv
+Lista de Tabelas .........................................              xv
+1.	Introdução .................................................          I
+2.	Cálculo da Permeabilidade Equivalente: O Estado da Arte...........    3
+2.1 - Preliminares  ..................................................   3
+2.2	- Conceitos de Equivalência ....................................     4
+2.3	- Estimadores Analíticos........................................     6
+2.4	- Métodos Numéricos .............................................. 11
+2.5	- Erros Numéricos e Refinamento de Malha.........................   18
+3.	Método dos Elementos Finitos Híbridos ......................         20
+3.1	- Visão Geral dos Métodos Mistos e Híbridos....................     20
+3.2	- Aplicação dos Métodos de Elementos Finitos ao Fluxo em Meios Porosos ..	22
+3.3	- Espaços de Aproximação............................................. 25
+3.3.1	~ Espaço de Raviart-Thomas....................................      25
+3.3.2	- Elemento Mestre Triangular:	Funções de Forma e Suas	Propriedades.	26
+3.3.3	- Elemento Mestre Quadrado:	Funções de Forma e Suas	Propriedades.	27
+3.3.4	- A Transformação de Piola......................................    28
+3.3.5	- Outros Espaços de Aproximação..................................   30
+3.4	- Síntese da Formulação...........................................   30
+3.4.1	- Comportamento do Material....................................     31
+3.4.2	- Equação de Equilíbrio ou Lei de Conservação...................... 32
+3.4.3	- A Continuidade do Fluxo....................................       34
+3.5	- Tratamento Tensorial.......................................        36
+4.	Os Programas de Computador: Hybrid2D e Hybrid3D ....................   39
+4.1-0 Programa HYBRID2D............................................       39
+4.1.1	- Estrutura Geral................................      ..........   39
+4.1.2	- Dois Tipos de Elementos e Suas Deformações ....................   40
+4.1.3	- Regra de Integração ....................................          42
+4.1.4	- Validação: Caso Analítico com Divergência (f = -4).............   44
+4.2	- O Programa HYBRID3D............................................     46
+4.2.1	- Descrição Gerai e Funções de Forma 3D...........................  46
+4.2.2	- Validação do Programa HYBRID3D...........................         48
+4.3	- Os Módulos Solver .....................................             49
+5.	Discussão dos Resultados.....................................          52
+5.1	- Casos Básicos: os Sete Exemplos de Cruz [1991]..................... 52
+5.2	- O Tabuleiro de Xadrez ................................              57
+5.3	- Reprodução do Sistema Arenito-Argila de Durlofsky................   61
+5.4	- Campos Lognormais.................................................  69
+5.4.1	- Campos Lognormais 3D Isotrópicos sem Correlação Espacial......... 70
+5.4.2	- Campos Lognormais e Anisotropia..............................     71
+5.4.3	- Campos Lognormais e Correlação Espacial......................     76
+5.5	- O Uso de Malhas Deformadas.................................       78
+5.6	- Esforço Computacional......................................       81
+5.7	- A Média Aritmética das Soluções EF e DF........................   83
+5.8	- Relações Entre os Esquemas EFH e DF...........................    84
+6.	Conclusões e Recomendações ...........  ........................     86
+Referências Bibliográficas....................................          88
+Lista de Figuras
+Figura 2.1 - Malha Regular e as Condições de Contorno Usuais no Domínio
+Retangular....................................................        6
+Figura 2.2 - Exemplo Numérico do Cálculo dos Limitantes de Le Loc’h............... 9
+Figura 3.1 - Espaço de Aproximação do Fluxo no Elemento Mestre Triangular ...	26
+Figura 3.2- Elemento Mestre Quadrado.........................................  27
+Reprodução 1 - Trecho do Afloramento Açu Destacando as Variações de
+Permeabilidade Interpoladas a Partir de Medidas de Minipermeâmetro  41 Figura 4.1- Características Gerais do Exemplo Analítico e com Divergência  45 Configuração 1 - Sistema em Série..............................................   53
+Configuração 2 - Sistema em Paralelo...........................................   54
+Configuração 3 - Sistema em Série com Barreira Impermeável.....................   54
+Configuração 4 - Sistema em Paralelo com Barreira Impermeável.................... 55
+Configuração 5 - Distribuição Alternada......................................     55
+Configuração 6 - Distribuição Alternada com um Zero..........................     56
+Configuração 7 - Estrangulamento na-Direção do Fluxo............................  56
+Figura 5.1 - Idealização de Reservatórios no Formato Tabuleiro..................  60
+Reprodução 2 - Sistema Arenito-Argila de Durlofsky ............................................	62
+Reprodução 3 - Linhas de Fluxo da Solução CVFE para 3721 Variáveis .............. 68
+Figura 5.2 - Discretização Simétrica em Relação à Diagonal....................... 79
+Figura 5.3 - Discretização Mais Irregular do Domínio    ....................... 79
+Lista de Gráficos
+Gráfico 5.1 - Análise da Configuração 5...........................    58
+Gráfico 5.2 - A Média Aritmética Entre EF e DF Pode Ser um Bom Estimador,
+Em Casos Mais Homogéneos.............................     59
+Gráfico 5.3 - Simulações do Sistema de Durlofsky com Quadrados....... 64
+Gráfico 5.4-0 Esforço Computacional Está Mais Relacionado com o
+Número de Variáveis...................................    65
+Gráfico 5.5 - A Diminuição do Erro com o Refinamento................  66
+Gráfico 5.6	- Campo Lognormal 23x23x23, com Desvio-Padrão	0.81322.... 72
+Gráfico 5.7	- Campo Lognormal 17x17x17, com Desvio-Padrão	0.9685 .... 72
+Gráfico 5.8	- Campo Lognormal 10x10x10, com Desvio-Padrão	1.5091 ...  73
+Gráfico 5.9	- Campo Lognormal 14x14x14, com Desvio-Padrão	3.1785 .... 73
+Gráfico 5.10 - Campo Lognormal 100x100, com Correlação Esférica de 10
+Blocos e Desvio-Padrão 1.0227........................     77
+Gráfico 5.11 - Campo Lognormal 100x100, com Correlação Esférica de 20
+Blocos e Desvio-Padrão 1.0229 ........................   77
+Lista de Tabelas
+Tabela 5.1 - A Média Aritmética Entre Simulações EF e DF Pode Ser Um Bom
+Estimador...............................................    57
+Tabela 5,2 - Refinamento do Arenito-Argila de Durlofsky Convergindo para
+0.5205 ..........................................           67
+Tabela 5.3 - Comparação de Simulações em Campos Lognormais Sintéticos....	71
+Tabela 5.4 - Características do Caso Base (Campo Lognormal).........   75
+Tabela 5.5 - Efeito da Anisotropia, Obtida Pela Variação das Dimensões
+Geométricas, na Permeabilidade Equivalente do Caso Base ..  75
+Tabela 5.6 - Análise dos Resultados das Simulações nas Malhas Deformadas.	80
+Capítulo 1 - Introdução
+As modernas técnicas de modelagem geológica e geoestatística permitem a descrição das heterogeneidades dos reservatórios de petróleo em um nível de detalhamento incompatível com a capacidade de cálculo dos programas de simulação numérica de fluxo. Com isso, o processo de transferência de escala - ou seja, a determinação de propriedades efetivas ou equivalentes para uma malha mais grosseira, preservando o máximo de informações da malha fina - tornou-se uma etapa crítica dos eestudos de reservatórios.
+Dentre as propriedades petrofísicas mais importantes para o escoamento nos meios porosos, a permeabilidade é aquela que rèquer mais atenção no processo de transferência de escala. Enquanto porosidade e saturações efetivas são simples médias ponderadas por volumes, o cálculo da permeabilidade equivalente necessita, normalmente, de procedimentos mais sofisticados.
+Apesar de toda a pesquisa que já foi efetuada, uma metodologia sistemática ainda não foi desenvolvida, nem conclusões amplamente aceitas foram apresentadas. Assim, continua havendo espaço para novos estudos, principalmente para a representação e solução de sistemas com elevados contrastes intemos de permeabilidade, como sistemas arenito-argila e outros casos razoavelmente comuns na prática, onde os métodos mais simplificados fracassam. Observa-se, por exemplo, que os programas de diferenças finitas produzem resultados sistematicamente enviesados (imprecisos), quando não é utilizada uma adequada discretização espacial do domínio de interesse.
+O ponto de partida desse trabalho foi a utilização de métodos numéricos para cálculo da permeabilidade equivalente. O objetivo principal da tese foi implementar e avaliar uma formulação híbrida de elementos finitos para o escoamento monofásico incompressível em regime permanente. Trata-se de uma técnica relativamente nova nas aplicações de simulação de fluxo, que apresenta a vantagem de uma melhor representação do campo de velocidades, essencial para o cálculo preciso da permeabilidade equivalente de meios heterogêneos. Foram também testadas algumas subrotinas da biblioteca HOMLIB, do projeto multicliente PROFIT, para, então, comparar os resultados de diferentes métodos entre si e com algumas das fórmulas analíticas mais freqüentemente usadas nos problemas de mudança de escala.
+Em muitos aspectos, a transferência de escala e a simulação de reservatórios são mais arte do que ciência. Muitas das conclusões obtidas possuem um caráter experimental, surgindo da observação crítica dos resultados. Uma prova formal ficou para mais tarde.
+Esse trabalho não pretende ser um texto exaustivo sobre métodos de transferência de escala. São revistos os conceitos básicos necessários para a compreensão do que foi simulado, sem necessariamente detalhar ou aprofundar todas as questões.
+Uma grande parte do tempo na elaboração da dissertação foi dedicado à correta implementação dos códigos de computador, estudando os comandos de alguns diferentes sistemas operacionais baseados em UNIX, navegando em estações de trabalho. Outra parte extensa foi usada na análise e desenvolvimento de formulações variacionais para as equações diferenciais parciais em questão.
+No Capítulo 2, situa-se o problema de mudança de escala na área de simulação de reservatórios. Apresentam-se as ferramentas mais aplicadas, incluindo um curto histórico do crescimento do uso dos métodos numéricos, especialmente DF.
+No Capítulo 3, são introduzidos os métodos vetoriais de elementos finitos (EFM e EFH), é feita uma revisão específica da literatura e, em seguida, é feito o desenvolvimento matemático da formulação híbrida para o cálculo da permeabilidade equivalente, em uma notação matricial (mais geral e mais próxima do que é implementado em um programa).
+No Capítulo 4, são mostradas as características gerais dos dois programas desenvolvidos. O primeiro é HYBRID2D, versão 2D que pode trabalhar com triângulos e retângulos, malha deformada e qualquer conjunto de condições de contorno, a partir da entrada manual de dados. O segundo é HYBRID3D, para malha estruturada, condições de contomo usuais e de execução mais rápida, principalmente, por não efetuar integração numérica.
+No Capítulo 5, são discutidos os resultados das simulações em diversos tipos de meios heterogêneos. Compara-se o desempenho, em termos de precisão e de esforço computacional, dos novos programas, construídos segundo o esquema EFH, com programas construídos segundo os esquemas mais tradicionais de diferenças finitas e de elementos finitos. São obtidas conclusões importantes, por exemplo, indicando um novo estimador combinando o resultado de simulações EF e DF.
+No Capítulo 6, resumem-se os pontos mais importantes desse estudo e sugerem-se algumas possibilidades para estender esse trabalho.
+Capítulo 2 - Cálculo da Permeabilidade
+Equivalente: O Estado da Arte
+2.1	- Preliminares
+A explotação economicamente racional dos reservatórios de petróleo, desde as fases que antecedem a produção até a decisão de seu abandono definitivo, necessita da previsão do comportamento do escoamento no meio poroso. Para isso, existe a simulação de reservatórios, atividade tecnológica cada vez mais valorizada na indústria do petróleo.
+O aperfeiçoamento da simulação de reservatórios requer o contínuo desenvolvimento dda modelagem geológica; de análises de rochas e fluidos; de ferramentas matemáticas e de recursos computacionais. Ferramentas matemáticas abrangem os modelos de representação do fenômeno físico e os métodos numéricos para resolver eficientemente esses modelos.
+A mudança de escala é uma etapa preliminar à simulação de reservatórios. Os dados de reservatórios, como porosidades, permeabilidades e outros, são adquiridos em diversas escalas, e é preciso transferi-los para a escala em que será feita a simulação de fluxo. Os modernos métodos de caracterização geológica e geoestatística de reservatórios produzem representações tridimensionais das propriedades da rocha em uma escala relativamente fina, com malhas que podem conter milhões de blocos. A simulação do fluxo não pode ser feita em uma escala tão fina por limitações computacionais e também por razões práticas. As malhas de simulação de fluxo dificilmente ultrapassam centenas de milhares de blocos nos dias de hoje.
+O processo de mudança de escala implica no cálculo de propriedades equivalentes, de uma malha fina para outra mais grosseira. Para propriedades não aditivas, como é o caso da permeabilidade, esse processo não é trivial. Na verdade, da mesma forma que a simulação de fluxo, a mudança de escala da permeabilidade está associada à resolução de equações diferenciais parciais.
+Para o cálculo da permeabilidade equivalente, têm sido aplicadas as mais diferentes técnicas, com variados graus de sofisticação:
+•	médias simples;
+•	limitantes e estimadores;
+•	soluções analíticas para casos especiais;
+•	métodos numéricos ( DF, EF, EFM, EFH, expansão espectral, transformada
+wavelet...);
+•	técnicas de perturbação;
+•	métodos para trabalhar com a mudança de escala em tensores;
+•	diferentes formas de renormalização;
+•	simulação estocástica, condicional e não condicional;
+•	geoestatística;
+•	caminho aleatorio (random walk);
+•	teoria da percolação;
+•	análise de Fourier;
+•	fractais.
+Algumas técnicas podem ser utilizadas em conjunto com outras. Antes de passar em revista alguns desses métodos, será discutida a própria noção de equivalência entre um meio homogéneo e um meio heterogéneo.
+2.2	- Conceitos de Equivalencia
+O conceito de permeabilidade equivalente compreende a substituição de um meio heterogéneo, onde a permeabilidade varia no espaço, por um meio homogéneo, onde a permeabilidade é uniforme, de tal modo que a substituição seja equivalente para certas finalidades e/ou para certas situações. Em geral, quando se substituem diversos valores por um único, há uma perda de informação, e a equivalência não pode ser absoluta. É preciso definir critérios e situações de equivalência.
+O critério mais tradicional para a equivalência é o de igualdade de fluxo. Segundo esse critério, dois sistemas são equivalentes se produzem a mesma vazão total quando submetidos às mesmas condições de contorno. Determinar a permeabilidade do meio homogêneo
+equivalente é, então, determinar o fluxo total que atravessa o sistema heterogêneo, sob certas condições de contorno, e adimensionalizar esse valor pela geometria e diferencial de pressão aplicado.
+Um critério mais moderno e mais geral é o da dissipação da energia pelo escoamento ao longo do meio poroso: de acordo com esse critério, dois sistemas são equivalentes se o trabalho realizado pelas forças viscosas for o mesmo, para as mesmas condições de contorno. A expressão para essa perda de energia pode ser encontrada em Romeu [1994, p, 45]:
+FF=-£v.VP&lt;/r ,	(2.1)
+onde v é o vetor velocidade da lei de Darcy e VP é o gradiente de pressão. Pode-se verificar que, para as condições de contorno usuais, do tipo impermeável, os dois critérios são equivalentes. Sejam, de fato, as seguintes condições de contorno aplicadas a um domínio retangular, conforme a Figura 2.1:
+•	v ,n = 0 , ao longo de duas faces paralelas (fronteiras impermeáveis);
+•	P = 1 , na face de entrada do fluxo;
+•	P = 0 , na face de saída do fluxo.
+Aplicando, em (2.1), o teorema da divergência de Gauss e a conservação do fluxo (V. v = 0 ), chega-se a uma forma alternativa
+W=\s=ay PV-”dS	(2-2)
+a partir da qual se pode verificar facilmente que, nesse caso, os dois critérios são equivalentes. De fato, aplicando as condições de contorno definidas, chega-se a:
+Pv.ndS=í v.ndS-[ v.ndS
+¿ENTRADA	¿SAIDA
+(2.3)
+onde a última igualdade é novamente devida à conservação do fluxo e ao teorema de Gauss.
+I
+V .M = 0
+Figura 2.1 - Malha Regular e as Condições de Contorno Usuais no Domínio Retangular
+Além das condições de contomo tipo impermeáveis, que reproduzem as experiências típicas de laboratório, outros tipos de condições de contorno têm sido propostos, com o objetivo de serem mais representativas da geometria do fluxo no sistema global (Durlofsky [1991], Romeu [1994]). Em geral, a permeabilidade equivalente será diferente, conforme o critério de cálculo e as condições de contorno adotadas.
+2.3	» Estimadores Analíticos
+A idéia de aplicar médias simples para determinar a permeabilidade equivalente é bastante antiga, remonta à época em que os recursos para fazer contas eram a régua de cálculo e os ábacos. Ainda hoje, essas fórmulas são utilizadas, seja porque produzem a resposta exata em alguns poucos casos especiais, seja porque produzem aproximações aceitáveis em uma variedade maior de casos, seja porque, simplesmente, são fáceis de calcular.
+Nesse contexto, as formulas mais conhecidas são as médias Aritmética, Harmônica e Geométrica. Elas são casos particulares da média de Potência, vide Nomenclatura, com expoentes +1, -1 e 0 (no limite), respectivamente. Seus resultados são exatos para sistemas em paralelo, em série e para distribuições lognormais isotrópicas em 2D, respectivamente. Outra média de Potência útil é a que usa expoente 1/3, para a caracterização de meios com distribuição lognormal isotrópica em 3D. Enquanto que os resultados para os sistemas em série e em paralelo são triviais, os resultados para meios lognormais em 2D e 3D merecem uma discussão adicional.
+Lognormal é uma distribuição tal que seu logaritmo (neperiano) é uma distribuição normal. Descreve-se a seguir como distribuições lognormais são geradas para as experiências numéricas dessa tese.
+Para obter-se uma distribuição lognormal, gera-se uma distribuição normal e procede-se a exponenciaçao dos eventos. A produção de uma distribuição normal, por sua vez, é feita a partir da criação de uma distribuição uniformemente distribuída. O costume é dar origem a uma distribuição normal de média zero e variância unitária, chamada a seguir simplesmente de X que pode ser facilmente transformada em uma distribuição com média e variância desejadas, a distribuição Fda Equação (2.5).
+A' = n(0;1)
+Sejam
+(2.4)
+Y = aX + b
+Há um teorema da estatística (Box e outros [1978]) que mostra que
+Y = N(b;a2)	(2.5)
+Nessa tese, a distribuição uniformemente distribuída será criada pela FUNCTION RANl(IDUM), e a transformação para n(0;1) feita pela FUNCTION GASDEV(IDUM), ambas do conhecido manual Numerical Recipes (PRESS e outros [1992]).
+Para uma orientação qualitativa, uma possível classificação do grau de heterogeneidade do reservatório pode ser dada a partir da variância (o quadrado do desvio-padrão) do logaritmo
+das permeabilidades (1ü(K)):
+•	a in(K)= 0 meio homogêneo;
+•	a 0.5 -•&gt; meio levemente heterogêneo;
+•	0.5 &amp;lt;cr ^n(K) &amp;lt;1.0 —&gt; meio medianamente heterogêneo;
+•	1.0 &amp;lt;o	&amp;lt;3.0 meio muito heterogêneo;
+•	a m^)&gt;	—&gt; meio muitíssimo heterogêneo.
+Como já foi antecipado, a permeabilidade equivalente de um meio lognormal 2D isotrópico e infinito é igual à Média Geométrica. Este é um resultado analítico exato, provado por Matheron [1967].
+Para um meio lognormal isotrópico 3D, a Média de Potência 1/3 é uma aproximação de primeira ordem para meios suficientemente grandes e de variância pequena. Uma forma equivalente dessa aproximação 3D de primeira ordem é a Média Geométrica multiplicada pela exponencial de um sexto da variância logarítmica,
+CTSi(K)
+^Equivalente “ ^GEOM
+(2-6)
+A Média de Potência 1/3 é um valor sempre maior do que o valor da Média Geométrica e é normal que, dada uma mesma distribuição estatística dos valores, a permeabilidade equivalente em 3D seja maior do que em 2D (Matheron [1967]).
+Um outro tipo de fórmula para cálculo da permeabilidade equivalente é construído a partir da combinação de médias Aritmética-Harmónica e Harmônica-Aritmética, em diferentes direções. Essas médias combinadas constituem, como será visto a seguir, limitantes teóricos para o valor da permeabilidade equivalente.
+Cardwell e Parsons [1945] foram possivelmente os primeiros a mostrar que, para o fluxo numa dada direção:
+(2.7)
+onde:
+KEq : permeabilidade equivalente na direção dada;
+KHARM : média harmônica das permeabilidades locais;
+KAR}T : média aritmética das permeabilidades locais;
+K2 : valor calculado tomando-se, em uma primeira etapa, para cada seção transversal ao fluxo a média aritmética das permeabilidades dos blocos, e, em uma segunda etapa, fazendo a média harmônica das médias aritméticas;
+Á?| : valor calculado fazendo-se agora, na primeira etapa, a média harmônica dos valores de permeabilidade em cada canal paralelo à direção de fluxo, e, na segunda etapa, calculando a média aritmética das médias harmônicas dos canais.
+Os limitantes e K2 são chamados limitantes de Cardwell e Parsons, limitantes de Le Loc’h, ou, simplesmente, médias Aritmética-Harmónica e Harmónica-Aritmética. O cálculo desses limitantes é ilustrado na Figura 2.2 e mais detalhes podem ser encontrados em Cruz [1991] ou em Galli e outros [1996].
+M. Harmônica
+100	60	130	200	150
+Médias Aritméticas c		las Seções 1	"fansversais ao Fluxo	
+==&gt;	108.64
+&gt; Fluxo na direção X
+200	50	100	200	200
+0	0	200	200	200
+100	200	50	200	100
+100	0	200	200	200
+100	50	100	200	50
+M. Harmônica
+M. Aritmética-Harmónica - M. Aritmética} 111.11; 0; 100.00; 0; 76.92} =	57.61
+Figura 2.2 - Exemplo Numérico do Cálculo dos Limitantes de Le Loc’h
+Limitante Superior - Média Harmônica-Aritmética = K2 = 108.64
+Limitante Inferior = Média Aritmética-Harmónica =	= 57.61
+Estimador de Le Loc’h/Guérillot = Média Geométrica { 57.61; 108.64} = 79.11
+Valor de Referência para a Permeabilidade Equivalente (Mais Preciso) =87.53
+O artigo de Cardwell e Parsons [1945] é muito interessante, principalmente pelo seu valor histórico. Sua contribuição para a época foi provar que não existe disposição geométrica das heterogeneidades capaz de criar um fluxo oblíquo que leve a um valor de permeabilidade equivalente maior do que a média aritmética (ponderada pelos volumes). A crença na possibilidade de criação desse fluxo oblíquo não era incomum naquele tempo. É interessante reparar que os autores adotam as médias harmônica e aritmética como limitantes preferenciais, trabalhando com elas ao longo do texto e referindo-se a elas nas conclusões do artigo. Porém, em seu “Apêndice Matemático”, com base na analogia com circuitos elétricos, os autores chegaram realmente aos limitantes teóricos mais estritos, e K2 , que seriam demonstrados muitos anos mais tarde na tese de doutorado de Le Loc’h [1987], Se eles não fizeram maior uso da desigualdade mais forte, foi, seguramente, pela falta de recursos computacionais. E surpreendente que só muito tempo depois é que esses limitantes tenham ressurgido, dessa vez com base em princípios variacionais.
+A partir desses limitantes, têm sido propostos diferentes estimadores. Le Loc’h [1989] e, mais tarde, Guérillot (ver Romeu [1994]) propõem que a permeabilidade equivalente seja estimada pela média geométrica entre Kx e K2 . Lemouzy propõe uma generalização desse estimador, que leva em conta mais termos para o caso 3D (ver Romeu [1994]).
+O estimador de Le Loc’h/Guérillot apresenta, no caso da Figura 2.2, um desvio de 10% em relação ao valor mais exato para a permeabilidade equivalente, não sendo possível diminuir esse erro. Um exemplo onde esse estimador fracassa é constituído pelos sistemas arenito-argila possuindo pelo menos uma argila em cada canal paralelo à direção de fluxo, mas de tal forma que permita fluxo. Todas as médias harmônicas são nulas, e consequentemente o limitante inferior é zero, e igualmente zero o estimador. Mas a permeabilidade equivalente correta pode ser bem próxima da Média Aritmética, a depender da fração total de argila. Isso será visto no exemplo do Sistema Arenito-Argila de Durlofsky, no Capítulo 5. Esse é um contra-exemplo para a afirmação sobre a habilidade desse estimador em lidar com zeros, feita em Cruz [1991, p.59].
+2.4	- Métodos Numéricos
+Os métodos numéricos ocupam um lugar importante entre os métodos de cálculo da permeabilidade equivalente. Sua aplicabilidade é muito mais geral do que as fórmulas algébricas, que só dão bons resultados em casos particulares. Um bom método numérico para a mudança de escala também deverá ser um bom método para a própria simulação de fluxo, e vice-versa, pois as equações modelando os dois fenômenos são, em essência, as mesmas.
+O princípio geral desses métodos, aplicados ao cálculo da permeabilidade equivalente, consiste na solução numérica do campo de pressões (P) e velocidades (v) no meio heterogêneo. Para fluxo incompressível, em regime permanente, isso corresponde a resolver a equação da continuidade e a lei de Darcy, no volume em consideração:
+V.v = 0	(2.8)
+v--KVP	(2.9)
+(onde a viscosidade foi tomada como unitária) sob as condições de contomo estipuladas. A partir daí, calcula-se o fluxo (as duas integrais mais a direita da Equação (2.3)) ou a energia total no meio heterogêneo (Equações (2.1) e (2.2)), e, por simples identificação, a permeabilidade do meio homogêneo equivalente.
+São diversos os métodos numéricos aplicáveis ao problema geral de mudança de escala. Neste estudo serão considerados três métodos principais:
+•	o método de diferenças finitas de cinco pontos em 2D, sete pontos em 3D;
+•	o método de elementos finitos de Galerkin, com funções de forma Lagrangeanas bilineares (2D) e trilineares (3D);
+•	a formulação (mista-)híbrida de elementos finitos, no espaço de Raviart-Thomas de mais baixa ordem.
+Descrevem-se a seguir alguns dos trabalhos mais significativos sobre o cálculo da permeabilidade equivalente por meio de métodos numéricos, particularmente no que diz respeito à utilização dos métodos de diferenças finitas e de elementos finitos tradicionais. A aplicação da formulação híbrida ao fluxo em meios porosos, uma abordagem mais recente e de interesse mais específico para esta tese, será tratada no próximo capítulo.
+O artigo de Warren e Price [1961], pioneiro em sua abordagem do escoamento em meios heterogêneos, tomou-se uma referência fundamental para os estudos posteriores. Eles estudaram a permeabilidade absoluta equivalente de meios heterogêneos, em fluxo
+monofásico, tanto para o regime permanente quanto para o regime transiente. O problema foi resolvido em três etapas, segundo uma metodologia que fez escola:
+•	geração estocástica do arranjo espacial das propriedades físicas;
+•	montagem e resolução numérica das equações diferenciais parciais, sujeitas a certas condições de contorno. Foram usados o método de diferenças finitas e condições de contorno impermeáveis;
+•	cálculo da permeabilidade equivalente a partir da vazão total computada.
+Segundo os próprios autores, a conclusão mais importante do estudo é que o comportamento mais provável de um sistema heterogêneo com fluxo monofásico aproxima-se do comportamento de um sistema homogêneo cuja permeabilidade é igual à média geométrica das permeabilidades individuais do sistema original. Na verdade, esses resultados correspondem a uma subestimativa para'meios lognormais tridimensionais, fato que será discutido mais adiante. Quanto à permeabilidade obtida de um teste de pressão (regime transiente), os autores concluem que ela representa bem a permeabilidade equivalente simulada para o regime permanente.
+Warren e Price também estudaram, com dificuldade, o fluxo em meios heterogêneos em laboratório, por meio da construção de protótipos, pela união de diversos cubos. No artigo, fala-se de um modelo com permeabilidade equivalente medida de 60.5 Darcies que, segundo seus cálculos, deveria se comportar como tendo em tomo de 47 Darcies. Foi levantada a suspeita de fluxo entre as faces dos cubos.
+Desbarats [1987] usa uma abordagem numérica muito semelhante à de Warren e Price para estimar a permeabilidade equivalente em formações argilo-arenosas em regime de fluxo permanente. A escolha desse tipo de formação é justificada citando-se Haldorsen e Chang [1986]: “a experiência tem mostrado que lentes descontínuas de argila (baixas permeabilidades) dispersas em um reservatório arenítico são o principal tipo de heterogeneidade afetando o comportamento do fluxo”. O artigo explica em detalhes o desenvolvimento do seu modelo geoestatístico e das simulações de Monte Cario.
+Desbarats diz que as soluções analíticas propostas por diversos autores consideram hipóteses muito restritivas para os reservatórios reais, e, assim, as soluções numéricas são preferíveis. É citado, por exemplo, que a fórmula analítica de Gelhar e Axness [1983] produz resultados aberrantes, quando aplicada ao modelo binário de distribuição da permeabilidade,
+criado para este estudo. Desbarats defende que a resolução numérica é a única forma para validar estimadores analíticos específicos.
+Urna das verificações mais importantes, observada dos resultados das diversas simulações, é que - dada urna certa fração de argila ~ a permeabilidade efetiva em uma simulação 3D é sistematicamente superior do que a permeabilidade para uma simulação 2D. Esse fato está de acordo com os desenvolvimentos teóricos de Matheron [1967] e de Gutjahr e outros [1978]. Tal fenômeno ocorre para as simulações em reservatórios gerados pela distribuição lognormal, como já foi comentado na seção anterior, quando da discussão dos resultados analíticos para distribuições lognormais.
+Para frações de argila muito elevadas (acima de 45 % em 2D e 65 % em 3D), há uma queda acentuada da permeabilidade efetiva, pois a continuidade do arenito não é mais mantida e o padrão de fluxo fica sendo controlado pela permeabilidade da argila. Esses resultados são relacionados com a teoria da percolação.
+Bonet e outros [1989] constróem um programa de diferenças finitas para cálculo da permeabilidade equivalente, para estudo e verificação dos resultados de Desbarats.
+Durlofsky [1991, p.699], após fazer uma curta revisão da literatura, conclui que:
+"Nenhum dos estudos analíticos anteriores fornece uma estrutura geral para o cálculo numérico da permeabilidade efetiva ou equivalente; todos são, de uma forma ou de outra, aplicáveis apenas a situações específicas. Em particular, todos contêm hipóteses implícitas sobre a distribuição espacial ou sobre a correlação das heterogeneidades, ou então são formulados específicamente para um dado tipo de seqüência (como areia-argila) ou geometria (p.e. sistemas em camadas)?’
+Ou seja, Durlofsky segue a linha de Desbarats de resolver numericamente as equações representativas no domínio mais genérico (real) do problema.
+Em particular, Durlofsky desenvolve uma metodologia que considera o caráter tensorial da permeabilidade equivalente, aplicando:
+•	condições de contorno periódicas na escala refinada;
+•	hipótese de gradiente de pressão linear no bloco grosseiro (pois ele possui permeabilidade constante e igual à permeabilidade equivalente);
+•	método dos elementos finitos não-conformes no lugar da formulação mista, por gerar menos incógnitas e levar a uma matriz de rigidez mais bem condicionada.
+Durlofsky sustenta, através de um exemplo, que as condições de contorno periódicas são as indicadas para obter o tensor equivalente (termos diagonais e cruzados) correto para um dado problema.
+Cruz [1991], em sua dissertação de mestrado, trabalha com a mudança de escala da permeabilidade absoluta em escoamento monofásico e da permeabilidade relativa e da pressão capilar, através de pseudo-funções, em escoamento bifásico. No caso de escoamento monofásico, além dos sete exemplos didáticos que serão reproduzidos no Capítulo 5 (as Configurações), ele efetuou a simulação em três modelos geoestatísticos, sempre em duas dimensões espaciais. Após realizar comparações entre os resultados pelos métodos de Le Loc’h, Desbarats e pelas médias Aritmética, Geométrica e Harmônica, tendo como referencial os resultados da simulação na malha fina 40x40, Cruz conclui sugerindo a utilização do método de Le Loc’h, por se tratar de um método analítico, de implementação mais simples e sem erros numéricos.
+De acordo com Fayers e Hewett [1992], a principal hipótese nos modelos matemáticos atualmente usados para a simulação do escoamento em meios porosos é que a lei de Darcy para o comportamento monofásico pode ser estendida para o caso bifásico pelo uso das curvas (funções) de permeabilidade relativa e de pressão capilar. A indústria do petróleo investiu muito nas últimas décadas em técnicas e equipamentos para melhorar a determinação dessas propriedades em laboratório, e isso atualmente é um limitante para o avanço para modelagens mais complexas ~ que poderiam ser derivadas a partir das equações de Navier-Stokes, mas implicariam em novos parâmetros e novos tipos de curvas a serem medidas experimentalmente.
+Mansoori [1994] faz uma revisão dos métodos mais usados para se efetuar a mudança de escala em fluxo monofásico. A maioria dos trabalhos apresentados até hoje foi sobre a mudança de escala em regime permanente. “A sensibilidade dos resultados pela escolha das condições de contorno pode ser investigada considerando-se diferentes conjuntos de condições de contorno e fazendo-se uma média das propriedades equivalentes resultantes das simulações de fluxo.” De fato, este procedimento é feito em subrotinas da biblioteca HOMLIB do projeto PROFIT que fazem a mudança de escala por elementos finitos e por diferenças finitas. “A seleção de algoritmos para gerar uma malha flexível o bastante para representar melhor as variações das heterogeneidades do reservatório e o tratamento da permeabilidade como um tensor completo (e não apenas diagonal) estão entre os métodos
+desenvolvidos para reduzir os erros inerentes associados às hipóteses simplificadoras que são feitas.”
+Mansoori mostra esperança de que os avanços na tecnologia dos computadores farão com que não seja mais necessário fazer mudança de escala no futuro. Acreditamos, porém, que tal esperança não é razoável, pois, com o aumento da capacidade computacional, sempre existirão hipóteses simplificadoras que poderemos deixar de fazer, elevando novamente a demanda pelo desempenho computacional.
+A referência Galli e outros [1996] é o relatório final de um projeto de pesquisa financiado pela “Commission of the European Communities”Os estudos foram desenvolvidos ao longo de três anos por sete pesquisadores da Escola de Minas de Paris e da Universidade de Newcastle, da Inglaterra. Foram abordadas os processos de mudança de escala da permeabilidade absoluta, em 3D, e da dispersividade, ou coeficiente de dispersão, em 2D. Para avaliar e classificar as diferentes fórmulas simplificadas para a permeabilidade equivalente, foram usados dois códigos para o cálculo de um valor de referência, que é obtido pela solução numérica das equações de fluxo:
+•	HIGHDEN, um simulador de diferenças finitas centradas, com um solver ICCG(O), desenvolvido pela Universidade de Newcastle;
+•	TRIMULEC, um programa de elementos finitos com funções de forma lineares em paralelepípedos regulares, possuindo um solver multigrid com aceleração SOR por linha, desenvolvido pela Escola de Minas de Paris.
+Um dos gráficos desse relatório, apresentando os resultados de milhares de simulações, mostra que, em alguns casos, a permeabilidade equivalente calculada pelo programa HIGHDEN é maior do que aquela calculada pelo programa TRIMULEC (K FD &gt; KFE). Esse resultado é surpreendente e seria necessário verificar melhor as condições dessas simulações, já que o resultado de uma simulação EF como limitante superior e o resultado da correspondente simulação DF como limitante inferior da permeabilidade equivalente são valores bastante observados em diversos estudos, como será discutido mais adiante.
+O trabalho de Galli e outros [1996] faz referência também a experimentos de laboratório realizados nessa área. No caso onde os resultados das simulações refinadas não convergem para o valor experimental, verificou-se que, na caracterização das heterogeneidades do arenito, treze pingues da amostra total foram perdidos, comprometendo a precisão dos resultados por um problema no procedimento experimental.
+Do recente artigo de Durlofsky e outros [1995], selecionam-se aqui alguns pontos importantes para mostrar como estão sendo aplicadas as técnicas de mudança de escala à simulação de reservatórios reais. Camadas com permeabilidade muito alta ou muito baixa devem ser mantidas no modelo mais grosseiro, pois essas regiões são as que mais influenciam o fluxo e os processos de deslocamento miscível e imiscível no reservatório. Isso gera a necessidade de fazer uma mudança de escala não-uniforme, como também já havia sido defendido por Mansoori [1994]. Uma boa prática é identificar as regiões mais prováveis de ocorrência de altos gradientes de velocidade por uma simulação monofásica preliminar. Essa simulação é mais precisa caso feita no modelo 3D do reservatório, levando em conta os poços produtores e injetores. Durlofsky emprega uma alternativa simplificada, fazendo a simulação em diversas seções transversais bidimensionais e, depois, fazendo uma composição dos resultados (composite solve approach).
+Para efetuar a mudança de escala nas diversas regiões, é empregada a solução numérica das equações de fluxo por DF. Os métodos mais simplificados, como as médias e estimadores, não são empregados. Prefere-se um resultado mais robusto, pois o tempo gasto para a solução dos diversos sistemas lineares resultantes representa apenas uma pequena fração do tempo total necessário para a simulação global do reservatório.
+O projeto multicliente PROFIT do Centro de Computação da Noruega, em Oslo, desenvolveu, em 1994, o estudo “Scaling and Representation of Absolute Permcabiliiy' que produziu uma série de programas e subrotinas, agrupadas sob o nome de biblioteca HOMLIB (“HOMogenization LIBrory^Y
+Esse estudo é descrito por Holden e outros [1994], que começa apresentando os dois critérios básicos para a definição da equivalência da propriedade física na escala mais grosseira: o de fluxo total e o de dissipação de energia.
+Dentre os onze métodos disponíveis na biblioteca HOMLIB, três são simulações com base no primeiro princípio, dois são baseados no segundo princípio (elementos finitos em cubos e elementos finitos em tetraedros) e seis são as médias usuais que são feitas em problemas de mudança de escala. Há também um método para a diagonalização de um tensor de permeabilidade completo sob certas condições.
+No artigo são apresentados os resultados da aplicação das onze técnicas de homogeneização em doze diferentes sistemas físicos. Os autores comentam que a aplicação das médias é muito limitada, mas que, para reservatórios com alto grau de homogeneidade, as
+médias Geométrica, Harmónica-Aritmética e Aritmética-Harmónica podem fornecer boas estimativas. A vantagem das médias é que elas são muito rápidas de se calcular, mesmo para problemas com centenas de milhares de blocos. A conclusão final é que os métodos baseados em simulações das equações de fluxo são os melhores, pois fornecem os menores erros quando comparados com a simulação na malha refinada, independente das características do sistema físico (distribuição geoestatística e condições de contorno).
+Na biblioteca HOMLIB, além das já citadas subrotinas em linguagem C, há um outro grupo de rotinas, escritas em FORTRAN 77, para cálculo numérico da permeabilidade equivalente. Essas rotinas foram agrupadas num chamado módulo EFFPERM, no arquivo de nome ‘effp.f.
+As rotinas da HOMLIB ainda não haviam sido testadas na PETROBRÁS. Uma das tarefas propostas nesta tese foi justamente entender e avaliar o funcionamento desses subprogramas, desde a sua entrada de dados, e executá-los juntamente com as simulações dos programas construídos nesta tese, segundo o método EFH, para fíns de validação e comparação, enriquecendo a análise das respostas calculadas. Segue-se, portanto, uma descrição dessas rotinas, que serão usadas no capítulo de análise de resultados.
+Há duas rotinas que são interfaces para a entrada de dados dos vetores e matrizes (EFFPERMJiBLOCK para EF e EFFPERM_DBLOCK para DF) e um módulo solver comum, que resolve o sistema linear iterativamente por gradientes conjugados, usando como pré-condicionamento uma decomposição LU incompleta. Ele trabalha só com malha estruturada. Não há nenhum esquema de indexação. Dado um elemento da diagonal, a posição dos demais elementos não-nulos na mesma linha é determinado pelo conhecimento a priori da posição das demais sub-diagonais.
+A rotina EFFPERMJEBL faz a mudança de escala pelo método de elementos finitos (Galerkin) com funções de formas bilineares e trilineares. O número total de variáveis é o número de nós (vértices), para Z* J blocos - problemas 2D - são (Z +1) * (J +1) vértices e para I*J*K blocos - problemas 3D - eles atingem (Z +1) * (J +1)* (K+1). Somente são considerados os termos diagonais do tensor de permeabilidade e pode-se calcular a permeabilidade equivalente em qualquer uma das três direções (X, Y ou Z), uma em cada rodada. O domínio total é um paralelepípedo, as três dimensões podem ser diferentes. A permeabilidade dentro de cada bloco é assumida constante.
+Por sua vez, EFFPERMJDBL resolve as equações por esquema DF de cinco ou sete pontos, respectivamente para 2D e 3D. É usada a média Harmônica para calcular a transmissibilidade entre os blocos, O número total de variáveis é igual ao número de blocos, / * J ou I* J* K. Além das demais características gerais de EFFPERM__EBL, essa rotina DF permite definir barreiras impermeáveis ao fluxo, como películas, entre quaisquer dois blocos, mas não chegamos a usar essa opção. Em algumas simulações de teste, EFFPERMJDBL produziu resultados idênticos aos do programa DF PERMEQ (Romeu [1994]), que - junto com o programa KEQVA - é um dos sucessores do programa de Bonet e outros [1989] no CENPES.
+2.5	- Erros Numéricos e Refinamento de Malha
+Um ponto nem sempre bem reconhecido é que os métodos numéricos para cálculo da permeabilidade equivalente não são exatos. Em casos onde existe uma solução analítica exata para a permeabilidade equivalente, podem-se observar resultados numéricos sistematicamente enviesados. Lachassagne c outros [1990], por exemplo, mostram como os resultados numéricos calculados por programas de diferenças finitas e de elementos finitos desviam-se significativamente dos resultados analíticos previstos para meios lognormais 2D, quando a variância dos logaritmos das permeabilidades locais aumenta. Warren e Price [1961], já foi dito, são enganados por esse mesmo viés numérico quando concluíram, equivocadamente, que a permeabilidade equivalente de um meio lognormal 3D seria igual à média geométrica (como apresentado na seção anterior, o resultado é próximo da média de potência com expoente 1/3).
+Isso vem do fato dos métodos numéricos serem, em geral, técnicas de aproximação, e não de resolução. A aproximação está associada a uma discretização espacial insuficiente. Efetuando-se o refinamento da malha numérica, pode-se notar a tendência das novas respostas irem se aproximando da resposta exata. Esse fato já havia sido verificado por Cruz [1991] e por alguns outros autores, e estudado em detalhes por Romeu [1995].
+Apenas em poucos casos especiais - como sistemas em série, paralelo e barreira impermeável - os diversos métodos de simulação calculam a resposta exata mesmo sem
+refinamento, devido à simplicidade do problema. No caso mais geral, a resposta numérica é uma aproximação que pode ser melhorada com o refinamento da malha numérica.
+Refinar a malha numérica consiste em dividir um bloco originai em blocos menores, estabelecendo para esses blocos menores uma propriedade característica de acordo com a propriedade no bloco original. No caso do problema de mudança de escala da permeabilidade absoluta, a permeabilidade de todos os blocos menores é feita constante e igual à permeabilidade do bloco que lhes deu origem. Um fato paradoxal: para ir para uma escala mais grosseira, o valor representativo deve ser encontrado numa escala bem mais refinada.
+O modo mais ou menos rápido como os diferentes métodos numéricos convergem para a resposta exata da permeabilidade equivalente será exatamente um dos critérios fundamentais nos estudos comparativos do Capítulo 5. Será por meio desse critério (a taxa de convergência) que o novo programa construído, segundo a formulação EFH, será comparado com os programas de DF e EF mais tradicionais.
+Quanto mais refinada a malha, quanto maior o número de elementos discretizando o domínio, maior a precisão da simulação. Romeu [1994] e Durlofsky [1994] efetuaram estudos nesse sentido e apresentam gráficos mostrando o resultado de simulações, em função do números de blocos, convergindo para um determinado valor, admitido como a resposta exata do problema analisado. Romeu [1994], aplicando o método das perturbações e a transformada de Fourier, chega a resultados analíticos para a idealização de um reservatório quadriculado, mostrando que a resposta da simulação DF é dada por um termo independente (a solução ideal) mais um outro cujo limite é zero quando o refinamento da malha tende a infinito, um exemplo bastante ilustrativo da maior precisão com o refinamento.
+Nas duas referências acima, nos próprios gráficos citados, é verificado o comportamento dos diferentes métodos numéricos. As formulações EF tradicional e CVFE calculam valores acima do considerado correto, convergindo por cima da solução. As formulações DF, EFM e EFH subestimam a solução, convergindo por baixo, apresentando valores cada vez maiores quanto mais refinada a malha.
+Para estudar este fenômeno, construiu-se uma subrotina para refinamento automático da malha, de acordo com um comando na entrada de dados
+Capítulo 3 - Método dos Elementos Finitos
+Híbridos
+3.1	- Visão Geral dos Métodos Mistos e Híbridos
+Segundo Chavent e Jaffré [1986, p.311]:
+“Há duas razões básicas para que os métodos de elementos finitos tradicionais não sejam adequados para a simulação de reservatórios. A primeira é que eles foram projetados para problemas com soluções suaves (processos difusivos, mecânica estrutural), enquanto que, na simulação de reservatórios, a solução pode apresentar frentes íngremes quando as equações são dominadas por efeitos convectivos. A segunda razão é que a velocidade dos fluidos, que é um importante fator de acoplamento nas equações no reservatório, é pobremente aproximada pelas funções de forma lineares (funções “chapéu”) normalmente usadas nas formulações de elementos finitos contínuos aplicadas em problemas elípticos e parabólicos suaves.”
+As formulações mistas de elementos finitos são uma forma de se obter velocidades realmente conservativas por meio da aproximação em separado da pressão (variável principal) e do seu gradiente, ou da própria velocidade, o que é equivalente. No problema de cálculo da permeabilidade equivalente, isso corresponde a resolver as equações (2.8) e (2.9) de forma separada, mas acoplada - o que contrasta com outros métodos onde a equação (2.9) é imediatamente introduzida em (2.8). A dimensão do sistema misto é, então, igual à soma do número de faces (número de valores de velocidades a serem calculadas) com o número de elementos (número de valores de pressões a serem calculadas) discretizando o domínio. O resultado é uma aproximação mais precisa, especialmente no cálculo das velocidades.
+De fato, um grande avanço e uma razão para as formulações mista (e híbrida) serem mais adequadas para problemas de fluxo é que elas trabalham com funções vetoriais, e com isso conseguem representar com mais liberdade o real comportamento do fenômeno físico.
+A principal desvantagem da formulação mista é que ela monta um sistema linear que não é positivo-definido. Esses sistemas são mais difíceis de resolver. Muito do que é publicado sobre elementos mistos é exatamente sobre algoritmos eficientes para a solução do
+sistema linear resultante, usando métodos numéricos muito elaborados e computacionalmente caros, e essa é uma das razões que tem limitado a utilização dos métodos mistos por engenheiros. O artigo de Alien [1994] é um típico exemplo dessa literatura.
+Para contornar o problema, Durlofsky [1994] cita os três métodos mais comuns para se obter uma matriz (simétrica) positiva-definida de ordem igual ao número de faces, cuja solução é equivalente à solução da formulação mista:
+« formulação de elementos finitos não-conformes;
+•	introdução de um termo de penalidade;
+•	formulação híbrida, ou técnica de hibridização.
+Na variante híbrida (ou elementos finitos mistos-híbridos, ou ainda, simplesmente, elementos finitos híbridos, ou ainda, nesta tese, EFH) a continuidade do fluxo normal entre elementos adjacentes é garantida explícitamente por meio da única equação que monta o sistema linear a ser resolvido, e não por meio da construção do espaço de aproximação. As formulações híbridas estão associadas matematicamente a uma aplicação dos multiplicadores de Lagrange - função Lagrangeana ou simplesmente Lagrangeano - , muito usados em problemas de otimização em Pesquisa Operacional.
+Hoje em dia, existe a tendência de substituir o método misto pelo híbrido. Durlofsky [1994], por exemplo, usou, na realidade, o método híbrido (como indica o número total de variáveis na malha triangular 20x20(x2) igual à 1240, pois na formulação mista seriam 1240 + 800 “ 2040 incógnitas). Chavent e Roberts [1991, p.343] já recomendavam o uso da formulação híbrida ao invés da formulação mista.
+Dois inconvenientes na formulação híbrida são:
+•	a necessidade, no pós-processamento, da matriz elementar para o cálculo da pressão média e dos fluxos nas faces. Para malhas compostas por muitos elementos deformados de formas diferentes, é preciso armazenar muitas matrizes elementares ou, então, essas matrizes elementares terão que ser calculadas novamente (para problemas grandes, a segunda opção parece mais apropriada);
+♦	a necessidade de calcular a inversa da matriz de rigidez elementar pode aumentar muito o tempo de processamento para espaços de aproximação de ordem superiores (no caso mais geral, com malhas muito irregulares).
+Segue-se uma revisão dos trabalhos relacionados com a aplicação do método dos elementos finitos híbridos ao problema da simulação de fluxo em meios porosos. Depois
+disso, elabora-se uma síntese da formulação, com aprofundamento em alguns detalhes particulares.
+3.2	- Aplicação dos Métodos de Elementos Finitos ao Fluxo em Meios Porosos
+O objetivo de Frind e Matanga [1985] é calcular um campo de velocidades no meio poroso (aqüífero) com precisão satisfatória para a simulação do transporte de contaminantes. Na revisão da teoria, eles fazem o desenvolvimento detalhado das equações para a descrição do fluxo em regime permanente, em termos de potencial e de linhas de fluxo, e mostram como tratar as condições de contomo essenciais e naturais. E comentado que os modelos de linhas de fluxo são sub-utilizados em hidrologia.
+A partir das formulações em termos de potencial e em termos de linhas de fluxo, que são muito semelhantes, eles mostram como aproximar a solução por elementos finitos (triângulos e quadriláteros) com funções de forma lineares. Tendo lados compatíveis, triângulos e retângulos podem ser usados em conjunto. Embora os triângulos sejam mais versáteis para a representação de geometrias irregulares, os retângulos, usados onde a geometria permitir, conduzem a uma solução mais precisa. Os elementos podem ser sempre orientados de tal forma que os eixos locais coincidam com os eixos principais da permeabilidade e, assim, a solução pode ser baseada na formulação que não contém termos cruzados.
+Como conclusão, são citadas as principais vantagens da chamada formulação dual, que é a formulação em termos das linhas de fluxo:
+•	a solução já é expressa em termos da velocidade;
+•	o mesmo método numérico da formulação em termos do potencial pode ser utilizado, pois as equações básicas são da mesma forma;
+•	as condições de contorno em termos de fluxo são melhor satisfeitas.
+Em um artigo complementar a esse é apresentada a aplicação metodologia à um aqüífero real, onde as linhas de fluxo, obtidas pela migração de um contaminante, foram sendo determinadas com boa precisão ao longo de muitos anos.
+Cordes e Kinzeibach [1992] desenvolvem um método de pós-processamento da pressão obtida pela aproximação por elementos finitos - funções de forma linear e bilinear -
+para gerar um mapa de fluxo contínuo em todo o domínio. Eles comentam que modelos que geram linhas de fluxo (stream function models) são uma alternativa para a determinação do campo de velocidades, mas não podem ser aplicados ao fluxo em regime transiente, problemas tridimensionais e reservatórios com fontes e sumidouros (poços) distribuídos. Além disso, esses modelos acabam por dobrar o esforço computacional necessário, pois precisam dos valores das pressões para calibrar os parâmetros de fluxo.
+A metodologia de pós-processamento é apresentada para o caso 2D e são dadas as indicações para estender para 3D. O artigo detalha bem a metodologia, porém sabe-se que a capacidade de aumentar a precisão do fluxo com pós-processamento está limitada pela precisão na determinação da pressão. Com o uso das funções de forma linear e bilinear, a taxa de convergência da pressão é O(h); mais lenta do que a taxa O(h2 ) dos casos de DF centradas e da formulação híbrida de EF no espaço R TQ (espaço de Raviart-Thomas de mais baixa ordem, que será descrito na próxima seção).
+Eymard, Gallouet e Joly [1989] mostram um simulador desenvolvido para o deslocamento imiscível bifásico incompressível, em 2D e 3D. Segundo o texto, eles desenvolveram uma formulação híbrida de elementos finitos com três graus de liberdade em elementos retangulares e dois graus de liberdade em triângulos, fazendo com que o número total de variáveis do sistema linear seja, assintoticamente, o mesmo que o número de blocos discretizando o domínio, no caso de retângulos. Ou seja, o sistema é da ordem de grandeza do obtido pela formulação de diferenças finitas. A técnica para resolver o fluxo bifásico é do tipo IMPES (IMplicit in Pressure, Explicit in Saturatiori).
+Essa redução no número de graus de liberdade por elemento é muito importante para aumentar a eficiência computacional da formulação híbrida sobre a formulação DF, porém os artigos mais recentes continuam citando como dois a relação entre o número de variáveis da formulação híbrida e o total de variáveis na formulação DF, para a mesma discretização do domínio.
+Chavent e outros [1990] apresentam as principais características do simulador de reservatórios para fluxo bifásico incompressível BIDIMIX, desenvolvido em conjunto pelo INRIA, IFP e Elf Aquitaine. A equação de saturação é resolvida por EF descontínuos e com o uso de um limitador de inclinação (slope limiter), técnica esta que já está presente nos atuais manuais para a resolução numérica de EDP. A equação da pressão e a de conservação são resolvidas utilizando EF híbridos com o espaço R To . São considerados os efeitos
+gravitacionais e de pressão capilar. A representação dos poços é feita por macroelementos, um refinamento radial da malha na região dos poços.
+Para a formulação híbrida, são apresentados os espaços de aproximação envolvidos na aproximação R To e a forma geral das matrizes presentes no sistema linear final a ser resolvido.
+São apresentados, em linhas gerais, quatro exemplos de validação. No caso de deslocamento imiscível linear, o programa calcula valores muito mais precisos da razão água-óleo contra o volume de água injetado, necessitando de apenas 1/6 do esforço computacional do esquema DF de primeira ordem.
+Este artigo é, de certa forma, uma atualização do capítulo cinco do livro de Chavent e Jafífé [1986], ampliada pela construção do simulador BIDIMIX.
+Beckie, Wood e Aldama [1993] apresentam as estratégias empregadas na simulação de alto desempenho do fluxo monofásico em aqüíferos heterogêneos. São empregadas técnicas avançadas como decomposição de domínio com multigrid e formulação híbrida de elementos finitos utilizando o espaço de BDM de primeira ordem.
+Nesse artigo em questão, eles sustentam que as simulações numéricas para estudar o efeito das heterogeneidades são feitas, geralmente, em malhas finamente refinadas e com valores de permeabilidade gerados sinteticamente por distribuições geoestatísticas, como, tipicamente, a lognormal sem correlação. É comentado que o espaço de aproximação de Raviart-Thomas de mais baixa ordem não reproduz corretamente fluxos não paralelos aos eixos de coordenadas.
+A conclusão básica do artigo é que o algoritmo de decomposição de domínio com aceleração multigrid consome entre cinco e dez vezes mais tempo de CPU do que a versão híbrida com solver ICCG(O), mas permite simular problemas da ordem de quatro milhões de graus de liberdade, o que não seria possível de outra forma.
+Durlofsky [1994] apresenta os resultados de simulações de fluxo monofásico bidimensional em reservatórios de petróleo idealizados, comparando o método dos elementos finitos tipo volume de controle com a formulação mista de elementos finitos. O objetivo principal é gastar o menor esforço computacional para obter um campo de velocidades que realmente conserve a massa do sistema e com fluxos contínuos entre elementos, utilizando apenas funções de forma lineares. O esforço computacional foi relacionado como diretamente proporcional ao número de incógnitas do sistema linear a ser resolvido, para uma certa
+precisão no mapa de fluxo. Para um mesmo número de incógnitas, a formulação mista é resolvida numa malha mais grosseira por ter mais incógnitas por cada elemento.
+A conclusão principal é que para sistemas com maior grau de heterogeneidade, como o caso de arenito com argilas dispersas aleatoriamente e como o caso de intrusão de canal de baixíssima permeabilidade, a formulação mista é computacionalmente mais eficiente do que elementos tipo volume de controle: os resultados com 1240 variáveis são bem mais precisos do que o CVFE com 3721 variáveis. O autor conclui também que a formulação mista é mais robusta e confiável e que a vantagem dessa formulação pode ser estendida para fluxo multifásico, já que as equações hiperbólicas de saturação a serem acopladas no modelo multifásico são também passíveis de tratamento pela formulação mista.
+Arbogast e outros [1995] citam na revisão de literatura que T.F. Russell e M.F. Wheeler demostraram, em publicação de 1983, que o uso de regras especiais de quadratura transformam a formulação mista de EF no espaço Ã TQ no esquema de diferenças finitas centradas padrão apenas para o caso de domínio retangular, e também com a hipótese do tensor de permeabilidades ser diagonal. No caso mais real, com a geometria do reservatório não sendo tão uniforme, aplica-se a técnica de mapear o domínio físico do reservatório em um domínio computacional retangular. Existindo uma função suave que faça esse mapeamento, ficam mantidas as vantagens de facilidade de implementação, a maior precisão dos resultados e a conservação local de massa da simulação EF mista em retângulos. Esse tipo de mapeamento é originário da indústria aeronáutica, onde é muito empregado, havendo muitos códigos comerciais disponíveis para criar o mapeamento e sua respectiva matriz Jacobiana. Aqui também aparece a explicação de que a formulação híbrida de EF é um caso limite da técnica de decomposição de domínio, onde todos os elementos são também sub-domínios.
+3.3	- Espaços de Aproximação
+3.3.1	- Espaço de Raviart-Thomas
+O espaço de aproximação de Raviart-Thomas de mais baixa ordem, denominado RTQ, é composto por três espaços de aproximação distintos:
+• define-se uma pressão média em todo o elemento;
+® em cada face do elemento há uma pressão média, um traço de pressão, que pode ser representada como aplicada no centro da face, ou então ao longo de toda a face;
+• o fluxo (variável vetorial) no elemento é representado peia expansão em um número de funções de forma (vetoriais) lineares igual ao número de faces:
+v(í)=’TvJw/x) .	(3.1)
+As funções de forma lineares de expansão do fluxo devem possuir propriedades características, que serão vistas a seguir. Serão mostrados os casos mais comuns: elemento mestre triangular e elemento mestre quadrado.
+3.3.2	- Elemento Mestre Triangular: Funções de Forma e Suas Propriedades
+Figura 3.1 - Espaço de aproximação do fluxo no elemento mestre triangular
+V.w, = l + l = 2 = cte
+V. w2 = 1 +1 = 2 = cie
+V .	= 1 4" 1 — 2 = cíe
+Conclusão:
+£ V . w, = 2 . £ = 1, i- 1,2,3
+2
+(3.2)
+
+w2 .«j =-y=0
+Resumindo em uma equação:
+- - 72/	\ wi-n2=^~~ {x + y-lj=0	Wj .n3 =-x = 0
+Í2	¿2 w2-«2“ 2 V+y&gt; 2	w2 .H3 -~x=0
+vv3./72=4~- (x_i+j)=o	w3.ãz3 =1-x = 1
+L	= so	(3-3)
+3.3.3 - Elemento Mestre Quadrado: Funções de Forma e Suas Propriedades
+Figura 3.2 - Elemento mestre quadrado
+1
+V.w, =~=cte
+1 4
+V.fo -~=cte ¿ 4
+V.w, - —^cte
+• 4
+Novamente:
+V.iv( = t,4 =!, /=1,2,3,4
+(e +1) 1
+1	4	2 (r, +1)	1
+2_	4	~2
+(e-1) 1
+
+3	4	2
+(p -1)	1
+(c 4-1)
+	~0	wt.n3 —-	4	“ = (
+	=0		(n +	1)
+			4	
+w3.ri4	=0	- - (E W3-Wl“	-0 4	-0
+-«3	=0	(r w4.n2~	I +1) A	=0
+w2 -«3=0
+iv3.n2 =0
+W4.H,=0
+E também:
+(3.5)
+3.3.4	- A Transformação de Piola
+As funções de forma descritas anteriormente foram definidas para elementos de geometria padrão. Para elementos triangulares ou retangulares deformados, faz-se necessária uma certa transformação.
+A função que faz a correspondência das bases vetoriais no elemento mestre com as respectivas funções de forma vetoriais no elemento real deformado é conhecida como transformação de Piola. Essa transformação preserva a componente normal do campo vetorial na superfície (em 2D, no lado) do elemento deformado.
+I M atriz Jacobiana I
+i =	-------------J--------------- ™ i	(3.6)
+onde:
+J = Jacobiano = Determinante da Matriz Jacobiana
+[ Matriz Jacobiana] = Matriz de Transformação das Coordenadas de um Ponto em Relação aos Eixos Cartesianos no Elemento Mestre e seu Correspondente Mapeamento no Elemento Real Deformado, Descrito nos Eixos Globais do Domínio.
+Além disso, a transformação de Piola também mantém:
+[v.Õ,- = [v.®,. = 1,VÍ	(3.7)
+(3.8)
+que serão características muito úteis para simplificar a formulação de elementos finitos.
+O primeiro lugar onde encontramos um método para transformação das funções de forma vetoriais, mantendo-se a componente normal, foi em Thomasset [1981, p. 34]. Entretanto, neste livro, o espaço de aproximação é definido de forma a ter a componente normal unitária, quando é mais desejável manter a integral dessa componente normal sobre o lado, ou seja, um fluxo normal unitário através do lado. O fluxo normal total será dado pelo coeficiente v., calculado no pós-processamento, como será visto a seguir. Arbogast e outros [1995] apresentam a denominação de transformação de Piola. A transformação de Piola é realmente fundamental para os métodos que trabalham com vetores, como pode ser visto também em Brezzi e Fortin [1991, p. 97].
+3.3.5	- Outros Espaços de Aproximação
+Atualmente existem três grupos principais de espaços de aproximação para as formulações EF mista e híbrida:
+•	os espaços de Raviart-Thomas (RTK );
+•	os espaços de Brezzi-Douglas-Marini
+•	os espaços de Brezzi-Douglas-Fortin-Marini (BDFM[K+l] ).
+O espaço RT0 é o espaço mais simples possível, e, por isso, ele ocupa um lugar especial entre todos os demais.
+Brezzi e Fortín [1991] é uma das referências mais modernas nesse assunto, com enfoque bastante matemático e exemplos voltados para a elasticidade, mecânica estrutural, operador biharmônico. Para problemas de fluxo (EDP de segunda ordem) são encontradas citações de utilização dos espaços RTq. BDM¡ e R7¡. Beckie e outros [1993] utilizam o espaço BDM¡. Nesse artigo encontra-se uma rápida apresentação desse espaço.
+Quanto maior a dimensão do espaço, maior a precisão que pode ser obtida. Por outro lado, mais complexa são a formulação e as operações matemáticas a serem realizadas.
+3.4	- Síntese da Formulação
+A utilização dos métodos híbridos em problemas de fluxos em meios porosos é tão recente que muito do que existe na literatura está numa linguagem matemática de difícil compreensão, mesmo para engenheiros pós-graduados. Uma importante exceção é o artigo de Chavent [1991]. Por outro lado, ele simplifica tanto a formulação, visando sua aplicação em malhas simplesmente retangulares, que fica difícil estender para o importante caso de elementos deformados linearmente. Portanto, julgou-se proveitoso elaborar a seguinte síntese da formulação, não apenas por consistência do texto como também por não haver disponível na literatura uma apresentação assim. Busca-se aqui um compromisso entre o simples e o completo. Para ampliar a formulação para espaços de ordem mais alta, além de obter as expressões para os três espaços em questão (pressões no bloco, pressões no contorno e vazões no contorno), será muito útil ver a seção 3.4 do volume II da coleção de Oden [1984], principalmente as páginas 143 e 144, onde são mostradas as integrais que terão que ser calculadas.
+A aproximação utilizada aqui é chamada de formulação mista-híbrida dual ou elemento finito misto-híbrido dual (dual mixed-hybrid elemenf). Nessa formulação, as aproximações da pressão no elemento, da pressão no contorno do elemento e da derivada da pressão no contorno do elemento são feitas em separado. Em contraste, na formulação híbrida primai (primai hybrid elemenf), não há interpolação em separado da pressão no contorno. Nesse caso, a pressão no contorno é conseqüência da aproximação da pressão em todo o bloco, como na técnica de elementos finitos tradicionais. A formulação dual é mais empregada do que a aproximação primai.
+3.4.1-	Comportamento do Material
+Parte-se da equação de comportamento linear do meio poroso, ou lei de Darcy:
+v(x) = -KV(P(x))	(3.9)
+Efetuando a ponderação por w, , vem:
+v.w,=-â:(vP.w()	(3.10)
+Integrando sobre um elemento Q., tem-se:
+fn^w,=-fn£(vP.w,.)	(3.11)
+Tem-se também:
+V.(PWj)= (VP).wi +P(V.Wi)	(3.12)
+Ou seja,
+-(VP).Wj = P(V.Wi)- V.(Pwí)	(3.13)
+Substituindo (3.13) em (3.11), chega-se a:
+K''(3.14)
+Aplicando o teorema da divergência de Gauss para a última integral, vem:
+(3.15)
+o que reduz as exigências de derivabilidade em relação a função P(x) ,
+Trabalhando com a integral de superfície:
+(3.16)
+Iv.w, = p[i	.H;)
+J
+K-' (/•*, =?((3.17)
+j
+K-'^v.w^P^.^-T^	(3.18)
+e lembrando que:
+v(x) = ¿Lv . W .(x) ;
+&gt;1
+eque Jn(V.w¡)=l;
+-se a:
+# FACES
+(3.19)
+Variando agora o índice i de 1 até (# FACES), chega-se a um sistema que será chamado de equação de consistência. Em notação matricial:
+[ÊKFjfr} = K[P- TP}	(3.20)
+onde os elementos ekf(ij) são iguais a:
+etf(i,j)= ¿ Wj . w,	(3.21)
+No pós-processamento, a partir dos valores de TP, calcula-se a pressão média no bloco P e, em um segundo passo, calculam-se os fluxos por meio da equação de consistência na forma:
+{v}= £[£££■]■' {?-TP}	(3.22)
+3.4.2	- Equação de Equilíbrio ou Lei de Conservação
+Equações diferenciais parciais elípticas típicas são:
+v ,(Vu) = V 2u = 0
+-V .(V u) - -V 2u = f
+-kV2u+K2u = f
+V 2u + k (E - V )u = 0
+............ Equação	de	Laplace
+........... Equação de Poisson
+	 Equação	de	Helmholtz ......................... Equação.de	Schrodinger
+As leis constitutivas são, geralmente, equações de comportamento linear muito semelhantes, tais como a lei de Darcy no fluxo em meios porosos, a lei de Hooke em elasticidade, a lei de Fourier nos processos de transferência de calor, a lei de Stokes no fluxo em regime laminar e a lei de Coulomb na eletricidade.
+Assim, pelo menos para a formulação do programa em 2D, será considerada a seguinte equação de equilíbrio:
+V ,V + bP = f	(3.23)
+Essa relação é mais geral do que a equação V. v ~ 0 usada para simular o fluxo monofásico incompressível em meios heterogêneos, necessária para o cálculo da permeabilidade equivalente. Resolveu-se, porém, trabalhar com esta equação por três razões:
+•	os termos b e f não dificultaram a formulação, eles foram praticamente carregados ao longo das manipulações algébricas;
+•	a equação de equilíbrio ficou bastante geral, e o programa poderá ser estendido para outras aplicações;
+•	é possível trabalhar com casos de validação mais interessantes, como o que será mostrado na Seção 4.1.4.
+A forma de trabalhar a equação de equilíbrio é diferente do que é feito nos métodos de elementos finitos tradicionais. Adota-se uma formulação variacional sem, contudo, haver a multiplicação por uma função de ponderação:
+ínV.v+(ôP=V	(3-24)
+(#FACES r	_ f	f
+£v, JnV.w,J + PJn&amp;amp; = Jn/	(3.25)
+Relembrando que	(V. w ¡) = 1
+e chamando
+fica-se com:
+UFACES \
+¿Ví ]+PB=F	(3.26)
+M 7
+Em notação matricial, trabalha-se com um vetor {e}, cuja característica é possuir todas
+as componentes unitárias, para substituir o sinal de somatório.
+Por enquanto:
+{e}T {v}= F-P B
+Porém, de (3.22):
+{e}r {v}= F-P B = K{e}r [EKF]~l {P-TP}
+Ou:
+F-PB^ K{e}r [EKFT P{e}-K{e}r [£&amp;amp;fF {TP}
+Levando a:
+{e}+s)= F + K{e}T\EKF}~' {TP}
+(3.27)
+(3.28)
+(3.29)
+(3.30)
+Desta forma, elimina-se a variável fluxo, ficando com uma equação de equilíbrio apenas nas variáveis de pressão. Em relação à notação empregada no artigo de Chavent e Roberts [1991, p.340], valem as seguintes equivalências:
+[FÁ77] 1 {e}= Vetor de componentes a K A
+{e}r [EXF]1 {e} = a K = Soma de todos os elementos de [EÁ77]”1
+(3.31)
+(3.32)
+3.4.3	- A Continuidade do Fluxo
+Nas formulações tradicionais de EF, a continuidade da variável de estado e dos fluxos entre elementos vizinhos é garantida automaticamente pela construção do espaço de aproximação (exceto no caso das funções de forma lineares, as mais simples, quando não há continuidade do fluxo na face). Exemplificando, para o caso dos polinómios de Lagrange, por um lado (interface) com dois nós, deve passar uma função linear, e, por um lado com três nós, deve passar uma função quadrática. Há unicidade do valor da variável nos nós, pois é o valor obtido pela solução do sistema linear, e existe uma única reta passando por dois pontos distintos, e uma única curva de segundo grau que passa por três pontos. Onde não houver continuidade do fluxo, é por que se trata de uma face com a aplicação da chamada condição de salto não-homogênea (jump condition), como um poço em um reservatório. Também na formulação mista, os espaços de aproximação do fluxo são construídos de forma a garantir automaticamente a continuidade do fluxo entre elementos vizinhos.
+Em contraste, na formulação híbrida, o espaço de aproximação R To não conserva implicitamente o fluxo: em qualquer face interna, o fluxo associado aos dois elementos vizinhos é definido sempre na direção da saída, não há entrada de fluxo na base do espaço de
+aproximação. Esta construção facilita a montagem da matriz elementar, e diminui a possibilidade de erros na descrição da malha. A continuidade do fluxo é garantida explicitamente na formulação híbrida. Para cada face, é criada a equação:
+NORMAL FACE #i	.	NORMAL LACE #i	_ rj
+V ELEMENTO DE UM LADO	V ELEMENTO DO OUTRO LADO ~ V	UJJ/
+Esta equação é a única que vai montar todo o sistema linear, ao contrário da formulação mista, onde há dois tipos diferentes de equação: a equação da pressão e a equação do fluxo.
+Em EFH, a montagem da matriz global é feita pela contribuição individual e independente de cada elemento. Cada elemento vai montar sua própria parte na equação de continuidade, que é simplesmente:
+}= 0	(3.34)
+Se, em uma dada linha da matriz global, nenhum outro elemento acrescentar uma contribuição, é por que aquela face está no contorno do domínio. Se, depois de montada toda a matriz global, não for especificada uma condição de contorno para esta face, o PVC estará sendo resolvido com vazão nula por esta face. Ou seja, há um default', considerar barreira
+impermeável se não for alimentada nenhuma condição de contorno.
+{v}= £[£ÁFr' {?-TP}= 0	(3.35)
+K [PÁPT' {e} P = K [EKF]~1 {TP}	(3.36)
+Fazendo:
+aXI® =(k^t lEKF^' W+B)	O-37)
+em (3.30), fica-se com:
+?(a «SL«)= F + K{e}T [EKF]-' {TP}	(3.38)
+A eliminação de P é feita substituindo a equação (3.38) na (3.36):
+K[£KFT' te}(F + K {e}T [SÂF]'1 {TP})= kQC^^EKF}-' {TP}	(3.39)
+Rearrumando os termos, chega-se finalmente em:
+K[EKF]~'
+K2
+a FATOR
+71 ESCALAR
+[EKFY' {e}{e}T[EKF]"' {TP} = J
+.fator AEKF]-'{e}
+ESCALAR
+....................................................................             (3.40)
+Relativamente às definições do artigo de Chavent e Roberts[1991, p. 341, eq. 126-
+128], têm-se as seguintes correspondências:
+(k[EKF] ’)= Matriz de massa da formulação MH
+K2
+..[EKFV {e}{e}T[EKF]~l
+ESCALAR	7
+(3.41)
+(342)
+Matriz de rigidez MH
+Vetar FAUH
+ESCALAR
+(3.43)
+Na Equação 3.40, a matriz [EÂ77]’1 está multiplicando todos os três termos pela esquerda, o que poderia sugerir uma simplificação da equação. Todavia, da forma em que está, a equação possui a vantagem de apresentar o dimensional de fluxo (vazão). Assim, fica simples aplicar condições de contorno de Neumann, dispensando realizar uma integral de superfície, diferentemente do que ocorre em EF tradicionais. A ação de aplicar as condições de contorno de Neumann é simbolizada pela subtração do vetor G, como aparece em Chavent e Roberts [1991, p. 341, eq. 129].
+3.5	- Tratamento Tensorial
+O caso mais geral de simulação de fluxo para o cálculo da permeabilidade equivalente inclui a representação tensorial completa para a permeabilidade. Nesse estudo é feita a aplicação inicial de uma formulação EFH, ainda pouco difundida e conhecida, e os programas são construídos praticamente para meios heterogêneos isotrópicos. Apresenta-se a seguir como seria a extensão para o tratamento tensorial.
+Em Arbogast e outros [1995] pode-se encontrar o desenvolvimento da formulação variacional, que depois será transformada em esquema DF. A base do tratamento tensorial é a
+lei de Darcy
+v = ~-KVP
+(3.44)
+só que agora
+v ” - [X] VP com
+(3.45)
+Como a permeabilidade é análoga à transmissibilidade, sua inversa é uma forma de resistência e, desse modo, pode-se definir
+Ul = ¡XF1 -
+para
+d~	xx yy
+r	= k i d
+XX	yy
+	= k / d
+yy	XX
+r	= — kri, / d
+xy	xy
+	= -kfJd
+Mudando de lado:
+(3.46)
+(3.47)
+(3.48)
+W'v = [/f]v =-VP
+Ponderando:
+= -VP.
+O lado direito continua o mesmo da formulação isotrópica, e vai resultar no vetor
+&lt;jp - TP |. O lado esquerdo, substituindo a velocidade pela sua expansão nas funções de
+forma, toma-se
+E v, (p]wy) w,
+(3.49)
+que vai dar origem a integrandos de forma geral
+rw.w.+rw.w.+rww.-l-rw.w.	(3 50)
+r xx v xj yxi .vy yj xi yx xj yi yy yj yi
+Já é possível perceber que a matriz elementar de fluxo vai perder todo o seu padrão de esparsidade, o que vai aumentar o esforço computacional para a sua inversão. Essa perda de esparsidade deve ser uma motivação para que, quando da utilização da representação tensorial, empregue-se conjuntamente malhas deformadas. No caso do espaço RTQ, a regra de quadratura exata em uso possui folga para trabalhar com quadrados deformados linearmente.
+Uma outra transformação importante, além da transformação de Piola, é a equação
+(2.5)	de Arbogast [1995], que mostra como modificar o tensor de permeabilidades em função da mudança nos eixos coordenados de referência:
+[k]=j[jr'w[jyr (3.51)
+A literatura em geral não cita como problema a formulação teórica para a representação tensorial. Os problemas aparecem na fase preliminar (caracterizar os valores tensoriais de uma região do reservatório) e no processamento (com o aumento do esforço
+computacional requerido). Mas, percebe-se uma tendência em utilizar cada vez mais a descrição tensorial.
+Arbogast e seu grupo desenvolveram um programa para a simulação no domínio computacional, que é retangular. É uma forma que reduz o esforço computacional, mas cujo entendimento operacional exigiria estudos além do escopo definido para esta tese. A idéia seria elaborar um programa tensorial no domínio real deformado (como é HYBRID2D), inicialmente considerando quadriláteros e triângulos em 2D, e depois passar para a versão 3D.
+A formulação EFH tensorial continua com sete e onze entradas não-nulas por linha, 2D e 3D respectivamente, da matriz do sistema linear - enquanto que a formulação DF tensorial passa para nove e dezenove pontos. O sistema linear EFH, principalmente o 3D, vai se tomar mais fácil de resolver do que o correspondente sistema DF. Quanto mais a modelagem matemática vai sendo complicada (malhas deformadas, representação tensorial, fluxo bifásico), mais favorável vai ficando a posição da formulação EFH, relativamente a outras formulações menos flexíveis.
+Quanto à simetria do tensor de permeabilidade, apesar de existirem defensores de que ele pode ser assimétrico, acreditamos que - a exemplo do tensor das constantes elásticas, onde condições de equilíbrio implicam na sua simetria - é mais razoável trabalhar com um tensor simétrico.
+Capítulo 4 - Os Programas de Computador:
+Hybrid2D e Hybrid3D
+Foram construídos dois programas para cálculo da permeabilidade equivalente em meios heterogêneos usando o método dos elementos finitos híbridos: Hybrid2D e Hybrid3D. Ambos os programas calculam o campo de pressões e velocidades em um meio heterogêneo submetido a condições de contorno do tipo impermeável para, depois, mediante um cálculo simples, chegarem a permeabilidade equivalente do sistema, seguindo os métodos que foram discutidos nos capítulos anteriores. Hybrid2D trata problemas em 2D, usando elementos triangulares ou retangulares sujeitos a certas deformações. Hybrid3D trata problemas em 3D, mas é limitado a malhas mais regulares.
+Este capítulo descreve as principais características desses dois programas, discutindo também alguns exemplos simples de validação. Fica para o capítulo seguinte uma discussão mais completa do desempenho desses programas, considerando uma variedade maior de casos e comparações com programas concorrentes baseados em diferenças finitas e elementos finitos tradicionais.
+4.1	- O Programa HYBRID2D
+4.1.1	- Estrutura Geral
+A intenção na elaboração do programa em 2D foi obter-se um código bastante geral para o problema em questão, incluindo a possibilidade de tratar malhas irregulares, formadas por triângulos de qualquer tipo e por retângulos orientados em quaisquer direções.
+Um programa genérico de elementos finitos é formado por três módulos principais:
+« PRÉ-PROCESSAMENTO: geração (manual ou automática) da malha; definição das propriedades físicas dos elementos; identificação da ordem - número de pontos ~ de integração, entre outras ações.
+® PROCESSAMENTO: cálculo das matrizes locais, elemento a elemento; montagem da matriz de rigidez global de acordo com a metodologia de indexação de matriz esparsa a ser utilizada; montagem da matriz de carga global; resolução do sistema de equações lineares resultante por algum módulo de solver, direto ou iterativo.
+• PÓS-PROCESSAMENTO: preparação final e impressão dos resultados. Na formulação híbrida - onde a solução do sistema linear corresponde às pressões sobre as fronteiras de cada bloco - é no pós-processamento que serão calculadas as variáveis de maior interesse: a pressão média nos blocos (elementos), os fluxos entre os blocos, a permeabilidade equivalente através do fluxo normal a uma certa superfície e, eventualmente, o pós-processamento não-conforme O ( h2 ) da pressão no bloco (que não está implementado no programas HYBRID2D e HYBRID3D).
+A estrutura geral de HYBRID2D é semelhante a do programa descrito em Oden [1981], livro-texto do curso de Análise Numérica na Unicamp. O nome das variáveis são mnemónicos sugestivos (em inglês) com seis caracteres, facilitando a compreensão e as futuras modificações. Não foram utilizados nomes com mais de seis caracteres para manter o código o mais portátil possível entre os diferentes compiladores FORTRAN em microcomputadores e em estações UNIX.
+4.1.2	- Dois Tipos de Elementos e Suas Deformações
+Uma fase inicial que requer bastante esforço em um projeto global de simulação é a adequada descrição do domínio e de suas propriedades físicas - isso é, a fase da geração da malha. Em geral, a utilização de elementos deformados é um recurso vantajoso para uma representação geométrica melhor e mais flexível, evitando o excessivo refinamento de uma malha ortogonal próximo das singularidades e das interfaces entre diferentes sub-domínios.
+A Reprodução 1 ilustra uma situação, construída a partir de dados reais de permeabilidade medidas em um afloramento, onde a possibilidade de utilização de elementos deformados constitui-se em uma vantagem evidente.
+Reprodução 1 - Trecho (comprimento e altura aproximadamente iguais a 50 m e 7 m) do afloramento Açu, destacando as variações de permeabilidade (0.1 a 500 mD) interpoladas a partir de medidas de minipermeâmetro. As cores mais escuras indicam permeabilidades muito baixas.
+(Figura originalmente em Siqueira e outros [1996])
+A compreensão da sistemática de trabalho com a transformação de coordenadas, com a matriz Jacobiana e com funções implícitas, é um requisito básico para a evolução rumo a simulações mais elaboradas.
+No caso, está-se aplicando o espaço de Raviart-Thomas de mais baixa ordem, e só são feitos cálculos de produtos cruzados das funções de forma que interpolam a velocidade. Nosso objetivo era trabalhar com elementos deformados linearmente, o que já confere uma enorme flexibilidade à geração da malha. Para efetuar o mapeamento do elemento mestre no elemento deformado, foram usadas as funções de forma (polinómios) de Lagrange lineares no
+triângulo e bilineares no quadrado. A combinação do espaço R To com o de Lagrange foi formulada segundo uma certa intuição. Posteriormente, verificamos, com o uso da transformação de Piola, que a sistemática empregada estava correta.
+O programa HYBRID2D permite trabalhar com qualquer triângulo deformado linearmente e com retângulos rotacionados de qualquer ângulo em relação aos eixos cartesianos globais.
+A formulação para retângulos é mais simples nesse caso, a matriz elementar 4x4 fica reduzida a dois blocos 2x2 após duas permutações: a da linha 2 com a linha 3 e a da coluna 2 com também a coluna 3. A inversão da matriz [EKF] resume-se à inversão de duas matrizes 2x2, o que é bem mais fácil. Os cálculos de mapeamento e das integrais dos produtos escalares que estão implementados servem para um elemento quadrilateral qualquer. O método pode ser estendido para incluir a inversão de uma matriz 4x4 cheia. Nesse caso, o cálculo dos elementos da matriz inversa seria implementado por fórmulas exatas, derivadas a partir da regra de Cramer para a solução analítica de sistemas de equações lineares.
+4.1.3	- Regra de Integração
+Os métodos de elementos finitos seguem duas sistemáticas gerais:
+® admitir a expansão da solução da equação diferencial em funções definidas, não nulas, apenas ao redor de elementos vizinhos (piece-wise tria! functions). As funções de expansão são geralmente polinómios, como os de Lagrange, para reduzir o esforço computacional, e este processo é chamado de determinação do espaço de aproximação;
+• multiplicar (ponderar) a equação diferencial por uma função de teste (weight functiori) bem comportada e determinar uma formulação integral (variacional), por meio da integração por partes ou da aplicação do teorema da divergência de Gauss, de modo a balancear os requisitos de suavidade entre as funções de expansão e as de ponderação. Essa formulação variacional é chamada de forma fraca do problema de valor de contorno (PVC).
+No método de Galerkin, as funções de expansão são as mesmas funções de ponderação e, desse modo, podemos nos referir a elas simplesmente como funções de base (basis
+functions) do espaço de aproximação. Outra denominação comum é a de funções de forma (shape functions).
+A substituição da expansão em série de funções na formulação fraca leva a um sistema linear para a determinação dos coeficientes da expansão. Com os coeficientes calculados, temos a solução do PVC. Entretanto, os termos que multiplicam os coeficientes (as incógnitas do sistema linear) são integrais definidas da soma e do produto das diversas funções de base e suas derivadas. O método EF calcula essas integrais, dando um valor numérico a elas, para permitir que se resolva o sistema linear.
+Assim, o cálculo de integrais tem um papel muito importante nos métodos de elementos finitos. Dentre as várias formas de calcular integrais, um processo muito aplicado em EF é a quadratura: o valor da integral é aproximado pela soma ponderada de um certo número de valores do integrando, em pontos determinados do domínio de integração, onde os pesos estão relacionados com o grau de importância (influência) desses pontos de avaliação do integrando. Há várias regras de quadratura, sendo mais comuns as de Gauss-Legendre e de Gauss-Lobatto. O valor da integral é o valor calculado pela quadratura mais um erro de quadratura, que, no caso da integração de polinómios, pode ser zero escolhendo-se um número suficiente de pontos de avaliação - a ordem da quadratura.
+I
+X / (*() * ®
+l
+dQ.
++ Erro s Quadratura
+Há também técnicas de integração reduzida, que podem levar à determinação aproximada dos coeficientes pela da utilização proposital de um número insuficiente de pontos de integração. Chavent e Roberts [1991] e Arbogast e outros [1995] mostram como aplicar regras de quadratura reduzidas para, a partir da formulação de EFH, chegar a formulações DF de cinco (meios isotrópicos) e nove pontos (tratamento tensorial), em 2D, e de dezenove pontos (tratamento tensorial), em 3D.
+A literatura cita que, nos métodos espectrais (expansão em um número finito de auto-funções), a quadratura de Gauss-Lobatto é a mais empregada. No problema em questão, as propriedades físicas são admitidas constantes em todo o elemento, e o espaço de aproximação de Raviart-Thomas é polinomial. Logo não há dificuldade em avaliar os integrandos em pontos interiores do elemento.
+Desse modo, em HYBRID2D utiliza-se uma integração exata pela quadratura de Gauss-Legendre. Essa é a regra de quadratura que necessita do menor número de pontos para a integração sem erro de um polinómio de um certo grau.
+4.1.4	- Validação: Caso Analítico e com Divergência (f = -4)
+Esse exemplo analítico e com divergência é originário de testes com um código EF 2D, com funções de forma quadráticas em triângulos e biquadráticas em quadrados. A aproximação EF para esse caso é exata. A idéia era então verificar o comportamento do código HYBRID2D, o que acabou gerando, pela observação dos resultados, mais uma importante verificação quanto à qualidade - e potencialidades - da aproximação EFH.
+Vamos definir um campo de pressões P=x2 +x+j&gt;2 + &gt;+C ,
+K=A
+atendendo a seguinte EDP:	- V. (VP) = - 4 , ou seja i b = 0
+l/=-4
+O domínio do problema é retangular, discretizado por quadrados unitários.
+O campo vetorial de fluxo é dado por: v = ~KVP = (~2x™ l;-2y-1)
+Os fluxos normais são mostrados na Figura 4.1.
+Para resolver o PVC, consideram-se condições essenciais -.de Dirichlet - nas faces verticais e condições naturais - de Neumann - nas faces horizontais, já em analogia ao que é feito em simulações para mudança de escala.
+As expressões exatas para as pressões médias de interesse são facilmente determinadas:
+—FACE	, ,.2	,	,	, (AP)
+PvERTlCAL~~	~~XCTE+XCTE+y MÉDIO^y MÈDIO + ^+
+fas
+—	_	&gt;3	„	,	(Ay)2 ; (Ar)2
+P BLOCO ~	~ X MÉDIO + X MÉDIO + -FMÉDIO + PMÉDIO +	1
+(4-2)
+(4.3)
+-2*B-1
+Figura 4.1 - Características gerais do exemplo analítico e com divergencia
+Para facilitar, consideram-se as condições de Dirichlet nas duas faces verticais como sendo comente
+~~~~FACE	2	2
+PVERTICAL ~~	%CTE MÉDIO MÉDIO
+(Ay)	1
+o que é equivalente a fazer C=~—
+12	12
+=™O.O8333...
+(4.4)
+(4.5)
+O domínio para os testes foi A=15 e B=6.
+A simulação mostrou que todos os traços de pressão na face foram calculados
+exatamente, assim como todos os fluxos. Quando for de interesse, o programa pode imprimir
+uma tabela mostrando as pressões e fluxos elemento a elemento. Em todos os elementos, o
+somatório dos fluxos é igual a -4, que é a divergência constante do campo de pressões idealizado. O uso desse fator f pode ser muito útil na simulação de reservatórios para fazer
+uma macro-representação dos poços. Um poço produtor dentro de um bloco é representado como um fator f negativo - correspondente a vazão de produção - naquele bloco, um poço
+injetor dentro de um outro bloco é representado como um fator f positivo e blocos sem poços em seu interior apresentam um fator f nulo.
+Discute-se, a seguir, a possibilidade de fazer um pós-processamento O ( h2 ) na
+pressão.
+Observou-se, na tabela citada acima, que todas as pressões médias nos blocos terminavam com o algarismo 8 na segunda casa decimal. Foi então que foram deduzidas as expressões exatas para as pressões médias de interesse. Verificou-se que a pressão média no bloco exata deveria realmente apresentar o fator (Ax)2 712 (= 0.08333....), que não foi cancelado pela constante de integração C, como foi o fator (âyJ /12. Ou seja, com funções de forma lineares (aproximando a derivada), a formulação EFH resolve exatamente um problema quadrático.
+Chavent e Roberts [1991] comentam a possibilidade de um pós-processamento não-conforme para obter um mapa de pressões com O ( h 2 ). Agora vemos que isso é de fato possível, pois foram calculados traços de pressão (pressões médias nas faces) exatos e as pressões médias nos blocos também são exatas. O interesse nesse mapa O ( h 2 ) é para fazer uma verificação no caso de haver um acompanhamento de pressão em pontos de reservatório.
+A relação entre o número total de variáveis pelo número total de elementos quadrados na formulação EF com funções de forma biquadráticas tende assintoticamente para três, e nessa formulação EFH RTÜ essa relação tende para apenas dois. Então, a formulação híbrida só apresenta vantagens sobre a formulação EF com funções de forma biquadráticas.
+4.2	»O Programa HYBRID3D
+4.2.1	- Descrição Geral e Funções de Forma 3D
+O programa HYBRID3D é semelhante, sob muitos aspectos, ao programa HYBRID2D. Serão destacadas aqui principalmente as características que os distinguem.
+Na elaboração do programa em 3D, HYBRID3D, projetou-se uma versão para malha regular, mais integrada com o módulo EFFPERM da HOMLIB e de execução mais rápida. A exemplo do que faz EFFPERM, HYBRID3D pode trabalhar com blocos em forma de paralelepípedo, com dimensões AX, AYe ÒZ. Logo, não há opção para criação manual da malha. Não é feita integração numérica. É calculada uma matriz elementar dos fluxos e a
+correspondente matriz elementar da formulação EFH, a menos do valor da permeabilidade do bloco. Na montagem da matriz global é que a permeabilidade é levada em conta, simplesmente pela multiplicação de todos os elementos da matriz elementar padrão pelo valor da permeabilidade. HYBRID3D não trabalha nem com o fator b, nem com o fatorf.
+Para serem definidas as funções de forma no elemento mestre cúbico, partiu-se de três premissas básicas:
+•	as funções de forma 3D deveriam ter uma forte semelhança com as funções 2D;
+•	a integral do divergente de cada função sobre o todo o volume do elemento deveria ser unitária;
+•	a integral do fluxo normal de cada função sobre todas as faces deveria resultar na função delta de Kronecker.
+Com isso, têm-se:
+W, =	= í“^-;0;0J	w2 = w.,_	1;0;0^
+= wr+=^0;ííyt;0^	w, =	= ^0;Ay-t;0^
+A numeração das funções de forma é diferente da numeração trigonométrica que foi dada em HYBRID2D. Como os elementos podem estar expandidos ou contraídos nas três direções principais, deve-se aplicar a transformação de Piola:
+
+o
+At
+2
+0
+0
+AZ
+2 J
+J== det([J])=
+AXAYAZ
+8
+(4.6)
+0
+e
+0 0
+Realizando analiticamente as integrais dos produtos internos, chega-se à seguinte matriz elementar de fluxo e à sua respectiva inversa:
+[EKF\
+6AYAKAZ
+2(A¥)2 -(AY)2 0
+-(AY)2	0	0	0	0
+2(A¥)2	0	0	0	0
+0	2(Ap2 -(AT)2		0	0
+0	-(AZ)2		0	0
+0	0	0	2(AZ)2	-(AZ)2
+0	0	0	-(AZ)2	2(AZ)\
+%w)2
+/(ay)2
+[EKFV ^IbXkYkZ)
+Aax)2
+Xay)2
+0
+0
+0
+0
+0	0	0
+0	0	0
+ur)2	Ar)2	0
+(Ar)2	2/ /Ur)2	0
+0	0	v /(AZ)2
+0	0	Az)2
+0
+0
+0
+0
+AAZ)2
+Aaz)2_
+0
+0
+0
+0
+0
+0
+0
+Como era de se esperar, para o caso 2D, é só fazer AZ -1 .
+A formulação fica simplificada para
+K[EKF}~'
+W^[ekfY_]
+{eYlEKFY' {e})
+{TP}=0
+(4.T)
+onde a matriz elementar padrão da formulação (todos os elementos estão deformados do
+mesmo modo) é:
+[EKFY1
+I {e}r[EKF]~‘{e})
+(4.8)
+Observe-se que a equação matricial acima corresponde à contribuição de um dos elementos que contém cada uma das interfaces, não é o sistema linear final que vai ser de fato resolvido.
+4.2.2	- Validação do Programa HYBRID3D
+A validação do programa HYBRID3D foi feita a partir de casos simples de solução analítica conhecida, em 2D e 3 D (homogêneo, série, paralelo e barreira impermeável irregular).
+Após o processo de validação, o intuito era repetir o que muitos pesquisadores (Warren e Price [1961]; Beckie e outros [1993]; Romeu [1994]; Galli e outros [1996]) fazem: gerar campos sintéticos estocasticamente, efetuar a simulação e comparar as respostas com soluções analíticas ou com aproximações de primeira ordem. Mais do que isso: nesta tese são mostrados comparações entre diferentes esquemas numéricos. Esses resultados serão discutidos no Capítulo 5, e sua consistência permitiu adquirir confiança no funcionamento dos programas HYBRID2D e HYBRID3D.
+43 - Os Módulos Solver
+A principal motivação para o estudo de métodos de solução de sistemas de equações lineares é que esta etapa do programa chega a consumir mais de 80% do esforço computacional para a simulação de problemas grandes, com mais de 100.000 variáveis. A pesquisa nessa área é muito ativa em diversas frentes: armazenamento e métodos de solução direta de matrizes esparsas; diferentes tipos de pré-condícionamento em métodos baseados em gradientes conjugados; decomposição e transformações de similaridade. Existem pacotes de domínio público, sub-rotinas prontas e programas fontes, como aqueles publicados por Press e outros [1992], que resolvem o sistema linear por inúmeros métodos. Axelsson [1984] aborda o assunto de modo particularmente interessante, ao analisar diferentes métodos de CG pré-condicionados (JCG, SSOR-CG, IC-CG), apresentando os pseudocódigos correspondentes. Os pseudocódigos são algoritmos ou fluxogramas que facilitam a implementação otimizada do método selecionado, de acordo com as particularidades do problema, do método de aproximação ou da sistemática de indexação de matriz esparsa.
+Na fase inicial da programação, estava-se aplicando o método de eliminação de Gauss com retro-substituição, herança do programa de elementos finitos convencional. Esse método permitia resolver problemas de tamanho 1240x1240 em um tempo de 54 segundos, em um microcomputador PC DX2 66 MHz com 8 Mb de RAM . O principal inconveniente era o armazenamento de uma matriz cheia, o que reduzia a capacidade de avançar para problemas maiores. Apesar de existirem métodos de Gauss modificados para matrizes esparsas, preferiu-se partir para o estudo do gradiente conjugado, devido ao grande número de referências e de citações do seu uso.
+O método de gradiente conjugado inicialmente implementado foi o de gradiente bi-conjugado (para matrizes não necessariamente simétricas), pré-condicionado simplesmente pela diagonal (Jacobi) e usando como estimativa inicial o vetor nulo. Essa escolha fez com que os resultados convergissem em um número de iterações menor do que o número de incógnitas.
+A questão do pré-condicionamento é delicada. Comumente, diz-se que a matriz de pré-condicionamento M deve ser escolhida de modo que a matriz A do sistema A . x = b fique mais próxima da matriz identidade (M.A® I), já que um sistema como M . A . x = I. x = M . b é resolvido em urna única iteração (x = M . b). Mas deve haver outros critérios além dessa semelhança de [M.A] com I. De fato, tentou-se incrementar o pré-condicionamento formando, a partir da matriz A, alguns blocos 2x2 para além da diagonal, já que é fácil inverter uma matriz 2x2, formando uma matriz composta por blocos 2x2, onde isso fosse possível, e, nos outros casos, com blocos 1x1 - o próprio elemento da diagonal. Esta matriz seria uma extensão natural do pré-condicionamento pela diagonal, tomando a matriz [M.A] mais parecida com a diagonal do que antes, com muito mais termos nulos fora da diagonal principal. Porém esse método não deu certo, revelando a complexidade da questão.
+Depois, implementou-se um método DSCG, para matrizes simétricas, seguindo a avaliação de Meyer [1989] de que o processo de diagonal scaling é mais vantajoso do que o pré-condicionamento de Jacobi. E realmente é: em problemas menores, o número de iterações é reduzido em 30%. Em problemas maiores, a redução foi de 7%. Além disso, é eliminada uma multiplicação vetor-vetor por iteração.
+Com o objetivo de reduzir ainda mais o tempo de execução em problemas 3D, partiu-se para um pré-condicionamento SSOR (symmetric successive overrelaxation methody com estimativa do maior autovalor da matriz de Jacobi associada para determinar o fator de relaxação ótimo (w‘).
+Beckie e outros [1993] afirmam que, em meios altamente heterogêneos, só pré-condicionamentos mais robustos, como a fatoração incompleta de Cholesky, são capazes de convergir. De fato, verificou-se por experiência própria, reproduzindo condições extremas citadas no artigo, que o SSOR-DS-CG não é eficiente em problemas desse tipo. Resolveu-se, então, implementar também um solver ICCG(O). No nome do método, o número zero refere-se à característica de não se operar sobre os zeros da matriz do sistema linear, ou seja, não há nenhum fill-in.
+A incorporação dos módulos de solver nos programas ficou assim: HYBRID2D está com o módulo DSCG; e há duas versões de HYBRID3D, uma com o módulo SSOR-DS-CG e outra com o módulo ICCG(O).
+O tempo aplicado no estudo do módulo de solver foi dosado em relação aos objetivos globais do trabalho. Ainda há pontos a serem melhorados nesses dois módulos 3D. para eles serem tão efetivos quanto os módulos do PROFIT e do PERMEQ, como será comentado no Capítulo 5.
+Capítulo 5 - Discussão dos Resultados
+Este capítulo discute o desempenho dos programas HYBRID2D e HYBRID3D, construídos segundo o método EFH, para o cálculo da permeabilidade equivalente em um conjunto representativo de padrões de heterogeneidade. Esse desempenho é avaliado por comparação com outros métodos analíticos e numéricos, incluindo os métodos de diferenças finitas e de elementos finitos tradicionais. O critério principal de comparação entre os diferentes métodos de simulação numérica baseia-se em gráficos que relacionam precisão dos resultados e índices de esforço computacional. As situações investigadas compreendem: os sete exemplos de Cruz [1991]; o tabuleiro de xadrez; o sistema arenito-argila de Durlofsky [1994]; distribuições lognormais em 2D e 3D, com correlação espacial ou não; e algumas variantes desses casos. A partir dos resultados, além de avaliar-se os programas construídos, identifica-se a equivalência entre certos esquemas numéricos, propõe-se o uso de novos estimadores e elaboram-se outras discussões.
+5.1	- Casos Básicos: os Sete Exemplos de Cruz [1991]
+Os sete exemplos iniciais da tese de Cruz [1991] constituem um conjunto simples mas significativo de situações para determinação da permeabilidade equivalente. São sete casos em malha 4x4, incluindo arranjos em paralelo, em série e outras combinações interessantes. O valor de permeabilidade zero nas figuras, quando aparece, foi substituído por 10~15 para fins de cálculo.
+As figuras mostram também, para cada uma das Configurações, os resultados de dez métodos de cálculo da permeabilidade equivalente na direção horizontal: seis tipos de médias, três métodos numéricos (DF, EF e EFH) e um valor de referência.
+Para os métodos numéricos usaram-se os subprogramas da biblioteca HOMLIB e o programa HYBRID2D (ou HYBRID3D), descritos nos Capítulos 2 e 4. Os resultados dos métodos numéricos são calculados sem refinamento da malha original. Isso corresponde a 16, 25 e 40 variáveis para DF, EF e EFH, respectivamente. Esses números correspondem ao
+números total de blocos (16), ao número total de nós (25) e ao número total de faces (40) da representação 4x4 do reservatório idealizado. Todos os programas trabalham com condições de contorno tipo impermeável.
+O valor “Malha Refinada” é tomado como a solução de referência e corresponde à extrapolação ponderada da tendência de convergência observada nos três métodos, com a malha 4x4 sendo refinada até 700x700. Assim, cada bloco original foi dividido em até 30.625 (175x175) blocos com a mesma permeabilidade (resultando em 490.000 variáveis para DF, 491.401 variáveis para EF e 981.400 variáveis para EFH).
+As Configurações 1 a 4 não apresentam dificuldades para os métodos numéricos, que produzem a resposta analítica exata sem problemas. Essa Configurações servem mais para comparação dos diferentes tipos de média - o estimador de Le Loc’h/ Guérillot fornece a resposta exata nas quatro situações - e para validação preliminar dos três métodos numéricos.
+As Configurações 5, 6 e 7 são mais interessantes para avaliação dos métodos numéricos, possibilitando a investigação dos efeitos do refinamento da malha numérica.
+150	50	350	250
+150	50	350	250
+150	50	350	250
+150	50	350	250
+Média Aritmética =	200.00
+Lim Sup LeLoc 'h -	119.32
+Elementos Finitos	119.32
+Malha Refinada =	119.32
+Média Geométrica ~	160.05
+El. Finitos Híbridos =	119.32
+LeLoc ’h Guérillot =	119.32
+Diferenças Finitas =	119.32
+¿ím Inf LeLoc ’h	=	119.32
+Média Harmônica =	119.32
+150	150	150	150
+50	50	50	50
+350	350	350	350
+250	250	250	250
+Média Aritmética =	200.00
+Lim Sup LeLoc 'h =	200.00
+Elementos Finitos -	200.00
+Malha Refinada =	200.00
+Média Geométrica =	160.05
+El. Finitos Híbridos =	200.00
+LeLoc’h Guérillot =	200.00
+Diferencas-Finitas =	200.00
+Lim Inf LeLoc 'h ~	200.00
+Média Harmônica =	119.32
+Configuração 2 - Sistema em paralelo (Exemplo 3 de Cruz [91])
+150	0	350	250
+150	0	350	250
+150	0	350	250
+150	0	350	250
+Média Aritmética =	187.5
+Lim Sup LeLoc 'h ~	0.00
+Elementos Finitos =	0.00
+Malha Refinada =	0.00
+Média Geométrica =	0.01
+EL Finitos Híbridos =	0.00
+LeLoc 'h Guérillot =	0.00
+Diferenças Finitas =	0.00
+Lim Inf LeLoc 7?	=	0.00
+Média Harmônica =	0.00
+150
+150	150
+150
+0
+0 0
+0
+350
+350	350	350
+250
+250	250	250
+Média Aritmética ~ 187.5
+Lim Sup LeLoc 'h -	187.5
+Elementos Finitos =	187.5
+Malha Refinada =	187.5
+Média Geométrica -	0.01
+EL Finitos Híbridos =	187.5
+LeLoc’h Guérillot =	187.5
+Diferenças Finitas =	187.5
+Lim Inf LeLoc 'h	=	187.5
+Média Harmônica =	0.0
+Configuração 4 - Sistema em paralelo com nível impermeável (Exemplo 6 de Cruz [91])
+250	50	350	150
+350	250	150	50
+150	350	50	250
+50	150	250	350
+Média Aritmética =	200.00
+Lim Sup LeLoc 'h -	200.00
+Elementos Finitos =	176.32
+Malha Refinada =	162.3
+Média Geométrica =	160.05
+EL Finitos Híbridos =	154.87
+LeLoc fh Guérillot ~	154.48
+Diferenças Finitas ~	148.80
+Lim Inf LeLoc 'h	=	119.32
+Média Harmônica =	119.32
+250
+50
+350
+150
+350
+250
+150
+50
+150	350
+0
+250
+50
+150	250	350
+Média Aritmética ~ 196.88
+Um Sup LeLoc 'h ~	196.72
+Elementos Finitos	170.45
+Malha Refinada =	149.45
+Média Geométrica =	14.47
+El. Finitos Híbridos =	138.55
+LeLoc ’h Guérillot =	132.68
+Diferenças Finitas -	129.43
+Lim Inf LeLoc 'h	~	89.49
+Média Harmônica =	0.00
+Configuração 6 - Distribuição alternada com um zero (Exemplo 4 de Cruz [91])
+150	0	350	250
+150	50	350	250
+150	0	350	250
+150	0	350	250
+Média Aritmética =	190.62
+Lim Sup LeLoc 'h =	42.77
+Elementos Finitos =	40.38
+Malha Refinada =	37.71
+Média Geométrica =	0.12
+EL Finta Híbridos =	36.46
+LeLoc ’h Guérillot =	35.72
+Diferenças Finitas =	34.68
+Lim Inf LeLoc 'h	—	29.83
+Média Harmônica =	0.00
+A Configuração 5 caracteriza-se por um grau de heterogeneidade relativamente leve. Isso pode ser avaliado por três indicadores: desvio-padrão logarítmico populacional igual à 0.736 (menor do que 1.0); contraste entre permeabilidades não superior a sete: quatro algarismos significativos na precisão da permeabilidade equivalente com refinamento 175.
+No Gráfico 5.1 mostram-se os resultados numéricos para a Configuração 5, com refinamento da malha até 10.000 variáveis em cada método, suficiente para indicar que todos os métodos estão convergindo. Resultados semelhantes foram obtidos para as Configurações 6 e 7. Registre-se apenas que a Configuração 6, que difere da Configuração 5 pela substituição de um valor de permeabilidade 50 por zero, é um caso com convergência mais lenta do que a Configuração 5, como seria de se esperar.
+Em sistemas assim, relativamente homogéneos, verificamos empiricamente que a permeabilidade equivalente é bem estimada pela média aritmética entre a resposta EF e a resposta DF para o refinamento original. Isso pode ser observado na Tabela 5.1, para as Configurações 5, 6 e 7. Com o refinamento da malha, os resultados desse estimador são ainda melhores, devido à diminuição no intervalo de incerteza. Entretanto, para sistemas mais heterogêneos, parece melhor ignorar o resultado EF, como será visto mais adiante.
+Tabela 5.1 - A média aritmética entre simulações EF e DF pode ser um bom estimador
+Casos	Média Aritmética Entre as	Valor de Referência
+Levemente	Respostas dos Métodos EF e	Obtido Pela
+Heterogêneos	DF, no Refinamento Original	Malha Refinada
+Configuração 5	162.56	162.30
+Configuração 6	149.94	149.45
+Configuração 7	37.53	37.71
+5.2	- O Tabuleiro de Xadrez
+À parte os arranjos em série e em paralelo, o sistema tipo tabuleiro de xadrez (Figura
+5.1) é, possivelmente, o tipo mais simples de meio heterogêneo.
+168
+166
+164
+\ Gráfico 5.1 - Análise da Configuração 5
+Permeabilidade Equivalente
+162
+160
+158
+156
+10
+. • r * ■
+-----Exata
+--♦-■EFH
+- - -âr - • DF
+100
+1000 10000
+Número de Variáveis
+162.6
+Permeabilidade Equivalente
+Gráfico 5.2 -
+A Media Aritmética Entre EF e DF Pode Ser um Bom Estimador, nos Casos Mais Homogéneos
+- - w ■ ■ EF
+--o---Média EF/ DF
+-----Exata
+DF
+0x
+162.3
+a,
+°~ ’ O- -o -o OOO ... -o - - O - O -0-0-0 - - - -0-0-0 O-Q
+162.0
+1
+10
+100
+Refinamento
+ZX2
+4X4
+Figura 5.Í - Idealização de reservatórios no formato Tabuleiro, ou Quadriculado
+Romeu [1994] mostra que há solução analítica para a permeabilidade equivalente de sistemas quadriculados com condições de contorno periódicas: a própria média geométrica entre os dois valores de permeabilidade. Desse modo, por exemplo, para um Tabuleiro 2x2 com permeabilidades 500x50, a solução exata é 158,11.
+Galli e outros [1996, p.64] também analisaram esse sistema 500x50, apresentando um gráfico com o comportamento das simulações EF e DF contra o refinamento, onde os resultados das duas formulações convergem para a Média Geométrica. Embora isto não seja dito explícitamente no texto, o gráfico foi feito para as condições de contorno periódicas, conforme foi verificado por comparação com resultados do programa PERMEQ.
+Simulando para as condições de contorno de tipo impermeável, com o módulo EFFPERM e com HYBRID2D, verificamos que novamente os dois métodos (DF e EF) vão convergindo para 158,11. Só que agora os resultados são sistematicamente superiores aos resultados das simulações com as condições de contorno periódicas. Quanto aos resultados EFH, eles convergem para 158,11, como sempre, por cima dos resultados DF.
+Surge assim a idéia de fazer a simulação EF para as condições periódicas, pois essas condições deslocam o resultado da simulação favoravelmente para baixo. Na formulação DF, por outro lado, é melhor usar as condições de contomo usuais, pois resultados maiores, nesse caso, são melhores. Não fizemos nenhuma verificação dessa idéia em outros exemplos, só a deixamos registrada aqui pois pode haver um bom potencial no seu uso.
+Não apresentamos os gráficos para o Tabuleiro, pois o comportamento dos métodos é análogo ao comportamento visto na Configuração 5.
+5.3	- Reprodução do Sistema Arenito-Argila de Durlofsky
+Em sistemas altamente heterogêneos e desorganizados, métodos como perturbação, expansão espectral e correlações analíticas fracassam, por se basearem em pequenas variações ou em expansões em funções definidas em todo o domínio do problema, Como os métodos numéricos DF e EF são baseados em expansões em funções definidas localmente, eles são potencialmente mais indicados para lidar com grandes variações locais das propriedades físicas.
+Durlofsky [1994] discute um exemplo de sistema arenito-argila gerado pelo posicionamento aleatório de blocos de argilas com as seguintes características:
+•	domínio quadrado unitário, discretizado por uma malha triangular 20x20(x2);
+•	distribuição espacial dos arenitos e argilas (20 % da área total) segundo a Reprodução 2;
+•	permeabilidade do arenito uniforme e isotrópica, K AltElA = 1 ;
+« permeabilidade da argila uniforme e isotrópica, K ARGlLA 10”6 ;
+•	a simulação por EFH com 800 elementos e 1240 variáveis resulta em um fluxo total através do sistema de 0.4508;
+•	a solução de referência é 0.5205, valor obtido pela extrapolação dos resultados de simulações DF em malhas cada vez mais refinadas.
+O resultado obtido por HYBRID2D para os 800 triângulos com 1240 variáveis foi 0,45082923 em um microcomputador e 0.45082921 numa estação de trabalho HP modelo apollo série 735.
+Uma característica desse sistema arenito-argila de Durlofsky é que o limite superior de Le Loc’h é muito próximo da média Aritmética, e o limite inferior é muito próximo de zero (como a própria média Harmônica). Em tais sistemas é inseguro tentar uma mudança de escala rápida por simples médias ou estimadores.
+No artigo de Durlofsky [1994], o domínio foi discretizado em elementos triangulares, pois este elemento modela melhor fronteiras irregulares e se adapta bem como encaixe e
+y
+X
+Reprodução 2 - Sistema Arenito-Argila de Durlofsky.
+Linhas de fluxo da solução EFH para as 1240 variáveis da discretização 20X20(X2), totalizando 800 triângulos.
+(Originalmente, figura 5 de Durlofsky [19941)
+união. Entretanto, uma malha retangular fornecerá, nesse exemplo, uma resposta muito mais precisa. Para tentar reproduzir a resposta exata, dada como 0.5205, trabalhou-se com quadrados, refinando a malha cada vez mais.
+O Gráfico 5.3 mostra os resultados das três formulações em função do grau de refinamento. Em termos de precisão dos resultados, observa-se uma enorme superioridade de EFH sobre DF, para um mesmo grau de refinamento da malha . Isso deve-se, em parte, ao maior número de variáveis na formulação EFH, 2 a 2,5 vezes superior ao número de variáveis DF, para um mesmo refinamento.
+No Gráfico 5.4 faz-se uma espécie de normalização, traçando as curvas em função do número total de variáveis empregadas em cada um dos métodos. A formulação EFH ainda assim apresenta uma maior precisão para o mesmo número de variáveis (considerando as curvas interpoladas, já que dificilmente existe coincidência do mesmo número de variáveis nos dois métodos). Para uma desejada precisão, a correspondente formulação DF precisa entre 100% e 50% mais variáveis do que a formulação DF. Quando se leva em conta o esforço computacional, a formulação DF melhora bastante sua situação, por gerar um sistema linear mais esparso e, desse modo, mais fácil e rápido de ser resolvido. Uma análise do balanço da influência dessas características - número total de variáveis, precisão e esparsidade - no esforço computacional é feita na Seção 5.6.
+Os Gráficos 5.3 e 5.4 revelam o desempenho sofrível da formulação EF na simulação do Sistema de Durlofsky. O método EF utilizado funciona razoavelmente bem em sistemas relativamente mais homogêneos, como observado na seção anterior, mas fracassa para sistemas com elevados contrastes entre as permeabilidades dos blocos, esse, aliás, é um fato bem reconhecido na literatura sobre a aplicação de EF em problemas de fluxo. Isso deve-se ao fato de que as funções de forma bilineares, usadas no programa da HOMLIB, não são muito apropriadas para problemas de fluxo em meios heterogêneos. As funções quadráticas e biquadráticas, mais adequadas por garantirem a continuidade do fluxo entre elementos, normalmente não são utilizadas, por não serem competitivas em termos do esforço computacional.
+Um fato curioso e casual foi obtido da observação dos números calculados para gerar o gráfico do refinamento. Durlofsky [1994] compara o método EFM, na realidade EFH (conforme observação feita na Seção 3.1), com um método CVFE {Control Volume Finite Element). É comentado que, para as funções de forma de mais baixa ordem (lineares e
+Permeabilidade Equivalente
+Permeabilidade Equivalente
+Gráfico 5.4 - O Esforço Computacional Está mais
+Número de Variáveis
+o
+LU
+Gráfico 5.5 - A Diminuição do Erro com o Refinamento
+6
+5
+4
+3
+2
+1
+0
+
+4™
+▲
+
+♦
+A
+■âr - ■ DF
+♦ -EFH
+
+1000 10000 100000
+Número de Variáveis
+Tabela 5.2 - Refinamento do arenito-argila de Durlofsky convergindo para 0.5205
+Grau de	Número de	Total de	Permeabilidade	ERRO
+Refinamento	Elementos	Variáveis	Eqv. por EFH	(%)
+1	400	840	0.4904082	-5.78
+2	1.600	3.280	0.5071188	-2.57
+3	3.600	7.320	0.5123443	-1.57
+4	6.400	12.960	0,5147454	-1.11
+5	10.000	20.200	0.5160955	-0.85
+6	14.400	29.040	0.5169473	-0.68
+7	19.600	39.480	0.5175277	-0.57
+8	25.600	51.520	0.5179453	-0.49
+9	32.400	65.160	0.5182584	-0.43
+10	40.000	80.400	0.5185007	-0.38
+11	48.400	97.240	0.5186930	-0.35
+12	57.600	115.680	0.5188489	-0.32
+13	67.600	135.720	0.5189775	-0.29
+14	78.400	157.360	0.5190852	-0.27
+15	90.000	180.600	0.5191764	-0.25
+16	102.400	205.440	0.5192547	-0.24
+17	115.600	231.880	0.5193224	-0.23
+18	129.600	259.920	0.5193814	-0.21
+19	144.400	289.560	0.5194334	-0.20
+20	160.000	320.800	0.5194794	-0.20
+25	250.000	501.000	0.5196470	-0.16
+35	490.000	981.400	0.5198226	-0.13
+y
+X
+Reprodução 3 - Linhas de fluxo da solução CVFE para 3721 variáveis, os vértices dos 7200 triângulos resultantes do refinamento igual à três do sistema arenito-argila de Durlofsky.
+Observar que em muitas regiões, as linhas de fluxo não são suficientemente desviadas pelos blocos de argila, chegando a haver fluxo através das argilas. A solução mostrada na Reprodução 2 é muito mais realista fisicamente, para um número total de variáveis três vezes menor.
+(Originalmente, figura 6 de Durlofsky [1994])
+bilineares), a formulação EF e a CVFE resultam no mesmo campo de pressões. Para o caso do sistema arenito-argila, o único resultado CVFE que aparece no texto é 0.6228 para 7200 triângulos com 3721 variáveis. Não é mostrado gráfico do comportamento da resposta contra o refinamento da malha.
+Observou-se que, para refinamento igual à três, o resultado EF do PROFIT era 0.6227729 para 3721 variáveis em 3600 quadrados.
+Sonier e Eymard [1993] apresentam um desenvolvimento teórico da formulação CVFE para aplicação na simulação de reservatórios, regime transiente. Analisando alguns pontos desse artigo com outros tópicos de Durlofsky [1994], concluímos que o resultado EF do PROFIT é um resultado CVFE. Isso ocorre por estarmos trabalhando em regime permanente e com as funções de forma mais simples. O pós-processamento que o PROFIT faz para calcular o fluxo no centro do bloco acaba resultando no mesmo valor que é obtido por CVFE.
+5,4	- Campos Lognormais
+Nesta seção, são investigados os resultados numéricos de permeabilidade equivalente em campos lognormais. É um exercício importante por diversas razões. A hipótese de distribuição lognormal das permeabilidades é bastante corrente nos estudos de reservatório, em função das estatísticas coletadas de dados de campo. Esse tipo de distribuição possui uma representação matemática simples, e o grau de heterogeneidade é facilmente controlado fazendo-se variar um único parâmetro. A descrição dessa distribuição e aspectos práticos de sua geração em computador foram introduzidos na Seção 2.3. Conforme apresentado naquela seção, a permeabilidade equivalente de meios lognormais isotrópicos infinitos é igual à média geométrica, em 2D, e próxima de uma média de potência com expoente 1/3, em 3D Muitos estudos anteriores relacionados com o cálculo da permeabilidade equivalente foram dirigidos para esse tipo de meio heterogêneo, como se viu no capítulo 2.
+Nesta tese, os casos de campos lognormais investigados incluem: um primeiro conjunto de malhas 3D, com diferentes tamanhos e diferentes níveis de refinamento; um estudo específico orientado para os efeitos de anisotropia do tensor; e dois casos 2D, onde considera-se a existência de uma correlação espacial nos valores da permeabilidade, gerados por métodos geoestatísticos.
+5.4.1	- Campos Lognormais 3D Isotrópicos sem Correlação Espacial
+Aplica-se aqui uma abordagem totalmente prática. Primeiro, são geradas diversas realizações ou imagens de campos lognormais. Depois, cada uma dessas imagens é simulada, com refinamento da malha numérica até o limite de nossa capacidade de cálculo (aproximadamente um milhão de variáveis). Por fim, são analisadas a convergência e o comportamento dos três métodos numéricos com os quais estamos trabalhando (DF, EF e EFH).
+Campos lognormais gerados com o desvio padrão dos logaritmos acima de quatro (variância dos logaritmos acima de dezesseis) apresentam um padrão de fluxo mais parecido com o fluxo em fraturas ou como um modelo de percolação, com alguns canais condutores. Os módulos de solver usuais tem muita dificuldade em convergir. Nos testes feitos por Beckie e outros [1993], o solver SSOR-CG não convergia em situações assim. Nós verificamos esses fatos, pela reprodução das condições extremas em simulações com HYBRID3D, e acabamos implementando um solver ICCG(O) para o nosso esquema de indexação esparsa, como foi dito na Seção 4.3. Não serão mostrados casos desse tipo.
+Apresentam-se quatro casos representativos das simulações lognormais. Na Tabela 5.4 são apresentadas as principais medidas estatísticas caracterizando as distribuições geradas. São mostrados também os resultados de diversos estimadores para a permeabilidade equivalente. Nos Gráficos 5.6 a 5.9, pode-se verificar o comportamento dos três métodos numéricos.
+Esses mesmos gráficos mostram que. mais uma vez, a Média Aritmética entre EF e DF funciona como uma boa estimativa da permeabilidade equivalente, sustentando a conjectura levantada na Seção 5.1. Esse ponto irá merecer uma discussão em separado, na Seção 5.9.
+Tabela 5.3 - Comparação de Simulações em Campos Lognormais Sintéticos
+Tamanho	23x23x23	- 17x17x17	10x10x10	14x14x14
+Refinamento Máximo	'"'t 0	4	7	5
+Desvio-padrão pedido	0.8130	0.9700	1.5000	3.1000
+Semente	688	307	2	438
+Desvio-padrão efetivo	0.8132	0.9685	1.5091	3.1785
+Grau de Heterogeneidade	Mediano	Mediano	Alto	Altíssimo
+Média Aritmética	1.3959	1.6377	3.0264	119.7078
+Limite Superior LeLoc’h	1.3936	1.6326	2.8269	57.4568
+Média Geométrica	0.9987	1.0164	0.9773	1.0008
+Le Loc’h - Guérillot	1.0212	1.0639	1.1013	2.5544
+Limite Inferior Le Loc'h	0.7484	0.6933	0.4290	0.1136
+Média Harmônica	0.7186	0.6365	0.3211	0.0149
+Média Potência 1/3	1.1155	1.1892	1.4288	5.4688
+Estimador pela Variância	1.1151	1.1884	1.4285	5.3903
+Primeira Média Aritmética EF/ DF (na Malha Original)	1.1088	1.1787	1.3640	4.9861
+Valor de Referência (Média EF/ DF na Malha mais Refinada).	1.1047	1.1649	1.2840	-2.6 (Tendência DF e EFH)
+5.4.2	~ Campos Lognormais e Anisotropia
+Anisotropia é a característica que os materiais podem apresentar de possuir propriedades físicas variáveis em função da direção - da orientação - considerada. Os meios porosos geralmente são anisotrópicos em relação à permeabilidade.
+1.26 -
+Gráfico 5.6- Campo lognormal 23x23x23, com desvio-padrão 0.8132
+Permeabilidade Equivalente	; ¡	Permeabilidade Equivalente
+1.16
+Ó
+-O
+-Q
+1.06
+- - ni k
+, -A - '
+• - -EF
+Potência 1/3
+- - O- - - Média EF/DF
+* --EFH
+- - A- - -DF
+0.96 1
+
+1
+2
+3
+Refinamento
+.38
+.24
+Q
+1.1
+0.96 -
+1
+Gráfico 5.7 - Campo lognormal 17x17x17, com desvio-padrão 0.9685
+O
+O- -
+ô
+, ♦ - ’
+, A' ‘ '
+2
+Refinamento
+, - -A - -
+
+— —■ Potência 1/3
+O - - Média EF/ DF
+»--EFH
+- - DF
+3
+4
+1.8
+1.58
+Gráfico 5.8 - Campo lognormal 10x10x10, com desvio-padrão 1.5091
+Permeabilidade Equivalente	i ¡	Permabilidade Equivalente
+1.36 Ó - . ,
+’ -O - -
+- . o
+o-
+o
+o
+&lt;&gt;
+1.14 -
+. - -A
+-•
+'A
+■A
+A
+, . -A "
+EF
+-----Potência 1/3 :
+A' '
+- - O - - Média EF/ DF
+&gt;-•EFH
+- - A- ■ ■ DF
+0.92
+1
+9
+7.05
+5.1
+1.2
+2
+3
+4
+5
+6
+7
+Refinamento
+Gráfico 5.9 - Campo lognormal 14x14x14, com desvio-padrão 3.1785
+11. .
+* - - EF
+— Potência 1/3
+- - O - - Média EF/DF
+♦ --EFH
+- - A - -DF
+3.15
+T ' *	' 'O		“ " -o-- - - -	w * -o-	■ - - - - --	.A
+					-	- - — -n
+o- - " ■				
+A’ ""				
+1
+2
+3
+4
+5
+Refinamento
+A forma de representar a anisotropia é tratando a permeabilidade não mais como um escalar puro, e sim como um tensor, uma representação matricial (2x2 em 2D e 3x3 em 3D). Em uma primeira aproximação, é usual considerar apenas os termos diagonais do tensor, admitindo que possa ocorrer kxx *	■ É o que faz, por exemplo, o módulo EFFPERM
+da HOMLIB do PROFIT. Em uma formulação mais geral, pode-se levar em conta os termos cruzados do tensor (Ramiro [1994]). Esses termos são responsáveis pelo surgimento de fluxo total em uma direção diferente daquela em que é aplicada o gradiente de potencial. As rotinas em C da HOMLIB, por sua vez, trabalham com todos os termos do tensor, diagonais e
+cruzados.
+A extensão da formulação híbrida para o tratamento tensorial completo foi discutida na Seção 3.6. Por ora, será feita uma aplicação ilustrativa de um caso mais simples, onde a permeabilidade em uma ou duas direções (componentes diagonais do tensor) é uniformemente alterada em todo o domínio.
+Um coeficiente de anisotropia constante em uma direção pode ser considerado em
+HYBRID3D pela mera variação da geometria de uma forma compatível. Em Romeu [1994,
+p.l 14], temos que o coeficiente de anisotropia global na direção Z é dada por:
+—
+k. ( AY?
+¿JazJ ’
+(5.1)
+e, de forma análoga, na direção Y. Essa relação entre anisotropia do tensor e anisotropia geométrica pode ser provada a partir de transformações de variáveis na equação diferencial que rege o fenômeno. Então, por exemplo, para simularmos kz: = 0.25* kxx, é só fazer AZ = 2AX .
+Na Tabela 5.5, partimos de um caso base (Tabela 5.4) com AY - AZ = AZ = 1 e fomos reduzindo as permeabilidades em Y e Z. E possível observar que a permeabilidade equivalente (obtida da extrapolação Média Aritmética EF/ DF na malha mais refinada) vai, de fato, diminuindo. Como o fluxo é basicamente na direção X e o meio é muito pouco heterogêneo, a variação não foi muito expressiva. Entretanto, em casos reais, levar em conta a anisotropia é fundamental para uma boa simulação de reservatórios.
+À
+Tabela 5.4 - Características do caso base (campo lognormal)
+Tamanho Original da Malha	10x10x10
+Refinamento Máximo	7
+Desvio-Padrão Efetivo	0.3276160
+Grau de Heterogeneidade	Baixo
+Média Aritmética	1.06210617
+Limite Superior de Le LoCh	1.06099479
+Média Geométrica	1.00635347
+Estimador de Le Loc’h - Guérillot	1.01148790
+Limite Inferior de Le Loc’h	0.96429104
+Média Harmônica	0.95412244
+Média de Potência 1/3	1.024552
+Estimador pela Variância	1.024518
+Primeira Média Aritmética EF/ DF (na Malha Original)	1.021994
+Valor de Referência (Média EF/ DF na Malha mais Refinada).	1.023595
+Tabela 5.5 - Efeito da anisotropia, obtida pela modificação das dimensões geométricas, na variação da permeabilidade equivalente do caso base.
+^TOTAL	Y 1 TOTAL	7 TOTAL	Extrapolação das Soluções na Malha 70x70x70
+1	1	1	1.024
+1	4	1	1.012
+1	9	1	1.009
+I	9	10	0.976
+1	9	100	0.974
+5.4.3	- Campos Lognormais e Correlação Espacial
+Os processos geológicos de formação do reservatório são a principal fonte da anisotropia da permeabilidade; e são responsáveis, da mesma forma, pelo fenômeno da correlação espacial. Os campos lognormais estudados nas seções anteriores eram do tipo sem correlação espacial: no processo de geração desses campos, a permeabilidade em cada bloco era simulada como um evento independente da permeabilidade dos blocos vizinhos. Todavia, na realidade, a permeabilidade em pontos vizinhos do reservatório tende a apresentar uma certa correlação espacial, por estar condicionada ao mesmo processo deposicional.
+A geoestatística possui modelos que, a partir de curvas chamadas variogramas, representam e simulam distribuições normais com correlação espacial. Para este estudo, a partir da biblioteca GSLIB, da Universidade de Stanford, foram geradas duas realizações de um meio lognormal 100x100 com correlação espacial. Usou-se um variograma esférico e alcances iguais a 10 e 20 células.
+Os Gráficos 5.10 e 5.11 mostram os resultados obtidos. Note-se que, nesses casos, a Média Geométrica (os casos são 2D) não foi um estimador tão bom, porque a dimensão total de 100x100 e os alcances de 10 e 20 células acabaram resultando em campos efetivamente pequenos (correspondendo grosseiramente a campos 10x10 e 5x5 não-corre lacio nados). Por isso, para testes de desempenho de modelos matemáticos, como no nosso caso, o campo lognormal sem correlação apresenta uma vantagem (para que os estimadores estejam mais próximos da solução, como nos Gráficos 5.6 a 5.9).
+1.15 -
+„	r- •	, a	Permeabilidade Equivalente
+Permeabilidade Equivalente
+Gráfico 5.10 - Campo lognormal 100x100, com correlação esférica de 10 blocos e desvio-padrão 1.0227
+	’ EEF
+- - o -	•Média EF/DF
+- - A -	EFH
+- - A- -	•DF
+- - X- -	-M. Geométrica
+&gt;í-
+H
+X-
+-X............-	-X...............X
+.01 -
+1
+2
+3
+4	5
+Refinamento
+6
+1.2
+1.16
+ó
+1.12
+
+X
+1.08
+1
+Gráfico 5.11 - Campo lognormal 100x100, com correlação esférica de 20 blocos e desvio-padrão de 1.0229
+ü
+o
+O
+o
+O
+. - -A
+'A -
+-A-
+. A- - •
+A
+X
+X
+X
+X
+
+♦ - - EFH
+w* “ *Ur
+2
+3
+4
+Refinamento
+5
+-----------------x—|	r- J I------------------
+X- - *M. Geométrica
+X'
+X
+6
+7
+5.5	- O Uso de Malhas Deformadas
+Nesta seção, demonstra-se o potencial de utilização de HYBRID2D para trabalhar com malhas deformadas.
+Uma dificuldade para a validação da capacidade de trabalho com malhas deformadas foi a inexistência de casos de referência na literatura. Acabamos tomando o caso homogêneo e as Configurações, para os quais temos valores de comparação. O caso de barreira impermeável não é a Configuração 3. Para cada uma das duas malhas, designamos como argilas um arranjo irregular (tortuoso) de blocos, unindo as duas fronteiras impermeáveis, que seguramente não deixasse haver fluxo.
+Para testar o uso de malhas deformadas foram escolhidas as duas discretizações mostradas nas Figuras 5.2 e 5.3. Essas duas malhas serão aqui identificadas como “simétrica” e “irregular”.
+A Tabela 5.6 apresenta os resultados das simulações (fluxos atravessando a face de saída) e os valores de referência para cada uma das sete Configurações.
+Para os casos em questão, a malha “irregular” conduziu a uma representação melhor do que a malha “simétrica”. Isso é, na Tabela 5.6, os resultados da terceira coluna são sistematicamente um pouco melhores do que os da segunda coluna, com exceção da última configuração. O que ocorre na Configuração 7 é que há um estrangulamento e todo o fluxo tem que passar por um único bloco da segunda coluna, aquele com permeabilidade igual à 50. Na representação “simétrica”, a entrada neste bloco pode se dar por duas faces, pertencentes a dois triângulos distintos. Logo, há um grau de liberdade maior para a entrada de fluxo por um caminho obrigatório, e é por isso que, nessa configuração, a malha “simétrica” tem um desempenho levemente superior ao da malha “irregular”, invertendo o comportamento usual.
+Nos casos com solução analítica, o solver iterativo foi a razão para as respostas não chegarem até a última casa decimal. Isso também ocorre em muitos exemplos com solução analítica simulados com o módulo EFFPERM do PROFIT.
+Figura 5.2 - Discretização simétrica em relação à diagonal. E composta por 41 nós, 56 elementos,
+6 tipos de matriz Jacobiana e 96 variáveis (faces).
+/x, 1 \z	(	
+A / \	|Ã / \,
+	
+		■*
+&amp;lt;&gt;	
+~x~	
+•\' " 1 \	.\
+	/
+Figura 5.3 - Discretização mais irregular do domínio. É composta por 36 nós, 42 elementos, 8 tipos de matriz Jacobiana e 77 variáveis (faces).
+Tabela 5.6 - Análise dos resultados das simulações nas malhas deformadas
+SISTEMA	MALHA SIMÉTRICA (96 FACES)	MALHA MAIS IRREGULAR (77 FACES)	VALORES DE REFERÊNCIA	TIPO
+Homogêneo	349.999990494	349.999993713	350.0	Solução Analítica
+Conf.l (Série)	119.318178716	119.318179201	119.318181...	Solução Analítica
+Conf.2 (Paralelo)	199.999994444	199.999996570	200.0	Solução Analítica
+Impermeável	.000000000	.000000000	Não há fluxo	Solução Analítica
+Configuração 4	187.499995325	187.499997066	187.5	Solução Analítica
+Configuração 5	152.020799227	153.323101962	148.80 154.87 156.34 159.34 162.3	DF com 16 gdl EFH com 40 gdl DF com 64 gdl EFH com 144gdl Malha Refinada
+Configuração 6	132.339618928	136.201152039	129.43 138.55 139.60 144.08 149.45	DF com 16 gdl EFM com 40 gdl DF com 64 gdl EFH com 144gdl Malha Refinada
+Configuração 7	35.744490936	35.638966448	34.68 36.46 36.48 37.22 37.71	DF com 16 gdl EFH com 40 gdl DF com 64 gdl EFH com 144gdl Malha Refinada
+5.6	- Esforço Computacional
+Nos exercícios deste capítulo, fizeram-se seguidas confrontações entre o desempenho dos métodos DF, EF e EFH (representados aqui pelas rotinas da HOMLIB e pelo programa HYBRID3D) para cálculo da permeabilidade equivalente em diferentes tipos de meios heterogêneos. Essas comparações precisam considerar simultaneamente dois critérios: precisão e esforço computacional, ou seja, benefício e custo.
+A precisão dos resultados pode ser medida no eixo vertical dos gráficos apresentados, a partir da distância entre as respostas calculadas e uma solução de referência (o limite de convergência).
+No eixo horizontal, a maioria dos gráficos apresenta o grau de refinamento da malha numérica, que é a forma mais usual de ser encontrada na literatura. Em alguns gráficos adota-se o número de variáveis do sistema linear associado. Já se discutiu que, para uma mesma malha, os esquemas DF, EF e EFH identificam diferentes números de incógnitas a resolver, e esse número é um melhor indicador do esforço computacional empregado.
+Idealmente, o tempo de processamento seria uma medida ainda mais representativa do custo computacional, já que os sistemas lineares associados a esses três métodos não têm necessariamente a mesma complexidade. Discutem-se, a seguir, alguns aspectos dessa delicada questão que é a comparação entre tempos de processamento dos diferentes programas utilizados.
+O compilador FORTRAN 77, padrão ANSI, não possui um comando específico para a medição do tempo de CPU gasto na execução de um programa, entre marcos colocados no código fonte. O Microsoft FORTRAN PowerStation possui seu próprio comando e, da mesma forma, os diferentes compiladores f77, para cada tipo de sistema operacional UNIX.
+Para fazermos as medições de tempo de execução, principalmente dos três módulos solver (dois nossos e um da HOMLIB), utilizamos:
+•	o comando MCLOCK(), sem parâmetros mesmo, do compilador f77;
+•	a opção prof do UNIX/AIX, através da opção de compilação sp, para gerar a tabela dos tempos de execução das principais subrotinas no arquivo default mon.out;
+ambas disponíveis nos sistemas operacionais AIX 3.2.5 (mais antigo, mas ainda em uso) e AIX 4.1.4 do ambiente do CENAPAD-SP.
+Utilizamos a opção de otimização máxima -O?. que reduziu o tempo de execução de uma rodada com em tomo de 100.000 variáveis de 100 % (sem otimização) para 28 % (com otimização).
+Devido à grande variedade de casos e de tamanho (número total de variáveis) dos problemas, vamos apresentar os resultados das medições apenas em linhas gerais.
+A rotina (solver) EFFPERM_PRECG do módulo EFFPERM se mostrou no geral a mais rápida. A grande razão para isso é que ela foi construída específicamente para malhas regulares (paralelepípedos), com estrutura em forma de multi subdiagonais conhecida. Não há nenhuma matriz ou vetor auxiliar de indexação.
+Um fato que observado na prática (sem que se estudasse o programa fonte) é que, havendo dificuldade na convergência (como nos casos lognormais com alta variância), esse solver encerra os cálculos precocementê (tipicamente em 100 iterações), sem atingir a precisão dei0"5 intrínseca do programa. Casos assim foram expurgados da análise, pois nossos dois módulos, nesses casos difíceis, chegam a iterar até o teórico limite do número total de variáveis, podendo ainda assim ficar longe da precisão desejada de 10“7 .
+Em casos mais simples, SSOR-DS-CG leva 60 % a mais de tempo para rodar, em relação à EFFPERM_PPvECG. Em casos muito heterogêneos, como os apresentados em Beckie e outros [1993], SSOR-DS-CG não converge: ao final do número máximo de iterações, pelas diferentes seções transversais passam os mais incríveis fluxos. Nosso ICCG(0) leva de 5 a 16 vezes o respectivo tempo de EFFPERM__PRECG. Isso porque há momentos em que se tem que efetuar uma busca para saber qual a numeração do transposto de um elemento no sistema de indexação esparso sendo utilizado. Nos problemas com desvio-padrão acima de quatro, ICCG(0) converge para a resposta, mesmo sendo com uma precisão mais grosseira do quel0~7. Mas nesses casos a medição de tempo é muito desfavorável, pois, como comentamos, EFFPERM_PRECG termina em 100 iterações. Com essa parada antecipada, há casos muito heterogêneos onde os resultados calculados de permeabilidade equivalente são absurdos, principalmente o valor EF.
+O Sistema de Durlofsky, descrito na Seção 5.3, requer relativamente menos trabalho computacional, pois as entradas (os números) da matriz são de apenas dois tipos, os referentes ao arenito e os muito próximos de zero, referentes à argila. Em refinamentos desse caso, e levando em conta a precisão do resultado. SSOR-DS-CG chega a levar 80% do tempo de EFFPERM PRECG. É mais rápido!
+Outra verificação importante feita a partir da cronometragem do tempo de execução foi que, além dos dois módulos de solver, nenhuma outra subrotina está utilizando um tempo excessivo de processamento. A montagem do sistema linear da formulação híbrida fica em terceiro lugar no consumo de tempo, nos grandes problemas.
+Melhorar os módulos solver para a formulação EFH e, principalmente, implementar um módulo específico para malha regular são, inegavelmente, pontos ainda a melhorar em HYBRID2D e HYBRID3D. De qualquer modo, o conhecimento adquirido - pelo estudo e com a implementação de JBCG, DSCG, SSOR-DS-CG e ICCG(O) - foi fundamental para programar e, também, utilizar módulos mais robustos e eficazes (como, por exemplo, os vários programas de domínio público colocados a disposição por Universidades americanas, tais como os das Universidades de Stanford, Yale e Tulsa).
+5.7	- A Média Aritmética das Soluções EF e DF
+Nesta tese, como também em alguns estudos anteriores, observou-se que, sistematicamente, o erro do método EF é positivo e o erro do método DF é negativo. Assim, não parece despropositado testar combinações lineares dos dois métodos que diminuíssem o erro.
+De fato, não é uma novidade que uma composição elementar de dois métodos possa produzir um método bem mais robusto do que os dois que lhe deram origem. Por exemplo, a regra de integração numérica de Simpson pode ser vista como a média ponderada entre a regra do retângulo, com peso dois, e a regra do trapézio, com peso unitário. Com isso, a ordem de convergência passa de o(h2)~ dos dois métodos isolados - para o(/í4).
+A utilização da média aritmética dos resultados EF e DF tem por base a mesma idéia de aumentar a ordem de convergência pelo cancelamento do termo de menor ordem do erro. Nesse caso, o cancelamento apareceu ¡mediatamente com a soma direta.
+Esse estimador é limitado aos sistemas mais homogêneos, casos onde a solução EF seja aceitável. De todo modo, não existe até o momento um estimador que sempre apresente resultados precisos. Em artigos mais recentes, como Mansoori [1994] e Durlofsky [1995], pode-se verificar que a sistemática sendo mais empregada para fazer transferência de escala é determinar as regiões com menores gradientes de velocidade, logo mais homogêneas, e nelas
+passar para malhas mais grosseiras. Trabalhando dessa forma, a média aritmética EF/ DF tem uma enorme potencialidade, pois nos exemplos analisados ela foi entre 3 e 13 % mais precisa do que o estimador de Le Loc'h e Guérillot. e vai ficando mais precisa com o refinamento da malha.
+Um possível estudo posterior é a determinação de limites de aplicabilidade desse estimador média aritmética EF/ DF.
+5.8	- Relações Entre os Esquemas EFH e DF
+Durante a execução do refinamento do sistema de Durlofsky, na Seção 5.3, observou-se que o resultado DF para a malha original, igual a 0.45082915, coincidia em até seis ou sete algarismos significativos com o resultado EFH com a discretização por triângulos, igual à 0.45082921.
+Esse resultado motivou um estudo especifico, onde se verificou, em inúmeras simulações, para qualquer grau de refinamento e para qualquer configuração testada, que as respostas DF e a EFH para a discretização por triângulos são equivalentes (de 4 a 8 dígitos iguais). Nessa correspondente discretização triangular EFH, o número de blocos EFH é o dobro do número N2 de blocos DF, e o número de variáveis EFH é n(3N + 2), aproximadamente o triplo do número de variáveis na formulação DF.
+Para complementar o estudo dessa equivalência, inicialmente observada apenas nos resultados finais da permeabilidade equivalente, resolveu-se investigar se todos os fluxos entre elementos eram mesmo iguais. Para isso, procedeu-se por comparar as pressões médias nos blocos e nas faces, o que causa fluxos iguais. As subrotinas do PROFIT devolvem um vetor com o resultado das pressões calculadas, que é a pressão nos blocos para a formulação DF. A determinação da pressão DF média na face envolve um pós-processamento das pressões médias em blocos vizinhos. Tomando o fluxo horizontal entre dois blocos, o da esquerda (E) e o da direita (D), temos, pela lei de Darcy, que:
+(5.2)
+o que resulta na seguinte média ponderada	-
+(5-3)
+Efetuamos esse pós-processamento para a Configuração 5 e para o Sistema de Durlofsky. A análise das pressões mostrou que a pressão média DF no bloco é igual à pressão média na hipotenusa do triângulo e as pressões nas faces verticais são iguais nas duas formulações. A discretização por triângulos tanto pode ser feita com as hipotenusas paralelas à diagonal principal (é o caso do artigo Durlofsky [1994]), como ao contrário, que a resposta é a mesma.
+Concluindo, há um relacionamento muito forte entre as formulações EFM e EFH com DF. É por isso que regras incompletas de quadratura podem transformar essas formulações em esquemas DF.
+Capítulo 6 - Conclusões e Recomendações
+Foi implementada e analisada a formulação híbrida de elementos finitos com o uso do espaço de aproximação de Raviart-Thomas de mais baixa ordem. Em relação ao número total de variáveis do sistema linear a ser resolvido, a formulação EFH é mais precisa do que o esquema DF, de cinco ou sete pontos, e do que a formulação EF de Galerkin com funções de forma Lagrangeanas lineares.
+Para se tomar competitivo em termos do tempo de execução, falta implementar um módulo solver para o caso mais comum de malha estruturada. Como há uma vantagem em termos do número de variáveis, principalmente nas descrições não refinadas do reservatório, acreditamos que seja possível tomar a formulação EFH computacionalmente mais eficiente do que os esquemas DF.
+Foi mostrado como a formulação EFH pode ser estendida para o tratamento tensorial. Há uma grande potencialidade em uma implementação EFH tensorial, pois a matriz do sistema linear continuaria com o mesmo número de entradas (elementos não-nulos) por linha, enquanto que, para implementações DF tensorial, o número de entradas DF ultrapassaria o número de entradas da formulação EFH.
+Foi validado o módulo EFFPERM, da biblioteca HOMLIB. do projeto multicliente PROFIT. Nesse módulo são considerados apenas os termos diagonais do tensor de permeabilidade, e pode-se obter a permeabilidade equivalente pelo esquema mais usual de diferenças finitas de cinco (2D) e sete pontos (3D) e pelo método dos elementos finitos de Galerkin com as funções de base mais simples (as chamadas funções “chapéu” - funções Lagrangeanas lineares).
+Apesar de não apresentar resultados coerentes para os casos mais heterogêneos, com desvio-padrão logarítmico muito elevado, esse método EF mais simples apresenta resultados aceitáveis em muitos casos, e serve para compor um novo estimador, que foi originado das observações dos resultados de centenas de simulações. Esse método EF mais simples é usado pois seu desempenho computacional é o mesmo dos esquemas DF. O uso das funções
+quadráticas, mais indicadas para originar em um campo de velocidades contínuo, apresentaria um tempo de processamento mais elevado, o que é bastante indesejável.
+O uso conjunto dos programas HYBRID2D e HYBRID3D com o módulo EFFPERM do PROFIT deu origem a um ótimo processo de ganha-ganha, ou seja, um programa foi validando o outro ao longo das observações críticas que foram sendo obtidas dos resultados.
+A Média Aritmética entre os resultados EF e DF apresentou-se como o melhor estimador da permeabilidade equivalente para regiões mais homogêneas. A Média Aritmética entre EF e DF é um resultado mais preciso já na descrição original, sem refinamento, do meio poroso. Determinar limites práticos para utilização dessa média é um trabalho futuro necessário.
+A utilização de médias simples e estimadores não leva a resultados confiáveis, de uma maneira geral. Em casos de trechos mais homogêneos, a Média Aritmética entre EF e DF é preferível.
+Nos últimos anos tem havido um grande crescimento na aplicação dos métodos não-convencionais de EF. Em Chavent e outros [1990] e em Eymard e outros [1989], é possível verificar que a formulação EFH tem sido aplicada no acoplamento elíptico-hiperbólico em simulação de reservatórios (fluxo bifásico).
+Dentre algumas alternativas para estender esse trabalho, uma considerada viável dentro do tempo de uma dissertação de mestrado é a implementação do espaço de BDM de primeira ordem, tentando utilizar o tratamento tensorial diagonal para a permeabilidade.
+Referências Bibliográficas
+[01] ALLEN, Myron B. - Mixed Finite-Element Methods for the Equations of Flow in Porous Media. In: BAINOV, D. &amp;amp; COVACHEV, V. ed. - Proceedings of the Fourth International Colloquium on Differential Equations. Plovdiv, Bulgaria, Aug. 18-22, 1993. Utrecht, The Netherlands, VSP, 1994.
+[02] ARBOGAST, Todd; KEENAN, Philip T.; WHEELER, Mary F. &amp;amp; YOTOV, Ivan -Logically Rectangular Mixed Methods for Darcy Flows on General Geometry. Soc. Petroleum Eng. Symposium on Reservoir Simulation. San Antonio, Texas, February 12-15, 1995, p. 51-59. SPE 29099.
+[03] ASHBY, Steve F.; MANTEUFFEL, Thomas A. &amp;amp; OTTO, James S. - Adaptive Polynomial Preconditioning for HPD Linear Systems. In: Glowinski, Roland &amp;amp; Linchnewsky, Alain ed. - Computing Methods in Applied Scinece and Engineering. Proceedings of the Ninth International Conference on Computing Methods in Applied Sciences and Engineering. Paris, France, Jan. 29 to Feb. 2, 1990. Philadelphia, SIAM, 1990.
+[04] AXELSSON, O. &amp;amp; BARKER, Vincent Allan - Finite Element Solution of Boundary Value Problems. Theory and Computation. Orlando, Florida, Academic Press, 1984. Chap. 1 and 7.
+[05] BECKIE, Roger; WOOD, Eric F. &amp;amp; ALDAMA, Alvaro A. - Mixed Finite Element Simulation of Saturated Groundwater Flow Using a Multigrid Accelerated Domain Decomposition Technique. Water Resourc. Res.. 29(9):3145-3157, September, 1993.
+[06] BONET, L.; ROMEU. R. K. &amp;amp; PEREIRA. J. R. - Metodologia para Determinação de Permeabilidades Equivalentes em Meios Heterogêneos. Rio de Janeiro, projeto 03-04-14 da PETROBRÁS-CENPES-DIGER, abril. 1989.
+[07] BOX, George E. P.; HUNTER, William Gordon &amp;amp; HUNTER, J. Stuart - Statistics for Experimenters. An Introduction to Design, Data Analysis, and Model Building. New York, John Wiley, 1978.
+[08] BREZZL Franco &amp;amp; FORTIN, Michel - Mixed and Hybrid Finite Element Methods. New York, NY, Springer-Verlag, 1991.
+[09] CARDWELL, W. T. Jr &amp;amp; PARSONS, R.L. - Average Permeabilities of Heterogeneous Oil Sands. Trans. Amer. Inst. Mining Metal. Eng., 160:34-42, 1945.
+[10]	CHAVENT, Guy &amp;amp; ROBERTS, J. E. - A Unified Physical Presentation of Mixed,
+Mixed-Hybrid Finite Element and Standard Finite Difference Approximations for the Determination of Velocities in Waterflow Problems. Adv. Water Resouc., 14(6):329-348, 1991.
+[11]	CHAVENT, Guy; COHEN, Gary; JAFFRÉ. Jerome; EYMARD. Robert; GUÉRILLOT.
+Dominique R. &amp;amp; WEILL, Luce - Discontinuous and Mixed Finite Element for Two-Phase Incompressible Flow. Soc. Petroleum Eng. Reservoir Eng., 567-575, November, 1990. SPE 16018.
+[12]	CHAVENT, Guy &amp;amp; JAFFRÉ, Jérôme - Mathematical Models and Finite Elements for
+Reservoir Simulation. Amsterdam, Holland, North-Ho 11 and, 1986. Chap. 5.
+[13]	CORDES, Christian &amp;amp; KINZELBACH, Wolfgang - Continuous Grounwater Velocity
+Fields and Path Lines in Linear, Bilinear, and Trilinear Finite Elements. Water Resourc. Res., 28(11 ):2903-2911, November, 1992.
+[14]	CRUZ, Paulo Sérgio da - Análise Crítica dos Métodos de Mudança de Escala
+Associados à Simulação de Reservatórios. Dissertação de mestrado, Faculdade de Engenharia Mecânica, UNICAMP, Campinas, 1991.
+[15]	DESBARATS, Alexandre J. - Numerical Estimation of Effective Permeability in Sand-
+Shale Formations. Water Resourc. Res., 23(2):273-286, February, 1987.
+[16]	DEMIDOVITCH, B. - Problemas e Exercícios de Análise Matemática. Lisboa, Portugal,
+McGraw-Hill, 1993.
+[17]	DURLOFSKY, Louis J. - Numerical Calculation of Equivalent Grid Block Permeability
+Tensors for Heterogeneous Porous Media. Water Resourc. Res., 27(5):699-708. May, 1991.
+[18]	DURLOFSKY, Louis J. - Accuracy of Mixed and Control Volume Finite Element
+Approximations to Darcy Velocity and Related Quantities. Water Resouc. Res., 30(4):965-973, 1994.
+[19]	DURLOFSKY, Louis J.; BEHRENS, R.A.; JONES, R. C. &amp;amp; BERNATH, A. - Scale Up
+of Heterogeneous Three Dimensional Reservoir Descriptions. Soc. Petroleum Eng. Annu. Techn. Conf, and Exhibition. Dallas, TX, Oct. 22 to 25, 1995. p. 53-66. SPE 30709.
+[20]	EYMARD, R.; GALLOUET,T. &amp;amp; JOLY, P. - Hybrid Finit Element Techniques for Oil
+Recovery Simulation. Comp. Meth. Appl. Meeh. Eng., North-Holland, 74:83-98, 1989.
+[21]	PAYERS, F.J. &amp;amp; HEWETT. T.A. - A Review of Current Trends in Petroleum Reservoir
+Description and Assessment of the Impacts on Oil Recovery. Adv. Water Resouc., 15(6):341-365, 1992.
+[22]	FLETCHER, C. A. J. - Computational Galerkin Methods. Springer Series in
+Computational Physics. New York, Springer-Verlag, 1984.
+[23]	FRIND, E. O. &amp;amp; MATANGA G. B. - The Dual Formulation of Flow for Contaminant
+Transport Modeling: 1. Review of Theory and Accuracy Aspects. Water Resourc. Res., 21(2):159-169, February, 1985.
+[24]	FRIND, E. O.; MATANGA, G. B. &amp;amp; CHERRY, J. A. - The Dual Formulation of Flow
+for Contaminant Transport Modeling: 2. The Borden Aquifer. Water Resourc. Res., 21(2): 170-182, February, 1985.
+[25]	GALLI, A.; GOBLET, P.; GRIFFIN, D.; LEDOUX, E.; LE LOC’H, G.; MACKAY, R.
+&amp;amp; RENARD, P. - Quick Upscaling of Flow and Transport Related Parameters. Technical Report LHM/96/RD/11, Commission of the European Communities, May 15, 1996.
+[26]	GELHAR, L. W. &amp;amp; AXNESS, C. L. - Three-Dimensional Stochastic Analysis of
+Macrodispersion in Aquifers. Water Resouc. Res., 19( 1): 161 -180, 1983.
+[27]	GUSTAFSON, Karl E. - Introduction to Partial Differential Equations and Hilbert Space
+Methods. New York, USA, John Wiley, 2.ed., 1987.
+[28]	GUTJAHR, A. L.; GELHAR, L. W.; BAKR, A. A. &amp;amp; MCMILLAN, J. R. - Stochastic
+Analysis of Spatial Variability in Subsurface Flows. 2: Evaluation and Application. Water Resouc. Res., 14(5):953-959, 1978.
+[29]	HAGEMAN, Louis A. &amp;amp; YOUNG, David M. - Applied Iterative Methods. San Diego,
+California, Academic Press, 1981. Chap. 2.
+[30]	HOLDEN, Lars; LIA, Oddvar; MADSEN, Rune A.; MOSTAD, P.; RUSTEN, Torgeir
+&amp;amp; SKORSTAD, Arne - Scaling and Representation of Absolute Permeability. NR-note SAND/02/94, Norwegian Computing Center, P.O.Box 114 Blindem, N-0314 Oslo, Norway. PROFIT report, 1994.
+[31]	HUGHES, Thomas J. R. - The Finite Element Method. Linear Static and Dynamic
+Finite Element Analysis. Englewood Cliffs, New Jersey, Prentice-Hall, 1987.
+[32]	LACHASSAGNE, P.; LEDOUX, E. &amp;amp; de MARSILY, G. - Two Dimensional Stochastic
+Modelling of Flow in Non-Uniform Confined Aquifers. Correction of the Systematic Bias Introduced by Numerical Models When They Are Used Stochastically. In: 2nd European Conference on the Mathematics of the Oil Recovery. Paris, Technip, 1990. p.283-286
+[33]	LE LOC’H, G. - Etude de la composition des permeabilites par des methodes
+variationnelles. These de Doctoral, Ecole de Mines de Paris. Paris, France, November 1987.
+[34]	MANSOORL John - A Review of Basic Upscaling Procedures: Advantages and
+Disadvantages. In: YARLIS, J. M, &amp;amp; CHAMBERS. R.L. eds. - Stochastic Modeling and Geostatistics; Principles. Methods and Case Studies. AAPG Computer Applications in Geology # 3. Tulsa. OK. AAPG, 1994. Chap. 7.
+[35]	MATHERON, G. - Elements pour une Théorie des Milieu Poreux. Paris, Masson. 1967.
+[36]	MEYER, Philip D.; VALOCCHI, Albert J.; ASHBY, Steven F. &amp;amp; SAYLOR. Paul E. -
+A Numerical Investigation of the Conjugate Gradient Method as Applied to Three-Dimensional Groundwater Flow Problems in Randomly Heterogeneous Porous Media. Water Resourc. Res., 25(6): 1440-1446, June, 1989.
+[37]	ODEN, John Tinsley; CAREY, Graham F. &amp;amp; BECKER, Eric B. - Finite Elements: An
+Introduction. Volume I. Englewood Cliffs, New Jersey, Prentice-Hall, 1981.
+[38]	ODEN, John Tinsley &amp;amp; CAREY, Graham F. - Finite Elements: A Second Course.
+Volume IL Englewood Cliffs, New Jersey, Prentice-Hall, 1983.
+[39]	ODEN, John Tinsley &amp;amp; CAREY, Graham F. - Finite Elements: Computational Aspects.
+Volume III. Englewood Cliffs, New Jersey, Prentice-Hall, 1984.
+[40]	ODEN, John Tinsley &amp;amp; CAREY, Graham F. - Finite Elements: Mathematical Aspects.
+Volume IV. Englewood Cliffs, New Jersey, Prentice-Hall, 1983 .
+[41]	PRESS, William H. et alii - Numerical Recipes in FORTRAN. The Art of Scientific
+Computing. United States, Cambridge University Press, 2nd edition, 1992.
+[42]	RAMIRO, R. A. - O Impacto do Tratamento Tensorial da Permeabilidade no Processo
+de Mudança de Escala e Simulação de Fluxo. Dissertação de mestrado, Instituto de Geociências (Area de Geologia de Petróleo), UNICAMP, Campinas, 1994.
+[43]	ROMEU, Regís Kruel - Écoulement en Milieux Hétérogènes: Prise de Moyenne de
+Perméabilité en Regimes Permanent et Transitoire. Thèse de Doctoral (Sciences de la Terre), Université Paris 6. Paris, France, Juin 1994.
+[44]	ROMEU, Régis Kruel &amp;amp; NOETINGER, B. - Calculation of Intemodal Transmissivities
+in Finite Difference Models of Flow in Heterogeneous Porous Media. Water Resouc. Res., 31(4):943-959, April, 1995.
+[45]	SIQUEIRA, A. G.; CARRASCO, B. N. &amp;amp; SOMBRA, C. L. - Minipermeametria:
+Princípios e Aplicações. In: I Seminário de Reservas e Reservatórios. Rio de Janeiro, 9-13 Setembro, 1996. Rio de Janeiro, PETROBRÁS/SEREC/CEN-NOR e PETROB RÁS/E&amp;amp;P/GERER/GECOR, 1996. p.285-95
+[46]	SONIER, Fernand &amp;amp; EYMARD, Robert - Mathematical and Numerical Properties of
+Control-Volume Finite-Element Scheme for Reservoir Simulation. Soc. Petroleum Eng. Symposium on Reservoir Simulation. New Orleans, LA, February 28 - March 3, 1993, p. 399-411. SPE 25267.
+[47]	THOMASSET, Francois - Implementation of Finite Element Methods for Navier-Stokes
+Equations. Springer Series in Computational Physics. New York, Springer-Verlag, 1981.
+[48]	WARREN, J. E. &amp;amp; PRICE, H. S. - Flow in Heterogeneous Porous Media. Soc.
+Petroleum Eng. J., 153-169, September, 1961.
+[49]	ZIENKIEW1CZ, O. C. &amp;amp; MORGAN, Kenneth - Finite Elements and Approximation.
+New York, NY, John Wiley, 1983.</field>
+	</doc>
+</add>

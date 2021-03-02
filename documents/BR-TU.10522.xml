@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.10522</field>
+		<field name="filename">15649_275.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">Prototipagem rápida de ambientes ubíquos
+José Luís Silva	(Oscar R. Ribeiro	João M. Fernandes
+José Creissac Campos
+Dep. Informatica / CCTC, Universidade do Minho, Braga, Portugal
+{jlsilva, orribeiro, jmf, jose.campos}@di.uminho.pt
+Michael D. Harrison
+Newcastle University, United Kingdom
+michael.harrison@ncl.ac.uk
+Resumo
+A experiência de utilização de ambiente ubíquos é um factor determinante no seu sucesso. As características de tais sistemas devem ser exploradas o mais cedo possível para antecipar potenciais problemas de utilizacao por parte do utilizador e para reduzir custos de re-design. No entanto, o desenvolvimento antecipado de prototipos a serem avaliados no ambiente final pode ser disruptivo e tornar-se inaceitavel. O desenvolvimento de protótipos de ambientes ubíquos pode ajudar, fornecendo indicacoes de como o utilizador ira reagir perante os ambientes. Este artigo descreve o APEX, uma plataforma de prototipagem rapida de ambientes ubíquos que junta a CPN Tools com um servidor de aplicacoes 3D existente. Os prototipos desenvolvidos com o APEX permitem que os utilizadores naveguem num mundo virtual, podendo experimentar muitas das características do design proposto. A arquitectura do APEX e a modelacao baseada em CPN sao descritas. Um exemplo ilustra a abordagem.
+Palavras-Chave
+Computacao ubíqua, modelacao, ambientes virtuais
+1.	Introdução
+A computação ubíqua impoe novos desafios de usabilidade para os designers e developers de sistemas interactivos. Dado que nestes sistemas os utilizadores estao imersos, o efeito que os sistemas tem sobre a experiencia de utilizaçao de um dado espaço torna-se um elemento importante que contribui para o sucesso do design. Um sistema bem sucedido deve, por exemplo, conseguir transformar um ambiente esteril num lugar no qual as pessoas estejam em harmonia com o ambiente e seus propósitos. Um exemplo de criacao de tal experiencia num ambiente ubíquo pode ser o de efectuar um check-in num aeroporto e mover-se com o mínimo de atraso atraves das várias etapas da partida. Outro exemplo pode ser um ambiente que fornece informacao adaptada aos utilizadores de uma biblioteca, facilitando-lhes localizar a prateleira onde o livro desejado se encontra. A nocao de experiencia e difícil de capturar como um requisito que pode ser demonstrado num sistema. Actualmente, nao existem tecnicas que possam ser utilizadas permitindo analisar especificares contra diferentes nocoes de experiencia (ver [Harrison 08] para uma discussao deste tema).
+Este artigo aborda a prototipagem de ambientes ubíquos projectados para melhorar ambientes físicos reais atraves da utilizacao de sensores, ecras publicos e dispositivos pes
+soais. Um aspecto particularmente relevante destes sistemas eí a forma como os utilizadores interagem com o ambiente, quer atraves de interaccoes explícitas com o sistema, quer de interaccoes implícitas que surgem atraves de mudancas do contexto. Aqui o contexto pode incluir a posicao ou as diferentes etapas que tem de ser cumpridas pelo utilizador por forma a atingir um determinado objectivo (por exemplo: check-in, controlo do passaporte, digitalizacao do bilhete de embarque).
+O objectivo do trabalho e possibilitar a avaliacao de ambientes ubíquos precocemente, antes mesmo da sua efectiva instalacao in situ. O artigo é baseado no pressuposto que prototipos serao utilizados para explorar o impacto que o design de um dado ambiente ubíquo tera nos utilizadores consoante eles se mexem, interagem e acedem a servicos dentro desse ambiente. Para evitar custos de desenvolvimento desnecessaírios, o design eí a explorado desde cedo atraves de prototipos baseados em modelos, recorrendo a ambientes virtuais. O artigo descreve um plataforma de prototipagem (APEX) que utiliza modelos de redes de Petri coloridas [Jensen 07] (CPN - Coloured Petri Nets). O APEX interliga um modelo CPN com um servidor de aplicacoes 3D (OpenSimulator1). A plataforma permite a prototipagem de ambientes ubíquos, possibilitando que os
+1http://opensimulator.org (acedido em: 14 de Junho de 2010)
+121
+utilizadores naveguem na simulação do ambiente virtual através do controlo (actualmente atraves do rato e do teclado) de um avatar que o representa, tornando possível avaliar problemas de usabilidade, incluindo noções de experiencia de utilizacao.
+A estrutura do artigo e a seguinte. A seccao 2 apresenta trabalhos relacionados presentes na literatura. A seccao 3 descreve a arquitectura do APEX. A plataforma e ilustrada atraveís de uma biblioteca inteligente que detecta a presenca dos seus utilizadores e os guia ate as prateleiras onde se encontram os livros que estes pretendem requisitar. A seccao 4 descreve como o exemplo e modelado. A seccao 5 descreve a utilizacao da plataforma e a seccao 6 apresenta conclusões e trabalho futuro.
+2.	Literatura relacionada
+Apesar de avancos consideráveis no desenvolvimento de sistemas ubíquos, continua a existir uma tendencia para que o seu desenvolvimento e avaliacao sejam feitos principalmente atraves de experimentacao, desenvolvendo prototipos de dispositivos a avaliar em sistemas parcialmente desenvolvidos (ver [Davies 05] para uma discussao deste tema). A questao de como avaliar os sistemas num contexto real permanece um topico em aberto [Abowd 05]. Outro importante aspecto de avaliacao e saber como explorar a experiencia criada por um dado sistema. Nesse campo, existe uma literatura substancial proveniente do campo do design (ver, por exemplo, [Buchenau 00]). Um exemplo de uma abordagem típica no campo do design e desenvolver prototipos nao-funcionais que potenciais utilizadores podem transportar no contexto onde o sistema real ira ser utilizado. O objectivo e obter informacoes acerca do modo como o design proposto iraí ser experimentado.
+O APEX e projectado para satisfazer 3 requisitos. O primeiro e permitir o desenvolvimento rápido de prototipos. Embora existam várias plataformas de computacao ubíqua (e.g., [Braubach 02, Garlan 02, Harter 01]), o desenvolvimento de prototipos que permitam avaliar a reaccao dos utilizadores a ambientes ubíquos e uma area ainda relativamente pouco explorada.
+O segundo requisito e a utilizacao de ambientes 3D para construir simulacoes que podem ser exploradas de forma realística por utilizadores. Servidores de aplicacoes 3D, tais como o SecondLife™2 ou o OpenSimulator fornecem uma via de desenvolvimento raípido de mundos virtuais. O OpenSimulator em particular tem a vantagem de disponibilizar o código fonte, o que significa que pode ser programado permitindo uma maior configurabilidade e extensibilidade.
+O terceiro requisito e possuir uma abordagem para a modelacao de sistemas ubíquos. As redes de Petri constituem uma linguagem de modelacao grafica expressiva e tem sido utilizada para descrever ambientes virtuais. Abordagens anteriores baseadas em redes de Petri incluem: Hybrid high level Nets (HyNets) [Massink99], Flow-nets [Smith 99], Interactive Cooperative Objects (ICO)
+[Navarre 05] e CPNs [Jensen 07].
+Um objectivo desta plataforma eí integrar a abordagem de modelacao com abordagens analíticas que permitam validar propriedades nos ambientes ubíquos que sejam relevantes aquando da sua utilizacao. Neste contexto, a utilizacao de CPNs surgiu como escolha logica dado o bom suporte ao nível de ferramentas de animacao e analise de modelos.
+Embora possam ser encontradas na literatura varias abordagens a prototipagem de computacao ubíqua, somente um numero limitado refere aspectos de interaccao do utilizador com o ambiente e da experiencia obtida pelo utilizador. Alguns sistemas (e.g. [Li 04]) recorrem as tecnicas de Wizard of Oz para evitar a instalacao de sensores no ambiente. Outros, tais como 3DSim [Shirehjini 05], UbiWorld [Disz 97] ou o trabalho de O’Neill et al. [O’Neill 09] tem visites similares a nossa.
+A abordagem de O’Neill et al. e a que mais se aproxima, utilizando modelos e um motor de jogos 3D para a prototipagem de ambientes ubíquos (3DSim e UbiWorld assemelham-se mais a frameworks de programacao). Acreditamos que o uso de servidores de aplicacoes 3D (OpenSimulator) tem algumas vantagens comparativamente com a utilizacao de um motor de jogos. Os servidores de aplicacoes 3D suportam a criacao de ambientes virtuais em tempo real utilizando ferramentas de construcao de objectos e sao facilmente extensíveis atraves do carregamento de modulos. No caso dos motores de jogos, o ambiente deve ser previamente criado utilizando um editor de mapas. Utilizar um servidor de aplicacoes 3D significa que a abordagem e flexível. Uma variedade de clientes, personalizaveis em aparência, podem aceder o mundo virtual em simultaneo utilizando diferentes protocolos e o desenvolvimento dos ambientes pode ser efectuado atraves de linguagens de programacao variadas.
+3.	Arquitectura
+O APEX utiliza a CPN Tools3 para modelar o comportamento de ambientes virtuais. Esse comportamento e entao ligado ao servidor de aplicacoes 3D (OpenSimulator). Modelos CPN dos diferentes tipos de dispositivos presentes no ambiente (e.g. sensores, ecras, dispositivos pessoais) devem ser criados. O objectivo eí desenvolver um estilo generico de CPN relevante para a modelacao de ambiente virtuais, incluindo modelos que podem ser instanciados no espaco real no qual o sistema foi definido para operar.
+O OpenSimulator permite a criacao interactiva de ambientes virtuais suficientemente ricos permitindo aos utilizadores visualizar as características dos sistemas reais que estes representam. Ambientes e dispositivos preí-definidos podem ser utilizados nesse processo de criacao.
+Uma vez o modelo CPN e o ambiente criados, um componente do APEX e responsavel por liga-los. Varios utilizadores podem estabelecer ligacoes a simulacao com diferentes pontos de vista no servidor OpenSimulator. Os
+122
+A visao global da arquitectura da plataforma e apresentada na figura 1. Esta é composta por 3 partes:
+1.	um componente comportamental responsavel por gerir o comportamento do prototipo, incluindo a descricao, analise e validacao do comportamento do ambiente virtual;
+2.	um componente arquitectural responsavel por gerir a aparência física do protótipo, incluindo a gestao da simulacao 3D e da construcao do ambiente virtual;
+3.	um componente de comunicacão/execucão responsavel pela troca de dados entre todos os componentes da plataforma.
+3.1.	Componente comportamental
+Este componente utiliza a linguagem de modelacao CPN para descrever o comportamento do ambiente virtual em resposta a accoes do utilizador e a mudancas do contexto. Um modelo CPN generico base foi desenvolvido contendo:
+1.	um modulo para inicializar a simulacao e para estabelecer a conexao entre o modelo CPN representado na CPN Tools e o OpenSimulator;
+2.	um modulo que recebe dados do utilizador (por exemplo, identidade e posicao) a partir do OpenSimulator quando este se move, utilizando-os para actualizar tokens apropriados do modelo CPN;
+3.	um modulo descrevendo o comportamento de cada um dos tipos de dispositivos do sistema.
+Um exemplo de um modelo CPN para o componente com-portamental e apresentado na seccao 4.
+3.2.	Componente arquitectural
+Este componente utiliza o OpenSimulator para definir características 3D da simulacao apresentada aos utilizadores e permite a navegacao destes na simulacao. As características 3D da simulacao incluem a localizacao, o aspecto visual e a física de cada objecto no ambiente. Estas definicoes sao efectuadas utilizando uma ferramenta de visualizacao, e.g. o Hippo Viewer4 ou o Linden Lab’s Second Life viewer5. Existem outros visualizadores compatíveis disponíveis (ver http://opensimulator.org/wiki/Connecting). Actualmente alguns desses visualizadores permitem somente a exploracao do ambiente sem fornecer qualquer ferramenta de edicao.
+Este componente eí tambeím responsaível por permitir a navegacao livre e a interaccao no ambiente. A interaccao
+4http://mjm-labs.com/viewer/ (acedido em: 14 Junho de 2010)
+5http://secondlife.com/support/downloads (acedido em: 14 Junho de 2010)
+pode ser efectuada explicitamente pelos utilizadores utilizando dispositivos (virtuais) e implicitamente atraves de mudancas do contexto. A plataforma permite a conexao de varios utilizadores de, possivelmente, diferentes localizacoes ao mesmo ambiente virtual atraves da Web. Ambientes e objectos pré-definidos podem ser guar-dados/carregados utilizando ficheiros OAR (Opensim ARchive files). Todas as entidades (objectos, terrenos, texturas, etc.) sao codificadas nesses ficheiros no formato utilizado pelo OpenSimulator para guardar dados em ficheiros.
+3.3.	Componente de comunicação/execução
+Este componente e uma DLL (dynamic-link library) responsavel pelo carregamento do ambiente ubíquo e por utilizar os modelos CPN para o dirigir. A comunicacao é baseada no Comms/CPN [Gallasch 01], uma biblioteca desenvolvida para conectar a CPN Tools com processos Java e C. Como os modulos para o OpenSimulator sao desenvolvidos em C#, um novo pacote de comunicacao C#/CPN teve de ser desenvolvido. Este pacote envia informacoes para a CPN Tools quando mudancas no ambiente ocorrem e e tambem responsavel por modificar o ambiente em resposta a dados enviados pela CPN Tools. Adicionalmente, este componente controla o carregamento/gravacao de ob-jectos e ambientes no OpenSimulator.
+4.	Exemplo: modelação com CPNs
+O exemplo utilizado para ilustrar o sistema e uma biblioteca inteligente. Todos os livros sao identificados com etiquetas RFID e sao dispostos em prateleiras que tem LEDs associadas. Sao utilizados ecras para fornecer informacao aos utilizadores da biblioteca. Um utilizador registado pode entrar/sair da biblioteca atraveís das portas.
+Quando um utilizador registado chega a porta de entrada, esta abre e o ecra associado apresenta os livros que foram previamente requisitados por ele (e.g. atraves da pagina Web da biblioteca). De seguida o sistema guia, com informacao em ecras presentes na biblioteca, o utilizador ateí aos livros requisitados atraveís do uso de sensores que reconhecem a posicao do utilizador em tempo real. Assim que os utilizadores se aproximam da localizacao dos referidos livros (distancia configuravel no modelo CPN), uma das luzes com uma cor específica liga-se. Uma vez que vários utilizadores podem estar a procura de livros em localizacoes proximas, este metodo facilita a distincao dos diferentes pedidos, dado que cada utilizador utilizaraí uma cor diferente, previamente indicada quando este chega a biblioteca. Quando o utilizador se dirigir para a porta de saída, uma lista personalizada dos livros requisitados sera apresentada no ecra perto da porta e esta sera aberta caso o utilizador possa requisitar os livros. A saída do utilizador, os RFIDs dos livros sao detectados e consequentemente requisitados automaticamente.
+4.1.	Inicializando a simulacao
+123
+Figura 1. Arquitectura da plataforma APEX
+a configuracao inicial da simulacao. Neste caso a configuracao incluí 3 lugares: “users”, “gates” e “bookshelves”. As Etiquetas de fusão (e.g., etiqueta books no lugar bookshelves) permitem que instancias desses lugares aparecam em outras partes do modelo CPN. Esses lugares sao chamados fusion places. A transicao “initialise simulation” cria uma nova conexao e utiliza dois lugares para controlar a execucao do modelo CPN: “init” para limitar a execucao da transicao a uma ocorrencia e “run” para informar os outros modulos CPN que a simulacao esta em execucao.
+4.2.	Leitura das posicoes do utilizador
+A figura 3 apresenta o modulo CPN responsavel por colectar os dados dos utilizadores. A transicao “read user id” le o identificador de um utilizador. Um token com o identificador do utilizador associado e introduzido no lugar “read user ids”. Este e utilizado para ler a nova posicao do utilizador atraves da transicao “read and update user position” que tambem actualiza o token do respectivo utilizador. A expressao “isThisUser(u,uId) ” na guarda desta transicao garante que o token do utilizador que e actualizado corresponde ao identificador que foi previamente lido. Neste modelo, o numero de utilizadores permanece constante durante cada sessao de uma simulacao, i.e. os utilizadores que se podem conectar a simulacao em tempo de execucao devem estar previamente inseridos no modelo (variavel “initial-USERS”).
+Os modulos CPN leitores de posicoes dos utilizadores provenientes da simulacao e os que descrevem o comportamento dos dispositivos executam concorrentemente. A precedencia das transicoes dos dispositivos sobre a aquisicao de dados e garantida atraves da guarda “not (hadASignificantMovement(u)) ” sobre a transicao “read and update user position”. Um movimento de um utilizador e considerado significativo (para um dispositivo) quando a nova posicao esta “próxima” do dispositivo. Fica desta forma garantido que nao ocorrem comportamentos indevidos devido a leituras antecipadas.
+4.3.	Modelacao dos dispositivos do sistema
+Cada tipo de objecto dinümico (dispositivo) presente no ambiente ubíquo simulado precisa de um correspondente
+modulo CPN que descreva o seu comportamento. Os fusion places sao a base do processo de criacao desses modulos. Para criar os modelos desses modulos os fusion places necessarios provenientes do modelo da figura 2 devem ser clonados nesses modelos. Neste exemplo os lugares “users”, “gates” e “bookshelves” contem os tokens relativos aos objectos dinâmicos presentes. Estes tokens sao utilizados para modelar o comportamento do sistema. Isto e efectuado atraves da combinacao de fusion places, lugares normais, transicoes, funcoes (descritas na linguagem CPN ML associada a CPN Tools) e condicoes. As transicoes tem um papel importante nesse processo ja que sao elas que estabelecem a conexao entre os modelos CPN e o simulador, atraves da utilizacao de funcoes CPN ML. As funcoes tambem sao utilizadas para descrever algum comportamento que nao seja expressado estruturalmente pela rede de Petri. Um exemplo do modelo de um desses dispositivos é o modelo da porta de entrada apresentado na figura 4.
+A porta de entrada e equipada com um sensor que reconhece quando um utilizador se aproxima para entrar na biblioteca. A transicao “show info and open gate” representa a accao da porta de entrada. Esta mostra os livros requisitados no ecra e abre a porta de entrada. Estas accoes ocorrem quando o sensor da porta detecta a chegada de um utilizador (modelado com a condicao “isArrivingToGateArea(u,g) ”). Quando a porta esta aberta e outro utilizador registado entra na zona da porta, a transicao “add a user” e executada incluído o utilizador no conjunto de utilizadores perto da referida porta.
+Quando a transicao “show default and close gate” e executada, informacao por omissao e mostrada no ecra e a porta e fechada. Para que isto aconteca um utilizador tem de se afastar da porta e mais nenhum utilizador pode estar perto dela. No caso de outros utilizadores estarem perto da porta, a transicao “remove a user and update info” remove o referido utilizador do conjunto de utilizadores que estao perto da porta. Caso existisse informacao para esse utilizador no ecra, essa é trocada por informacao relevante para outro utilizador que ainda esteja perto da porta.
+124
+Figura 2. Módulo CPN para inicializar a simulação da biblioteca.
+UNIT
+1'()
+&lt;-
+
+[idRead = ""]°/o()
+◄
+()
+&gt;
+read user id
+UNIT
+output(idRead);
+action
+( if (ConnCanReceive()) then receiveString() else "" );
+[idRead&lt;&gt;""]%idRead
+▼
+uId
+▼
+read
+user ids
+()
+USERID
+[isThisUser(u,uId) andalso not (hadASignificantMovement(u))]
+sers
+A
+u
+&gt;
+read and update user position
+USER
+updateUserPosition(u,p)
+
+output(p);
+action
+( {x=receiveInteger(),
+y= receiveInteger()});
+Figura 3. Módulo CPN para aquisiçção de dados dos utilizadores.
+Por exemplo, a propriedade de acessibilidade, i.e. se todos os lugares sao acessíveis ou se um dado lugar e acessível a partir de outro lugar numa dada situacao, sao exemplos de propriedades que podem ser facilmente validadas atraves da utilizacao de funcoes fornecidas pela State Space tool (c.f. AllReachable(), Reachable(node,node)).
+5.	Utilizacçtão
+Como foi referido na seccao 1, o objectivo do APEX e suportar o design e analise de sistemas ubíquos. A pessoa responsavel pelo desenvolvimento do protótipo cria modelos CPN, tal como ilustrado na seccao 4. Dependendo da necessidade de novos tipos de dispositivos, poderaí ter que desenvolver novos modelos ou apenas reutilizar modelos existentes.
+Cada dispositivo e cada utilizador eí representado no modelo CPN por um token inserido no respectivo lugar etiquetado como lugar de fusão (e.g. veja o lugar users na figura 4). Cada um desses tokens tem um identificador que e comum aos identificadores dos objectos presentes na simulacao. Estes dados sao usados pelas funcoes CPN ML conjuntamente com instrucoes (e.g. open, close) para indicar mudancas que devem ser reflectidas no OpenSimulator. Estas indicacoes sao responsaveis por reflectir mudancas nos objectos do ambiente de acordo com o estado do modelo CPN. Como exemplo, a figura 5 mostra um pedaco de codigo que procura objectos que devem ser modificados, de acordo com instrucoes recebidas do modelo CPN, e efectua as respectivas alteracoes. Nesse pedaco de codigo, a posicao da porta e alterada de acordo com as accoes open
+125
+input (g); action
+( sendCloseGate(g) );
+Figura 4. Modulo CPN para o dispositivo porta de entrada.
+e close que são recebidas.
+Uma vez o servidor OpenSimulator e a CPN Tools instalados e configurados, o componente de comunicacão/execucão e o modelo CPN carregados, passa a ser possível a exploracao do mundo virtual.
+Existem dois modos possíveis de utilizacao do APEX. O modo de desenvolvimento e o modo de utilizador. No primeiro modo, o developer tem de alterar/estender o modelo CPN base de modo a reflectir o comportamento de novos dispositivos presentes no ambiente. No caso da definicao de novos dispositivos, pequenas modificacoes tem tambem de ser efectuadas no modulo de comunicacao/execucao (modulo C#) de modo a que este saiba como reflectir no novo objecto do ambiente as instrucoes do modelo CPN. No modo de utilizador, este somente tem de descarregar um visualizador e configuraí-lo de modo a poder aceder atraves da Web ao ambiente simulado. O acesso ao servidor e efectuado atraves da utilizacao de uma conta de utilizador criada para o efeito. Nesse modo sao utilizados modelos CPN e ambientes virtuais jaí desenvolvidos sendo que o utilizador experimenta o sistema atraves de uma simples conexao ao servidor.
+Para alem disso, a criacao, remocao e modificacao de objectos pode ser efectuada atraves da ferramenta de
+visualização (ver figura 6) gritando (forma de interacção do avatar com o mundo disponibilizada pelo visualizador) os seguintes comandos:
+•	load-oar ficheiro - responsavel por carregar um ambi-ente/objecto a partir de um ficheiro;
+•	save-oar ficheiro - responsavel por guardar um ambi-ente/objecto num ficheiro;
+•	clear - remove todos os objectos presentes no ambiente, ficando somente os utilizadores e o terreno.
+6.	Conclusões e trabalho futuro
+A experiencia dos utilizadores em ambientes ubíquos e um factor determinante no seu sucesso. Possibilitar a exploracao precoce das características de tais sistemas ira ajudar a antecipar potenciais problemas de utilizacao e reduzir o custo de re-design. No entanto, o desenvolvimento de prototipos no ambiente físico de destino e na maior parte dos casos inviavel. Isto acontece devido aos custos de desenvolvimento de tais protótipos e por poder levar a uma ruptura do ambiente a que o sistema em desenvolvimento se destina. Alternativas devem ser exploradas, fornecendo um adequado grau de experiencia no uso de sistemas ubíquos, mas evitando os custos da implementacao real.
+126
+Figura 5. Código relativo ao comportamento dos objectos do OpenSimulator
+Figura 6. Interface do visualisador
+Este artigo apresenta uma proposta para tais alternativas. Uma plataforma de prototipagem baseada em simulaçao para sistemas de computaçao ubíquos. Esta plataforma fornece, juntamente, a expressividade das redes de Petri, com a possibilidade de exploraçao de uma simulaçao virtual 3D do sistema modelado. O desenvolvimento de modelos e ambientes 3D e acelerado atraves da utilizaçao do modelo CPN base e de ambientes pré-definidos. Isto permite que potenciais utilizadores possam explorar a simulaçao do sistema antes da sua implementaçao, sendo possível ter uma abordagem de prototipagem com um baixo custo.
+Desenvolvimentos futuros da plataforma envolvem a sua avaliaçao com os utilizadores e developers. A avaliaçao dos utilizadores refere-se a fidelidade dos resultados, i.e. se os ambientes prototipados podem ser usados efiçaz-mente permitindo aos utilizadores uma experiencia suficientemente rica do design. A avaliaçao dos developers
+foça-se na agilidade da abordagem, na façilidade çom que os protótipos podem ser desenvolvidos de uma forma precisa para ambientes ubíquos.
+Trabalhos futuros no desenvolvimento da plataforma referem-se a questoes tecnicas que visam melhorar o suporte a utilizadores e developers. Estes incluem:
+•	A possibilidade de adicionar novos utilizadores a simulaçao em tempo de execuçao, sem que estes tenham que estar previamente inseridos no modelo;
+•	Reduzir a quantidade de informaçao trocada entre a CPN Tools e APEX para a mínima possível - isto e relevante para prever que a CPN Tools execute alem dos recursos;
+•	Conectar a simulaçao a dispositivos moveis, tais como PDAs, via bluetooth - isto iraí permitir uma ex-
+127
+periencia de utilizacao mais realista e imersiva.
+Agradecimentos
+Este trabalho e suportado pela Fundação para a Ciência e Tecnologia (FCT, Portugal) através da bolsa de doutoramento SFRH/BD/41179/2007.
+E. Law, E. Hvannberg, e G. Cockton, editores, Maturing Usability: Quality in Software, Interaction and Value, Human Computer Interaction Series, paginas 56-74. Springer-Verlag, 2008.
+Referências
+[Abowd 05] G.D. Abowd, G.R. Hayes, G. Iachello,
+J.	A. Kientz, S.N. Patel, M.M. Stevens, e
+K.	N. Truong. Prototypes and paratypes: designing mobile and ubiquitous computing applications. IEEE Pervasive Computing, 4(4):67-73, 2005.
+[Braubach 02] L. Braubach, A. Pokahr, D. Moldt, A. Bar-telt, e W. Lamersdorf. Tool-supported interpreter-based user interface architecture for ubiquitous computing. Em Interactive Systems, volume 2545 de Lecture Notes in Computer Science, paginas 89103. Springer-Verlag, 2002.
+[Buchenau 00] M. Buchenau e J.F. Suri. Experience prototyping. Em Proceedings Designing Interactive Systems (DIS’00), paginas 424433. ACM Press, 2000.
+[Davies 05] N. Davies, J. Landay, S. Hudson, e A. Schmidt. Rapid prototyping for ubiquitous computing — guest editors’ introduction. IEEE Pervasive Computing, 4(4):15-17, 2005.
+[Disz 97] T.E. Disz, M.E. Papka, e R. Stevens. UbiWorld: an environment integrating virtual reality, supercomputing, and design. Em Proceedings of the Heterogeneous Computing Workshop, paginas 46-59, April 1997.
+[Gallasch 01]
+G. Gallasch e L.M. Kristensen. Comms/CPN: A communication infrastructure for external communication with design/CPN. Em K. Jensen, editor, 3rd Workshop and Tutorial on Practical Use of Coloured Petri Nets and the CPN Tools (CPN'01), paginas 75-90. DAIMI PB-554, Aarhus University, 2001.
+[Harter 01]
+[Jensen 07]
+[Li 04]
+[Massink 99]
+[Navarre 05]
+[O’Neill 09]
+[Garlan 02]
+D. Garlan, D.P. Siewiorek, A Smaila-gic, e P Steenkiste. Project Aura: toward distraction-free pervasive computing. IEEE Pervasive Computing, paginas 22-31, April-June 2002.
+[Harrison 08] M.D. Harrison, J.C. Campos, G. Doherty, e K. Loer. Connecting rigorous system analysis to experience centred design. Em
+128
+A. Harter, A. Hopper, P. Steggles, A. Ward, e P. Webster. The anatomy of a context-aware application. Wireless Networks, 1:1-16, 2001.
+K. Jensen, L.M. Kristensen, e L. Wells. Coloured petri nets and CPN tools for modelling and validation of concurrent systems. International Journal on Software Tools for Technology Transfer (STTT), 9(3-4):213-254, 2007.
+Y. Li, J.I. Hong, e J.A. Landay. Topiary: a tool for prototyping location-enhanced applications. Em UIST '04: Proceedings of the 17th annual ACM symposium on User interface software and technology, paginas 217-226. ACM, 2004.
+M. Massink, D.J. Duke, e S.P. Smith. Towards hybrid interface specification for virtual environments. Em D.J. Duke e
+A. Puerta, editores, Design, Specification and Verification of Interactive Systems '99, paginas 30-51. Springer-Verlag, 1999.
+D. Navarre, P. Palanque, R. Bastide, A. Schyn, M. Winckler, L. Nedel, e C. Freitas. A formal description of multimodal interaction techniques for immersive virtual reality applications. Em INTERACT 2005, volume 3585 de Lecture Notes in Computer Science, paginas 170183. Springer-Verlag, 2005.
+E. O’Neill, D. Lewis, e O. Conlan. A simulation-based approach to highly iterative prototyping of ubiquitous computing systems. Em 2nd International Conference on Simulation Tools and Techniques, paginas 1-10. ICST, 2009.
+[Shirehjini 05] Ali A. Nazari Shirehjini e Felix Klar.
+3DSim: rapid prototyping ambient intelligence. Em Proceedings of the 2005 joint conference on Smart objects and ambient intelligence: innovative context-aware services: usages and technologies, 2005.</field>
+	</doc>
+</add>

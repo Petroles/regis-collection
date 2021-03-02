@@ -1,0 +1,5772 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.20218</field>
+		<field name="filename">3675_Cecilio_DiogoLira_D.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+DIOGO LIRA CECÍLIO
+
+Modelagem Elastoplástica Aplicada à
+
+Simulação Numérica da Estabilidade de
+
+Poços de Petróleo
+
+CAMPINAS
+2014
+
+i
+
+
+
+ii
+
+
+
+
+
+Ficha catalográfica
+Universidade Estadual de Campinas
+
+Biblioteca da Área de Engenharia e Arquitetura
+Luciana Pietrosanto Milla - CRB 8/8129
+
+    
+  Cecílio, Diogo Lira, 1983-  
+ C324m CecModelagem elastoplástica aplicada à simulação numérica da estabilidade de
+
+poços de petróleo / Diogo Lira Cecílio. – Campinas, SP : [s.n.], 2014.
+ 
+
+   
+  CecOrientador: Philippe Remy Bernard Devloo.
+  CecTese (doutorado) – Universidade Estadual de Campinas, Faculdade de
+
+Engenharia Mecânica e Instituto de Geociências.
+ 
+
+    
+  Cec1. Elastoplasticidade. 2. Métodos dos elementos finitos . 3. Poços de petroleo.
+
+4. Plasticidade. I. Devloo, Philippe Remy Bernard,1958-. II. Universidade Estadual
+de Campinas. Faculdade de Engenharia Mecânica. III. Título.
+
+ 
+
+Informações para Biblioteca Digital
+
+Título em outro idioma: Elastoplastic modeling applied to the numerical simulation of wellbore
+stability analysis
+Palavras-chave em inglês:
+Elastoplasticity
+Finite element method
+Oil wells
+Plasticity
+Área de concentração: Explotação
+Titulação: Doutor em Ciências e Engenharia de Petróleo
+Banca examinadora:
+Philippe Remy Bernard Devloo [Orientador]
+Luiz Carlos Marcos Vieira Junior
+Renato Pavanello
+José Luis Drummond Alves
+Sérgio Augusto Barreto da Fontoura
+Data de defesa: 10-12-2014
+Programa de Pós-Graduação: Ciências e Engenharia de Petróleo
+
+Powered by TCPDF (www.tcpdf.org)
+
+iv
+
+http://www.tcpdf.org
+
+
+
+
+vi
+
+
+
+AGRADECIMENTOS
+
+Gostaria de agradecer todas as pessoas especiais que participaram desta etapa da minha
+vida. À minha esposa Débora por ter me apoiado, me dado força carinho e companheirismo
+nos momentos mais difíceis. Ao meu filho João Henrique por trazer muita alegria em minha
+vida. Aos meus pais Paulo e Ozanilda, por todo o amor e apoio nas horas mais difíceis.
+Aos meus irmãos Pablo e Nina, pela amizade, carinho e paciência. Aos meus primos Pedro,
+Paulo e Luiz pela amizade forte que já dura a tanto tempo. Ao meu orientador Philippe pela
+amizade, por todo o conhecimento que me transmitiu e os pelos obstáculos que me ajudou
+a transpor. Aos meus amigos do LabMeC pela nossa rica troca de conhecimento e pelos
+momentos que passamos juntos. Ao meu amigo Claudemir por ter me ajudado a enfrentar e
+entender as dificuldades.
+
+vii
+
+
+
+viii
+
+
+
+"O homem vangloria-se de ter imitado o vôo
+das aves com uma complicação técnica que
+elas dispensam." (Carlos Drummond de An-
+drade)
+
+ix
+
+
+
+x
+
+
+
+RESUMO
+
+No presente trabalho é construído um código eficiente para a simulação do comportamento
+mecânico de um poço de petróleo na fase de perfuração, com base na discretização de um
+modelo matemático geral para pequenas deformações elastoplásticas pelo método de Elemen-
+tos Finitos. A metodologia de cálculo elastoplástico conhecida por projeção sobre o ponto
+mais próximo da superfície plástica é aplicada ao modelo de Sandler-DiMaggio, o que permite
+abordar o problema elastoplástico de modelos complexos de forma mais simples e eficiente.
+Os resultados da resposta material são comparados aos apresentados no artigo original sobre
+esse modelo. Uma análise de estabilidade de poço utilizando o método dos elementos finitos,
+juntamente com o modelo elastoplástico proposto, é realizada posteriormente. O comporta-
+mento plástico na região em torno do poço é obtido por uma transferência gradual do estado
+de tensão na parede do mesmo. Para aprimorar a precisão da simulação elastoplástica de
+Elementos Finitos, aplica-se refinamento h e aumento da ordem polinomial p aos elementos
+localizados na região de plastificação. Utiliza-se o segundo invariante do tensor de deformação
+plástico deviatórico como critério para indicar o colapso do material. Simulações adaptativas
+requerem a comunicação de informação de uma malha para outra. Sendo assim, um proce-
+dimento específico de transferência do histórico de deformação elastoplástica foi criado. A
+matriz tangente referente ao cálculo da variação da tensão em função da variação da deforma-
+ção é calculada consistentemente. O modelo numérico elastoplástico é implementado em um
+contexto de programação orientada a objetos. Ele é aplicado em uma configuração típica de
+um reservatório carbonático. Observa-se que a mudança de geometria do poço devido ao bre-
+akout gera um aumento na magnitude da defomação plástica em uma área progressivamente
+menor.
+
+Palavras-chave: Elastoplasticidade, Elementos Finitos, Sandler-DiMaggio, Estabilidade
+de Poços.
+
+xi
+
+
+
+xii
+
+
+
+ABSTRACT
+
+In this work an e?cient code for the simulation of the mechanical behavior of an oil well
+during the drilling phase is constructed. It is based on the discretization of a general mathe-
+matical elastoplastic model for small deformations using the Finite Element method. The
+methodology of the elastoplastic calculation, known as the closest point projection, is ap-
+plied to the Sandler-DiMaggio modal, which enables addressing the elastoplastic problem of
+complex models more easily and e?ciently. The results of the response is compared to the
+material presented in the original article about this model. A stability analysis of a well
+using the Finite Element method with the proposed elastoplastic constitutive modal is then
+performed. The plastic behaviour in the area around the wellbore is obtained by a gradual
+transfer of stress state to it. To improve the accuracy of the elastoplastic Finite Element
+simulation, adaptive refinement and increasing the polynomial order are applied to elements
+located in the plastification area. The second invariant of the plastic deviatoric strain tensor
+is used as a damage criterion to indicate the failure of the material. Adaptive simulations
+require the comunication of information from a mesh to another one. Therefore, a specific
+transfer procedure for elastoplastic deformation history is created. The tangent matrix re-
+lated to the stress variation with respect to the strain variation is calculated consistently.
+The elastoplastic numerical model is implemented in the context of object-oriented program-
+ming. It is applied to a typical configuration of a carbonate reservoir. It is observed that
+the change in geometry due to the well breakout generates an increase in the magnitude of
+plastic defomação in a progressively smaller area.
+
+Keywords: Elastoplasticity, Finite Elements, Sandler-DiMaggio, Wellbore Stability.
+
+xiii
+
+
+
+xiv
+
+
+
+Conteúdo
+
+1 INTRODUÇÃO 1
+1.1 Motivação . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+1.2 Conceitos Gerais Sobre Cálculo Elastoplástico . . . . . . . . . . . . . . . . . 2
+1.3 Objetivos . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+1.4 Principais Contribuições da Tese . . . . . . . . . . . . . . . . . . . . . . . . . 4
+1.5 Organização do Trabalho . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+
+2 REVISÃO DA LITERATURA 9
+2.1 Metodologias de Cálculo Elastoplástico . . . . . . . . . . . . . . . . . . . . . 9
+2.2 Modelos Constitutivos Elastoplásticos Para Rochas de Reservatórios . . . . . 10
+2.3 Cálculo Elastoplástico no Estudo de Estabilidade de Poços . . . . . . . . . . 11
+
+3 FUNDAMENTAÇÃO TEÓRICA 15
+3.1 Formulação do Modelo Constitutivo Elastoplástico . . . . . . . . . . . . . . . 16
+
+3.1.1 Exemplos . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+3.2 Modelo Numérico do Problema de Valor Inicial Elastoplástico . . . . . . . . 27
+3.3 Equação de Equilíbrio Mecânico Para o Deslocamento . . . . . . . . . . . . . 29
+3.4 Modelo Numérico Elastoplástico . . . . . . . . . . . . . . . . . . . . . . . . . 31
+
+4 OTIMIZAÇÃO DO CORRETOR PLÁSTICO 33
+4.1 Espaço de Haigh-Westergaard . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+4.2 Espaço de Haigh-Westergard-Rotacionado . . . . . . . . . . . . . . . . . . . 36
+4.3 Representação de Modelos Associativos no Espaço HWR . . . . . . . . . . . 37
+4.4 Corretor Plástico no Espaço HWR . . . . . . . . . . . . . . . . . . . . . . . 38
+
+5 CORRETOR PLÁSTICO NO MODELO SANDLER-DIMAGGIO 41
+5.1 Modelo Sandler-DiMaggio no Espaço HWR . . . . . . . . . . . . . . . . . . . 41
+5.2 Corretor Plástico . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+5.3 Verificação . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+
+xv
+
+
+
+5.4 Matriz Tangente . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 49
+5.5 Cálculo de ??
+
+??trial
+para o modelo de Sandler-DiMaggio . . . . . . . . . . . . . 55
+
+6 ESTUDO DE ESTABILIDADE DE POÇOS 57
+6.1 Implementação do Código Elastoplástico . . . . . . . . . . . . . . . . . . . . 60
+6.2 Ferramentas Especiais de Elementos Finitos para a Equação de Equilíbrio . . 61
+6.3 Simulador de Estabilidade de Poços . . . . . . . . . . . . . . . . . . . . . . . 69
+
+7 RESULTADOS E DISCUSSÕES 75
+7.1 Preliminares . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+
+7.1.1 Geometria . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+7.1.2 Configuração do Estado de Tensões In-Situ . . . . . . . . . . . . . . . 77
+7.1.3 Parâmetros materiais e tensões in-situ . . . . . . . . . . . . . . . . . 79
+7.1.4 Solução Analítica de Airy . . . . . . . . . . . . . . . . . . . . . . . . 81
+
+7.2 Simulação do Caso 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 82
+7.2.1 Simulação do Caso 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . 84
+7.2.2 Simulação do Caso 3 . . . . . . . . . . . . . . . . . . . . . . . . . . . 87
+7.2.3 Caso 3 com Ajuste Progressivo da Geometria . . . . . . . . . . . . . 89
+
+8 CONCLUSÕES E TRABALHOS FUTUROS 95
+
+Bibliografia 96
+
+A APÊNDICE 101
+A.1 Direções principais . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 101
+A.2 Derivadas dos invariantes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 102
+A.3 Verificação da Derivada . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 102
+
+xvi
+
+
+
+Lista de Figuras
+
+1.1 Esquema matemático do problema elastoplástico em Elementos Finitos. . . . 3
+
+3.1 Encruamento isotrópico (figura adaptada de Neto et al. [28]). . . . . . . . . 19
+3.2 Encruamento cinemático (figura adaptada de Neto et al. [28]). . . . . . . . . 19
+3.3 Perfeitamente plástico (figura adaptada de Neto et al. [28]). . . . . . . . . . 20
+3.4 Superfície de plastificação de Mohr-Coulomb. . . . . . . . . . . . . . . . . . . 21
+3.5 Superfície de plastificação de Mohr-Coulomb. . . . . . . . . . . . . . . . . . . 22
+3.6 Modelo clássico de Sandler-DiMaggio (I1,
+
+?
+J2). . . . . . . . . . . . . . . . . 24
+
+3.7 Modelo elastoplástico de SandlerDiMaggio representado no espaço de Haigh-
+Westergaard com ? = 7/9. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+
+3.8 Visão do plano ? para o modelo de Sandler-DiMaggio, para três valores dife-
+rentes de ?. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+
+3.9 Visão esquemática do modelo preditor-corretor para um modelo com endure-
+cimento isotrópico. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+
+3.10 Diagrama do esquema numérico elastoplástico . . . . . . . . . . . . . . . . . 32
+
+4.1 Esquema ilustrativo do espaço HW. . . . . . . . . . . . . . . . . . . . . . . . 35
+
+5.1 Superfície de plastificação de Sandler-DiMaggio representada no espaço HWR. 42
+5.2 Deformação uniaxial em compressão (A-B) , seguido por uma deformação axial
+
+na direção oposta (B-D). . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+5.3 Caminho A-B, o material perde volume devido ao fechamento de vazios e, en-
+
+tão, plastifica-se acionando a função F2. No caminho B-C, a resposta material
+é elástica. No caminho C-D plastifica acionando a função F1. . . . . . . . . . 47
+
+5.4 Taxa de convergência: ordem quadrática é observada em todos os passos de
+carregamento. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+
+5.5 Teste de carregamento proporcional para o material McCormic Ranch Sand,
+cujos parâmetros estão ilustrados na Tabela 5.1. . . . . . . . . . . . . . . . . 49
+
+xvii
+
+
+
+6.1 Janela operacional: a) projeto de pré-perfuração, assumindo-se que a pressão
+de poros e o gradiente de fratura limitam o peso do fluido de perfuração;
+b) projeto de pré-perfuração, f assumindo-se que a pressão de colapso e o
+gradiente de fratura limitam o peso do fluido de perfuração. Figura adaptada
+e retirada de Zoback [37]. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 59
+
+6.2 Esquema ilustrativo do breakout. Figura retirada de Zoback [37] . . . . . . . 60
+6.3 Busca otimizada pelo elemento que contém um ponto dado . . . . . . . . . . 63
+6.4 Solução obtida utilizando um procedimento de remoção de elementos . . . . 64
+6.5 Antes e depois da movimentação dos nós. . . . . . . . . . . . . . . . . . . . . 66
+6.6 Após o deslocamento dos nós. . . . . . . . . . . . . . . . . . . . . . . . . . . 66
+6.7 Imagens de breakout adaptadas do artigo Haimson and Lee [18]. Seções do
+
+poço simulado em laboratório da Tablerock sandstone, com tensão horizontal
+mínima e a tensão vertical s ?h = 15 MPa, ?v = 30 MPa, e tensão horizontal
+máxima (a) ?H = 50 MPa, (b) ?H = 60MPa e (c) ?H = 70MPa. . . . . . . 67
+
+6.8 Refinamento h na zona plastificada . . . . . . . . . . . . . . . . . . . . . . . 68
+6.9 Refinamento p na zona plastificada . . . . . . . . . . . . . . . . . . . . . . . 68
+6.10 Sensibilidade com relação à precisão da modelagem geométrica . . . . . . . . 69
+6.11 Vista do software SEST2D. . . . . . . . . . . . . . . . . . . . . . . . . . . . 71
+6.12 Abas de configurações do programa SEST2D. . . . . . . . . . . . . . . . . . 73
+6.13 Ilustração das funcionalidades do SEST2D. . . . . . . . . . . . . . . . . . . . 74
+
+7.1 Esquema de geração da malha. . . . . . . . . . . . . . . . . . . . . . . . . . . 76
+7.2 Condições de contorno. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+7.3 Passos de carregamento aplicados. . . . . . . . . . . . . . . . . . . . . . . . . 79
+7.4 Mapas de cores da simulação de Caso 1, considerando o modelo de Sandler-
+
+DiMaggio. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 83
+7.5 Mapas de cores da simulação de Caso 1, considerando o modelo de Mohr-
+
+Coulomb. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 83
+7.6 Caso 1: Valor comparativo entre a função de plastificação da solução numérica
+
+(pontos azuis) e da solução de Airy (curva vermelha tracejada), calculadas
+na parede do poço, em função do ângulo ?: modelo Sandler-DiMaggio (lado
+esquerdo) e Mohr-Coulomb (lado direito) . . . . . . . . . . . . . . . . . . . . 84
+
+7.7 Mapas de cores da simulação de Caso 2, considerando o modelo de Sandler-
+DiMaggio. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 85
+
+7.8 Mapas de cores da simulação de Caso 2, considerando o modelo de Mohr-
+Coulomb. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 86
+
+xviii
+
+
+
+7.9 Caso 2: Valor comparativo entre a função de plastificação da solução numérica
+(pontos azuis) e da solução de Airy (curva vermelha tracejada), calculadas
+na parede do poço, em função do ângulo ?: modelo Sandler-DiMaggio (lado
+esquerdo) e Mohr-Coulomb (lado direito) . . . . . . . . . . . . . . . . . . . . 86
+
+7.10 Mapas de cores da simulação de Caso 3, considerando o modelo de Sandler-
+DiMaggio. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 87
+
+7.11 Mapas de cores da simulação de Caso 3, considerando o modelo de Mohr-
+Coulomb. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 88
+
+7.12 Caso 3: Valor comparativo entre a função de plastificação da solução numérica
+(pontos azuis) e da solução de Airy (curva vermelha tracejada), calculadas
+na parede do poço, em função do ângulo ?: modelo Sandler-DiMaggio (lado
+esquerdo) e Mohr-Coulomb (lado direito). . . . . . . . . . . . . . . . . . . . 88
+
+7.13 Evolução progressiva do dano: caso RefHP = 1.e ? 7 e AdjBK = 0.0001. . 90
+7.14 Ajuste progressivo da geometria: caso RefHP = 1.e ? 7 e AdjBK = 0.0005 . 93
+
+xix
+
+
+
+xx
+
+
+
+Lista de Tabelas
+
+3.1 Parâmetros empregaod no modelo de Mohr-Coulomb. . . . . . . . . . . . . 22
+3.2 Parâmetros do modelo constitutivo de Sandler e DiMaggio. . . . . . . . . . . 24
+
+5.1 Parâmetros para o material McCormic Ranch Sand [31]. . . . . . . . . . . . 45
+
+7.1 Parâmetros do modelo elastoplástico de Sandler-DiMaggio para o material
+simulado neste estudo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 80
+
+7.2 Parâmetros do modelo elastoplástico de Mohr-Coulomb para o material simu-
+lado neste estudo. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 80
+
+7.3 Tensões efetivas de confinamento para os três casos simulados. . . . . . . . 80
+7.4 Evolução do dano. Áreas referentes a 1/4 de poço. . . . . . . . . . . . . . . . 91
+7.5 Evolução do dano. Áreas referentes a 1/4 de poço. . . . . . . . . . . . . . . . 92
+
+xxi
+
+
+
+xxii
+
+
+
+LISTA DE SÍMBOLOS
+
+I1 - primeiro invariante do tensor de tensão
+I2 - segundo invariante do tensor de tensão
+I3 - terceiro invariante do tensor de tensão
+J2 - segundo invariante do tensor de tensão deviatórico
+J3 - segundo invariante do tensor de tensão deviatórico
+N - lei de escoamento plástico
+H - módulo de endurecimento
+PVI-EP - abreviação do problema de valor inicial elastoplástico
+EDO - abreviação de equação diferencial ordinária
+HW - abreviação de Haigh-Westergaard
+HWR - abreviação de Haigh-Westergaard-Rotacionado
+?v - deformação volumétrica
+? - porosidade da rocha
+' - potencial de energia livre
+? - multiplicador plástico infinitesimal
+?? - multiplicador plástico discreto
+E - módulo de elasticidade
+? - coeficiente de poisson
+K - módulo de deformação volumétrica
+G - módulo de cisalhamento
+C - tensor constitutivo elástico
+D - tensor constitutivo elastoplástico
+I - tensor identidade
+? - tensor de deformação
+"- vetor composto pelas deformações principais
+?e - parcela elástica do tensor de deformação
+?p - parcela plástica do tensor de deformação
+? - tensor de tensões
+
+xxiii
+
+
+
+?? - tensor de tensões efetivas
+?trial - tensor de tensão elástica presumida em algoritmo preditor
+?1, ?2, ?3 - tensões principais
+? - vetor composto pelas tensões principais
+?trial - vetor de tensão composto pelos autovalores presumido
+?proj - vetor de tensão composto pelos autovalores projetado
+S?h - menor componente horizontal do tensor de tensões principais efetivas
+S?H - maior componente horizontal do tensor de tensões principais efetivas
+S?v - componente vertical ou de sobrecarga do tensor de tensões principais efetivas
+Sh - menor componente horizontal do tensor de tensões principais efetivas
+SH - maior componente horizontal do tensor de tensões principais efetivas
+Sv - componente vertical ou de sobrecarga do tensor de tensões totais
+ - Coordenada cilíndrica hidrostática de Haigth-Westeergard
+? - Coordenada cilíndrica cisalhante de Haigth-Westeergard
+? - Lode Angle
+? - ângulo da projeção sobre o cap
+L - variável dissipativa interna referentes ao fenômeno de endurecimento
+? - critério de plastificação
+? - função potencial plástico
+? - domínio no espaço euclidiano
+?? - fronteira do domínio ?
+Ei - autoprojeções
+R - Rotação que leva do espaço de HW para HWR
+R - Resíduo gerado pelo problema elastoplástico
+r - resíduo da deformação plástica volumétrica no critério de Sandler-DiMaggio
+CHW - Tensor constitutivo elástico que relaciona o vetor de tensões principais ao de defor-
+mações principais no espaço HW
+CHWR - Tensor constitutivo elástico que relaciona o vetor de tensões principais ao de defor-
+mações principais no espaço HWR
+A - força termodinâmica de encruamento
+S - tensor deviatórico
+c - coesão
+? - ângulo de atrito interno
+? - constante que modela seção da superfície de falha
+? - função que modela seção da superfície de falha
+V- espaço das funções vetorias de gradiente quadrado integrável
+
+xxiv
+
+
+
+?v - vetor de funções teste
+?u - vetor de deslocamentos
+? - Ângulo correspondente à posição na parede do poço
+?
+? - Massa específica na configuração de referência
+
+xxv
+
+
+
+xxvi
+
+
+
+Capítulo 1
+
+INTRODUÇÃO
+
+1.1 Motivação
+
+A técnica de perfuração de poços de petróleo tem se desenvolvido rapidamente com a neces-
+sidade, cada vez maior, de se extrair petróleo de regiões antes inacessíveis, principalmente a
+grandes lâminas de água. Neste contexto, o Brasil, através da Petrobras, desempenha papel
+de vanguarda, desenvolvendo tecnologia de ponta para abastecer o mercado interno. Com
+o aumento da perfuração de poços e da produção de óleo no pré-sal, vem crescendo a de-
+manda por estudos que indiquem melhor o comportamento mecânico de seus reservatórios,
+em grande parte, compostos por materiais carbonáticos localizados em grande profundidades.
+
+O estudo das tensões desenvolvidas pelos processos de perfuração e completação, bem
+como o fluxo de óleo pela formação, tem grande importância. Durante processo de perfuração
+do poço ocorre a retirada de material rochoso pela broca, e o mesmo é substituído pelo
+fluido de perfuração. O equilíbrio adquirido pela formação em milhões de anos, é alterado
+bruscamente. A tensão confinante da rocha passa a ser equilibrada pela pressão gerada
+pela coluna hidrostática do fluido de perfuração. Essa pressão é diferente das tensões de
+confinamento que atuavam anteriormente, e muitas vezes não consegue mater o poço inerte
+a falhas mecânicas.
+
+Caso a pressão exercida pela coluna hidrostática do fluido de perfuração seja excessiva-
+mente alta, pode ocorrer o fraturamento da rocha, provocando significativas perdas de fluido
+e dano à formação do reservatório (fraturamento hidráulico). Caso a pressão seja baixa de-
+mais, pode haver invasão do fluido a ser produzido. Esta invasão pode provocar separação de
+fluidos, com conseqüente expansão do gás contido no petróleo. Mesmo quando a pressão do
+fluido de perfuração está entre os dois limites mencionados, a alteração de estado de tensão
+pode levar à plastificação do material do reservatório e ao eventual colapso do poço. No
+entanto, esta alteração do estado de tensões pode ser parcialmente corrigida pelo controle da
+
+1
+
+
+
+pressão através do fluido de perfuração (lama de perfuração).
+Tisser [34] relata em seu trabalho que a instabilidade do poço gera um aumento de custos
+
+na perfuração, e no pior dos casos, pode chegar ao seu abandono devido a prisão da coluna
+de perfuração. Dentre os custos de estabilidade estão a necessidade de limpeza do poço, de
+injeção de mais fluido de perfuração devido à perda do mesmo.
+
+Villela [35] destaca que aproximadamente 10 a 15% do tempo de perfuração de um poço
+está associado a estabilidade. A autora menciona a grande incidência de instabilidades du-
+rante a perfuração e principalmente a ocorrência de breakouts.
+
+Dentro deste contexto, entende-se que o aumento da confiabilidade da perfuração de
+poços, é de grande importância para a segurança e para a economia do processo. A compre-
+ensão do comportamento mecânico da formação é crucial para o aumento da confiabilidade
+da perfuração e da produção de um poço de petróleo. No mesmo sentido, a modelagem do
+material por modelos constitutivos elastoplásticos que melhor representam o comportamento
+do material, também são necessários para se avançar na confiabilidade da perfuração.
+
+1.2 Conceitos Gerais Sobre Cálculo Elastoplástico
+
+Um modelo matemático geral para pequenas deformações elastoplásticas é constituído de
+duas partes principais acopladas:
+
+1. Equação de equilíbrio mecânico para o deslocamento, obtida com base em princípios
+que são válidos para qualquer corpo contínuo, independentemente do tipo de material
+de que é composto.
+
+2. Modelo constitutivo composto de uma lei elastoplástica correspondente a um problema
+de valor inicial com restrição. O material específico do corpo analisado é especificado
+pelo modelo constitutivo, que modela as variáveis internas e o tensor deformação plás-
+tica com base em três axiomas fundamentais: critério de plastificação, lei de escoamento
+plástico e lei de endurecimento.
+
+A Figura 1.1 esquematiza a associação da lei constitutiva elastoplástica com a equação de
+equilíbrio mecânico.
+
+2
+
+
+
+Figura 1.1: Esquema matemático do problema elastoplástico em Elementos Finitos.
+
+Em termos de elastoplasticidade, a tensão num ponto depende de uma forma não linear da
+deformação do ponto. A implementação computacional de um modelo numérico elastoplástico
+requer um conjunto de ferramentas que podem ser classificadas em duas partes: para a
+resolução do problema de valor inicial constitutivo e para a resolução da equação residual de
+elementos finitos.
+
+Na modelagem tradicional do problema de valor inicial constitutivo, um grande número
+de variáveis de estado devem ser calculadas (seis variáveis a serem encontradas para o tensor
+de tensão e mais as possíveis variáveis associadas ao dano material), através da solução de
+um sistema não linear para cada ponto de integração constituinte da malha de elementos
+finitos que atinge o regime plástico. Isso gera um complexo sistema de equações de difícil
+interpretação, tornando o cálculo de elementos finitos computacionalmente caro.
+
+1.3 Objetivos
+
+O trabalho proposto tem como objetivo avançar no entendimento do estado de tensão de
+poços através de uma modelagem elastoplástica, utilizando simulação numérica de elementos
+finitos, em que são consideradas a não linearidade do material e a modelagem da desagre-
+gação do material devido ao excesso de deformação e à atuação do gradiente de pressão.
+Precisamente, os objetivos principais são:
+
+1. Entendimento do estado da arte de modelos constitutivos elastoplásticos aplicáveis a
+rochas de reservatórios.
+
+3
+
+
+
+2. Desenvolvimento de procedimentos simplificados e eficientes para o cálculo elastoplás-
+tico.
+
+3. Desenvolvimento de novas ferramentas para incrementar a resolução da equação residual
+de elementos finitos para a equação de equilíbrio mecânico.
+
+4. Aplicação da nova metodologia de cálculo elastoplástico e das novas ferramentas de
+elementos finitos no estudo de estabilidade de poços.
+
+1.4 Principais Contribuições da Tese
+
+Apresenta-se a continuação um sumário das principais contribuições originais da presente
+tese. As implementações foram feitas na biblioteca de Elementos Finitos, desenvolvida em
+linguagem de programação C++ , chamada NeoPZ [7, 8]
+
+(www.code.google.com/p/neopz/).
+
+Simplificação de Procedimentos Para o Cálculo Elastoplástico
+
+A convergência de um método iterativo para a solução do problema elastoplástico dependente
+da escolha das variáveis que representam o vetor de incógnitas. Um grande número de incóg-
+nitas com complexas expressões que devem ser derivadas analítica ou numericamente através
+de diferenciação automática, tornam o cálculo pesado computacionamente e de difícil inter-
+pretação e depuração. No presente trabalho é proposta uma implementação simplificada do
+procedimento de solução do problema elastoplástico, válida para modelos associativos. Nesta
+implementação é adotada uma reinterpretação do problema elastoplástico a ser resolvido,
+com reduzido número de equações não-lineares e, consequentemente, melhorando a eficiência
+numérica. Neste sentido, os modelos são representados em um espaço alternativo, chamado
+de Haigh-Westergaard-Rotacionado (HWR). Demonstra-se que o ponto na superfície elasto-
+plástica cuja distância ao ponto trial é mínima é a solução do problema elastoplástico. Este
+procedimento aplicado ao modelo de Sandler-DiMaggio reduz a projeção elastoplástica a
+solução de um sistema não linear de três incógnitas apenas. Assim, a convergência do pro-
+cesso iterativo pode ser obtida de maneira mais rápida, estabilizando o cálculo, com uma
+consequente economia no custo computacional.
+
+4
+
+
+
+Novas Ferramentas de Resolução do Modelo de Elementos Finitos
+
+Durante a simulação de Elementos Finitos da perfuração de poços são encontradas algumas
+dificuldades que prejudicam a convergência da resolução residual do problema de equilíbrio.
+Descrevem-se a seguir as principais ferramentas adotada que permitiram uma simulação mais
+eficiente.
+
+1. Escolha da Matriz Tangente no Processo Iterativo de Newton
+O uso da matriz tangente consistente, em alguns casos, conduz à divergência do pro-
+cesso iterativo de Newton. Sendo assim, algumas técnicas foram desenvolvidas visando
+a estabilização da busca pela solução aproximada. Inicialmente foi implementado o mé-
+todo line-search, o qual proporciona um melhor avanço nos cálculos. Posteriormente,
+quando situações mais desfavoráveis de pressão causam maior solicitação ao material
+que, consequentemente, plastifica, a dificuldade em equilibrar a solução aumenta e
+ocorrem casos em que a solução não converge. Nestas situações, o emprego da matriz
+elástica na solução do método de Newton do sistema global de equações resultou mais
+estabilidade numérica. Isso proporciona uma resolução do problema mais estável, com
+convergência da solução, porém em um ritmo mais lento. A solução final adotada é
+um método que alterna o uso da matriz tangente caso a solução encontre dificuldades
+de convergência. Ou seja, primeiramente o problema tenta a solução do método de
+Newton com a matriz elastoplástica consistente. Caso a solução utilizando a matriz
+tangente consistente seja divergente, então emprega-se a matriz tangente elástica.
+
+2. Critério Para Modelagem do Breakout
+Um dos desafios encontrados em estudos numéricos da estabilidade de poços foi a de-
+finição de um critério para a propagação do breakout. Neste trabalho, após inúmeras
+simulações e consultas na literatura de trabalhos da área, como o de Zoback [38],
+concluiu-se que a geometria que mais se aproxima do fenômeno de breakout é a elíp-
+tica. Sendo assim, uma sistemática foi elaborada para remover material supostamente
+colapsado do poço, a qual consiste no ajuste de elipses a isolinhas onde o valor da
+deformação plástica deviatórica é constante a um valor previamente estipulado, todo
+o material abrangido pela elipse sendo eliminado. Para a implementação desta ferra-
+menta, foi criado um método para encontrar os elementos da malha de elementos finitos
+correspondentes aos valores determinados de deformação plástica deviatórica, um mé-
+todo para o cálculo das constantes que ajusta a elipse a tal isolinha, e um método para
+o deslocamento dos nós do contorno para a elipse calculada.
+
+3. Refinamento h ? p
+Um ponto importante no desenvolvimento deste trabalho foi o refinamento geométrico
+
+5
+
+
+
+(h) e polinomial (p) da malha de elementos finitos. Adotou-se o critério onde os elemen-
+tos cuja máxima deformação plástica deviatórica é maior que um valor pré-estabelecido
+sejam refinados em h e ou p. Para um valor estipulado desta deformação, identificam-se
+os elementos que se encontram acima deste valor, onde é realizado o refinamento. No
+caso do refinamento geométrico, o elemento é dividido e no caso polinomial, a ordem das
+funções que compõem o espaço de aproximação é incrementada para aqueles elementos
+especificados. Quando ocorre o refinamento, novos pontos de integração são criados,
+porém os mesmos não contemplam o histórico das deformações plásticas e das variáveis
+de dano internas sofridas pelo material. Por isso, é necessário criar um histórico de
+deformações para os novos pontos de integração baseados no histórico de soluções das
+malhas anteriores. Depois de aplicar o histórico de deformação é necessário re-equilibrar
+as tensões da malha.
+
+Software SEST2D Para o Estudo de Estabilidade de Poços
+
+Como fruto da parceria entre o LabMeC e a Petrobras, foi desenvolvido um software de esta-
+bilidade de poços chamado SEST2D. O software contempla as novas técnicas de aproximação
+numérica elastoplástica que foram desenvolvidas neste estudo bem como várias ferramentas
+de interface gráfica desenvolvidas no LabMeC pelo programador Raul Baldin.
+
+1.5 Organização do Trabalho
+
+Este trabalho está dividido em oito capítulos. O capítulo 2 contempla uma contextualiza-
+ção do problema elastoplástico e a sua aplicação na estabilidade de poços. No capítulo 3
+uma revisão bibliográfica da teoria elastoplástica para pequenas deformações, composta por
+critério de plastificação, lei do escoamento plástico e lei de endurecimento, são descritos. É
+apresentado um o método de mapa de retorno para a solução do problema de valor inicial
+elastoplástico (PVI-EP). Os critérios de plastificação para materiais friccionais de Mohr-
+Coulomb e Sandler-DiMaggio são introduzidos, e a formulação fraca de elementos finitos é
+desenvolvida. No capítulo 4, alguns conceitos importantes relacionados à metodologia para
+a solução do PVI-EP através da projeção sobre a superfície plástica são elaborados. No
+capítulo 5, os conceitos descritos no capítulo anterior são aplicados ao modelo elastoplástico
+de Sandler-DiMaggio. A validação da sistemática de cálculo elastoplástico proposta é feita
+comparando os resultados numéricos obtidos com a literatura. No capítulo 6, são discutidos:
+o assunto de estabilidade de poços, as classes implementadas, as ferramentas desenvolvidas
+para a simulação numérica. Além disso no final do capítulo é feita a apresentação do software
+
+6
+
+
+
+SEST2D. No capítulo 7 um problema prático de perfuração de poços em grande profundidade,
+passando por uma camada de material carbonático, é resolvido com o método dos elementos
+finitos associado a uma lei constitutiva elastoplástica. No capítulo 8 são apresentadas as
+conclusões e trabalhos futuros.
+
+7
+
+
+
+8
+
+
+
+Capítulo 2
+
+REVISÃO DA LITERATURA
+
+Neste Capítulo, é realizada uma revisão da literatura dos temas envolvidos neste trabalho.
+Na primeira seção, são apresentados os componentes básicos de um modelo elastoplástico,
+bem como os métodos mais comuns na solução deste tipo de problema. Na segunda seção,
+é feita uma revisão sobre modelos constitutivos elastoplásticos aplicados a rochas porosas.
+Na terceira seção, uma contextualização do problema de estabilidade de poços associado
+a plastificação do material é realizada. E por fim, na última seção, são apresentadas as
+ferramentas para a resolução da equação residual de elementos finitos empregada neste estudo.
+
+2.1 Metodologias de Cálculo Elastoplástico
+
+A modelagem constitutiva elastoplástica é formada, tradicionalmente ([20, 26, 30]), pelos
+seguintes componentes básicos :
+
+• Divisão da deformação (plástica/elástica);
+
+• Lei de elasticidade;
+
+• Critério de plastificação;
+
+• Lei de escoamento plástico;
+
+• Lei de endurecimento.
+
+Em conjunto, esses componentes constituem um sistema de equações diferenciais ordinárias
+(EDO), com restrição, que deve ser integrado a partir de um dado estado elastoplástico ini-
+cial. Tem-se, portanto, um problema de valor inicial elastoplástico (PVI-EP). A integração
+de modelos elastoplásticos necessita de esquemas numéricos para ser solicionado. Tradici-
+onalmente, o sistema de equações gerado considera o tensor de deformações em termos de
+
+9
+
+
+
+todas as variáveis de estado, o que significa um maior número equações, o que complica sua
+resolução numérica por simuladores de EDO usuais (Euler, Runge-Kutta).
+
+Os integradores são classificados conforme a técnica de cálculo das derivadas no tempo e de
+suas restrições, e são classificados em explícitos e implícitos. A definição da maneira de cálculo
+das derivdas no tempo e da ordem de integração dão origem a vários tipos de integradores.
+Esquemas implícitos de alta ordem geram grande custo computacional limitando seu emprego.
+
+Por outro lado existe uma maneira alternativa aos métodos de integração tradicionais
+para a solução do PVI-EP. O mesmo pode ser abordado sob uma perspectiva geométrica,
+conforme exposto nos artigos de Armero et al[2, 29]. Esta abordagem é mais simples e envolve
+um número significativamente menor de variáveis. Dado um estado inicial do material, sua
+superfície de plastificação é definida no espaço da tensões principais rotacionado (detalhado
+na seção 4.2) e as variáveis que minimizam a distância entre o ponto inicial e o ponto projetado
+fornece a solução do problema elastoplástico.
+
+Especificamente, para o modelo de Sandler-DiMaggio, uma adaptação da superfície para
+a caracterização do material em tração triaxial ou em compressão triaxial foi desenvolvida
+de maneira similar à adotata por Fossum et al [17]. Esta adaptação é de grande importância
+para que se consiga modelar de maneira mais realista o comportamento de materiais rochosos,
+pois possibilita incluir no modelo, uma diferença de sensibilidade entre tração e compressão
+triaxial.
+
+Uma técnica que permite simplificar o cáculo plástico reduzindo seu número de varáveis,
+é o desenvolvimento da modelagem constitutiva em função das tensões principais, o que
+implica na simplificação das equações envolvidas e também o melhoramento da eficiência
+computacional, conforme apresenta Souza Neto [28] para o modelo de Mohr-Coulomb. No
+presente trabalho, a idéia de representação da tensão em valores princiapis, foi incorporada
+ao modelo de Sandler-DiMaggio.
+
+2.2 Modelos Constitutivos Elastoplásticos Para Rochas
+de Reservatórios
+
+Os mecanismos de colapso sob estados multiaxiais em rochas são complexos. O colapso da
+mesma ocorre através de um processo microscópico e ocorre de duas maneiras, colapso de po-
+ros e falha por cisalhamento. Maiores detalhes sobre os mecanismos de falha são encontrados
+no trabalho de Santos [32], no artigo de DiGiovanni [11] e no artigo de Zahn et al [36].
+
+Ensaios de laboratório fornecem uma noção básica do comportamento mecânico das ro-
+chas, sendo necessário o desenvolvimento de modelos mais elaborados para a sua representa-
+
+10
+
+
+
+ção na prática, como por exemplo, em problemas de estabilidade de poços.
+Vários modelos elastoplásticos complexos foram desenvolvidos buscando melhor empregar
+
+os dados disponíveis de laboratório. O modelo mais comum é o modelo de Mohr-Coulomb,
+que é limitado por não considerar a compactação do material. No entanto melhoras a este
+modelo já foram propostas. Guevara [23] trabalhou no tratamento do problema de colapso de
+poros em rochas porosas de reservatórios de petróleo ajustando ao modelo de Mohr-Coulomb
+um cap suave e contínuo.
+
+O modelo de Sandler-DiMaggio tem boa capacidade representativa do comportamento
+das rochas confinadas. Ele foi desenvolvido inicialmente em 1971 por Sandler e DiMaggio
+[12] e teve a sua primeira aplicação prática no estudo de choques no solo causado pelo
+efeito de explosivos, tais como, bombas atômicas e ou outros tipos de grandes explosões. O
+comportamento laboratorial das rochas carbonáticas sob confinamento é muito bem ajustado
+pelo mesmo Santos et al [33]. Este modelo é composto por duas superfícies representativas
+da zona elástica: uma envoltória de cisalhamento; e uma elipse de fechamento que limita a
+deformação elástica sob confinamento (cap).
+
+O modelo de Sandler-DiMaggio representa bem rochas principalmente por ter um cap
+de fechamento que é móvel e considera a compactação da rocha, além da sua capacidade
+de limitar a dilatância excessiva conforme referência [12]. Conforme a tese de Santos [32],
+outro aspecto positivo deste modelo é a facilidade de obtenção de parâmetros constitutivos
+em ensaios simples de laboratório. Os modelos com cap de fechamento são amplamente
+utilizados na indústria petrolífera por possuirem a capacidade de reproduzir a compactação
+do material causada pelo colapso dos poros.
+
+Além das aplicações citadas, os modelos com cap de fechamento tem as mais variadas
+aplicações. Na indústria farmacêutica a simulação da fabricação de comprimidos, utiliza o
+modelo de Drucker-Prager com cap para simular o comportamento da compactação do pó
+que compõe o comprimido como descrito por Han et al [19].
+
+2.3 Cálculo Elastoplástico no Estudo de Estabilidade de
+Poços
+
+O problema considerado neste estudo consiste da análise da estabilidade de um poço vertical
+sendo perfurado em uma região de formação constituída por material carbonático a grande
+profundidade. O material nos arredores do poço em perfuração está sujeito à concentração
+de tensões, a qual varia de acordo com a posição no entorno do poço. A concentração de
+tensões no entorno do poço pode levar a falhas de compressão (breakout) ou falha por tração
+
+11
+
+
+
+(fraturamento).
+Um modelo elastoplástico se faz necessário pois previsões lineares elásticas não conseguem
+
+reproduzir o comportamento da formação no entorno do poço que é observada na prática.
+A limitação da elasticidade advém de sua incapacidade em prever a energia que é absorvida
+pelo material quando o mesmo se deforma plasticamente, o que na prática acaba diminuindo
+o avanço do breakout. Como mencionado anteriormente, o modelo Sandler-DiMaggio é o
+escolhido como a lei constitutiva elastoplástica a ser utilizada na simulação do breakout do
+presente trabalho.
+
+Em seu livro Zoback [37] faz um estudo de estabilidade de poços associando a integridade
+do mesmo à falha mecânica da formação em seu entorno. No livro são ilustrados casos para
+várias bacias sedimentares ao redor do mundo, chamando a atenção para a importância da
+limpeza do poço, hidráulica de perfuração e vibração mecânica do equipamento de perfuração
+Burgoine et al [22]. O estudo é focado na estabilidade em dois objetivos principais: evitar
+instabilidades significantes durante a perfuração e limitar a falha da formação ao redor do
+poço durante a produção. O último problema está, muitas vezes, relacionado à produção de
+areia. Ele cita também outros aspectos associados à falha do poço durante a produção, tais
+como, o colapso do revestimento devido à compactação causada pela depleção do reservatório.
+
+Uma vez que o breakout é formado, a concentração de tensões é tal que ele tende a se
+aprofundar. Porém, contanto que as condições de perfuração não resultem em breakouts
+largos, o poço pode continuar a ser perfurado. Haimson et al [18] discutem o formato e
+o mecanismo de falha associados a poços perfurados em experimento laboratorial, feito em
+blocos de material com alta porosidade e sujeitos a tensões principais de confinamentos
+diferentes. Eles comentam que valores críticos de tensões de confinamento podem induzir a
+breakouts com o formato v-shape ou dog-eared. Eles discutem a importância da porosidade e
+da composição do material no formato do breakout.
+
+A modelagem analítica de estabilidade de poços baseia-se no cálculo das tensões elásticas
+ao redor do poço, sendo este modelado como uma cavidade cilíndrica com tensões elásticas
+calculadas pelas equações de Kirsch [24]. Este trabalho foi desenvolvido em 1898 e ainda é
+empregado atualmente nos simuladores analíticos de estabilidade de poços (denominados de
+1D).
+
+O primeiro trabalho a publicar o emprego das equações de Kirsch em engenharia de
+petróleo com ampla repercussão é o de Bradley [5] de 1979. Segundo Fajaer et. al. [13], o
+trabalho de Bradley aparenta trazer um erro de sinal em parte da expressão da tensão e este
+erro haveria sido propagado na literatura técnica, como na primeira edição do livro “Petroleum
+Related Rock Mechanics” de sua coautoria. Fjaer também menciona que o emprego das
+equações de Kirsch na engenharia de petróleo haveria sido primeiramente publicado em 1962
+
+12
+
+
+
+por Hiramatsu e Oka.
+Neste trabalho, a modelagem analítica de estabilidade de poços utilizou as funções de
+
+Airy. A solução analítica para estes casos é útil na validação dos cálculos de Elementos
+Finitos, uma vez que é possível utilizar as tensões calculadas analiticamente para avaliar o
+valor das funções de plastificação em consideração e se ter uma noção da área inicialmente
+afetada pela falha do material.
+
+13
+
+
+
+14
+
+
+
+Capítulo 3
+
+FUNDAMENTAÇÃO TEÓRICA
+
+Como mencionado na Introdução, um modelo matemático geral para pequenas deformações
+elastoplásticas é constituído de duas partes principais acopladas:
+
+• Modelo constitutivo elastoplástico, composto de um problema de valor inicial com res-
+trição.
+
+• Equação de equilíbrio mecânico para o deslocamento.
+
+Obviamente, devido à complexidade matemática de tais equações, soluções analíticas para
+problemas de interesse prático de engenharia só podem ser obtidas sob condições muito sim-
+plificadas. A análise do comportamento elastoplástico de estruturas e solos em condições
+mais realistas requer a adoção de técnicas numéricas adequadas capazes de produzir soluções
+aproximadas com razoável precisão. No contexto do método dos elementos finitos, a formu-
+lação e a solução numérica de problemas não lineares em mecânica do contínuo se embasa
+crucialmente na forma fraca do princípio dos trabalhos virtuais. Se o material é elástico, este
+tem a resposta diretamente do tensor de tensões que pode ser introduzido na equação do
+princípio dos trabalhos virtuais para se obter uma equação variacional envolvendo apenas os
+deslocamentos e o gradiente dos deslocamentos.
+
+Em contraste com o comportamento elástico, o comportamento plástico é um processo
+incremental que precisa necessariamente ser caracterizado pela evolução das equações cons-
+titutivas em um pseudo-tempo. Para a aplicação elastoplástica, o procedimento destacado
+para elasticidade requer um passo a mais, que é a integração numérica das equações consti-
+tutivas no pseudo-tempo. O resultado gerado pelo algoritmo de integração é uma resposta
+incremental não linear a qual define o tensor de tensão como função da história do tensor de
+deformações até o presente passo.
+
+No presente capítulo, é feita um revisão dos principais aspectos de um modelo numérico
+para a resolução do modelo matemático elastoplástico, baseado no Método dos Elementos
+
+15
+
+
+
+Finitos, tendo como referências básicas o livro Souza Neto [28], e a tese de doutorado de
+Santos [32].
+
+3.1 Formulação do Modelo Constitutivo Elastoplástico
+
+O presente estudo da teoria matemática da plasticidade segue o Capítulo 6 do livro de Souza
+Neto [28]. Essa teoria fornece uma estrutura geral para a descrição constitutiva do com-
+portamento dos materiais elastoplásticos. A teoria da plasticidade é focada em sólidos que,
+após submetidos a um ciclo de carregamento, podem sustentar deformações permanentes (ou
+plásticas) quando completamente descarregados. A teoria é restrita à descrição de materiais
+que não dependem da taxa de aplicação de carga. Um grande número de materiais de en-
+genharia, tais como metais, concreto, rochas, argilas e solos em geral, podem ser modelados
+por meio do comportamento elastoplástico, sob uma ampla gama de circunstâncias de inte-
+resse prático. A teoria apresentada é restrita a deformações infinitesimais e fornece a base
+para a simulação numérica elastoplástica do comportamento de sólidos a ser discutido neste
+trabalho.
+
+Como mencionado no capítulo anterior, o estudo elastoplástico é subdividido nos seguintes
+tópicos:
+
+• Decomposição do tensor de deformação em parcelas elástica e plástica;
+
+• Lei de elasticidade;
+
+• Critério de Plastificação;
+
+• Lei de escoamento plástico;
+
+• Lei de endurecimento (hardening).
+
+A seguir, os principais aspectos sobre esses tópicos são apresentados.
+
+Decomposição do Tensor de Deformações
+
+A deformação total ? é dividida em duas partes, uma elástica, e outra, plástica.
+
+? = ?e + ?p (3.1)
+
+As tensões estão associadas à parcela elástica da deformação. A parte plástica se relaciona
+com o dano ao material, associado ao histórico de processos dissipativos e irreversíveis aos
+quais o material foi submetido. Em geral, o que é fornecido como dado de entrada para o
+
+16
+
+
+
+cálculo elastoplástico são as deformações totais e, a partir delas, com a solução do problema,
+as partes elásticas e plásticas são encontradas.
+
+Lei de Elasticidade
+
+A lei de Hooke generalizada é representada pela relação
+
+? = C : ?e, (3.2)
+
+em que C é o tensor constitutivo elástico de quarta ordem. A relação tensão deformação
+entre tensores é representada pelas relações
+
+? = Ktr(?e)I + 2Gdev(?e), (3.3)
+
+?e =
+1
+
+9K
+tr(?)I +
+
+1
+
+2G
+dev(?), (3.4)
+
+em que
+
+dev(?) = ? ?
+1
+
+3
+tr(?)I, (3.5)
+
+o módulo de deformação volumétrica K e o módulo de cisalhamento G são dados por
+
+K =
+E
+
+3(1 ? 2?)
+,
+
+G =
+E
+
+2(1 + ?)
+.
+
+Processos Dissipativos
+
+A parte plástica da deformação não está relacionada ao estado de tensões do material, mas
+sim com o histórico dos processos dissipativos e irreversíveis aos quais o material foi sub-
+metido. Conforme mecionam Souza Neto[28] e Armero et al [1], a formulação de modelos
+dissipativos, segundo os princípios da termodinâmica, partem do pressuposto de que existe
+um potencial de energia livre '(?, ?p, ?), função das deformações total e plástica e de um
+conjunto ? de variáveis internas relativas ao fenômeno de endurecimento (hardening). A
+energia livre é dividida em uma parte elástica, 'e(???p) e em uma parte plástica, associada
+ao endurecimento, 'p(?). Precisamente.
+
+'(?, ?p, ?) = 'e(? ? ?p) + 'p(?).
+
+17
+
+
+
+Em seu texto, Souza Neto [28] aplica a inequação de Clausius-Duhem, resultado da combi-
+nação do primeiro e segundo princípios da termodinâmica, que implica na definição da força
+termodinâmica de endurecimento
+
+A = ??
+?'p(?)
+
+??
+, (3.6)
+
+e lei de elasticidade
+
+? = ??
+?'e(? ? ?p)
+
+??
+, (3.7)
+
+em que ?? é a massa específica na configuração de referência.
+
+Critério de Plastificação
+
+O critério de plastificação descreve a transição entre os domínios elástico e plástico. A função
+potencial ? = ?(?, A) ? 0 definida no espaço de tensões define a transição do domínio
+elástico para o plástico. ?(?, A) assume valores não-positivos em regime elástico e nulos em
+regime plástico.
+
+Lei de Escoamento Plástico
+
+Em um ciclo de carregamento, o estado de tensão não deve ultrapassar o domínio elastoplás-
+tico. A lei de escoamento plástico assume a existência de uma função de potencial plástico
+?(?, A) que especifica como evolui o tensor de deformação plástica ?p em um processo de
+plastificação
+
+.
+?
+p
+=
+
+.
+?N(?, A), (3.8)
+
+em que o tensor N representa a direção do escoamento e definido por
+
+N(?, A) = ??/?? (3.9)
+
+e
+.
+? ? 0 é um multiplicador plástico.
+
+Lei do Endurecimento (Hardening)
+
+A lei do endurecimento (ou encruamento) caracteriza uma expansão da superfície ou trans-
+lação (ganho de resistência do material) conforme o mesmo se plastifica. O endurecimento
+se comporta em função de um conjunto de variáveis de dano internas. No caso de endure-
+
+18
+
+
+
+cimento isotrópico, ilustrado na Figura (3.1), este conjunto de variáveis se reduz a somente
+um escalar ? que representa a evolução do trabalho plástico.
+
+Figura 3.1: Encruamento isotrópico (figura adaptada de Neto et al. [28]).
+
+No endurecimento cinemático, a forma da superfície permanece constante, no entanto há
+um translado da superfície de falha durante a plastificação, como visualizado na Figura (3.2).
+Neste caso, a variável interna ? terá de ser representada vetorialmente para definir a direção
+e a taxa de encruamento.
+
+Figura 3.2: Encruamento cinemático (figura adaptada de Neto et al. [28]).
+
+Os modelos chamados de perfeitamente plásticos se caracterizam pela ausência de
+encruamento, ou seja, a superfície de escoamento permanece fixa (Figura (3.3)).
+
+19
+
+
+
+Figura 3.3: Perfeitamente plástico (figura adaptada de Neto et al. [28]).
+
+A evolução de um conjunto de variáveis de encruamento é descrita por
+
+.
+? =
+
+.
+?H(?, A), (3.10)
+
+em que
+
+H(?, A) = ???/?A (3.11)
+
+é o módulo de encruamento.
+
+Associatividade
+
+O modelo é considerado associativo quando a lei de escoamento plástico e a função de plas-
+tificação coincidem, ? = ?. Nos modelos associativos, a evolução das equações para a
+deformação plástica e as variáveis de dano são dadas por
+
+.
+?
+p
+=
+
+.
+?
+??
+
+??
+, (3.12)
+
+e
+
+.
+? =
+
+.
+?
+??
+
+?A
+. (3.13)
+
+A associatividade implica a ortogonalidade entre a direção de escoamento plástico e a super-
+fície de escoamento. A associatividade também implica tensores constitutivos simétricos.
+
+20
+
+
+
+3.1.1 Exemplos
+
+Modelo Elastoplástico de Mohr-Coulomb
+
+É um modelo que descreve a resposta de materiais friccionais, tais como concreto, e/ou solo.
+Ele é aplicado a materiais cuja a resistência à compressão é superior à tração e nos quais a
+falha do material ocorre por uma ruptura ao longo de um plano de escorregamento. Por ser
+um material friccional, há o incremento de cisalhamento admissível com o aumento da tensão
+confinante, expresso pela 3.14.
+
+? = c ? ? tan(?), (3.14)
+
+Figura 3.4: Superfície de plastificação de Mohr-Coulomb.
+
+No espaço das tensões principais, a superfície de Morh-Coulomb é formada por seis su-
+perfícies descritas pelas equações abaixo,
+
+?1 = ?1 ? ?3 + (?1 + ?3) sin(?) ? 2 c cos(?)
+?2 = ?2 ? ?3 + (?2 + ?3) sin(?) ? 2 c cos(?)
+?3 = ?2 ? ?1 + (?2 + ?1) sin(?) ? 2 c cos(?)
+?4 = ?3 ? ?1 + (?3 + ?1) sin(?) ? 2 c cos(?)
+?5 = ?3 ? ?2 + (?3 + ?2) sin(?) ? 2 c cos(?)
+?6 = ?1 ? ?2 + (?1 + ?2) sin(?) ? 2 c cos(?)
+
+.
+
+21
+
+
+
+Figura 3.5: Superfície de plastificação de Mohr-Coulomb.
+
+Como as tensões principais calculadas pela Equação (4.4) dão como resultado as tensões
+organizadas em ordem decrescente, ?1 &gt; ?2 &gt; ?3 apenas três das funções acima serão dadas
+como críticas. O significado dos parâmetros empregados neste modelo são detalhados na
+tabela 7.2.
+
+Parâmetro Unidade
+E(modulo de Elasticidade) MPa
+?(coeficiente de Poisson) (adimensional)
+
+c(Coesão) MPa
+? (Ângulo de atrito interno) graus
+
+Tabela 3.1: Parâmetros empregaod no modelo de Mohr-Coulomb.
+
+Neste trabalho adotou-se modelagem associativa do modelo de Mohr-Coulomb.
+
+Modelo Elastoplástico de Sandler-DiMaggio
+
+O modelo de Sandler-DiMaggio é um modelo elastoplástico relativamente simples, associativo,
+com endurecimento hidrostático à compressão hidrostática e que representa bem o compor-
+tamento constitutivo típico de rochas Santos et al [33]. Ele foi desenvolvido inicialmente por
+
+22
+
+
+
+Sandler e DiMaggio [12] e teve a sua primeira aplicação prática no estudo de choques no solo
+causado pelo efeito de explosivos. Este modelo é composto por duas superfícies envoltórias
+de plastificação: uma envoltória de cisalhamento; e uma elipse de fechamento que limita a
+deformação elástica sob confinamento (cap). A eficiência do modelo na representação de
+rochas se deve principalmente ao cap de fechamento que é móvel e considera a compactação
+da rocha, além da sua capacidade de modelar a dilatância excessiva. Conforme Santos [32],
+outro aspecto positivo deste modelo é a facilidade de obtenção de parâmetros constitutivos
+em ensaios simples de laboratório. Os modelos com cap de fechamento são amplamente utili-
+zados na indústria e possuem a capacidade de reproduzir a compactação do material causada
+pela perda de volume em conseqüência do fechamento dos poros. Os modelos com cap tem
+atualmente utilização na indústria petrolífera devido ao seu uso no estudo da estabilidade de
+poços e compactação de reservatórios causada por depleção. O modelo é associativo e, para
+cada L, a função plástica ? é definida por partes pela função de falha F1(I1,
+
+?
+J2), e uma
+
+função elíptica de fechamento F2(I1,
+?
+J2; L). A transição entre as funções de plastificação é
+
+dada pela variável L, que define a posiçao do cap elíptico em função do endurecimento do
+material.
+
+O modelo aqui proposto foi inspirado nos artigos [3, 16, 15, 17, 21]. Na presente mode-
+lagem é possível controlar o formato da superfície plástica, para que a resposta material sob
+compressão triaxial seja diferente da sua resposta em tração triaxial, considera-se um modelo
+generalizado de Sandler-DiMaggio, introduzindo uma dependência adicional do Lode angle
+?. Precisamente a função de escoamento plástico é definida pela expressão,
+
+? =
+
+8
+&gt;&lt;
+
+&gt;:
+
+F1(I1,
+?
+J2, ?), I1 &gt; L,
+
+F2(I1,
+?
+J2, ?; L), L ? I1 ? X.
+
+(3.15)
+
+em que
+
+F1(I1,
+p
+J2, ?) =
+
+p
+J2 ?
+
+Ff(I1)
+
+?(?)
+, (3.16)
+
+F2(I1,
+p
+
+J2, ?; L) =
+
+?
+I1 ? L
+RFf(L)
+
+?2
++
+
+??
+J2?(?)
+
+Ff(L)
+
+?2
+? 1, (3.17)
+
+com
+Ff(s) = A ? C exp(Bs) (3.18)
+
+onde as constantes A, B, C, D, R e W são constantes materiais, obtidas em testes
+laboratoriais. Algumas destas constates são associadas à propriedades físicas que são descritas
+em maiores detalhes na tabela 3.2.
+
+23
+
+
+
+Parâmetro Descrição
+
+D
+Constante na expressão 3.20 de correlação entre
+
+deformação plástica volumétrica e nível de tensão hidrostática
+
+R
+Razão entre os comprimentos dos semi-eixos da envoltória
+
+do critério de plastificação à compressão (eq. 3.16)
+
+W
+Constante na expressão 3.20 de correlação entre
+
+deformação plástica volumétrica e nível de tensão hidrostática
+
+Tabela 3.2: Parâmetros do modelo constitutivo de Sandler e DiMaggio.
+
+Introduz-se ?(?) dado por
+
+?(?) =
+1
+
+2
+
+?
+(1 + sin(3?)) +
+
+1
+
+?
+(1 ? sin(3?))
+
+?
+, (3.19)
+
+em que ? ? [7/9, 9/7]. O modelo clássico de Sandler-DiMaggio emprega ? = 1, de forma
+que ?(?) = 1. Uma seção bidimensional típica da correspondente a superfície de falha
+é ilustrada na Figura (3.6). Como reportado em Sandler e DiMaggio [12], a quantidade
+X(L) = L + RFf(L) é relacionada a deformação plástica volumétrica através da expressão
+
+?pv(L) = W [exp(DX(L)) ? 1]. (3.20)
+
+Figura 3.6: Modelo clássico de Sandler-DiMaggio (I1,
+?
+J2).
+
+Usando a representação das tensões principais, a Figura (3.7) mostra o aspecto da super-
+fície para ? = 7/9. Seções da superfície no plano ?, para ? = 1, ? = 7/9 e ? = 9/7 são
+
+24
+
+
+
+ilustrados na figura (3.8) com a finalidade de mostrar o efeito de diferentes valores de ?(?)
+no formato da seção.
+
+Figura 3.7: Modelo elastoplástico de SandlerDiMaggio representado no espaço de Haigh-
+Westergaard com ? = 7/9.
+
+25
+
+
+
+Figura 3.8: Visão do plano ? para o modelo de Sandler-DiMaggio, para três valores diferentes
+de ?.
+
+O modelo de Sandler-DiMaggio original[12] é associativo, com ? = ?. Além disso,
+para este modelo, o módulo de encruamento H e a direção de escoamento plástico N são
+relacionados por
+
+H = tr(N). (3.21)
+
+Usando esta particularidade, a equação para a variável de dano no corretor plástico para
+este modelo elastoplástico pode ser reformulada como
+
+.
+? =
+
+.
+?tr(?) = tr(?p) =
+
+.
+
+?pv. (3.22)
+
+Quando é realizada uma discretização utilizando o algoritmo clássico de Euler, a defor-
+mação plástica volumétrica incremental leva a seguinte expressão
+
+??pv =
+?I1
+3K
+
+, (3.23)
+
+que através da relação (3.20), define a evolução de L(?pv). Estas considerações permite a
+eliminação do multiplicador plástico ?? como variável do corretor plástico.
+
+26
+
+
+
+3.2 Modelo Numérico do Problema de Valor Inicial Elas-
+toplástico
+
+Como descrito na seção anterior, o comportamento elastoplástico de um material pode ser
+completamente caracterizado pela junção das leis escoamento e endurecimento,
+
+.
+?
+p
+=
+
+.
+?N(?, A),
+
+.
+? =
+
+.
+?H(?, A),
+
+e o critério de plastificação ?(?, A) ? 0. Se a função de plastificação ? é menor que zero,
+o regime é elástico e se for igual a zero, o regime é plástico. O multiplicador elastoplástico
+.
+? ? 0 assume valores positivos no regime plástico e nulo no regime elástico. A consistência
+de uma aproximação elastoplástica deve satisfazer ?
+
+.
+? = 0.
+
+Esquema de integração temporal para esse modelo constitutivo (de valor inicial com res-
+trição) no passo do (pseudo) tempo [tn, tn+1] do ciclo de carregamento fornece uma relação.
+Considerando o caso de integração pelo método de Euler implícito, dados o estado de defor-
+mação ?n, as correspondentes deformação plástica ?p,n e variável interna ?n em um nível de
+tempo tn, então a deformação plástica ?
+
+p
+n+1, a variável interna ?n+1 e ?? são obtidas como
+
+solução do sistema não linear de equações
+
+??pn+1 = ??N(?n+1, An+1),
+
+??n+1 = ??H(?n+1, An+1),
+
+?? ? 0 ?(?n+1, An+1) ? 0 ???(?n+1, An+1) = 0.
+
+Para facilitar esse procedimento de resolução, é comum a imposição das restrições serem
+efetuadas em duas etapas principais: um preditor elástico e um corretor plástico, como
+mostrado no Capítulo 6 do livro de Souza Neto [28] e descrito a continuação.
+
+Modelo Preditor Elástico-Corretor Plástico
+
+Dois possíveis conjuntos de equações são adotados sequencialmente e a solução final é seleci-
+onada como sendo a válida.
+
+Preditor Elástico Assume-se inicialmente que ?? = 0 e tem-se , portanto, uma deforma-
+ção elástica. A deformação elástica e a variável interna obtidas são
+
+27
+
+
+
+?trial = ?n + ??,
+
+?trial = ?n.
+
+Calcula-se a tensão ?trial através da Equação (3.3) e Atrial com a Equação (3.6). Depois
+verifica-se se ?(?trial, Atrial) ? 0. Caso seja verdade, aceitam-se as variáveis trial como
+sendo verdadeiras e o algoritmo para. Caso contrário é necessária uma nova etapa, o corretor
+plástico.
+
+Corretor Plástico Na etapa de corretor plástico, resolve-se o sistema
+
+?en+1 = ?
+trial ? ??N(?n+1, An+1),
+
+?n+1 = ?
+trial + ??H(?n+1, An+1),
+
+?(?n+1, An+1) = 0.
+
+(3.24)
+
+A seguir, atualiza-se a deformação
+
+?pn+1 = ?
+p
+n + ?? ? ??
+
+e.
+
+A Figura (3.9) ilustra este procedimento no caso de endurecimento isotrópico.
+
+Figura 3.9: Visão esquemática do modelo preditor-corretor para um modelo com endureci-
+mento isotrópico.
+
+28
+
+
+
+3.3 Equação de Equilíbrio Mecânico Para o Deslocamento
+
+O problema de equilíbrio mecânico consiste em encontrar o vetor de deslocamento ?u do
+material, que seja solução do problema:
+
+8
+&gt;&gt;&gt;&lt;
+
+&gt;&gt;&gt;:
+
+div(?) +?b = 0 , ?
+
+?u = 0 em ?D
+
+?.?n = ?t ?N
+
+(3.25)
+
+em que:
+
+• ?: domínio computacional ocupado pelo material;
+
+• ?D parte do contorno de ? em que o deslocamento é nulo (condição de Dirichlet nula);
+
+• ?N parte do contorno de ? em que a força de superfície é conhecida (condição de
+Neumann);
+
+• ?b força de volume, conhecida em ?;
+
+• ?t força de superfície, conhecida no contorno ?N .
+
+Formulação Variacional
+
+Nesta seção descreve-se a formulação variacional do problema de equilíbrio mecânico (3.25)
+para os problemas elásticos e elastoplásticos.
+
+Em um problema bidimensional, espera-se encontrar a solução ?u do problema no espaço
+de funções
+
+V = {?v ? [H1(?)]2 tal que ?v = 0 em ?D},
+
+em que [H1(?)]2 denota o espaço das funções vetorias ?v = (v1, v2)T cujo gradiente (?v1, ?v2)T
+
+é quadrado integrável. A equação em questão é a equação governante do problema mecânico,
+chamada de equação de equilíbrio.
+
+29
+
+
+
+Elasticidade
+
+Considerando-se a relação tensão-deformação elástica dada pela equação
+
+? = Ktr(?)I + 2Gdev(?),
+
+e as deformações são infinitesimais
+
+?(?u) =
+??u + ??uT
+
+2
+,
+
+a forma fraca da equação de equilíbrio é obtida multiplicando-se a equação (3.25) por uma
+função teste ?v ? V. Procura-se o deslocamento ?u tal que:
+
+R(?u,?v) =
+
+ˆ
+?
+
+?div(?)?v d? ?
+ˆ
+?
+
+?b.?v d? = 0 (3.26)
+
+para qualquer função teste ?v admissível.
+Utilizando o teorema da divergência (integração por partes) na expressão (3.26) chega-se
+
+em
+
+R(?u,?v) =
+
+ˆ
+?
+
+? : ??v d? ?
+ˆ
+?
+
+?b.?v d? ?
+ˆ
+?
+N
+
+?t.?v ds  ?v ? V, (3.27)
+
+em que deve-se encontrar ?u ? V.
+
+Plasticidade
+
+No caso elastoplástico, na equação (3.27) a tensão depende de uma resposta não linear da
+deformação ? = ?(?(?)). Portanto, deve ser linearizado com respeito ao campo vetorial
+desconhecido ?u no ponto ?u?. O problema linearizado consiste em encontrar o campo vetorial
+??u tal que
+
+L(??u,?v) = R(?u?,?v) + D R(?u?,?v) [??u] = 0  ?v ? V,
+
+em que L corresponde à linearização de R(?u?,?v).
+
+D R(?u?,?v) [??u] =
+d
+
+d?
+|?=0Ru(?u? + ???u,?v)
+
+é a derivada direcional de Ru no ponto ?u? na direção de ??u.
+
+D R(?u?,?v) [??u] =
+d
+
+d?
+|?=0
+ˆ
+?
+
+?(?(?)) : ??v d? ?
+ˆ
+?
+
+?b.?v d? ?
+ˆ
+??
+
+?t.?v ds
+
+30
+
+
+
+=
+d
+
+d?
+|?=0
+ˆ
+?
+
+?(?(?)) : ??v d? (3.28)
+
+em que
+
+?(?) =
+?(?u? + ???u) + ?(?u? + ???u)T
+
+2
+= ?s?u? + ??s??u.
+
+Aplicando a regra da cadeia na derivação de (3.28), tem-se
+
+DG(?u?,?v) [??u] =
+
+ˆ
+?
+
+D : ?s??u : ??v d?
+
+em que
+
+D =
+??
+
+??
+.
+
+é a derivada consistente da tensão com respeito a deformação que é descrita na seção (5.4).
+
+ˆ
+?
+
+D : ?s??u : ??v d?
+| {z }
+
+K ??u
+
+= ?
+ˆ
+?
+
+?
+? : ??v ??b.?v
+
+?
+d?
+
+| {z }
+F
+int
+
++
+
+ˆ
+??
+
+?t.?v ds
+| {z }
+
+F
+ext
+
+. (3.29)
+
+Portanto para que o equilíbrio seja satisfeito em determinado corpo composto por uma
+material que tem comportamento regido pela lei constitutiva elastoplástica deve-se encontrar
+?u ? V que satisfaça a equação (3.29).
+
+3.4 Modelo Numérico Elastoplástico
+
+O diagrama da Figura 3.10 resume as principais etapas na construção do modelo numérico
+completo de elementos finitos para o problema elastoplástico .
+
+31
+
+
+
+Figura 3.10: Diagrama do esquema numérico elastoplástico .
+
+A saber:
+
+1. Esquema de integração temporal para o modelo constitutivo (de valor inicial com res-
+trição) no passo do (pseudo) tempo [tn, tn+1] do ciclo de carregamento, como descrito
+na Seção (3.2). Tal procedimento fornece uma relação para o tensor de tensões e para
+as variáveis internas do modelo .
+
+2. Método de elementos finitos para a formulação variacional da equação de equilíbrio
+mecânico, como descrito na Seção (3.3).
+
+32
+
+
+
+Capítulo 4
+
+OTIMIZAÇÃO DO CORRETOR
+PLÁSTICO
+
+Neste capítulo, são discutidos os principais métodos utilizados para a resolução de mode-
+los elastoplásticos. Utilizando a metodologia do corretor plástico documentada em Souza
+Neto [28], oito equações não lineares devem ser resolvidas em cada ponto de integração.
+Observou-se que dependendo do modelo elastoplástico o condicionamento destas equações
+pode deteriorar-se. Motivado pelo melhoramento da eficiência computacional e pela simplifi-
+cação das equações evolvidas no problema elastoplástico, uma nova abordagem ao problema
+elastoplástico é desenvolvida. Nesta abordagem, uma redução no número de variáveis de es-
+tado que compõem o sistema elastoplástico é alcançada ao se trabalhar no espaço das tensões
+principais (espaço de Haigh-Westergaard (HW)). Para obter-se uma descrição simplificada da
+superfície plasticação um operador de rotação é criado, objetivando transformar as tensões
+principais em coordenadas de Haigh-Westergaard-Rotacionado, ou simplesmente HWR.
+
+A metodologia apresentada neste capítulo está publicada em Cecílio et al [6]
+
+4.1 Espaço de Haigh-Westergaard
+
+Os invariantes do tensor de tensões são definidos por:
+
+I1 = tr(?),
+
+J2 =
+1
+
+2
+tr(S2),
+
+J3 =
+1
+
+3
+tr(S3),
+
+33
+
+
+
+em que o tensor deviatórico é dado por S = ??1
+3
+tr(?)I, a matriz identidade sendo repre-
+
+sentada por I.
+As componentes hidrostática  , cisalhante ? e o Lode Angle ? são definidas como:
+
+ =
+I1?
+3
+, (4.1)
+
+? =
+p
+
+2J2, (4.2)
+
+? =
+1
+
+3
+cos?1
+
+ 
+3
+?
+3
+
+2
+
+J3
+
+J
+3/2
+2
+
+!
+, (4.3)
+
+em que ? ? [0, ?/3] .
+É notório saber que o estado de tensão em um ponto material é caracterizado por suas
+
+tensões principais. Sendo os autovalores organizados em ordem decrescente ?1 &gt; ?2 &gt; ?3 ,
+os mesmos podem ser calculados pela expressão abaixo,
+
+? =
+
+2
+
+6
+4
+
+?1
+
+?2
+
+?3
+
+3
+
+7
+5 =
+
+2
+
+666
+4
+
+1?
+3
+ +
+
+q
+2
+3
+? cos(?)
+
+1?
+3
+ +
+
+q
+2
+3
+? cos(? ? 2?
+
+3
+)
+
+1?
+3
+ +
+
+q
+2
+3
+? cos(? + 2?
+
+3
+)
+
+3
+
+777
+5
+. (4.4)
+
+A Figura (4.1) ilustra essa representação.
+
+34
+
+
+
+Figura 4.1: Esquema ilustrativo do espaço HW.
+
+Neste espaço, o vetor de deformações principais é representado por " = [?1, ?2, ?3]T . A
+relação tensão deformação é dada por
+
+" = C?1HW ?, (4.5)
+
+em que
+
+CHW =
+
+2
+
+6
+4
+
+?
+K + 4G
+
+3
+
+? ?
+K ? 2G
+
+3
+
+? ?
+K ? 2G
+
+3
+
+?
+?
+K ? 2G
+
+3
+
+? ?
+K + 4G
+
+3
+
+? ?
+K ? 2G
+
+3
+
+?
+?
+K ? 2G
+
+3
+
+? ?
+K ? 2G
+
+3
+
+? ?
+K + 4G
+
+3
+
+?
+
+3
+
+7
+5 , (4.6)
+
+Neste espaço o primeiro invariante do tensor de tensões I1, o segundo invariante do tensor
+deviatórico J2 e o Lode Angle ?, são representados pelas equações a seguir
+
+I1 = ?1 + ?2 + ?3,
+
+J2 =
+1
+
+3
+
+?
+?21 + ?
+
+2
+2 ? ?2?3 + ?
+
+2
+3 ? ?1 (?2 + ?3)
+
+?
+,
+
+35
+
+
+
+? =
+1
+
+3
+arccos
+
+ 
+(2?1 ? ?2 ? ?3) (?1 ? 2?2 + ?3) (?1 + ?2 ? 2?3)
+
+2 [?21 + ?
+2
+2 ? ?2?3 + ?23 ? ?1 (?2 + ?3)]
+
+3/2
+
+!
+.
+
+4.2 Espaço de Haigh-Westergard-Rotacionado
+
+A aplicação de uma rotação ao sistema de coordenas HW, conforme inicialmente realizado
+no livro de Borja [4] e no artigo Lainé et al [25], é possível uma representação dos alternativa
+dos invariantes, que contribui para uma simplificação no algoritmo do corretor plástico in-
+cremental. A seguir, descreve-se a obtenção do espaço HWR, o cálculo dos invariantes neste
+espaço e a relação entre tensão e deformação, que é realizada por um tensor constitutivo
+diagonal.
+
+O vetor de tensões principais neste espaço é dado por ?? = [??1, ?
+?
+2, ?
+
+?
+3]
+
+T e é calcula através
+da relação
+
+?? = R ?, (4.7)
+
+em que
+
+R =
+
+2
+
+66
+4
+
+1?
+3
+
+1?
+3
+
+1?
+3q
+
+2
+3
+
+? 1?
+6
+
+? 1?
+6
+
+0 1?
+2
+
+? 1?
+2
+
+3
+
+77
+5 . (4.8)
+
+é uma matriz de rotação, com determinante igual a 1.
+No espaço HWR, o cálculo dos invariantes simplificam-se
+
+I1 =
+?
+3??1, (4.9)
+
+J2 =
+??22 + ?
+
+?2
+3
+
+2
+, (4.10)
+
+? = arctan(??3/?
+?
+2). (4.11)
+
+A relação tensão-deformação, com "? = [??1, ?
+?
+2, ?
+
+?
+3], também é mais simples
+
+"? = (CHWR)
+?1
+
+??, (4.12)
+
+onde CRHW é o tensor elástico constitutivo neste espaço, dado por
+
+36
+
+
+
+CHWR =
+
+2
+
+6
+4
+
+3K 0 0
+
+0 2G 0
+
+0 0 2G
+
+3
+
+7
+5 . (4.13)
+
+4.3 Representação de Modelos Associativos no Espaço
+HWR
+
+Para modelos associativos, com ? = ?, a lei do escoamento plástico pode ser interpretada
+como uma minimização de distância entre a tensão inicial e a superfície admissível Armero
+et al [2, 29]. Para uma dada variável de dano ?, a superfície admissível é definida por
+
+S?(?) = {?? : ??(??, A(?) = 0)},
+
+em que ??(??, A) representa a função de plastificação representada em termos das coorde-
+nadas ?? do espaço HWR. Usando o sistema de coordenadas HWR, a equação incremental
+para a lei de escoamento plástico (3.24) fica
+
+"e?,trial ? "e?n+1 = ??N
+?
+n+1, (4.14)
+
+em que
+
+N?n+1 =
+???(??n+1, A(?n+1))
+
+???
+. (4.15)
+
+Portanto, para todos as possíveis variações de ??? no plano tangente à superfície admissível
+no ponto ??n+1 ? S?(?n+1), verifica-se
+
+0 =
+?
+?"?, "e?,trial ? "e?n+1
+
+?
+=
+?
+???, C?1HWR
+
+?
+??,trial ? ??n+1
+
+??
+
+=&amp;lt;???, ?trial,? ? ??n+1 &gt;HWR,
+(4.16)
+
+em que, para os vetores a? e b? no espaço HWR, define-se o produto interno
+
+&amp;lt;a?, b? &gt;HWR= (a
+?, C?1HWRb
+
+?). (4.17)
+
+A propriedade (4.16) significa que ?? é o ponto projetado sobre S?(?n+1) que minimiza
+a distância no espaço HWR. Ou seja, se
+
+d(a?, b?) :=
+
+(
+(a?1 ? b?1)
+
+2
+
+3K
++
+
+(a?2 ? b?2)
+2
+
+2G
++
+
+(a?3 ? b?3)
+2
+
+2G
+
+)1/2
+(4.18)
+
+37
+
+
+
+=
+p
+
+&amp;lt;a? ? b?, a? ? b? &gt;HWR,
+
+então
+
+d(??, ??n+1) = min???S?(?n+1)d(?
+?,trial, ??).
+
+4.4 Corretor Plástico no Espaço HWR
+
+As considerações anteriores possibilitam o corretor plástico incremental, representado pela
+Equação (3.24), ser realizado através de uma minimização de distância. Distância esta re-
+presentada genericamente pela Equação (4.18). A seguir, o procedimento é descrito, separa-
+damente, para materiais perfeitamente plásticos e com encruamento isotrópico.
+
+Caso 1: Materiais Perfeitamente Plásticos
+
+Em tais casos, a superfície de plastificação tridimensional S? não depende de ?, o que significa
+que ela não sofre nenhum tipo de rotação, translação e nem alteração de volume. Qualquer
+superfície tridimensional é parametrizável por dois parâmetros (r1 , r2)
+
+S? = {??(r1, r2) : (r1, r2) ? I} . (4.19)
+
+Portanto, o quadrado da distância de um dado ??,trial até um ponto ??(r1, r2) ? S? pode ser
+expresso em função de dois parâmetros
+
+d2(??,trial, ??) := ?(??,trial; r1, r2).
+
+Algoritmo corretor plástico: Dado "e?,trial, ?trial, calcular a tensão ??,trial = CHWR"e?,trial
+
+e calcular:
+
+1. Projeção: Calcular ??n+1(r1, r2) ? S? através da minimização da distância no espaço
+HWR do ponto ??,trialn+1 até um ponto admissível na superfície S?. Isso é realizando
+fazendo as derivadas abaixo serem nulas.
+
+??(??,trial; r1, r2)
+
+?r1
+= 0 (4.20)
+
+??(??,trial; r1, r2)
+
+r2
+= 0. (4.21)
+
+38
+
+
+
+2. Caso necessário, ?? pode ser calculado pela equação (4.14) extraindo a norma dos
+dois tensores envolvidos na equação. A equação (4.14) pode ser usada para verificar a
+validade do ponto projetado.
+
+Caso 2: Materiais Elastoplásticos com Encruamento Isotrópico
+
+Na presença de encruamento, os pontos na superfície plástica dependem de três parâmetros:
+um parâmetro ? para definir a posição da superfície, e dois parâmetros r1 e r2 que definem
+um ponto, como no modelo Sandler-DiMaggio. Portanto a solução do corretor plástico é
+representada por ??n+1(r1, r2, ?n+1).
+
+Algoritmo corretor plástico: é representado pelo sistema não linear de equações:
+
+??(??,trial; r1, r2, ?n+1)
+
+?r1
+= 0 (4.22)
+
+??(??,trial; r1, r2, ?n+1)
+
+?r2
+= 0. (4.23)
+
+?n+1 ? ?trial + ??H?(r1, r2, ?n+1) = 0, (4.24)
+
+em que H?(r1, r2, ?) representa do módulo de encruamento expresso em termo das tensões
+principais rotacionadas. O valor de ??, como representado na expressão (4.14), é função de
+três incógnitas.
+
+Implicações deste processo:
+
+• Ele reduz o tamanho do sistema não linear no ponto material de sete equações para
+um sistema não linear de, no máximo, três equações, correspondendo à minimização
+da distância e de uma equação para a variável ?. Considerando que existem milhares
+de pontos de integração que plastificam, este ganho computacional é considerável.
+
+• No caso de a superfície plástica não depender do Lode Angle (e.g. Von Mises ou Sandler-
+DiMaggio), a projeção mais próxima até a superfície S?(?trial) tem o mesmo ângulo ?.
+Isto significa que ??n+1, pode ser encontrado variando apenas um parâmetro.
+
+• Para algumas modelos elastoplásticos, o ponto mais próximo pode ser calculado ana-
+liticamente. Este é o caso do critério de Mohr-Coulomb (projeção em um plano) ou
+o critério de Von Mises (projeção sobre um círculo). Para esses casos, o esquema de
+devolução de mapeamento é reduzida para a resolução de uma única equação não linear.
+
+39
+
+
+
+• Quando o ponto estimado inicialmente para o cálculo do ponto projetado é suficien-
+temente próximo da solução, a função distância é uma função convexa das variáveis
+que parametrizam a superfície. Portanto, os algoritmos orientados para minimizar a
+distância de um ponto de uma superfície são mais estáveis do que o método de Newton
+para a resolução de um sistema não linear geral das equações.
+
+40
+
+
+
+Capítulo 5
+
+CORRETOR PLÁSTICO NO MODELO
+SANDLER-DIMAGGIO
+
+No presente capítulo, apresenta-se uma aplicação da metodologia proposta no capítulo ante-
+rior para o modelo Sandler-DiMaggio. Considerando o modelo formulado no espaço HWR,
+formula-se o correspondente algoritmo corretor plástico e calcula-se em detalhe a matriz tan-
+gente requerida. Por fim, são apresentados resultados e realizada a validação do mesmos,
+comparando-os com aqueles do artigo Sandler et al [31].
+
+5.1 Modelo Sandler-DiMaggio no Espaço HWR
+
+No espaço de HWR, a superfície de plastificação do modelo de Sandler-DiMaggio é orientada
+axialmente ao eixo ??1, como ilustra a Figura (5.1), e é formada por duas partes. Existe uma
+parte que é perfeitamente plástica S?1 , em que F1 = 0, e a parte de fechamento representada
+por S?2(L) que contempla endurecimento isotrópico, e corresponde a F2 = 0.
+
+41
+
+
+
+Figura 5.1: Superfície de plastificação de Sandler-DiMaggio representada no espaço HWR.
+
+As tensões na superfície de falha S?1 podem ser representadas em termos das variáveis que
+parametrizam a superfície como r1 = I1 e r2 = ?, conforme a relação abaixo
+
+?? =
+
+2
+
+66
+4
+
+I1?
+3
+
+cos(?)
+?
+2F
+
+f
+
+(I1)
+?(?)
+
+sin(?)
+?
+2F
+
+f
+
+(I1)
+?(?)
+
+3
+
+77
+5 . (5.1)
+
+A partir da das tensões rotacionadas descritas acima (5.1) e utilizando as equações (4.9),
+(4.10) e (4.11), e substituindo na equação (3.16), tem-se que F1(I1,
+
+?
+J2, ?) = 0.
+
+De maneira análoga, a representação de qualquer ponto da superfície S?2(L) é parametri-
+zado por dois parâmetros r1 = ? e r2 = ?, conforme a expressão abaixo
+
+?? =
+
+2
+
+66
+4
+
+L+R F
+f
+
+(L) cos(?)?
+3
+
+cos(?)
+?
+2F
+
+f
+
+(L) sin(?)
+?(?)
+
+sin(?)
+?
+2F
+
+f
+
+(L) sin(?)
+?(?)
+
+3
+
+77
+5 . (5.2)
+
+Da mesma forma descrita acima, partindo da das tensões rotacionadas (5.2) e utili-
+zando as equações (4.9), (4.10) e (4.11), e substituindo na equação (3.17), tem-se que
+F2(I1,
+
+?
+J2, ?; L) = 0.
+
+42
+
+
+
+5.2 Corretor Plástico
+
+Uma vez que a superfície de plastificação do modelo Sandler-DiMaggio é uma combinação
+de uma parte perfeitamente plástica S?1 e uma parte de fechamento S?2(L) com encruamento
+isotrópico, o corretor plástico deve ser planejado para considerar os dois casos descritos na
+seção (4.4).
+
+Projeção sobre a Superfície F1
+
+A equação do quadrado da distância de um determinado ponto ??,trial até um ponto ?? na
+superfície S?1 tem a forma
+
+d2(?trial,?, I1, ?) =
+
+?
+?trial,?1 ?
+
+I1?
+3
+
+?2
+
+3K
++
+
+?
+?trial,?2 ? cos(?)
+
+?
+2F
+
+f
+
+(I1)
+?(?)
+
+?2
+
+2G
+
++
+
+?
+?trial,?3 ? sin(?)
+
+?
+2F
+
+f
+
+(I1)
+?(?)
+
+?2
+
+2G
+:= ?1(?
+
+?,trial; I1, ?). (5.3)
+
+Portanto o procedimento para encontrar ?? = ??(I1, ?) ? S?1 que minimiza a distância
+até ??,trial requer a solução do sistema
+
+R1 =
+
+"
+??1(?
+
+?,trial;I1,?)
+?I1
+
+??1(?
+?,trial;I1,?)
+??
+
+#
+=
+
+"
+0
+
+0
+
+#
+. (5.4)
+
+Uma vez que o ponto projetado na superfície ?? é encontrado, determina-se a nova posição
+do centro da elipse de fechamento L, zerando o resíduo
+
+res(I1) = I1(?
+?,trial) ? I1(??) ? 3K
+
+?
+?pv(L) ? ?
+
+p
+v(L
+
+trial)
+?
+= 0, (5.5)
+
+em que a deformação plástica volumétrica ?pv(L) é representada pela equação (3.20).
+
+Projeção sobre a Superfície F2
+
+Por outro lado, a equação do quadrado da distância de um determinado ponto ??,trial até um
+ponto ?? na superfície S?2(L) é dada por
+
+43
+
+
+
+d2(?trial,?; ?, ?, L) =
+
+?
+?trial,?1 ?
+
+L+R F
+f
+
+(L) cos(?)?
+3
+
+?2
+
+3K
++
+
+?
+?trial,?2 ? cos(?)
+
+?
+2F
+
+f
+
+(L) sin(?)
+?(?)
+
+?2
+
+2G
+
++
+
+?
+?trial,?3 ? sin(?)
+
+?
+2F
+
+f
+
+(L) sin(?)
+?(?)
+
+?2
+
+2G
+:= ?2(?
+
+trial,?; ?, ?, L). (5.6)
+
+O procedimento para encontrar ?? = ??(?, ?, L) ? S?2(L) que minimiza a distância até
+??,trial requer a solução do sistema
+
+R2 =
+
+2
+
+6
+4
+
+??2(?
+?,trial;?,?,L)
+
+??
+??2(?
+
+?,trial;?,?,L)
+??
+
+res(?, L)
+
+3
+
+7
+5 =
+
+2
+
+6
+4
+
+0
+
+0
+
+0
+
+3
+
+7
+5 , (5.7)
+
+em que a representação
+
+r(?, L) =
+?
+I1(?
+
+?,trial) ? I1(??)
+?
+? 3K
+
+?
+?pv(L) ? ?
+
+p
+v(L
+
+trial)
+?
+, (5.8)
+
+lembrando que I1(??) para ?? ? S?2(L), tem a expressão
+
+I1(?
+?) = I1(?, L) = RFf(L) cos(?) + L.
+
+Algoritmo
+
+Do ponto de vista algorítmico o corretor plástico é realizado nos seguintes passos:
+
+• Se I1(??,trial) &amp;lt;Ltrial, calcular L e ?? ? S?2(L) resolvendo o sistema (5.7), e aceita-las
+como as variáveis atualizadas.
+
+• Caso contrário, calcular ?? ? S?1 resolvendo o sistema de equações (5.4) e depois calcular
+L através da equação (5.5).
+
+– Se I1(??) ? L, então aceita-se ?? e L como as variáveis a serem atualizadas.
+
+– Caso contrário, calcular L e ?? na intersecção de S?1 e S?2(L) resolvendo o sis-
+tema (5.7) , do qual elimina-se a primeira equação, e fixa-se o valor de ? = ?/2
+na terceira equação (Isto significa reduzir o sistema para duas equações e duas
+incógnitas L e ?) e toma-se como resultado a solução.
+
+44
+
+
+
+5.3 Verificação
+
+De forma a validar a metodologia desenvolvida, o objetivo desta seção é atingir os resultados
+apresentados por Sandler et al [31] e Sandler e DiMaggio [12]. O teste realizado em um
+ponto material consiste na aplicação de uma deformação uniaxial (deslocamentos prescri-
+tos axialmente e deslocamentos nulos nas outras direções), seguido por uma deformação em
+sentido contrário. A Figura (5.3) mostra os resultados desse trabalho comparados com os
+resultados de Sandler et al [31]. Os parâmetros materiais usados estão listados na Tabela
+(5.1). As etapas de carregamento estão ilustrados na Figura (5.3). Inicialmente, no cami-
+nho A-B, o material perde volume devido ao fechamento de vazios e plastifica acionando a
+superfície de fechamento F2. Depois no caminho B-C, quando o descarregamento começa, a
+resposta material é elástica até que se atinge um ponto na superfície F1 e o material falha
+por cisalhamento, o que é representado pelo caminho C-D.
+
+E(Módulo de elasticidade) 100 ksi
+?(Poisson) 0.25 (adimensional)
+
+A 0.25 ksi
+B 0.67 ksi?1
+C 0.18 ksi
+D 0.67 ksi?1
+R 2.5 (adimensional)
+W 0.066 (adimensional)
+? 1 (adimensional)
+
+Tabela 5.1: Parâmetros para o material McCormic Ranch Sand [31].
+
+45
+
+
+
+Figura 5.2: Deformação uniaxial em compressão (A-B) , seguido por uma deformação axial
+na direção oposta (B-D).
+
+46
+
+
+
+Figura 5.3: Caminho A-B, o material perde volume devido ao fechamento de vazios e, então,
+plastifica-se acionando a função F2. No caminho B-C, a resposta material é elástica. No
+caminho C-D plastifica acionando a função F1.
+
+47
+
+
+
+Figura 5.4: Taxa de convergência: ordem quadrática é observada em todos os passos de
+carregamento.
+
+Além da simulação da deformação uniaxial, a simulação de carregamento proporcional
+também foi realizada no artigo Sandler et al [12]. Com o objetivo de validar a metodologia
+desenvolvida neste estudo, o teste de carregamento proporcional também foi reproduzido,
+conforme ilustra a Figura (5.5).
+
+48
+
+
+
+Figura 5.5: Teste de carregamento proporcional para o material McCormic Ranch Sand,
+cujos parâmetros estão ilustrados na Tabela 5.1.
+
+5.4 Matriz Tangente
+
+Nesta seção é detalhado o procedimento para a obtenção da matriz tangente elastoplástica.
+Uma vez que é realizada a decomposição da deformação, deve-se posteriormente, calcular a
+matriz constitutiva elastoplástica consistente. Na notação de Voight o tensor de tensões e o
+de deformações são representados por
+
+??? =
+h
+?xx ?yy ?zz ?xy ?yz ?zx
+
+iT
+, (5.9)
+
+???
+h
+?xx ?yy ?zz ?xy ?yz ?zx
+
+iT
+. (5.10)
+
+e a matriz tangente elastoplástica Dep,
+
+49
+
+
+
+Dep =
+
+2
+
+6666666666
+4
+
+??
+xx
+
+??
+xx
+
+??
+xx
+
+??
+yy
+
+??
+xx
+
+??
+zz
+
+??
+xx
+
+??
+xy
+
+??
+xx
+
+??
+yz
+
+??
+xx
+
+??
+zx
+
+??
+yy
+
+??
+xx
+
+??
+yy
+
+??
+yy
+
+??
+yy
+
+??
+zz
+
+??
+yy
+
+??
+xy
+
+??
+yy
+
+??
+yz
+
+??
+yy
+
+??
+zx
+
+??
+zz
+
+??
+xx
+
+??
+zz
+
+??
+yy
+
+??
+zz
+
+??
+zz
+
+??
+zz
+
+??
+xy
+
+??
+zz
+
+??
+yz
+
+??
+zz
+
+??
+zx
+
+??
+xy
+
+??
+xx
+
+??
+xy
+
+??
+yy
+
+??
+xy
+
+??
+zz
+
+??
+xy
+
+??
+xy
+
+??
+xy
+
+??
+yz
+
+??
+xy
+
+??
+zx
+
+??
+yz
+
+??
+xx
+
+??
+yz
+
+??
+yy
+
+??
+yz
+
+??
+zz
+
+??
+yz
+
+??
+xy
+
+??
+yz
+
+??
+yz
+
+??
+yz
+
+??
+zx
+
+??
+zx
+
+??
+xx
+
+??
+zx
+
+??
+yy
+
+??
+zx
+
+??
+zz
+
+??
+zx
+
+??
+xy
+
+??
+zx
+
+??
+yz
+
+??
+zx
+
+??
+zx
+
+3
+
+7777777777
+5
+
+, (5.11)
+
+em que
+
+Dep =
+??
+
+??
+,
+
+e a relação tensão deformação escrita por
+
+?? = Dep??.
+
+Considerando que ? = ?(?trial(?)), e aplicando a regra da cadeia, tem-se
+
+Dep =
+??
+
+??
+=
+
+??
+
+??trial
+??trial
+
+??
+. (5.12)
+
+Portanto, para a obtenção da matriz tangente, deve-se determinar apenas ??
+??trial
+
+. Já que
+o valor de ??
+
+trial
+
+??
+é a matriz constitutiva elástica e é função do módulo de elasticidade e
+
+coeficiente de Poisson apenas.
+
+Calculando ??
+??trial
+
+A decomposição espectral dos tensores de tensão projetado e trial são
+dadas pelo somatório do produto entre as suas tensões principais e o produto tensorial de
+seus autovetores,
+
+? =
+X
+
+?i(?vi ? ?vi),
+
+?trial =
+X
+
+?trialj (?vj ? ?vj).
+
+A derivada do tensor de tensões calculado em relação ao tensor de tensões trial pode ser
+representada na forma
+
+??
+
+??trial
+=
+X ??i
+
+??trialj
+(?vi ? ?vi) ? (?vj ? ?vj)
+
+50
+
+
+
+??
+
+??
+=
+
+ 
+X ??i
+
+??trialj
+(?vi ? ?vi) ? (?vj ? ?vj)
+
+!
+??trial
+
+??
+(5.13)
+
+É importante observar que a expressão 5.13 fornece um tensor de quarta ordem. É neces-
+sário representa-lo na forma da matriz 5.11, e para isso manipulações tensoriais devem ser
+realizadas. Primeiramente é necessário multiplicar a matriz tangente 5.13 que é de quarta
+ordem por uma matriz de segunda ordem. A seguir serão mostradas as manipulações ten-
+soriais de modo que todas as multiplicações, no final, envolvam somente multiplicações de
+tensores de segunda ordem, e vetores. Objetiva-se um produto do tipo:
+
+??
+
+??
+??,
+
+que de acordo com as deduções apresentadas anteriormente, pode ser escrito como
+
+??
+
+??
+?? =
+
+ 
+X ??i
+
+??trialj
+(?vi ? ?vi) ? (?vj ? ?vj)
+
+!
+?
+2µI4 + ?I2 ? I2
+
+?
+??.
+
+Fatorando os termos tem-se
+
+??
+
+??
+?? =
+
+ 
+X ??i
+
+??trialj
+
+?
+(?vi ? ?vi) ? (?vj ? ?vj)2µI4 + (?vi ? ?vi) ? (?vj ? ?vj)?I2 ? I2
+
+?
+!
+
+??.
+
+No primeiro termo, tem-se a identidade de quarta ordem multiplicada por um tensor de
+quarta ordem, que resulta simplesmente no próprio tensor de quarta ordem. No segundo
+termo será usada a seguinte propriedade
+
+(a ? b) (c ? d) = (b · c) (a ? d) .
+
+Logo
+
+??
+
+??
+?? =
+
+ 
+X ??i
+
+??trialj
+
+?
+2µ(?vi ? ?vi) ? (?vj ? ?vj) + ?(?vi ? ?vi) ? I2
+
+?
+!
+
+??
+
+aplicando a matriz ??
+
+??
+
+??
+?? =
+
+ 
+X ??i
+
+??trialj
+
+?
+2µ (tr[(?vj ? ?vj)??]) + ?
+
+?
+I2 · ??
+
+??
+(?vi ? ?vi)
+
+!
+, (5.14)
+
+que é a matriz tangente na notação de Voight. O único valor que depende da decomposição
+elastoplástica a ser calculado na expressão 5.14 é o termo ??i
+
+??trial
+j
+
+.
+
+51
+
+
+
+Calculo da matriz tangente na notação de Voight
+
+Para calcular essa matriz definem-se seis direções de variação unitárias:
+
+??xx =
+
+0
+
+B
+@
+
+1 0 0
+
+0 0 0
+
+0 0 0
+
+1
+
+C
+A ??xy =
+
+0
+
+B
+@
+
+0 1 0
+
+1 0 0
+
+0 0 0
+
+1
+
+C
+A ??xz =
+
+0
+
+B
+@
+
+0 0 1
+
+0 0 0
+
+1 0 0
+
+1
+
+C
+A
+
+??yy =
+
+0
+
+B
+@
+
+0 0 0
+
+0 1 0
+
+0 0 0
+
+1
+
+C
+A ??yz =
+
+0
+
+B
+@
+
+0 0 0
+
+0 0 1
+
+0 1 0
+
+1
+
+C
+A ??zz =
+
+0
+
+B
+@
+
+0 0 0
+
+0 0 0
+
+0 0 1
+
+1
+
+C
+A
+
+Desse modo, substitui-se ?? por cada uma dessas matrizes na Equação 5.14. A matriz
+resultante de cada uma dessas seis operações significa a taxa de variação de cada uma das
+componentes do tensor de tensão projetado em relação a um ??ij. Na matriz tangente isso
+significa cada uma das colunas na notação de Voight.
+
+Logo, demonstra-se o cálculo detalhado de cada uma dessas colunas.
+
+Coluna 1 : ??xx ?
+X
+
+ij
+
+??i
+??trialj
+
+?
+2µ v2j1 + ?
+
+?
+(?vi ? ?vi)
+
+Coluna 2 : ??xy ?
+X
+
+2
+ij
+
+??i
+??trialj
+
+[2µ vj2vj1] (?vi ? ?vi)
+
+Coluna 3 : ??xz ?
+X
+
+ij
+
+2
+??i
+
+??trialj
+[2µ vj3vj1] (?vi ? ?vi)
+
+Coluna 4 : ??yy ?
+X
+
+ij
+
+??i
+??trialj
+
+?
+2µ v2j2 + ?
+
+?
+(?vi ? ?vi)
+
+Coluna 5 : ??yz ?
+X
+
+ij
+
+2
+??i
+
+??trialj
+[2µ vj3vj2] (?vi ? ?vi)
+
+Coluna 6 : ??zz ?
+X
+
+ij
+
+??i
+??trialj
+
+?
+2µ v2j3 + ?
+
+?
+(?vi ? ?vi)
+
+em que vj
+k
+
+é a componente k do autovetor ?vj, com k = 1, 2, 3.
+
+Correção do tensor tangente pelo giro rígido
+
+O tensor tangente multiplicado por um ?? pode ser aproximado pelo expansão de Taylor
+como:
+
+??
+
+??
+??? = ?ij(? + ???) ? ?ij(?) + o(???)
+
+52
+
+
+
+A partir da dedução apresentada anteriormente para ??
+??
+
+??? não se considera a rotação
+dos autovetores entre ? + ??? e ?. A seguir será descrita a metodologia para incluir essa
+parte no tensor tangente.
+
+Um tensor rotação pode ser visto como o tensor identidade somado com uma parcela
+relativa as rotações:
+
+R = I +
+
+0
+
+B
+@
+
+0 ?z ?y
+
+?z 0 ?x
+
+?y ?x 0
+
+1
+
+C
+A
+
+Considerando um tensor de deformação nos eixos principais
+
+? =
+
+0
+
+B
+@
+
+?1 0 0
+
+0 ?2 0
+
+0 0 ?3
+
+1
+
+C
+A
+
+A rotação desse tensor já eliminando os termos de ordem é dada por:
+
+RT ?R =
+
+0
+
+B
+@
+
+?1 (?1 ? ?2) ?z (?1 ? ?3) ?y
+(?1 ? ?2) ?z ?2 (?2 ? ?3) ?x
+(?1 ? ?3) ?y (?2 ? ?3) ?x ?3
+
+1
+
+C
+A
+
+Logo, caso exista um termo fora da diagonal como por exemplo d?ij com i ?= j:
+
+?vj(?? · ?vi) = ?("i ? "j)
+
+? =
+?vj(?? · ?vi)
+("i ? "j)
+
+Como os autovetores de ? e de ? são iguais, uma variação fora da diagonal do tensor de
+tensão projetado pode ser escrito como:
+
+?i ? ?j
+" ? "j
+
+?vj(?? · ?vi) (5.15)
+
+E dados vi e vj os autovetores de ambos ? e ? relativos a posição ij, tem-se que a correção
+dada nessa posição será:
+
+?i ? ?j
+"i ? "j
+
+[?vj(?? · ?vi)] (?vi ? ?vi + ?vj ? ?vj)
+
+Do mesmo modo, será calculada a parcela será calculada a taxa de variação de cada uma
+
+53
+
+
+
+das componentes do tensor de tensão projetado em relação a um ??ij. Na matriz tangente
+isso significa cada uma das colunas na notação de Voight.
+
+Logo, demonstra-se o cálculo detalhado de cada uma dessas colunas.
+
+Coluna 1 : ??xx ?
+?i ? ?j
+"i ? "j
+
+[vj1vi1] (?vi ? ?vj + ?vj ? ?vi)
+
+Coluna 2 : ??xy ?
+?i ? ?j
+"i ? "j
+
+[vj1vi2 + vj2vi1] (?vi ? ?vj + ?vj ? ?vi)
+
+Coluna 3 : ??xz ?
+?i ? ?j
+"i ? "j
+
+[vj1vi3 + vj3vi1] (?vi ? ?vj + ?vj ? ?vi)
+
+Coluna 4 : ??yy ?
+?i ? ?j
+"i ? "j
+
+[vj2vi2] (?vi ? ?vj + ?vj ? ?vi)
+
+Coluna 5 : ??yz ?
+?i ? ?j
+"i ? "j
+
+[vj2vi3 + vj3vi2] (?vi ? ?vj + ?vj ? ?vi)
+
+Coluna 6 : ??zz ?
+?i ? ?j
+"i ? "j
+
+[vj3vi3] (?vi ? ?vj + ?vj ? ?vi)
+
+Caso particular de autovalores repetidos
+
+Caso os autovalores sejam repetidos, nota-se que a correção se torna uma relação 0
+0
+. Esse
+
+problema é resolvido tomando-se o limite ?? ? 0, impondo uma variação na direção ?? =
+[??, ???, 0]. Primeiro nota-se que:
+
+?i ? ?j
+"i ? "j
+
+= 2µ
+
+Assim altera-se as variáveis da relação 5.15:
+
+2µ
+?i ? ?j
+"i ? "j
+
+Desse modo, calcula-se o seguinte limite:
+
+lim
+???0
+
+2µ
+?i +
+
+??
+i
+
+??trial
+· ?? ?
+
+?
+?
+proj
+j +
+
+??
+proj
+
+i
+
+??trial
+· ??
+?
+
+(?triali + ??) ? (?trialj ? ??)
+
+Como ?i = ?j e ?triali = ?
+trial
+j , chega-se a:
+
+lim
+???0
+
+2µ
+
+??
+i
+
+??trial
+i
+
+?? ? ??i
+??trial
+
+j
+
+?? ? ??j
+??trial
+
+i
+
+?? +
+??
+
+j
+
+??trial
+j
+
+??
+
+2??
+
+E cortando os termo ??, define-se a correção final para o caso de autovalores iguais.
+
+54
+
+
+
+µ
+
+ 
+??i
+
+??triali
+?
+
+??i
+??trialj
+
+?
+??j
+
+??triali
++
+
+??j
+??trialj
+
+!
+
+Assim a seguinte substituição deve ser realizada:
+
+?i ? ?j
+"i ? "j
+
+= µ
+
+ 
+??i
+
+??triali
+?
+
+??i
+??trialj
+
+?
+??j
+
+??triali
++
+
+??j
+??trialj
+
+!
+
+5.5 Cálculo de ??
+??trial
+
+para o modelo de Sandler-DiMaggio
+
+Nesta seção são calculados os valores da variação da tensão projetada com respeito a ten-
+são teste ou trial, especificamente para o modelo de Sandler-DiMaggio. Como existem duas
+superfícies de plastificação, serão descritos os procedimentos para o cálculo da derivada men-
+cionada em duas partes.
+
+Superfície F1(I1, ?)
+
+Para a superfície de plastificação F1(I1, ?) a regra da cadeia proporciona
+
+??
+
+??trial
+=
+
+??
+
+?(I1, ?)
+
+?(I1, ?)
+
+??trial
+. (5.16)
+
+Igualando-se a expressão 5.4 a zero e realizando a expansão de Taylor, tem-se
+
+?R1
+??trial
+
+??trial +
+?R1
+
+?(I1, ?)
+?(I1, ?) + O(??
+
+trial, I1, ?) = 0, (5.17)
+
+em que
+
+?R1
+?(I1, ?)
+
+=
+
+"
+?2?1
+?I21
+
+?2?1
+?I1??
+
+?2?1
+???I1
+
+?2?1
+??2
+
+#
+.
+
+Reorganizando os termos, tem-se
+
+?(I1, ?)
+
+??trial
+= ?
+
+?
+?R1
+
+?(I1, ?)
+
+??1
+?R1
+??trial
+
+, (5.18)
+
+em que
+
+?R1
+??trial
+
+=
+
+"
+?2?1
+
+?I1??1
+?2?1
+
+?I1??2
+?2?1
+
+?I1??3
+?2?1
+????1
+
+?2?1
+????2
+
+?2?1
+????3
+
+#
+,
+
+e
+
+55
+
+
+
+??
+
+?(I1, ?)
+=
+
+2
+
+6
+4
+
+??1
+?I1
+
+??1
+??
+
+??2
+?I1
+
+??2
+??
+
+??3
+?I1
+
+??3
+??
+
+3
+
+7
+5 .
+
+Superfície F2(?, ?; L)
+
+Para a superfícieF2(?, ?; L), a regra da cadeia proporciona
+
+??
+
+??trial
+=
+
+??
+
+?(?, ?; L)
+
+?(?, ?; L)
+
+??trial
+. (5.19)
+
+Tem-se que
+
+??
+
+?(?, ?; ?)
+=
+
+2
+
+6
+4
+
+??1
+??
+
+??1
+??
+
+??1
+?L
+
+??2
+??
+
+??2
+??
+
+??2
+?L
+
+??3
+??
+
+??3
+??
+
+??3
+?L
+
+3
+
+7
+5 .
+
+Por outro lado, igualando a expressão (5.6) a zero e realizando uma expansão de Taylor sobre
+ela, tem-se
+
+?R2
+??trial
+
+??trial +
+?R2
+
+?(?, ?; L)
+?(?, ?; L) + O(?trial, ?, ?; L) = 0, (5.20)
+
+em que
+
+?R2
+?(?, ?; L)
+
+=
+
+2
+
+6
+4
+
+?2?2
+??2
+
+?2?2
+????
+
+?2?2
+???L
+
+?2?2
+????
+
+?2?2
+??2
+
+?2?2
+???L
+
+?r
+??
+
+0 ?r
+?L
+
+3
+
+7
+5 ,
+
+com r = r(?, L) representado pela equação (5.8), e
+
+?R2
+??trial
+
+=
+
+2
+
+6
+4
+
+?2?2
+????1
+
+?2?2
+????2
+
+?2?2
+????3
+
+?2?2
+????1
+
+?2?2
+????2
+
+?2?2
+????3
+
+?r
+??1
+
+?r
+??2
+
+?r
+??3
+
+3
+
+7
+5 .
+
+Rearranjando a relação (5.20), obtém-se
+
+?(?, ?; L)
+
+??trial
+= ?
+
+?
+?R2
+
+?(?, ?; L)
+
+??1
+?R2
+??trial
+
+. (5.21)
+
+56
+
+
+
+Capítulo 6
+
+ESTUDO DE ESTABILIDADE DE
+POÇOS
+
+Durante a perfuração, a parede do poço sofre uma grande solicitação mecânica decorrente da
+mudança brusca no estado de tensões. O mesmo passa, bruscamente, de um confinamento a
+uma pressão que é exercida pelo fluido de perfuração e atua em sua parede. Caso a pressão do
+fluido de perfuração seja excessivamente alta, este fluido pode fraturar a rocha, provocando
+significativas perdas de fluido e dano à formação do reservatório, fenômeno conhecido como
+fraturamento hidráulico. Caso a pressão de fluido seja baixa demais, pode haver invasão do
+poço por fluidos contidos na formação. Esta invasão pode provocar a separação de fluidos,
+com conseqüente expansão do gás contido no petróleo, causando o fenômeno conhecido por
+kick. Mesmo quando a pressão do fluido de perfuração está entre os dois limites mencionados,
+a alteração de estado de tensão pode levar à plastificação do material do reservatório e ao
+eventual colapso do poço, fenômeno denominado de breakout.
+
+O estudo da pressão de colapso é importante para o entendimento do comportamento
+mecânico do material. O peso do fluido de perfuração deve ser planejado para que não
+ocorra o colapso do poço, causando o aprisionamento da coluna, ou uma geração excessiva
+de cascalhos oriundos do desmanche do material rochoso. Uma boa previsão da resposta
+material, em tais situações, pode acarretar em economia para a empresa.
+
+No caso de breakout, dependendo do ângulo formado pelo mesmo, a formação começa a
+erodir progressivamente, despejando material no poço, o qual se mistura ao fluido de perfu-
+ração. O acúmulo deste material, advindo da falha mecânica da parede do poço, somado aos
+cascalhos provenientes da perfuração do poço, causa um excesso de material sólido misturado
+ao fluido de perfuração, acarretando a perda de circulação e, eventualmente, a perda do poço.
+Um poço é considerado estável, segundo Zoback [37], quando o ângulo formado pelo breakout
+é inferior a 60?. Neste caso, apesar de aprofundamento do breakout, o mesmo para de ganhar
+
+57
+
+
+
+ângulo, com menor liberação de material da formação para o poço. Já um breakout com
+ângulo superior a 60? tende a se alargar, liberando, progressivamente, maior quantidade de
+material.
+
+A Figura (6.1) ilustra a janela operacional de perfuração em dois casos críticos: a da
+esquerda, considera a pressão de poros como limitante inferior do peso do fluido de perfuração
+e, a da direita, tem a pressão de colapso como o limite mínimo para o peso do fluido de
+perfuração. Neste caso específico, a janela operacional que considera a pressão de colapso
+como limite inferior é mais estreita que a outra, o que a torna mais crítica.
+
+58
+
+
+
+Figura 6.1: Janela operacional: a) projeto de pré-perfuração, assumindo-se que a pressão de
+poros e o gradiente de fratura limitam o peso do fluido de perfuração; b) projeto de pré-
+perfuração, f assumindo-se que a pressão de colapso e o gradiente de fratura limitam o peso
+do fluido de perfuração. Figura adaptada e retirada de Zoback [37].
+
+A Figura (6.2) ilustra a evolução estável de um breakout à esquerda, e a fotografia de um
+experimento de laboratório, à direita, conforme documentado em Zoback [37].
+
+59
+
+
+
+Figura 6.2: Esquema ilustrativo do breakout. Figura retirada de Zoback [37]
+
+O trabalho proposto nesta tese tem como objetivo avançar no entendimento do estado de
+tensão de poços através de uma modelagem elastoplástica, utilizando simulação numérica de
+elementos finitos conjuntamente a metodologia de cálculo elastoplástico desenvolvida neste
+trabalho, em que são consideradas a não linearidade do material e a modelagem da desagre-
+gação do material devido ao excesso de deformação e à atuação do gradiente de pressão.
+
+6.1 Implementação do Código Elastoplástico
+
+A implementação computacional de um modelo numérico elastoplástico requer um conjunto
+de ferramentas que podem ser classificadas em duas partes: resolução do PVI-EP e resolução
+da equação residual de elementos finitos. Na parte da resolução do PVI-EP, empregando a
+metodologia de projeção sobre a superfície apresentada neste estudo, são cinco as principais
+classes de ferramentas necessárias e disponíveis no NeoPZ:
+
+• TPZTensor: classe que implementa tensores de três dimensões na notação de Voigt e
+realiza sua decomposição espectral;
+
+• TPZElasticResponse: implementa a resposta elástica de um material isotrópico;
+
+60
+
+
+
+• pzsandlerPV: implementa a solução do PVI-EP empregando a técnica da projeção da
+tensão sobre a superfície de plastificação;
+
+• TPZPlasticStepPV: implementa métodos que administram a decomposição da defor-
+mação total utilizando a tensão projetada e calculam a matriz tangente D descrita na
+seção (5.4).
+
+Para a resolução da equação residual de elementos finitos, o ambiente NeoPZ ( Devloo [7,
+8], Devloo et al. [10, 9]) dispõe de uma extensa biblioteca de ferramentas computacionais
+necessárias para implementação de tarefas típicas desse método:
+
+• Geom:Implementa as geometrias de elementos dos seguintes elementos: triângulo, qua-
+drilátero, tetraedro, hexaedro e pirâmide e suas respectivas funções de mapeamento;
+
+• Shape: Contém as classes de construção das funções de forma para cada geometria;
+
+• Material: Implementa variados tipos de equações diferenciais correspondentes ao pro-
+blemas físicos de interesse;
+
+• Mesh: Implementa as malhas geométrica e computacional. A malha geométrica envolve
+a discretização espacial. A malha computacional está associada ao espaço de interpo-
+lação da solução. As malhas geométrica e computacional são inter-referenciadas para
+troca de informações;
+
+• Analysis: Montagem e solução de sistemas de equação;
+
+• Integral: Módulo que implementa a integração numérica de Gauss;
+
+• Matrix: Implementações de diversos tipos matrizes;
+
+• LinearSolvers: Implementa os métodos de solução de sistemas lineares;
+
+• Post: Classes que implementam o pós-processamento da solução.
+
+6.2 Ferramentas Especiais de Elementos Finitos para a
+Equação de Equilíbrio
+
+O desenvolvimento do simulador elastoplástico de estabilidade de poços requer algumas fer-
+ramentas especiais a serem aplicadas no modelo de elementos finitos para a equação de
+equilíbrio. Estas ferramentas consistem em:
+
+61
+
+
+
+1. Um método para encontrar um elemento na malha a partir de um dado ponto p .
+
+2. Um critério para ajustar a malha de elementos finitos à geometria do breakout que é
+observada na prática.
+
+3. Uma sistemática para realizar o refinamento polinomial e geométrico da malha de
+elementos finitos, considerando-se uma lei constitutiva elastoplástica.
+
+4. Uma sistemática para verificar o equilíbrio da solução numérica.
+
+5. Um procedimento de leitura e salvamento de arquivos de simulação.
+
+6. Técnicas de paralelização do cálculo numérico.
+
+Identificação do Elemento que Contém um Ponto em Uma Malha
+Geométrica
+
+Durante o processo de refinamento, novos pontos de integração são criados e outros são
+"deletados". A proposta adotada para permitir refinar malhas de forma arbitrária é o de
+desenvolver um procedimento geral para transferir soluções elastoplásticos entre malhas não
+relacionados. Para isso é necessário identificar o elemento e suas coordenadas no elemento
+mestre correspondente a uma dada coordenada x e y.
+De acordo com a metodologia clássica de elementos finitos, a malha geométrica é composta
+pela união de elementos ?e parametrizados a partir de seus respectivos domínios de referência
+??e. Normalmente o mapeamento de um ponto  ? ?? para o domínio deformado ?e ocorre de
+forma trivial, através da definição de uma função mapeamento ?x = ?( ). Já a implementação
+da função inversa ( = ??1(?x)) não se apresenta de forma explícita, sendo portanto necessária
+a utilização de algum método iterativo. No caso da implementação realizada no NeoPZ, é
+aplicado o Método Iterativo de Newton para zerar a função resíduo R = ?( ) ? ?x. Esta
+implementação encontra-se em um método denominado ComputeXInverse, o qual pertence
+à classe que abstrai a noção de elemento geométrico, TPZGeoElement.
+
+No caso em que, para um dado ponto ?x ? ?e, deseja-se saber se um elemento específico
+o contém, basta realizar seu mapeamento inverso (através do método ComputeXInverse) e
+verificar se a coordenada  obtida pertencente ao seu domínio de referência, ou seja, adota-se
+o seguinte critério de localização:
+
+• Se ??1(?x) =  é tal que  /? ??e, conclui-se que o elemento deformado não contém o
+ponto x fornecido.
+
+62
+
+
+
+• Se ??1(?x) =  é tal que  ? ??e, conclui-se que o elemento deformado contém o ponto
+?x fornecido.
+
+Em um algoritmo de busca, até que seja encontrado o elemento que contenha o ponto ?x, pode-
+se adotar a metodologia de percorrer todos os elementos da malha até que seja satisfeito o
+critério de localização. Para evitar o alto custo gerado por esta abordagem, foi adotado como
+otimização a busca em duas etapas:
+
+1. A partir de um elemento inicial e seus vizinhos, calcula-se as distâncias de seus centros
+até o ponto ?x, adotando como próximo elemento aquele que apresentar menor distância.
+Repete-se este procedimento até que seja obtido o elemento cuja distância de seu centro
+até o ponto ?x seja menor do que a de as respectivas distâncias de todos os seus vizinhos.
+
+2. Utilizando o critério de localização, verifica-se se o elemento obtido no passo 1 já não
+é o elemento procurado. Caso negativo, é iniciada uma busca pela vizinhança deste
+elemento até que seja satisfeito o critério de localização.
+
+Esta metodologia é implementada no NeoPZ em um método denominado FindElement na
+classe TPZGeoMesh e é ilustrada na Figura (6.3).
+
+Figura 6.3: Busca otimizada pelo elemento que contém um ponto dado
+
+63
+
+
+
+Propagação do Breakout
+
+Para o estudo de estabilidade de poços faz-se necessário caracterizar o processo de integridade
+estrutural do material sólido. Isso significa que, além de simular o estado elastoplástico do
+poço, é preciso escolher um critério a partir do qual determina-se a alteração da geometria
+do poço.
+
+Em uma proposta inicial para simular o ajuste da geometria do poço, considerou-se a
+remoção dos elemento com máxima deformação plástica acima do valor crítico. Com a
+mesma configuração anterior, a Figura (6.4) representa o mapa de cores de
+
+p
+J2(?p) da
+
+solução com a remoção dos elementos. As quinas formadas no contorno pela remoção de
+elementos criam uma singularidade na solução. Esta singularidade aumenta sobremaneira a
+região plastificada. O valor máximo de
+
+p
+J2(?p) neste gráfico é aproximadamente dez vezes
+
+superior ao valor máximo antes da remoção dos elementos.
+
+Figura 6.4: Solução obtida utilizando um procedimento de remoção de elementos
+
+64
+
+
+
+Conclui-se então que a remoção dos elementos plastificados não era viável. Uma nova abor-
+dagem foi então empregada a partir de observações da forma que se propaga o fenômeno de
+breakout. Verificou-se a partir de observações das simulações que o mesmo se formava com
+uma geometria elíptica. Vale observar que este fato também pode ser confirmado em expe-
+rimentos conduzidos por Haimson et al [18] e Zoback et al [38]. Baseado nisto, elaborou-se
+então uma nova sistemática para a adequação da geometria do poço através do ajuste de
+elipses. O ajuste é calculado a partir da determinação de funções que passam pelos pontos
+com valor constante (isolinhas) do segundo invariante do tensor de deformações
+
+p
+J2(?p).
+
+Optou-se por este critério porque a deformação é caracterizada por duas componentes, uma
+parcela hidrostática e outra deviatórica. Conjectura-se que a deformação hidrostática não
+leva a desagregação do material da parede do poço (apesar de poder levar ao colapso dos
+poros). Já a deformação cisalhante, causa o deslizamento entre os planos microscópicos dos
+quais o material é composto levando-o a ruptura. Por isso o valor de
+
+p
+J2(?p) foi escolhido
+
+para quantificar a deformação permanente do material do poço em cisalhamento.
+Para o ajuste de elipses, primeiramente identificam-se os pontos com os valores constantes
+
+de
+p
+
+J2(?p) que foi especificado pelo programador, procedimento este, que é descrito na Seção
+(6.2). Em segundo lugar utiliza-se o método dos mínimos quadrados para a determinação
+de uma equação quadrática que se ajuste aos pontos da isolinha, e a partir destes pontos,
+determina-se a equação da elipse. Uma vez encontrada a equação da elipse, os nós do contorno
+do poço são identificados e deslocados até a posição da elipse, e os demais nós da malha que
+estão enfileirados com os nós do contorno deslocados, também devem ser movidos.
+
+Como exemplo ilustrativo, apresenta-se na Figura (6.5) uma seção do poço antes da
+adaptação da geometria, que é delimitada pelo contorno circular do poço (linha branca). Na
+Figura (6.6) a geometria da seção do poço é adptada de para que os nós do contorno seja
+ajustados ao valor crítico do critério de plastificação (breakout), que é marcado pela isolinha
+branca mais tênue, com um perfil semelhante ao da geometria elíptica de caving, observada na
+prática (Figura (6.7)). A linha verde indica uma elipse ajustando-se a essa isolinha. Altera-se
+então a geometria do poço movimentando a malha para que o contorno do poço se encontre
+na parte da elipse que se ajusta à isolinha. Observa-se que o perfil elíptico do breakout é
+semelhante ao da geometria de caving observada na prática, conforme mostrado na Figura
+(6.7).
+
+65
+
+
+
+Figura 6.5: Antes e depois da movimentação dos nós.
+
+Figura 6.6: Após o deslocamento dos nós.
+
+66
+
+
+
+Figura 6.7: Imagens de breakout adaptadas do artigo Haimson and Lee [18]. Seções do poço
+simulado em laboratório da Tablerock sandstone, com tensão horizontal mínima e a tensão
+vertical s ?h = 15 MPa, ?v = 30 MPa, e tensão horizontal máxima (a) ?H = 50 MPa, (b)
+?H = 60MPa e (c) ?H = 70MPa.
+
+Refinamento hp
+
+Refinamento h e p de simulações elastoplásticas
+O refinamento de malhas para problemas elastoplásticos é desafiador. A tensão em qualquer
+ponto do domínio depende, não somente do estado de deformação, como também do seu
+histórico. Para malhas sem adaptividade, este histórico pode ser obtido guardando a lista
+dos deslocamentos nos nós da malha. No caso de refinamento, os deslocamentos por si
+não permitem reconstruir o histórico de deformação. Durante o processo de refinamento,
+novos pontos de integração são criados e outros são "deletados". A proposta adotada para
+permitir refinar malhas de forma arbitrária é o de desenvolver um procedimento geral para
+transferir soluções elastoplásticas entre malhas não relacionados. O desenvolvimento tem
+dois elementos fundamentais:
+
+1. Identificar um elemento e as coordenadas do elemento mestre para uma coordenada x
+e y (ver (6.2)).
+
+2. Submeter um ponto material a uma evolução de tensor de deformação de acordo com
+a solução das malhas anteriores.
+
+Refinamentos h e p na zona plastificada são ilustrados nas Figura (6.8) e Figura (6.9).
+Após a aplicação do histórico de deformação em todos os pontos, forma-se uma solução sobre
+a malha nova, cuja as tensões não estão em equilíbrio. Porém, em poucas iterações, a solução
+
+67
+
+
+
+sobre a malha nova é posta em equilíbrio.
+
+Figura 6.8: Refinamento h na zona plastificada
+
+Figura 6.9: Refinamento p na zona plastificada
+
+68
+
+
+
+Utilização de Geometria Quadrática no Contorno
+
+O poço é simulado com 40 elementos distribuídos sobre uma região de 1/4 do poço. Isso
+implica que o ângulo representado por cada elemento é de aproximadamente 2 graus. A
+Figura (6.10) mostra um detalhe da solução próxima à junção de dois elementos. Ela ilustra
+que, mesmo com esta malha bastante refinada, pode-se observar que a variação do ângulo
+entre um elemento e seu vizinho afeta a precisão da solução. A cada quina entre dois trechos
+retos há uma aumento do dano plástico simulado. Esta variação de dano inviabilizaria a sua
+utilização como critério de remoção de material. Observou-se que utilizando elementos com
+geometria quadrática, conseguiu-se eliminar as deformações devido às "quinas". Os elementos
+com geometria quadrática foram desenvolvidos e implementados em ambiente NeoPZ por
+Lucci [27].
+
+Figura 6.10: Sensibilidade com relação à precisão da modelagem geométrica
+
+6.3 Simulador de Estabilidade de Poços
+
+Um simulador foi proposto e desenvolvido pelo Laboratório de Mecânica Computacional
+(LabMeC) da Universidade Estadual de Campinas, no projeto da rede temática SIGER
+(Gerenciamento e Simulação de Reservatórios) intitulado “Análise Elastoplástica de Poços e
+Estudo do Fraturamento Hidráulico em Reservatórios Carbonáticos”.
+
+69
+
+
+
+É um simulador de Elementos Finitos específico para o estudo da estabilidade de poços. O
+software teve início no trabalho de Santos [32], que implantou na biblioteca NeoPZ a estrutura
+para a realização de um cálculo elastoplástico. Buscou-se na implementação deste simulador
+um modelo generalista, baseado na mecânica dos meios contínuos clássica e com modelos
+constitutivos que representassem a resposta mecânica da rocha. Como desafios importantes
+de implementação e qualidades do simulador, destacam-se:
+
+• modelagem constitutiva elastoplástica robusta. O equilíbrio elastoplástico local do
+material é realizado de forma consistente, buscando-se a determinação das parcelas
+elástica e plástica do tensor de deformação com precisão e consistência na determinação
+da matriz tangente elastoplástica local;
+
+• arcabouço de elementos finitos versátil e eficiente. O simulador foi desenvolvido com
+base no ambiente de elementos finitos PZ, um pacote acadêmico desenvolvido na lin-
+guagem de programação C++ na Unicamp no Laboratório de Mecânica Computacional
+pelo professor Philippe Remy Bernard Devloo. O PZ apresenta as qualidades de versa-
+tilidade no acoplamento de problemas de ciências distintas (multifísico, por exemplo),
+disponibilidade de diversos tipos de materiais, estruturas de dados, algoritmos de so-
+lução de sistemas de equações, suporte a paralelismo, opções de refinamento espacial
+e de ordem de interpolação, pós-processamento, armazenamento de dados em disco,
+otimização de execução etc. Além de ser acadêmico e permitir esta flexibilidade e
+extensibilidade, o PZ também apresenta boas soluções de otimização de código e de
+tempo de execução de problemas;
+
+• integração com o pacote de visualização VTK (Visualization ToolKit) para pós-processamento
+gráfico das soluções com interatividade com o usuário;
+
+• integração com o ambiente de interface gráfica QT para a produção de um software
+dedicado à análise de problemas de interface poço-reservatório. Os códigos gerados em
+QT são compatíveis com diversas plataformas, tais como Windows, Linux e Macintosh;
+
+• Por ser um simulador dedicado e especialista, ele encapsula a complexidade de cada
+ciência envolvida no processo de forma que um usuário capacitado possa com pouco
+esforço e em pouco tempo realizar simulações de poço na melhor prática da engenharia.
+Suas funcionalidades permitem avaliar a concentração de tensões e deformações no
+entorno do poço para as condições de:
+
+– poços alinhados com as direções principais vertical e horizontais;
+
+– perfuração (escavação) em condição de overbalance e underbalance;
+
+70
+
+
+
+– geometria de poço alterada pela formação de breakouts;
+
+– produção ou injeção, conhecidas as pressões de poço e estática de reservatório;
+
+– depleção homogênea do reservatório; o degradação de propriedades mecânicas de-
+correntes de operações de estimulação por acidificação;
+
+– transmissão de tensões para revestimentos não-cimentados, considerando-se anular
+nulo na instalação do revestimento.
+
+• Capacidade de salvar e recuperar simulações de poço, bem como retroceder passos na
+simulação para alteração de etapas de carregamento;
+
+• Refinamento espacial e de ordem de interpolação para a melhoria da qualidade numérica
+da solução;
+
+• Geração de malha automatizada, impondo automaticamente as condições de contorno
+adequadas a cada tipo de problema.
+
+O processo de simulação pode ser comandado através de uma interface gráfica, conforme
+ilustrado na Figura (6.11). O usuário pode escolher as configurações desejadas, como ilustrado
+nas abas mostradas na Figura (6.12):
+
+Figura 6.11: Vista do software SEST2D.
+
+71
+
+
+
+• Carregamento do poço: a definição do estado de tensões confinantes e da profundidade
+vertical total são realizadas conforme ilustra a Figura (6.12) a).
+
+• Geométricas: o usuário escolhe o raio interno e externo do poço (Figura (6.12) b)).
+
+• Malha: o usuário pode escolher o número de divisões que deseja na malha nas direções
+radial e cincunferenciais alem de configurar o valor da ordem polinomial inicial (Figura
+(6.12) c)).
+
+• Material: nesta aba (Figura (6.12) d)), o usuário escolhe entre os modelos elastoplásti-
+cos de Mohr-Coulomb, Sandler-DiMaggio ou linear elástico, e configura as constantes
+envolvidas em cada um dos modelos, bem como o coeficiente de Poisson e módulo de
+elasticidade.
+
+• Fluido: o usuário escolhe a permeabilidade da formação e a viscosidade do fluido (Figura
+(6.12) e).)
+
+• Coeficiente de Biot: o usuário escolhe o coeficiente de Biot desejado (Figura (6.12) f)).
+
+• Aba Pwb: nesta aba (Figura (6.13) a) ), o usuário escolhe a pressão que o fluido de
+perfuração exerce sobre a parede do poço e o número de passos que deseja executar a
+simulação inicial. A simulação inicial representa a remoção do material realizada pela
+broca. Essa remoção é simulada através da aplicação de carregamento na parede do
+poço do confinamento até a pressão de fluido no poço.
+
+• Aba Breakout: nesta aba (Figura (6.13) b) ), é possível escolher um valor de
+p
+J2(?p)
+
+sobre o qual deseja-se ajustar a elipse para simular o breakout. É possível visualizar as
+constantes da elipse a e b.
+
+• Aba Pref: nesta aba (Figura (6.13) c) ), é onde se configura o refinamento na ordem
+polinomial das funções que compõem o espaço de aproximação utilizado no Método dos
+Elementos Finitos.
+
+• Aba Href: a divisão dos elementos nos quais deseja-se uma solução mais refinada é
+realizada nesta aba (Figura (6.13) d) ). O usuário especifica o valor de
+
+p
+J2(?p) acima
+
+do qual se deseja que os elementos se dividam.
+
+72
+
+
+
+a) Configurações do estado de carregamento. b) Configurações da geometria do poço.
+
+c) Configurações da malha geométrica. d) Configurações do modelo constitutivo.
+
+e) Configurações do fluido. f) Configuração do coeficiente de Biot.
+
+Figura 6.12: Abas de configurações do programa SEST2D.
+
+73
+
+
+
+a)Aba Pwb b) Aba Breakout.
+
+c) Aba Pref. d) Aba Href.
+
+Figura 6.13: Ilustração das funcionalidades do SEST2D.
+
+74
+
+
+
+Capítulo 7
+
+RESULTADOS E DISCUSSÕES
+
+Para ilustrar a execução do código SEST2D, são apresentados e discutidos os resultados de
+simulação de três problemas para os modelos de Mohr-Coulomb e Sandler-DiMaggio. Por
+fim, uma simulação de um caso mais crítico é escolhida para testar o ajuste da geometria
+utilizando a movimentação dos nós da malha, afim de reproduzir o fenômeno do breakout.
+
+7.1 Preliminares
+
+Descrevem-se a seguir as propriedades geométricas e parâmetros principais que definem os
+testes implementados, bem como uma solução analítica a ser usada como referência nos testes
+de verificação do código.
+
+7.1.1 Geometria
+
+A sistemática de construção da malha objetivou adensar a discretização espacial nas proxi-
+midades do poço, onde ocorre grande solicitação mecânica, e reduzir o número de elementos
+no farfield onde existe pouca solicitação.
+
+A geometria do domínio é dada pelo raio do poço (rwb) e raio do contorno (re). Os
+parâmetros necessários à geração da malha são o número de elementos ao longo do quarto
+da parede do poço (ncirc), o número de elementos desde a parede do poço até o contorno
+externo e proporção dos elementos da parede do poço ( ?r
+
+?circ
+). Com estes parâmetros o com-
+
+primento radial do primeiro elemento (szmin) é dado expressão 7.1 e a progressão geométrica
+deste comprimento nos demais elementos dada pela expressão 7.2. A razão q é determinada
+implicitamente, resolvendo-se a expressão 7.2 pelo método de Newton.
+
+szmin =
+?
+
+2
+
+rwb
+ncirc
+
+?
+?r
+
+?circ
+
+?
+(7.1)
+
+75
+
+
+
+f = (re ? rwb) ?
+i=nradX
+
+i=1
+
+szmin q
+i?1 (7.2)
+
+Uma vez em calculada a razão, as coordenadas geométricas dos nós são calculadas por:
+
+x =
+?
+rwb +
+
+Pi=nrad
+i=1 szmin q
+
+i?1
+?
+cos(?)
+
+y =
+?
+rwb +
+
+Pi=nrad
+i=1 szmin q
+
+i?1
+?
+sin(?)
+
+(7.3)
+
+com o valor de ? ? [0, ? rwb
+2
+
+].
+
+Figura 7.1: Esquema de geração da malha.
+
+76
+
+
+
+O processo de perfuração de um poço pode ser representado por uma placa infinita com
+tensões em suas extremidades e com um furo sujeito a pressão interna em seu centro. O
+problema pode ser simplificado de modo que a deformação no eixo vertical ?v seja nula,
+caracterizando o estado plano de deformações. Para este caso é possível calcular as tensões
+elásticas analiticamente.
+
+7.1.2 Configuração do Estado de Tensões In-Situ
+
+A geometria do problema apresenta aparente simetria axissimétrica, mas as condições de
+carregamento não homogênea implicam em dois eixos ortogonais de simetria, alinhados com
+as direções de tensões principais. A simetria possibilita reduzir o número de equações em
+75% ao permitir a modelagem de apenas 1/4 do domínio. As condições de contorno iniciais
+aplicadas ao quarto de poço a ser modelado são deslocamentos direcionais nulos ortogonais
+aos eixos de simetria e tensões de confinamento na parede do poço e no farfield. As tensões
+atuando na parede do poço são dadas pelo vetor twb e as tensões atuando no farfield pelo
+vetor t, determinado em cada ponto da parede do poço.
+
+Figura 7.2: Condições de contorno.
+
+77
+
+
+
+Sendo que em poços verticais, considera-se
+
+? =
+
+2
+
+6
+4
+
+?v 0 0
+
+0 ?H 0
+
+0 0 ?h
+
+3
+
+7
+5
+
+twb=?
+wb
+
+.n
+
+t = ?.n
+
+Para simular o processo de perfuração, deve-se modificar gradualmente as tensões de con-
+finamento na parede do poço (?wb) até que elas cheguem ao valor da pressão hidrostática
+exercidada pela coluna de fluido de perfuração. Portando a evolução da tensão ?wb é repre-
+sentada pela expressão abaixo
+
+?wb = ?
+(n ? i)
+
+n
++ PwbI
+
+i
+
+n
+
+em que Pwb a pressão exercida pelo fluido de perfuração, n é o número de passos de carre-
+gamento e i é o indexador do passo de carregamento atual. A evolução de ?wb encontra-se
+ilustrada na figura (7.3) desconsiderando-se a rotação por simplicidade de notação.
+
+78
+
+
+
+Figura 7.3: Passos de carregamento aplicados.
+
+As tensões efetivas ??, que são as tensões que causam danos mecânicos, e são calculadas
+através da expressão
+
+?? = ? ? ?Pp
+
+onde ? é o coeficiente de Biot e Pp é a pressão de poros.
+
+7.1.3 Parâmetros materiais e tensões in-situ
+
+Para as seguintes simulações é considerado um poço vertical de raio interno rwb = 0.10795 m
+e raio externo re = 3 m. O poço tem área(Apo?co ) igual a 0.036 m2. Os parâmetros para os
+modelos de Sandler-DiMaggio encontram-se detalhados na Tabela (7.1), e os parâmetros de
+Mohr-Coulomb na Tabela (7.2). O material em questão trata-se de um material carbonático.
+
+79
+
+
+
+Parâmetro Valor
+E(modulo de Elasticidade) 29269 MPa
+?(coeficiente de Poisson) 0.203 (adimensional)
+
+A 152.54 MPa
+B 0.0015489 MPa?1
+C 146.29 MPa
+D 0.018768 MPa?1
+R 0.91969 (adimensional)
+W 0.06605 (adimensional)
+? 1 (adimensional)
+
+Tabela 7.1: Parâmetros do modelo elastoplástico de Sandler-DiMaggio para o material simu-
+lado neste estudo
+
+Parâmetro Valor
+E(modulo de Elasticidade) 29269 MPa
+?(coeficiente de Poisson) 0.203 (adimensional)
+
+c 27.38 MPa
+? 11.7?
+
+Tabela 7.2: Parâmetros do modelo elastoplástico de Mohr-Coulomb para o material simulado
+neste estudo.
+
+Considera-se o poço pressurizado em três níveis de pressão do fluido. Os três estados de
+tensões efetivas calculados a partir de um coeficiente Biot-Willis ? = 0.659 . Os três estados
+de tensões efetivas escolhidos para serem simulados encontram-se especificados na Tabela
+(7.3). A convenção de sinal adotada pela comunidade de mecânica dos meios contínuos é de
+tensão positiva para tensão de tração.
+
+Caso 1 Caso 2 Caso 3
+S
+
+0
+H(MPa) ?62.1 ?62.1 ?62.1
+S
+
+0
+h(MPa) ?45.9 ?45.9 ?45.9
+
+S
+0
+v(MPa) ?48.2 ?48.2 ?48.2
+
+P
+0
+f(MPa) 28.9 23.4 19.5
+
+Tabela 7.3: Tensões efetivas de confinamento para os três casos simulados.
+
+80
+
+
+
+7.1.4 Solução Analítica de Airy
+
+No presente estudo as tensões analíticas atuantes no poço foram calculadas utilizando uma
+função de tensão. Caso o estado de tensão ao redor do poço seja elástico, pode se calcular a
+solução ana??tica utilizando a função de Airy ?, que depende do raio do poço rw , do ângulo
+? e das tensões de confinamento. Ou seja
+
+? =
+? (r2 ? r2w)
+
+2
+(Sh ? SH) cos(2?) + r2 [r2 (Sh + SH) ? 2 r2w (2 Pi + Sh + SH) log(r)]
+
+4 r2
+. (7.4)
+
+Desta forma, as tensões do problema de equilíbrio mecânico são calculadas pelas expressões
+
+?r =
+1
+
+r
+
+??
+
+?r
++
+
+1
+
+r2
+?2?
+
+??2
+, (7.5)
+
+?? =
+?2?
+
+?r2
+, (7.6)
+
+?r? = ?
+?
+
+?r
+
+?
+1
+
+r
+
+??
+
+??
+
+?
+. (7.7)
+
+Precisamente, tem-se
+
+?r =
+r2 [?2Pir2w + (r2 ? r2w) (Sh + SH)] + (r4 ? 4r2r2w + 3r4w) (Sh ? SH) cos(2?)
+
+2 r4
+, (7.8)
+
+?? =
+r2 [2Pir
+
+2
+w + (r
+
+2 + r2w) (Sh + SH)] ? (r4 + 3r4w) (Sh ? SH) cos(2?)
+2 r4
+
+, (7.9)
+
+?z =
+r2Sv ? 2? r2w (Sh ? SH) cos(2?)
+
+r2
+, (7.10)
+
+?r? = ?
+(r4 + 2r2r2w ? 3r4w) (Sh ? SH) cos(?) sin(?)
+
+r4
+. (7.11)
+
+Para efeitos de verificação do código elastoplástico, utilizam-se estas soluções analíticas
+para efeito de comparação com os resultados numéricos obtidos. Calculando o valor da
+função de plastificação dos modelos Sandler–Dimaggio e Mohr-Coulumb, enquanto esse valor
+for negativo, tem-se que o poço não plastifica.
+
+81
+
+
+
+7.2 Simulação do Caso 1
+
+Considera-se o problema com as condições de contorno do Caso 1. Na Figura (7.4) são apre-
+sentados os resultados para o modelo Sandler-DiMaggio. Observa-se que para este modelo
+não ocorre plastificação alguma e, consequentemente, nenhum breakout é observado. O mapa
+de cores correspondente ao valor da função de falha, em cada ponto do domínio, é mostrada
+na parte superior esquerda, evidenciando a não ocorrência de plastificação por cisalhamento.
+Este fato também é comprovado a partir dos dados da figura mostrada no lado direito supe-
+rior, em que o valor da raiz quadrada do segundo invariante do tensor de deformação plástica
+fica nulo em todo o domínio. O valor do primeiro invariante do tensor de tensões é mostrado
+na parte inferior esquerda, evidenciando uma forte concentração de tensão na direção da me-
+nor tensão principal de confinamento. O segundo invariante do tensor de tensão deviatórico,
+apresentado no lado inferior direito, também mostra uma maior concentração de tensão na
+direção da menor tensão principal de confinamento.
+
+Na Figura (7.5) são apresentados os resultados para o modelo de Mohr-Coulomb. Neste
+caso, ocorre um pequeno breakout, o qual é verificado na solução analítica de Airy com um
+ângulo de 11.36?. A área plastificada verificada no modelo numérico é de 0.047% da área
+do poço. Este fato é ilustrado na parte superior à esquerda, em que a região plastificada
+é marcada em azul escuro, e confirmado na figura do lado direito superior, por uma tênue
+presença de deformação plástica deviatórica, marcada em verde claro.
+
+A Figura (7.6) mostra os valores da função de plastificação da solução numérica (pontos
+azuis) e da solução de Airy (curva vermelha tracejada), calculadas na parede do poço, em
+função do ângulo ?, para o modelo Sandler-DiMaggio (lado esquerdo) e de Mohr-Coulomb
+(lado direito). Observa-se a coincidência dos valores numéricos e analíticos, em ambos casos.
+Confirma-se também os resultados discutidos acima no que se refere à ausência de plastifi-
+cação no modelo Sandler-DiMaggio (curva totalmente negativa) e uma leve plastificação no
+modelo de Mohr-Coulomb (valores positivos em pequena região de 0 ? ? ? 11?).
+
+82
+
+
+
+a) Função de Plastificação b)
+p
+
+J2(?p)
+
+c) Mapa de cores de I1(?) d) Mapa de cores de J2(?)
+
+Figura 7.4: Mapas de cores da simulação de Caso 1, considerando o modelo de Sandler-
+DiMaggio.
+
+a) Função de Plastificação b)
+p
+
+J2(?p)
+
+c) Mapa de cores de I1(?) d) Mapa de cores de J2(?)
+
+Figura 7.5: Mapas de cores da simulação de Caso 1, considerando o modelo de Mohr-
+Coulomb.
+
+83
+
+
+
+a) Sandler-DiMaggio. b) Mohr-Coulomb.
+
+Figura 7.6: Caso 1: Valor comparativo entre a função de plastificação da solução numérica
+(pontos azuis) e da solução de Airy (curva vermelha tracejada), calculadas na parede do
+poço, em função do ângulo ?: modelo Sandler-DiMaggio (lado esquerdo) e Mohr-Coulomb
+(lado direito)
+
+7.2.1 Simulação do Caso 2
+
+Os resuldados desta simulação são mostrados nas Figuras (7.7) - (7.9). Neste caso, os mapas
+de cores indicam a ocorrência de breakout nos dois modelos de plastificação simulados. No
+caso de Sandler-DiMaggio, o ângulo formado pelo breakout é de 46.50?, com uma área plas-
+tificada correspondendo a 1.3% da área do poço. Já o modelo de Mohr-Coulomb, prevê um
+ângulo de 56.3218? e uma área plastificada de 2.74% da área do poço.
+
+Na comparação dos valores da função de plastificação da solução numérica (pontos azuis)
+e da solução de Airy (curva vermelha tracejada), fica bem evidente o fato de que a solução nu-
+mérica respeita a condição imposta no corretor plástico, ou seja, uma função de plastificação
+nula no domínio plastificado.
+
+84
+
+
+
+a) Função de Plastificação b)
+p
+
+J2(?p)
+
+c) Mapa de cores de I1(?) d) Mapa de cores de J2(?)
+
+Figura 7.7: Mapas de cores da simulação de Caso 2, considerando o modelo de Sandler-
+DiMaggio.
+
+85
+
+
+
+a) Função de Plastificação b)
+p
+
+J2(?p)
+
+c) Mapa de cores de I1(?) d) Mapa de cores de J2(?)
+
+Figura 7.8: Mapas de cores da simulação de Caso 2, considerando o modelo de Mohr-
+Coulomb.
+
+a) Sandler-DiMaggio. b) Mohr-Coulomb.
+
+Figura 7.9: Caso 2: Valor comparativo entre a função de plastificação da solução numérica
+(pontos azuis) e da solução de Airy (curva vermelha tracejada), calculadas na parede do
+poço, em função do ângulo ?: modelo Sandler-DiMaggio (lado esquerdo) e Mohr-Coulomb
+(lado direito)
+
+86
+
+
+
+7.2.2 Simulação do Caso 3
+
+Na simulação do Caso 3, também observou-se falha da formação nos dois casos. Para o
+Modelo de Sandler-DiMaggio, o ângulo formado pelo breakout calculado analiticamente é
+de 72.1187? e a área plastificada é de 4.28% da área do poço. Já para o modelo de Mohr-
+Coulomb, a solução analítica apontou para o ângulo de breakout o valor de 75.3716? e a
+solução numérica uma área plastificada de 6.2% da área do poço, bem superior ao valor
+calculado no no modelo Sandler-DiMaggio. Neste caso, conclui-se que o modelo Sandler-
+DiMaggio poderia conduzir a projetos de estabilidade de poços mais ousados.
+
+a) Função de Plastificação b)
+p
+
+J2(?p)
+
+c) Mapa de cores de I1(?) d) Mapa de cores de J2(?)
+
+Figura 7.10: Mapas de cores da simulação de Caso 3, considerando o modelo de Sandler-
+DiMaggio.
+
+87
+
+
+
+a) Função de Plastificação b)
+p
+
+J2(?p)
+
+c) Mapa de cores de I1(?) d) Mapa de cores de J2(?)
+
+Figura 7.11: Mapas de cores da simulação de Caso 3, considerando o modelo de Mohr-
+Coulomb.
+
+a) Sandler-DiMaggio. b) Mohr-Coulomb.
+
+Figura 7.12: Caso 3: Valor comparativo entre a função de plastificação da solução numérica
+(pontos azuis) e da solução de Airy (curva vermelha tracejada), calculadas na parede do
+poço, em função do ângulo ?: modelo Sandler-DiMaggio (lado esquerdo) e Mohr-Coulomb
+(lado direito).
+
+88
+
+
+
+7.2.3 Caso 3 com Ajuste Progressivo da Geometria
+
+O procedimento detalhado na Seção (6.2), no que se refere ao ajuste da geometria através da
+movimentação dos nós do contorno para uma elipse pré-determinada, é ilustrado nesta seção.
+Para os exemplos numéricos a serem realizados, foi escolhido apenas o estado de confinamento
+mais crítico (Caso 3). Justifica-se esta escolha por entender que o poço apresenta problemas
+mais graves de estabilidade mecânica para breakouts com ângulos superiores a 60?, conforme
+mencionado em Zoback [37].
+
+Para a simulação, definem-se dois parâmetros de ajuste: RefHP e AdjBK. Em primeiro
+lugar, buscam-se os elementos da malha em que os valores de
+
+p
+J2(?p) sejam acima do limiar
+
+predeterminado RefHP , onde o refinamento h ? p é efetuado. Em segundo lugar, adota-se
+um critério de ajuste da geometria especificado pela busca de uma isolinha correspondente a
+p
+
+J2(?p) = AdjBK, a qual é ajustada a uma elipse.
+Consideram-se dois casos, diferenciados pelas escolhas dos parâmetros de ajuste. Em
+
+ambos casos, o modelo Sandler-DiMaggio é adotado e efetuam-se quatro passos do ajuste
+progressivo da geometria. Precisamente,
+
+1. Dada uma geometria, o problema é resolvido na malha inicial com p = 2, como indicado
+nos testes anteriores.
+
+2. Aplicam-se o critério de ajuste de malha, subdividindo cada elemento acima do limite
+especificado e aumentando seu grau polinomial para p = 3. Resolve-se o problema
+elastoplástico nessa nova geometria.
+
+3. Ajusta-se a geometria baseada no critério AdjBK e resolve-se o problema na malha
+original restrita à nova geometria.
+
+4. Retorna-se ao passo 1.
+
+Caso A: RefHP = 10?7 e AdjBK = 10?4
+
+A Figura (7.13) (a) mostra o valor de
+p
+
+J2(?p) no estágio 2 da simulação. Neste estágio,
+a região ainda corresponde à geometria original, mas a malha foi refinada hp, com base no
+resultado do estágio 1. Nota-se, um valor máximo do segundo invariante da deformação
+plástica igual a
+
+p
+J2(?p) = 0.000829. É possível visualizar a isolinha branca que corresponde
+
+ao limiar estabelecido no critério de ajuste de geometria, saber,
+p
+J2(?p) = 0.0001. Em
+
+um próximo estágio da simulação, representado pela Figura (7.13) (b), é realizado o ajuste
+
+89
+
+
+
+(a
+)
+
+(b
+)
+
+(c
+)
+
+(d
+)
+
+F
+ig
+
+ur
+a
+
+7.
+13
+
+:
+E
+
+vo
+lu
+
+çã
+o
+
+pr
+og
+
+re
+ss
+
+iv
+a
+
+do
+da
+
+no
+:
+
+ca
+so
+
+R
+ef
+
+H
+P
+
+=
+1
+.e
+?
+
+7
+e
+A
+dj
+B
+K
+
+=
+0
+.0
+0
+0
+1
+.
+
+90
+
+
+
+da geometria, pela remoção da pequena área plastificada delimitada pela elipse ajustada à
+isolinha branca na Figura (7.13) (a). Neste estágio observa-se um valor máximo de
+
+p
+J2(?p) =
+
+0.001669. Novamente, marca-se com uma isolinha branca o limiar
+p
+
+J2(?p) = 0.0001. Em
+Em seguida, a região plastificada delimitada pela isolinha, é removida e retorna-se ao estágio
+1. A Figura (7.13) (c) indica o resultado do próximo estágio, após o refinamento hp e a
+execução do problema na nova malha. Observa-se um valor máximo de
+
+p
+J2(?p) = 0.003159,
+
+o que evidencia uma deformação plástica deviatórica cada vez maior. Outras duas tendências
+também podem ser notadas. Uma delas é a tendência da zona plastificada se movimentar
+em direção ao eixo de simetria inferior. A outra é que a área plastifica, é cada vez menor.
+Na Figura (5.4) (d), é mostrado o resultado de um novo ciclo do procedimento, confirmando
+as tendências anteriores. O valor máximo de
+
+p
+J2(?p) = 0.006338 é mais do que o dobro do
+
+valor observado no passo anterior e a área plastificada é reduzida.
+Observa-se que a geometria do poço final obtida com o procedimento desenvolvido assemelha-
+
+se qualitativamente com a geometria do poço obtida experimentalmente em [18], conforme
+indica a Figura (??).
+
+passo área removida(m2) área plastificada(m2) extensão dano(m2) dano(% da Apoco)
+1 - 0.00037 0.00037 4.12
+2 0.00028 0.00039 0.00067 7.32
+3 0.00059 0.00035 0.00113 10.31
+4 0.00087 0.00033 0.00120 13.18
+
+Tabela 7.4: Evolução do dano. Áreas referentes a 1/4 de poço.
+
+A cada aplicação do algoritmo de remoção de área danificada, a área do poço aumenta.
+Somando a área removida e a área plastificada (em que
+
+p
+J2(?p) ? AdjBK), temos uma
+
+estimativa da extensão de dano formação causada pela plastificação.
+A Tabela (7.4) mostra a área plastificada, a extensão do dano e a porcentagem da área
+
+danificada em relação a área do poço. A extensão do dano é calculada realizando a soma entre
+a área plastificada e a área removida pelo ajuste de geometria. Todas as áreas apresentadas
+na tabela são referentes a apenas um quarto do poço. Por isso, no cálculo da porcentagem
+danificada, deve-se dividir a área do poço por 4.
+
+Na Petrobras o critério de estabilidade de poços na fase de perfuração é o de que a área
+de zona danificada não ultrapasse 15% da área do poço. Por este critério é possível concluir
+que, para este poço, empregando estes critérios, o mesmo é considerado estável.
+
+91
+
+
+
+Caso B: RefHP = 10?7 e AdjBK = 5 ? 10?4
+
+Neste caso, a evolução da zona de plastificação segue a tendência da simulação anterior,
+deslocando a zona plastificada para a linha de simetria horizontal do poço, conforme ilustrado
+na Figura (7.14) e Tabela (7.5).
+
+passo área removida(m2) área plastificada(m2) extensão dano(m2) dano(% da Apoco)
+1 - 0.00037 0.00037 4.12
+2 0.00006 0.00038 0.00044 4.89
+3 0.00017 0.00038 0.00055 6.04
+4 0.00027 0.00053 0.00080 8.81
+
+Tabela 7.5: Evolução do dano. Áreas referentes a 1/4 de poço.
+
+Pelo critério discutido na seção anterior, o poço também é considerado estável. Além
+disso, é possível concluir que valores menores de AdjBK levam a uma maior área danificada,
+o que se traduz em menor estabilidade.
+
+92
+
+
+
+a)
+b)
+
+c)
+d)
+
+F
+ig
+
+ur
+a
+
+7.
+14
+
+:
+A
+
+ju
+st
+
+e
+pr
+
+og
+re
+
+ss
+iv
+
+o
+da
+
+ge
+om
+
+et
+ri
+
+a:
+ca
+
+so
+R
+ef
+
+H
+P
+
+=
+1
+.e
+?
+
+7
+e
+A
+dj
+B
+K
+
+=
+0
+.0
+0
+0
+5
+
+.
+
+93
+
+
+
+94
+
+
+
+Capítulo 8
+
+CONCLUSÕES E TRABALHOS
+FUTUROS
+
+No presente trabalho foi implementado um código eficiente para a simulação do fenômeno do
+breakout que ocorre em um poço na fase de perfuração. Um modelo matemático geral para
+pequenas deformações elastoplásticas foi discretizado pelo método de Elementos Finitos. Foi
+desenvolvida uma metodologia de cálculo elastoplástico sendo criado um espaço das tensões
+principais rotacionado HWR. A solução do problema elastoplástico se deu realizando a proje-
+ção sobre o ponto mais próximo da superfícies de plastificação, a qual foi aplicada ao modelo
+de Sandler-DiMaggio. Esta metodologia permitiu simplificar os cálculos e torná-los mais efi-
+cientes. Os resultados da solução da lei constitutiva foram validados comparativamente ao
+artigo Sandler e DiMaggio [12]. Uma análise de estabilidade de poço utilizando o método
+dos elementos finitos, juntamente com o modelo elastoplástico proposto, foi realizada para
+os modelos de Mohr-Coulomb e Sandler-DiMaggio. Um refinamento da ordem polinomial e
+geométrico foi realizado na região onde ocorria maior plastificação melhorando a qualidade
+da solução. Um procedimento específico de transferência do histórico de deformação elasto-
+plástica foi criado. A matriz tangente referente ao cálculo da variação da tensão em função
+da variação da deformação foi calculada consistentemente.
+
+Este estudo teve contribuição importante no desenvolvimento do software SEST2D em
+parceria com a Petrobras. Na próxima etapa do projeto pretende-se
+
+• Incrementar o software de estabilidade de poços SEST2D, em desenvolvimento no atual
+projeto, incluindo novos modelos elastoplásticos.
+
+• Implementar um gerador de malha 3D para estudar estabilidade poços inclinados
+(SEST3D).
+
+95
+
+
+
+• Desenvolver um simulador de ensaios de laboratório para ajuste de parâmetros de
+modelos constitutivos.
+
+• Desenvolver o protótipo de análise de ensaios de laboratório combinados para ajuste
+de propriedades mecânicas.
+
+96
+
+
+
+Bibliografia
+
+[1] F. Armero. Formulation and finite element implementation of a multiplicative model
+of coupled poro-plasticity at finite strains under fully saturated conditions. Computer
+Methods in Applied Mechanics and Engineering, 1999.
+
+[2] F. Armero and A. Pérez-Foguet. On the formulation of closest-point projection algo-
+rithms in elastoplasticity—part i: The variational structure. INTERNATIONAL JOUR-
+NAL FOR NUMERICAL METHODS IN ENGINEERING, 2002.
+
+[3] R. I. Borja, K.M. Sama, and P. F. Sanz. On the numerical integration of three-invariant
+elastoplastic constitutive models. Comput. Methods Appl. Mech. Engrg., 2003.
+
+[4] R.I. Borja. Plasticity Modeling and Computation. Springer, 2013.
+
+[5] W. B. Bradley. Failure of inclined boreholes. J. of Energy Resources Tech Trans, 1979.
+
+[6] D.L. Cecílio, P.R.B. Devloo, S. Gomes, N.Shauer, and E.S.R. Santos. An improved
+numerical integration algorithm for elastoplastic constitutive equations. Computers and
+Geotechnics, 2014.
+
+[7] P. R. B. Devloo. Pz: An object oriented evironment for scientific programming. Comput.
+Methods Appl. Mech. Engrg., 1997.
+
+[8] P. R. B. Devloo. Object oriented tools for scientific computing. Engineering with Com-
+puters, 2000.
+
+[9] P. R. B. Devloo, E. C. Rylo, and E. S. R. Santos. On an object oriented implementation
+of plasticity models. Communications in numerical methods in engineering, 2006.
+
+[10] P. R. B. Devloo, E.R. S. dos Santos, D. L. Cecílio, N. Shauer, and S. M. Gomes. Simu-
+lação numérica de estabilidade de poços. Cilance XXXIV, 2013.
+
+[11] A.A. DiGiovanni, J.T. Fredric, D.J. Holcomb, and W.A Olsson. Micromechanics of
+compactation in an analogue reservoir sandstone. Sandia National Laboratories, Albu-
+querque, New Mexico, 2000.
+
+97
+
+
+
+[12] F. L. DiMaggio, M. ASCE, and I. Sandler. Material model for granular soils. Engineering
+Mechanics Division, 1971.
+
+[13] Erling. Fjaer, Rune M. Holt, Per. Horsrud, Arne M. Raaen, and Rasmus Risnes. Petro-
+leum related rock mechanics. Elsevier, 2nd Edition, Amsterdam, 2008.
+
+[14] A.F. Fossum and R.M. Brannon. The sandia geomodel: Theory and user’s guide. Tech-
+nical report, Sandia National Laboratories, 2004.
+
+[15] A.F. Fossum and R.M. Brannon. The sandia geomodel: Theory and users’s guide. SAND
+report, 2004.
+
+[16] A.F. Fossum and J.T. Fredrich. Cap plasticity models and compactive and dilatant pre-
+failure deformation. North American Rock Mechanics symposium; Pacific rocks 2000,
+2000.
+
+[17] C.D. Foster, R.A. Regueiro, A.F. Fossum, and R.I. Borja. Implicit numerical integration
+of a three-invariant, isotropic/kinematic hardening cap plasticity model for geomaterials.
+Comput. Methods Appl. Mech. Engrg., 2005.
+
+[18] G. Haimson and H. Lee. Borehole breakouts and compaction bands in two high-porosity
+sandstones. International Journal of Rock Mechanics and Mining Sciences, 2004.
+
+[19] L. H. Han, J.A. Elliott, A.C Betham, A. Mills, G. E. Amidon, and B.C Hancock. A
+modified drucker-prager cap model for die compaction simulation of pharmaceutical
+powders. International Journal of Solids and Structures, 2008.
+
+[20] R. Hill. The Mathematical Theory of Plasticity. London: Oxford University Press, 1950.
+
+[21] G. Hofstetter, J.C. Simo, and R.L. Taylor. A modified cap model: closest point solution
+algorithms. Computers and Structures, 1993.
+
+[22] A.T. Bourgoyne Jr. and K.K. Millhein. Applied Drilling Engineering. Society of Petro-
+leum Enginners, 2003.
+
+[23] Nestor Oscar Guevara Junior. Implementação computacional de um modelo constitutivo
+para tratamento de poro-colapso em meios porosos. Dissertação de Mestrado, Junho
+2006.
+
+[24] Ernst Gustav Kirsch. Die theorie der elastizitätund dir bedûrfnisse der festigkeitslehre.
+Zeitschrift des Vereines deutscher Ingenieure, 42, 1898.
+
+98
+
+
+
+[25] E. Lainé, C. Vallée, and D. Fortuné. Nonlinear isotropic constitutive laws: choice of the
+three invariants, convex potentials and constitutive inequalities. International Journal
+of Engineering Science, 1988.
+
+[26] J. Lubliner. Plasticity Theory. New York: Macmillan, 1990.
+
+[27] P. C. A. Lucci. Descri?ão matemática de geometrias curvas por interpola?ão transfinita.
+PhD thesis, Universidade Estadual de Campinas, 2009.
+
+[28] E. S. Neto, D. Peric, and D.R.J. Owen. Computational Methods for Plasticity. John
+Wiley and Sons Ltd, 2008.
+
+[29] A. Pérez-Foguet and F. Armero. On the formulation of closest-point projection algo-
+rithms in elastoplasticity—part ii: Globally convergent schemes. INTERNATIONAL
+JOURNAL FOR NUMERICAL METHODS IN ENGINEERING, 2002.
+
+[30] W. Prager. An Introducion to Plasticity. London: Addison-Wesley, 1959.
+
+[31] I.S. Sandler and D. Rubin. An algorithm and a modular subroutine for the cap model.
+International Journal dor Numerical and Analytical Methods in Geomechanics, 1979.
+
+[32] E.S.R. Santos. Simulador poroeslastoplástico em elementos finitos com subincrementação
+elastoplástica e jacobiana consistente. PhD thesis, UNICAMP, 2009.
+
+[33] E.S.R. Santos and F.H. Ferreira. Mechanical behaviour of a brazilian o?-shore carbonate
+reservoir. American rock mechanics association, 2010.
+
+[34] Arão Dias Tisser. Um modelo constitutivo para análise de estabilidade de poços. Dis-
+sertação de mestrado, 2004.
+
+[35] J. Villela. Avaliação da sensibilidade de um modelo elastoplástico em elementos finitos
+para a análise de estabilidade em poços de petróleo. Dissertação de mestrado, 2010.
+
+[36] M. N. Zahn, L. C. Coelho, L. Landau, and J. L. D. Alves. Numerical study on well-
+bore stability analysis considering volumetric failure. Asociación Argentina de Mecánica
+Computacional, 2010.
+
+[37] M. D. Zoback. Reservoir Geomechanics. Cambridge University Press, 2007.
+
+[38] M. D. Zoback, D. Moos, and L. Mastin. Wellbore breakouts and in situ stress. Journal
+of Geophysical Research, 1985.
+
+99
+
+
+
+100
+
+
+
+Apêndice A
+
+APÊNDICE
+
+Neste apêndice algumas ferramentas utilizadas neste trabalho são detalhadas. São descri-
+tos: o procedimento de cálculo das direções principais, a derivação dos principais invariantes
+utilizados em problemas plásticos, o cálculo da matriz tangente elastoplástica, método de
+verificação de derivadas (checkconv ) através da verificação da ordem de convergência prove-
+niente da expansão de Taylor.
+
+A.1 Direções principais
+
+Uma importante propriedade do espaço das tensões principais é permitir o cálculo das deriva-
+das das tensões principais com respeito (autovalores) ao tensor de tensão de forma analítica,
+conforme detalha o livro [28]. As derivadas dos autovalores de ? são iguais as autoprojeções
+Ei, que são definidas como o produto tensorial dos autovetores ?ei
+
+??i
+??
+
+= Ei = ?ei ? ?ei(i = 1, 2, 3).
+
+No cálculo das autoprojeções é necessário definir o terceiro invariante do tensor de tensões
+
+I3 = det(?).
+
+se ?1 ?= ?2 ?= ?3, então para i = 1, 2, 3,
+
+Ei =
+?3
+
+2?3i ? I1?2i + I3
+
+?
+?2 ? (I1 ? ?i)? +
+
+I3
+?i
+I
+
+?
+
+se ?1 ?= ?2 = ?3 então
+
+Ej = I ? Ei
+
+101
+
+
+
+se ?1 = ?2 = ?3 então
+
+E1 = I
+
+Onde a projeção Ei = ?ei ? ?ei é escrita como o produto tensorial dos autovetores do tensor
+de tensões. Ei tem a propriedade abaixo,
+
+I =
+3X
+
+i=1
+
+?ei ? ?ei
+
+A.2 Derivadas dos invariantes
+
+Para materiais isotrópicos se existe uma função escalar f(?), presume-se que a mesma de-
+pende somente dos autovalores e não dos autovetores do tensor de tensões. Equivalentemente
+a função f(?) é isotrópica se e somente se ela poder ser expressa alternativamente em função
+do invariantes I1, J2 e J3 [14]. Em situações em que a derivada de f(?) com respeito ao
+tensor de tensões é necessária, a regra da cadeia pode ser aplicada como segue,
+
+?f(?)
+
+??
+=
+
+?f
+
+?I1
+
+?I1
+??
+
++
+?f
+
+?J2
+
+?J2
+??
+
++
+?f
+
+?J3
+
+?J3
+??
+
+e as derivadas
+
+?I1
+??
+
+= I
+
+?J2
+??
+
+= S
+
+?J3
+??
+
+= T
+
+onde T = dev(S2).
+Consequentemente a equação ?f(?)
+
+??
+pode ser rescrita,
+
+?f(?)
+
+??
+=
+
+?f
+
+?I1
+I +
+
+?f
+
+?J2
+S +
+
+?f
+
+?J3
+T
+
+A.3 Verificação da Derivada
+
+A verificação das derivadas numericamente pode ser realizada através do erro de linearização
+de uma expressão f(x) que apresenta desvio de ordem quadrática ou superior. Realizando-se
+
+102
+
+
+
+a expansão de Taylor em um ponto x e na direção ?1,
+
+f(x + ?1?x) = f(x) + ?1f
+?(x)?x + O(?1?x)
+
+e depois no mesmo ponto x na direção ?2,
+
+f(x + ?2?x) = f(x) + ?2f
+?(x)?x + O(?2?x)
+
+se considerando-se que ?nC = O(??x) os erros na aproximação das derivadas são,
+
+e1 = f(x + ?1?x) ? f(x) ? ?1f ?(x)?x = ?n1C
+
+e2 = f(x + ?2?x) ? f(x) ? ?2f ?(x)?x = ?n2C
+
+a relação entre os erros deve ser igual a relação entre as direções elevadas ao termo de
+ordem n,
+
+e1
+e2
+
+=
+?n1
+?n2
+
+isso leva a,
+
+n =
+log(e1) ? log(e2)
+log(?1) ? log(?2)
+
+(A.1)
+
+103
+
+
+</field>
+	</doc>
+</add>

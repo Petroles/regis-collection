@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-BT.05403</field>
+		<field name="filename">BTP_1994_37_1_05_Controle_de_conversores.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">CONTROLE DE CONVERSORES DE CRAQUEAMENTO CATALÍTICO EM LEITO FLUIDO
+I - MODELAGEM DINÂMICA
+CONTROL OF FLUID CATALYTIC CRACKING CONVERTERS I - DYNAMIC MODELING
+Lincoln F. Lautenschlager Moro(1) e Darci Odloak1 (2)
+RESUMO — A modelagem simplificada de conversores FCC industriais é enfocada com o objetivo de analisar as estratégias de controle multivariável lineares e não-lineares. O modelo desenvolvido inclui as principais não-linearidades das seções de craqueamento e regeneração em uma forma agrupada, de modo a reduzir o esforço computacional a níveis razoáveis. O modelo é comparado, para várias perturbações (vazões de carga, catalisador e ar para regeneração), com dados reais de operação, coletados de um conversor Kellogg Orthoflow F. Os resultados são bastante promissores, considerando-se a utilização do modelo como ferramenta para o projeto de estratégias de modelo interno, para o controle de conversores. FCC em escala industrial.
+ABSTRACT— This paper focuses the simplified modeling of industrial FCC converters, aiming the analysis of multivariable linear and non-linear control strategies. The developed model includes the main non-linearities of the cracking and regeneration sections in a lumped form to reduce the computation to reasonable levels. The model is compared, for several disturbances (feed flow rate, catalyst flow rate and regeneration air flow rate), to the real operation data collected from a Kellogg Orthoflow F converter. The results are quite promising in terms of the model being used as a tool for the design of internal model strategies for the control of industrial scale FCC converters.
+(Originais recebidos em 27.10.92).
+1	— INTRODUÇÃO
+O processo de craqueamento catalítico em leito fluidizado (FCC) tem como objetivo a transformação, por meio de reações de craqueamento, de hidrocarbonetos de alto peso molecular e baixo valor comerciai em outros de peso molecular menor que, de uma maneira geral, possuem maior interesse econômico. Este processo constitui o coração de uma refinaria típica de petróleo e, segundo Krishna e Parkin111, apresenta o maior potencial de ganho econômico, dentre todos os processos de refino de petróleo, o que faz com que o investimento em um trabalho de modelagem seja compensador, apesar de sua grande complexidade.
+Denn(2) cita o trabalho de Kurihari131 como sendo, provavelmente, o melhor modelo dinâmico disponível na literatura aberta, quando foram propostas expressões cinéticas para a velocidade da reação de craqueamento, de formação de coque e de sua queima no leito do regenerador, além de uma equação para levarem conta a desativação do catalisador pela deposição de coque. Denn(2) comenta que o modelo apresentou resultados qualitativamente corretos quando comparados com dados industriais.
+Em 1975, Wollaston et a/.(4), compilando dados de
+pesquisas prévias, especialmente de Blanding151 e Weekmann161 e utilizando resultados obtidos em uma planta-piloto, propuseram um modelo para a conversão e para o rendimento de coque como função da relação catalisador/óleo, temperatura média de reação e velocidade espacial além de uma função proprietária que, segundo os autores, leva em conta a qualidade da carga, a pressão parcial dos hidrocarbonetos, a atividade do catalisador e o efeito da deposição de coque sobre o mesmo, permitindo que a equação pudesse ser utilizada para simular tanto unidades com craqueamento em riser quanto em leito denso.
+O modelo proposto foi acoplado a um outro bastante simplificado que levava em conta a interação entre o regenerador e o reator e, após uma validação efetuada com dados industriais, foram obtidos resultados suficientemente precisos para serem utilizados em otimização.
+Jacob et al.{7} desenvolveram um modelo para o craqueamento, cuja principal característica foi a divisão dos compostos envolvidos no processo em dez categorias (lumps), levando-se em conta a afinidade química e a faixa de destilação. Foi estabelecido um esquema de reações entre os lumps, considerando todas irreversíveis e eliminando as de ocorrência menos
+1	- Setor de Desenvolvimento da Produção (SEDEP), Divisão de Tecnologia (DITEN), Refinaria Henrique Lage (REVAP)
+2	- Setor de Automação (SEAUT), Divisão de Desenvolvimento Tecnológico (DITED), Refinaria Presidente Bernardes (RPBC)
+provável, o qual mostrou a existência de 21 constantes de reação e energias de ativação a serem determinadas experimentalmente.
+Deve ser lembrado que esta estratégia de agrupamento em lumps foi introduzida, primeiramente, por Weekman(6) com um modelo de três lumps, ou seja, gasóleo, gasolina e gases e coque.
+Em sua tese de doutorado, Le Page(8) desenvolveu um modelo dinâmico do conversor FCC para utilização em treinamento de operadores da Shell/França e, segundo o autor, o modelo conseguia representar uma situação da operação real que os existentes até então não eram capazes, a saber, a ocorrência de diferenças de temperatura negativas entre as fases diluída e densa do regenerador, isto é, temperatura menor na fase diluída.
+Após analisar as hipóteses simplificadoras utilizadas por outros pesquisadores, Krishna e Parkin(1&gt; propuseram um modelo estático para o regenerador, assumindo que, na fase densa, a velocidade de queima do carbono segue uma relação de primeira ordem com a pressão parcial de oxigênio e com o teor de carbono no catalisador. Além disso, foi assumido que a queima ocorre de modo a gerar um gás com relação molar CO/CO2 dependente apenas da temperatura por meio de uma equação exponencial, com aumento da relação à medida que a temperatura aumenta.
+Para a fase diluída, foi considerada apenas a reação de oxidação do CO a CO2 com velocidade, seguindo uma relação de primeira ordem com a pressão parcial de CO e ordem 1/2 com a pressão parcial de O2.
+Objetiva-se, com este trabalho, o desenvolvimento de um modelo dinâmico de um conversor FCC industrial que permita prever o comportamento das principais variáveis operacionais, de modo suficientemente preciso para permitir a sua utilização no desenvolvimento de um sistema de controle. Por outro lado, para permitir o processamento rápido do programa, o modelo deverá ser mantido adequadamente simples.
+2	— DESENVOLVIMENTO DO MODELO DINÂMICO
+O processo de craqueamento constitui-se fundamentalmente da reação de quebra (cracking) de moléculas que produz moléculas com peso molecular menor do que o original. Estas reações exigem altas temperaturas para sua ocorrência a velocidades apreciáveis, e, por isso, é utilizado o processo catalítico que, mesmo assim, demanda temperaturas na faixa de 500 a 550 °C. Além disso, a presença de um catalisador permite melhores seletividades do que o processo puramente térmico, com maior rendimento dos produtos mais desejados. A ocorrência de reações secundárias, como polimerização e desidrogenação, é normalmente indesejável.
+Durante o processo, o coque formado pelas reações secundárias de polimerização deposita-se sobre as partículas de catalisador, reduzindo drasticamente a sua atividade e fazendo com que seja necessário um
+procedimento de regeneração que é feito por meio de combustão. Assim, o processo constitui-se basicamente de duas seções: a de reação, onde o catalisador é colocado em contato com a carga, e a de regeneração, onde o coque é queimado. O catalisador circula entre as duas seções (fig. 1).
+gases de combustão
+produtos
+ar
+carga
+Fig. 1 - Circulação de catalisador entre regenerador e reator.
+Na seção de reação, ocorre consumo de energia, pois as reações de craqueamento são endotérmicas, formação de cpque e desativação do catalisador, que passa a ser chamado de catalisador gasto. Na seção de regeneração, onde a temperatura se situa na faixa de 700 °C, ocorre a queima do coque com a consequente reativação do catalisador e geração de energia, que será utilizada na seção de reação. É possível notar que é extremamente importante a existência de um controle que permita balancear termicamente o sistema, isto é, que faça com que o calor gerado na combustão seja igual ao necessário para o craqueamento e que as temperaturas sejam mantidas dentro dos limites considerados adequados. Como exemplo, cita-se que, normalmente, por limitações de material, a temperatura no regenerador não pode superar 730 °C.
+Além do balanço térmico, é necessário, fazer com que a quantidade de coque gerada na seção de reação seja igual âquantidade queimada, o que é conhecido usualmente como balanço de carbono. Finalmente, é preciso obter a vazão necessária de catalisador entre as duas seções, conhecida como circulação, para o que é indispensável manter um perfil de pressões adequado, o que é chamado de balanço de pressão.
+Basicamente, o modelo aqui desenvolvido visa a prever o comportamento ao longo do tempo das seguintes variáveis:
+— teor de carbono no catalisador gasto (Csc);
+—	teor de carbono no catalisador regenerado do 1a estágio (Crc1);
+—	teor de carbono no catalisador regenerado do 2a estágio (Crc2);
+—	temperatura na saída do riser (Trx);
+—	temperatura do leito denso do 1a estágio de regeneração (Trg1);
+—	temperatura do leito denso do 2a estágio de regeneração (Trg2);
+—	inventário de catalisador no vaso separador (Hra);
+—	inventário de catalisador no 1a estágio de regeneração (Hrg1);
+—	inventário de catalisador no 2a estágio de regeneração (Hrg2);
+—	temperatura da fase diluída do 1a estágio de regeneração;
+—	temperatura da fase diluída do 2a estágio de regeneração;
+—	temperatura da fase diluída geral;
+—	teor de O2 nos gases de combustão;
+—	pressão no regenerador.
+A princípio, as variáveis factíveis de serem manipuladas pelas estratégias de controle são:
+—	vazão de carga para o riser (Rtf);
+—	temperatura da carga na entrada do riser (Tfp);
+—	vazões de ar para o 1a e o 2a estágios de regeneração (Rail e Rai2);
+—	circulação de catalisador regenerado para o riser (Rrc);
+—	circulação de catalisador gasto para o regenerador (Rsc);
+—	vazão de gases de combustão.
+2.1	— Balanço de Carbono no Catalisador do Reator
+O carbono é depositado no catalisador durante as reações de craqueamento, sendo, por isso, conhecido como carbono catalítico.
+Deste modo, sua equação é:
+dCcãt
+Hra—-— = -Rrc.Ccat + lOORcf	(1)
+dt	' '
+onde:
+Hra = inventário de catalisador no vaso separador
+(t);
+Ccat = carbono catalítico (% massa);
+Rrc = circulação de catalisador para o riser (t/min).
+A variável Rcf representa a velocidade de formação de carbono (em t/min), que é uma função complexa das propriedades da carga, temperatura, pressão parcial dos hidrocarbonetos, relação catalisador/carga, tempo de residência dos hidrocarbonetos na zona de reação (tempo de contato), atividade do catalisador, que, por sua vez, depende do teor de coque sobre sua superfície
+etc. A equação utilizada é resultado de uma composição entre a proposta de Denn(2) e a equação de Wollaston et al.w, e leva em conta a influência da maioria das variáveis listadas acima:
+Kcc.Pra.{C/O)w
+Ccat.Crcm
+,WHSV°X
+Rcf =
+EXP{-1500 / R /{Trx + 273)).W.Dtf /1.44 /105
+(2)
+onde:
+Kcc = constante experimental;
+C/O = relação entre a circulação de catalisador e a vazão de carga, conhecida como relação catalisador/óleo (t/t);
+Trx = temperatura na saída do riser (°C)',
+Rtf = vazão de carga (m3/d);
+Dtf = massa específica da carga (t/m3);
+Pra = pressão na zona de reação (kgf/cm2);
+WHSV= velocidade espacial (t carga/h/t catalisador);
+Crc = teor de carbono no catalisador regenerado (% massa).
+Está sendo utilizada uma equação em estado estacionário, pois foi considerado que as reações de craqueamento são muito rápidas, quando comparadas com as outras dinâmicas envolvidas no processo.
+O carbono total no catalisador que deixa o vaso separador, conhecido como catalisador gasto, é representado pela soma do carbono catalítico com o carbono presente no catalisador regenerado. Deste modo, a equação fica:
+Hra	= -Rrc. {Crc2 -Csc) + 1 OORcf	(3)
+sendo:
+Csc = teor de carbono no catalisador gasto (% massa);
+Crc2 = teor de carbono no catalisador regenerado (% massa).
+2.2	— Balanço de Energia no Riser
+O reator de FCC é, na verdade, um tubo longo {riser) onde a carga vaporizada arrasta o catalisador a uma velocidade da ordem de 20 m/s, o que leva a um tempo de residência da ordem de 2 s. Esse tempo, reduzido em relação à dinâmica dos demais elementos do conversor, torna perfeitamente factível a hipótese de quase-estado estacionário para o riser. Entretanto, esta hipótese leva a um conjunto de equações algébricas não-lineares e que, portanto, necessitaria de um procedimento iterativo para a sua solução a cada passo de integração do sistema. Para simplificar a abordagem, o riser é considerado um reator de mistura perfeita com um tempo de residência equivalente ao tempo real. Basicamente, o balanço leva em conta o aporte de calor proporcionado pelo catalisador quente que vem do
+regenerador, o calor de vaporização da carga e a entalpia das reações de craqueamento, cujo resultado líquido é sempre endotérmico associado ao calor necessário para aquecer os hidrocarbonetos até a temperatura na saída do riser.
+Hris. Sc. = Sc. Rrc. (Trg2 - Trx) + Sf. Dtf. Rtf. (Tfp - Trx) /1440 + -kHfv.Dtf.Rtf ItAAO-kHcrRoc	'
+sendo:
+Hris = inventário de catalisador no riser (t);
+Sc = calor específico do catalisador, considerado constante(kcal/kg/°C);
+Trg2 = temperatura do leito do segundo estágio de regeneração (°C);
+Sf = calor específico da carga, que é considerado constante e igual ao calor específico dos produtos (kcal/kg/°C);
+Tfp = temperatura da carga na entrada do riser (°C);
+DHfv = calor de vaporização da carga (kcal/kg);
+DHcr = calor de craqueamento (kcal/kg);
+Roc = velocidade das reações de craqueamento (t/min).
+A velocidade das reações de craqueamento pode ser obtida por:
+Roc = Kcr. A / (t + A).Rtf.Dtf /1440	(5)
+onde:
+Kcr = constante a ser determinada experimentalmente;
+A = severidade, definida pela equação (6):
+í-1500/7? &gt; t fTrx + 273 J
+A = r T	Pr “■&amp;lt;c '	■ WHSV-"”. Ex/Á
+Ccat. Crc	I
+(6)
+É possível obter a fração mássica da carga convertida em produtos por meio da expressão:
+Conversão (%m) = Roc/1440/Rtf/Dtf
+2.3	— Balanço de Catalisador no Vaso Separador
+dHra „	„
+----= Rrc - Rsc dt
+(7)
+A vazão do catalisador gasto é manipulada pela válvula colocada na parte inferior da tubulação interligando o vaso separador com o regenerador. Esta vazão depende do diferencial de pressão disponível, que, por sua vez, depende das pressões do vaso separador e do regenerador e do nível do leito de catalisador.
+O diferencial de pressão disponível para a válvula é dado por:
+=P,.+yd + yh,p -	(8)
+onde:
+APlcv = perda de carga disponível para a válvula (kgf/m2);
+Pra = pressão no vaso separador (kgf/m2);
+y = peso específico do catalisador fluidizado (kgf/m3);
+hsp = altura do stand-pipe (m);
+Prg = pressão no regenerador (kgf/m2).
+A altura do catalisador no vaso separador h é dada por:
+h = H„/^A	(9)
+onde:
+p = massa específica do catalisador no vaso separador (kg/m3);
+A = área transversal do vaso separador (m2).
+A vazão do catalisador por meio da válvula é dada por:
+^^^.^.(AP^)''2	(10)
+onde:
+Alcv = abertura da válvula;
+CVLCV = coeficiente de vazão.
+A dinâmica desta válvula, assim como de todas as outras, foi considerada de primeira ordem:
+rLCVdALCV / dt = C - Alcv	(11)
+sendo:
+C = saída do controlador de nível do vaso separador.
+2.4	— Balanço de Energia no Vaso Separador
+A temperatura do catalisador no vaso separador é obtida por uma equação bastante simples, que supõe calor específico constante com a temperatura e leva em conta apenas a capacidade térmica do catalisador, desprezando qualquer efeito relacionado aos hidrocarbonetos ou ao vapor d’água:
+HmdTJdt = RK.Trx-Rsc.Tm	(12)
+2.5	— Balanço de Energia no Leito do Primeiro Estágio do Regenerador
+É assumido que este leito pode ser representado por um reator de mistura, com temperatura e concentrações homogêneas. Além disso, é admitido que uma determinada fração do ar injetado no primeiro estágio é arrastada para o segundo, sofrendo aquecimento até a temperatura do leito, mas não participando da reação de queima do coque. Esta hipótese foi necessária, pois nota-se que
+ocorre combustão apreciável no segundo estágio, mesmo que a injeção de ar seja nula. Assim, a equação é: onde:
+H,sl.Sc.dT,9, /df = SC.R„.T„	+
++0,0215.S..R,il(r,-F„,2.T,1) + -Ftk1.S,.T„1/1000 +	(13)
+-AH^.C^.12/1000
+Sa = calor específico do ar e dos gases de combustão (kcal/kg/°C);
+Ra)1 = vazão de ar injetada no primeiro estágio de regeneração (kNm3/h);
+Tai = temperatura do ar injetado (°C);
+Far12 = fração do ar injetado no primeiro estágio, que é arrastada para o segundo. Este valor é proporcional à vazão de catalisador que flui entre os dois estágios;
+Fgk1 = vazão degases de combustão (kg mol/min); Carb1 = carbono queimado (kg mol/min);
+AHrgl = calor de combustão do coque, que é considerado função apenas da relação CO2/ CO nos gases de combustão e é calculado pela equação(14).
+= (7831+ 5416/(CO2 /CO))/(l + 1/(CO2/CO))	(14)
+Representando o efeito total das seguintes reações:
+C + O2 -» CO2	AH = -7,831 kcal/kg
+C + 1/2 O2-» CO	AH = -5,416 kcal/kg
+É fácil notar que foi considerado o coque constituído apenas de carbono (grafite), desprezando a presença de hidrogênio, enxofre, etc.
+Na fase diluída, ocorre apenas a reação de oxidação do CO:
+2CO(g) + O!-*2CO2(g)	(15)
+A velocidade da reação de queima do carbono é expressa por:
+ç=-K„.e-EC"’r.Cc.Po2	(16)
+onde:
+Kco = constante pré-exponencial (kPa 's1);
+E/R = 18 900 k;
+Cc = concentração de carbono no catalisador (kg C/kg catalisador);
+Po2 = pressão parcial média logarítma de O2 ao longo do leito (kPa).
+Nesse caso, utilizou-se uma simplificação da equação anterior:
+fía, = K„.exp[-18900/(^ +273)].C„,.OW.P,	(17)
+sendo:
+Rcb1 = velocidade de queima do coque no primeiro estágio (% C/min);
+Crc1 = teor de carbono no catalisador do 1a estágio (% massa);
+O( = teor de O2 no gás de combustão do primeiro estágio (%vol.);
+Prg = pressão do regenerador (kgf/cm2);
+Carb1 = queima de carbono em kg mol/min, dada pela equação seguinte:
+C,M = 10/12.fícb,.Hv,	(18)
+2.6	— Balanço de Carbono no Catalisador no Primeiro Estágio do Regenerador
+dC„, /dt = (R„. C,c - RrcV CK, )/H„- Rm	(19)
+2.7	— Balanço de Oxigênio na Fase Densa
+Vvpm lAOOdO,,, / dt = 0.21.R- - FG".Ols, /100 -10 / 12.Rch1. (20)
+onde:
+V, = volume da fase densa do primeiro estágio (m3);
+pm = densidade molar dos gases de combustão (kg mol/m3);
+Rmai1 = vazão molar de ar, já descontado o arraste para o segundo estágio (kg mol/min);
+FGm = vazão molar dos gases de combustão (kg mol/min);
+O = % molar de O2 nos gases de combustão na saída da fase densa;
+F ,	= relação molar O2 consumido/C queimado,
+fornecida por:
+F,„ = (/’ + 2)/2/(/’ + 1) + x/4	(21)
+onde:
+b	= relação CO/CO2 nos gases de combustão;
+x	= relação hidrogênio/carbono no coque.
+Estes cálculos são repetidos de maneira análoga para o segundo estágio de regeneração.
+Na fase diluída do primeiro estágio, considerou-se apenas a ocorrência da reação (15), que fornece 67 636 kcal/kg mol, com velocidade expressa pela equação (22):
+Ft„, = -F„.exp[-15000 /	+ 273)].[o2f.[co].p;5	(22)
+onde:
+R em kq mol de CO/m3/s;
+[O2]	= % molar de O2 na fase diluída;
+[CO] = % molar de CO na fase diluída.
+O balanço de massa para O2 é dado por:
+/100.d[O2]/ dt = FG". (o,Bl - [O2]) /100 - Rcü /2.^,.60 (23)
+sendo que Vdi1 é o volume da fase diluída do primeiro estágio (m3).
+Daí, o balanço de energia na fase diluída do primeiro estágio fica:
+dTdn Ttit = FGIpl	- Tdn) + 67636. R„.6O / p / S,	(24)
+onde:
+Tdi1 = temperatura da fase diluída do primeiro estágio (°C);
+FG = vazão de gases de combustão (kg/min);
+p = densidade dos gases de combustão (kg/m3).
+Cálculo análogo é feito para a fase diluída do segundo estágio e para a fase diluída geral.
+2.8	— Balanço de Pressão no Regenerador
+O balanço é feito, considerando-se o regenerador simplesmente como uma capacitância, de acordo com a equação (25):
+V„fyldt = F-F,	(25)
+onde:
+F. = vazão de gases de combustão gerados (kg/min);
+Fo = vazão de gases de combustão enviados para a caldeira de CO (kg/min).
+Considerando-se que os gases de combustão comportam-se como gases ideais, tem-se:
+/2 = e,.P/W/fl/(7;+273)	(26)
+e, assim, combinando esta equação com a (25), obtém-se:
+l4,.PM/R/(7;+273)^/df = Ff-Fo	(26)
+Fo é controlado pela válvula slide de gases de combustão sob o comando do controlador de pressão diferencial entre o regenerador e o vaso separador. Esta válvula é simulada de maneira semelhante às válvulas de catalisador.
+2.9	— Balanço de Catalisador no Leito do Primeiro Estágio do Regenerador
+O leito do primeiro estágio de regeneração recebe catalisador gasto do vaso separador com vazão manipulada pela válvula de catalisador gasto sob o comando do controlador de nível do vaso separador. O catalisador flui pelo primeiro estágio, encaminhando-se para o segundo, apenas devido à diferença de nível entre os dois estágios. A vazão, neste caso, é considerada proporcional à raiz quadrada da altura acima do vertedor. O nível de catalisador no primeiro estágio é calculado por:
+onde:
+pcat = massa específica média do leito do primeiro estágio (kg/m3);
+Arg1 = área transversal do primeiro estágio (m2).
+Fig. 2 - Escoamento de catalisador no regenerador.
+E assim:
+R„, = K.(/7-/7j1'2
+(29)
+onde:
+Rrc1 = vazão de catalisador do primeiro para o segundo estágio (t/min);
+hv = altura do vertedor (4 m).
+A equação diferencial fica:
+K.1dH,1/df = R.c-R,c,	(30)
+3	— VALIDAÇÃO DO MODELO
+Para se verificar a adequação do modelo à realidade industrial, foram realizados testes na unidade de craquea-mento da Refinaria Henrique Lage, constituídos basicamente da aplicação de uma variação em degrau em uma variável manipulada, e acompanhamento das respostas das variáveis operacionais mais importantes ao longo do tempo.
+Os testes foram realizados com o controlador de temperatura na saída do riser em manual, pois a operação em automático exige que o operador faça constantes alterações na vazão de ar para manter o sistema em controle. Já com o controlador em manual, o que significa abertura da válvula constante e circulação praticamente constante, o sistema é estável em malha aberta e não há necessidade de se fazerem alterações para mantê-lo sob controle.
+Em todos os testes, as variáveis acompanhadas foram:
+— temperatura na saída do riser (ou temperatura de reação);
+—	temperatura da fase densa do 1a estágio de regeneração;
+—	temperatura da fase densa do 2- estágio de regeneração;
+—	temperatura da fase diluída do 1s estágio de regeneração;
+—	temperatura da fase diluída do 2- estágio de regeneração.
+Para cada um dos testes, foi processada uma simulação utilizando o programa desenvolvido conforme as equações descritas anteriormente e codificado em linguagem FORTRAN. Para integração das equações diferenciais, é utilizada a sub-rotina SDRIV2 fornecida por Kahaner eta/.(9).
+A alteração daquelas variáveis acima em relação ao valor do estado estacionário foi plotada em gráficos, juntamente com a alteração obtida experimentalmente.
+3.1	— Variação na Vazão de Carga
+O primeiro teste consistiu em um aumento na vazão de carga da unidade de 120 m3/d, mantendo-se constantes a vazão de ar para o regenerador, a abertura da válvula de catalisador regenerado, a temperatura da carga, as pressões e todas as outras condições que pudessem afetar significativamente o teste. Os resultados obtidos estão nos gráficos das figuras a seguir.
+É importante observar que os dados práticos têm sua precisão limitada pelos instrumentos existentes na unidade. Assim, por exemplo, as temperaturas são coletadas manualmente de um indicador digital sem casas decimais. Portanto, a resolução é de 1 °C, sem contar os erros do próprio sensor.
+A variação da temperatura na saída do riser é mostrada na figura 3. Observa-se que ela apresentou uma queda de 2 °C após cerca de 35 min, ao passo que a simulação apresentou uma queda de 2,5 °C com constantes de tempo bem próximas. Levando-se em conta as limitações mencionadas envolvidas neste teste, considerou-se o resultado bastante satisfatório.
+Delta °C Temperatura na saída do riser
+0	5	10	15	20	25	30	35	40	45	50
+tempo (min.)
+Degrau = 120 mV d na carga
+Fig. 3 - Resposta da temperatura na saída do riser a uma perturbação em degrau na vazão de carga da unidade industrial.
+Com relação às temperaturas do regenerador, cujo comportamento é mostrado nas figuras de 4 a 6, pode-se notar uma coincidência bastante razoável da simu
+lação com o resultado experimental, ressalvando apenas que a simulação, como era de se esperar, apresenta variações mais suaves do que os dados reais não-filtrados, que incorporam ruídos naturais do processo.
+Fig. 4 - Temperatura da fase densa do primeiro estágio do regenerador para um degrau na vazão de carga.
+tempo ( min.)
+Degrau = 120 m3/d na carga
+Fig. 5 - Temperatura da fase densa do segundo estágio do regenerador para um degrau na vazão de carga.
+Delta °C Temperatura fase diluída do primeiro esta'gio
+0	5	10	15	20	25	30	35	40	45	50
+tempo (min.)
+Degrau = 120 m3/d na carga
+Fig. 6 - Temperatura da fase diluída do primeiro estágio do regenerador para um degrau na vazão de carga.
+3.2	— Variação na Abertura da Válvula de Catalisador Regenerado
+O segundo teste consistiu em uma variação de 4% na abertura da válvula de circulação de catalisador regenerado, cujo controlador estava em modo manual. Com a redução na abertura desta válvula, espera-se queda na temperatura de saída do riser e elevação nas temperaturas do regenerador.
+Como pode ser visto nas figuras de 7 a 11, os resultados do modelo são bastante próximos dos observados na planta. É importante notar que esses resultados não são consequência de uma otimização dos parâmetros do modelo, pois usaram-se, basicamente, os valores existentes na literatura. Portanto, resultados ainda melhores poderiam ser obtidos com uma escolha adequada desses parâmetros.
+Delta °C Temperatura na saída do Riser
+										
+										
+	V-	L					/			
+“1 -	V	L			real		Z			
+	A	X		A				simu	ado	
+				/		z				
+-3		X								
+							—			
+		r rii						-111 1		
+0	5	10	15	20	25	30	35	40	45	50
+tempo ( mín.)
+Degrau =	4% na abertura da TRCV
+Fig. 7 - Temperatura na saída do riser para um degrau na abertura da válvula de catalisador regenerado.
+Delta °C Temperatura fase densa do primeiro estagio
+										
+						/	X			
+				rea	1	/	“A	S.		
+						/		x		
+												
+						simu	ado			
+										
+										
+	p . FT|									
+0	5	10	15	20	25	30	35	40	45	50
+tempo ( mín.)
+Degrau = 4% na abertura da TRCV
+Fig. 8 - Temperatura da fase densa do primeiro estágio do regenerador para um degrau na abertura da válvula de catalisador regenerado.
+Delta °C Temperatura fase densa do segundo estagio
+										
+						real				
+										
+										
+										
+						s	imula&lt;	io		
+										
+										
+										
+					11 1 1	rrrxTi	-’-n-q			
+0	5	10	15	20	25	30	35	40	45	50
+tempo (min.)
+Degrau =	4% na abertura da TRCV
+Fig. 9 - Temperatura da fase densa do segundo estágio do regenerador para um degrau na abertura da válvula de catalisador regenerado.
+tempo (min.)
+Degrau = 4% na abertura da TRCV
+Fig. 10 - Temperatura da fase diluída do primeiro estágio do regenerador para um degrau na abertura da válvula de catalisador regenerado.
+Delta °C Temperatura fase diluída do segundo estágio
+0	5	10	15	20	25	30	35	40	45	50
+tempo (min.)
+Degrau = 4% na abertura da TRCV
+Fig. 11 - Temperatura da fase diluída do segundo estágio do regenerador para um degrau na abertura da válvula de catalisador regenerado.
+3.3	— Variação na Vazão de Ar
+O terceiro teste foi realizado, aplicando-se uma variação de +2 400 Nm3/h na vazão de ar para o primeiro estágio do regenerador, mantendo-se constante a vazão para o segundo estágio. Como resultado desta alteração, espera-se elevação em todas as temperaturas registradas.
+De um modo geral, o simulador apresentou respostas compatíveis com os dados experimentais (figs, de 12 a 16).
+Delta °C Temperatura na saída do Riser
+										
+										
+								simul	ido	
+							1			
+						/				
+										
+		1					real			
+		/								
+		/								
+		/								
+										
+										
+										
+					....	....	....			
+0	5	10	15	20	25	30	35	40	45	50
+tempo (min.) ■
+Degrau = + 2.400 Nm3/h de ar para regeneração
+Fig. 12 - Temperatura na saída do riser para um degrau na vazão de ar para regeneração.
+										
+										
+		real								
+	/									
+	/		X-	$						
+	/ X		-'X							
+		s/								
+	s	mulac	Io							
+O 5	10	15	20	25	30	35	40	45	50
+										
+								simulf	ido	
+						r'-'					
+					-7	\	/		■	
+	/	X7			Z	X	z	rea		
+	/,		s'							
+	7/									
+										
+										
+0	5	10	15	20	25	30	35	40	45	50
+tempo (min.)
+Degrau = + 2.400 Nm3/h de ar para regeneraça’o
+Fig. 13 - Temperatura da fase densa do primeiro estágio do regenerador para um degrau na vazão de ar para regeneração.
+Delta °C Temperatura fase diluída do primeiro esta’gio
+-2	|| i|	||.......p ,, , |., ,, |, ,,, |
+0	5	10	15	20	25	30	35	40	45	50
+tempo (min.)
+Degrau = + 2.400 NmVh de ar para regeneração
+Fig. 15 - Temperatura da fase diluída do primeiro estágio do regenerador para um degrau na vazão de ar para regeneração.
+4	— CONCLUSÕES
+Levando-se em conta a precisão dos dados coletados industrialmente, pode-se considerar o comportamento do modelo bastante satisfatório e perfeitamente adequado para ser utilizado no desenvolvimento de algoritmos de controle multivariável.
+Os testes de validação do modelo foram realizados para perturbações na vazão de carga, ar de regeneração e catalisador regenerado, que, juntamente com a carga fresca, são as variáveis com maior potencial para utilização como variáveis manipuladas em um esquema de controle multivariável.
+Apesar de as considerações sobre a dinâmica do processo incluídas no modelo serem relativamente triviais, os resultados mostraram-se surpreendentemente bons, tendo em vista os objetivos de um estudo de controle de processo. Neste caso, são relevantes apenas as variáveis que realmente são monitoradas e controladas na planta e, sob esse aspecto, o comportamento do modelo foi excelente.
+Os resultados obtidos mostram que o modelo desenvolvido pode representar confiavelmente o conversor de FCC, para estudos sobre estratégias de controle preditivo com modelos lineares baseados nas
+tempo (min.)
+Degrau = +■ 2.400Nm /h de arpara regeneração
+Fig. 14 - Temperatura da fase densa do segundo estágio do regenerador para um degrau na vazão de ar para regeneração.
+Delta °C Temperatura fase diluída do segundo estagio
+tempo (min.)
+Degrau = + 2.400 Nm’/ti de ar para regeneração
+Fig. 16 - Temperatura da fase diluída do segundo estágio do regenerador para um degrau na vazão de ar para regeneração.
+respostas ao degrau, principalmente para avaliação de estratégias que visem a maximizar a carga da unidade, forçando as temperaturas do sistema a se aproximarem de suas restrições. Analogamente, tendo em vista as não-linearidades incluídas no modelo, existe a possibilidade de um bom comportamento do mesmo para condições bem diferentes das testadas. Nesse caso, o modelo poderá ser usado para testes de robustez dos algoritmos lineares ou mesmo diretamente no desenvolvimento de algoritmos não-lineares que tenham robustez mais abrangente que os lineares.
+REFERÊNCIAS BIBLIOGRÁFICAS
+(') KRISHNA, A.S., PARKIN, E.S. Moldeling the regenerator in commercial fluid catalytic cracking units. Chemical Engineering Progress, New York, v. 81, n. 4, p. 57-62, Apr 1985.
+(2)	DENN, M.M. Process modeling. [S. I.]: Longman Scientific and Tech-
+nical, 1988.
+(3)	KURIHARA, H. Optimal control of fluid catalytic cracking processes.
+Cambridge, MA: MIT, 1967. Tese (Doutorado)-Massachusetts Institute of Technology.
+(4)	WOLLASTON, E.G., HAFLIN, W.D., D’SOUZA, G.J. What influences
+cat cracking. Hydrocarbon Processing, Houston, Tx, v. 54, n. 9, p. 93-100, Sep 1975.
+(5)	BLANDING, F.H. Reaction rates in catalytic cracking of petroleum.
+Industrial Engineering Chemistry, Washington, v. 45, n. 4, p. 1186, Apr 1953.
+(6)	WEEKMAN JR., V.W. A model of catalytic cracking conversion in fixed,
+moving and fluid-bed reactors. Industrial Engineering - Progress Design Development.Washington, v. 7, n. 1, p. 90-95, Jan 1968.
+(7)	JACOB, S.M. etal. A lumping and reaction scheme for catalytic crack-
+ing. AICHE Journal, New York, v. 22, n. 4, p. 701-712, July 1976.
+(8)	LE PAGE, C. Modelisation du comportementstatique etdynamique d'une
+unite de craquage catalytique à lis fluidises: apllication à la simulation pedagogique. Grénoble: INPG, 1981.188 p. Tese (Doutorado em Engenharia) - Institut National Polytechinique de Grénoble.
+(9)	KAHANER, D., MOLER, C. B., NASH, S. Numerical methods and software. Englewood Cliffs, NJ: Prentice Hall International, 1989.495 p.
+BIBLIOGRAFIA
+ODLOAK, D., MOREIRA, A. Simulação de regeneradores de UFCC em leito fluidizado. In: CONGRESSO BRASILEIRO DE PETRÓLEO, 3, 1986, Rio de Janeiro. Trabalhos técnicos. Rio de Janeiro: Instituto Brasileiro de Petróleo, 1986. 6v. v. 5, TT-191.
+</field>
+	</doc>
+</add>

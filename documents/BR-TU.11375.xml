@@ -1,0 +1,7351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.11375</field>
+		<field name="filename">16651_001095195.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+MINISTÉRIO DA EDUCAÇÃO
+
+UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL
+
+PROGRAMA DE PÓS-GRADUAÇÃO EM ENGENHARIA MECÂNICA
+
+EVALUATION OF THE WSGG AND SLW MODELS FOR THE RADIATIVE
+
+TRANSFER PREDICTION IN NON-ISOTHERMAL HOMOGENEOUS AND
+
+NON-HOMOGENEOUS MEDIA
+
+por
+
+Roger Mazurek da Silva
+
+Dissertação para obtenção do Título de
+
+Mestre em Engenharia
+
+Porto Alegre, Março de 2019
+
+
+
+AVALIAÇÃO DOS MODELOS WSGG E SLW PARA A PREDIÇÃO DA
+
+TRANSFERÊNCIA RADIATIVA EM MEIOS NÃO ISOTÉRMICOS HOMOGÊNEOS
+
+E NÃO HOMOGÊNEOS
+
+por
+
+Roger Mazurek da Silva
+
+Engenheiro Mecânico
+
+Dissertação submetida ao Corpo Docente do Programa de Pós-Graduação em Engenharia
+
+Mecânica, PROMEC, da Escola de Engenharia da Universidade Federal do Rio Grande
+
+do Sul, como parte dos requisitos necessários para a obtenção do Título de
+
+Mestre em Engenharia
+
+Área de Concentração: Fenômenos de Transporte
+
+Orientador: Prof. Dr. Francis Henrique Ramos França
+
+Aprovada por:
+
+Prof. Dr. Antônio José da Silva Neto .. . . . . . . . . . . . . . . . . . . . . . . . . .PPGMC/UERJ
+
+Prof. Dr. Felipe Roman Centeno .. . . . . . . . . . . . . . . . . . . . . . . . . . . PROMEC/UFRGS
+
+Prof. Dr. Fernando Marcelo Pereira . . . . . . . . . . . . . . . . . . . . . . . . PROMEC/UFRGS
+
+Prof. Dr. Fernando Marcelo Pareira
+
+Coordenador do PROMEC
+
+Porto Alegre, 29 de Março de 2019
+
+ii
+
+
+
+AGRADECIMENTOS
+
+Agradeço àqueles amigos e colegas de mestrado que foram companheiros, ato de
+
+extrema importância, principalmente ao longo do primeiro ano.
+
+Agradecimento especial ao meus amigos e colegas do Laboratório de Radiação
+
+Térmica por toda ajuda, apoio e conhecimento compartilhado durante este período.
+
+Agradeço também ao Prof. Francis França pela orientação e suporte ao longo da
+
+pesquisa.
+
+À banca avaliadora por todas as contribuições ao trabalho.
+
+Por ?m, agradeço à Coordenação de Aperfeiçoamento de Pessoal de Nível Superior
+
+(CAPES) pela bolsa de mestrado.
+
+iii
+
+
+
+RESUMO
+
+Em sistemas de combustão tais como fornos para tratamento térmico, geradores de vapor,
+
+câmaras de motores e flares na indústria de petróleo, a radiação térmica é o mecanismo
+
+de transferência de calor predominante devido à presença de gases, fuligem e partículas
+
+em altas temperaturas. O cálculo da radiação térmica em gases participantes, tais como
+
+H2O e CO2, é uma tarefa complexa devido à forte dependência de suas propriedades
+
+radiativas com o número de onda. A solução `exata' linha-por-linha (LBL) é a alternativa
+
+mais precisa. No entanto, esta metodologia requer um alto esforço computacional, o qual
+
+não é factível para soluções de problemas práticos de engenharia. Modelos Globais tais
+
+como a Soma-Ponderada-de-Gases-Cinza (WSGG) e a Soma-Ponderada-de-Gases-Cinza
+
+baseada em linhas espectrais (SLW) são alternativas promissoras. O modelo WSGG,
+
+apesar de sua formulação relativamente simples, fornece resultados próximos à integração
+
+LBL, assim como o modelo SLW, normalmente reconhecido como uma evolução do modelo
+
+WSGG. Desse modo, neste trabalho foi realizada a comparação entre a precisão do modelo
+
+WSGG e a do SLW. Para tanto, foram obtidas soluções para H2O, CO2 e misturas de
+
+H2O/CO2 em meios não isotérmicos homogêneos e não homogêneos. Para misturas, no
+
+modelo WSGG também foi utilizado o método da sobreposição, o qual faz parte da
+
+modelagem de misturas do modelo SLW. A abordagem da sobreposição surge como uma
+
+alternativa para o tratamento de meios não homogêneos. No entanto, o desa?o deste
+
+método é a combinação de espécies participantes uma vez que isto requer um aumento no
+
+esforço computacional com o aumento do número de componentes. A partir disto, este
+
+trabalho propõe e aplica um método da sobreposição reduzido para o modelo WSGG, com
+
+o intuito de reduzir o tempo computacional. Além disso, é veri?cada a consistência desta
+
+proposta em chamas difusivas. Os resultados mostram que o modelo WSGG pode levar a
+
+resultados tão bons quanto os do modelo SLW dependendo do problema analisado. Ainda,
+
+o método da sobreposição reduzido forneceu uma precisão muito próxima à do método da
+
+sobreposição padrão.
+
+Palavras-chave: Radiação Térmica; Modelo WSGG; Modelo SLW; LBL; Método da So-
+
+breposição.
+
+iv
+
+
+
+ABSTRACT
+
+In combustion systems such as gas furnaces for thermal processing, steam generators, en-
+
+gine chambers and ?ares in the petroleum industry, the thermal radiation is the dominant
+
+heat transfer mechanism due to the presence of participating gases, soot and particulates
+
+at high temperatures. The thermal radiation computation in participating gases, such as
+
+H2O and CO2, is a complex task due to the strong dependence of its radiative properties
+
+on the wavenumber. The `exact' Line-by-Line (LBL) calculation is the most accurate
+
+alternative. However, this methodology requires a very expensive computational e?ort,
+
+which is not feasible for practical engineering problems solution. Global Models such
+
+as the Weighted-Sum-of-Gray-Gases (WSGG) and the Spectral-Line Weighted-Sum-of-
+
+Gray-Gases (SLW) are promising alternatives. The WSGG model, despite its relatively
+
+simple formulation, has provided results near to LBL integration as well as the SLW
+
+model, often recognized as a WSGG model improvement. Thus, in this work a compar-
+
+ison between the accuracy of the WSGG and SLW models was made. Therefore, were
+
+obtained solutions for H2O, CO2, and H2O/CO2 mixtures in non-isothermal homoge-
+
+neous and non-homogeneous media. For mixtures, in the WSGG model was also used
+
+the superposition method, which makes part of SLW mixture modeling. The superposi-
+
+tion approach arises as an alternative to non-homogeneous media treatment. However,
+
+the challenge of this approach is the combination of participating gases since it requires
+
+increasing computational e?ort as the components number increase. Thereby, this work
+
+proposes and applies a reduced superposition method for the WSGG model aiming for
+
+computational time reduction. In addition, the consistency of this proposition is also
+
+veri?ed in di?usion ?ames. The results show that the WSGG model can lead to results
+
+as good as those of SLW depending on the problem under analysis. Further, the reduced
+
+superposition method provided accuracy very near to that of the standard superposition
+
+method.
+
+Keywords: Thermal Radiation; WSGG Model; SLW Model; LBL; Superposition Method.
+
+v
+
+
+
+INDEX
+
+1 INTRODUCTION . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+
+1.1 Objectives of the study . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+
+1.2 Organization of the Work . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+
+2 BIBLIOGRAPHY SURVEY . . . . . . . . . . . . . . . . . . . . . . 5
+
+2.1 Radiative Transfer Modeling . . . . . . . . . . . . . . . . . . . . . . . . . 5
+
+2.2 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+
+3 FUNDAMENTALS OF THERMAL RADIATION . . . . . . . . . 14
+
+3.1 Blackbody . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+
+3.2 Thermal Radiation Intensity . . . . . . . . . . . . . . . . . . . . . . . . . 16
+
+3.2.1 Attenuation of Intensity by Absorption . . . . . . . . . . . . . . . . . . . 17
+
+3.2.2 The Increase of Intensity by Emission . . . . . . . . . . . . . . . . . . . . 17
+
+3.3 Spectral Line Broadening . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+
+3.3.1 Natural Broadening . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+
+3.3.2 Doppler Broadening . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+
+3.3.3 Collision Broadening . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+
+3.3.4 Stark Broadening . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+
+3.4 Absorption Coe?cient . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+
+3.5 Spectral Databases . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+
+3.6 Radiative Transfer Equation . . . . . . . . . . . . . . . . . . . . . . . . . 24
+
+3.7 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+
+4 AVAILABLE METHODS FOR SPECTRAL INTEGRATION
+
+OF THE RTE AND A NEW PROPOSITION . . . . . . . . . . . 26
+
+4.1 The Line-by-Line Integration . . . . . . . . . . . . . . . . . . . . . . . . 26
+
+4.2 Weighted-Sum-of-Gray-Gases . . . . . . . . . . . . . . . . . . . . . . . . 27
+
+4.2.1 Superposition Method . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+
+4.2.2 Proposition of a Reduced Superposition Method . . . . . . . . . . . . . . 32
+
+4.3 Spectral-Line Weighted-Sum-of-Gray-Gases . . . . . . . . . . . . . . . . . 35
+
+4.3.1 SLW Modeling of Gas Mixture . . . . . . . . . . . . . . . . . . . . . . . . 40
+
+vi
+
+
+
+4.4 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+
+5 RESULTS AND DISCUSSION . . . . . . . . . . . . . . . . . . . . . 42
+
+5.1 Analyze Between the LBL Solution and the WSGG and SLW Models . . 42
+
+5.1.1 Radiative Transfer in Non-isothermal, Homogeneous Media . . . . . . . . 42
+
+5.1.2 Radiative Transfer in Non-isothermal, Non-homogeneous Media . . . . . 48
+
+5.1.3 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 55
+
+5.2 Application of the Proposed Reduced Superposition Method . . . . . . . 56
+
+5.2.1 Radiative Transfer in One-dimensional Problems . . . . . . . . . . . . . 56
+
+5.2.2 Evaluation of the Consistency of the Reduced Superposition Method
+
+in Di?usion Flames . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 59
+
+5.2.3 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 61
+
+6 CONCLUSIONS AND PERSPECTIVES . . . . . . . . . . . . . . 62
+
+BIBLIOGRAPHY . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 64
+
+APPENDIX A Homogeneous media - Radiative Heat Flux and
+
+Heat Source for Cases 2 and 3 . . . . . . . . . . . . . . 74
+
+APPENDIX B Non-homogeneous media - Radiative Heat Flux
+
+and Heat Source for Case 2 . . . . . . . . . . . . . . . . 78
+
+vii
+
+
+
+LIST OF FIGURES
+
+Figura 1.1 The absorption coe?cient, ??, as a function of wavenumber
+
+?, for H2O at T = 1500 K, p = 1 atm, YH2O = 0.01, and for
+
+wavenumbers ranging from 0 to 10,000 cm?1 [Pearson, 2013]. . . . 2
+
+Figura 3.1 Blackbody enveloped by a hemispherical radiation detector
+
+[adapted from Howell et al., 2010]. . . . . . . . . . . . . . . . . . . 15
+
+Figura 3.2 Spectral intensity emitted by an elemental area dA [adapted
+
+from Siegel and Howell, 1993]. . . . . . . . . . . . . . . . . . . . . 16
+
+Figura 3.3 Intensity incident normally on absorbing volume element dV
+
+[adapted from Siegel and Howell, 1993)]. . . . . . . . . . . . . . . . 17
+
+Figura 3.4 Geometry for derivation of emission from elemental volume[
+
+Siegel and Howell, 1993]. . . . . . . . . . . . . . . . . . . . . . . . 18
+
+Figura 3.5 Spectral line shape for di?erent line broadening mechanisms
+
+[adapted from Modest, 2013]. . . . . . . . . . . . . . . . . . . . . . 20
+
+Figura 4.1 Schematic representation of the one-dimensional domain studied. . 27
+
+Figura 4.2 Pressure absorption coe?cient representation using ng gray
+
+gases [ adapted from Dorigon et al., 2013]. . . . . . . . . . . . . . . 28
+
+Figura 4.3 Reduced superposition approach for the arrangement of (a)
+
+H2O coe?cients with those of CO2, and for the arrangement
+
+of (b) CO2 coe?cients with those of H2O. . . . . . . . . . . . . . . 33
+
+Figura 4.4 Representation of part of the spectrum in which the ALBDF
+
+is calculated [adapted from Solovjov et al., 2016]. . . . . . . . . . . 36
+
+Figura 4.5 Idealized dependence of high resolution spectrum on two dif-
+
+ferent thermodynamics states, resulting in equivalent black-
+
+body energy fractions [adapted from Solovjov et al., 2017]. . . . . . 37
+
+Figura 5.1 Temperature pro?les. . . . . . . . . . . . . . . . . . . . . . . . . . 43
+
+Figura 5.2 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of CO2 (YCO2 = 0.1), Case
+
+1: (a) radiative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx. . 45
+
+viii
+
+
+
+Figura 5.3 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of H2O (YH2O = 0.2,),
+
+Case 1: (a) radiative heat ?ux, q”R, (b) radiative heat source,
+
+?dq”R/dx. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+
+Figura 5.4 Comparison of the solutions obtained by the LBL integra-
+
+tion, SLW and WSGG models for a layer of H2O/CO2 mixture
+
+(YH2O = 0.2, YCO2 = 0.1), Case 1: (a) radiative heat ?ux, q
+”
+R,
+
+(b) radiative heat source, ?dq”R/dx. . . . . . . . . . . . . . . . . . 46
+
+Figura 5.5 Pro?les of (a) temperature and (b) molar concentration of
+
+participating species. . . . . . . . . . . . . . . . . . . . . . . . . . 49
+
+Figura 5.6 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of CO2, Case 1: (a) ra-
+
+diative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx. . . . . . 50
+
+Figura 5.7 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of H2O, Case 1: (a) ra-
+
+diative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx. . . . . . 50
+
+Figura 5.8 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of H2O/CO2 mixture
+
+(YH2O/YCO2 = 0.2), Case 1: (a) radiative heat ?ux, q
+”
+R, (b)
+
+radiative heat source, ?dq”R/dx. . . . . . . . . . . . . . . . . . . . 51
+
+Figura 5.9 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of CO2, Case 3: (a) ra-
+
+diative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx. . . . . . 53
+
+Figura 5.10 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of H2O, Case 3: (a) ra-
+
+diative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx. . . . . . 54
+
+Figura 5.11 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of H2O/CO2 mixture,
+
+Case 3: (a) radiative heat ?ux, q”R, (b) radiative heat source,
+
+?dq”R/dx. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+
+ix
+
+
+
+Figura 5.12 Comparison of the solutions obtained with the WSGG model,
+
+considering the standard superposition method and the pro-
+
+posed reduced superposition method, for a H2O/CO2 mixture.
+
+The solutions are also compared against the LBL integration
+
+for the (a) radiative heat ?ux, q”R and (b) radiative heat source,
+
+?dq”R/dx, for temperature and CO2 molar concentration given
+
+by Equations 5.2 and 5.7 with pw/pc = 2. . . . . . . . . . . . . . . 57
+
+Figura 5.13 Comparison of the solutions obtained by the WSGG model,
+
+considering the standard superposition method and the pro-
+
+posed reduced superposition method, for a H2O/CO2 mixture.
+
+The solutions are also compared against the LBL integration
+
+for the (a) radiative heat ?ux, q”R and (b) radiative heat source,
+
+?dq”R/dx. The temperature pro?le is given by Equation 5.1,
+
+and the molar concentration of CO2 and H2O represented by
+
+Equations 5.8 and 5.9, receptively. . . . . . . . . . . . . . . . . . . 58
+
+Figura 5.14 Fields of (a) temperature, (b) H2O and (c) CO2 molar con-
+
+centrations, and (d) the partial pressure ratio (pw/pc) for the
+
+laminar di?usion ?ame. . . . . . . . . . . . . . . . . . . . . . . . . 61
+
+Figura A.1 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of CO2 (YCO2 = 0.1), Case
+
+2: (a) radiative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx. . 74
+
+Figura A.2 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of H2O (YH2O = 0.2,),
+
+Case 2: (a) radiative heat ?ux, q”R, (b) radiative heat source,
+
+?dq”R/dx. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+
+Figura A.3 Comparison of the solutions obtained by the LBL integra-
+
+tion, SLW and WSGG models for a layer of H2O/CO2 mixture
+
+(YH2O = 0.2, YCO2 = 0.1), Case 2: (a) radiative heat ?ux, q
+”
+R,
+
+(b) radiative heat source, ?dq”R/dx. . . . . . . . . . . . . . . . . . 75
+
+Figura A.4 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of CO2 (YCO2 = 0.1), Case
+
+3: (a) radiative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx. . 76
+
+x
+
+
+
+Figura A.5 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of H2O (YH2O = 0.2,),
+
+Case 3: (a) radiative heat ?ux, q”R, (b) radiative heat source,
+
+?dq”R/dx. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+
+Figura A.6 Comparison of the solutions obtained by the LBL integra-
+
+tion, SLW and WSGG models for a layer of H2O/CO2 mixture
+
+(YH2O = 0.2, YCO2 = 0.1), Case 3: (a) radiative heat ?ux, q
+”
+R,
+
+(b) radiative heat source, ?dq”R/dx. . . . . . . . . . . . . . . . . . 77
+
+Figura B.1 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of CO2, Case 2: (a) ra-
+
+diative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx. . . . . . 78
+
+Figura B.2 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of H2O, Case 2: (a) ra-
+
+diative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx. . . . . . 79
+
+Figura B.3 Comparison of the solutions obtained by the LBL integration,
+
+SLW and WSGG models for a layer of H2O/CO2 mixture
+
+(YH2O/YCO2 = 0.2), Case 2: (a) radiative heat ?ux, q
+”
+R, (b)
+
+radiative heat source, ?dq”R/dx. . . . . . . . . . . . . . . . . . . . 79
+
+xi
+
+
+
+LIST OF TABLES
+
+Tabela 3.1 Number of spectral lines for molecules of the HITEMP2010
+
+[Rothman et al., 2010]. . . . . . . . . . . . . . . . . . . . . . . . . 24
+
+Tabela 4.1 WSGG coe?cients for H2O/CO2 mixtures for pw/pc = 2 [Dorigon
+
+et al., 2013]. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+
+Tabela 4.2 WSGG coe?cients for H2O [Cassol et al., 2014]. . . . . . . . . . . 31
+
+Tabela 4.3 WSGG coe?cients for CO2 [Cassol et al., 2014]. . . . . . . . . . . 32
+
+Tabela 5.1 Homogeneous testes cases for molar concentration of YCO2 =
+
+0.1 and YH2O = 0.2. . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+
+Tabela 5.2 Maximum and average deviations of the SLW and WSGG so-
+
+lutions for the radiative heat ?ux, ?max and ?avg, and the ra-
+
+diative heat source, ?max and ?avg, for Case 1. . . . . . . . . . . . . 47
+
+Tabela 5.3 Maximum and average deviations of the SLW and WSGG so-
+
+lutions for the radiative heat ?ux, ?max and ?avg, and the ra-
+
+diative heat source, ?max and ?avg, for Case 2. . . . . . . . . . . . . 47
+
+Tabela 5.4 Maximum and average deviations of the SLW and WSGG so-
+
+lutions for the radiative heat ?ux, ?max and ?avg, and the ra-
+
+diative heat source, ?max and ?avg, for Case 3. . . . . . . . . . . . . 48
+
+Tabela 5.5 Test cases considering non-homogeneous molar concentration
+
+of the participating species. . . . . . . . . . . . . . . . . . . . . . . 49
+
+Tabela 5.6 Maximum and average deviations of the SLW and WSGG so-
+
+lutions for the radiative heat ?ux, ?max and ?avg, and the ra-
+
+diative heat source, ?max and ?avg, for Case 1. . . . . . . . . . . . . 51
+
+Tabela 5.7 Maximum and average deviations of the SLW and WSGG so-
+
+lutions for the radiative heat ?ux, ?max and ?avg, and the ra-
+
+diative heat source, ?max and ?avg, for Case 2. . . . . . . . . . . . . 52
+
+Tabela 5.8 Maximum and average deviations of the SLW and WSGG so-
+
+lutions for the radiative heat ?ux, ?max and ?avg, and the ra-
+
+diative heat source, ?max and ?avg, for Case 3. . . . . . . . . . . . . 55
+
+xii
+
+
+
+Tabela 5.9 Maximum and average deviations of the WSGG solutions for
+
+the radiative heat ?ux, ?max and ?avg, and the radiative heat
+
+source, ?max and ?avg, considering the standard superposition
+
+method and the proposed reduced superposition method, for
+
+temperature and CO2 molar concentration given by Equa-
+
+tions 5.2 and 5.7 with pw/pc = 2. . . . . . . . . . . . . . . . . . . . 57
+
+Tabela 5.10 Maximum and average deviations of the WSGG solutions for
+
+the radiative heat ?ux, ?max and ?avg, and the radiative heat
+
+source, ?max and ?avg, considering the standard superposition
+
+method and the proposed reduced superposition method, for
+
+temperature pro?le given by Equation 5.1, and the molar con-
+
+centration of CO2 and H2O represented by Equations 5.8 and
+
+5.9, receptively. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 59
+
+xiii
+
+
+
+LIST OF ACRONYMS AND ABBREVIATIONS
+
+ADF Absorption distribution function model
+
+ADFFG Absorption distribution function with ?ctitious gases model
+
+ALBDF Absorption line blackbody distribution function
+
+BM Band models
+
+CK Correlated-k methodology
+
+CW Cumulative wavenumber model
+
+DOM Discrete ordinates method
+
+EWB Exponential wide band model
+
+FSK Full-spectrum k-distribution model
+
+GG Gray gas model
+
+HITEMP High temperature molecular spectroscopic database
+
+HITRAN High resolution transmission molecular spectroscopic database
+
+LBL Line-by-line integration
+
+MCW Modi?ed cumulative wavenumber model
+
+NB Narrow band models
+
+RTE Radiative transfer equation
+
+RC-SLW Rank Correlated SLW model
+
+SLW Spectral line weighted-sum-of-gray-gases model
+
+SLW-1 SLW model for 1 gray gas
+
+SNB Statistical narrow band
+
+SNBCK Statistical narrow band model based on CK
+
+WB Wide band models
+
+WBCK Wide band model based on CK
+
+WSGG Weighted-sum-of-gray-gases model
+
+xiv
+
+
+
+LIST OF SYMBOLS
+
+A Area [m2]
+
+c Speed of the light in the vacuum [m/s]
+
+a0 Weighting factor of the transparent window
+
+ac,k Weighting factor for the kth gray gas of CO2
+
+aw,j Weighting factor for the jth gray gas of H2O
+
+am,i Weighting factor for the ith gray gas of mixture
+
+aj Weighting factor of each gray gas
+
+bj,k Polynomial coe?cient of order kth for the jth gray gas
+
+C Prescribed absorption cross section [cm2/molecule]
+
+C1 Fist Planck's constant [W.µm4/(m2.sr)]
+
+C2 Second Planck's constant [µm]
+
+C? Spectral absorption cross section [cm2/molecule]
+
+C?j Supplemental absorption cross section [cm2/molecule]
+
+D Diameter of the atoms or molecules [m]
+
+Eb Total emissive power of the blackbody [W/m2]
+
+E?b Spectral emissive power of the blackbody [W/(m2.µm)]
+
+Ep Photon radiative energy transition [J]
+
+Ei Photon energy associated to level i [J]
+
+Ej Photon energy associated to level j [J]
+
+F Absorption line blackbody distribution function
+
+h Planck's constant [J.s]
+
+I? Spectral radiation intensity [W/(m2.µm.sr)]
+
+I?b Blackbody spectral radiation intensity [W/(m2.µm.sr)]
+
+I+?,l Spectral radiation intensity in the forward direction [W/(m
+2.µm.sr)]
+
+I??,l Spectral radiation intensity in the backward direction [W/(m
+2.µm.sr)]
+
+I+j,l Gray gas radiation intensity in the forward direction [W/(m
+2.sr)]
+
+I?j,l Gray gas radiation intensity in the backward direction [W/(m
+2.sr)]
+
+Ib Blackbody radiation intensity [W/(m2.sr)]
+
+xv
+
+
+
+Ij Gray gas radiation intensity [W/(m2.sr)]
+
+K Boltzmann's constant [J/K]
+
+L Distance between the parallel black surfaces [m]
+
+LBL Line-by-line spectral integration
+
+M Mass [Kg]
+
+max
+??q”R,LBL?? Maximum absolute value of the LBL radiative heat ?ux [W/(m2)]
+
+max
+????dq”R,LBLdx ??? Maximum absolute value of the LBL radiative heat source [W/(m3)]
+
+n Temperature dependence coe?cient
+
+nd Number of directions
+
+ng Number of gray gases
+
+N Gas molar density [molecule/m3]
+
+NA Avogadro's number [molecule/mol]
+
+p Gas pressure [atm]
+
+pc Partial pressure of CO2 [atm]
+
+pi Partial pressure of the chemical specie i [atm]
+
+pw Partial pressure of H2O [atm]
+
+P Sum of partial pressure of the individual species of the gaseous mixture [atm]
+
+PT Gas total pressure [atm]
+
+Q Total intern partition sum
+
+q”R Radiative heat ?ux [W/m
+2]
+
+?dq”R/dx Radiative heat source [W/m
+3]
+
+R Sphere radius [m]
+
+Ru Gases universal constant [J/mol.K]
+
+r Local partial pressure ratio
+
+r Average partial pressure ratio
+
+Si Integrated intensity of the line i [cm?1/molecule.cm?2]
+
+Sij Spectral line intensity where occurs the transition energy between the levels i
+
+and j [cm?1/molecule.cm?2]
+
+s Path traveled by radiation [m]
+
+T Temperature [K]
+
+T0 Database reference temperature[K]
+
+Tb Blackbody temperature [K]
+
+xvi
+
+
+
+Tg Gas temperature [K]
+
+x Local position in the domain [m]
+
+x? Dimensionless distance
+
+Greek Symbols
+
+? (pw + pc)T
+4
+
+?? Spectral absortance
+
+? Total emittance
+
+?? Spectral emittance
+
+? Radiative heat ?ux local deviation [%]
+
+? Radiative heat source local deviation [%]
+
+?air,i Air-broadened half-width [(cm.atm)?1]
+
+? Spectral line half-width [(cm.atm)?1]
+
+?i Line half-width [(cm.atm)?1]
+
+?self,i Self-broadened half-width [(cm.atm)?1]
+
+? Wavelength [µm]
+
+µl Cosine diretor of the angle ?l []
+
+? Wavenumber [cm?1]
+
+?i Line location in the spectrum [cm?1]
+
+? Stefan-Boltzmann constant [W/(m2.K4)]
+
+? Angle [rad]
+
+?l Angle formed with direction l [rad]
+
+?p,? Spectral pressure absorption coe?cient [atm.m?1]
+
+?j Gray gas absorption coe?cient [m?1]
+
+?p,j Gray gas pressure absorption coe?cient [atm.m?1]
+
+?? Spectral interval [cm?1]
+
+??i Spectral interval i [cm?1]
+
+? Spatial dependence of the absorption cross section
+
+? Spectral dependence of the absorption cross section
+
+?ij Frequency of the photon energy where occurs the transition energy between
+
+the levels i and j [Hz]
+
+?i Energy di?erence between the initial and ?nal state [cm?1]
+
+xvii
+
+
+
+? Solid angle [sr]
+
+?l Factors of the quadrature scheme
+
+Subscripts
+
+avg Average value
+
+c Condition referent to carbon dioxide molecule
+
+C Collision broadening
+
+CO2 Condition referent to carbon dioxide molecule
+
+D Doppler broadening
+
+H2O Condition referent to water vapor molecule
+
+i ith gray gas of mixture
+
+j jth gray gas of H2O
+
+k kth gray gas of CO2
+
+L Lorentz broadening
+
+loc Local condition
+
+m Reference to the mixture
+
+max Maximum value
+
+? Spectral condition
+
+ref Reference condition
+
+w Condition referent to water vapor molecule
+
+xviii
+
+
+
+1
+
+1 INTRODUCTION
+
+Several engineering processes need to operate in elevated temperatures. In com-
+
+bustion systems, for instance, the participating gases temperature may reach above 2500
+
+K. In such conditions, the thermal radiation is the prevalent heat transfer mechanism. De-
+
+spite this fact, the accurate thermal radiation modeling in combustion systems has being
+
+ignored in many cases and treated with simplistic optically thin and gray models [Modest
+
+and Haworth, 2016]. The main reason for that may be the di?culty of including accurate
+
+radiative transfer calculation in problems already complex. However, simply neglecting
+
+the thermal radiation in atmospheric pressure combustion systems may overpredict the
+
+temperature up to 200 ?C, while using the optically thin or gray radiation models un-
+
+derpredict up to 100 ?C [Modest and Haworth, 2016]. Due to this, many works have
+
+been developed presenting di?erent methodologies for the thermal radiation modeling in
+
+participating gases, as will be described in Chapter 2.
+
+In participating media, when a gas molecule absorbs or emits radiative energy,
+
+the vibrational and/or rotational energies of the molecule are raised or lowered. These
+
+energy levels lead to many thousands of discrete spectral lines, forming so-called vibra-
+
+tion?rotation bands. The photon energy needed to the transition levels are a?ected by
+
+some physical mechanisms which makes the line to be broadened. The main mechanisms
+
+are the molecular collisions and the molecular movement (Doppler e?ect). In a certain
+
+spectral location, a spectral line is described by its strength and its line width. These
+
+informations are found in conceited databases, such as HITRAN and HITEMP. In these
+
+databases is also found the information of how to calculate the resulting absorption co-
+
+e?cient, necessary in the radiative transfer equation (RTE) solution. The absorption
+
+coe?cient is characterized by thousands of absorption lines having a very erratic behavior
+
+with wavenumber, which makes the analysis complicated. Such behavior is illustrated in
+
+Figure 1.1, where the spectral absorption coe?cient, ??, is plotted against the wavenum-
+
+ber ? for a small concentration of H2O (YH2O = 0.01), at a temperature of 1500 K and
+
+total pressure of 1 atm. There are some approaches focused on capturing this spectral
+
+dependence of the absorption coe?cient. The Line-by-Line (LBL) spectral integration
+
+solve the RTE for wavenumber intervals small enough to capture the data exactly. The
+
+challenge of this method is the high computational time needed in this calculation. On the
+
+
+
+2
+
+other hand, the gray approach removes the spectral dependence of the absorption coe?-
+
+cient by calculating an average value for all wavenumbers. Despite the less computational
+
+e?ort required, this approach lead to elevated errors.
+
+Figure 1.1 ? The absorption coe?cient, ??, as a function of wavenumber ?, for H2O at T
+
+= 1500 K, p = 1 atm, YH2O = 0.01, and for wavenumbers ranging from 0 to 10,000 cm
+?1
+
+[Pearson, 2013].
+
+Between these two extremists approaches there are the Global Models. These meth-
+
+ods propose a integration scheme over the absorption coe?cient rather than wavenumber.
+
+Thus, it renders fewer than 20 RTE integrations with an accuracy near to that of LBL.
+
+The WSGG and the SLW models are among the most promising Global Models. The
+
+WSGG model, initially developed by Hottel and Saro?m, 1967, in despite of its simple
+
+formulation yields satisfactory accuracy, solving the RTE with a summation over just
+
+3 or 4 gray gases instead of spectral integration. While the SLW model [Denison and
+
+Webb, 1993b] was developed in 1990's, and has received several improvements since its
+
+initial proposition for the treatment of non-isothermal and/or non-homogeneous media.
+
+Therefore, this model is more sophisticated than WSGG, utilizing 10 or even 20 gray
+
+gases. For participating gases mixtures, the limitation of WSGG is that its correlations
+
+are given for constant partial pressure ratio between the species in non-homogeneous me-
+
+dia. This problem is removed with the superposition method [Cassol et al., 2014], based
+
+
+
+3
+
+on individual gases correlations, which also makes part of SLW mixture formulation. Even
+
+though the SLW model be considered an improvement of WSGG, the di?erence between
+
+the solutions of these models may not be substantial depending on the case under anal-
+
+ysis. Furthermore, one important issue of the superposition method is that the number
+
+of times that the RTE must be solved increases signi?cantly as the species number also
+
+increases.
+
+1.1 Objectives of the study
+
+The general objective of this study is to apply the WSGG and SLW models for
+
+radiative transfer prediction in participating media. From that, the following speci?c
+
+objectives can be de?ned:
+
+• Compute the thermal radiation in non-isothermal homogeneous and non-homogeneous
+
+media using both WSGG and SLW models. The results will be compared against
+
+LBL benchmark solutions in order to verify the accuracy of these models. The
+
+problems will be solved for H2O and CO2 individually, and for H2O/CO2 mixtures,
+
+considering di?erent pro?les of temperature and molar concentration of the species.
+
+For mixtures, the superposition method will be applied to the WSGG to do an
+
+adequate comparison with SLW solution;
+
+• Proposition and application of a reduced superposition method in the WSGG model,
+
+aiming at a computational time reduction. In the superposition method the num-
+
+ber of times that the RTE must be solved is expressively raised as the participating
+
+species number increases. In combustion systems where the radiative transfer cal-
+
+culation is only part of a complex problem, which includes chemical kinetic and
+
+turbulence modeling, any computational time reduction is very important.
+
+• Verify the consistency of the reduced superposition method in di?usion ?ames.
+
+1.2 Organization of the Work
+
+Chapter 2 will present a literature review for the main methods developed for
+
+spectral integration of the RTE. Chapter 3 will provide a description of the thermal
+
+radiation fundamental relevant for this work, focusing on those important for the de?nition
+
+
+
+4
+
+and solution of the RTE. The detailed description of the spectral integration methods used
+
+in this study will be shown in Chapter 4. A new approach for the superposition method
+
+applied to the WSGG model will be described in Chapter 5. This proposition aims at the
+
+computational e?ort reduction. Chapter 6 will show the application of WSGG and SLW
+
+models for the radiative transfer prediction in participating media. The validation of the
+
+new approach for the superposition method will also be presented. Chapter 7 will give
+
+conclusions and perspectives for future works. Some results of the radiative transfer from
+
+participating gases are also included in the appendices.
+
+
+
+5
+
+2 BIBLIOGRAPHY SURVEY
+
+At high temperatures, thermal radiation can signi?cantly a?ect the heat transfer
+
+characteristics in media involving combustion products. However, the prediction of the
+
+radiative heat transfer is still a challenging task due to the strong spectral variation of the
+
+absorption coe?cient of gases with the wavenumber. The line-by-line (LBL) integration
+
+can provide a solution with high level of accuracy for this kind of problem, but, due to
+
+the many thousands of absorption lines present in gases spectra, LBL calculations are
+
+computationally expensive [Denison and Webb, 1995a], which often makes the solution
+
+impracticable. As an alternative to overcome this di?culty, some gas models have been
+
+developed.
+
+2.1 Radiative Transfer Modeling
+
+The Gray Gas (GG) model is the simplest method to predict the radiative heat
+
+transfer in combustion systems and atmosphere processes. This approach consists in
+
+considering the radiative properties, as the absorption coe?cient, to be independent of
+
+the wavenumber. Despite this unrealistic approximation for gases, the GG model is yet
+
+used in modern engineering problem solution [Xue et al., 2001; Al-Omari, 2006; Narayanan
+
+and Trouvé, 2009; Crnomarkovic et al., 2013] since it is of quite simple implementation if
+
+compared to other spectral models. Besides that, studies have shown that the GG model
+
+leads to pool accuracy when the media is dominated by participating gases, and becomes
+
+more accurate as the soot concentration increases [Mossi et al., 2012; Cassol et al., 2015].
+
+When there is a non-gray media, the Radiative Transfer Equation (RTE) solution
+
+can be found by three groups of methods : Band Models, Global Models, and Line-by-line
+
+(LBL) method. In the LBL method the RTE integration is performed over the entire radi-
+
+ation spectrum taking into account the contribution of each spectral line. This procedure
+
+requires about 106 resolution of the RTE [Modest, 2003b], involving a lot of computa-
+
+tional e?ort that is not feasible for practical applications [Demarco, 2012]. However, this
+
+method is useful for providing benchmark solutions, and it has been used in a few works
+
+which solve two-dimensional problems [Mazumder and Modest, 2002; Modest and Zhang,
+
+2002; Zhang and Modest, 2002, 2003; Pal and Modest, 2010; Chu et al., 2012; Consalvi
+
+and Liu, 2014; Centeno et al., 2016].
+
+
+
+6
+
+The Band Models (BM) consist of dividing the radiation spectrum into spectral
+
+intervals in which the radiative properties are considered constant, and are classi?ed in
+
+Narrow Band (NB) and Wide Band (WB) models. With the NB models is possible to re-
+
+place the actual absorption coe?cient behavior by average values over narrow wavenumber
+
+intervals. In the WB models the integration is realized over larger wavenumber intervals
+
+considering that blackbody intensities do not vary substantially across bands. Despite
+
+being less computationally expansive, WB models does not achieve the same level of ac-
+
+curacy as the NB models [Modest, 2003b]. The disadvantaged of Band Models is the
+
+di?culty to be used in an arbitrary solution technique of the RTE, as the discrete or-
+
+dinates method (DOM), since they yield gas transmissivity (NB model) or absorptance
+
+(WB model) instead of absorption coe?cient. One alternative to overcome such issue is
+
+to implement the band models through the correlated-k (CK) methodology to acquire
+
+absorption coe?cients [Liu and Smallwood, 2004]. In the BM are included the Statistical
+
+Narrow Band (SNB) [Goody, 1952], SNB based on CK (SNBCK) [Liu and Smallwood,
+
+2004], Exponential Wide Band (EWB) [Edwards and Balakrishnan, 1973], and Wide Band
+
+based on CK (WBCK) [Çayan and Selçuk, 2007] models. In the absence of the LBL calcu-
+
+lation due to its excessive computing time, the SNB model is used as benchmark solution
+
+for gas radiation transfer problems [Bresslo?, 1999; Goutiere et al., 2000; Coelho, 2002;
+
+Demarco et al., 2011].
+
+Global Models propose an integration scheme over the absorption coe?cient rather
+
+than wavenumber. This engineering approach typically renders fewer than 20 integrations
+
+of the RTE for prediction of total quantities such as radiative ?ux and net ?ux divergence,
+
+while the LBL method requires millions of times, which is prohibitively expensive. One
+
+popular Global Model is the Weighted-Sum-of-Gray-Gases (WSGG), initially developed
+
+by Hottel and Saro?m, 1967. The approach of this model replaces the integration of
+
+spectral properties with a summation over a small set of gray gases (often three or four)
+
+plus the spectral window to simulate the properties of the non-gray gas. These gray gases
+
+replace the real spectrum behavior, and it is considered that each of them has uniform
+
+absorption coe?cient and a temperature coe?cient which correspond to the fraction of
+
+blackbody energy emitted in the spectral region that represent each gray gas location.
+
+The coe?cients of such gray gases in the WSGG model can be determined from ?tting
+
+data of total emittance computed, for instance, from LBL calculations of high-resolution
+
+
+
+7
+
+spectral absorption coe?cient. Smith et al., 1982 present these coe?cients obtained from
+
+interpolation of experimental data. However, such coe?cients are limited to H2O/CO2
+
+mixture with uniform concentration, and they can generate elevated errors in the solution
+
+when compared to problems that use modern spectral data [Maurente et al., 2008; Mossi
+
+et al., 2012]. Despite this, such correlations are still used in contemporary studies [Trivic,
+
+2014] and in commercial software of computational ?uid dynamics as the ANSYS/Fluent
+
+[Fluent, 2018].
+
+Nonetheless, few studies have focused on generate new WSGG correlations for
+
+H2O/CO2 mixtures [Kangwanpongpan et al., 2012; Dorigon et al., 2013], and for individ-
+
+ual species such as carbon monoxide (CO) [Ziemniczak et al., 2015; Brittes et al., 2017].
+
+Although the correlations are, often, obtained for a wide temperature range, the partial
+
+pressure ratio between the species is maintained constant. For this reason, Johansson
+
+et al., 2011 proposed a WSGG modi?cation to consider partial pressure ratio between
+
+H2O and CO2 varying from 0.125 to 2.
+
+Besides having a relatively simple formulation, the WSGG model does not require
+
+the knowledge of spectral data banks, and was demonstrated by Modest, 1991 that this
+
+model can be applied with arbitrary RTE methods of solution since the media is non-
+
+scattering with a black-walled enclosure. However, Modest and Zhang, 2000 showed that
+
+these restrictions can be disregarded. Thereby, the WSGG methodology is adopted in
+
+several problems solution as those of oxi-combustion [Becher et al., 2012; Rajhi et al.,
+
+2014; Garten et al., 2015], one-dimensional [Dorigon et al., 2013; Fonseca and França,
+
+2015; Ziemniczak et al., 2015; Brittes et al., 2017; Fonseca et al., 2018], two-dimensional
+
+[Silva et al., 2007; Centeno et al., 2013; Crnomarkovic et al., 2013; Centeno et al., 2014;
+
+Garten et al., 2015; Centeno et al., 2016], and three-dimensional problems [Coelho, 2002;
+
+Trivic, 2014; Bhuiyan and Naser, 2015; G.Clements et al., 2015; Zhang et al., 2015; Fraga
+
+et al., 2017], as well as in the Turbulence-Radiation-Iterations (TRI) modeling [Silva et al.,
+
+2007; Krishnamoorthy, 2010; Coelho, 2012; Centeno et al., 2014; Shiehnejadhesar et al.,
+
+2014; Centeno et al., 2016; Fraga et al., 2017].
+
+Although the standard WSGG model be widely used in engineering computations
+
+of radiative heat transfer in participating media, it is limited to the gas mixtures where the
+
+mole ratio between the species is constant. As a way to eliminate this restriction, Cassol
+
+et al., 2014 applied the superposition methodology [Smith et al., 1987] to the WSGG
+
+
+
+8
+
+model for H2O, CO2, and soot mixtures . This approach consists on ?rst setting up
+
+independent correlations for each species, which are then superposed to form the WSGG
+
+correlations for the mixture. Thus, it is possible to compute the radiative heat transfer
+
+in mixtures with arbitrary concentrations, allowing for local variations in the mole ratios,
+
+and the inclusion of any number of participating species.
+
+Based on these advantages, a few works have been done on which is used the
+
+WSGG model with the superposition approach. Centeno et al., 2016 studied the e?ect
+
+of soot on the radiative heat transfer in a turbulent, non-premixed methane?air ?ame
+
+inside a combustion chamber. It was shown that the superposition of the correlations
+
+of H2O/CO2 mixtures and soot in the WSGG model provides results of good agreement
+
+with the LBL benchmark solution. The TRI phenomena in the context of a non-reactive
+
+3-D channel ?ow of a high temperature homogeneous participating gas was successfully
+
+modeled using the WSGG model with the superposition method [Fraga et al., 2017].
+
+Another recent paper also explored this approaching in the computation of the radiative
+
+heat transfer in an axisymmetric gas system composed of H2O, CO2, and soot [Centeno
+
+et al., 2018]. This study showed that the superposition method between the coe?cients of
+
+the individual species led to the least accurate results, while the WSGG model considering
+
+the superposition between the H2O/CO2 mixture and soot coe?cients proved the best
+
+alternative for both moderate and high concentrations of soot.
+
+Another prominent Global Model that also uses the superposition method is the
+
+Spectral-Line Weighted-Sum-of-Gray-Gases (SLW) ?rst introduced by Denison and Webb,
+
+1993b. The fundamental component of this model is the absorption line blackbody dis-
+
+tribution function (ALBDF). For a given gas temperature, the ALBDF is the fraction of
+
+the blackbody energy in the portions of the spectrum where the spectral absorption cross-
+
+section of the gas is less than a prescribed value. The ALBDF is used for temperature
+
+coe?cient calculation of each gray gas in the RTE solution. This function is generated
+
+with a detailed spectral data available in databases as the HITRAN and HITEMP. Since
+
+this procedure spend much computational time, empirical correlations for ALBDF of
+
+H2O [Denison and Webb, 1993a], and CO2 [Denison and Webb, 1995a] were developed in
+
+a form of a hyperbolic tangent function. Radiative transfer model parameters for carbon
+
+monoxide (CO) were also proposed [Solovjov and Webb, 1998].
+
+New ALBDF correlations for H2O, CO2, and CO based on the updated HITEMP
+
+
+
+9
+
+2010 database were generated by Pearson et al., 2014b. In this study were considered
+
+variable temperature, mole fraction, and total pressure. The LBL ALBDF was also com-
+
+puted and tabulated for discrete temperature, mole fractions, and total pressure ranging
+
+from 300 K to 3000 K, 0 to 1, and 0.1 atm to 50 atm, respectively. The correlation showed
+
+an accuracy that is quite adequate for engineering applications but considerably less accu-
+
+rate than the tabulated ALBDF. In spite of having an initial computational cost to read
+
+the data, the inaccuracy of the tabulated ALBDF is only caused by interpolations used
+
+to obtain its values at speci?ed conditions [Pearson, 2013]. The e?ect of total pressure
+
+on the ALBDF and radiative transfer in H2O, CO2, and CO was also recently analyzed
+
+[Pearson et al., 2014a].
+
+In the non-isothermal and/or non-homogeneous media treatment, the Liebnitz rule
+
+leads to appearance of additional terms in the spectral integration of the RTE. This ren-
+
+ders the analysis complicated, especially for multidimensional media, and alter the RTE
+
+standard form of solution [Denison and Webb, 1993b]. As an alternative, two approaches
+
+have been adopted to treat these terms in the SLW model. The ?rst is the reference
+
+approach which allows the Liebnitz terms to be canceled using a reference state [Denison
+
+and Webb, 1995c]. Since this method require the implicit calculation of a set of parame-
+
+ters, the computational time can be expensive. The second approach suggests the simple
+
+neglect of these terms from the RTE [Solovjov and Webb, 2000], however this procedure
+
+can yield signi?cant errors and less accuracy if compared with the reference approach
+
+[Pearson, 2013].
+
+For the case of gas mixtures, some approaches have also been proposed. The dou-
+
+ble integration and the convolution approaches were applied to radiative heat transfer
+
+calculation in H2O/CO2 mixtures [Denison and Webb, 1995b]. The extension to multi-
+
+component gas mixtures with the superposition and multiplication approaches, along with
+
+a hybrid of the two, were also introduced [Solovjov and Webb, 2000]. The soot inclusion
+
+as a gas in the multiplication method was studied by Solovjov and Webb, 2001. A new
+
+model, named SLW-1, was introduced by Solovjov et al., 2011a for individual species and
+
+latter for non-isothermal non-homogeneous gaseous mixture with soot [Solovjov et al.,
+
+2011b]. In this methodology, the problem is reduced to the simplest case of the SLW
+
+model with a single gray gas and a clear gas, providing the accuracy near that of the SLW
+
+method with a large number of gray gases.
+
+
+
+10
+
+As the SLW model, the Full-Spectrum k-Distribution model (FSK) can be viewed
+
+as an improvement of the WSGG [Demarco, 2012]. In the FSK model, The RTE so-
+
+lution is given by a integration over a distribution function virtually identical to the
+
+ALBDF developed by Denison and Webb, 1993a [Pearson, 2013]. Proposed by Modest
+
+e Zhang [Modest and Zhang, 2000, 2002], th FSK model has been implemented with
+
+both correlated-k and scaled-k distribution methods. These methods are an approach
+
+developed for non-homogeneous media treatment, while for homogeneous medium (i.e.,
+
+the absorption coe?cient is not a function of spatial coordinate) with narrow spectral
+
+intervals (i.e., range over which the Planck's function is nearly constant) the absorption
+
+coe?cient may be reordered into a monotonic k-distribution, which produces exact results
+
+in a small fraction of the time required for LBL calculations [Modest, 2003a; Modest and
+
+Riazzi, 2005]. The correlated-k method is based on the fact that inside a spectral band,
+
+which is su?ciently narrow to assume a constant Planck's function, the precise position
+
+of a spectral line is not important for spectral integration. In the scaled-k distribution
+
+the spectral and spatial dependence of the absorption coe?cient are separately treated.
+
+Thereby, the FSK model has been applied to radiative transfer prediction in non-
+
+homogeneous gas mixtures [Modest and Zhang, 2002; Wang and Modest, 2005; Pal et al.,
+
+2008], nonhomogeneous gas-soot mixtures [Pal and Modest, 2010], and in multidimen-
+
+sional media [Modest and Zhang, 2002; Mazumder and Modest, 2002; Modest and Riazzi,
+
+2005; Ma et al., 2014]. Its relation with the SLW model is discussed by Solovjov and
+
+Webb, 2009, showing that these two models are equivalent when the number of gray gases
+
+tends to in?nity.
+
+The concept of correlated spectrum [Modest, 2013], initially refereed as ideal spec-
+
+trum by Denison and Webb, 1995c, has been recently applied to the SLW model. It
+
+establishes a relation between absorption coe?cient at an arbitrary state and the absorp-
+
+tion coe?cient at some chosen reference state. An extension of this approach is the novel
+
+Rank Correlated SLW (RC-SLW) model of gas radiation in non-uniform media developed
+
+by Solovjov et al., 2017. The approach of this model is remarkable by the fact that it does
+
+not require the speci?cation of a reference gas thermodynamic state, and it preserves the
+
+emission term in the spectrally integrated RTE. Studies have shown that the RC-SLW
+
+model provides more accurate results than the original SLW model based on a reference
+
+state [Solovjov et al., 2017; Andre et al., 2017]. The range of the ALBDF database has
+
+
+
+11
+
+also been studied for the accurate radiative prediction in this model [Webb et al., 2018],
+
+and it is shown that good accuracy may be achieved by using the RC-SLW model with as
+
+few as 3?5 gray gases. A more general assumption of rank correlated spectrum is given
+
+by the scaled spectrum assumption used for the Scaled SLW model proposition [Solovjov
+
+et al., 2017, 2018].
+
+The Absorption Distribution Function (ADF) model is another distinguished Global
+
+Model. Developed in the 1990's [Rivière et al., 1996], the ADF model is quite similar to
+
+the SLW [Modest and Zhang, 2002; Pierrot et al., 1999a], di?ering only in the calculation
+
+of the gray gas temperature coe?cients. This method was extended to non-isothermal
+
+media by means of the absorption distribution function model proposition with ?ctitious
+
+gases (ADFFG) [Pierrot et al., 1999a]. For a non-isothermal medium, it was shown that
+
+the ADF and SLW models lead to resemblant accuracy, and the ADFFG model proved to
+
+be more accurate than these latest models, but requires greater computing time [Pierrot
+
+et al., 1999b].
+
+Instead of the full-spectrum correlation techniques traditionally used (i.e., ideal
+
+behavior of the spectrum), a new model, called Cumulative Wavenumber (CW), proposes
+
+a local-spectrum correlation for the solution of the RTE in non-uniform media at high
+
+temperature [Solovjov and Webb, 2002]. By means of the cumulative wavenumber (a new
+
+gas absorption spectral distribution function), this model introduces a local correction
+
+factor to consider the spatial variation of species concentration and gas temperature cal-
+
+culated independently in each ?xed spectral interval. Thus, there is no Leibniz terms
+
+production in the RTE solution. This approach is an attempt to replace the scale ap-
+
+proximation. Despite providing good results for radiative heat transfer calculation, the
+
+CW model formulation do not satisfy the energy balance, presenting considerable error in
+
+the radiative heat ?ux prediction, as shown by Galarça et al., 2011. For this reason, the
+
+Modi?ed CW (MCW) model was developed [Galarça et al., 2011] to satisfy the energy
+
+balance while keeping the same value of the radiative volumetric heat source. The MCW
+
+model demonstrated to be more accurate than CW, however, spends much computational
+
+time, that can not be practical to be coupled with combustion problems.
+
+Some CW model applications for radiative transfer calculation in participating
+
+gases have been accomplished. This model has been extended to non-uniform gas mixtures
+
+with soot [Solovjov and Webb, 2005], and to account for non-gray walls [Solovjov et al.,
+
+
+
+12
+
+2013]. A fast approach was applied to reduce the computational cost [Salinas, 2008],
+
+and two-dimensional problems were also studied [Ismail and Salinas, 2005; Salinas, 2008].
+
+The multilayer approach was used to modeling non-isothermal gaseous medium by SLW
+
+and CW models [Solovjov and Webb, 2008]. In this methodology the non-isothermal
+
+media is modeled by a system of isotherm layers, and, thus, the intervals of spectral
+
+integration do not vary with spatial coordinate within the layers. Hence, the Leibnitz
+
+terms are eliminated in the spectral integration of the RTE, but the spectral integration
+
+in the interface between the layers requires special consideration for the consistency of
+
+the model radiation intensities in di?erent layers.
+
+As demonstrated in the literature, even more simple gas models such as the WSGG
+
+can provide satisfactory results for the radiative transfer prediction in combustion gases.
+
+The superposition method applied to the WSGG has shown to be a good alternative
+
+for radiative transfer computation in non-homogeneous mixtures, and recently has been
+
+applied in some works [Centeno et al., 2016; Fraga et al., 2017; Centeno et al., 2018].
+
+Even though in these works have been used the WSGG model based on the superposi-
+
+tion method, it was carried out for complex and multidimensional problems. However,
+
+the application of the superposition approach in the WSGG model needs to be better
+
+understood in fundamental problems. Since this method is also used in the SLW mixture
+
+modeling, the solution of this model can be adequately compared with that of the WSGG.
+
+In this work, the WSGG and SLW model solutions are investigated in one-dimensional
+
+problems, for H2O, CO2, and H2O/CO2 mixture gas layers, exploring di?erent pro?les of
+
+temperature and concentration of the participating species. Moreover, the main challenge
+
+in the radiative transfer prediction using the superposition method is the combination
+
+of participating gases since it requires increasing computational e?ort as the components
+
+number increase. Thereby, it is fundamental to develop a methodology capable of reduce
+
+the computational time in such cases. Performing this study with the WSGG model is
+
+another objective of this work.
+
+2.2 Summary
+
+The LBL method provides the higher level of accuracy in radiative transfer pre-
+
+dictions in participating media. However, it spends a computational time that can be
+
+prohibitively high for practical applications. The Band Models become a restrictive alter-
+
+
+
+13
+
+native since it provides the gas transmissivity or the absorptance, which can not be used
+
+with arbitrary RTE solution methods. Such di?culty is removed by the Global Models
+
+that yield the absorption coe?cient. The WSGG is the simplest Global Model, but can
+
+provide satisfactory results for the radiative transfer prediction in combustion gases. The
+
+SLW model has received several improvements in the last years. The formulation of this
+
+model is based on the superposition method, which has also been recently explored in
+
+the WSGG model. The superposition method furnishes some new possibilities to the
+
+WSGG model, such as the treatment of mixtures with arbitrary concentrations, local
+
+variable mole ratios, and with any number of participating species. However, the WSGG
+
+model, employing this approach, need to be better investigated in fundamental problems,
+
+comparing the solution with that of SLW model, and searching for ways to reduce the
+
+computational e?ort which signi?cantly increases as the number of participating gases
+
+also increases. Such investigations are made in this work.
+
+
+
+14
+
+3 FUNDAMENTALS OF THERMAL RADIATION
+
+The thermal radiation propagation can be described by two viewpoints: quantum
+
+mechanics and classical electromagnetic wave theory. With the ?rst, the thermal radiation
+
+energy is described as quanta of particles, or photons. A statistical mechanism is used
+
+to approximate their propagation in a medium and interaction with matter. Thermal
+
+radiation also can be viewed as consisting of electromagnetic waves. In general, radiative
+
+properties of liquids and solids are more easily predicted using electromagnetic wave
+
+theory, while radiative properties of gases are more conveniently obtained from quantum
+
+mechanics [Modest, 2013]. For practical engineering applications, the thermal radiation
+
+regions of interest is in the wavelength range of 0.1 µm to 100 µm, including the ultraviolet
+
+and visible (? = 0.1 to 0.7 µm), near-infrared (? = 0.7 to 10 µm), and far-infrared (? =
+
+10 to 100 µm) spectra [Howell et al., 2010].
+
+Unlike conduction and convection, the thermal radiation can be transferred over a
+
+long distance without interacting with a medium. Because of this, it is of great importance
+
+in vacuum, space applications, and combustion processes. Another distinguishing feature
+
+which di?er these three heat transfer mechanisms is that conductive and convective heat
+
+transfer rates are linearly proportional to temperature di?erences, and, on the other hand,
+
+radiative heat transfer rates are generally proportional to di?erences in temperature to
+
+the fourth power. Therefore, thermal radiation becomes more important than conduction
+
+and convection in high temperatures, as in combustion applications (?res, furnaces, rocket
+
+nozzles, engines, etc.). Since the modern technologies have as priority higher e?ciencies, it
+
+will require higher temperatures, making thermal radiation even more important [Modest,
+
+2013]. This chapter will show same fundamentals concepts of thermal radiation, which
+
+are important to the development of this work.
+
+3.1 Blackbody
+
+The concept of a blackbody is basic to the study of radiative transfer. The black-
+
+body is called an ideal body, and it allows all the incident radiation pass into it (no
+
+re?ected energy) and internally absorbs all the incident radiation (no energy transmit-
+
+ted through the body). This behavior happens for all wavenumbers and for all angles of
+
+incidence [Howell and Siegel, 2002]. Hence, the blackbody is a perfect absorber for all
+
+
+
+15
+
+incident radiation, and it serves as a standard with which real absorbers can be compared
+
+to. The blackbody also emits the maximum total amount of energy at each wavenumber
+
+and at each direction.
+
+Considering a blackbody at temperature T enveloped by a hemispherical detector
+
+that captures thermal radiation with a wavenumber ? within a wavenumber interval d?, as
+
+shown in Figure 3.1, the hemispherical spectral emissive power, E?b, in W/(m2.µm), is the
+
+energy emitted by a black surface per unit time per unit area and per unit wavenumber
+
+interval around ?. This quantity is given by Planck's spectral distribution of emissive
+
+power:
+
+E?b(?,T) =
+2C1??
+
+3
+
+eC2?/T ? 1
+(3.1)
+
+where, C1 and C2 are constants for which the values are, respectively, 0.59552137 × 108
+
+W.µm4/(m2.sr) and 1.4387752 × 104µm; T (K) is the temperature, and ? (cm?1) is the
+
+wavenumber.
+
+Integrating Equation 3.1 over all the spectrum, results the mathematic expression
+
+called Stefan-Boltzmann law:
+
+Eb = ?T
+4 (3.2)
+
+in which Eb is the emitted blackbody energy ?ux (W/m2), and ? = 5.670400 × 10?8
+
+W/(m2.K4) is the Stefan-Boltzmann constant. Through this expression it is possible
+
+to calculate the radiation emission quantity in all directions and all wavenumbers only
+
+knowing the blackbody temperature.
+
+Figure 3.1 ? Blackbody enveloped by a hemispherical radiation detector [adapted from
+
+Howell et al., 2010].
+
+
+
+16
+
+3.2 Thermal Radiation Intensity
+
+The intensity is an important quantity for studying radiative transfer in absorbing,
+
+emitting, and scattering media due to certain invariance properties. The emitted spec-
+
+tral intensity is de?ned as the energy emitted per unit time per unit small wavenumber
+
+interval around the wavenumber ?, per unit elemental projected surface area normal to
+
+the direction and into a unit elemental solid angle centered around the direction given by
+
+the polar angle ?. For an elemental area dA within participating media shown in Fig. 3.2,
+
+the spectral radiation intensity is:
+
+I? =
+d3QR
+
+dA cos ?d?d?
+(3.3)
+
+where I? is expressed in W/(m2.µm.sr). For a non-attenuating and non-emitting medium
+
+with constant properties, the intensity in a given direction is independent of position along
+
+that direction.
+
+Figure 3.2 ? Spectral intensity emitted by an elemental area dA [adapted from Siegel
+
+and Howell, 1993].
+
+Another feature is that the radiation emitted by the blackbody depends on the
+
+wavenumber and on the temperature, and it is independent of direction, being, thus,
+
+a di?use emitter [Howell and Siegel, 2002]. The blackbody radiation intensity has its
+
+relation with the spectral emissive power according to:
+
+I?b(?,T) =
+E?b
+?
+
+=
+2C1?
+
+3
+
+eC2?/T ? 1
+(3.4)
+
+in which I?b is the spectral radiation intensity emitted by blackbody, in W/(m2.µm.sr).
+
+For a participating media, such as a mixture of water vapor and carbon dioxide,
+
+
+
+17
+
+the radiative intensity is a function of the distance along a path. It happens due to
+
+absorption, emission and the scattering e?ects of the medium.
+
+3.2.1 Attenuation of Intensity by Absorption
+
+The spectral radiation of intensity I? incident normally on a volume element of
+
+thickness ds which absorbs radiation, can be analyzed in Fig. 3.3. As radiation passes
+
+through ds, its intensity is reduced by absorption. This change in the intensity is propor-
+
+tional to the magnitude of the local intensity, as has been found experimentally [Howell
+
+and Siegel, 2002]. If the media is non-scattering, the coe?cient of proportionality will be
+
+the absorption coe?cient (??). Thus, the decrease is:
+
+dI? = ???I?ds (3.5)
+
+Figure 3.3 ? Intensity incident normally on absorbing volume element dV [adapted from
+
+Siegel and Howell, 1993)].
+
+3.2.2 The Increase of Intensity by Emission
+
+For emission of energy within the medium, it is considered an elemental volume
+
+dV (Figure. 3.4) at the center of a large black hollow sphere of radius R at uniform
+
+temperature T . The elemental volume dV limits a participating medium with absorption
+
+coe?cient ??, and the space between dV and the sphere is ?lled with non-participating
+
+material. The spectral intensity incident at the elemental area dAs, from element dA
+
+is I?(s = 0) = I?b(?,T), where I?b is the blackbody spectral intensity. Because of the
+
+
+
+18
+
+absorption, the change of the intensity in dV is [Howell and Siegel, 2002]:
+
+? I?(0)??ds = ?I?b(?,T)??ds (3.6)
+
+The energy absorbed by the di?erential volume dSdAs is I?b(?,T)??dSdAsd?d?, where
+
+d? = dA/R2 and dAs is the projected area normal to I?(0). The energy emitted by dA
+
+and absorbed by all of dV is ??I?b(?,T )dV d?d? (result from integration over all dAsdS
+
+elements), where d? is the solid angle de?ned by dA when viewed from dV . The energy
+
+incident upon dV from the entire spherical enclosure, is obtained by integration over all
+
+solid angles, which gives 4???I?b(?,T)dV d?.
+
+Figure 3.4 ? Geometry for derivation of emission from elemental volume[ Siegel and
+
+Howell, 1993].
+
+The elemental volume dV must emit energy equal to that absorbed to maintain
+
+equilibrium in the enclosure. Hence, for a isothermal volume, the spectral emissivity is
+
+given by the expression:
+
+4???I?b(?,T)I?b(?,T)dV d? = 4??I?b(?,T)E?b(?,T)dV d? (3.7)
+
+where E?b is the blackbody spectral emissive power. Finally, considering that the thermal
+
+emission is uniform over all directions, the spectral intensity emitted by an elemental
+
+volume into any direction is:
+
+dI? = ??I?bds (3.8)
+
+
+
+19
+
+3.3 Spectral Line Broadening
+
+It is convenient to discuss the radiation process by utilizing a photon or quantum
+
+point of view. Since the photon is the basic unit of radiative energy, the emission releases
+
+photons, and absorption is the capture of photons. When a photon is emitted or absorbed,
+
+the energy is correspondingly decreased or increased. However, a photon can also transfer
+
+part of its energy by the scattering process which is of minor engineering relevance [Howell
+
+and Siegel, 2002]. The magnitude of the radiative energy transition is related to the
+
+frequency of the emitted or absorbed radiation according to:
+
+Ep = Ej ?Ei = h?ij (3.9)
+
+in which h is Planck's constant and ? is the frequency of the photon energy; Ei and Ej
+
+are the energy that a photon can present in the levels i and j, respectively.
+
+A ?xed frequency is associated with the transition from a speci?c energy level to
+
+another. Thus, in the absence of other e?ects, the spectrum of the emitted radiation
+
+is a spectral line at that frequency. For a photon to be absorbed, the frequency of the
+
+photon energy must have one of certain discrete values. According to Equation 3.9, very
+
+little energy could be absorbed from the entire incident spectrum by an absorption line,
+
+since only those having a single wavenumber could be absorbed. However, other e?ects
+
+cause the line to be broadened and consequently to have a ?nite wavenumber span around
+
+the transition wavenumber ?ij. Some important e?ects are the physical mechanisms such
+
+as natural, Doppler, collision, and Stark broadening. Each one of these mechanisms
+
+contribute to a certain shape of the spectral lines, as shown in Figure 3.5, where ?D
+
+and ?L are the spectral line half-width for Doppler and Lorentz broadening, respectively,
+
+measured in the middle of the height.
+
+The line intensity can be obtained with the integration of the absorption coe?cient
+
+over all the wavenumber range according to the following expression:
+
+Sij =
+
+? ?
+0
+
+??,ij(?)d? =
+
+? ?
+??
+
+??,ij(?)d(? ??ij) (3.10)
+
+where Sij and ??,ij depend on the number of molecules in transition between the levels
+
+i and j, and on the gas density. The e?ect of the density on magnitude is seen taking
+
+the ratio ??/Sij. Thus, it shows the e?ect of density in changing the line shape. In the
+
+
+
+20
+
+subsections that follow are shown the mechanisms of line broadening.
+
+Figure 3.5 ? Spectral line shape for di?erent line broadening mechanisms [adapted from
+
+Modest, 2013].
+
+3.3.1 Natural Broadening
+
+This mechanism happens when a stationary emitter not perturbed by any external
+
+e?ects emits energy over a ?nite spectral interval about each transition wavenumber. This
+
+natural line broadening arises from the uncertainty in the exact levels Ei and Ej of the
+
+transition energy states, and is given by the Lorentz pro?le [Howell et al., 2010]:
+
+?ij(?)
+
+Sij
+=
+
+??/?
+
+?2? + (? ??ij)2
+(3.11)
+
+where ?? is the half-width. In engineering applications the half-width for natural broaden-
+
+ing is usually small compared with that for other line broadening phenomena, and, thus,
+
+this mechanism is neglected.
+
+3.3.2 Doppler Broadening
+
+Since the atoms or molecules of an absorbing or emitting gas are not stationary,
+
+it has a distribution of velocities associated with its thermal energy. If the gas molecules
+
+are in thermal equilibrium, it has a Maxwell-Boltzmann distribution of velocities which
+
+
+
+21
+
+results in a spectral line shape with a Gaussian distribution [Howell et al., 2010]:
+
+?ij(?)
+
+Sij
+=
+
+1
+
+?D
+
+?
+ln 2
+
+?
+exp
+
+[
+? (? ??ij)2
+
+ln 2
+
+?2D
+
+]
+(3.12)
+
+in which ?D is the line half-width for Doppler broadening,
+
+?D =
+?ij
+c
+
+(
+2KT
+
+M
+ln 2
+
+)1/2
+(3.13)
+
+Here, c is the speed of light in the vacuum (c = 2.998 × 108m/s), K is Boltzmann's
+
+constant (K = 1.3806 × 10?23J/K), T is the temperature in K, and M is the molecules
+
+mass, in kg. Since ?D depends on T 1/2, the Doppler broadening becomes important at
+
+high temperatures, more speci?cally above those found in combustion systems.
+
+3.3.3 Collision Broadening
+
+The collision rate by an atom or molecule increases when the gas pressure gas
+
+is increased, and it perturbs the energy states of atoms or molecules, resulting in colli-
+
+sion broadening of spectral lines. The line shape has a Lorentz pro?le, as the natural
+
+broadening [Howell et al., 2010]:
+
+?ij(?)
+
+Sij
+=
+
+?c/?
+
+?2c + (? ??ij)2
+(3.14)
+
+where the collision half-width ?c is determined by the collision rate,
+
+?c =
+1
+
+2?c
+
+4
+?
+?D2pi
+
+(MKT)1/2
+(3.15)
+
+in which D is the diameter of the atoms or molecules and pi is the gas pressure for the
+
+single component gas. With this equation, it is shown that collision broadening become
+
+important at high pressures and low temperatures. For engineering infrared conditions,
+
+the collision broadening is often the mean contributor to line broadening, and the other
+
+line broadening mechanisms can usually be neglected.
+
+3.3.4 Stark Broadening
+
+When the Stark e?ect happens, the energy levels of the radiating gas particles can
+
+be greatly perturbed due to the presence of strong electric ?elds. This kind of physical
+
+mechanism can produce very large line broadening. The Stark broadening is observed
+
+
+
+22
+
+in ionized gases due to the interactions of radiating particles with electrons and protons.
+
+The line shapes must be calculated by quantum mechanisms, and are quite unsymmetrical
+
+and complicated.
+
+3.4 Absorption Coe?cient
+
+As already discussed, the absorption coe?cient of participating gases has a strong
+
+variation with the wavenumber. The determination of this coe?cient is given by means of
+
+the computation of the absorption cross section, which, according to Howell et al., 2010,
+
+is obtained with the Lorentz collision pro?le:
+
+C? =
+?
+i
+
+Si
+?
+
+?i
+?2i + (? ??i)2
+
+(3.16)
+
+In this equation ? is the wavenumber, C? is the absorption cross section, in cm2/molecule,
+
+Si is the integrated intensity of the line i, ?i is the line location in the spectrum (found
+
+in spectral databases), and ?i is the line half-width. In Equation 3.16 the summation
+
+includes all the lines that are within an interval ??, for which the contribution of C? is
+
+signi?cant.
+
+In the work of Wang and Modest, 2004, it is shown that, for both H2O and CO2,
+
+the Lorentz pro?le is adequate for total pressure of 1 atm or higher and temperatures
+
+above 2500 K. The integrated intensity of a spectral line, Si, for a given temperature T
+
+(K), is calculated with the following expression [Rothman et al., 2010]:
+
+Si(T) = Si(T0)
+Q(T0)
+
+Q(T)
+
+exp(?C2Ei/T)
+exp(?C2Ei/T0)
+
+1 ?exp(?C2?iT)
+1 ?exp(?C2?iT0)
+
+(3.17)
+
+where T0 is the database reference temperature (T0 = 296 K in the HITEMP), Q is
+
+the total intern partition sum (which depends on the molecule structure, its isotope and
+
+temperature) [Fischer et al., 2003], and represents the summation of all energy states
+
+(electronic, vibrational, rotational, torsional, etc.); Ei is the energy of the lower state
+
+(cm?1), and ?i is the energy di?erence between the initial and ?nal state (given as vacuum
+
+wavenumber, cm?1, in the database). The constant C2 is the second Planck's constant
+
+(C2 = 1.43877 cm.K).
+
+The quantities Si(T0), Ei, and ?i are provided in the HITRAN compilation, and
+
+the value of Q is obtained with a Fortran routine [Fischer et al., 2003] available in the
+
+databases. The line half-width ?i (p,T) for a gas at pressure p (atm), temperature T (K),
+
+
+
+23
+
+and partial pressure pi (atm), is calculated as [Rothman et al., 1998]:
+
+?i(p,T) =
+
+(
+T0
+T
+
+)n[
+?air,i(p0,T0)(p?pi) + ?self,i(p0,T0)pi
+
+]
+(3.18)
+
+in which n is the temperature dependence coe?cient, p0 is the reference pressure, ?air,i
+
+is the air-broadened half-width, and ?self,i is the self-broadened half-width. Since the
+
+databases only provides ?air,i, Rothman et al., 1998 proposes that n = ?air,i = ?self,i.
+
+After de?ning the spectral line intensity Si(T), the line half-wight ?i (p,T), and
+
+the absorption cross section C?, then the absorption coe?cient can be expressed as:
+
+??(p,T,Y ) = N(p,T)Y C?(p,T,Y ) (3.19)
+
+Here, Y = pi/p is the gas molar fraction, N(p,T) = pNA/RuT is the gas molar density,
+
+being NA = 6.022×10?23 molecules/mol the Avogadro's number, and Ru = 8.314 J/mol.K
+
+the gases universal constant.
+
+3.5 Spectral Databases
+
+The advances in the spectroscopy of high resolution in the last decades have been
+
+very important in the thermal radiation ?eld. It allowed the detailed compilation of
+
+parameters of those molecules that are the mean constituents of the terrestrial atmosphere.
+
+McClatchey et al., 1973 published a technical report containing spectral data of molecules
+
+of water vapor, carbon dioxide, ozone, nitrous oxide, carbon dioxide, methane, and oxygen.
+
+Some of the parameters included were the frequency, intensity, half-width and the energy
+
+of the lower state of transition. Posteriorly, this study gave rise to the HITRAN database
+
+[Rothman et al., 1987] which has been periodically updated. The HITRAN2012 [Rothman
+
+et al., 2013] encompassing spectral information of 47 molecules. This database has its
+
+origins in applications for conditions of the terrestrial atmosphere. The last update is the
+
+HITRAN2016 [Gordon et al., 2017].
+
+For combustion applications arises the need of molecules spectra at high temper-
+
+atures (&gt; 1000 K). This requirement was attended by Rothman et al., 1995 with the
+
+HITEMP1995 spectroscopic database. Hence, it contains many more spectral lines than
+
+HITRAN for participating species. The last version, the HITEMP2010, has the spectral
+
+data of the absorbers H2O, CO2, CO, NO, and OH [Rothman et al., 2010]. One inter-
+
+esting point to note is that in the HITEMP2010 there is an amount of spectral lines for
+
+
+
+24
+
+H2O and CO2 much greater than for the others species, as can be seen in Table 3.1.
+
+Table 3.1 ? Number of spectral lines for molecules of the HITEMP2010 [Rothman et al.,
+
+2010].
+
+Molecule Spectral Coverage (cm?1) Number of Spectral Lines
+H2O 0 - 30,000 111,377,777
+CO2 258 - 9,648 11,167,618
+CO 0 - 8,465 115,218
+NO 0 - 9,274 105,633
+OH 0 - 19,268 40,055
+
+3.6 Radiative Transfer Equation
+
+When it is considered a participating media, such as a H2O/CO2 mixtures at
+
+high temperatures, the particles emits and absorbs radiation, and the scattering of this
+
+quantity can be neglected. To take into account the emission and absorption e?ects it
+
+is necessary to do the radiative energy balance over the enclosure. Thus, it results in
+
+the radiative transfer equation (RTE) which, for a non-scattering media, accounts for the
+
+spectral intensity variation along a given path x [Modest, 2013]:
+
+dI?
+dx
+
+= ???(x)I?(x) + ??(x)I?b(x) (3.20)
+
+where, in the right-side, the ?rst term represents the intensity attenuation due to ab-
+
+sorption, and the second is the intensity increasing due to emission; ?? is the spectral
+
+absorption coe?cient and I?b is the blackbody spectral radiation intensity, which were
+
+discussed in the previous sections. This equation needs to be solved for all directions and
+
+wavenumbers.
+
+3.7 Summary
+
+Unlike conduction and convection, the thermal radiation can be transferred along
+
+a distance without interacting with the medium. Since this mechanism is proportional to
+
+di?erences in temperature to the fourth power, it is very important in high temperatures
+
+such as those of combustion process. In this kind of problems, the blackbody, as a perfect
+
+absorber for all incident thermal radiation, serves as a standard with which real absorbers
+
+
+
+25
+
+can be compared. Another fundamental de?nition in the radiation ?eld is the spectral
+
+intensity. As the radiation passes through a participating media, the intensity can be
+
+attenuated by absorption, and increased by emission. The concepts of line broadening also
+
+must be considered. For engineering applications, the e?ect of the collision broadening
+
+is the most important. However, the Doppler broadening can become also relevant at
+
+elevated temperatures. To solve the RTE, besides to calculate the radiation intensity, it
+
+is needed to know the absorption coe?cient of the gases. This coe?cient depends on the
+
+absorption cross section, which can be obtained from the spectral databases.
+
+
+
+26
+
+4 AVAILABLE METHODS FOR SPECTRAL INTEGRATION OF THE
+
+RTE AND A NEW PROPOSITION
+
+After presenting the spectral form of the RTE, which needS to be solved for all di-
+
+rection and all wavenumbers, some methods for its spectral integration will be described.
+
+In this chapter, only the methods relevant to this work will be shown. The LBL integra-
+
+tion may require a high computational time depending on the problem under analysis.
+
+It happens due to the highly irregular behavior of the absorption coe?cient with the
+
+wavenumber. One common alternative is to apply the gas models such as the WSGG and
+
+the SLW for the radiative transfer computation.
+
+4.1 The Line-by-Line Integration
+
+As already discussed, the absorption coe?cient of the participating gases presents
+
+a strong variation with the wavenumber. This behavior is characterized by hundreds of
+
+thousands of spectral lines forming the gases spectra. In the Line-by-Line (LBL) solution
+
+of the RTE it is considered each one of these spectral lines individually. Because of this
+
+approach, the LBL method is taken as a benchmark solution with which the accuracy of
+
+the gases models is veri?ed.
+
+In Figure 4.1 there is a representation of an one-dimensional participating medium
+
+bounded by two parallel surfaces separated by a distance L. The spectral intensities in
+
+the forward and backward direction, I+?,l(x) and I
+?
+?,l(x), in a non-scattering participat-
+
+ing media, are determined from the RTE equation as follow, according to the discrete
+
+ordinates method (DOM)[Cassol et al., 2014; Modest, 2013]:
+
+µl
+dI+?,l(x)
+
+dx
+= ???(x)I+?,l(x) + ??(x)I?b(x) (4.1)
+
+?µl
+dI??,l(x)
+
+dx
+= ???(x)I??,l(x) + ??(x)I?b(x) (4.2)
+
+in which µl is the the cosine of the polar angle ?l in l direction, I
++
+?,l and I
+
+?
+?,l are the
+
+spectral radiation intensities for µl &gt; 0 and µl &amp;lt;0, respectively; x is the spatial position.
+
+Considering that the walls are black with known temperatures, the boundary conditions
+
+for Equations 4.1 and 4.2 at positions x = 0 and x = L are, respectively, I+?,l(0) = I?b(0)
+
+and I??,l(L) = I?b(L).
+
+
+
+27
+
+Figure 4.1 ? Schematic representation of the one-dimensional domain studied.
+
+If Equation 4.1 and 4.2 are solved for all directions and wavenumbers, the radiative
+
+heat ?ux and the heat source, q”R and ?qR, respectively, at position x, can be calculated by
+
+[Cassol et al., 2014]:
+
+q”R(x) =
+
+nd?
+l=1
+
+?
+?
+
+2?µl?l
+[
+I+?,l(x) ? I
+
+?
+?,l(x)
+
+]
+d? (4.3)
+
+?qR(x) =
+
+nd?
+l=1
+
+?
+?
+
+2??l??
+{[
+I+?,l(x) + I
+
+?
+?,l(x)
+
+]
+? 2I?b(x)
+
+}
+d? (4.4)
+
+where, for nd directions, the µl and the weights ?l of the quadrature scheme are de?ned
+
+within the interval [0,1]. To solve the radiative transfer equation, in this work was used
+
+the Gauss Legendre quadrature.
+
+Usually the RTE must be solved for a mixture of gases such as those found in
+
+combustion systems. Thus, the spectral absorption coe?cient in Equations 4.1 and 4.2
+
+has to be modi?ed. For a mixture of H2O and CO2 this coe?cient is written then as:
+
+?? = ??,w + ??,c (4.5)
+
+in which ??,w and ??,c are the spectral absorption coe?cients for H2O and CO2, respec-
+
+tively.
+
+4.2 Weighted-Sum-of-Gray-Gases
+
+Since the LBL integration solves the RTE for each spectral line, it requires a high
+
+computational time which may be not feasible for practical applications. Based on this,
+
+the Weighted-Sum-of-Gray-Gases (WSGG) model comes to overcome this di?cult with
+
+a good accuracy. Initially proposed by Hottel and Saro?m, 1967, this model replaces the
+
+
+
+28
+
+spectrum by a set of gray gases with uniform pressure absorption coe?cient, as shown in
+
+Figure 4.2. Thus, it is assumed that each gray gas covers a ?xed portion ??j in the spec-
+
+trum. Moreover, each pressure absorption coe?cient ?p,j is assumed to be independent
+
+of the temperature and partial pressure of the participating gases.
+
+Figure 4.2 ? Pressure absorption coe?cient representation using ng gray gases [ adapted
+
+from Dorigon et al., 2013].
+
+One parameter of great importance for the WSGG model is the total emittance
+
+along a certain path s in a medium at a given temperature and composition. This quantity
+
+accounts for the amount of energy emitted by a participating media compared with the
+
+energy emitted by a blackbody. Thereby, the total emittance is expressed as [Howell et al.,
+
+2010]:
+
+?(s) =
+?
+?
+?
+I?b??(s)d??
+?
+I?bd?
+
+(4.6)
+
+The Kirchho?'s law states that the absorbed and emitted energies must be equal: ?? = ??,
+
+where ?? is the spectral emittance, and ?? the spectral absorptance which is de?ned by
+
+the expression:
+
+??(s) = 1 ?e??p?Ps (4.7)
+
+This equation expresses the fraction of spectral intensity that has been absorbed along
+
+a path s, where ?p? = ??/P is the absorption coe?cient based on pressure, being P
+
+the sum of the partial pressures of the individual species of the gaseous mixture. Thus,
+
+Equation 4.6 can be rewritten as follows:
+
+?(s) =
+?
+?
+?
+I?b
+[
+1 ?e??p?Ps
+
+]
+d?
+
+?T 4
+(4.8)
+
+For the WSGG model, the total emittance is evaluated according to the following
+
+
+
+29
+
+relation [Smith et al., 1982]:
+
+?(s) =
+
+ng?
+j=0
+
+aj(T)
+
+[
+1 ?e??p,jPs
+
+]
+(4.9)
+
+where aj(T) is the weighting factor for each gray gas, based on the gas temperature;
+
+j = 0 represents the spectral windows for which the absorption coe?cient is null, and
+
+ng indicates the number of gray gases. The weighting factor, aj(T), may be physically
+
+interpreted as the fraction of the blackbody energy in the range of the spectrum in which
+
+the gray gas has a pressure absorption coe?cient ?p,j. Another interpretation for aj(T)
+
+and ?p,j is that they are the numerical values that yield the better ?t of Equation 4.9.
+
+The coe?cients aj(T) can be represented by polynomial functions [Smith et al., 1982]:
+
+aj(T) =
+K?
+k=0
+
+bj,kT
+k (4.10)
+
+in which bj,k is the polynomial coe?cient of kth order for the jth gray gas. Despite the
+
+transparent window having a null absorption coe?cient, the weighting factor must be
+
+di?erent from zero to assure that radiation energy is conserved:
+
+a0 = 1 ?
+ng?
+j=1
+
+aj (4.11)
+
+To solve Equation 4.9 - 4.11 the ?p,j and bj,k coe?cients for H2O/CO2 mixtures
+
+have been proposed in the last years [Galarça et al., 2008; Kangwanpongpan et al., 2012;
+
+Dorigon et al., 2013]. In this work was adopted the Dorigon et al., 2013 correlations for
+
+a partial pressure ratio between H2O and CO2 (pw/pc) equal to 2, as shown in Table 4.1.
+
+Such correlations are valid for a temperature range from 400 K to 2500 K, and for the
+
+pressure path lengths Ps of Equations 4.7 - 4.9 between 0.001 atm.m and 10 atm.m.
+
+Table 4.1 ? WSGG coe?cients for H2O/CO2 mixtures for pw/pc = 2 [Dorigon et al.,
+
+2013].
+
+j ?p,j(atm.m)
+?1 bj,0 bj,1(K)
+
+?1 bj,2(K)
+?2 bj,3(K)
+
+?3 bj,4(K)
+?4
+
+1 1.921E-01 5.617E-02 7.844E-04 -8.563E-07 4.246E-10 -7.440E-14
+2 1.719E+00 1.426E-01 1.795E-04 -1.077E-08 -6.971E-11 1.774E-14
+3 1.137E+01 1.362E-01 2.574E-04 -3.711E-07 1.575E-10 -2.267E-14
+4 1.110E+02 1.222E-01 -2.492E-05 -7.272E-08 4.275E-11 -6.608E-15
+
+
+
+30
+
+It was shown by Modest, 1991 that the WSGG model can be used with any method
+
+of solution of the RTE, which assumes the following form:
+
+dIj(x)
+
+dx
+= ??j(x)Ij(x) + ?j(x)aj(x)Ib(x) (4.12)
+
+In this equation, Ij and ?j are the intensity and the absorption coe?cient associated
+
+with the jth gray gas; Ib = ?T 4/? is the blackbody intensity, which is the Planck's
+
+distribution law. For a H2O/CO2 mixture, the coe?cient ?j can be rewritten as ?m,i to
+
+have the contribution of each participating gas: ?m,i = ?w,j + ?c,k, being kw,j and kc,k
+
+the gray gas absorption coe?cient for H2O and CO2, respectively. Considering a gaseous
+
+mixture con?ned between two parallel surfaces, Equation 4.12 can be written for positive
+
+and negative directions, according to the discrete ordinates method [Cassol et al., 2014;
+
+Modest, 2013]:
+
+µl
+dI+j,l(x)
+
+dx
+= ??j(x)I+j,l(x) + ?j(x)aj(x)Ib(x) (4.13)
+
+?µl
+dI?j,l(x)
+
+dx
+= ??j(x)I?j,l(x) + ?j(x)aj(x)Ib(x) (4.14)
+
+in which µl is the cosine of the polar angle ?l in the l direction, I
++
+j,l and I
+
+?
+j,l are the
+
+radiation intensities of the gray gas j for µl &gt; 0 and µl &amp;lt;0, respectively. Whereas the
+
+walls are black with known temperatures, the boundary conditions for Equations 4.13
+
+and Equation 4.14 at positions x = 0 and x = L are, respectively, I+j,l(0) = aj(0)Ib(0) and
+
+I?j,l(L) = aj(L)Ib(L).
+
+Solving Equations 4.13 and 4.14, the radiative heat ?ux and heat source, q”R and
+
+?qR, respectively, at a position x, can be determined as [Cassol et al., 2014; Dorigon et al.,
+
+2013]:
+
+q”R(x) =
+
+ng?
+j=0
+
+nd?
+l=1
+
+2?µl?l
+[
+I+j,l(x) ? I
+
+?
+j,l(x)
+
+]
+(4.15)
+
+?qR(x) =
+
+ng?
+j=1
+
+nd?
+l=1
+
+2??l?j
+{[
+I+j,l(x) + I
+
+?
+j,l(x)
+
+]
+? 2aj(x)Ib(x)
+
+}
+(4.16)
+
+where the summation over all gray gases (ng) represent the spectral integration in the
+
+WSGG model.
+
+
+
+31
+
+4.2.1 Superposition Method
+
+The correlations obtained for the standard WSGG model usually are for a constant
+
+partial pressure ratio between the participating species or when this ratio presents a little
+
+variation. Cassol et al., 2014 applied the superposition method as a way to eliminate
+
+this restriction. This approach consists of ?rst setting up independent correlations for
+
+each species, which are then superposed to form the WSGG correlations for the mixture.
+
+Thus, it is possible to compute the radiative heat transfer in mixtures with arbitrary
+
+concentrations, allowing for local variations in the mole ratios, and the inclusion of any
+
+number of participating species.
+
+According to the superposition method, for a mixture of water vapor and carbon
+
+dioxide, the gray gas absorption coe?cient is a sum of a given combination of gray gases
+
+absorption coe?cient of the components, and the weighting factor will be the product of
+
+their respective weighting factors. These de?nitions are represented by the expressions:
+
+?m,i = ?w,j + ?c,k (4.17)
+
+am,i(T) = aw,j(T) ×ac,k(T) (4.18)
+
+where ?w,j and ?c,k are the local absorption coe?cients for the jth and the kth gray
+
+gas of H2O and CO2, respectively; aw,j(T) and ac,k(T) are the corresponding weighting
+
+factors. Such method is similar to the implementation realized by Smith et al., 1987 for
+
+the WSGG model combining H2O and CO2 with soot, and was also applied to the SLW
+
+model development for H2O/CO2 mixtures [Denison and Webb, 1995b].
+
+Since this methodology requires the correlations of the individuals species, in this
+
+work it is adopted those found by Cassol et al., 2014 for H2O and CO2. These correlations,
+
+described in Tables 4.2 and 4.3, are valid for temperatures between 400 K and 2500 K,
+
+and 0.001 atm.m to 10 atm.m.
+
+Table 4.2 ? WSGG coe?cients for H2O [Cassol et al., 2014].
+
+j ?p,j(atm.m)
+?1 bj,0 bj,1(K)
+
+?1 bj,2(K)
+?2 bj,3(K)
+
+?3 bj,4(K)
+?4
+
+1 0.171 0.06617 55.48E-05 -48.41E-08 22.27E-11 -40.17E-15
+2 1.551 0.11045 0.576E-05 24.00E-08 -17.01E-11 30.96E-15
+3 5.562 -0.04915 70.63E-05 -70.12E-08 26.07E-11 -34.94E-15
+4 49.159 0.23675 -18.91E-05 -0.907E-08 4.082E-11 -8.778E-15
+
+
+
+32
+
+Table 4.3 ? WSGG coe?cients for CO2 [Cassol et al., 2014].
+
+j ?p,j(atm.m)
+?1 bj,0 bj,1(K)
+
+?1 bj,2(K)
+?2 bj,3(K)
+
+?3 bj,4(K)
+?4
+
+1 0.138 0.09990 64.41E-05 -86.94E-08 41.27E-11 -67.74E-15
+2 1.895 0.00942 10.36E-05 2.277E-08 -2.134E-11 6.497E-15
+3 13.301 0.14511 -3073E-05 -37.65E-08 -18.41E-11 30.16E-15
+4 340.811 -0.02915 25.23E-05 -26.10E-08 9.965E-11 -13.26E-15
+
+4.2.2 Proposition of a Reduced Superposition Method
+
+The superposition method applied to the WSGG has proved to be a good alterna-
+
+tive for radiative transfer prediction in participating media, and has been applied recently
+
+in some works [Centeno et al., 2016, 2018; Fraga et al., 2017]. However, this approach
+
+needs to be better investigated when used for the radiative transfer prediction in com-
+
+bustion gases. In this case, the main challenge is the combination of participating species
+
+since it requires increasing computational e?ort as the components number increase. For
+
+combustion problems modeling, the thermal radiation calculation needs to be coupled
+
+with other complex phenomena such as chemical kinetic and turbulence. Thereby, any
+
+computational cost improvement in the thermal radiation prediction is of great relevance.
+
+Considering a H2O/CO2 mixture, the present proposition is based on the absorp-
+
+tion coe?cient of each specie. Let ?w,j and ?c,k be the absorption coe?cient of the H2O
+
+and CO2, respectively, and j and k varying from 0 (transparent window) to ng (number
+
+of gray gaes). Thus, the main assumption for the reduced superposition method can be
+
+written as: ???
+??
+?w,j &gt;&gt; ?c,k, if j &gt; k
+
+?w,j&amp;lt;&amp;lt;?c,k, if j &amp;lt;k
+(4.19)
+
+This assumption can be obtained from the analysis of the WSGG correlations [Cassol
+
+et al., 2014], observing that the ?w,j and ?c,j coe?cients are given as follows:???
+??
+?w,j = pw?p,j
+
+?c,k = pc?p,k
+
+(4.20)
+
+where pw and pc are the partial pressures of H2O and CO2, respectively; ?p,j and ?p,k are
+
+accordingly the pressure absorption coe?cient which are found in the literature [Cassol
+
+
+
+33
+
+et al., 2014], and as shown in Tables 4.2 and 4.3, they are arranged in order of magnitude
+
+that makes the assumption of Equation 4.19 possible.
+
+It is fundamental to emphasize the relevance of the partial pressure of the partici-
+
+pating species (pw and pc). The assumption of the Equation 4.19 is valid when the partial
+
+pressure ratio (pw/pc), from Equation 4.20, is on scale with 1 (pw/pc ? 1). Otherwise, if
+
+pw/pc ratio is much larger or much smaller, the proposed reduced superposition method
+
+may not accurately predict the radiative transfer. In such a case it is necessary to evaluate
+
+if the regions where this happens are important or not to the thermal radiation.
+
+In Figure 4.3 there is a representation of the proposed reduced superposition
+
+method. The combination of two absorption coe?cients of H2O (?w,j) with those of
+
+CO2 (?c,k) is shown in Figure 4.3(a), where the subscripts j and k are varying from 0
+
+(transparent window) to 4 (number of gray gases). In the case where j = k the absorption
+
+coe?cient of the two species has the same magnitude, and, then, the absorption coe?cient
+
+i of the mixture, ?m,i, will have the contribution of both the H2O and the CO2 absorption
+
+coe?cients. The same happens for the weighting factor of the mixture, am,i(T), forming
+
+then one gray gas. This assumption can be summarized by the following expression:
+
+if j = k
+
+???
+??
+?m,i = ?w,j + ?c,k
+
+am,i(T) = aw,j(T) ×ac,k(T)
+(4.21)
+
+(a) (b)
+
+Figure 4.3 ? Reduced superposition approach for the arrangement of (a) H2O coe?cients
+
+with those of CO2, and for the arrangement of (b) CO2 coe?cients with those of H2O.
+
+Each of the combinations for which j &gt; k will also form one gray gas. However,
+
+these gray gases will have the same absorption coe?cient, which is ?w,j. This happens
+
+because the H2O absorption coe?cients will be much larger than those of CO2, and, then,
+
+will predominate. Since all combinations have the same absorption coe?cient, it will
+
+
+
+34
+
+generate one unique gray gas i of the mixture, with absorption coe?cient ?w,j. Thus,
+
+for this gray gas i, the absorption coe?cient, ?m,i, and the weighting factor, am,i(T), are
+
+given as:
+
+if j &gt; k
+
+????
+???
+?m,i = ?w,j
+
+am,i(T) = aw,j(T) ×
+[
+1 ?
+
+?4
+k+1 ac,k(T)
+
+] (4.22)
+In Equation 4.22, for CO2, all the arrangements together will form a fraction of the
+
+blackbody energy, represented by the term [1?
+?4
+
+k+1 ac,k(T)], in the range of the spectrum
+
+where the gray gas of the mixture has the absorption coe?cient ?w,j. Thereby, considering,
+
+for instance, all the possible arrangements of the absorption coe?cient ?w,4 of H2O with
+
+those of CO2 in Figure 4.3, it will be formed only two gray gases of the mixture.
+
+For the combinations of the CO2 absorption coe?cient with those of H2O, remains
+
+the scheme of the Figure 4.3(b) showed for two CO2 absorption coe?cients. As can be
+
+seen, there are only the combinations for j &amp;lt;k since those for j = k have already been
+
+accounted in the arrangement of Figure 4.3(a). Observing this, the absorption coe?cient
+
+and the weighting factor for the H2O/CO2 mixture, ?m,i and am,i(T), are expressed as
+
+follows:
+
+if j &amp;lt;k
+
+????
+???
+?m,i = ?c,k
+
+am,i(T) = ac,k(T) ×
+[
+1 ?
+
+?4
+j+1 aw,j(T)
+
+] (4.23)
+Considering the application of the standard superposition method for a mixture
+
+of H2O/CO2, the number of gray gases, adding the transparent windows, will be i =
+
+(j + 1) × (k + 1). In this relation, the correlations adopted for H2O and CO2 leads to
+
+j = k = 4, then i = 25. However, if the proposed reduced superposition is adopted i is
+
+reduced to 13. This result is of great relevance when concerning computational e?ort. The
+
+radiative transfer equation (RTE) is solved approximately only half of the time needed to
+
+obtain the solution by means of the standard superposition method. Moreover, it gains
+
+even more importance when it is working with more than two participating species. In
+
+the case of three components, the RTE should be solved 125 times applying the standard
+
+superposition method. Since the combustion system modeling requires the consideration
+
+of even more components, the computational time increases signi?cantly for the solution
+
+the RTE. Because of it, it is important the development of methodologies like the one
+
+presented in this work, which are capable of decreasing the computational e?ort.
+
+
+
+35
+
+4.3 Spectral-Line Weighted-Sum-of-Gray-Gases
+
+Derived from the formulation of the WSGG model proposed by Modest, 1991, the
+
+Spectral-Line Weighted-Sum-of-Gray-Gases (SLW) model allows for a further detailing in
+
+the treatment of the radiation spectrum, gases mixtures, and non-isothermal and non-
+
+homogeneous media. This model, ?rst introduced by Denison and Webb, 1993b, replaces
+
+the traditional LBL spectral integration over the wavenumber with an integration over the
+
+spectral absorption cross-section. Numerically, it means a discretization of the spectral
+
+absorption cross-section. The RTE has the same form as that of the WSGG model,
+
+di?ering only in the way of calculating the gray gases absorption coe?cient and the
+
+correspondent weighting factors, which are obtained with the absorption line blackbody
+
+distribution function (ALBDF). For a non-scattering media, the RTE becomes, then:
+
+dIj(x)
+
+dx
+= ??j(x)Ij(x) + ?j(x)aj(x)Ib(x) (4.24)
+
+where ?j and aj are the absorption coe?cient and the weighting factor for each gray gas,
+
+respectively.
+
+The ALBDF is de?ned as the fraction of the blackbody energy in the portions of
+
+the spectrum where the high-resolution spectral absorption cross-section of the gas C?
+
+is less than the prescribed value C, as illustrated in Figure 4.4. The dark-gray hatches
+
+represent the portions of the spectrum where the Planck's function (Eb?) is integrated.
+
+The ALBDF can be expressed as [Denison and Webb, 1995c]:
+
+F(C,Tb,Tg,PT ,Y ) =
+1
+
+?T 4b
+
+?
+i
+
+?
+??i
+
+Eb?(?,Tb)d? (4.25)
+
+in which ? is the Stephan-Boltzmann constant and Eb? is Planck's function evaluated
+
+at the wavenumber ? and blackbody temperature Tb. The subscript i refers to the ith
+
+spectral segment and the summation is performed over the all segments for which C?&lt;C,
+
+covering the entire spectrum. The dependence of the ALBDF on the spectrum is given
+
+by the spectral intervals ??i, which are dependent on the absorption cross-section, gas
+
+temperature Tg, the total pressure PT , and the species concentration Y . This distribution
+
+function monotonically increases from 0 to 1 with increasing absorption cross section.
+
+The discretization of C? results in the called supplemental absorption cross sections,
+
+whose values are logarithmically spaced between the minimum and maximum values of
+
+
+
+36
+
+Figure 4.4 ? Representation of part of the spectrum in which the ALBDF is calculated
+
+[adapted from Solovjov et al., 2016].
+
+C?. Each discrete increment of C? is represented by a single absorption cross section Cj
+
+or a single gray gas. Thus, for each gray gas, the fraction of blackbody energy, aj, for
+
+a given source temperature, is computed as the di?erence of two distribution functions
+
+evaluated at the supplementals absorption cross sections C?j and C?j+1:
+
+aj = F(C?j+1,Tb,Tg,PT ,Y ) ?F(C?j,Tb,Tg,PT ,Y ) (4.26)
+
+The application of the SLW model to non-isothermal and/or non-homogeneous
+
+media is made through scaling approximations, wherein a non-isothermal and/or non-
+
+homogeneous gas is replaced with an equivalently absorbing isothermal homogeneous gas.
+
+The most known is the Curtis-Godson approximation [Godson, 1953]. Goody and Yung,
+
+1989 showed that the scaling approximations are exact if the high-resolution absorption
+
+cross section can be expressed as the product of two functions [Denison and Webb, 1995c]:
+
+C?(Tg,PT ,Y ) = ?(Tg,PT ,Y )?(?) (4.27)
+
+where ? and ? de?ne the spatial and the spectral dependence of the absorption cross
+
+section, respectively. For non-isotherm and/or non-homogeneous problems, the spectral
+
+integration of the RTE leads to the appearance of the additional so-called Liebnitz terms
+
+[Denison and Webb, 1993b], which makes the analysis complicated . However, employing
+
+the scaling approximation, these terms vanish, and, therefore, the RTE can be solved with
+
+
+
+37
+
+arbitrary solution methods.
+
+The employment of the scaling approximation can be analyzed through Figure 4.5.
+
+In this ?gure there is a high-resolution portion of an ideal spectrum of a gas described
+
+by Equation 4.27 at two di?erent thermodynamic states. The spectrum at the state 1 is
+
+represented by temperature Tg1, total pressure PT1, and molar fraction Y1. For this state,
+
+the ALBDF may be calculated by integrating Planck's function over all spectral segments
+
+where C?(Tg1,PT1,Y1) is less than the prescribed value Cj(Tg1,PT1,Y1). The stated 2
+
+is described by temperature Tg2, total pressure PT2, and molar fraction Y2. Then, if the
+
+Equation 4.27 is valid, the absorption cross section of the state 2, Cj(Tg2,PT2,Y2), is given
+
+as [Denison and Webb, 1995c]:
+
+Cj(Tg2,PT2,Y2) = Cj(Tg1,PT1,Y1)
+?(Tg2,PT2,Y2)
+
+?(Tg1,PT1,Y1)
+(4.28)
+
+This result is due to function ?(?) be independent of the gas state, according to Equa-
+
+tion 4.27.
+
+Figure 4.5 ? Idealized dependence of high resolution spectrum on two di?erent
+
+thermodynamics states, resulting in equivalent blackbody energy fractions [adapted
+
+from Solovjov et al., 2017].
+
+As can be observed in Figure 4.5, the spectral segments de?ned where C?(Tg1,PT1,Y1)
+
+is less than the prescribed value Cj(Tg1,PT1,Y1) are identical to those spectral segments
+
+where C?(Tg2,PT2,Y2) is less than Cj(Tg2,PT2,Y2). Thereby, from the de?nition of the
+
+
+
+38
+
+ALBDF, there is an equality between the ALBDFs of the two thermodynamic states for
+
+a given blackbody temperature, established by the following expression:
+
+F
+[
+Cj(Tg2,PT2,Y2); Tb = Tref ; Tg = Tg2; Y = Y2; PT = PT2
+
+]
+= F
+
+[
+Cj(Tg1,PT1,Y1); Tb = Tref ; Tg = Tg1; Y = Y1; PT = PT1
+
+] (4.29)
+where Tref is a reference temperature. This equation provides an implicit dependence
+
+of Cj on the local gas state. Thus, the local absorption cross section Cj is determined
+
+from the following implicit equation, which is the Equation 4.29 written for equivalent
+
+absorption-line blackbody functions at the reference and the local states [Denison and
+
+Webb, 1995c]:
+
+F
+[
+Cj; Tb = Tref ; Tg = Tloc; Y = Yloc; PT = Ploc
+
+]
+= F
+
+[
+Cj,ref ; Tb = Tref ; Tg = Tref ; Y = Yref ; PT = Pref
+
+] (4.30)
+in which the "ref" and "loc" terms means the reference and the local values, respectively,
+
+of each variable. Equation 4.30 is known as the reference approach [Solovjov and Webb,
+
+2000; Solovjov et al., 2014, 2017] which assumes an ideal spectrum producing scaling of the
+
+spectrum in non-uniform media. Under this assumption, the intervals of integration can
+
+then be ?xed for each spatial position, eliminating the Leibnitz terms. Since Equation 4.30
+
+is implicit, Cj must be determined at each spatial location from an iterative technique
+
+such as bisection (adopted in this work) or Newton-Raphson [Denison and Webb, 1995c].
+
+For Solovjov and Webb, 2010 the reference approach provides satisfactory results when
+
+the spatial temperature gradients are not too high.
+
+According to Denison and Webb, 1995c the reference state can be determined as the
+
+spatial average of the temperature, total pressure, and composition ?elds. The reference
+
+absorption cross section, Cj,ref in Equation 4.30, is an appropriate value between the
+
+supplemental absorption cross sections C?j and C?j+1, which are logarithmically spaced.
+
+Thus, if su?cient gray gases (20 or more) are used, Cj,ref may be determined as the
+
+logarithmic mean of C?j and C?j+1:
+
+Cj,ref = exp
+
+[
+ln(C?j) + ln(C?j+1)
+
+2
+
+]
+(4.31)
+
+The local gray gas absorption coe?cient ?j is a function of the local molar density
+
+N, determined from an appropriate equation of state, and the local gray gas absorption
+
+
+
+39
+
+cross section Cj:
+
+?j = NY Cj (4.32)
+
+where Y is the local molar fraction of each participating specie.
+
+Since the fraction of blackbody energy of each gray gas, aj, has already been de?ned
+
+in Equation 4.26, remains to set the appropriated values of the gas temperature, total
+
+pressure, and mole fraction to calculate aj. Denison and Webb, 1995c recommend that
+
+the fraction of blackbody energy of each gray gas be calculated as follow:
+
+aj = F(C?j+1,Tb = Tloc,Tg = Tref,PT = Pref,Y = Yref )
+
+?F(C?j,Tb = Tloc,Tg = Tref,PT = Pref,Y = Yref )
+(4.33)
+
+For a participating media bounded by two parallel surfaces, Equation 4.24 can be
+
+written for positive and negative directions, according to the discrete ordinates method
+
+[Cassol et al., 2014; Modest, 2013]:
+
+µl
+dI+j,l(x)
+
+dx
+= ??j(x)I+j,l(x) + ?j(x)aj(x)Ib(x) (4.34)
+
+?µl
+dI?j,l(x)
+
+dx
+= ??j(x)I?j,l(x) + ?j(x)aj(x)Ib(x) (4.35)
+
+in which µl is the the cosine of the angle ?l in l direction, I
++
+j,l and I
+
+?
+j,l are the radiation
+
+intensities for the gray gas j for µl &gt; 0 and µl &amp;lt;0, respectively. Considering that the
+
+walls are black with known temperatures, the boundary conditions for Equation 4.34 and
+
+Equation 4.35 at the positions x = 0 and x = L are, respectively, I+j,l(0) = aj(0)Ib(0) and
+
+I?j,l(L) = aj(L)Ib(L).
+
+Solving Equations 4.34 and 4.35, the radiative heat ?ux and the heat source, q”R
+
+and ?qR, respectively, at position x, can be determined as [Cassol et al., 2014; Dorigon
+
+et al., 2013]:
+
+q”R(x) =
+
+ng?
+j=0
+
+nd?
+l=1
+
+2?µl?l
+[
+I+j,l(x) ? I
+
+?
+j,l(x)
+
+]
+(4.36)
+
+?qR(x) =
+
+ng?
+j=1
+
+nd?
+l=1
+
+2??l?j
+{[
+I+j,l(x) + I
+
+?
+j,l(x)
+
+]
+? 2aj(x)Ib(x)
+
+}
+(4.37)
+
+where the summation over all gray gases (ng) represent the spectral integration in the
+
+SLW model.
+
+
+
+40
+
+4.3.1 SLW Modeling of Gas Mixture
+
+In the SLW model, when it is considered more than one participating specie Equa-
+
+tions 4.30 - 4.33 must be solved for each specie. Thereby, for a mixture of H2O and CO2,
+
+the absorption coe?cient is given as:
+
+?m,i = ?w,j + ?c,k (4.38)
+
+where ?w,j and ?c,k are the local absorption coe?cients for the jth and the kth gray gas of
+
+H2O and CO2, respectively. The value of ?w,j and ?c,k is calculated using Equation 4.32.
+
+The direct method is considered to be the most accurate approach for treatment
+
+of mixtures in the SLW model [Solovjov et al., 2011b]. This method was developed by
+
+Denison and Webb, 1995b for binary mixtures, and later extended to multicomponent
+
+gas mixtures [Solovjov and Webb, 2000, 2001]. This approach consists of obtaining the
+
+ALBDF separately for each specie. Thus, the weighting factor of H2O and CO2 can be
+
+written as follow, respectively:
+
+aw,j = Fw(C?j+1,Tb,Tg,PT ,Y ) ?Fw(C?j,Tb,Tg,PT ,Y ) (4.39)
+
+ac,k = Fc(C?j+1,Tb,Tg,PT ,Y ) ?Fc(C?j,Tb,Tg,PT ,Y ) (4.40)
+
+in which Fw and Fc are the ALBDFs for H2O and CO2, respectively. The values of the
+
+ALBDF are calculated for each local mole concentration and temperature.
+
+Finally, the weighting factor for the mixture, used in the RTE, is given by the
+
+product of the two individual weights:
+
+am,i = aw,j ×ac,k (4.41)
+
+Such approach assumes that the spectra of the individual species are statistically uncor-
+
+related. Including the transparent window, the weighting factor for the mixture must
+
+satisfy the relation:
+ng?
+i=0
+
+am,i = 1 (4.42)
+
+
+
+41
+
+4.4 Summary
+
+The most accurate radiative transfer prediction in participating media is made
+
+with the LBL spectral integration of the RTE. However, this method spends a high com-
+
+putational time since it is needed to solve the RTE for hundreds of thousands of spectral
+
+lines. The WSGG model came up as a possible alternative. The attractiveness of this
+
+method is its relatively simple formulation and implementation with satisfactory accuracy
+
+depending on the problem under analysis. The application of the WSGG model consists
+
+on ?rst generating the participating gases correlations, which can be obtained for a mix-
+
+ture or for the individual species. The advantage of the individual correlations for each
+
+gas is that the radiative problems can be solved for variable partial pressure ratios along
+
+the spatial position. For a gas mixture, the combination of the individual correlations is
+
+made through the known superposition approach. In this work is proposed the reduced
+
+superposition method focused on the computational e?ort reduction. The superposition
+
+method is also used in the SLW model. This method, more complex and detailed, is
+
+based on the absorption line blackbody energy distribution function (ALBDF) calculated
+
+for each participating specie through its detailed spectrum. Thus, the ALBDFs can be
+
+used to calculate the weighting factors of the mixture.
+
+
+
+42
+
+5 RESULTS AND DISCUSSION
+
+5.1 Analyze Between the LBL Solution and the WSGG and SLW Models
+
+After describing the theory of the Gas Models of interest in this work, now it will
+
+be applied to the radiative transfer calculation in participating gases. In this chapter
+
+will be shown results considering two kinds of non-isothermal problems: homogeneous
+
+and non-homogeneous media. For each of them the solutions are carried out ?rst for
+
+the individual species, and next for the mixture. The SLW and WSGG solutions for a
+
+one-dimensional gas layer are compared against the LBL benchmark solutions in order to
+
+evaluate the accuracy of these models.
+
+5.1.1 Radiative Transfer in Non-isothermal, Homogeneous Media
+
+The radiative heat transfer in non-isothermal homogeneous media is now inves-
+
+tigated. The solutions are performed using the SLW and WSGG models for a one-
+
+dimensional gas layer bounded with two black walls, which are separated by one meter.
+
+The results are shown for the radiative heat ?ux and the heat source for which the LBL
+
+integration serves as the benchmark solution in the comparison. The molar concentra-
+
+tions of the gases are assumed to be constant and equal to 0.1 for carbon dioxide (CO2),
+
+and 0.2 for water vapor (H2O). In all cases the total pressure is 1 atm, and a spatial
+
+discretization of 200 points for the grid was used. Furthermore, the discrete ordinates
+
+method (DOM) [Cassol et al., 2014; Modest, 2013] was applied for the angular discretiza-
+
+tion: 40 directions were used for the LBL, 8 for the SLW, 8 for WSGG that uses the
+
+Cassol et al., 2014 coe?cients and 30 directions for WSGG that uses the Dorigon et al.,
+
+2013 coe?cients. Previous works show that these spatial and angular discretizations are
+
+enough to ensure the solutions independence. [Dorigon et al., 2013; Cassol et al., 2014;
+
+Brittes, 2015; Fonseca et al., 2018; Coelho and França, 2018]. For the WSGG model, 4
+
+gray gases for each participating specie were used, as found in the literature. In the SLW
+
+formulation, 20 gray gases were adopted since above of this number the solutions does
+
+not vary signi?cantly.
+
+To evaluate the spectral models approached in this work, three temperature pro?les
+
+
+
+43
+
+were adopted, described as follows:
+
+T(x?) = 400 + 1400sin2(?x?) (5.1)
+
+T(x?) = 400 + 1400sin2(2?x?) (5.2)
+
+T(x?) =
+
+????
+???
+
+800 + 920sin2 (2?x?) , x? ? 0.25
+
+400 + 1400
+
+{
+1 ? sin3/4
+
+[
+2
+
+3
+?(x? ? 0.25)
+
+]}
+, x? &gt; 0.25
+
+(5.3)
+
+in which x? = x/L, being x the local position, and L the distance between the walls.
+
+Figure 5.1 shows these temperature pro?les. The cases discussed here are organized
+
+according to Table 5.1. The WSGG and SLW deviations with respect to the LBL
+
+0.0 0.2 0.4 0.6 0.8 1.0
+0
+
+200
+
+400
+
+600
+
+800
+
+1000
+
+1200
+
+1400
+
+1600
+
+1800
+
+2000
+
+ 
+
+ 
+
+T
+em
+
+pe
+ra
+
+tu
+re
+
+ [ 
+K
+
+]
+
+Dimensionless distance, x*
+
+ Eq(5.1)
+ Eq(5.2)
+ Eq(5.3)
+
+Figure 5.1 ? Temperature pro?les.
+
+Table 5.1 ? Homogeneous testes cases for molar concentration of YCO2 = 0.1 and
+
+YH2O = 0.2.
+
+Test Case
+Temperature
+
+Pro?le
+1 Eq.(5.1)
+2 Eq.(5.2)
+3 Eq.(5.3)
+
+integration were computed for both the radiative heat ?ux, q”R, and the heat source,
+
+?dq”R/dx, as follow:
+
+?(%) =
+
+??q”R,MODEL ? q”R,LBL??
+max
+
+??q”R,LBL?? × 100% (5.4)
+
+
+
+44
+
+?(%) =
+
+??(?dq”R,MODEL/dx) ? (?dq”R,LBL/dx)??
+max
+
+???dq”R,MODEL/dx?? × 100% (5.5)
+where ? and ? are the local deviations in the computation of the radiative heat ?ux and the
+
+heat source, respectively. In Equations 5.4 and 5.5, max
+??q”R,LBL?? and max ???dq”R,LBL/dx??
+
+are the maximum absolute values of the radiative heat ?ux and heat source for each case
+
+under analysis. Of special interest in the discussion will be the maximum deviations, ?max
+
+and ?max, and the average deviations, ?avg and ?avg, in the domain.
+
+For the three cases presented in this section, two situations are considered. First,
+
+the problems are solved for individual species, and, next, for the mixture using both the
+
+WSGG and the SLW models. In the WSGG model, the solution for individual species is
+
+obtained with the Cassol et al., 2014 coe?cients, while for the mixture is adopted both
+
+the Dorigon et al., 2013 (pw/pc = 2) and the Cassol et al., 2014 coe?cients. In Case 1,
+
+the temperature pro?le varies symmetrically in the domain, with the temperature ranging
+
+from 400 K on the walls to 1800 K in the mid distance between the walls. In Figures 5.2-
+
+5.4 are shown the radiative heat ?ux and the heat source for a layer of CO2, H2O and
+
+H2O/CO2 mixture, respectively.
+
+As can be seen in these ?gures, for all these problems the radiative heat ?ux is null
+
+in the middle of the domain due to the symmetry of the temperature pro?le. Since the
+
+radiative heat ?ux is directed from the higher temperature of the medium to the walls,
+
+the heat ?ux is positive for x? &gt; 0.5, and negative for x? &amp;lt;0.5. The radiative heat source
+
+has a peak at x? = 0.5 where the temperature is at its maximum, and the negative sign
+
+means that the medium is losing energy due to radiation. For CO2, the WSGG model
+
+presents a worst agreement with the LBL near to the walls for both the radiative heat ?ux
+
+and the heat source. The radiative heat ?ux of H2O presents a behavior similar to that
+
+of CO2, while the maximum radiative heat source deviation occurs in the mid distance
+
+between the walls, such as happens for the H2O/CO2 mixture. For the problems of Case
+
+1, the radiative heat ?ux deviations for the SLW model has also its maximum value in
+
+the middle of the domain.
+
+The SLW and WSGG maximum and average deviations with respect to LBL in-
+
+tegration are shown in Table 5.2. For CO2, with the WSGG model, the maximum and
+
+average deviations found for the radiative heat ?ux were of 11.53 % and 3.46 %, respec-
+
+tively. For the heat source the maximum deviation is 6.72 %, and 4.17 % for the average.
+
+When the SLW model is considered, it is seen (Table 5.2) that in average it has a better
+
+
+
+45
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-25
+
+-20
+
+-15
+
+-10
+
+-5
+
+0
+
+5
+
+10
+
+15
+
+20
+
+25
+
+ 
+
+ 
+q" R
+
+  [
+ k
+
+W
+ / 
+
+m
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+  WSGG
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-180
+-160
+-140
+-120
+-100
+
+-80
+-60
+-40
+-20
+
+0
+20
+40
+60
+
+ 
+
+ 
+
+- d
+q" R
+
+ /d
+x 
+
+ [ 
+kW
+
+ / 
+m
+
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+  WSGG
+
+(b)
+
+Figure 5.2 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of CO2 (YCO2 = 0.1), Case 1: (a) radiative heat ?ux, q
+”
+R, (b)
+
+radiative heat source, ?dq”R/dx.
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-60
+
+-40
+
+-20
+
+0
+
+20
+
+40
+
+60
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-400
+
+-350
+
+-300
+
+-250
+
+-200
+
+-150
+
+-100
+
+-50
+
+0
+
+50
+
+100
+
+ 
+
+ 
+
+- d
+q" R
+
+ /d
+x 
+
+ [ 
+kW
+
+ / 
+m
+
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(b)
+
+Figure 5.3 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of H2O (YH2O = 0.2,), Case 1: (a) radiative heat ?ux, q
+”
+R, (b)
+
+radiative heat source, ?dq”R/dx.
+
+accuracy than WSGG, specially for the radiative heat ?ux. In the radiative heat source,
+
+the maximum deviation of 7.59 % occurs in the middle of the domain. When the par-
+
+ticipating gas is H2O, the deviations increase signi?cantly if compared to those of CO2
+
+for both the WSGG and the SLW models. However, surprisingly the WSGG maximum
+
+radiative heat source deviation is smaller than that for the SLW model for both the H2O
+
+
+
+46
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-100
+
+-75
+
+-50
+
+-25
+
+0
+
+25
+
+50
+
+75
+
+100
+
+ 
+
+ 
+q" R
+
+  [
+ k
+
+W
+ / 
+
+m
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG (Superposition)
+ WSGG ( pw/pc = 2)
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-600
+
+-500
+
+-400
+
+-300
+
+-200
+
+-100
+
+0
+
+100
+
+200
+
+ 
+
+ 
+
+- d
+q" R
+
+  /
+dx
+
+  [
+ k
+
+W
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG (Superposition)
+ WSGG ( pw/p c= 2)
+
+(b)
+
+Figure 5.4 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of H2O/CO2 mixture (YH2O = 0.2, YCO2 = 0.1), Case 1: (a)
+
+radiative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx.
+
+and the CO2.
+
+The calculations for the H2O/CO2 mixture shows that the Dorigon et al., 2013
+
+coe?cients (pw/pc = 2) provides much better agreement with the LBL integration than
+
+the superposition methodology applied to both the WSGG and the SLW models. This
+
+happens because the superposition approach is a coupling method for the mixture from
+
+individual participating species coe?cients, and it introduces approximations that are
+
+not found when the mixture is made before obtaining the coe?cients. Besides that, using
+
+the WSGG coe?cients for mixture, the RTE is solved only for 4 gray gases and one
+
+transparent window, while with the superposition method the RTE is solved 25 times in
+
+the WSGG model, and 441 times in the SLW model. Except for the maximum radiative
+
+heat source deviation of the mixture, the WSGG model employing the superposition
+
+method leads to higher deviations than SLW. Moreover, there is another interesting point
+
+to notice: the WSGG for H2O/CO2 (pw/pc = 2) mixture solution has a relevant smaller
+
+deviation if compared to the maximum deviations found for individual species.
+
+The Cases 2 and 3 share some conclusions with Case 1 in such a way that only the
+
+deviations are shown in this section. The graphics for the radiative heat ?ux and the heat
+
+source can be seen in detail in the Appendix A. Tables 5.3 and 5.4 show the deviations
+
+for Cases 2 and 3, where it can be seen that, except for the WSGG heat source deviations
+
+
+
+47
+
+Table 5.2 ? Maximum and average deviations of the SLW and WSGG solutions for the
+
+radiative heat ?ux, ?max and ?avg, and the radiative heat source, ?max and ?avg, for Case
+
+1.
+
+q”R ?dq
+”
+R/dx
+
+SLW ?max(%) ?avg(%) ?max(%) ?avg(%)
+CO2 6.40 2.55 7.59 2.79
+H2O 8.79 4.73 12.28 4.31
+H2O/CO2 11.48 7.77 14.48 4.38
+WSGG ?max(%) ?avg(%) ?max(%) ?avg(%)
+CO2 11.53 3.46 6.72 4.17
+H2O 15.45 10.51 9.48 5.30
+H2O/CO2 (pw/pc = 2) 5.09 2.88 5.72 3.43
+H2O/CO2 (Superposition) 14.83 10.24 9.93 5.32
+
+of Case 2, the CO2 deviations are smaller than those of H2O for both the WSGG and
+
+the SLW models, and, in average, the WSGG deviations found for the individual species
+
+are greater than those of SLW, as happens in Case 1. As can be noted, the superposition
+
+method applied to the WSGG model of Case 2 leads to deviations very closed to those of
+
+SLW, indicating that even with just 4 gray gases the WSGG model can be competitive
+
+depending on the case under study. For these two cases, the mixture with the Dorigon
+
+et al., 2013 coe?cients (pw/pc = 2) also yields the smaller deviations if compared with
+
+the LBL benchmark solutions.
+
+Table 5.3 ? Maximum and average deviations of the SLW and WSGG solutions for the
+
+radiative heat ?ux, ?max and ?avg, and the radiative heat source, ?max and ?avg, for Case
+
+2.
+
+q”R ?dq
+”
+R/dx
+
+SLW ?max(%) ?avg(%) ?max(%) ?avg(%)
+CO2 8.66 3.67 11.66 4.32
+H2O 9.54 4.72 16.37 6.53
+H2O/CO2 12.95 6.18 15.67 5.66
+WSGG ?max(%) ?avg(%) ?max(%) ?avg(%)
+CO2 12.64 5.00 17.53 6.37
+H2O 15.45 7.83 13.81 5.60
+H2O/CO2 (pw/pc = 2) 8.31 3.34 13.34 4.77
+H2O/CO2 (Superposition) 12.65 6.89 16.12 4.72
+
+
+
+48
+
+Table 5.4 ? Maximum and average deviations of the SLW and WSGG solutions for the
+
+radiative heat ?ux, ?max and ?avg, and the radiative heat source, ?max and ?avg, for Case
+
+3.
+
+q”R ?dq
+”
+R/dx
+
+SLW ?max(%) ?avg(%) ?max(%) ?avg(%)
+CO2 1.98 1.00 6.27 1.97
+H2O 5.39 3.06 13.95 3.35
+H2O/CO2 8.51 5.87 14.46 3.35
+WSGG ?max(%) ?avg(%) ?max(%) ?avg(%)
+CO2 5.06 1.74 8.50 3.65
+H2O 10.72 6.50 11.12 4.88
+H2O/CO2 (pw/pc = 2) 4.89 2.77 6.84 2.85
+H2O/CO2 (Superposition) 11.85 7.71 11.84 4.73
+
+5.1.2 Radiative Transfer in Non-isothermal, Non-homogeneous Media
+
+In real combustion systems the molar concentration of the participating gases is
+
+not homogeneous, which means that it varies in the spatial position. For this reason, it
+
+will be shown in this section some problems in which the media is non-isothermal and
+
+non-homogeneous. The molar concentration pro?les adopted for the participating species
+
+are described by the following equations:
+
+YCO2 (x
+?) = 0.2sin2(?x?) (5.6)
+
+YCO2 (x
+?) = 0.2sin2(2?x?) (5.7)
+
+YCO2 (x
+?) = 0.1cos2(2?x?) (5.8)
+
+YH2O(x
+?) = 0.2sin2(2?x?) (5.9)
+
+in which x? = x/L, being x the local position, and L the distance between the walls.
+
+Figure 5.5 presents the pro?les of these concentration as well as those of temperature.
+
+The three test cases studied are organized in Table 5.5. All the computational parameters
+
+are the same as those de?ned for homogeneous media in the previous section.
+
+The ?rst two cases present a constant partial pressure ratio (pw/pc = 2) over the
+
+domain, while for the Case 3 this ratio vary with the spatial coordinate. For Case 1, both
+
+the temperature and the molar concentration pro?les present a double symmetry, with
+
+
+
+49
+
+0.0 0.2 0.4 0.6 0.8 1.0
+0
+
+200
+
+400
+
+600
+
+800
+
+1000
+
+1200
+
+1400
+
+1600
+
+1800
+
+2000
+
+ 
+
+ 
+T
+
+em
+pe
+
+ra
+tu
+
+re
+ [ 
+
+K
+]
+
+Dimensionless distance, x*
+
+ Eq(5.1)
+ Eq(5.2)
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+0.00
+
+0.05
+
+0.10
+
+0.15
+
+0.20
+
+0.25
+
+ 
+
+ 
+
+M
+ol
+
+ar
+ c
+
+on
+ce
+
+nt
+ra
+
+tio
+n
+
+Dimensionless distance, x*
+
+ Eq(5.6)
+ Eq(5.7) and Eq(5.9)
+ Eq(5.8)
+
+(b)
+
+Figure 5.5 ? Pro?les of (a) temperature and (b) molar concentration of participating
+
+species.
+
+Table 5.5 ? Test cases considering non-homogeneous molar concentration of the
+
+participating species.
+
+Test Case
+Temperature
+
+Pro?le
+Molar Concentration Pro?le
+
+CO2 H2O
+1 Eq.(5.2) Eq.(5.7) 2YCO2
+2 Eq.(5.1) Eq.(5.6) 2YCO2
+3 Eq.(5.1) Eq.(5.8) Eq.(5.9)
+
+two points of maximum: x? = 0.25 and x? = 0.75. The maximum temperature for this
+
+case is 1800 K, while the minimum is 400 K and occurs in the walls and in the middle of
+
+the domain. Because of the symmetry of the pro?les, the radiative heat ?ux is null in the
+
+half distance between the walls. Figures 5.6-5.8 shows the radiative heat ?ux and the heat
+
+source for a layer of CO2, H2O and H2O/CO2 mixture, respectively. For the H2O and
+
+the H2O/CO2 mixture problems, the radiative heat ?ux presents higher deviations near
+
+the walls, in which there are low temperatures and molar concentrations. However, such
+
+behavior does not happens for CO2. Furthermore, in all the problems solved for Case 1,
+
+the SLW model leads to the higher deviation of the radiative heat source in the regions
+
+of maximum temperature and molar concentration, which was expected.
+
+Table 5.6 shows the deviations of the WSGG and SLW models with respect to the
+
+LBL benchmark solution, for individuals participating species and mixture of the Case
+
+
+
+50
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-40
+
+-30
+
+-20
+
+-10
+
+0
+
+10
+
+20
+
+30
+
+40
+
+ 
+
+ 
+q" R
+
+  [
+ k
+
+W
+ / 
+
+m
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-350
+
+-300
+
+-250
+
+-200
+
+-150
+
+-100
+
+-50
+
+0
+
+50
+
+100
+
+150
+
+ 
+
+ 
+
+- d
+q" R
+
+  /
+dx
+
+  [
+ k
+
+W
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(b)
+
+Figure 5.6 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of CO2, Case 1: (a) radiative heat ?ux, q”R, (b) radiative heat
+
+source, ?dq”R/dx.
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-100
+
+-80
+
+-60
+
+-40
+
+-20
+
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-800
+
+-700
+
+-600
+
+-500
+
+-400
+
+-300
+
+-200
+
+-100
+
+0
+
+100
+
+200
+
+ 
+
+ 
+
+- d
+q" R
+
+  /
+dx
+
+  [
+ k
+
+W
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(b)
+
+Figure 5.7 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of H2O, Case 1: (a) radiative heat ?ux, q”R, (b) radiative heat
+
+source, ?dq”R/dx.
+
+1. Considering the results of the SLW model, it can be seen that the H2O, if compared
+
+to CO2, provides the higher deviations. Besides that, the H2O/CO2 mixture deviations
+
+are greater than those found for individuals species, such as happens, in average, for the
+
+WSGG (superposition). Unlike SLW, the H2O deviations for WSGG model has a higher
+
+value than those for CO2 only for the radiative heat ?ux, while the maximum and average
+
+
+
+51
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-150
+
+-100
+
+-50
+
+0
+
+50
+
+100
+
+150
+
+ 
+
+ 
+q" R
+
+  [
+ k
+
+W
+ / 
+
+m
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG (Superposition)
+ WSGG ( pw/pc = 2)
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+
+-1200
+
+-1000
+
+-800
+
+-600
+
+-400
+
+-200
+
+0
+
+200
+
+400
+
+ 
+
+ 
+
+- d
+q" R
+
+  /
+dx
+
+  [
+ k
+
+W
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG (Superposition)
+ WSGG ( pw/pc = 2)
+
+(b)
+
+Figure 5.8 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of H2O/CO2 mixture (YH2O/YCO2 = 0.2), Case 1: (a)
+
+radiative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx.
+
+deviations for the radiative heat source are 8.81 % and 2.46 %, respectively. Moreover, it
+
+can be noted that the superposition methodology applied to the WSGG yields, in average,
+
+the smaller deviations than SLW, and it also is truth for the individual species. In the
+
+comparison of the WSGG and SLW radiative heat ?ux, it can be seen that the results are
+
+close to each other.
+
+Table 5.6 ? Maximum and average deviations of the SLW and WSGG solutions for the
+
+radiative heat ?ux, ?max and ?avg, and the radiative heat source, ?max and ?avg, for Case
+
+1.
+
+q”R ?dq
+”
+R/dx
+
+SLW ?max(%) ?avg(%) ?max(%) ?avg(%)
+CO2 8.19 2.88 10.86 2.90
+H2O 11.45 4.78 16.21 3.85
+H2O/CO2 15.52 6.97 17.98 4.16
+WSGG ?max(%) ?avg(%) ?max(%) ?avg(%)
+CO2 7.02 1.87 15.13 3.69
+H2O 11.14 5.54 8.81 2.46
+H2O/CO2 (pw/pc = 2) 3.62 1.19 6.44 1.57
+H2O/CO2 (Superposition) 13.22 7.12 14.40 2.84
+
+For Case 2, in general, when the problems are compared with each other, the con-
+
+
+
+52
+
+clusions have the same tendency of those derived from Case 1. Thus, only the computed
+
+deviation for the radiative heat ?ux and the heat source are shown in this section, and
+
+the graphics can be seen in detail in Appendix B. As can be observed in Table 5.7, except
+
+when it is used the Dorigon et al., 2013 coe?cients, in average, the WSGG radiative heat
+
+?ux deviations are close to those found employing the SLW model. Further, the WSGG
+
+radiative heat source maximum deviations for H2O and H2O/CO2 (superposition) mix-
+
+ture are lower than those found employing the SLW model: for H2O reaches 6.86 %, being
+
+13.57 % in the SLW model; and for H2O/CO2 (superposition) this deviation is 13.54 %,
+
+while for the SLW model it is 18.44 %. Such results show that the WSGG might compete
+
+very well with the SLW, depending on the problem analyzed. It is very important for
+
+the thermal radiation ?eld since the WSGG model present a formulation simpler to be
+
+implemented than SLW.
+
+Table 5.7 ? Maximum and average deviations of the SLW and WSGG solutions for the
+
+radiative heat ?ux, ?max and ?avg, and the radiative heat source, ?max and ?avg, for Case
+
+2.
+
+q”R ?dq
+”
+R/dx
+
+SLW ?max(%) ?avg(%) ?max(%) ?avg(%)
+CO2 6.31 3.34 8.14 2.23
+H2O 9.89 7.14 13.57 2.97
+H2O/CO2 14.22 11.38 18.44 3.99
+WSGG ?max(%) ?avg(%) ?max(%) ?avg(%)
+CO2 7.50 2.89 8.98 3.54
+H2O 11.10 8.22 6.86 2.74
+H2O/CO2 (pw/pc = 2) 2.13 0.71 1.58 0.72
+H2O/CO2 (Superposition) 14.48 11.82 13.54 3.63
+
+When the partial pressure ratio (pw/pc) is not constant over the domain, the dis-
+
+agreements between the WSGG and the SLW models are more pronounced. This behavior
+
+can be observed in Case 3 which was also solved for the individual species as well as for
+
+the mixture. The temperature and H2O molar concentration pro?les reach the maximum
+
+values at the positions x? = 0.25 and x? = 0.75. On the other hand, in these same
+
+locations, the CO2 molar concentration has the lowest value, which allows for the vari-
+
+able partial pressure ratio pw/pc. The radiative heat ?ux and heat source for CO2, H2O,
+
+
+
+53
+
+and H2O/CO2 mixture are found in Figures 5.9-5.11, respectively. For the solution of
+
+the individual species, the radiative heat ?ux calculation obtained with WSGG model
+
+presents the worst results near the walls. The radiative heat source deviation for CO2 has
+
+its maximum value in the middle of the domain where there is a peak of concentration,
+
+and a minimum of temperature; while for H2O the location where there are the maximum
+
+deviations does not coincides with that of maximum temperature or molar concentration.
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-30
+
+-20
+
+-10
+
+0
+
+10
+
+20
+
+30
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-250
+
+-200
+
+-150
+
+-100
+
+-50
+
+0
+
+50
+
+100
+
+ 
+
+ 
+
+- d
+q" R
+
+  /
+dx
+
+  [
+ k
+
+W
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(b)
+
+Figure 5.9 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of CO2, Case 3: (a) radiative heat ?ux, q”R, (b) radiative heat
+
+source, ?dq”R/dx.
+
+For all the problems of Case 3 it is seen that the SLW model is signi?cantly
+
+more accurate than WSGG. It can also be veri?ed in the deviations shown in Table 5.8.
+
+One interesting point to note is that the WSGG (pw/pc = 2) solution furnish the worst
+
+results for the radiative heat source, as found by Cassol et al., 2014. That is expected
+
+since the Dorigon et al., 2013 coe?cients are generated under the conditions that the
+
+partial pressure ratio between the species is 2/1 in all positions in the medium, while
+
+in fact the concentration of H2O is much smaller than that of CO2 in the middle of
+
+the slab. However, among the solutions, such coe?cients provides the best result for
+
+the radiative heat ?ux, having the advantage that it require the RTE to be solved only
+
+for four gray gases and one transparent window, while with the superposition method
+
+the RTE is solved 25 times in the WSGG model, and 441 times in the SLW model.
+
+
+
+54
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-30
+
+-20
+
+-10
+
+0
+
+10
+
+20
+
+30
+
+ 
+
+ 
+ q
+
+" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-200
+
+-175
+
+-150
+
+-125
+
+-100
+
+-75
+
+-50
+
+-25
+
+0
+
+25
+
+50
+
+ 
+
+ 
+
+- d
+q" R
+
+ /d
+x 
+
+ [ 
+kW
+
+ / 
+m
+
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(b)
+
+Figure 5.10 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of H2O, Case 3: (a) radiative heat ?ux, q”R, (b) radiative heat
+
+source, ?dq”R/dx.
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-50
+
+-40
+
+-30
+
+-20
+
+-10
+
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG (Superposition)
+ WSGG ( pw/pc = 2)
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-300
+
+-250
+
+-200
+
+-150
+
+-100
+
+-50
+
+0
+
+50
+
+100
+
+150
+
+ 
+
+ 
+
+- d
+q" R
+
+ /d
+x 
+
+ [ 
+kW
+
+ / 
+m
+
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG (Superposition)
+ WSGG ( pw/pc = 2)
+
+(b)
+
+Figure 5.11 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of H2O/CO2 mixture, Case 3: (a) radiative heat ?ux, q”R, (b)
+
+radiative heat source, ?dq”R/dx.
+
+As seen in the graphics, WSGG (pw/pc = 2) overpredicted the absolute value of the
+
+radiative heat source in the half distance between the walls. The opposite e?ect takes
+
+place in the vicinity of x? = 0.2 and 0.8, where the use of the WSGG (pw/pc = 2)
+
+underpredicted the actual amount of H2O, which is a more e?ective absorber-emitter
+
+than CO2, leading to an underestimation of the absorption of radiation from the higher
+
+
+
+55
+
+temperature regions in the medium. Another observation is that, for the mixture made
+
+through the superposition method, the deviations found are very close to the maximum
+
+deviations found for the individual species, or even smaller, in both the SLW and the
+
+WSGG models. This behavior does not appears when the partial pressure ratio (pw/pc)
+
+is constant, for which the H2O/CO2 mixture deviations expressively increase if compared
+
+to those of individuals species.
+
+Table 5.8 ? Maximum and average deviations of the SLW and WSGG solutions for the
+
+radiative heat ?ux, ?max and ?avg, and the radiative heat source, ?max and ?avg, for Case
+
+3.
+
+q”R ?dq
+”
+R/dx
+
+SLW ?max(%) ?avg(%) ?max(%) ?avg(%)
+CO2 6.35 3.37 8.34 3.02
+H2O 3.43 1.70 7.94 2.32
+H2O/CO2 6.11 3.17 8.81 3.26
+WSGG ?max(%) ?avg(%) ?max(%) ?avg(%)
+CO2 14.10 5.46 14.21 5.77
+H2O 16.03 9.82 14.79 4.85
+H2O/CO2 (pw/pc = 2) 6.06 2.54 16.77 8.49
+H2O/CO2 (Superposition) 9.58 4.41 14.48 7.08
+
+5.1.3 Summary
+
+The radiative heat transfer calculation was made in a one-dimensional gas layer.
+
+For this, both the WSGG and the SLW models were used. The results were compared
+
+against the LBL benchmark solutions in order to evaluate the accuracy of these models.
+
+The problems were solved for CO2 and H2O individually, and for H2O/CO2 mixtures
+
+considering a non-isothermal homogeneous or non-homogeneous media. In the WSGG
+
+model, the Cassol et al., 2014 coe?cients were adopted for the individual participating
+
+species. These same coe?cients were used for the mixture as well as to those of Dorigon
+
+et al., 2013. For both the homogeneous and the non-homogeneous media, when pw/pc
+
+ratio is constant, the results have shown that for both the WSGG and the SLW models,
+
+the H2O deviations, in average, are higher than those found for CO2. Furthermore, for
+
+homogeneous media, the WSGG deviations for individual species are signi?cantly greater
+
+than those of SLW, except for the radiative heat source maximum deviation of H2O;
+
+
+
+56
+
+while for mixtures, when the superposition approach is used, WSGG model can provide
+
+results as accurate as the SLW model depending on the problem under analysis. In all the
+
+cases where the partial pressure ratio is constant (pw/pc = 0.2) the Dorigon et al., 2013
+
+coe?cients provide the better agreement with the LBL solution. It happens because the
+
+superposition approach is a coupling method for the mixture from individual participating
+
+species coe?cients, and it introduces same approximations that are not found when the
+
+mixture is made before obtaining the coe?cients. On the other hand, in the case where
+
+the partial pressure ratio is not constant over the domain, the superposition method
+
+yields the lowest deviations for the radiative heat source. Besides that, in such condition,
+
+the deviations for the mixture are very close to the maximum deviations found for the
+
+individual species for both the WSGG and the SLW models, contrary to what happens
+
+for constant partial pressure ratio.
+
+5.2 Application of the Proposed Reduced Superposition Method
+
+Since the proposed reduced superposition method for the WSGG model was de-
+
+tailed in Chapter 4, now its accuracy will be evaluated in one-dimensional radiative trans-
+
+fer problems. Furthermore, it will be evaluated the consistency of this new proposition
+
+for the radiative transfer prediction in laminar di?usion ?ames.
+
+5.2.1 Radiative Transfer in One-dimensional Problems
+
+The ?rst case is a non-isothermal non-homogeneous H2O/CO2 mixture. The tem-
+
+perature pro?le is that given by Equation 5.2, shown in Section 5.1.1. The CO2 concentra-
+
+tion pro?le (YCO2) is described by Equation 5.7 in Section 5.1.2, being that YH2O = 2YCO2.
+
+Thus, the partial pressure ratio (pw/pc) between the species is constant through the do-
+
+main and equal to 2.
+
+For this case, the radiative heat ?ux and heat source were computed. Theses
+
+quantities were calculated using the WSGG model. Therefore, were adopted the standard
+
+superposition method [Cassol et al., 2014] and the reduced superposition method proposed
+
+in this work. The solutions obtained with these two approaches are compared against the
+
+LBL integration. As can be seen in Figure 5.12, there is no visible di?erence between
+
+the standard and the reduced superposition method solutions for both the radiative heat
+
+?ux and the heat source. The disagreement between the solutions is only found when
+
+
+
+57
+
+the normalized deviations with respect to the LBL benchmark solutions are computed,
+
+as shown in Table 5.9. For the radiative heat ?ux, the maximum normalized deviation
+
+found with the standard and the reduced superposition method were 12.40 % and 12.33
+
+%, respectively; accordingly, the maximum deviations for the radiative heat source were
+
+13.22% and 12.38%.
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-150
+
+-100
+
+-50
+
+0
+
+50
+
+100
+
+150
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ Standard-Superposition
+ Reduced-Superposition
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+
+-1200
+
+-1000
+
+-800
+
+-600
+
+-400
+
+-200
+
+0
+
+200
+
+400
+
+ 
+
+ 
+
+- d
+q" R
+
+  /
+dx
+
+  [
+ k
+
+W
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ Standard-Superposition
+ Reduced-Superposition
+
+(b)
+
+Figure 5.12 ? Comparison of the solutions obtained with the WSGG model, considering
+
+the standard superposition method and the proposed reduced superposition method, for
+
+a H2O/CO2 mixture. The solutions are also compared against the LBL integration for
+
+the (a) radiative heat ?ux, q”R and (b) radiative heat source, ?dq
+”
+R/dx, for temperature
+
+and CO2 molar concentration given by Equations 5.2 and 5.7 with pw/pc = 2.
+
+Table 5.9 ? Maximum and average deviations of the WSGG solutions for the radiative
+
+heat ?ux, ?max and ?avg, and the radiative heat source, ?max and ?avg, considering the
+
+standard superposition method and the proposed reduced superposition method, for
+
+temperature and CO2 molar concentration given by Equations 5.2 and 5.7 with
+
+pw/pc = 2.
+
+q”R ?dq
+”
+R/dx
+
+WSGG ?max(%) ?avg(%) ?max(%) ?avg(%)
+Standard-Superposition 12.40 2.84 13.22 7.13
+Reduced-Superposition 12.33 2.70 12.38 6.77
+
+The next case is also a non-isothermal non-homogeneous media containing a H2O/CO2
+
+
+
+58
+
+gas layer. The temperature pro?le is given by Equation 5.1, in Section 5.1.1, and the mo-
+
+lar concentration of CO2 and H2O are represented by Equations 5.8 and 5.9, receptively,
+
+in Section 5.1.2. Unlike ?rst case, in this one the partial pressure ratio (pw/pc) between
+
+the participating species vary along the spatial position. The results for the radiative heat
+
+?ux and heat source are shown in Figure 5.13, and again it can be seen that the standard
+
+and the reduced superposition method provide coincident solutions. When compared with
+
+the LBL solution, the deviations found are those presented in Table 5.10. For the radia-
+
+tive heat ?ux the maximum normalized deviation applying the standard and the reduced
+
+superposition method are 14.48% and 13.92%, respectively. Extending these calculations
+
+for the radiative heat source, the maximum deviation are, accordingly, 9.58% and 9.18%.
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-50
+
+-40
+
+-30
+
+-20
+
+-10
+
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ Standard-Superposition
+ Reduced-Superposition
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-300
+
+-250
+
+-200
+
+-150
+
+-100
+
+-50
+
+0
+
+50
+
+100
+
+150
+
+ 
+
+ 
+
+- d
+q" R
+
+ /d
+x 
+
+ [ 
+kW
+
+ / 
+m
+
+3  ]
+
+x [ m ]
+
+ LBL
+Standard-Superposition
+ Reduced-Superposition
+
+(b)
+
+Figure 5.13 ? Comparison of the solutions obtained by the WSGG model, considering
+
+the standard superposition method and the proposed reduced superposition method, for
+
+a H2O/CO2 mixture. The solutions are also compared against the LBL integration for
+
+the (a) radiative heat ?ux, q”R and (b) radiative heat source, ?dq
+”
+R/dx. The temperature
+
+pro?le is given by Equation 5.1, and the molar concentration of CO2 and H2O
+
+represented by Equations 5.8 and 5.9, receptively.
+
+The results presented in this section show the relevance of the proposed reduced
+
+superposition method for radiative transfer prediction in combustion gases. Considering
+
+the standard superposition method, for a H2O/CO2 mixture, the RTE must be solved
+
+25 times. Employing the reduced superposition method this number is reduced to 13.
+
+
+
+59
+
+Table 5.10 ? Maximum and average deviations of the WSGG solutions for the radiative
+
+heat ?ux, ?max and ?avg, and the radiative heat source, ?max and ?avg, considering the
+
+standard superposition method and the proposed reduced superposition method, for
+
+temperature pro?le given by Equation 5.1, and the molar concentration of CO2 and H2O
+
+represented by Equations 5.8 and 5.9, receptively.
+
+q”R ?dq
+”
+R/dx
+
+WSGG ?max(%) ?avg(%) ?max(%) ?avg(%)
+Standard-Superposition 14.48 7.08 9.58 4.41
+Reduced-Superposition 13.92 7.29 9.18 4.07
+
+As already discussed in Chapter 4, this result is of great relevance when concerning
+
+computational e?ort. It gains even more importance when it is working with more than
+
+two participating species. In the case of three components, the RTE should be solved
+
+125 times applying the standard superposition method. Since the combustion system
+
+modeling requires the consideration of even more components, the computational time
+
+increases signi?cantly for the computation of the radiative transfer. Despite the proposed
+
+reduced superposition method working for one-dimensional problems, its validity also
+
+needs to be evaluated for the radiative transfer solution in combustion systems such as
+
+di?usion ?ames. Such discussion is the aim of the following section.
+
+5.2.2 Evaluation of the Consistency of the Reduced Superposition Method in
+
+Di?usion Flames
+
+The radiative transfer prediction using the WSGG model with the reduced su-
+
+perposition method was carried out for H2O/CO2 mixtures in one-dimensional domain
+
+in the previous section. However, it is important to verify the consistency of this new
+
+proposition in combustion systems, where the H2O and the CO2 are the main combustion
+
+products. For this, it was chosen a laminar di?usion ?ame. The di?usive term means
+
+that the fuel and the oxidant are not premixed.
+
+The laminar di?usion ?ame has CH4 as fuel, without dilution, and air as oxidant.
+
+For the evaluation of the consistency of the reduced superposition method it is necessary
+
+to know the ?elds of temperature, molar concentration of H2O and CO2, as well as the
+
+partial pressure ratio pw/pc between these species in the ?ame. As already discussed, the
+
+
+
+60
+
+partial pressures pw and pc are important for the absorption coe?cient calculation for
+
+the gray gases. Moreover, the ratio between these partial pressures needs to be on scale
+
+with 1 (pw/pc ? 1) over the domain for the proposed reduced superposition method to
+
+be valid. Otherwise, if pw/pc ratio is much larger or much smaller, the proposed reduced
+
+superposition method may not predict accurately the radiative transfer. In such case it is
+
+necessary to evaluate if the regions where it happens are important or not for the thermal
+
+radiation.
+
+In Figure 5.14 it is shown the variables of interest in this analysis for the laminar
+
+?ame. There is a symmetry axis at the right vertical edge. The ?ame was simulated in
+
+the ANSYS/Fluent 18, and the results are a courtesy of the colleague Luís Gustavo Pires
+
+Rodrigues. As can be observed in the pw/pc ?eld, there are regions where this ratio is
+
+not on scale with 1. However, it is important to note that such regions are not relevant
+
+from the thermal radiation point of view. That is true because the radiative transfer is
+
+signi?cant in the regions of high temperature and molar concentrations of the participating
+
+species. Thus, analyzing Figures 5.14 (a), (b) and (c), it can be seen that the regions of
+
+interest for the thermal radiation are not coincident with those of very high and very low
+
+pw/pc ratios. Thereby, even if the reduced superposition method does not work for such
+
+conditions, the regions where that happens do not have a relevant contribution in the
+
+radiative transfer calculation. Even if there are regions of high and low partial pressure
+
+ratios, in average this ratio are close to 2, which is on scale with 1. To verify that, the
+
+following expression can be used for the average partial pressure ratio computation in the
+
+?ame:
+
+r =
+
+?
+V
+?rdV?
+
+V
+?dV
+
+(5.10)
+
+in which ? is given as (pw + pc)T 4, being T the local temperature; and r is the local
+
+partial pressure ratio (pw/pc). The integration is made over each ?nite volume. Solving
+
+this equation for the laminar ?ame, it yields r = 1.989, which satisfy the conditions for
+
+the proposed reduced superposition to be valid.
+
+
+
+61
+
+(a) (b) (c) (d)
+
+Figure 5.14 ? Fields of (a) temperature, (b) H2O and (c) CO2 molar concentrations, and
+
+(d) the partial pressure ratio (pw/pc) for the laminar di?usion ?ame.
+
+5.2.3 Summary
+
+In this section was veri?ed the accuracy and the consistency of the reduced superpo-
+
+sition method proposed in this work. The radiative transfer prediction in one-dimensional
+
+domain was performed for non-isothermal and non-homogeneous problems. In such case
+
+it was considered both the constant and the non-constant partial pressure ratio (pw/pc)
+
+over the spatial position. The proposed methodology provided solutions as accurate as
+
+those found employing the standard superposition method, with the advantage that the
+
+number of times the RTE is solved was reduced by half. In addition, it was concluded
+
+that the reduced superposition method also is valid for the radiative transfer prediction
+
+in laminar di?usion ?ames. Although this method does not work for very high and very
+
+low pw/pc ratios, the regions where it happens in these ?ames are not important for the
+
+thermal radiation calculations.
+
+
+
+62
+
+6 CONCLUSIONS AND PERSPECTIVES
+
+In this work, the radiative transfer was computed in one-dimensional problems em-
+
+ploying both the WSGG and the SLW models. The results for the radiative heat ?ux and
+
+the heat source were compared against the LBL benchmark solution in order to evaluate
+
+the accuracy of these models. Therefore, its was considered non-isothermal homogeneous
+
+and non-homogeneous media with di?erent temperature and concentration pro?les of the
+
+participating species. The ?rst step was to solve the problems for H2O and CO2 individ-
+
+ually, and, next, for H2O/CO2 mixtures. The objective of doing that was to compare the
+
+accuracy of the WSGG and SLW models for several media conditions. Furthermore, the
+
+main challenge in the superposition method is the combination of participating gases since
+
+it requires increasing computational time as the components number increase. Thus, for
+
+the WSGG model, it was proposed a reduced superposition method capable of reducing
+
+the computational e?ort. Its accuracy was veri?ed in one-dimensional radiative problems.
+
+Finally, the consistency of this new approach was proved in di?usion ?ames. The main
+
+conclusions of this study can be summarized as follow:
+
+• In homogeneous media, analyzing the individual species solutions, the SLW model
+
+proved to be more accurate than WSGG. For both the WSGG and the SLW models,
+
+the H2O normalized deviations found for the radiative heat ?ux and the heat source
+
+were expressively higher than those for CO2. When the solution was carried out for
+
+H2O/CO2 mixtures, the deviations, in average, reached values close to those found
+
+for H2O (maximum deviations between the individual species). Further, the super-
+
+position method applied to WSGG model, even with just four gray gases for each
+
+specie, led to results very close to those of SLW depending on the problem under an-
+
+alyze. It shows that despite the simple formulation, the WSGG model may compete
+
+very well with more sophisticated gas models in the solutions of thermal radiation
+
+problems. In all the test cases, for mixtures, the Dorigon et al., 2013 coe?cients
+
+provided the best results, which make sense since such correlations were generated
+
+speci?cally for mixtures where the partial pressure ratio (pw/pc) is constant.
+
+• When the media is non-homogeneous, for constant partial pressure ratio, in both
+
+the mixture and the individual species, the solutions lead to same conclusions that
+
+those derived from homogeneous media. However, if variable partial pressure ra-
+
+
+
+63
+
+tio is considered, the disagreements between the WSGG and the SLW models are
+
+more pronounced. The SLW model shown to be, in average, signi?cantly more
+
+accurate than WSGG for both the mixture and the individual species. Moreover,
+
+when Dorigon et al., 2013 coe?cients for mixture was applied provided the higher
+
+deviation for the radiative heat source, and the better results for the radiative heat
+
+?ux. This result show that these coe?cients may be a good option even when the
+
+partial pressure ratio is not constant, depending on the result of interest, having
+
+the advantage that it require the RTE to be solved only for four gray gases and one
+
+transparent window, while with the superposition method the RTE was solved 25
+
+times in the WSGG model, and 441 times in the SLW model.
+
+• The proposed reduced superposition method applied to the WSGG model led to
+
+solutions as good as those of the standard superposition method in the computa-
+
+tion of the radiative transfer in one-dimensional problems for both constant and
+
+non-constant partial pressure ratio (pw/pc). Since the combination of participating
+
+species is the main challenge of the standard superposition method, this result is
+
+very important for the thermal radiation prediction from combustion gases due to
+
+the fact that the number of times need to solve the radiative transfer equation (RTE)
+
+is reduced by half. In combustion system, where the thermal radiation calculation
+
+need to be coupled with others complex mechanisms such as chemical kinetic and
+
+turbulence, this computational time reduction become of great relevance.
+
+• The consistency of the reduced superposition method in methane di?usion laminar
+
+?ames was certi?ed. Since the proposition made in this work is valid when pw/pc ?
+
+1, the ?elds of temperature, molar concentrations of H2O and CO2, and partial
+
+pressure ratio (pw/pc) were analyzed. Thereby, it was veri?ed that the regions in
+
+the ?ame where pw/pc is not in scale with 1 are not important for thermal radiation.
+
+This phenomenon become relevant only in locations of high temperature and molar
+
+concentrations of the participating species, and in such regions the relation pw/pc ?
+
+1 was satis?ed.
+
+The perspectives of this work are:
+
+(i) It is important to extend the reduced superposition method to thermal radiation
+
+prediction in di?usion ?ames, and, thus, analyze the accuracy of this approach in
+
+
+
+64
+
+such conditions;
+
+(ii) As realized for the WSGG model, the development of a new approach for optimiza-
+
+tion of the superposition method applied to SLW model is of great interest for the
+
+computational e?ort reduction;
+
+(iii) Another perspective is to couple the optimized superposition method with an ade-
+
+quate approach to consider turbulence-radiation iterations (TRI) and soot formation
+
+in combustion processes.
+
+
+
+65
+
+BIBLIOGRAPHY
+
+Al-Omari, S. A. B. On the sensitivity of soot and thermal radiation simulation
+results to the adopted PDF for temperature under highly sooting combustion conditions,
+International Communications in Heat and Mass Transfer, vol. 33, p. 1273?1280,
+2006.
+
+Andre, F., Solovjov, V., Lemonnier, D., and Webb, B. Comonotonic global spectral
+models of gas radiation in non-uniform media based on arbitrary probability measures,
+Applied Mathematical Modelling, vol. 50, p. 741?754, 2017.
+
+Çayan, F. N. and Selçuk, N. A comparative study of modeling of radiative heat
+transfer using MOL solution of DOM with gray gas, wide-band correlated-k and spectral
+line-based weighted sum of gray gases models, Numerical Heat Transfer, vol. 52, p.
+281?296, 2007.
+
+Becher, V., Goanta, A., and Splietho?, H. Validation of spectral gas radiation
+models under oxyfuel conditions ? Part C: Validation of simpli?ed models, International
+Journal of Greenhouse Gas Control, vol. 11, p. 34?51, 2012.
+
+Bhuiyan, A. A. and Naser, J. Numerical modelling of oxy fuel combustion, the
+e?ect of radiative and convective heat transfer and burnout, Fuel, vol. 139, p. 268?284,
+2015.
+
+Bresslo?, N. W. The in?uence of soot loading on weighted sum of gray gases solu-
+tions to the radiative transfer equation across mixtures of gases and soot, International
+Journal of Heat and Mass Transfer, vol. 42, p. 3469?3480, 1999.
+
+Brittes, R., Centeno, F. R., Ziemniczak, A., and França, F. H. R. WSGG Model
+Correlations to Compute Nongray Radiation From Carbon Monoxide in Combustion Ap-
+plications, Journal of Heat Transfer, vol. 139, p. 041202:1?7, 2017.
+
+Brittes, R. S. Desenvolvimento de um Novo Modelo para Integração Es-
+pectral da RTE em Problemas Não Homogêneos e Não Isotérmicos. PhD thesis,
+Universidade Federal do Rio Grande do SUL, 2015.
+
+Cassol, F., Brittes, R., Centeno, F. R., da Silva, C. V., and França, F. H. R.
+Evaluation of the gray gas model to compute radiative transfer in non-isothermal, non-
+homogeneous participating medium containing CO2, H2O and soot, Journal of the
+Brazilian Society of Mechanical Sciences and Engineering, vol. 37(1), p. 163?172,
+2015.
+
+Cassol, F., Brittes, R., França, F. H., and Ezekoye, O. A. Application of the
+weighted-sum-of-gray-gases model for media composed of arbitrary concentrations of H2O,
+{CO2} and soot, International Journal of Heat and Mass Transfer, vol. 79, p. 796
+? 806, 2014.
+
+Centeno, F. R., Brittes, R., França, F. H., and da Silva, C. V. Application of
+the WSGG model for the calculation of gas?soot radiation in a turbulent non-premixed
+
+
+
+66
+
+methane?air ?ame inside a cylindrical combustion chamber, International Journal of
+Heat and Mass Transfer, vol. 93, p. 742?753, 2016.
+
+Centeno, F. R., Brittes, R., Rodrigues, L. G., Coelho, F. R., and França, F. H.
+Evaluation of the WSGG model against line-by-line calculation of thermal radiation in a
+non-gray sooting medium representing an axisymmetric laminar jet ?ame, International
+Journal of Heat and Mass Transfer, vol. 124, p. 475?483, 2018.
+
+Centeno, F. R., Cassol, F., Vielmo, H. A., França, F. H. R., and Silva, C. V.
+Comparison of di?erent WSGG correlations in the computation of thermal radiation in a
+2D axisymmetric turbulent non-premixed methane?air ?ame, Journal of the Brazilian
+Society of Mechanical Sciences and Engineering, vol. 35, p. 419?430, 2013.
+
+Centeno, F. R., Silva, C. V., and França, F. H. R. The in?uence of gas radiation on
+the thermal behavior of a 2D axisymmetric turbulent non-premixed methane?air ?ame,
+Energy Conversion and Management, vol. 79, p. 405?414, 2014.
+
+Chu, H., Liu, F., and Zhou, H. Calculations of gas radiation heat transfer in a
+two-dimensional rectangular enclosure using the line-by-line approach and the statistical
+narrow-band correlated-k model, International Journal of Heat and Mass Transfer,
+vol. 59, p. 66?74, 2012.
+
+Coelho, F. R. and França, F. H. R. WSGG correlations based on HITEMP2010 for
+gas mixtures of H2O and CO2 in high total pressure conditions, International Journal
+of Heat and Mass Transfer, vol. 127, p. 105?114, 2018.
+
+Coelho, P. J. Numerical simulation of radiative heat transfer from non-gray gases
+in three-dimensional enclosures, Journal of Quantitative Spectroscopy &amp;amp; Radiative
+Transfer, vol. 74, p. 307?328, 2002.
+
+Coelho, P. J. Turbulence?Radiation Interaction: From Theory to Application in
+Numerical Simulations, Journal of Heat Transfer, vol. 134, p. 1?13, 2012.
+
+Consalvi, J. L. and Liu, F. Radiative heat transfer in the core of axisymmetric pool
+?res e I: Evaluation of approximate radiative property models, International Journal
+of Heat and Mass Transfer, vol. 84, p. 104?117, 2014.
+
+Crnomarkovic, N., Sijercic, M., Belosevic, S., Tucakovic, D., and Zivanovic, T.
+Numerical investigation of processes in the lignite-?red furnace when simple gray gas and
+weighted sum of gray gases models are used, International Journal Of Heat and
+Mass Transfer, vol. 56, p. 197?205, 2013.
+
+Demarco, R., Consalvi, J. L., Fuentes, A., and Melis, S. Assessment of radiative
+property models in non-gray sooting media, International Journal of Heat and Mass
+Transfer, vol. 50, p. 1672?1684, 2011.
+
+Demarco, R. A. B. Modelling thermal radiation and soot formation in
+buoyant di?usion ?ames. PhD thesis, Universite de Provence, Aix-Marseille I, 2012.
+
+Denison, M. K. and Webb, B. W. An absorption-line blackbody distribution func-
+tion for e?cient calculation of total gas radiative transfer, Journal of Quantitative
+Spectroscopy &amp;amp; Radiative Transfer, vol. 50, p. 499?510, 1993a.
+
+
+
+67
+
+Denison, M. K. and Webb, B. W. A spectral-line based weighted-sum-of-gray-gases
+model for arbitrary RTE solvers, Journal of Heat Transfer, vol. 115, p. 1004?1011,
+1993b.
+
+Denison, M. K. and Webb, B. W. Development and application of an absorption-
+line blackbody distribution function for CO2, International Journal of Heat and
+Mass Transfer, vol. 38, p. 1813?1821, 1995a.
+
+Denison, M. K. and Webb, B. W. The spectral line-based weighted sum-of-gray-
+gases model for H2O/CO2 mixtures, Journal of Heat Transfer, vol. 117, p. 788?792,
+1995b.
+
+Denison, M. K. and Webb, B. W. The spectral line-based weighted sum-of-gray-
+gases model in nonisothermal nonhomogeneous media, Journal of Heat Transfer, vol.
+117, p. 359?365, 1995c.
+
+Dorigon, L. J., Duciak, G., Brittes, R., Cassol, F., Galarça, M., and França, F. H.
+WSGG correlations based on HITEMP2010 for computation of thermal radiation in non-
+isothermal, non-homogeneous H2O/CO2 mixtures, International Journal of Heat and
+Mass Transfer, vol. 64, p. 863 ? 873, 2013.
+
+Edwards, D. K. and Balakrishnan, A. Thermal Radiation by Combustion gases,
+International Journal of Heat and Mass Transfer, vol. 16, p. 25?40, 1973.
+
+Fischer, J., Gamache, R. R., Goldeman, A., Rothman, L. S., and Perrin, A. Total
+internal partition sums for molecular species in the 2000 edition of the HITRAN database,
+Journal of Quantitative Spectroscopy &amp;amp; Radiative Transfer, vol. 82, p. 401?412,
+2003.
+
+Fluent, A. Fluent, ANSYS Academic Research, Release 18, 2018.
+
+Fonseca, R. C. and França, F. H. R. Application of the weighted-sum-of-
+gray-gases model in enclosures with gray surfaces. In Proceedings of the 23rd
+
+International Congress of Mechanical Engineering, 2015.
+
+Fonseca, R. J. C., Fraga, G. C., Silva, R. B., and França, F. H. R. Application
+of the WSGG Model to Solve the Radiative Transfer in Gaseous Systems With Nongray
+Boundaries, Journal of Heat Transfer, vol. 140, p. 1?10, 2018.
+
+Fraga, G., Centeno, F., Petry, A., and França, F. Evaluation and optimization-
+based modi?cation of a model for the mean radiative emission in a turbulent non-reactive
+?ow, International Journal of Heat and Mass Transfer, vol. 114, p. 664?674, 2017.
+
+Galarça, M. M., Maurente, A., Vielmo, H. A., and França, F. H. R. Correlations
+for the weighted-sum-of-gray-gases generated from the absorption-line black-
+body distribution function. In Proceedings of the 12th Brazilian of Thermal Sciences
+and Engineering, 2008.
+
+Galarça, M. M., Mossi, A., and França, F. H. R. A modi?cation of the cumulative
+wavenumber method to compute the radiative heat ?ux in non-uniform media, Journal
+of Quantitative Spectroscopy &amp;amp; Radiative Transfer, vol. 112, p. 384?393, 2011.
+
+
+
+68
+
+Garten, B., Hunger, F., Messig, D., Stelzner, B., Trimis, D., and Hasse, C. Detailed
+radiation modeling of a partial-oxidation ?ame, International Journal of Thermal
+Sciences, vol. 87, p. 68?84, 2015.
+
+G.Clements, A., Porter, R., Pranzitelli, A., and Pourkashanian, M. Evaluation of
+FSK models for radiative heat transfer under oxyfuel conditions, Journal of Quantita-
+tive Spectroscopy &amp;amp; Radiative Transfer, vol. 151, p. 67?75, 2015.
+
+Godson, W. L. The Evaluation of Infrared Radiation Fluxes Due to Atmospheric
+Water Vapor, Quarterly Journal of Royal Meteorological Society, vol. 79, p. 367?
+379, 1953.
+
+Goody, R. M. A statistical model to water-vapor absorption, Quarterly Journal
+of the Royal Meteorological Society, vol. 78, p. 165?169, 1952.
+
+Goody, W. L. and Yung, Y. L. Atmospheric Radiation. Clarendon Press,
+Oxford - United Kingdom, 1989.
+
+Gordon, I. E., Rothman, L. S., Hill, C., Kochanov, R. V., Tana, Y., Bernath,
+P. F., Birk, M., Boudon, V., Campargue, A., Chance, K. V., Drouin, B. J., Flaud, J. M.,
+Gamache, R. R., Hodges, J. T., Jacquemart, D., Perevalovm, V. I., Perrin, A., Shine,
+K. P., Smith, M. A. H., Tennyson, J., Toon, G. C., Tran, H., Tyuterev, V. G., Barbe, A.,
+Császár, A. G., Devi, V. M., Furtenbacher, T., Harrison, J. J., Hartmann, J. M., Jolly,
+A., Johnson, T. J., Karman, T., Kleiner, I., Kyuberis, A. A., Loos, J., Lyulin, O. M.,
+Massie, S. T., S. N. Mikhailenkom, N. M.-A., Müller, H. S. P., O. V. Naumenkom, A.
+V. Nikitinm, O. L. P., Rey, M., Rotger, M., Sharpe, S. W., Sung, K., Starikovam, E.,
+Tashkunm, S. A., Auwera, J. V., Wagner, G., Wilzewski, J., Wcisªo, P., Yuh, S., and Zak,
+E. J. The HITRAN2016 molecular spectroscopic database, Journal of Quantitative
+Spectroscopy &amp;amp; Radiative Transfer, vol. 203, p. 3?69, 2017.
+
+Goutiere, V., Liu, F., and Charette, A. An assessment of real-gas modelling in 2D
+enclosures, Journal of Quantitative Spectroscopy &amp;amp; Radiative Transfer, vol. 64,
+p. 299?326, 2000.
+
+Hottel, H. C. and Saro?m, A. F. Radiative Transfer (McGraw-Hill Series in
+Mechanical Engineering). McGraw-Hill, 1967.
+
+Howell, J. R. and Siegel, R. Thermal Radiation heat transfer. Taylor &amp;amp;
+Francis, 4th edition, 2002.
+
+Howell, J. R., Siegel, R., and Mengüç, M. P. Thermal Radiation heat transfer.
+CRC Press, 5th edition, 2010.
+
+Ismail, K. A. R. and Salinas, C. T. Application of a local-spectrum correlated
+model to modeling radiative transfer in a mixture of real gas media in bidimensional
+enclosures, Numerical Heat Transfer, vol. 47, p. 183?207, 2005.
+
+Johansson, R., Leckner, B., Andersson, K., and Johnsson, F. Account for variations
+in the H2O to CO2 molar ratio when modeling gaseous radiative heat transfer with the
+weighted-sum-of-grey-gases model, Combustion and Flame, vol. 158, p. 893?901, 2011.
+
+
+
+69
+
+Kangwanpongpan, T., França, F. H., da Silva, R. C., Schneider, P. S., and Krautz,
+H. J. New correlations for the weighted-sum-of-gray-gases model in oxy-fuel conditions
+based on HITEMP 2010 database, International Journal of Heat and Mass Trans-
+fer, vol. 55, p. 7419?7433, 2012.
+
+Krishnamoorthy, G. A new weighted-sum-of-gray-gases model for CO2?H2O gas
+mixtures, International Communications in Heat and Mass Transfer, vol. 37, p.
+1182?1186, 2010.
+
+Liu, F. and Smallwood, G. J. An e?cient approach for the implementation of the
+SNB based correlated-k method and its evaluation, Journal of Quantitative Spec-
+troscopy &amp;amp; Radiative Transfer, vol. 84, p. 465?475, 2004.
+
+Ma, J., Li, B.-W., and Howell, J. R. Thermal radiation heat transfer in one- and
+two-dimensional enclosures using the spectral collocation method with full spectrum k-
+distribution model, International Journal of Heat and Mass Transfer, vol. 71, p.
+35?43, 2014.
+
+Maurente, A., Vielmo, H. A., and França, F. H. R. Comparison of the standard
+weighted-sum-of-gray-gases with the absorption-line blackbody distribution function for
+the computation of radiative heat transfer in H2O/CO2 mixtures, Journal of Quanti-
+tative Spectroscopy &amp;amp; Radiative Transfer, vol. 109, p. 1758?1770, 2008.
+
+Mazumder, S. and Modest, M. F. Application of the Full Spectrum Correlated-k
+Distribution Approach to Modeling Non-Gray Radiation in Combustion Gases, Com-
+bustion and Flame, vol. 129, p. 416?438, 2002.
+
+McClatchey, R. A., Benedict, W. S., Clough, S. A., Burch, D. E., Fox, K., Roth-
+man, L. S., and Garing, J. S. AFCRL Atmospheric Absorption Line Parameters Compi-
+lation, Technical Report, vol. 434, p. AFCRL?TR?73?0096, 1973.
+
+Modest, M. F. The Weighted-Sum-of-Gray-Gases Model for Arbitrary Solution
+Methods in Radiative Transfer, Transactions of the ASME, vol. 113, p. 650?656,
+1991.
+
+Modest, M. F. Narrow-band and full-spectrum k-distributions for radiative
+heat transfer?correlated-k vs. scaling approximation, Journal of Quantitative Spec-
+troscopy &amp;amp; Radiative Transfer, vol. 76, p. 69?83, 2003a.
+
+Modest, M. F. Radiative heat transfer. Academic press, 2th edition, 2003b.
+
+Modest, M. F. Radiative heat transfer. Academic press, 3th edition, 2013.
+
+Modest, M. F. and Haworth, D. C. Radiative Heat Transfer in Turbulent
+Combustion Systems - Theory and Applications. SpringerBriefs in Applied Sciences
+and Technology, New York, 2016.
+
+Modest, M. F. and Riazzi, R. J. Assembly of full-spectrum k-distributions from
+a narrow-band database; efects of mixing gases, gases and nongray absorbing particles,
+and mixtures with nongray scatterers in nongray enclosures, Journal of Quantitative
+Spectroscopy &amp;amp; Radiative Transfer, vol. 90, p. 169?89, 2005.
+
+
+
+70
+
+Modest, M. F. and Zhang, H. The full-spectrum correlated-k distribution
+and its relationship to the weighted-sum-of-gray-gases method. In Proceedings
+of 2000 IMECE, 2000.
+
+Modest, M. F. and Zhang, H. The Full-Spectrum Correlated-k Distribution for
+Thermal Radiation From Molecular Gas-Particulate Mixtures, Transactions of the
+ASME, vol. 124, p. 30?38, 2002.
+
+Mossi, A., Galarça, M. M., Brittes, R., Vielmo, H. H., and França, F. H. R. Com-
+parison of Spectral Models in the Computation of Radiative Heat Transfer in Participating
+Media Composed of Gases and Soot, Journal of the Brazilian Society of Mechanical
+Sciences and Engineering, vol. 34, p. 112?119, 2012.
+
+Narayanan, P. and Trouvé, A. Radiation-driven ?ame weakening e?ects in sooting
+turbulent di?usion ?ames, Proceedings of the Combustion Institute, vol. 32, p.
+1481?1489, 2009.
+
+Pal, G. and Modest, M. F. A Narrow Band-Based Multiscale Multigroup Full-
+Spectrum k-Distribution Method for Radiative Transfer in Nonhomogeneous Gas-Soot
+Mixtures, Transactions of the ASME, vol. 132, p. 023307:1?9, 2010.
+
+Pal, G., Modest, M. F., and Wang, L. Hybrid Full-Spectrum Correlated k-
+Distribution Method for Radiative Transfer in Nonhomogeneous Gas Mixtures, Journal
+of Heat Transfer, vol. 130, p. 082701:1?9, 2008.
+
+Pearson, J. T. The Development of Updated and Improved SLW Model
+Parameters and Its Application to Comprehensive Combustion Predictions.
+PhD thesis, Brigham Young University, 2013.
+
+Pearson, J. T., W., B. W., Solovjov, V. P., and Ma, J. E?ect of total pressure on
+the absorption line blackbody distribution function and radiative transfer in H2O, CO2,
+and CO, Journal of Quantitative Spectroscopy &amp;amp; Radiative Transfer, vol. 143,
+p. 100?110, 2014a.
+
+Pearson, J. T., W., B. W., Solovjov, V. P., and Ma, J. E?cient representation of the
+absorption line blackbody distribution function for H2O, CO2, and CO at variable tem-
+perature , mole fraction, and total pressure, Journal of Quantitative Spectroscopy
+&amp;amp; Radiative Transfer, vol. 138, p. 82?96, 2014b.
+
+Pierrot, L., Rivière, P., Sou?ani, A., and Taine, J. A ?ctitious-gas-based absorp-
+tion distribution function global model for radiative transfer in hot gases, Journal of
+Quantitative Spectroscopy &amp;amp; Radiative Transfer, vol. 62, p. 609?624, 1999a.
+
+Pierrot, L., Sou?ani, A., and Taine, J. Accuracy of narrow-band and global models
+for radiative transfer in H2O, CO2, and H2O/CO2 mixtures at high temperature, Journal
+of Quantitative Spectroscopy &amp;amp; Radiative Transfer, vol. 62, p. 523?548, 1999b.
+
+Rajhi, M., Ben-Mansour, R., Habib, M., Nemitallah, M., and Andersson, K. Eval-
+uation of gas radiation models in CFD modeling of oxy-combustion, Energy Conversion
+and Management, vol. 81, p. 83?97, 2014.
+
+
+
+71
+
+Rivière, P., Sou?ani, A., Perrin, M. Y., Riad, H., and Gleizes, A. Air mixture ra-
+diative property modeling in the temperature range 10,000-40,000 K, Journal of Quan-
+titative Spectroscopy &amp;amp; Radiative Transfer, vol. 56, p. 29?45, 1996.
+
+Rothman, L. S., Gamache, R. R., Goldamn, A., Brown, L. R., Toth, R. A., Pickett,
+H. M., Poynter, R. L., Flaud, J.-M., Camy-Peyret, C., Barbe, A., Husson, N., Rinsland,
+C. P., and Smith, M. A. H. The HITRAN database: 1986 edition, Journal of Applied
+Optics, vol. 26, p. 4058?4097, 1987.
+
+Rothman, L. S., Gordon, I. E., Babikov, Y., Barde, A., Chris Benner, D., Bernath,
+P. F., Birk, M., Bizzocchi, L., Boudon, V., Brown, L. R., Campargue, A., Chance, K., Co-
+hen, E. A., Coudert, L. H., Devi, V. M., Drouin, B. J., Fayt, A., Flaud, J. M., Gamache,
+R. R., Harrison, J. J., Hartmann, J. M., Hill, C., Hodges, J. T., Jacquemart, D., Jolly,
+A., Lamouroux, J., Le Roy, R. J., Li, G., Long, D. A., Lyulin, O. M., Mackie, C. J.,
+Massie, S. T., Mikhailenko, S., Müller, H. S. P., Naumenko, O. V., Nikitin, A. V., Orphal,
+J., Perevalov, V., Perrin, A., Polovtseva, E. R., Richard, C., Smith, M. A. H., Starikova,
+E., Sung, K., Tashkun, S., Tennyson, J., Toon, G. C., Tyuterev, V. G., and Wagner, G.
+The HITRAN2012 molecular spectroscopic database, Journal of Quantitative Spec-
+troscopy &amp;amp; Radiative Transfer, vol. 130, p. 4?50, 2013.
+
+Rothman, L. S., Gordon, I. E., Barber, R. J., Dothe, H., Gamache, R. R., Goldman,
+A., Perevalov, V. I., Tashkun, S. A., and Tennyson, J. HITEMP, the high-temperature
+molecular spectroscopic database, Journal of Quantitative Spectroscopy &amp;amp; Radia-
+tive Transfer, vol. 111, p. 2139?2150, 2010.
+
+Rothman, L. S., Rinsland, C. P., Goldman, A., Massie, S. T., Edwards, D. P.,
+Flaud, J. M., Perrin, A., Camy-Peyret, C., Dana, V., Mandin, J. Y., Schroeder, J.,
+Mccann, A., Gamache, R. R., Wattson, R. B., Yoshino, K., Chance, K. V., Jucks, K. W.,
+Brown, L. R., Nemtchinov, V., and Varanasi, P. The HITRAN molecular spectroscopic
+database and Hawks (HITRAN Atmospheric Workstation): 1996 edition, Journal of
+Quantitative Spectroscopy &amp;amp; Radiative Transfer, vol. 60, p. 665?710, 1998.
+
+Rothman, L. S., Wattson, R. B., Gamache, R. R., Schroeder, J., and McCann, A.
+HITRAN WAWKS and HITEMP: High-temperature molecular database. In
+Proceedings of SPIE, 1995.
+
+Salinas, C. T. Fast approximate technique for the cumulative wavenumber model
+to modeling radiative transfer in a mixture of real gas media, Journal of Quantitative
+Spectroscopy &amp;amp; Radiative Transfer, vol. 109, p. 2078?2093, 2008.
+
+Shiehnejadhesar, A., Mehrabian, R., Scharler, R., Goldin, G. M., and Obernberger,
+I. Development of a gas phase combustion model suitable for low and high turbulence
+conditions, Fuel, vol. 126, p. 177?187, 2014.
+
+Siegel, R. and Howell, J. R. Thermal Radiation heat transfer. Hemisphere
+Publishing Corporation, 3th edition, 1993.
+
+Silva, C. V., França, F. H. R., and Vielmo, H. H. Analysis of turbulent, non-
+premixed combustion of natural gas in cylindrical chamber with and without radiation,
+Combustion Science and Technology, vol. 179, p. 1605?1630, 2007.
+
+
+
+72
+
+Smith, T. F., Al-Turki, A. M., Byun, K.-H., and Kim, T. K. Radiative and
+Conductive Transfer for a Gas/Soot Mixture Between Di?use Parallel Plates, Journal of
+Thermophysics, vol. 1, p. 50?55, 1987.
+
+Smith, T. F., Shen, Z. F., and Friedman, J. N. Evaluation of coe?cients for the
+weighted sum of gray gases model, Journal of Heat Transfer, vol. 104, p. 602?608,
+1982.
+
+Solovjov, V. P., Andre, F., Lemonnier, D., and Webb, B. W. The Generalized SLW
+Model, Journal of Physics: Conference Series, vol. 676(012022), p. 1?36, 2016.
+
+Solovjov, V. P., Andre, F., Lemonnier, D., and Webb, B. W. The rank correlated
+SLW model of gas radiation in non-uniform media, Journal of Quantitative Spec-
+troscopy &amp;amp; Radiative Transfer, vol. 197, p. 26?44, 2017.
+
+Solovjov, V. P., Andre, F., Lemonnier, D., and Webb, B. W. The Scaled SLW model
+of gas radiation in non-uniform media based on Planck-weighted moments of gas absorp-
+tion cross-section, Journal of Quantitative Spectroscopy &amp;amp; Radiative Transfer,
+vol. 206, p. 198?212, 2018.
+
+Solovjov, V. P., Lemonnier, D., and Webb, B. The SLW-1 model for e?cient
+prediction of radiative transfer in high temperature gases, Journal of Quantitative
+Spectroscopy &amp;amp; Radiative Transfer, vol. 112, p. 1205?1212, 2011a.
+
+Solovjov, V. P., Lemonnier, D., and Webb, B. The SLW-1 modeling of radiative
+heat transfer in nonisothermal nonhomogeneous gas mixture with soot, Journal of heat
+Transfer, vol. 133, p. 1?9, 2011b.
+
+Solovjov, V. P., Lemonnier, D., and Webb, B. W. E?cient cumulative wavenumber
+model of radiative transfer in gaseous media bounded by non-gray walls, Journal of
+Quantitative Spectroscopy &amp;amp; Radiative Transfer, vol. 128, p. 2?9, 2013.
+
+Solovjov, V. P., Lemonnier, D., and Webb, B. W. Extension of the exact SLW
+model to non-isothermal gaseous media, Journal of Quantitative Spectroscopy &amp;amp;
+Radiative Transfer, vol. 143, p. 83?91, 2014.
+
+Solovjov, V. P. and Webb, B. W. Radiative transfer model parameters for
+carbon monoxide at high temperature. In Proceedings of 11th IHTC, 1998.
+
+Solovjov, V. P. and Webb, B. W. SLW modeling of radiative transfer in multicom-
+ponent gas mixtures, Journal of Quantitative Spectroscopy &amp;amp; Radiative Transfer,
+vol. 65, p. 665?672, 2000.
+
+Solovjov, V. P. and Webb, B. W. An e?cient method for modeling radiative
+transfer in multicomponent gas mixtures with soot, Journal of Heat Transfer, vol.
+123(3), p. 450?457, 2001.
+
+Solovjov, V. P. and Webb, B. W. A local-spectrum correlated model for radia-
+tive transfer in non-uniform gas media, Journal of Quantitative Spectroscopy &amp;amp;
+Radiative Transfer, vol. 73, p. 361?373, 2002.
+
+
+
+73
+
+Solovjov, V. P. and Webb, B. W. The cumulative wavenumber method for modeling
+radiative transfer in gas mixtures with soot, Journal of Quantitative Spectroscopy
+&amp;amp; Radiative Transfer, vol. 93, p. 273?287, 2005.
+
+Solovjov, V. P. and Webb, B. W. Multilayer modeling of radiative transfer by
+SLW and CW methods in non-isothermal gaseous medium, Journal of Quantitative
+Spectroscopy &amp;amp; Radiative Transfer, vol. 109, p. 245?257, 2008.
+
+Solovjov, V. P. and Webb, B. W. The SLW model: exact limit and relation-
+ship to other global methos. In Proceedings of the ASME 2009 Heat Transfer Summer
+Conference, 2009.
+
+Solovjov, V. P. and Webb, B. W. Application of CW local correction approach
+to SLW modeling of radiative transfer in non-isothermal gaseous media, Journal of
+Quantitative Spectroscopy &amp;amp; Radiative Transfer, vol. 111, p. 318?324, 2010.
+
+Trivic, D. N. 3-D radiation modeling of nongray gases?particles mixture by two
+di?erent numerical methods, International Journal of Heat and Mass Transfer,
+vol. 70, p. 298?312, 2014.
+
+Wang, A. and Modest, M. F. Importance of Combined Lorentz- Doppler Broad-
+ening in High- Temperature Radiative Heat Transfer Applications, Transactions of the
+ASME, vol. 126, p. 858?861, 2004.
+
+Wang, L. and Modest, M. F. Narrow-Band Based Multiscale Full-Spectrum k-
+Distribution Method for Radiative Transfer in Inhomogeneous Gas Mixtures, Transac-
+tions of the ASME, vol. 127, p. 740?748, 2005.
+
+Webb, B. W., Solovjov, V. P., and Andre, F. An exploration of the in?uence of
+spectral model parameters on the accuracy of the rank correlated SLW model, Journal
+of Quantitative Spectroscopy &amp;amp; Radiative Transfer, vol. 218, p. 161?170, 2018.
+
+Xue, H., Ho, J. C., and Cheng, Y. M. Comparison of di?erent combustion models
+in enclosure ?re simulation, Fire Safety Journal, vol. 36, p. 37?54, 2001.
+
+Zhang, H. and Modest, M. F. Multi-scale full-spectrum correlated-k distribution
+for radiative heat transfer in inhomogeneous gas mixtures, Journal of Quantitative
+Spectroscopy &amp;amp; Radiative Transfer, vol. 73, p. 349?360, 2002.
+
+Zhang, H. and Modest, M. F. Multi-group full-spectrum k-distribution database
+for water vapor mixtures in radiative transfer calculations, International Journal of
+Heat and Mass Transfer, vol. 46, p. 3593?3603, 2003.
+
+Zhang, J., Ito, T., Ito, S., Riechelmann, D., and Fujimori, T. Numerical investi-
+gation of oxy-coal combustion in a large-scale furnace: Non-gray e?ect of gas and role of
+particle radiation, Fuel, vol. 139, p. 87?93, 2015.
+
+Ziemniczak, A., Brittes, R., Centeno, F. R., and França, F. H. R. Generation of
+new correlations for the weighted-sum-of-gray-gases model for carbon monox-
+ide. In 23rd ABCM International Congress of Mechanical Engineering, 2015.
+
+
+
+74
+
+APPENDIX A ? Homogeneous media - Radiative Heat Flux and Heat Source for
+
+Cases 2 and 3
+
+Figures A.1, A.2, and A.3 presents the radiative heat ?ux and the heat source for
+
+a layer of CO2, H2O and H2O/CO2 mixture, respectively, for Case 2 discussed in section
+
+6.1.1. For this case, the temperature pro?le presents a double symmetric, with two points
+
+of maximum: x? = 0.25 and x? = 0.75. The maximum temperature for this case is
+
+1800 K, while the minimum is 400 K and occur in the walls and in the mid distance of
+
+the domain. Because of the symmetry of the pro?les, the radiative heat ?ux is null in
+
+mid distance between the walls, reaching the highest absolute values at x? = 0.125 and
+
+x? = 0.825, where the temperature gradient is maximum. The maximum absolutes values
+
+of the radiative heat source occurs in the regions where the temperature pro?le has its
+
+peak; and the heat source is positive in the cold regions of the medium, indicating net
+
+gain of radiation from the hot regions. For both the individual and the mixture problems,
+
+the WSGG radiative heat ?ux presents higher deviations near to the walls, where there
+
+are low temperatures. Furthermore, in all the problems, the SLW model leads to the
+
+maximum deviation of the radiative heat source in the regions of maximum temperature.
+
+In the H2O/CO2 mixture problem the WSGG radiative heat ?ux deviations shows to be
+
+very close to those of the SLW model.
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-25
+
+-20
+
+-15
+
+-10
+
+-5
+
+0
+
+5
+
+10
+
+15
+
+20
+
+25
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-300
+
+-250
+
+-200
+
+-150
+
+-100
+
+-50
+
+0
+
+50
+
+100
+ 
+
+ 
+
+- d
+q" R
+
+  /
+dx
+
+  [
+ k
+
+W
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(b)
+
+Figure A.1 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of CO2 (YCO2 = 0.1), Case 2: (a) radiative heat ?ux, q
+”
+R, (b)
+
+radiative heat source, ?dq”R/dx.
+
+
+
+75
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-60
+
+-40
+
+-20
+
+0
+
+20
+
+40
+
+60
+
+ 
+
+ 
+q" R
+
+  [
+ k
+
+W
+ / 
+
+m
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-500
+
+-400
+
+-300
+
+-200
+
+-100
+
+0
+
+100
+
+200
+
+ 
+
+ 
+
+- d
+q"
+
+R
+ /d
+
+x 
+ [ 
+
+kW
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(b)
+
+Figure A.2 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of H2O (YH2O = 0.2,), Case 2: (a) radiative heat ?ux, q
+”
+R, (b)
+
+radiative heat source, ?dq”R/dx.
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-80
+
+-60
+
+-40
+
+-20
+
+0
+
+20
+
+40
+
+60
+
+80
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG (Superposition)
+ WSGG ( pw/pc = 2)
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-800
+
+-700
+
+-600
+
+-500
+
+-400
+
+-300
+
+-200
+
+-100
+
+0
+
+100
+
+200
+
+300
+
+ 
+
+ 
+
+- d
+q" R
+
+  /
+dx
+
+  [
+ k
+
+W
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG (Superposition)
+ WSGG ( pw/pc = 2)
+
+(b)
+
+Figure A.3 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of H2O/CO2 mixture (YH2O = 0.2, YCO2 = 0.1), Case 2: (a)
+
+radiative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx.
+
+In Figures A.4, A.5, and A.6 are showed the radiative heat ?ux and the heat
+
+source for a layer of CO2, H2O and H2O/CO2 mixture, respectively, for Case 3 discussed
+
+in section 6.1.1. Contrarily to cases 1 and 2, the temperature pro?le is not symmetric,
+
+reaching its peak at x? = 0.25. The maximum temperature is still 1800 K as with the
+
+other cases, but the walls temperatures are no longer the same value: at x? = 0, T = 880
+
+
+
+76
+
+K, and x? = 1, T = 400 K. As can be seen, for all problems, since the temperature pro?le
+
+is no longer symmetric, the point in which the heat ?ux is null was no longer in the mid
+
+distance between the walls. Moreover, for the radiative heat source, the maximum for all
+
+problems took place in x? = 0.25, which is where the temperature of the participating
+
+species is at its peaks. For x? larger than about 0.6, where there is the lower temperature
+
+of the domain, the radiative heat source does not have steep variations. Analyzing the
+
+deviations, except for H2O/CO2 (pw/pc = 2) mixture, the problems solved with the
+
+WSGG model provided the worts results than the SLW model if compared to the LBL
+
+benchmark computation. When the results for radiative heat source is veri?ed, it is seen
+
+that such behavior change in some cases: for H2O, the WSGG maximum deviation is
+
+11.12 %, while for SLW achieve 13.95 %; for H2O/CO2 mixture, using the superposition
+
+approach, the WSGG maximum deviation is 11.84 %, and for the SLW is 14.46 %. This
+
+interesting fact shows that the WSGG model can compete in a satisfactory way with the
+
+more sophisticated SLW model.
+
+0.0 0.2 0.4 0.6 0.8 1.0
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+  WSGG
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-200
+
+-150
+
+-100
+
+-50
+
+0
+
+50
+
+100
+
+ 
+
+ 
+
+- d
+q"
+
+R
+ /d
+
+x 
+ [ 
+
+kW
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+  WSGG
+
+(b)
+
+Figure A.4 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of CO2 (YCO2 = 0.1), Case 3: (a) radiative heat ?ux, q
+”
+R, (b)
+
+radiative heat source, ?dq”R/dx.
+
+
+
+77
+
+0.0 0.2 0.4 0.6 0.8 1.0
+
+-20
+
+0
+
+20
+
+40
+
+60
+
+80
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-400
+
+-300
+
+-200
+
+-100
+
+0
+
+100
+
+200
+
+ 
+
+ 
+
+- d
+q" R
+
+  /
+dx
+
+  [
+ k
+
+W
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG
+
+(b)
+
+Figure A.5 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of H2O (YH2O = 0.2,), Case 3: (a) radiative heat ?ux, q
+”
+R, (b)
+
+radiative heat source, ?dq”R/dx.
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-60
+
+-40
+
+-20
+
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG (Superposition)
+ WSGG ( pw/pc = 2)
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-600
+
+-500
+
+-400
+
+-300
+
+-200
+
+-100
+
+0
+
+100
+
+200
+
+ 
+
+ 
+
+- d
+q" R
+
+  /
+dx
+
+  [
+ k
+
+W
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG (Superposition)
+ WSGG ( pw/pc = 2)
+
+(b)
+
+Figure A.6 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of H2O/CO2 mixture (YH2O = 0.2, YCO2 = 0.1), Case 3: (a)
+
+radiative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx.
+
+
+
+78
+
+APPENDIX B ? Non-homogeneous media - Radiative Heat Flux and Heat Source
+
+for Case 2
+
+Figures B.1, B.2, and B.3 present the radiative heat ?ux and the heat source for a
+
+layer of CO2, H2O and H2O/CO2 mixture, respectively, in non-homogeneous media, for
+
+Case 2 discussed in section 6.1.2. The results of the radiative heat ?ux for the WSGG
+
+model are very close to those of the SLW model for all the problems, and it is null in the
+
+half distance between the walls where the temperature and concentration pro?les have
+
+their peak. The maximum deviations found for the radiative heat ?ux are also at x? = 0.5
+
+for both the individual and the mixture problems.
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-30
+
+-20
+
+-10
+
+0
+
+10
+
+20
+
+30
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+  WSGG
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-250
+
+-200
+
+-150
+
+-100
+
+-50
+
+0
+
+50
+
+ 
+
+ 
+- d
+
+q" R
+  /
+
+dx
+  [
+
+ k
+W
+
+ / 
+m
+
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+  WSGG
+
+(b)
+
+Figure B.1 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of CO2, Case 2: (a) radiative heat ?ux, q”R, (b) radiative heat
+
+source, ?dq”R/dx.
+
+
+
+79
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-100
+
+-80
+
+-60
+
+-40
+
+-20
+
+0
+
+20
+
+40
+
+60
+
+80
+
+100
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+  WSGG
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-700
+
+-600
+
+-500
+
+-400
+
+-300
+
+-200
+
+-100
+
+0
+
+100
+
+ 
+
+ 
+
+- d
+q" R
+
+  /
+dx
+
+  [
+ k
+
+W
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+  WSGG
+
+(b)
+
+Figure B.2 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of H2O, Case 2: (a) radiative heat ?ux, q”R, (b) radiative heat
+
+source, ?dq”R/dx.
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-120
+
+-80
+
+-40
+
+0
+
+40
+
+80
+
+120
+
+ 
+
+ 
+
+q" R
+  [
+
+ k
+W
+
+ / 
+m
+
+2  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG (Superposition)
+ WSGG ( pw/pc = 2)
+
+(a)
+
+0.0 0.2 0.4 0.6 0.8 1.0
+-1200
+
+-1000
+
+-800
+
+-600
+
+-400
+
+-200
+
+0
+
+200
+
+ 
+
+ 
+
+- d
+q" R
+
+  /
+dx
+
+  [
+ k
+
+W
+ / 
+
+m
+3  ]
+
+x [ m ]
+
+ LBL
+ SLW
+ WSGG (Superposition)
+ WSGG ( pw/pc = 2)
+
+(b)
+
+Figure B.3 ? Comparison of the solutions obtained by the LBL integration, SLW and
+
+WSGG models for a layer of H2O/CO2 mixture (YH2O/YCO2 = 0.2), Case 2: (a)
+
+radiative heat ?ux, q”R, (b) radiative heat source, ?dq
+”
+R/dx.
+
+
+	INTRODUCTION
+	BIBLIOGRAPHY SURVEY
+	FUNDAMENTALS OF THERMAL RADIATION
+	AVAILABLE METHODS FOR SPECTRAL INTEGRATION OF THE RTE AND A NEW PROPOSITION
+	RESULTS AND DISCUSSION
+	CONCLUSIONS AND PERSPECTIVES
+	BIBLIOGRAPHY
+	Homogeneous media - Radiative Heat Flux and Heat Source for Cases 2 and 3
+	Non-homogeneous media - Radiative Heat Flux and Heat Source for Case 2
+
+</field>
+	</doc>
+</add>

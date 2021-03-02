@@ -1,0 +1,5790 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.11823</field>
+		<field name="filename">17246_MestradoRa%c3%balAndrade.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+
+
+ORIENTAÇÃO
+Eduardo Leopoldo Fermé
+
+Luís Armando de Aguiar Oliveira Gomes
+
+Raúl Duarte Nóbrega Andrade
+MESTRADO EM ENGENHARIA INFORMÁTICA
+
+Criação de uma Estação de Testes para um
+Micro-Helicóptero Autónomo
+DISSERTAÇÃO DE MESTRADO 
+
+
+
+ii 
+ 
+
+  
+
+
+
+iii 
+ 
+
+Resumo 
+
+Os UAV (Unmaned Air Vehicles) têm sido cada vez mais utilizados em vários ramos, como 
+
+a geologia, a segurança pública, a robótica e na obtenção de imagens. Visto existir grande 
+
+interesse no uso do equipamento, foi comprado um quadcopter com o objetivo poder torná-
+
+lo o mais autónomo possível. Esta tese contém informações dos elementos utilizados nesse 
+
+Arducopter e ainda a informação dos sensores que podem ser adaptados ao mesmo. Explica 
+
+também como está estruturado todo o código e como o UAV pode ser configurado antes do 
+
+voo. São também apresentados todos os resultados obtidos dos primeiros voos e as 
+
+evoluções e alterações após cada teste. 
+
+
+
+iv 
+ 
+
+  
+
+
+
+v 
+ 
+
+Abstract 
+
+UAVs (Unmaned Air Vehicles) are being used more frequently in a variety of areas, like 
+
+geology, public security, robotics and image acquisition. As a result of such demand for 
+
+this kind of equipment, a quadcopter was bought with the aim of making it more 
+
+autonomous. This thesis presents information about the elements used on the Arducopter 
+
+and information about the sensors that can be adapted to it. It explains how the code is 
+
+structured and how the Arducopter must be configured before flight. It also presents all the 
+
+results obtained on each test flight and the upgrades that were then implemented.  
+
+
+
+vi 
+ 
+
+  
+
+
+
+vii 
+ 
+
+Agradecimentos 
+
+Gostaria de agradecer à minha família e namorada, por todo o apoio e motivação que me 
+
+deram. 
+
+Agradeço a todos os meus colegas, que ajudaram na documentação dos voos do 
+
+Arducopter. 
+
+Agradeço ao Engenheiro Filipe e aos restantes alunos que se encontravam no laboratório, 
+
+pela ajuda que deram-me no desenvolvimento da minha tese. 
+
+Agradeço aos meus orientadores, o Professor Eduardo Fermé e o Professor Luís Gomes por 
+
+toda a orientação que deram-me durante este ano. 
+
+
+
+viii 
+ 
+
+  
+
+
+
+ix 
+ 
+
+Índice 
+Resumo .................................................................................................................................. iii 
+
+Abstract ................................................................................................................................... v 
+
+Agradecimentos .................................................................................................................... vii 
+
+Índice de Figuras ................................................................................................................. xiv 
+
+Acrónimos .......................................................................................................................... xvii 
+
+1-Introdução ........................................................................................................................... 1 
+
+1.1-Motivação ..................................................................................................................... 2 
+
+1.2-Objetivos ...................................................................................................................... 2 
+
+1.3-Contribuições ............................................................................................................... 2 
+
+1.4-Estrutura do documento ............................................................................................... 3 
+
+2-Estado da Arte ..................................................................................................................... 5 
+
+2.1-Funcionalidade dos UAV ............................................................................................. 5 
+
+2.1.1-Segurança Pública ................................................................................................. 5 
+
+2.1.2-Geologia e Arqueologia ........................................................................................ 7 
+
+2.1.3-Aquisição de imagens aéreas................................................................................. 9 
+
+2.1.4-Robótica ................................................................................................................ 9 
+
+3-Explicação geral do sistema .............................................................................................. 12 
+
+4- Descrição do Arducopter .................................................................................................. 14 
+
+4.1-APM (ArduPilot Mega) .............................................................................................. 14 
+
+4.1.1-Alimentação da placa .......................................................................................... 15 
+
+4.1.2-Descrição da placa APM1 ................................................................................... 16 
+
+4.1.3-Descrição da placa oilpan ................................................................................... 16 
+
+4.1.5-Descrição da APM2 ............................................................................................ 19 
+
+4.2-Estrutura do quadcopter ............................................................................................. 20 
+
+
+
+x 
+ 
+
+4.2.1-Diferenças entre a estrutura em x ou em + .......................................................... 21 
+
+4.2.2-Trem de aterragem (estrutura de aterragem) ....................................................... 21 
+
+4.3-Motores/ESC (eletronic speed controls) /Hélices ...................................................... 24 
+
+4.4-Rádio transmissor e recetor ........................................................................................ 24 
+
+4.4.1-Rádio transmissor ................................................................................................ 24 
+
+4.4.2-Rádio recetor ....................................................................................................... 25 
+
+4.5-Bateria e carregador ................................................................................................... 26 
+
+4.5.1-Bateria ................................................................................................................. 26 
+
+4.5.2-Carregador ........................................................................................................... 27 
+
+4.6-Sensores ...................................................................................................................... 28 
+
+4.6.1-Magnetómetro ..................................................................................................... 28 
+
+4.6.2-GPS (Global Positioning System) ....................................................................... 31 
+
+4.6.3-Sonar (sensor ultrassónico) ................................................................................. 31 
+
+5- Software e programação ................................................................................................... 34 
+
+5.1-Software ...................................................................................................................... 34 
+
+5.2-Programação em Arduino .......................................................................................... 34 
+
+5.3-Descrição do código ................................................................................................... 36 
+
+5.3.1-Pasta Libraries ..................................................................................................... 36 
+
+5.3.2-Pasta Arducopter ................................................................................................. 36 
+
+6-APM Mission Planner ....................................................................................................... 42 
+
+6.1-O que é a Ground Control Station ............................................................................. 43 
+
+6.1.1-Utilizar o Mission Planner ground station .......................................................... 43 
+
+6.2-Definição de waypoints através de um editor point and click .................................... 44 
+
+6.2.1-Comandos básicos de waypoint .......................................................................... 44 
+
+
+
+xi 
+ 
+
+6.2.2-Carregar um voo autónomo para a placa APM quando não dispomos de um 
+
+sistema de telemetria sem fios ...................................................................................... 46 
+
+6.3-Fazer download e análise dos ficheiros log ................................................................ 46 
+
+6.3.1-Fazer download ................................................................................................... 46 
+
+6.3.2-Analisar os ficheiros log ...................................................................................... 46 
+
+6.4-utilização de um gamepad /joystick para controlar o Arducopter manualmente em vez 
+
+do controlo remoto............................................................................................................ 47 
+
+6.5-Scripting em Phyton ................................................................................................... 47 
+
+6.6-Controlo através do terminal CLI .............................................................................. 48 
+
+6.6.1-Como configurar o Arducopter através do CLI .................................................. 50 
+
+7-Configurações Pré-voo ...................................................................................................... 52 
+
+7.1-Como funciona o sistema do Arducopter ................................................................... 52 
+
+7.2-Voo ............................................................................................................................. 53 
+
+7.3-Segurança ................................................................................................................... 55 
+
+7.4-Armar e desarmar os motores..................................................................................... 56 
+
+7.5-Calibrações dos acelerómetros através do controlo remoto ....................................... 58 
+
+7.6-Primeiro Voo .............................................................................................................. 58 
+
+7.7-Calibração dos controladores ESC ............................................................................. 59 
+
+7.7.1-Calibração automática ......................................................................................... 59 
+
+7.7.2-Calibração Manual .............................................................................................. 60 
+
+7.7.3-Testes ................................................................................................................... 60 
+
+7.8-Afinações dos parâmetros do controlador PID .......................................................... 60 
+
+7.9-Primeira configuração do Arducopter ........................................................................ 61 
+
+7.10-Failsafe ..................................................................................................................... 62 
+
+8-Voos de teste e resultados ................................................................................................. 64 
+
+9-Conclusões e trabalhos futuros .......................................................................................... 69 
+
+
+
+xii 
+ 
+
+9.1-Conclusões ................................................................................................................. 69 
+
+9.2-Contribuições ............................................................................................................. 69 
+
+9.3- Trabalhos futuros....................................................................................................... 69 
+
+Referências Bibliográficas .................................................................................................... 71 
+
+Anexos .................................................................................................................................. 79 
+
+Anexo A-Manual de montagem do Arducopter ................................................................... 80 
+
+A.1-Montagem da placa Arduino ..................................................................................... 80 
+
+A.2-Soldagem dos conetores dos ESC (Electronics speed controls) (conetor fêmea) e os 
+
+conetores dos motores (Conetor macho). ......................................................................... 83 
+
+A.3-Montagem da placa de distribuição de energia ......................................................... 83 
+
+Anexo B-Montagem da estrutura do Arducopter ................................................................. 87 
+
+B.1 – Montagem da secção central ................................................................................... 87 
+
+B.2-Trem de Aterragem .................................................................................................... 91 
+
+B.3-Montagem dos motores nos braços ........................................................................... 93 
+
+B.4-Conexão dos ESC aos motores .................................................................................. 96 
+
+B.5-Ligação do controlo de rádio à APM......................................................................... 97 
+
+B.6-Ligação do controlo remoto ....................................................................................... 98 
+
+B.7-Instalação do recetor de controlo remoto .................................................................. 99 
+
+Anexo C-Montagem de sensores opcionais........................................................................ 100 
+
+C.1-Sensor de infravermelhos ........................................................................................ 100 
+
+C.2-Sensor ótico de fluxo (optical flow) ........................................................................ 100 
+
+C.2.1-Como ligar o sensor à placa .............................................................................. 100 
+
+C.2.2-Como manter a posição do Arducopter em voo ............................................... 101 
+
+C.3-Telemetria sem fios ................................................................................................. 102 
+
+C.3.1-3DR Radio ........................................................................................................ 103 
+
+
+
+xiii 
+ 
+
+C.3.2-Xbee .................................................................................................................. 104 
+
+C.4-Gymbal da câmara ................................................................................................... 105 
+
+C.4.1-Instalar o gymbal da câmara ............................................................................. 105 
+
+C.4.2-Como ligar os servos do gymbal ...................................................................... 106 
+
+C.5-Placa On-Screen Display (OSD) ............................................................................. 107 
+
+C.6-Monitor de bateria ................................................................................................... 107 
+
+Anexo D-Afinações dos termos PID .................................................................................. 109 
+
+ 
+
+  
+
+
+
+xiv 
+ 
+
+Índice de Figuras 
+
+Figura 1- Placa APM V.1 [29] ............................................................................................. 15 
+
+Figura 2 -Imagem ilustrativa de como configurar a alimentação da placa [30] ................... 15 
+
+Figura 3 - Arquitetura da placa APM [30] ........................................................................... 16 
+
+Figura 4 - Placa APM Shield [31] ........................................................................................ 17 
+
+Figura 5 - Ilustração dos vários leds da oilpan[33] .............................................................. 18 
+
+Figura 6 - Placa APM2 [34] ................................................................................................. 20 
+
+Figura 7- Indicação da rotação das hélices quando configuradas em + e em x [37] ............ 21 
+
+Figura 8- Exemplo do trem de aterragem da estrutura dos diydrones [38] .......................... 22 
+
+Figura 9 - Exemplo do trem de aterragem da estrutura 3DR [39] ........................................ 22 
+
+Figura 10- Exemplo de um trem de aterragem de uma estrutura nova [40] ......................... 23 
+
+Figura 10 - Pernas impressas na impressora 3D ................................................................... 24 
+
+Figura 12 - Emissor de controlo remoto e movimentos correspondentes ............................ 25 
+
+Figura 13 -Recetor de controlo remoto................................................................................. 26 
+
+Figura 14 -Bateria LiPo do arducopter ................................................................................. 26 
+
+Figura 15 - Carregador de bateria ......................................................................................... 27 
+
+Figura 16 - Imagem ilustrativa de como carregar ................................................................. 28 
+
+Figura 17- Montagem do magnetómetro através do método 1 [41] ..................................... 29 
+
+Figura 18 - Ligação do cabo ao magnetómetro através do método 2 [41] ........................... 30 
+
+Figura 19- Montagem do magnetómetro através do método 2 ............................................. 30 
+
+Figura 20 - Conexão do GPS à placa APM [42] .................................................................. 31 
+
+Figura 21- Ligação do sonar à placa APM ........................................................................... 32 
+
+Figura 22 - Ilustração sobre a conexão dos vários pins do sonar [43].................................. 33 
+
+Figura 23 - Diagrama contendo os vários ficheiros do código agrupados segundo as suas 
+
+funcionalidades ..................................................................................................................... 40 
+
+Figura 24 - Diagrama com as funções de cada subloop do loop principal ........................... 41 
+
+Figura 25 - Vários movimento possíveis para um quadcopter com estrutura em + [8] ....... 53 
+
+Figura 26 – Ligação do cabo de sinal dos motores à APM [66] .......................................... 57 
+
+Figura 27 - Indicação dos comandos do controlo remoto em modo 2 [65] .......................... 57 
+
+Figura 28 - Helicóptero inclinando-se ao andar numa direção ............................................. 65 
+
+
+
+xv 
+ 
+
+Figura 29 - Nova disposição das hélices .............................................................................. 66 
+
+Figura 30 - Botão utilizado para mudar o modo de voo do Arducopter ............................... 67 
+
+Figura 31 - Arducopter em voo no modo Alt Hold .............................................................. 68 
+
+Figura 32- Kit de montagem da placa APM [42] ................................................................. 80 
+
+Figura 33 - Headers necessários [42] ................................................................................... 81 
+
+Figura 34 - Placa APM com os headers de 90? soldados [42] ............................................. 81 
+
+Figura 35 - Colocação dos restantes headers [42] ................................................................ 81 
+
+Figura 36 - Headers soldados na placa [42] ......................................................................... 82 
+
+Figura 37 - Placa APM totalmente montada [42] ................................................................. 82 
+
+Figura 38 - Imagem ilustrativa de como soldar os header pins [73] .................................... 83 
+
+Figura 39 - Imagem ilustrativa de como preencher a placa com solda [73] ......................... 83 
+
+Figura 40 - Imagem ilustrativa de como conectar os cabos de alimentação da bateria [73] 84 
+
+Figura 41 - Imagem ilustrativa de como soldar os cabos de sinal à placa de distribuição de 
+
+energia [73] ........................................................................................................................... 84 
+
+Figura 42 - Imagem ilustrativa de como soldar a alimentação da placa APM [73] ............. 85 
+
+Figura 43 - Imagem ilustrativa de como soldar os conetores dos ESC à placa APM[73] .... 85 
+
+Figura 44 - Resultado final da instalação da placa de distribuição de energia ..................... 86 
+
+Figura 45 - Montagem das placas da estrutura base [24] ..................................................... 88 
+
+Figura 46 - Parte final da montagem da estrutura base ........................................................ 88 
+
+Figura 47 - Montagem dos braços à estrutura ...................................................................... 89 
+
+Figura 48 - Montagem do suporte de bateria ........................................................................ 89 
+
+Figura 49 - Montagem da placa de distribuição de energia à estrutura ................................ 90 
+
+Figura 50 - Montagem da placa APM à estrutura [24] ......................................................... 90 
+
+Figura 51 - Montagem da placa APM à estrutura ................................................................ 91 
+
+Figura 52 - Dome protetor dos componentes de hardware [24] .......................................... 92 
+
+Figura 53 - Peça substituta às pernas existentes no kit de montagem .................................. 92 
+
+Figura 54 - Novas pernas criadas na impressora 3D ............................................................ 93 
+
+Figura 55 - Montagem dos motores nos braços .................................................................... 93 
+
+Figura 56 - Passagem dos fios do motor pelos braços do Arducopter [33] .......................... 94 
+
+Figura 57 - Passos para montar as hélices no motor ............................................................ 94 
+
+Figura 58 - Montagem das hélices nos motores ................................................................... 95 
+
+
+
+xvi 
+ 
+
+Figura 59 - Escolha correta das hélices segundo o tipo de estrutura em + ou em x [37] ..... 96 
+
+Figura 60 - Configuração da conexão dos ESC aos motores ............................................... 97 
+
+Figura 61 - Instalação do controlo de rádio à placa APM [66] ............................................ 97 
+
+Figura 62 - Ligação dos canais do recetor à placa APM ...................................................... 99 
+
+Figura 63- Sensor infravermelho SharpGP2Y [75] ............................................................ 100 
+
+Figura 64- Instalação do optical flow na placa APM1 [76] ................................................ 101 
+
+Figura 65- Ligação do 3DRadio à placa APM [78]............................................................ 103 
+
+Figura 66 - Ligação do Xbee à placa APM V1 [80] ........................................................... 104 
+
+Figura 67 - Exemplo da montagem do gymbal da câmara ................................................. 106 
+
+Figura 68 - Canais de output para roll e pitch da câmara [81] ........................................... 106 
+
+Figura 69 - Exemplo de um OSD (on screen display) [82] ................................................ 107 
+
+Figura 70 - Imagem ilustrativa de como conectar o sensor AttoPilot [35]......................... 108 
+
+ 
+
+  
+
+
+
+xvii 
+ 
+
+Acrónimos 
+
+3D   3 Dimensões 
+
+3DR   3D Robotics 
+
+APM   ArduPilot Mega 
+
+BEC   Brushless Eletronic Speed Controller 
+
+CLI   Command Line Interpreter 
+
+CTT                Correios Telégrafos e Telefones 
+
+DIP   Dual In-line Package 
+
+ESC   Eletronic Speed Controls 
+
+FPGA  Field-Programmable Gate Array 
+
+FPV   Fist Person View 
+
+FTDI   Future Technology Devices International 
+
+GCS  Ground Control Station 
+
+GND  Ground 
+
+GPS   Global Positioning System 
+
+HALE   High Altitude Long Endurance 
+
+HIL   Hardware In-the-Loop 
+
+HUD  Heads Up Display 
+
+I2C   Inter-Integrated Circuit 
+
+IDE   Integrated Development Environment 
+
+IMU   Inertial Measurement Unit 
+
+
+
+xviii 
+ 
+
+LiPo   Litium Polymers 
+
+MAV   Micro Air Vehicle 
+
+OSD   On Screen Display 
+
+PDB   Power Distribution Board 
+
+PID   Proportional Integral Derivative 
+
+PWM   Pulse Width Modulation 
+
+RTL   Return To Launch 
+
+UAV   Unmaned Air Vehicles 
+
+USB   Universal Serial Bus 
+
+VTOL   Vertical TakeOff and Landing 
+
+
+
+1 
+ 
+
+1-Introdução 
+
+Os UAV (Unamaned Air Vehicles) são aeronaves não tripuladas. Este conceito foi 
+
+desenvolvido por equipas militares dos Estados Unidos da América, pois permitia a 
+
+observação do campo dos inimigos sem existirem baixas a nível de vidas humanas caso a 
+
+aeronave fosse atingida [1]. Após vários anos de investigação neste campo, foram criados 
+
+os mais variados tipos de aeronaves capazes de voar sem um piloto fisicamente presente na 
+
+aeronave. 
+
+As várias aeronaves foram categorizadas segundo várias classificações, de acordo com as 
+
+suas características em voo. As aeronaves de asa fixa, mais conhecidas como aviões, eram 
+
+movidas quer por motores com hélices, quer por motores a jato. Devido às suas limitações, 
+
+as imagens capturadas por este tipo de aeronaves não eram muito nítidas pois não eram 
+
+capazes de pairar no mesmo sítio e tinham que voar a grande altitude para poderem de certa 
+
+forma circundar o alvo a ser observado [1,2]. 
+
+ Foram então criados os VTOL (Vertical TakeOff and Landing), que permitiam um voo 
+
+numa altitude mais baixa conseguindo uma melhor qualidade de imagem, assim como 
+
+podiam descolar e aterrar em qualquer superfície sem necessitar de pistas [1,2]. 
+
+Também através do desenvolvimento deste equipamento, o tamanho das aeronaves foi 
+
+ficando cada vez mais pequeno, tornando também a sua construção mais barata e a sua 
+
+divulgação maior. Passaram de motores de combustível fóssil a elétricos utilizando 
+
+baterias, devido a serem mais pequenos e leves e passaram a ser também utilizados em voos 
+
+em espaços fechados, em vez de apenas ao ar livre e céu aberto [1,2]. 
+
+Dentro dos VTOL, tentaram desenvolver a estrutura dos mesmos de forma a melhorar a 
+
+performance em voo e conseguirem suportar carga, de forma a transportar sensores para as 
+
+mais variadas análises e missões. Assim evoluíram do helicóptero tradicional para uma 
+
+estrutura mais estável: os multicópteros, que possuíam desde 4 a 8 motores equidistantes do 
+
+centro, proporcionando um maior poder de elevação e um voo mais estável [1,2]. 
+
+
+
+2 
+ 
+
+1.1-Motivação 
+Este projeto é novo nesta universidade. É também desafiante, pois é necessário ter 
+
+conhecimentos de várias áreas: Na informática, para se poderem criar novos programas 
+
+para melhor configurar o equipamento e ter um código mais fácil de alterar; Na eletrónica, 
+
+pois é necessário saber instalar e personalizar os sensores do equipamento; Em inteligência 
+
+artificial, pois é necessário saber tornar o equipamento o mais autónomo possível. Também 
+
+os ramos do acesso remoto e das comunicações, são explorados de forma a controlar o 
+
+quadcopter num espaço mais distante e com a melhor qualidade possível.  
+
+1.2-Objetivos 
+Os objetivos para esta tese passaram principalmente por criar uma boa estação de testes e 
+
+uma boa documentação, para que em projetos futuros utilizando este equipamento não seja 
+
+necessária uma pesquisa exaustiva para tentar perceber como o equipamento funciona, 
+
+como deve ser montado, quais as capacidades do mesmo e que sensores podem ser 
+
+adicionados. O segundo objetivo foi tentar desenvolver pequenos programas e equipar o 
+
+veículo com mais sensores, de maneira a que este seja mais fácil de controlar por parte do 
+
+operador e para que exista uma maior segurança em caso de falhas. Serve também para 
+
+evitar com que ocorram acidentes em voo e por fim para que se criem missões para o 
+
+Arducopter desempenhá-las autonomamente. 
+
+1.3-Contribuições  
+
+Uma vez que esta tese fornece uma boa estação de trabalho, com toda a informação 
+
+necessária para o voo do equipamento, vários outros projetos podem ser aplicados ao 
+
+helicóptero em várias áreas, como a eletrónica, a informática e a inteligência artificial. 
+
+Neste sentido, o trabalho não representa uma contribuição significativa em nenhuma destas 
+
+áreas, mas uma sólida base de trabalho, que suportará futuros projetos nessas áreas.  
+
+ 
+ 
+
+ 
+
+
+
+3 
+ 
+
+1.4-Estrutura do documento 
+A tese está estruturada da seguinte forma: 
+
+• A secção 1 “Introdução” apresenta uma breve apresentação do trabalho e estrutura 
+
+desta dissertação. 
+
+• A secção 2 “Estado da arte” apresenta as capacidades dos UAV nas mais variadas 
+
+áreas, como segurança pública, geologia, obtenção de imagens e robótica. 
+
+• A secção 3 “Explicação geral do sistema” apresenta um resumo do funcionamento 
+
+do sistema do Arducopter. 
+
+• A secção 4 “Descrição do Arducopter” indica todos os sensores e componentes 
+
+existentes no Arducopter e todos os componentes de hardware que podem ser 
+
+adicionados. Também explica a instalação de cada um dos componentes. 
+
+• A secção 5 “Software e programação” descreve como programar em Arduino e 
+
+indica como está estruturado o código e as principais funções de cada ficheiro. 
+
+• A secção 6 “APM Mission Planner”, explica como utilizar a ferramenta do Mission 
+
+Planner, para a configuração dos controlos de voo, para análise de ficheiros log, 
+
+como criar missões de voo autónomo e como usar as opções do terminal CLI. 
+
+• A secção 7 “Configurações Pré-voo” indica tudo o que é necessário saber configurar 
+
+antes de efetuar um voo. 
+
+• A secção 8 “Voos de teste e resultados”, apresenta a evolução que existiu com o 
+
+equipamento, durante os voos de teste e as alterações feitas ao helicóptero para 
+
+solucionar os problemas dos voos de teste anteriores. 
+
+• A secção 9 “Conclusões e trabalhos futuros” descreve as conclusões tiradas após os 
+
+voos, que contribuições foram feitas e que trabalhos futuros poderão ser realizados. 
+
+• O anexo A “Manual de montagem do Arducopter” descreve os passos de montagem 
+
+da placa APM, a soldagem dos conetores dos controladores ESC e motores, e 
+
+montagem da placa de distribuição de energia. 
+
+• O anexo B “Montagem da estrutura do Arducopter” descreve todos os passos para 
+
+montagem da estrutura do Arducopter como: secção central da estrutura; trem de 
+
+aterragem; braços; motores e controladores; ligação dos cabos de entrada e saída da 
+
+placa APM aos motores e recetor de rádio. 
+
+
+
+4 
+ 
+
+• O anexo C “Montagem de sensores opcionais” apresenta a informação dos sensores 
+
+adicionais que podem ser adicionados ao Arducopter, mas que ainda não se 
+
+encontram instalados, no helicóptero da Universidade. 
+
+• O Anexo D “Afinação dos termos PID” apresenta as possíveis afinações dos 
+
+parâmetros do controlador PID (Proportional Integral Derivative) para uma melhor 
+
+estabilidade em voo. 
+
+  
+
+
+
+5 
+ 
+
+2-Estado da Arte 
+
+2.1-Funcionalidade dos UAV 
+Os quadcopters ou UAV em miniatura abrangem vários campos, como na área militar e de 
+
+segurança pública. Têm como funções o desempenho de tarefas tais como a busca e 
+
+salvamento de pessoas, a vigilância e perseguição em caso de roubo, a análise de acidentes 
+
+de viação [3] e o auxílio na deteção de fogo para prevenção de incêndios [4]. No campo da 
+
+geologia, usando câmaras térmicas, câmaras de infravermelhos, podem ser capazes de 
+
+analisar terrenos agrícolas [5], taludes (verificando se estes causam perigo às zonas mais 
+
+baixas), permitem a análise a estruturas de edifícios (desde pilares ou vigas que se 
+
+encontram a grande altitude) [6]. No campo da aquisição de imagens são usados 
+
+essencialmente para fazer captura de imagens, de forma a obter-se uma vista geral e mais 
+
+abrangente ou para uma filmagem aérea [6]. No campo da robótica, servem para melhorar o 
+
+equipamento através de simulações [7], de forma a estarem preparados para grande parte 
+
+das situações, para que consigam voar em condições menos favoráveis, sejam mais estáveis 
+
+[8], mais autónomos, necessitando cada vez menos da intervenção humana nos seus voos e 
+
+para que dependam única e exclusivamente dos seus próprios sensores para o desempenho 
+
+de missões [9,10]. 
+
+2.1.1-Segurança Pública 
+
+No campo da segurança pública foram desenvolvidos equipamentos [11] para a vigilância 
+
+de edifícios ou de centros comerciais, e também para o resgate e salvamentos depois de 
+
+catástrofes, como terramotos, explosões, entre outros. Devido a terem um tamanho 
+
+reduzido, estes poderiam chegar às vítimas em espaços apertados e além de encontrar as 
+
+vítimas podiam ainda obter um mapa de como chegar com as equipas de salvamento até a 
+
+essas pessoas.  
+
+No artigo [11] foi criado um ambiente de simulação em que se utilizava um controlador de 
+
+deteção de obstáculos. Segundo o artigo, no uso de OS4 (um modelo de um quadcopter) 
+
+através desse controlador o helicóptero conseguiu alterar a trajetória sem alterar a sua 
+
+altitude e o seu ângulo de yaw (rotação do helicóptero para a esquerda/direita). 
+
+
+
+6 
+ 
+
+De maneira semelhante o artigo [12] fala sobre um voo autónomo efetuado num espaço 
+
+interior. O sistema utiliza sensores e algoritmos utilizados anteriormente em robôs terrestes. 
+
+Os criadores lançaram o sistema como um software open-source para providenciar uma 
+
+comunidade com novos frameworks para construir aplicações para robôs interior, visto 
+
+muitas das propostas existentes serem exclusivamente para exterior [10].  
+
+O artigo [12] defende que qualquer algoritmo para robôs terrestes pode ser convertido para 
+
+robôs aéreos, mas que essa conversão é difícil pois são aparelhos diferentes com graus de 
+
+liberdade diferentes. Um veículo aéreo tem mais complexidade de movimentos e não pode 
+
+transportar grande peso de sensores como um veículo terrestre. A forma que os autores 
+
+utilizaram foi tentar manter o helicóptero a uma certa altitude voando de forma a tentar 
+
+criar um mapa a 2 dimensões, para assim poder criar um mapa por onde pudesse estimar a 
+
+sua posição e navegar dentro do mapa [12].  
+
+Em [10] utilizam um quadcopter, que dispõe de um sonar para a altitude e de sensores 
+
+infravermelhos para a deteção de obstáculos. São então feitos 3 testes numa sala de 6x7 
+
+metros. No primeiro teste o quadcopter levantou voo, pairou no ar e de seguida aterrou. No 
+
+segundo teste o quadcopter levantou voo e seguiu numa direção aleatória evitando a colisão 
+
+com uma das 4 paredes da sala. No terceiro teste o quadcopter tentou manter-se no meio da 
+
+sala sem se desviar do centro da sala. Todos os testes foram feitos de forma autónoma e 
+
+com sucesso. 
+
+Quanto à vigilância e perseguição, dentro do campo da segurança pública, no artigo [13] é 
+
+desenvolvido um método que faz com que um UAV de asa fixa consiga seguir um veículo 
+
+terrestre, usando uma câmara giratória. O autor afirma que, apesar de este método ser para 
+
+uma UAV de asa fixa (avião), se fosse aplicado a um helicóptero seria muito mais bem-
+
+sucedido visto que o helicóptero tem menos restrições de voo e é capaz de pairar no ar. 
+
+Esse método funciona segundo duas regras essenciais: 
+
+• A primeira – é necessário encontrar o alvo a seguir.  
+
+• A segunda – deve tentar manter uma distância de proximidade suficiente para o 
+
+poder seguir sem o perder de vista. 
+
+
+
+7 
+ 
+
+ Uma restrição a ter em conta neste sistema de perseguição é que a velocidade do veículo 
+
+terrestre não deve exceder a do avião por longos períodos de tempo (pois assim este o 
+
+perdia de vista). 
+
+No artigo [14] é apresentado um algoritmo baseado na visão que permite com que um UAV 
+
+seja capaz de aterrar sobre uma pista de helicóptero. O algoritmo é feito segundo uma 
+
+sequência. Primeiro o helicóptero tenta procurar a pista, após encontrá-la dirige-se até ela e 
+
+quando está situado sobre a pista, tenta fazer a aterragem. Se ao dirigir-se até à pista o 
+
+helicóptero a perder de vista, ele volta ao primeiro passo. A deteção da pista de aterragem é 
+
+feita segundo a deteção da forma característica de uma pista de aterragem para helicópteros 
+
+(um “H”). 
+
+De forma semelhante o artigo [15] fala sobre os quadcopters que dispõem de uma câmara 
+
+de um comando Wii, usada para detetar um padrão de leds infravermelhos existentes num 
+
+boné modificado. O equipamento é capaz de pairar sobre a pessoa que utilize esse boné. 
+
+Em termos de segurança poderia ser utilizado para vigiar uma pessoa de forma a garantir a 
+
+sua segurança. Trata-se de um equipamento acessível e leve, visto dispor de sensores 
+
+simples e baratos. 
+
+No que diz respeito aos incêndios, à sua deteção, confirmação e monitorização, o artigo 
+
+[16] descreve como vários tipos de UAV podem ser usados antes, durante e depois dos 
+
+incêndios. Podem ser usados por exemplo na prevenção dos incêndios, inspecionando a 
+
+vegetação, verificando zonas onde exista mais suscetibilidade de ocorrer fogos. Durante os 
+
+fogos são usados na deteção [17] e confirmação do incêndio, informando o serviço de 
+
+bombeiros da área através da sua georreferência. Após os fogos são utilizados na 
+
+monotorização de pequenas brasas e na prospeção fazendo uma previsão da área ardida. 
+
+2.1.2-Geologia e Arqueologia 
+
+No campo da geologia é apresentado no artigo [5] um quadcopter que dispõe de uma 
+
+câmara com vários filtros óticos, com a finalidade de analisar terrenos agrícolas. Após essa 
+
+análise é possível observar se é necessário ou não fertilizar determinada zona, pois com a 
+
+ajuda da câmara é possível assinalar as zonas que necessitem de fertilização, fazendo com 
+
+que não se desperdice recursos onde não seja necessário. Este sistema dispõe ainda de um 
+
+
+
+8 
+ 
+
+downlink com o qual são transferidas as imagens capturadas pelos sensores para uma GCS 
+
+(Ground Contol Station) para serem analisadas.  
+
+Outro método é descrito na referência [18]. Esse método é baseado num HALE (High 
+
+Altitude Long Endurance), um tipo de UAV que é usado para exploração dos terrenos 
+
+inóspitos do Ártico. É proposta uma alternativa de exploração de terrenos como o Ártico, 
+
+usando um UAV a energia solar, não necessitando de combustíveis fosseis para descolarem 
+
+satélites para o mesmo propósito. 
+
+No campo da arqueologia os UAV são muitas vezes utilizados para o registo de imagens 
+
+aéreas, de forma a registar o trabalho feito diariamente [19]. O autor enuncia que antes de 
+
+existirem os UAV, o trabalho teria de ser feito por mão humana, tentando desenhar os 
+
+planos e seções feitas no trabalho do dia-a-dia, um processo muito tedioso, assim foi 
+
+testado a utilização de um UAV num local arqueológico em Itália, com sistemas aéreos de 
+
+baixo custo do Politécnico de Torino. Com o uso da fotogrametria [2] foi possível recolher 
+
+e armazenar informações das imagens necessárias durante o período de trabalho na 
+
+escavação, algo que sem o uso de UAV teria que ser feito apenas após o dia de escavações 
+
+[19]. 
+
+No artigo [20], são utilizados vários modelos de UAV para fotografar 3 diferentes zonas 
+
+climáticas, desde zonas húmidas a altas temperaturas, nas Honduras, de zonas com poeiras 
+
+no Perú, zonas de grande altitude e diferentes variações de temperatura e ventos fortes no 
+
+Butão. Segundo a análise do autor, conclui-se que ao utilizar diferentes UAV em várias 
+
+zonas, umas vezes de forma autónoma e outras pilotadas os UAV conseguem completar a 
+
+missão que lhe é destinada (tirar fotos a instâncias arqueológicas). Ainda conclui que pode 
+
+ser afirmado que todos os sistemas utilizados estão aptos para aplicações de arqueologia.  
+
+De forma semelhante, o artigo [21] indica que utilizam UAV para capturar imagens 
+
+panorâmicas de uma paisagem de valor cultural de forma a conseguirem posteriormente 
+
+integrar imagens 3D de mapas históricos ou atlas. Com o uso da fotogrametria, usam UAV 
+
+para tirar fotos de diferentes perspetivas, a fim de criarem uma imagem com texturas dos 
+
+vários elementos. Através dessas imagens panorâmicas é possível criar mapas e itinerários, 
+
+
+
+9 
+ 
+
+que mais tarde podem ser usados em aparelhos como smartphones ou tablets em aplicações 
+
+de divulgação turística e de conhecimento cultural. 
+
+2.1.3-Aquisição de imagens aéreas 
+
+Neste campo não existe grande desenvolvimento sobre o equipamento. O equipamento é 
+
+utilizado como um meio para filmagem. A única parte de desenvolvimento para o 
+
+equipamento será por exemplo no controlo da câmara que o equipamento transporta [50]. 
+
+Grande parte dos UAV já é capaz de fazer um percurso aéreo previamente definido, não 
+
+necessitando de grande conhecimento sobre os comandos de voo e bastando indicar num 
+
+mapa que percurso o aparelho deve fazer [20].  
+
+O sistema por sua vez executa o percurso que lhe foi destinado e muitos deles já dispõem 
+
+do sistema de aterragem automática [22]. Ao utilizador cabe a tarefa de indicar o percurso 
+
+de voo e guardar as imagens, para mais tarde vendê-las. Caso não seja propício o voo 
+
+autónomo, existem modos de voo que permitem um voo estável para qualquer utilizador 
+
+inexperiente [23].  
+
+Este ramo tem crescido cada vez mais, pois através do uso de um UAV não é necessário 
+
+alugar um meio aéreo para fazer uma filmagem que apenas poderia ser feita por meio aéreo 
+
+[2]. A utilização dos UAV vai desde a promoção de imobiliário [6], para o vídeo 
+
+publicitário [6], para documentários de vida animal [6] e para a utilização em cobertura de 
+
+eventos jornalísticos [24]. 
+
+2.1.4-Robótica 
+
+Este deve ser o campo onde existe mais informação sobre o desenvolvimento de robôs 
+
+aéreos. Um dos vários desenvolvimentos é a cooperação entre robôs: o desenvolvimento de 
+
+técnicas multiagente. Em [7] é proposto um ambiente de simulação para teste de controlo 
+
+de mini-UAV. Durante essas simulações o quadcopter é testado no caso de perda do 
+
+controlo de eficiência num dos motores ao pairar e noutro a fazer uma trajetória elíptica. 
+
+Este ambiente de simulação é propício para o desenvolvimento do controlador de voo, visto 
+
+que é possível testar em ambiente controlado, sendo possível alterar variáveis em vez de 
+
+criar testes reais. 
+
+
+
+10 
+ 
+
+O artigo [25] apresenta uma proposta de um controlador implementado com redes neurais, 
+
+para controlar o voo de um quadcopter. Em ambiente de simulação foram obtidos 
+
+resultados animadores e conseguido obter a atitude correta reduzindo os desvios em voo. 
+
+O artigo [1] demonstra que foi possível desenvolver um sistema de um quadcopter, usando 
+
+um controlador PID (Proportional Integral Derivative) que permitisse estabilizar 2 dos 6 
+
+graus de liberdade, usando uma placa FPGA (Field-Programmable GateArray). Através da 
+
+filtragem dos sensores, como o IMU (Inertial Measurement Unit), e do uso das imagens de 
+
+uma câmara para estabilizar os restantes 4 graus de liberdade, foi possível corrigir todos os 
+
+graus de liberdade para permitir um voo sem intervenção humana. 
+
+ Por sua vez, na tese [26] é usada uma câmara capaz de capturar o movimento em tempo 
+
+real e de o transmitir para uma estação terrestre onde será analisada. O sistema utiliza o 
+
+processamento da imagem que é capturada através da câmara para detetar obstáculos e 
+
+saber onde se encontra. Através desse sistema o quadcopter é capaz de fazer grande parte 
+
+do percurso sem a intervenção humana. 
+
+Na referência [22] é apresentado um quadcopter com um sistema de garras, que serve tanto 
+
+para transportar objetos, como para pousar em superfícies que não se encontram na 
+
+horizontal. Durante a fase de testes o quadcopter foi capaz de aterrar autonomamente e 
+
+caso exista alguma falha na aterragem, principalmente quando este tenta pousar sobre uma 
+
+superfície vertical, o helicóptero é capaz de recuperar dessa falha e manter-se novamente a 
+
+pairar. 
+
+O mesmo autor desenvolveu um sistema autónomo, [27] utilizando as garras indicadas no 
+
+capítulo anterior, de forma a transportar um bloco de madeira com a cooperação de 2 ou 
+
+mais quadcopters. Durante os testes, foi possível transportar blocos de madeira com 4 
+
+formas diferentes (em linha, em T, em L e em cruz) utilizando para a tarefa 4 quadcopters. 
+
+Os quadcopters foram capazes de transportar os diferentes blocos de forma estável.  
+
+ 
+
+ 
+
+
+
+11 
+ 
+
+Outra inovação é referida em [9] em que é criado um controlador para que o Arducopter 
+
+passe através de uma janela pela horizontal, pela vertical e que tente também pousar numa 
+
+plataforma que faz um ângulo com a horizontal superior a 90?. Foi desenvolvido um 
+
+controlador de forma a que o veículo completasse a sua missão, isto é fazer uma trajetória 
+
+3D. 
+
+  
+
+
+
+12 
+ 
+
+3-Explicação geral do sistema 
+
+Para esta tese foi comprado um quadcopter (um helicóptero que dispõe de 4 hélices 
+
+equidistantes do centro) Arducopter, esse dispositivo é programado sobre a plataforma 
+
+Arduino. Para o controlo do helicóptero é usado um rádio transmissor de controlo remoto. 
+
+O controlo remoto dispõe de um conjunto de canais através dos quais podem ser enviados 
+
+comandos para controlar os movimentos do helicóptero. Existem 4 canais essenciais no que 
+
+correspondem a cada movimento do helicóptero, esses movimentos são: o movimento de 
+
+pitch no qual o helicóptero movimenta-se para a frente ou para trás, inclinando-se nessa 
+
+mesma direção; o movimento de roll no qual o helicóptero movimenta-se para a direita ou 
+
+para a esquerda, inclinando-se nas respetivas direções; o movimento de yaw no qual o 
+
+helicóptero faz um movimento de rotação para a direita ou para a esquerda; o movimento 
+
+de throttle que faz o helicóptero aumentar, manter ou baixar a altitude, segundo a potência 
+
+dos motores. Na secção 7.1 encontra-se definido o processamento dos movimentos com 
+
+maior detalhe.  
+
+Além desses canais existe um outro que é responsável por indicar o modo de voo, na secção 
+
+7.2 encontram-se descritos os vários modos de voo e o respetivo comportamento em voo. 
+
+Existem modos de voo manuais, em que o helicóptero é controlado exclusivamente pelo 
+
+controlo remoto. Existes também modos de voo assistidos, na medida em que, auxiliam no 
+
+controlo da altitude, orientação e posição em voo (ajudando a pairar) do helicóptero. 
+
+Finalmente existem modos de voo autónomos, em que o helicóptero é controlado 
+
+automaticamente sem necessitar de controlo remoto.  
+
+Após o controlo remoto enviar os comandos para o helicóptero, no helicóptero os sinais são 
+
+recebidos pelo recetor de controlo remoto que reencaminha os sinais correspondentes aos 
+
+vários canais, para as portas de entrada existentes numa placa que processa-os. Essa placa 
+
+existente no Arducopter, designada por APM (ArduPilot Mega), é uma placa que contém 
+
+um microprocessador com 8 portas de entrada e 8 portas de saída PWM e possui outras 
+
+portas (nas quais podem ser adicionados novos sensores), possui vários sensores embutidos, 
+
+como o barómetro, giroscópios de xy e z e acelerómetros de 3 eixos. A placa tem como 
+
+função processar os sinais recebidos por parte do recetor, juntamente com os dados dos 
+
+
+
+13 
+ 
+
+outros sensores e enviar para a saída os sinais que irão fazer mover os motores, de acordo 
+
+com o desejado.  
+
+Os motores estão ligados a controladores ESC (Electronic Speed Controllers), que são 
+
+responsáveis por fazerem trabalhar os motores. Na placa de controlo através de Arducopter 
+
+existem 2 pares de hélices simétricos, cada par deve girar numa direção (no sentido dos 
+
+ponteiros do relógio ou contrário aos ponteiros do relógio). Os pares de hélices devem ser 
+
+dispostos da seguinte forma: um par deve ser colocado com uma hélice à frente e outra 
+
+atrás do helicóptero; o outro deve ser colocado, com uma hélice à esquerda e outra à direita 
+
+do helicóptero. O helicóptero contém de uma bateria de Lítio para fornecer energia a todo o 
+
+equipamento. 
+
+A placa de controlo contém um firmware que pode ser programado para adição de novas 
+
+funcionalidades ou de sensores, atualmente esse firmware é o Arducopter 2.6. Existem duas 
+
+formas para configurar e testaros sistema, e gerir os ficheiros log dos voos efetuados. Uma 
+
+das formas, é através de um menu CLI (Command Line Interpreter), um terminal de linha 
+
+de comandos que contém: um menu para configurações referentes ao helicóptero; outro 
+
+menu para testar os vários sensores; e outro menu para gerir os ficheiros de log. A outra é 
+
+utilizando o software Mission Planner, uma plataforma que além de permitir a execução 
+
+dessas tarefas através de uma interface gráfica mais percetível, pode ainda ser utilizado para 
+
+definir uma missão autónoma para o helicóptero, com a ajuda de um sistema de telemetria 
+
+permite utilizar uma GCS (Ground Control Station), uma estação capaz de controlar um 
+
+helicóptero em tempo real através de um portátil, contendo a visualização dos estados dos 
+
+sensores, sendo possível a alteração da missão autónoma em tempo real. O software 
+
+Mission Planner contém um protocolo de comunicação chamado MAVLink (Minature 
+
+AirVihecle Link), cujo protocolo serve para definir as missões autónomas e toda a 
+
+comunicação entre a placa APM e o programa. 
+
+ 
+
+ 
+
+
+
+14 
+ 
+
+4- Descrição do Arducopter 
+
+Neste trabalho foi utilizado um quadopter que resultou da aplicação da plataforma Arduíno. 
+
+Neste capítulo serão descritos os vários elementos do Arducopter, assim como a sua 
+
+instalação. 
+
+O equipamento é essencialmente constituído por [28]: 
+
+• APM (ArduPilot Mega) 
+
+• A estrutura do Arducopter 
+
+• Motores/ESC (Eletronic Speed Controlers)/hélices 
+
+• Rádio transmissor/recetor 
+
+• Bateria e carregador 
+
+• Magnetómetro  
+
+• GPS  
+
+Em seguida iremos descrever esses componentes. 
+
+4.1-APM (ArduPilot Mega) 
+
+Existem duas versões desta placa, a versão 1 e a versão 2. A primeira versão é a mais antiga 
+
+e é composta por duas partes, o controlador APM (placa vermelha) e o IMU oilpan (placa 
+
+azul). A montagem destes componentes está descrita no anexo A.1. A segunda versão é 
+
+mais recente, com mais sensores, é mais pequena não necessitando de serem soldados 
+
+nenhuns componentes, já possui GPS e magnetómetro embutido [28].  
+
+O conjunto APM1 serve para controlar todos os sensores, motores e o processamento de 
+
+todas as informações necessárias para o funcionamento do Arducopter. No que diz respeito 
+
+à placa ArduPilot Mega1 (figura 1) que é a placa existente atualmente no Arducopter da 
+
+Universidade da Madeira, esta é constituída por duas placas [29]:  
+
+1. Uma placa com o processador Atmega 2560 e um co-processador Atmega328, 
+
+usado para as comunicações de rádio. Esta placa é conhecida por várias designações 
+
+como a placa vermelha, APM ou masterboard. 
+
+
+
+15 
+ 
+
+2. A segunda placa, que se situa no topo da primeira, inclui um largo conjunto de 
+
+sensores desde giroscópios, acelerómetros, sensores de pressão e voltagem. Serve 
+
+de IMU (Inertial Measurement Unit, utilizada para gerir a estabilidade do 
+
+Arducopter) e é conhecida por nomes como placa azul, APM Shield e oilpan. 
+
+ 
+
+Figura 1- Placa APM V.1 [29] 
+
+4.1.1-Alimentação da placa 
+
+A APM também tem uma entrada alternativa de energia, podendo assim fornecer energia 
+
+diretamente à placa através de uma bateria separada do sistema de controlo remoto. Isso é 
+
+feito através da extração da soldadura de um jumper SJ1 como se mostra na figura 2 e 
+
+ligando os conetores da bateria diretamente na placa APM, com as respetivas polaridades 
+
+nos pins que se encontram na figura 2. A placa possui um regulador de corrente e um 
+
+fusível de reset. [30] 
+
+ 
+
+Figura 2 -Imagem ilustrativa de como configurar a alimentação da placa [30] 
+
+
+
+16 
+ 
+
+4.1.2-Descrição da placa APM1 
+
+A figura 3 mostra um pouco da arquitetura da placa APM, exibindo em primeiro plano o 
+
+processador Atmega2560 da atmel que dispõe de uma memória flash de 256kb. Através de 
+
+alguns truques no código é possível ler e escrever 8 canais de PWM (pulse width 
+
+modulation) usando cerca de 1% do processador. A placa dispõe também de um conversor 
+
+analógico para digital, que pode ser usado como pins de entradas digitais, possui 4 portas 
+
+série sendo as portas 0, 1, 2 e 3 usadas para USB, GPS, DataFlash e Xbee/ Telemetria 
+
+respetivamente [30]. 
+
+ 
+
+Figura 3 - Arquitetura da placa APM [30] 
+
+4.1.3-Descrição da placa oilpan 
+
+Esta placa engloba grande parte dos sensores que irão determinar uma boa performance em 
+
+voo. Desde acelerómetros de 3 eixos, giroscópios xy e também do z, e barómetro para 
+
+calcular a altura do equipamento segundo a sua temperatura e pressão atmosférica. Na porta 
+
+I2C é ligado o magnetómetro, de forma a se ter uma orientação em voo correta. A placa 
+
+também dispõe de uma porta de expansão para a ligação de vários sensores analógicos. A 
+
+
+
+17 
+ 
+
+porta de telemetria serve para ligar componentes adicionais, como um Xbee de forma a se 
+
+ter um voo com uma GCS. A porta Pitot é onde devem ser ligados sensores adicionais, 
+
+como sensores utrassónicos ou de infravermelhos [31]. 
+
+Os 4 DIP (Dual In-line Package) switches e o slider switch (que se encontram no canto 
+
+inferior esquerdo da figura 4) tornaram-se obsoletos, visto que, com o aparecimento do 
+
+firmware 2.0, para se aceder aos comandos enviados por estes dispositivos, que passavam 
+
+pela entrada no terminal CLI, pela escolha da configuração da estrutura e pelo modo de voo 
+
+(se o dispositivo controlado era um avião ou um helicóptero). Atualmente são todos feitos 
+
+por software, não sendo necessário por vezes desmontar o equipamento para alterar a sua 
+
+configuração, tornando a placa APM1 mais próxima a nível de funcionalidades da versão 2 
+
+APM2 [32]. 
+
+ 
+
+Figura 4 - Placa APM Shield [31] 
+
+Na figura 4 pode-se observar um relé a branco que serve para ser usado em eventos de 
+
+gatilho (trigger) como por exemplo, este pode ser usado quando se pretende tirar uma foto 
+
+(quando se dispõe de uma máquina fotográfica). Pode-se também observar que é através 
+
+desta placa que se liga a ficha mini USB que se conectará ao pc para permitir aceder aos 
+
+dados da placa e programá-la [31]. 
+
+
+
+18 
+ 
+
+A figura 5 ilustra os vários leds da placa azul [33]: 
+
+• O led A (verde) - se estiver ligado indica que os motores estão armados; se estiver 
+
+intermitente indica que os motores estão desarmados. 
+
+• O led B (amarelo) - se estiver intermitente o sistema encontra-se durante a 
+
+calibração; caso contrário não é utilizado. 
+
+• O led C (vermelho) - se estiver ligado indica que o GPS está sincronizado; se estiver 
+
+intermitente indica que está a tentar sincronizar; se estiver desligado indica que o 
+
+GPS não se encontra conectado. 
+
+• Os leds TX e RX - quando estão intermitentes indicam que está a decorrer uma 
+
+comunicação em série, quer por USB ou por Telemetria.  
+
+• O led power (azul) - indica que a placa APM1 está ligada. 
+
+ 
+
+Figura 5 - Ilustração dos vários leds da oilpan[33] 
+
+
+
+19 
+ 
+
+4.1.5-Descrição da APM2  
+
+Apesar da Universidade da Madeira não dispor da versão 2 da placa APM, irá ser descrito 
+
+brevemente as diferenças entre as duas versões. Uma das grandes diferenças entre estas 
+
+duas placas é nos sensores que usam. A placa APM2, que está representada pela figura 6, 
+
+dispõe de um Invensense MPU-6000 gyro/accelerometer chip, que contém o seu próprio 
+
+processador. Contém ainda um sensor de pressão altamente preciso para medições de 
+
+altitude. Devido à evolução dos sensores foi possível a incorporação de várias funções, 
+
+utilizando assim menos chips e com sensores digitais, não recorrendo aos conversores 
+
+analógico para digital, como ocorria no APM1 [34]. 
+
+ Ao contrário da APM1, a APM2 já dispõe de sensores como o GPS e o magnetómetro 
+
+embutidos, para não ser necessária a utilização de soldaduras ou cabos. O botão CLI 
+
+(command line interpreter) no APM2 já não existe. O CLI é chamado premindo a tecla 
+
+enter 3 vezes no terminal de início em vez de utilizar um interruptor na placa APM para 
+
+ativar essa função. A placa APM2 não contém o relé que servia essencialmente para tirar 
+
+uma foto numa câmara, mas é possível a adição de um relé externo [34]. 
+
+Não existem interruptores DIP pois estas funcionalidades são executadas através do 
+
+Mission Planner. Como acontecia com a APM1 esta não dispõe de um monitor de 
+
+voltagem, pois é preferível utilizar um Sparkfun current sensor [35], que pode ser ligado a 
+
+uma das portas disponíveis [34]. 
+
+
+
+20 
+ 
+
+ 
+
+Figura 6 - Placa APM2 [34] 
+
+4.2-Estrutura do quadcopter 
+
+Existem vários tipos de estruturas, dependendo do número de motores e da versão do 
+
+modelo. A versão do Arducopter existente é uma versão mais antiga e primordial. O seu 
+
+trem de aterragem não é o melhor, pois é feito de um material frágil e pouco resistente a 
+
+choques. Existem outros modelos mais recentes que já dispõem de materiais mais robustos, 
+
+com alumínio, que fazem com que se tenha mais segurança no caso de uma queda 
+
+involuntária do equipamento ou no caso de não se ter muita sensibilidade com o controlo ao 
+
+aterrar [28]. 
+
+ Estas novas estruturas têm a vantagem de serem originais do Arducopter tendo assim 
+
+controladores PID (Proportional Integral Derivative) adequados à estrutura e aos motores 
+
+de 850kv (potência dos motores), que são os motores padrão. A montagem da estrutura 
+
+encontra-se descrita no Anexo B. A estrutura do quadcopter existente pode ser configurada 
+
+
+
+21 
+ 
+
+de duas maneiras, quer em cruz (+) ou em x. O tipo de estrutura existente no Arducopter 
+
+atual é a estrutura em cruz (+) [28].   
+
+4.2.1-Diferenças entre a estrutura em x ou em + 
+
+Qualquer uma pode ser escolhida. A estrutura em x é utilizada quando é usada uma câmara, 
+
+visto que, durante o voo ao inclinar-se, no movimento de pitch (para a frente), a câmara não 
+
+apanha o braço que se encontra inclinado, como aconteceria se se utilizasse na estrutura em 
+
++. A estrutura em + é a mais utilizada, por ser a mais intuitiva em voo, quando se pretende 
+
+verificar onde fica a parte da frente do Arducopter. Normalmente pinta-se o braço que se 
+
+encontra à frente ou é colocada uma bola de ping pong na perna da frente de forma a 
+
+diferenciar dos restantes braços [36]. 
+
+A figura abaixo mostra como devem ser dispostas as hélices quando configuradas em + 
+
+(esquerda) e em x (direita). 
+
+ 
+
+Figura 7- Indicação da rotação das hélices quando configuradas em + e em x [37] 
+
+ 
+
+4.2.2-Trem de aterragem (estrutura de aterragem) 
+
+Quanto ao trem de aterragem existente, pode-se concluir que é muito frágil. É preferível a 
+
+substituição deste por um mais robusto e mais flexível. Recomenda-se uma boa superfície, 
+
+feita de um material flexível e ao mesmo tempo forte, para que no caso de uma queda o 
+
+choque seja absorvido e os componentes permaneçam intactos. 
+
+
+
+22 
+ 
+
+Dos vários exemplos de trens de aterragem existentes, pode-se referir o modelo da 
+
+diydrones, representado na figura 8: 
+
+ 
+
+Figura 8- Exemplo do trem de aterragem da estrutura dos diydrones [38] 
+
+Este é semelhante a uns esquis, como existem nos helicópteros convencionais, e permitem a 
+
+utilização de uma câmara a bordo. Outro modelo, representado nas figuras 9 e 10, utilizam 
+
+4 pernas. 
+
+ 
+
+Figura 9 - Exemplo do trem de aterragem da estrutura 3DR [39] 
+
+
+
+23 
+ 
+
+ 
+
+Figura 10- Exemplo de um trem de aterragem de uma estrutura nova [40] 
+
+ 
+
+Na figura 10 existe uma estrutura constituída por 4 pernas que dispõem de molas para 
+
+reduzir a força do impacto. Um dos factos a ter em conta quando se escolhe um trem de 
+
+aterragem é a funcionalidade do helicóptero. Se for necessário incorporar uma câmara, é 
+
+indispensável que o trem de aterragem seja suficientemente alto para que consiga proteger a 
+
+câmara de um impacto.  
+
+Analisando os vários modelos existentes, optou-se por criar uma perna para ser colocada 
+
+em cada um dos braços, visto a universidade usufruir de uma impressora 3D, para que fosse 
+
+mais estável a aterragem. Estas novas pernas, que se apresentam na figura 11, são feitas de 
+
+um plástico que as torna mais flexível, para aterragens de pequena altitude. As pernas 
+
+foram colocadas mais perto dos motores, para que na queda as hélices não se inclinassem 
+
+para o chão e fossem danificadas. Com esta nova disposição das pernas, caso a aterragem 
+
+fosse de forma inclinada, a estrutura ficaria mais nivelada.  
+
+
+
+24 
+ 
+
+ 
+
+Figura 11 - Pernas impressas na impressora 3D 
+
+4.3-Motores/ESC (eletronic speed controls) /Hélices 
+
+No que diz respeito aos motores, os motores usados são de 850 kv sem escovas. Na compra 
+
+de motores/ESC (controladores de velocidade electrónicos) /hélices é preferível utilizar os 
+
+que já vêm em kits. Para os multi-rotores são recomendados os motores de 800-1100 kv 
+
+quando se usa baterias de 3 células. Os controladores de velocidade são usados para 
+
+controlar os motores e são classificados em amperes. Essa amperagem deve coincidir com a 
+
+usada pelo motor [28]. 
+
+As hélices utilizadas são hélices com duas pás grandes, sendo as dimensões mais populares 
+
+10x45 e 12x47. As hélices podem ter a particularidade de serem constituídas por um tipo de 
+
+material mais resistente. As hélices que vêm de fábrica são as de 10x45, mas foi testado o 
+
+uso de hélices maiores, de 12x47, e o Arducopter ao levantar voo tornou-se mais estável 
+
+com este tipo de hélices do que com as anteriores [28]. A descrição da montagem dos 
+
+motores e hélices encontram-se no anexo B.3.  
+
+4.4-Rádio transmissor e recetor 
+Nesta secção são descritos o rádio transmissor e o rádio recetor utilizados no atual modelo 
+
+do Arducopter. 
+
+4.4.1-Rádio transmissor 
+
+O rádio transmissor é usado para controlar o Arducopter em modo manual, simples ou no 
+
+caso de existirem coordenadas erradas no modo automático é possível intervir para que o 
+
+equipamento não caia. O equipamento necessita no mínimo de 4 canais para desempenhar 
+
+grande parte das funcionalidades do Arducopter [28]. Na figura 11 pode-se observar o rádio 
+
+
+
+25 
+ 
+
+transmissor, que é um rádio transmissor de 9 canais que está configurado no modo 2 (modo 
+
+utilizado na Europa em que o throttle é posicionado no lado esquerdo do comando, algo 
+
+que não aconteceria no modo Americano, em que o throttle está posicionado no lado 
+
+direito, fazendo uma troca com o comando pitch) e funciona com 8 pilhas AA. A figura 12 
+
+apresenta os vários canais e o correspondente a um movimento do Arducopter. A 
+
+explicação desses movimentos encontra-se na secção 7.1. 
+
+ 
+
+Figura 12 - Emissor de controlo remoto e movimentos correspondentes 
+
+4.4.2-Rádio recetor 
+
+O rádio recetor representado na figura 13 é o equipamento que recebe os comandos 
+
+enviados pelo transmissor e os envia para a placa APM. Estes dois equipamentos são 
+
+comprados em conjunto, mas ter vários recetores é por vezes bom, no caso de se ter várias 
+
+aeronaves, pois assim pode-se utilizar apenas um controlador para várias aeronaves [28]. A 
+
+instalação dos componentes encontra-se explicada no anexo B.5. 
+
+Este equipamento apresenta 9 canais de saída, mas no modelo existente na Universidade da 
+
+Madeira apenas utilizamos o cabo que contém 6 canais, que deve ser ligado às primeiras 6 
+
+entradas (apesar de não usarmos o 6º canal pois este não é necessário). 
+
+
+
+26 
+ 
+
+ 
+
+Figura 13 -Recetor de controlo remoto 
+
+4.5-Bateria e carregador 
+
+Nesta secção são descritos a bateria, o carregador e os passos para o seu carregamento. 
+
+4.5.1-Bateria 
+
+Um componente muito importante é a bateria, visto que é o dispositivo que fornece toda a 
+
+energia necessária para o funcionamento dos controladores e motores [28]. O Arducopter 
+
+existente possui uma bateria de LiPo (Litium Polymers) de 11,1V e 2200mAh com 3 
+
+células. Abaixo encontra-se a figura 14, com a bateria. Este tipo de bateria é muito 
+
+perigoso, por ser muito inflamável e não ser possível apagar com um extintor normal. Por 
+
+isso deve-se ter o cuidado de mantê-la em lugares frescos e longe de fontes de ignição ou 
+
+de calor. 
+
+ 
+
+Figura 14 -Bateria LiPo do arducopter 
+
+
+
+27 
+ 
+
+4.5.2-Carregador 
+
+É também necessário ter um carregador específico para este tipo de bateria de forma a 
+
+carregar corretamente cada célula da bateria [28]. O carregador IMAX B6 dispõe de várias 
+
+formas de carregamento (carregamento rápido, carregamento normal e carregamento 
+
+balanceado) para vários tipos de bateria (de níquel e de lítio). Ao carregar a bateria, deve 
+
+ser escolhido o tipo de bateria correto assim como o carregamento balanceado, visto que 
+
+este carrega corretamente cada célula da mesma. Na figura 15 encontra-se uma imagem do 
+
+carregador existente. 
+
+ 
+
+Figura 15 - Carregador de bateria 
+
+Ao carregar a bateria há que seguir os seguintes passos: 
+
+• Ligar os conetores da bateria ao carregador como mostra a figura 16. 
+
+• Ligar as duas outras pontas dos fios de corrente do carregador a uma fonte de 
+
+alimentação (ter sempre em atenção o positivo e negativo) e escolher uma voltagem 
+
+de cerca de 15V. 
+
+• Ligar o carregador. 
+
+• Escolher o menu de baterias lítio LiPo (normalmente já está definido por defeito).  
+
+• Escolher o menu de carregamento balanceado. De seguida clicar na tecla enter. 
+
+• Em seguida selecionar a amperagem de 2A (este valor convém ser entre 1,5A a 2A), 
+
+a voltagem de 11,1V e 3S (3 células). Para começar a carregar a bateria deve seguir 
+
+para o próximo menu, pressionando enter cerca de 3 segundos. 
+
+
+
+28 
+ 
+
+• Irá ser apresentado um menu indicando o número de células detetadas pelo 
+
+carregador (à esquerda) e o número de células escolhido no menu anterior (à 
+
+direita). Caso o número seja o mesmo deve seguir para o próximo menu 
+
+pressionando enter. 
+
+• A bateria irá carregar durante uns 30 minutos, após esse tempo o carregador irá dar 
+
+uns apitos a indicar que a bateria está carregada. O tempo de carregamento é 
+
+influenciado pela amperagem definida, quanto mais amperagem mais rápido o seu 
+
+carregamento. Após estar carregada, carregue no botão stop, desligue a fonte de 
+
+alimentação e retire os conetores todos. 
+
+ 
+
+Figura 16 - Imagem ilustrativa de como carregar 
+
+4.6-Sensores 
+
+Esta secção apresenta quais os sensores que podem ser adicionados ao Arducopter. Um 
+
+sensor é um dispositivo eletrónico cuja função é medir certos valores, por exemplo a 
+
+temperatura, a altura, a distância. A placa APM analisa os vários dados obtidos pelos 
+
+diversos sensores para que o Arducopter tenha melhor desempenho nos voos. 
+
+4.6.1-Magnetómetro 
+
+Este dispositivo pode ser opcional no caso de não se utilizar o modo de manter a posição 
+
+em voo (pairar no mesmo local) ou de fazer voos autónomos. O magnetómetro disponível é 
+
+o Tripple Axis Magnetometer - HMC5883L. Este dispositivo pode ser colocado na placa 
+
+APM de duas maneiras. Através de um cabo ligado à porta I2C do oilpan (placa azul); ou 
+
+
+
+29 
+ 
+
+soldando o magnetómetro à placa. Em baixo encontram-se descritas as formas de montar 
+
+este equipamento [41]. 
+
+4.6.1.1-Método 1 
+
+O método 1 é a maneira mais fácil de montar o magnetómetro instalando-o diretamente na 
+
+placa azul. É a maneira mais utilizada e é a configuração padrão. É de ter em atenção se a 
+
+voltagem do sensor está configurada para 5V. Para a sua instalação é necessário utilizar 4 
+
+headers pins. Quebra-se a parte assinalada pela figura 17 e solda-se os 4 pins Finalmente 
+
+solda-se o magnetómetro virado para baixo como mostra a figura 17. 
+
+ 
+
+Figura 17- Montagem do magnetómetro através do método 1 [41] 
+
+  
+
+
+
+30 
+ 
+
+4.6.1.2-Método 2 
+
+No método 2, o cabo mais comprido do kit deve ser alterado. Retira-se um conetor (peça de 
+plástico branca) de uma das extremidades do cabo e dois fios como podemos observar na 
+figura 18. De seguida é inserido o conetor na placa IMU na porta I2C. O magnetómetro ao 
+ser ligado na estrutura deve se encontrar orientado para a frente como no método 1 (figura 
+19) [41]. 
+
+ 
+
+Figura 18 - Ligação do cabo ao magnetómetro através do método 2 [41] 
+
+ 
+
+Figura 19- Montagem do magnetómetro através do método 2 
+
+
+
+31 
+ 
+
+4.6.2-GPS (Global Positioning System) 
+
+O GPS serve para se poderem realizar missões de voo autónomo e deve ser usado em 
+
+espaços abertos de forma a ser posível capturar a sua localização. O modelo do GPS do 
+
+Arducopter utilizado é o Mediatek MT3329, e a sua instalação é feita (como podemos 
+
+observar na figura 20) ligando um conetor I2C à porta do GPS e o outro conetor à porta I2C 
+
+da placa vermelha.  
+
+ 
+
+Figura 20 - Conexão do GPS à placa APM [42] 
+
+Como sensores opcionais podem ser ligados [28]: 
+
+• Sonar 
+
+• Sensor Infravermelho. 
+
+• Sensor de optical flow 
+
+• Kit de telemetria sem fios 
+
+• Um gymbal de câmara 
+
+• Display no ecrã(On screen diplay) 
+
+• Monitor de bateria 
+
+Alguns dos sensores encontram-se apresentados no anexo C. 
+
+4.6.3-Sonar (sensor ultrassónico) 
+
+O Arducopter pode dispor também de um sonar para o Arducopter manter a sua altitude, 
+
+quando esta é inferior a 10 metros. No caso da altitude ser superior a 10 metros em vez de 
+
+ser utilizado o sonar, é usado o barómetro (sensor de pressão). O sonar é também utilizado 
+
+na deteção de obstáculos. Abaixo temos a informação de como instalá-lo. 
+
+
+
+32 
+ 
+
+É importante que o sonar seja montado pelo menos cerca de 7,5 cm do centro, para evitar 
+
+ruídos elétricos provenientes dos ESC e outras interferências. Adicionou-se um sonar no 
+
+Arducopter utilizado na tese, criou-se um suporte na impressora 3D. Este sensor foi preso 
+
+com apenas um parafuso O sonar é o LV-EZ3, apesar do modelo não ser o LV-EZ0, os 
+
+alcances na medição de distâncias são semelhantes [43]. 
+
+O sonar dispõe de um cabo que é facilmente adaptado e retirado, caso não seja necessário a 
+
+sua utilização. Ao instalar deve-se ter atenção às marcas que se encontram em cada uma das 
+
+extremidades do fio (figura 21). A marca a preto corresponde ao GND (Ground) e coloca-
+
+se na placa de forma correta, para evitar danos na placa e no sensor. [43]  
+
+ 
+
+Figura 21- Ligação do sonar à placa APM 
+
+Ligam-se os 3 pins de GND (preto), V+ (vermelho) e “AN” (amarelo) ao pitot tube do IMU 
+
+shield (placa azul) nos GND, +V e “AN” respetivamente, como pode-se observar na figura 
+
+22. 
+
+
+
+33 
+ 
+
+ 
+
+Figura 22 - Ilustração sobre a conexão dos vários pins do sonar [43] 
+
+É possível ativar o sonar entrando no modo CLI (comand line interpreter), ou usando o 
+
+separador “configuration” do Mission Planner. No terminal de CLI, após escrevermos 
+
+setup, escreve-se “sonar on” para ativá-lo. Para indicar o modelo do sonar escreve-se 
+
+“sonar 0” para o XL-EZ0; “sonar 1” para o LV-EZ0; ou “sonar 2” para o XL-EZL0. É 
+
+possível ativar e selecionar o modelo, quando estamos conectados pela USB através do 
+
+programa APM Mission Planner, selecionando o separador “configuration” como se 
+
+encontra descrito na secção 6.  
+
+Os valores do sonar podem conter ruído, para isso usa-se um choke de ferrite no cabo do 
+
+sensor ou utiliza-se um cabo blindado. As causas dos ruídos poderão ser [43]: 
+
+• Os ESC, servos (motores) ou BEC (Brushless Eletronic Speed Control), que 
+
+encontram-se no mesmo circuito que o sonar 
+
+• As frequências eletromagnéticas provenientes dos motores, dos seus cabos, dos 
+
+ESC ou do Xbee. 
+
+• O barulho acústico provocado pela rotação das hélices. 
+
+• As vibrações dos motores ou das hélices. 
+
+
+
+34 
+ 
+
+5- Software e programação 
+
+Neste capítulo serão apresentados os vários firmwares existente para o Arducopter, assim 
+
+como a explicação do firmware Arducopter 2.6, que se encontra instalado no hardware do 
+
+Arducopter da Universidade da Madeira.  
+
+5.1-Software 
+
+Existem vários firmwares diferentes para o hardware do Arducopter entre os quais são 
+
+recomendados [44]: 
+
+• ArduPiratesNg code – Foi utilizada uma versão ArduCopter RC2 onde fizeram 
+
+melhoramentos através comunidade Ardupirates, este inclui novos suportes da 
+
+estrutura de voo, um melhor processo de configuração e resolução de bugs [45]. 
+
+Este código encontra-se atualmente pouco desenvolvido, pois com o aparecimento 
+
+da placa APM2 o grupo do Arducopter evoluiu de tal maneira que todos os modos 
+
+de CLI e voo são selecionados por software, existindo melhores funcionalidades 
+
+deixando este código praticamente obsoleto. 
+
+• ArduCopterMega - É a versão oficial mais recente a ser lançada. Tem como nome 
+
+Arducopter 2.0. O código que provém do APM de asa fixa (Ardupilot), que contém 
+
+mais funcionalidades e é mais maduro que o Arducopter. Esta versão traz as 
+
+funcionalidades totais dos UAV, incluindo waypoints programáveis em 3D, 
+
+software ground station, comunicação de dois sentidos durante o voo e uma 
+
+navegação guiada através de GPS permitindo indicar onde o Arducopter deve seguir 
+
+em tempo real. Atualmente encontra-se na versão Arducopter 2.6, mas mensalmente 
+
+são realizadas melhorias ao software, de forma a tornar o voo mais estável. 
+
+5.2-Programação em Arduino  
+No caso de ser necessário criar novas funcionalidades no código, ou incorporar outro sensor 
+
+que não se encontre na versão atual, é possível programar a placa APM com o IDE 
+
+(Integrated Development Environment) do Arduino [46]. 
+
+
+
+35 
+ 
+
+Antes de programar é necessário instalar a placa APM no computador, para tal é necessário 
+
+[47]: 
+
+• Instalar o Arduino IDE que se encontra disponível online na referência [48] 
+
+• Ter atenção para não selecionar o ficheiro Arduino com uma versão igual ou 
+
+superior à 1.0, pois esta versão utiliza uma extensão de ficheiro diferente à utilizado 
+
+pelo Arducopter. É preferível a utilização do ficheiro Arduino 0023. 
+
+• Após instalar o ficheiro deve ligar-se a ficha mini USB à placa APM, caso o sistema 
+
+não reconheça a placa, deve-se ir ao gestor de dispositivos do computador e 
+
+atualizar o controlador (de preferência através da atualização online). 
+
+• Abrir o gestor de dispositivos, ir às propriedades da porta, escolher “definições 
+
+avançadas” e selecionar a opção “Set RTS on Close”.  
+
+• Abrir o programa Arduino, escolher o menu “preferências” e indicar onde se deseja 
+
+guardar o sketchbook (área de trabalho do programa Arduino que contém o código). 
+
+• Após definir a localização do sketchbook, é necessário fechar o programa e reiniciá-
+
+lo para que as opções sejam atualizadas. 
+
+Para carregar o código através do Arduino devem-se seguir os seguintes passos [49]: 
+
+• Fazer o download da versão mais recente do Arducopter neste caso o Arducopter 
+
+2.6. [50] e descompactar o ficheiro zip para uma pasta. Após a descompactação 
+
+deve-se copiar as duas pastas (Arducopter, Libraries) para a localização definida do 
+
+sketchbook. 
+
+• Abrir o programa Arduino. 
+
+• Ir a “ficheiro”, selecionar “abrir” e procurar dentro da pasta Arducopter o ficheiro 
+
+“ArduCopter.pde”. 
+
+• No menu de ferramentas do Arduino escolhe-se a placa Arduino Mega 2560. 
+
+• Depois de efetuadas as alterações no código, para fazer o upload do código é 
+
+necessário carregar no botão com uma seta azul apontando para a direita. Este 
+
+processo demora um a dois minutos e após a transferência o Arduino indica que o 
+
+upload está completo. 
+
+
+
+36 
+ 
+
+5.3-Descrição do código 
+O código é criado por uma pequena equipa que ao desenvolvê-lo, torna-o mais completo, e 
+
+com menos erros. Mensalmente são criadas novas versões do código, onde são corrigidos 
+
+bugs e adicionadas novas funcionalidades. 
+
+O código que será analisado corresponde à versão 2.6. O código é constituído por duas 
+
+pastas, uma “Libraries” e outra “Arducopter”.  
+
+5.3.1-Pasta Libraries 
+
+No que diz respeito à pasta “Libraries”, esta contém todas as bibliotecas necessárias para 
+
+uma boa operação dos sensores e dos componentes. Dentro desta existem várias pastas que 
+
+correspondem às bibliotecas individuais de cada componente, (desde controladores, 
+
+sensores, motores, informações relativas à placa, entre outras). Em cada pasta podem existir 
+
+4 tipos de ficheiros com 4 tipos de extensão. A extensão “.h”(ficheiro header), a extensão 
+
+“.cpp”(ficheiro c++), a extensão “.pde” (ficheiro Arduino) e um ficheiro adicional de 
+
+extensão “.txt”(ficheiro de texto) com o nome de “keywords.txt”.  
+
+• Os ficheiros header definem as classes, indicando os construtores e os métodos que 
+
+a classe deve ter. 
+
+• Os ficheiros c++ contêm a mesma informação da classe, mas indicam a definição 
+
+dos métodos da classe. 
+
+• Os ficheiros Arduino apresentam pequenos exemplos para testar certos sensores e 
+
+outros elementos da biblioteca. 
+
+• O ficheiro “keywords.txt” contém o nome da classe seguido do número 1 e os 
+
+nomes dos vários métodos seguidos do número 2, este ficheiro serve para distinguir 
+
+o construtor da classe dos métodos da classe. 
+
+5.3.2-Pasta Arducopter 
+
+Quanto à pasta “Arducopter”, esta é constituída essencialmente por ficheiros de dois tipos, 
+
+Arduino e header.  
+
+Os ficheiros header (extensão “.h”) servem para criar classes com parâmetros globais, e 
+
+definir a configuração dos componentes a serem utilizados no Arducopter assim como as 
+
+variáveis. 
+
+
+
+37 
+ 
+
+Através da figura 23, pode-se observar que de todos os ficheiros Arduino (extensão “.pde”) 
+
+existe um ficheiro principal denominado “arducopter.pde” e encontra-se ligado a todos os 
+
+restantes. Este ficheiro realiza a inclusão de todas as bibliotecas necessárias, assim como de 
+
+todas as variáveis e inicia o loop principal do programa. É a partir deste ficheiro que são 
+
+chamadas todas as funções que se encontram nos restantes ficheiros Arduino. 
+
+Na parte superior da figura 23, podemos observar um pequeno grupo de ficheiros Arduino 
+
+que correspondem aos menus do CLI. Esses ficheiros são: 
+
+• Setup.pde 
+
+• Test.pde 
+
+• Log.pde 
+
+• Planner.pde 
+
+O ficheiro System.pde, que se encontra ligado a este grupo, é responsável por criar o menu 
+
+principal do terminal, com as opções (setup, test, log e planner), assim como as funções 
+
+críticas como a designação do modo de voo, a ativação do modo failsafe e o início do GCS. 
+
+Os restantes ficheiros (setup, test, log e planner) contêm a informação de como serão 
+
+apresentados os vários menus selecionados, como se fosse um terminal. 
+
+No lado direito da figura apresenta-se um grupo de dois ficheiros, responsáveis por permitir 
+
+ao utilizador definir o seu próprio código. Esses ficheiros são o “UserCode.pde” e o 
+
+“UserVariables.h”. No “UserCode.pde”, podem ser definidas as inicializações e as funções 
+
+necessárias. As variáveis do utilizador podem ser definidas no ficheiro header 
+
+“UserVariables.h”. 
+
+Na parte de baixo da figura 23 existe um grupo formado por 3 ficheiros nos quais se 
+
+encontram as funções relacionadas com o rádio controlo remoto: 
+
+• Radio.pde – contém as funções de inicialização dos comandos de input e output do 
+
+controlo remoto, o valor mínimo de output dos motores, as funções de failsafe (no 
+
+caso de perda de controlo do rádio), e o trim (alteração da escala dos valores) de 
+
+valores do controlo remoto. 
+
+• Control_modes.pde – contém as funções do interruptor dos modos de voo.  
+
+
+
+38 
+ 
+
+• Events.pde – contém as funções de ativação e desativação do evento de failsafe, a 
+
+atualização de eventos e o evento de bateria fraca. 
+
+Também no canto inferior esquerdo da figura 23 existe um outro grupo composto por 
+
+ficheiros header que são responsáveis pela alteração, definição de variáveis, pela 
+
+configuração de estrutura e pela configuração de canais. Esses ficheiros são: 
+
+• Config.h – Ficheiro de configuração principal (nunca deve ser alterado). 
+
+• APM_config.h – Ficheiro de configuração que é sobreposto ao config.h. 
+
+• APM_config.Mavlink.h – Utilizado para simulações com o modo HIL (Hardware In 
+
+the Loop). 
+
+• Config_channel.h – Configuração dos canais de voo. 
+
+• Defines.h – Definição de variáveis do sistema 
+
+No canto inferior direito da figura 23 encontra-se um grupo de ficheiros que dizem respeito 
+
+às funções dos sensores e dos atuadores. Este grupo é formado pelos seguintes ficheiros: 
+
+• Sensors.pde – contém funções que dizem respeito a sensores como o barómetro, a 
+
+bússola, a leitura de bateria e o sonar. 
+
+• Motors.pde – contém as funções de inicialização da armação e a inicialização da 
+
+desarmação dos motores, as funções de armar e desarmar motores e de enviar os 
+
+comandos aos motores. 
+
+• Camera.pde – contém as funções necessárias para a estabilização da câmara em voo. 
+
+• Leds.pde – contém as funções que dizem respeito à correspondência de leds. 
+
+No lado direito, em baixo na figura 23 pode-se observar um grupo de 3 ficheiros que têm 
+
+como função gerir a dinâmica em voo, ou seja, manter um voo mais estável ou mais ágil. 
+
+Este grupo é formado por: 
+
+• Inertia.pde – contém todas a funções necessárias para o bom funcionamento dos 
+
+acelerómetros. 
+
+• Attitude.pde  – contém as funções necessárias para obter os valores desejados de 
+
+roll, pitch, yaw e throttle para um voo estável. 
+
+
+
+39 
+ 
+
+• Flip.pde  – é um ficheiro recente que contém a definição das funções necessárias 
+
+para o Arducopter fazer uma pirueta no ar no sentido do roll. 
+
+Novamente no lado direito da figura 23, encontra-se um grupo formado por 3 ficheiros. 
+
+Esses são responsáveis pela criação, processamento e gestão dos comandos de voo 
+
+automático. O grupo é formado pelos seguintes ficheiros: 
+
+• Commands.pde – é responsável pela inicialização e criação do comando. 
+
+• Commands_process.pde – é responsável pelo processamento dos vários comandos 
+
+de voo. 
+
+• Commands_logic.pde – é responsável pela gestão dos comandos, designando como 
+
+devem ser tratados os comandos. 
+
+No canto superior direito, existe um ficheiro chamado GCS_mavlink.pde, que contém todas 
+
+as funções necessárias para a comunicação entre o Arducopter e a estação GCS. 
+
+No lado esquerdo, pode-se observar o ficheiro Navigation.pde, que contém todas as funções 
+
+necessárias para um voo autónomo. Este ficheiro contém o cálculo de trajetórias, de 
+
+velocidade, de altura e de erros para que o voo através de waypoints seja feito sem falhas. 
+
+Finalmente no canto superior esquerdo, existe um grupo formado por 4 ficheiros, dois 
+
+headers e dois ficheiros Arduino. Esses ficheiros são: 
+
+• Parameters.h – Contém uma classe (Parameters) que contém todos os parâmetros 
+
+globais. 
+
+• Parameters.pde – Contém as funções definidas na classe “Parameters”. 
+
+• GCS.h – Contém a definição das classes GCS e GCS_mavlink. 
+
+• GCS.pde – não é utilizado, pois todo o seu código encontra-se comentado. 
+
+
+
+40 
+ 
+
+ 
+
+Figura 23 - Diagrama contendo os vários ficheiros do código agrupados segundo as suas funcionalidades 
+
+Na figura 24, pode-se observar um diagrama que contém os vários loops do código 
+
+principal do “arducopter.pde”. A figura apresenta retângulos e cada retângulo indica um 
+
+loop. Os loops médium_loop e slow_loop contêm pequenos retângulos dentro do seu loop, 
+
+isto deve-se ao facto de apenas executarem um retângulo de cada vez que são chamados. Os 
+
+retângulos são executados da esquerda para a direita e de cima para baixo. Cada um dos 
+
+loops é executado segundo um período de tempo determinado. O fast_loop executa-se a 
+
+
+
+41 
+ 
+
+uma frequência de 100Hz; o medium_loop a uma frequência de 10Hz; o 50hz_loop como o 
+
+nome indica executa-se a uma frequência de 50Hz; o slow_loop executa-se a uma 
+
+frequência de 2Hz; finalmente o super_slow_loop executa-se a uma frequência de 1Hz. 
+
+Quanto maior a sua frequência, mais vezes é executado o loop, sendo através destas 
+
+relações de frequência que é possível designar a prioridade das funções. 
+
+ 
+
+Figura 24 - Diagrama com as funções de cada subloop do loop principal 
+
+
+
+42 
+ 
+
+6-APM Mission Planner 
+
+O Mission Planner é um programa auxiliar de configuração do Arducopter que contém uma 
+
+plataforma na qual conseguimos aceder aos valores dos sensores da placa APM, do 
+
+terminal CLI, entre outros. O APM Mission Planner é utilizado para definir uma rota para o 
+
+Arducopter seguir,usando clicks no Google Maps. É também utilizado como uma estação 
+
+base para monitorizar o helicóptero e mandar comandos de voo através de um pc, 
+
+permitindo selecionar os comandos de voo através de drop-down menus. Verificar os 
+
+valores de output dos sensores e testar a performance de voo em piloto automático, ou fazer 
+
+download dos ficheiros log para análise posterior. O software permite também configurar a 
+
+placa APM, escolhendo as estruturas de voo dos comandos de rádio e as afinações dos 
+
+valores controladores PID (Propositional Integral Derivate). Permite a visualização do 
+
+terminal da APM [51]. 
+
+O software pode ser adquirido através do link da referência [52], escolhe-se a versão do 
+
+Mission Planner de acordo com o tipo de arquitetura do computador utilizado (32 bits ou 
+
+64bits).  
+
+Após instalar o software, no canto superior direito ao abrir o ficheiro do Mission Planner 
+
+encontra-se um drop-down menu que contém as portas necessárias para a ligação. Se for 
+
+usada a porta USB é necessário escolher a porta COM designada pelo gestor de dispositivos 
+
+do Windows. Quando liga-se ao Mission Planner o baud rate deve ser 115200 bps, para a 
+
+conexão usb. Se a conexão for através do Xbee devemos indicar novamente a porta COM 
+
+criada pelo gestor de dispositivos do Windows quando o Xbee foi ligado. Neste caso o 
+
+baud rate deve ser de 57600 bps. A informação sobre quais as portas disponíveis, encontra-
+
+se no gestor de dispositivos do Windows [51]. 
+
+Carrega-se no botão “connect” depois de se escolher a porta COM. A placa irá fazer reset 
+
+por uns 20-30 segundos, irá conectar-se através do MAVLink e carregar os parâmetros da 
+
+APM para o Mission Planner. A placa APM suporta por vários softwares de GCS entre os 
+
+quais: 
+
+
+
+43 
+ 
+
+? Arducopter Mission Planner [51] 
+
+? Happykilmore GCS [53] 
+
+? Qground Control(mac, Linux e widows) [54] 
+
+6.1-O que é a Ground Control Station  
+Se se tiver um Xbee para comunicações wireless (através do kit de telemetria) configurado 
+
+no Arducopter. É possível utilizar a ground control station (GCS) para monitorizar a 
+
+telemetria e carregar comandos de voo. A GCS dispõe os dados em tempo-real da quando o 
+
+helicóptero se encontra em voo e serve de cockpit virtual, mostrando um horizonte virtual 
+
+assim com os de um avião real [55]. 
+
+A GCS pode ser utilizada para controlar um UAV em voo, podendo carregar novos 
+
+comandos de missão e repor parâmetros. É possível também visualizar o stream de vídeo 
+
+das câmaras quando o UAV se encontra em voo, utilizando o um transmissor de vídeo 
+
+ligado a um sistema OSD [55].  
+
+6.1.1-Utilizar o Mission Planner ground station 
+
+O mapa apenas apresentará a posição atual se o GPS estiver ativado e sincronizado, ou se 
+
+estiver a usar um simulador de voo. O horizonte artificial funciona da seguinte forma, 
+
+quando o arducopter se inclina para a direita, o horizonte inclina-se para a esquerda, isto 
+
+pode ser verificado se inclinar a cabeça para a direita [56]. 
+
+Através do Mission Planner é possível observar as mudanças do modo de voo assim como 
+
+outros comandos quando este se encontra em voo. Essas mudanças devem ser feitas sobre o 
+
+modo Autopilot para ter efeito. Se fizermos duplo click sobre o HUD (Heads up Display), 
+
+abrirá uma nova janela com o seu conteúdo. Ao fazer-se duplo click sobre o speed gauge 
+
+pode-se modificar a escala máxima da velocidade que se pretende ver. Ao ativar a checkbox 
+
+de tuning é possível visualizar as variáveis de status num gráfico em tempo real [56]. 
+
+É também possível selecionar ao fazer duplo click na legenda, e escolher que variáveis são 
+
+apresentadas no gráfico. Em voo é possível fazer com que o Arducopter vá até onde se 
+
+pretende, pressionando com o botão direito do rato no mapa, escolhendo a opção “fly to 
+
+here”. Isto fará com que o Arducopter paire no local onde foi indicado, este modo de voo é 
+
+
+
+44 
+ 
+
+chamado modo guiado e só pode ser utilizado se existir um sistema de telemetria que 
+
+comunique entre o Arducopter e o programa em tempo-real [56]. 
+
+ O modo guiado é separado dos outros modos e uma vez selecionado no Arducopter, irá 
+
+permanecer no ponto selecionado até que seja adicionado outro ponto em modo guiado ou 
+
+até que seja escolhido outro modo de voo. No caso de outro modo de voo ser o auto, ele 
+
+retomará a missão onde foi deixada [56]. 
+
+6.2-Definição de waypoints através de um editor point and click  
+Para efectuar uma missão através do Mission Planner, é necessário escolher o separador 
+
+“flight planner” e em seguida indicar a missão clicando no mapa. Podemos alterar os 
+
+parâmetros dos waypoints conforme a missão pretendida. A altitude em voo é sempre 
+
+relativa à altitude da descolagem. Se o Arducopter for lançado já no ar, essa altura será a 
+
+sua altitude 0. O default Alt é a altura com que se inserirem os waypoints. Ao escolher a 
+
+opção Verify height significa que o helicóptero usará a altura do relevo do Google Earth 
+
+como altura de referência. Este modo é bom pois faz com que em modos de voo autónomos 
+
+o Arducopter não vá de encontro a obstáculos, como por exemplo montanhas [57].  
+
+6.2.1-Comandos básicos de waypoint  
+
+Para definir a missão o Mission Planner tem como comandos básicos [57]: 
+
+• Waypoint - Tem como parâmetros o delay, a altitude, a longitude e a latitude. O 
+
+delay é feito após o Arducopter chegar ao waypoint. 
+
+• Loiter UnLim - Este comando faz com que o Arducopter faça loiter na posição em 
+
+que se encontra quando o comando é chamado. 
+
+• Loiter_Time - Tem como parâmetros o tempo, a altura, a latitude e a longitude. Este 
+
+comando fará com que o Arducopter faça loiter durante o tempo especificado, na 
+
+latitude, na longitude e altura especificada. 
+
+• Loiter_turns - Tem como parâmetros o número de voltas que o Arducopter fará. 
+
+Este comando faz com que o Arducopter faça loiter na posição em que se encontra 
+
+quando o comando é chamado. 
+
+• Return_to_launch - Este comando necessita que o GPS esteja ativo e sincronizado, 
+
+faz com que o Arducopter regresse ao waypoint home com a altura indicada. Caso o 
+
+
+
+45 
+ 
+
+parâmetro esteja a zero, o Arducopter regressará ao waypoint home à altura em que 
+
+se encontra. 
+
+• Land - Este comando fará com que o Arducopter aterre. Se o sonar estiver ativo, ele 
+
+manterá a posição a uma altura de 3 metros e em seguida descerá. Neste comando 
+
+os motores não param, sendo necessário mudar o modo de voo para Stabilize para 
+
+poder desligá-los. 
+
+• Takeoff - Este comando tem como parâmetro a altura. O comando fará com que o 
+
+Arducopter levante voo e mantenha a sua posição até a altura indicada nos 
+
+parâmetros. 
+
+• Condition_delay - Tem como parâmetro o tempo em segundos. Este comando fará 
+
+com que o próximo comando condicional tenha um igual ao indicado nos 
+
+parâmetros. 
+
+• Condition_distance - Tem como parâmetro a distância em metros. Este comando 
+
+fará com que o Arducopter cumpra uma condição quando a distância para o 
+
+próximo waypoint seja a indicada. 
+
+• Condition_Change_alt - Tem como parâmetro a altura em metros. Este comando 
+
+fará com que a altura indicada sobreponha a altura no próximo waypoint. 
+
+• Condition_yaw - Tem como parâmetros a direção e rotação no sentido dos ponteiros 
+
+do relógio (valor 1) ou então ao contrário (valor 0).   
+
+• Do_jump - Este comando faz com que o helicóptero salte o comando para um 
+
+waypoint com o índice indicado nos parâmetros. Tem como parâmetros o índice do 
+
+comando pretendido e o número de vezes que deve ser executado o salto. 
+
+• Do_Change speed - Muda a velocidade e mantê-la-á configurada até ser novamente 
+
+reiniciado. 
+
+• Do_set_relay - Este comando liga ou desliga o relé existente na placa APM (placa 
+
+azul). 
+
+• Do_set_servo - Este comando faz mover o servo e tem como parâmetros o canal e o 
+
+valor de PWM. 
+
+• Do_repeat_servo - Este comando é semelhante ao anterior podendo indicar-se 
+
+quantas vezes o comando repete, assim como a velocidade. Tem como parâmetros o 
+
+canal, o valor de PWM, o número de repetições e o tempo do ciclo em segundos. 
+
+
+
+46 
+ 
+
+6.2.2-Carregar um voo autónomo para a placa APM quando não dispomos de um 
+
+sistema de telemetria sem fios 
+
+Assim que a missão esteja realizada, pressiona-se “Write WPs” para que a missão seja 
+
+guardada na EEPROM da placa APM. É possível verificar se tudo está em ordem ao 
+
+carregar-se em “Read WPs”. 
+
+Também é possível guardar múltiplos ficheiros de waypoints no computador utilizando o 
+
+botão “Save WP file”. Para se aceder aos ficheiros gravados no disco do PC utiliza-se o 
+
+botão “Load WP file” [57]. 
+
+6.3-Fazer download e análise dos ficheiros log  
+No separador “Telemetry Logs”, se se utilizar o Xbee ou outro sistema de telemetria sem 
+
+fios ligado ao Mission Planner, é possível gravar os relatórios do voo num ficheiro tlog. 
+
+Este ficheiro encontra-se no Mission Planner na pasta de log. É também possível fazer o 
+
+download de ficheiros logs assim como convertê-los num ficheiro KML que pode ser 
+
+visualizado no Google Earth. Estes encontram-se também na pasta de log [58]. 
+
+6.3.1-Fazer download 
+
+Deve-se assegurar que se seleciona a porta COM correta ao conectarmos a placa ao Mission 
+
+Planner. Seleciona-se o log download do separador “terminal” do Mission Planner, então 
+
+aparecerá uma lista com os logs que se encontram em memória. Esses ficheiros podem ser 
+
+selecionados de forma individual, ou todos de uma vez. Pode-se ainda obter os ficheiros log 
+
+diretamente do CLI escrevendo “dump -1” [58]. 
+
+ 6.3.2-Analisar os ficheiros log  
+
+Para analisar os ficheiros basta clicar no ficheiro pretendido e abrirá o Log Browser. Ao 
+
+princípio parece um pouco confuso perceber como está estruturado mas a estrutura é feita 
+
+da seguinte forma [58]: 
+
+• As primeiras 256 linhas são os comandos e após essas linhas o log alternará entre 
+
+attitude (valores dos acelerómetros) e GPS. Se o GPS for 0 significa que o GPS não 
+
+estava sincronizado nessa altura. 
+
+• Cada linha representa um data log que é feito várias vezes por segundo. 
+
+
+
+47 
+ 
+
+• Os dados mais importantes são os de attitude, está dividido em 3, nomeadamente, 
+
+roll, pitch e yaw. Clicando na célula aparecerá um gráfico com a variação dos 
+
+valores respetivos. 
+
+Para mais informações de como analisar os ficheiros log encontra-se na referência [59]  
+
+6.4-utilização de um gamepad /joystick para controlar o Arducopter 
+
+manualmente em vez do controlo remoto  
+O Arducopter permite que se controle o helicóptero utilizando um joystick, enviando os 
+
+comandos através do Xbee, em vez de utilizar o sistema de controlo remoto. Para isso são 
+
+necessários os seguintes equipamentos [60]: 
+
+• Um sistema de telemetria sem fios como o Xbee. 
+
+• Um joystick ou gamepad com ligação USB. 
+
+• Um portátil na área de voo. 
+
+O Mission Planner facilita a configuração dos comandos do joystick ou do gamepad. É 
+
+recomendado ter o controlo remoto ligado, pois no caso de alguma perda de sinal o controlo 
+
+remoto assumirá o comando. Assim que o comando esteja ligado, seleciona-se o botão 
+
+“joystick” (que se encontra no separador “flight data”), então abrirá uma janela que 
+
+permitirá configurar os botões do comando. Para configurá-los é necessário [60]: 
+
+• Clicar em “Auto Detect” e mexer os sticks ou botões do comando de forma a 
+
+configurá-lo. 
+
+• Pode-se inverter os eixos fazendo check na checkbox “reverse.” 
+
+Quando tudo estiver configurado clica-se em “enable” e o Mission Planner fará com 
+
+que o comando configurado assuma o lugar do controlador manual. As restantes 
+
+funções mantêm-se. Se carregar em “Save ” o sistema guardará as configurações, sendo 
+
+designar modos autopilot através dos botões do comando. 
+
+6.5-Scripting em Phyton  
+No Mission Planner é possível executar scripts em phyton, de forma a programar o 
+
+Arducopter facilmente. Para aceder e executar o script, deve-se carregar no botão “Script” 
+
+
+
+48 
+ 
+
+(que se encontra no separador “flight data”), escrever o script. Ao fechar abrirá uma janela 
+
+indicando se se quer executar o script ou não. 
+
+Além dos comandos do phyton existem os comandos que são específicos do Mission 
+
+Planner, sendo eles [61]: 
+
+• cs.???? – estado atual, qualquer variável no separador “status” do Mission Planner 
+
+pode ser usada onde se encontra os ???? de forma a saber o seu valor. 
+
+O Script tem como opções: 
+
+• Script.Sleep (ms) – faz uma pausa no processamento durante os milissegundos. 
+
+• Script.ChangeParam (nome,valor) – muda o valor do parâmetro. 
+
+• Script.GetParam (nome) – obtém o valor do parâmetro. 
+
+• Script.ChangeMode (modo) – muda o modo de voo. 
+
+• Script.WaitFor (string,tempo) – imprime a string espera o tempo especificado no 
+
+comando. 
+
+• Script.SendRC(canal,pwm,sendnow) – envia um sinal pwm para o canal e o 
+
+sendnow é uma variável booleana. 
+
+6.6-Controlo através do terminal CLI 
+Não é necessário usar o Mission Planner para fazer a configuração do helicóptero. O modo 
+
+CLI pode ser usado em qualquer terminal série, disponível em qualquer sistema operativo. 
+
+O modo CLI serve também para definir funções, como escolher os modos de voo 
+
+desejados, que serão utilizados no control switch do rádio (botão de 3 posições). É possível 
+
+entrar no modo CLI através do terminal do Mission Planner carregando no separador 
+
+“terminal” [62]. 
+
+Dentro do modo CLI pode-se sempre escrever o comando “help” de forma a obter-se a lista 
+
+de todos os comandos disponíveis. Existem 4 tipos de menu de nível topo [62]: 
+
+• Setup – Um menu para configurações. 
+
+• Log – Um menu para a gestão dos ficheiros log. 
+
+• Test – Um menu para testar sensores.  
+
+• Planner – Um menu recente que ainda está em desenvolvimento. 
+
+
+
+49 
+ 
+
+Cada um destes menus contém sub-menus cujos comandos podem ser novamente 
+
+verificados pelo comando “help”. 
+
+Dentro do menu Setup temos os seguintes comandos [62]: 
+
+• Erase – Apaga os dados da EEPROM. 
+
+• Reset – Faz um reset à EEPROM e inicia os valores de fábrica. 
+
+• Radio – Guarda os valores limite dos vários canais do controlo remoto. 
+
+• Motors – Move os motores através do controlador do controlo remoto( mover o 
+
+stick de pitch para cima fará mover o motor da frente, ao mover o stick de pitch para 
+
+baixo fará mover o motor para de trás, ao mover o stick de roll para direita fará 
+
+mover o motor da direita e assim sucessivamente). 
+
+• Level – Faz uma calibração nos valores do acelerómetros, neste helicóptero deve 
+
+estar numa superfície nivelada. 
+
+• Modes – Faz a configuração dos modos de voo. Usa-se o stick de roll para escolher 
+
+o modo de voo e a tecla enter para gravar as configurações. 
+
+• Frame – Configura a estrutura( em x ou +). 
+
+• Current – Ativa o sensor de corrente AttoPillot. 
+
+• Sonar – Ativa o sensor ultrassónico.  
+
+• Compass – Ativa o magnetómetro. 
+
+• Declination – Indica a declinação do magnetómetro em relação aos polos. 
+
+• Show – Apresenta uma lista com as configurações efetuadas. 
+
+Dentro do menu Log temos os seguintes comandos [62]: 
+
+• Dump – Descarrega o log com o número indicado, por exemplo “dump (1)” 
+
+descarrega o log  número 1.Caso o número seja 0, descarrega e apaga todos o logs. 
+
+• Erase – Apaga todos os logs. 
+
+• Enable – Ativa o log com o nome, por exemplo “enable log1” ativa o log1. Se se 
+
+escrever “all” em vez do nome ativa todos os logs. 
+
+• Disable – Desativa o log com o nome, por exemplo “disable log1” desativa o log1. 
+
+Se se escrever “all” em vez do nome desativa todos os logs. 
+
+
+
+50 
+ 
+
+Dentro do menu Test temos os seguintes comandos [62]: 
+
+• Pwm – Apresenta os valores PWM de todos canais enviados através do controlo 
+
+remoto. 
+
+• Radio – Apresenta os valores de todos o canais do controlo remoto em graus. 
+
+• GPS – Apresenta os valores do GPS. 
+
+• Ins – Apresenta os valores da attitude( acelerómetros).  
+
+• Imu – Apresenta os valores da attitude( acelerómetros).  
+
+• Battery – Apresenta os valores da voltagem se existir um monitor de voltagem 
+
+ligado. 
+
+• Tune – Não é atualmente usado. 
+
+• Relay – Liga e desliga o relé. 
+
+• Wp – Apresenta os valores dos waypoints gravados para a missão autónoma. 
+
+• Altitude – Apresenta a altura segundo os valores do barómetros que se encontra na 
+
+placa APM oilpan( placa azul). 
+
+• Sonar – Apresenta os valores do sonar. 
+
+• Compass – Apresenta o ângulo de graus norte( norte=0); 
+
+• Optflow – Apresenta os valores do sensor de fluxo óptico 
+
+Existe um novo menu chamado Planner, que foi adicionado recentemente, não existe 
+
+nenhuma documentação sobre a sua funcionalidade. Este menu apenas dispõe do comando: 
+
+• Gcs 
+
+Devido à falta de informação sobre este comando, não é aconselhável o seu uso. 
+
+6.6.1-Como configurar o Arducopter através do CLI  
+
+Faz-se o carregamento do firmware através do Mission Planner ou através do Arduino. 
+
+Clica-se no separador para iniciar caso não tenha sido dada a entry prompt do CLI. Para 
+
+aceder-se a cada um dos 3 menus escreve-se o nome do menu (Setup,Log, ou Test) e dentro 
+
+de cada menu existem os vários comandos que estão indicados acima. Antes do primeiro 
+
+voo deve-se seguir os seguintes comandos do menu Setup [62]: 
+
+• “Reset” de forma a limpar os valores anteriores para que não existam conflitos. 
+
+
+
+51 
+ 
+
+• Após fazer o reset liga-se o rádio e escreve-se o comando radio. Será pedido para 
+
+mover os controlos deste e pressionar a tecla enter para gravar os valores máximos. 
+
+• Executa-se o comando “Level” com o Arducopter numa superfície plana. 
+
+• Executa-se o comando “Frame” que tem como estrutura padrão a estrutura em “x”. 
+
+No caso de se querer a orientação como sendo em + deve-se indicá-la escrevendo o 
+
+comando “frame +”. 
+
+• Executa-se o comando “Modes” para indicar os modos de voo no canal 5 do 
+
+helicóptero, a seleção do modo é feita utilizando o stick de roll. O stick de yaw serve 
+
+para indicar se o modo simple é ativo ou não. No controlo do canal 5 do rádio 
+
+(botão de 3 posições) indicamos a posição para qual o modo é definido e quando 
+
+estiver concluído clicamos na tecla enter de forma a guardar as configurações. 
+
+• Escreve-se “sonar on” para ativá-lo. Para escolher o modelo do sonar devemos 
+
+escrever o comando “sonar 0,1 ou 2” para os modelos XL-EZ0,  LV-EZ0 e XL-
+
+EZL0, respetivamente. O sonar disponível é o LV-EZ3, por isso deve-se escrever o 
+
+comando “sonar 1”.  
+
+• Da mesma forma escreve-se “compass on” para ativar o magnetómetro. 
+
+• Escreve-se por exemplo “declination 14.25” para gravar a inclinação para a bússola. 
+
+Para achar a declinação da bússola deve-se ir ao link disponível na referência [63] 
+
+colocar a latitude, a longitude e a data. De seguida faz-se o cálculo da declinação e 
+
+introduz-se esse valor. 
+
+• Por fim executa-se o comando “exit” para sair do menu Setup. 
+
+Escreve-se “Test” para entramos no menu Test e executa-se o comando “Radio” para se 
+
+verificar os valores do rádio movendo os sticks de roll e pitch, como se encontra na secção 
+
+4.4.1, Para baixo e para a direita os valores devem ser aproximadamente de 4500 nos dois 
+
+(roll e pitch), O stick de throttle deve ser entre os valores 0-800 e o stick de yaw os valores 
+
+devem ser de -4500 se este estiver para a esquerda, e de 4500 se estiver para a direita. 
+
+Após estes passos o Arducopter está pronto para voo. Apesar destes passos poderem ser 
+
+feitos através do modo CLI, é preferível fazê-los através do APM Mission Planner, visto 
+
+este ter uma interface gráfica, facilitando os passos de configuração. As instruções Para a 
+
+configuração estão descritas na secção 7.8. 
+
+
+
+52 
+ 
+
+7-Configurações Pré-voo 
+
+Este capítulo apresenta o uma serie de procedimentos a serem compridos antes de se efetuar 
+
+um voo. 
+
+7.1-Como funciona o sistema do Arducopter  
+O Arducopter pode fazer 4 tipos de movimentos, um para cada canal de transmissão. Com a 
+
+estrutura em + (que é a que se encontra definida no Arducopter usado), o seu 
+
+comportamento em voo é o seguinte [8]: 
+
+O movimento pitch (em que o Arducopter inclina-se para a frente ou para trás), é feito 
+
+aumentando a potência do motor oposto. Para andar para a frente, o Arducopter aumenta a 
+
+potência do motor da parte de trás e vice-versa. 
+
+O movimento de roll (em que o Arducopter inclina-se para a esquerda ou para a direita), é 
+
+feito aumentando a potência do motor do lado oposto. Para andar para esquerda, o 
+
+Arducopter aumenta a potência do motor da direita e vice-versa. 
+
+O movimento de yaw (em que o Arducopter roda para a esquerda ou para a direita), é feito 
+
+aumentando um par de motores. Para rodar para a esquerda é ativado o par que roda no 
+
+sentido contrário (neste caso é o par de motores da esquerda e da direita). Para rodar para a 
+
+direita é aumentado o outro par de motores (neste caso são os motores da frente e de trás). 
+
+O movimento de throttle (que faz o Arducopter levantar do solo), é feito aumentado a 
+
+potência de todos os motores por igual. Quanto mais potência é aplicada nos motores mais 
+
+alto o Arducopter sobe. 
+
+  
+
+
+
+53 
+ 
+
+A figura 25 ilustra o texto acima, indicando os vários movimentos feitos pelo Arducopter. 
+
+ 
+
+Figura 25 - Vários movimento possíveis para um quadcopter com estrutura em + [8] 
+
+7.2-Voo 
+
+O Arducopter permite os seguintes modos de voo [23]: 
+
+• Acro: este modo destina-se a voos acrobáticos (só deve ser utilizado quando temos 
+
+grande domínio sobre o helicóptero), pelo que não é recomendado a principiantes. 
+
+• Stabilize: este modo tentará manter o Arducopter equilibrado. É um bom modo de 
+
+voo para FPV (first person view), sendo que o valor dos sticks indicará o valor do 
+
+ângulo que o Arducopter deve manter. O controlo dos ângulos é feito na ordem de 
+
+45? em 45?. O yaw manter-se-á na direção indicada, um movimento no stick de yaw 
+
+
+
+54 
+ 
+
+fará com que o helicóptero mude a sua rotação consoante o valor do stick. Largar o 
+
+stick de yaw fará o helicóptero manter a nova posição. 
+
+• Alt Hold: é um modo semelhante ao Stabilize mas com a potência das hélices 
+
+ajustada automaticamente de forma a manter a altitude. Essa altitude pode ser 
+
+controlada levantando o stick de throttle (faz o helicóptero aumentar a altitude) ou 
+
+baixando o stick de throttle (faz o helicóptero diminuir a sua altitude). Deixar o stick 
+
+de throttle na posição de repouso, faz com que este mantenha a altitude. 
+
+Um dos cuidados a ter neste modo é com a sua desativação, pois o valor de throttle 
+
+será o mesmo que o indicado no comando. Assim, quando este modo for 
+
+desativado, o Arducopter pode subir ou descer rapidamente, causando assim um 
+
+acidente. 
+
+Neste modo não é possível aterrar e parar os motores completamente (uma vez que 
+
+este modo controla a altitude do helicóptero e não os motores). É aconselhável 
+
+mudar o modo para o Stabilize e assim aterrar.  
+
+• Simple: este modo é o que é muitas vezes chamado de “care free” em outros 
+
+multicopters. Permite o utilizador voar sem se preocupar com a orientação do 
+
+helicóptero. Se nos controlos apontar-se o Arducopter para norte ele seguirá nessa 
+
+direção. Este modo é muito útil para voos em que a sua visualização é dificultada 
+
+pela longa distância.  
+
+Este modo pode ser sempre selecionado juntamente com qualquer outro modo de 
+
+voo. 
+
+Quando se usa este modo deve-se primeiro armá-lo na orientação correta antes de se 
+
+levantar voo. Assim quando se apontar o controlo para a frente ele deve seguir em 
+
+frente e ao carregar-se para trás ele deve vir na direção oposta.  
+
+• Auto: este modo faz com que o helicóptero siga as instruções internas de scripting 
+
+de forma a controlar as suas ações. As suas missões podem ser simples waypoints 
+
+ou ações complexas como levantar voo, rodar várias vezes, tirar fotos, entre outros. 
+
+Para aterrar é necessário outra vez mudar para o modo Stabilize, visto que no modo 
+
+automático apenas controla-se a altitude e não os motores. 
+
+
+
+55 
+ 
+
+• RTL: Este modo permite que o helicóptero retorne à localização de início (ou seja 
+
+return to home location). Este modo retorna à posição inicial com a mesma altura a 
+
+não ser que seja especificado outro valor através do Mission Planner. 
+
+De forma semelhante ao modo Auto, não é possível aterrar neste modo, daí ter-se 
+
+que mudar, por exemplo para o modo Stabilize. 
+
+• Guided: Este modo é semelhante ao RTL com a particularidade de se indicar a 
+
+localização no mapa. Este modo apenas funciona se se tiver um kit de telemetria que 
+
+permita que durante voo indicar o local pretendido. 
+
+• Loiter: Este modo serve para manter o voo na localização atual. 
+
+Como no modo Alt Hold, a altitude é controlada através do stick de throttle. Ao 
+
+mudar-se a posição do stick do roll e do pitch, este modo fará controlar a posição do 
+
+helicóptero. 
+
+• Position: É semelhante ao modo Loiter mas com throttle manual. 
+
+• Circle: Este modo serve para orbitar numa certa localização. É semelhante ao Loiter 
+
+mas a parte da frente do helicóptero aponta sempre em direção ao centro.  
+
+No modo Circle a localização será o centro da órbita. 
+
+• Follow Me: É uma opção muito útil pois permite que o Arducopter siga uma 
+
+localização de waypoint dinâmico. Para este modo é necessário ter um kit de 
+
+telemetria, assim como dois dispositivos Bluetooth, um no GCS e outro no 
+
+Arducopter. O Arducopter seguirá o portátil através do seu sinal de bluetooth. 
+
+Nota: os modos Auto, RTL e Guided apenas devem ser utilizados quando o GPS se 
+
+encontra sincronizado.  
+
+7.3-Segurança  
+
+O Arducopter é uma máquina e, como em todas as máquinas podem existir falhas. As 
+
+falhas podem ser, quer por parte do piloto, ou através do sistema hardware/software do 
+
+equipamento [64]. 
+
+Antes de qualquer voo é necessário ler os avisos disponíveis no manual, de como ligar os 
+
+componentes e por exemplo retirar as hélices quando testamos os motores. Deve-se deixar 
+
+uma distância de segurança, ao manobrar este tipo de equipamento, para que em caso de 
+
+falhas não se por a vida de ninguém em risco [64]. 
+
+
+
+56 
+ 
+
+Estas são as regras base para um voo em segurança [64]: 
+
+• Apenas ligar a bateria quando for para voo. 
+
+• Ter sempre o modo de voo Simple como uma das 3 opções do botão de 3 posições 
+
+do rádio emissor. Por exemplo ventos fortes provocam desvios no movimento do 
+
+helicóptero, principalmente a grande altitude. A utilização do modo de voo Simple 
+
+evita que isto aconteça, pois este modo faz com que a sua orientação seja sempre a 
+
+mesma. 
+
+• Enquanto não se dominar o voo manual e automático deve-se evitar os voos a alta 
+
+velocidade e grande altitude. É normal perder o controlo do helicóptero quando este 
+
+se encontra acima do nível das árvores, devido ao vento ser maior nessas regiões. 
+
+Deve-se utilizar o helicóptero a baixa altitude (entre 2 e 3 metros), voar a baixa 
+
+velocidade, em zonas amplas e estar constantemente a utilizar os modos Simple e 
+
+RTL. 
+
+• Ao utilizar o controlo remoto não se deve fazer movimentos bruscos com os 
+
+comandos (especialmente o stick de throttle). Se o dispositivo estiver bem calibrado 
+
+deve-se apenas fazer movimentos pequenos e suaves. O helicóptero deverá manter-
+
+se mais estável na horizontal se não se utilizar os restantes comandos.  
+
+• Ao assumir que os motores estão armados deve-se dar um toque suave no throttle, 
+
+para confirmar se os motores estão armados. 
+
+• Verificar sempre se o helicóptero está a estabilizar-se corretamente. 
+
+• Evitar voar a grande altitude com pouca bateria. 
+
+• Com FPV (first person view) deve-se utilizar os modos Simple, Stabilize e RTL, 
+
+mas devemos testar primeiro o RTL. 
+
+• Se perder a orientação do yaw no modo Stabilize, deve tentar voar apenas para a 
+
+frente e utilizar o yaw para virar (como se se tratasse de um carro por controlo 
+
+remoto). 
+
+7.4-Armar e desarmar os motores  
+Para que os motores não se ativem acidentalmente quando transporta-se o Arducopter, 
+
+existe uma espécie de código de forma a poder usá-los (armar) e voltar a bloqueá-los 
+
+(desarmar) quando não for necessário o seu uso. Antes de armar os motores, deve-se ter o 
+
+
+
+57 
+ 
+
+cuidado de não ter nem pessoas nem objetos perto das hélices. Deve-se armar o Arducopter 
+
+apenas num espaço aberto e livre de todo o tipo de obstáculos. Liga-se a bateria de LiPo e 
+
+espera-se até que a placa APM reinicie, mostrando os leds verde e vermelho a piscar. Caso 
+
+se tenha os 4 fios que contêm o sinal dos motores desconectados dos pins de output da 
+
+placa APM, os motores tentarão rodar e estarão constantemente a apitar [65]. Para 
+
+armarmos os motores deve-se ligar os 4 fios à placa como mostra a figura 26 do anexo B.5. 
+
+ 
+
+Figura 26 – Ligação do cabo de sinal dos motores à APM [66] 
+
+ 
+
+A armação é feita segundo o modo do rádio transmissor. O rádio disponível já se encontra 
+
+configurado no modo 2, como se pode ver na figura 27. Para armar os motores neste modo 
+
+deve-se apenas mexer no stick da esquerda, todo para baixo e todo para a direita durante 2 
+
+segundos, sendo que se pode verificar que está armado olhando para o led verde da placa 
+
+que estará ligado [65]. 
+
+ 
+
+Figura 27 - Indicação dos comandos do controlo remoto em modo 2 [65] 
+
+
+
+58 
+ 
+
+Para desarmar é semelhante, mas em vez do stick estar posicionado todo para a direita, este 
+
+deve estar posicionado todo para a esquerda durante 2 segundos. Pode-se verificar que o 
+
+Arducopter encontra-se desarmado, verificando se o led verde encontra-se intermitente 
+
+[65]. 
+
+Nota: Apenas se pode armar e desarmar os motores do Arducopter caso este se encontre no 
+
+modo de voo manual (Acro ou Stabilize). Nos restantes modos não é possível desarmar ou 
+
+armar os motores [65]. 
+
+7.5-Calibrações dos acelerómetros através do controlo remoto  
+
+De forma semelhante à armação e desarmação dos motores, caso a armação seja feita 
+
+durante 20 segundos, ativa-se um modo especial usando o modo Stabilize que dura 45 
+
+segun0dos voando a cerca de 1,20 metros do chão. Este modo fará a calibração dos 
+
+acelerómetros em pleno voo, deve-se mantê-lo nivelado. Uma vez que este esteja 
+
+equilibrado deve-se aterrar o Arducopter e esperar até que os 3 leds deixem de fazer ciclos 
+
+(piscando um após o outro) [65]. 
+
+No caso de se manter o comando da função de desarmar o Arducopter por cerca de 15 
+
+segundos, ele fará a recalibração dos acelerómetros. O Arducopter deve-se encontrar numa 
+
+superfície nivelada para que a calibração dos acelerómetros esteja correta [65]. 
+
+7.6-Primeiro Voo  
+
+Deve-se assegurar que o modo de voo do controlo remoto está em Stabilize e lentamente 
+
+aumentar o throttle até que o helicóptero esteja a alguns centímetros do chão. Se por acaso 
+
+parecer que o helicóptero vai virar, ou não está a levantar de forma estável é melhor aterrá-
+
+lo. De seguida, deve-se segurá-lo com a mão, equilibrando-o no ar com as hélices afastadas 
+
+do corpo aumenta-se o throttle aos poucos para ter noção de como o quadcopter se 
+
+comporta [65].  
+
+Ao mover nos controlos o helicóptero inclina-se nas direções pretendidas? Se o helicóptero 
+
+não corresponder aos comandos, isso pode significar que existe alguma má configuração 
+
+dos motores, ou que os motores não se encontram corretamente ligados, ou que o recetor 
+
+dos canais do controlo remoto tenha os canais mal configurados. No caso de o Arducopter 
+
+
+
+59 
+ 
+
+não voar da forma desejada é sempre bom rever o equipamento, a fim de verificar se tudo 
+
+está corretamente ligado [65].  
+
+7.7-Calibração dos controladores ESC  
+
+Para que o helicóptero consiga levantar voo de forma estável é necessário fazer uma 
+
+clibração aos controladores ESC de forma a que todos os motores se liguem ao mesmo 
+
+tempo. Alguns controladores ESC não se ligarão a não ser que recebam um sinal PWM 
+
+suficiente. Devem-se configurar os controlos de rádio através do setup do modo CLI ou 
+
+através do APM Mission Planner para que os ESC sejam ativados, caso contrário apenas 
+
+ouvirá sons de beeps por parte do helicóptero e não calibrará nada [67]. 
+
+Existem duas maneiras de calibrar: uma manual, feita sem falhas e que funciona sempre 
+
+para todos os ESC; a outra automática, que funciona com grande parte dos ESC. Deve-se 
+
+primeiro tentar a maneira automática, e então se esta não funcionar devemos executar a 
+
+manual. 
+
+7.7.1-Calibração automática  
+
+Esta calibração é feita com todos os controladores ao mesmo tempo. Durante a calibração é 
+
+recomendável retirar as hélices. A calibração executa-se segundo os seguintes passos [67]: 
+
+• Deve-se certificar que o cabo com 4 fios que vem da placa de distribuição de 
+
+energia encontra-se ligado à placa APM corretamente (nos primeiros 4 pins de saída 
+
+da placa). Este cabo é o que fornece o sinal proveniente da placa APM aos motores. 
+
+• Desconectar-se o cabo USB. 
+
+• Nos controlos deve-se meter o throttle alto e ligar a bateria para fornecer energia à 
+
+APM. 
+
+• Quando a APM ligar, as luzes irão circular continuamente. 
+
+• Desliga-se a bateria e liga-se novamente. Um sinal alto de PWM será enviado para 
+
+os controladores ESC acionando a calibração. 
+
+• Desloca-se o stick de throttle para o mínimo (todo em baixo). Deverá ouvir-se um 
+
+beep ou dois de confirmação. Em seguida deve-se mover o stick de throttle e 
+
+confirmar que todos os controladores estão a funcionar de forma sincronizada. 
+
+
+
+60 
+ 
+
+• Por fim deve-se desligar a bateria. Os controladores ESC já se encontram 
+
+calibrados. 
+
+ 7.7.2-Calibração Manual 
+
+Ao contrário da calibração automática, esta deve ser feita de forma individual a cada 
+
+controlador. Novamente recomenda-se retirar as hélices antes da calibração. Os passos são 
+
+os seguintes [67]:  
+
+• Com a bateria desligada, liga-se os 3 conetores do ESC que se pretende calibrar ao 
+
+canal de throttle do recetor de controlo remoto. 
+
+• Liga-se o transmissor de rádio e aumenta-se o stick de throttle para o máximo. 
+
+• Liga-se o ESC à bateria. 
+
+• Deverá ouvir-se uma nota musical e de seguida dois beeps. Depois dos dois beeps 
+
+deve-se largar o stick de throttle. De seguida irá ouvir-se um número de beeps 
+
+(equivalente ao número de células da bateria, que neste caso é de 3) e depois um 
+
+longo indicando que o ESC está calibrado. 
+
+• Deve-se então desligar a bateria e repetir o processo para os restantes controladores 
+
+ESC. 
+
+• Caso um controlador ESC não calibre, deve-se inverter o canal de throttle pois deve 
+
+estar ao contrário. 
+
+7.7.3-Testes 
+
+É necessário efetuar pequenos teste de voo após a calibração, para confirmar que tudo se 
+
+encontra em ordem. Após estar tudo ligado corretamente assim que a placa iniciar, 
+
+armamos os motores pondo o stick de yaw no máximo para a direita durante 2 segundos, de 
+
+seguida deve-se dar uma pequena quantidade de throttle. Espera-se que todos os motores 
+
+rodem à mesma velocidade e comecem ao mesmo tempo [67]. 
+
+7.8-Afinações dos parâmetros do controlador PID  
+O controlador PID é um mecanismo que serve para controlar vários dispositivos eletrónicos 
+
+[68]. O controlador tenta ajustar os valores de input de forma a que o valor de output 
+
+medido seja o mais próximo do desejado, sendo que para tal, utiliza 3 variáveis uma 
+
+proporcional, uma integral e outra derivada do erro (diferença entre o valor de output e o 
+
+
+
+61 
+ 
+
+valor desejado). Na proporcional o controlador utiliza a variável para diminuir o erro 
+
+segundo o erro atual. Na integral o controlador tenta chegar ao valor desejado através do 
+
+conjunto de erros passados, diminuindo assim o tempo até chegar ao valor desejado. Na 
+
+derivada o controlador, segundo o conjunto dos vários erros, tenta prever erros futuros. Por 
+
+vezes pode-se dispensar o uso de certos termos, ficando apenas com controladores: PI, PD, 
+
+P ou I, sendo o mais comum o PI, pois o termo da derivada é suscetível a medições de 
+
+valores com ruído. No separador “configuration” do Mission Planner é possível afinar os 
+
+parâmetros do controlador PID do Arducopter para que, por exemplo, no caso de utilizar-se 
+
+um modelo que não seja oficial do Arducopter, possam-se alterar os parâmetros PID para 
+
+que o helicóptero se torne mais estável [69]. No anexo D são apresentadas as possíveis 
+
+afinações para que o controlo do Arducopter seja feito, sem oscilações e com um tempo de 
+
+resposta menor.  
+
+7.9-Primeira configuração do Arducopter  
+A APM1 necessita de estar conectada a uma bateria externa. É possível usar o USB e a 
+
+bateria ligados ao mesmo tempo sem problemas. Antes da configuração é aconselhável 
+
+retirar o cabo de sinal dos motores da placa APM. 
+
+Para fazer o primeiro setup é necessário seguir os seguintes passos [70]: 
+
+• Abre-se o Mission Planner e clicar no separador “Firmware”. 
+
+• Clica-se em “connect” no canto superior direito. O Mission Planner irá tentar 
+
+conectar através do MAVlink. 
+
+• Clica-se no botão “APM Setup (Quad)”, abrirá uma janela que passará por um 
+
+processo de configuração. 
+
+Esse processo de configuração segue os seguintes passos [70]: 
+
+• Faz-se reset na placa – clicando no separador terminal, inserir o seguinte comando –
+
+setup e de seguida escreve-se “reset EEPROM”. 
+
+• Calibra-se o transmissor do controlo remoto – aparecerá uma janela com os vários 
+
+comandos de voo com barras verdes e linhas vermelhas de forma a indicar os 
+
+limites de cada comando (Pitch, Roll, Yaw e Trottle). Quanto ao comando de pitch, 
+
+
+
+62 
+ 
+
+é preferível selecionar a opção de reverse para inverter o controlo de stick de forma 
+
+a ser mais intuitivo ao utilizar o controlo remoto (ao fazer pitch para a frente no 
+
+stick do controlo remoto, este fará o Arducopter andar para a frente). 
+
+• Configura-se os modos de voo – É possível configurar os vários modos de voo 
+
+através do botão de 3 botões de posições do controlo remoto, através de comb-
+
+boxes. É importante utilizar pelo menos um modo de voo manual como o modo 
+
+Stabilize para um dos modos de voo. 
+
+•  Configura-se o hardware – Nesta parte é possível indicar que sensores estão 
+
+ligados, apenas selecionando os necessários. 
+
+• Configura-se a orientação da estrutura se em + ou em x – é possível selecionar a 
+
+orientação desejada e existe ainda um botão “level” para calibrar os acelerómetros. 
+
+Ao carregar no botão devemos garantir que o Arducopter encontra-se numa 
+
+superfície nivelada. 
+
+• Antes de começar o voo é necessário calibrar os controladores ESC (secção 7.7) e 
+
+verificar se as hélices e a direção da rotação correspondem à estrutura em que se 
+
+encontra. De seguida deve-se saber armar e desarmar os motores com o stick de 
+
+yaw. Para armar os motores é necessário meter o sitck de throttle a 0 e o de yaw 
+
+todo para o lado direito durante cerca de 2 segundos. Para desarmar é semelhante 
+
+mas o stick de yaw deve estar todo para o lado esquerdo (secção 7.4). 
+
+7.10-Failsafe  
+O sistema de failsafe é um sistema que serve, por exemplo no caso de o controlo remoto 
+
+estar fora do alcance, o helicóptero conseguir lidar com a situação (regressando à sua 
+
+posição home). Para ativar o sistema de failsafe é necessário definir o parâmetro 
+
+THR_FAILSAFE a 1 (a 0 para desativá-lo). 
+
+Caso seja ativado o trigger de failsafe, o Arducopter levantará uns 10 metros, regressará à 
+
+posição de home e aterrará após 20 segundos. Este modo só funcionará caso o GPS se 
+
+encontre sincronizado. Por medidas de segurança o sistema de retornar à base só funcionará 
+
+caso o helicóptero esteja armado e esteja cerca de 10 metros da sua posição de home. Ao 
+
+utilizar este modo é necessário não desligar o controlo remoto acidentalmente, pois ele irá 
+
+aumentar a sua altitude em 10 metros e pairará na posição em que se encontra. O modo de 
+
+
+
+63 
+ 
+
+failsafe é ativado quando o recetor manda para a placa pouco sinal de throttle, por exemplo 
+
+quando o rádio emissor é acidentalmente desligado [71]. 
+
+Ao usar o modo auto, existem dois modos de failsafe: No modo 1 quando o parâmetro 
+
+THR_FS_ACTION está definido para 1, indica que ao haver uma falha por parte do recetor 
+
+o Arducopter deve regressar à posição home; O modo 2 em que o parâmetro 
+
+THR_FS_ACTION está definido como 2, caso ocorra uma falha por parte do recetor (por 
+
+falta de sinal ou mau funcionamento) e este estiver em modo auto o Arducopter deve 
+
+continuar a missão [71]. 
+
+
+
+64 
+ 
+
+8-Voos de teste e resultados 
+
+Neste capítulo será feito um pequeno resumo, dos vários voos de teste efetuados, assim 
+
+como as conclusões e melhorias sobre o equipamento. 
+
+Os voos de teste foram feitos em dois locais: 
+
+• Dentro da Universidade, no piso -2. 
+
+• No parque de estacionamento da Universidade, perto da cantina. 
+
+O primeiro objetivo foi testar os passos de configuração dos primeiros voos que se 
+
+encontram indicados na secção 7.8. Após se efetuarem esses passos foi efetuada à 
+
+calibração dos motores. O primeiro voo foi realizado dentro da Universidade, os motores 
+
+foram armados e os comandos testados. O Arducopter parecia estar bem configurado a 
+
+nível de estrutura e comandos. No primeiro voo foram obtidos os seguintes resultados: 
+
+• O Arducopter voou como era suposto e no que diz respeito a fazer pitch, roll, yaw e 
+
+throttle todos os comandos respondiam corretamente. 
+
+• Era difícil, em voo saber onde se encontrava a parte da frente do Arducopter, visto 
+
+este ser simétrico em todos os braços.  
+
+• Também tornava-se difícil controlar o stick de throttle após o equipamento levantar 
+
+do chão, e este não permitia uma aterragem suave, por vezes levantando o 
+
+Arducopter ainda mais, em vez de o baixar. 
+
+• Outra observação resultante do primeiro voo foi que, devido às pernas provenientes 
+
+no kit serem muito próximas do seu centro, estas faziam com que em voos de baixa 
+
+altitude, ao se querer deslocar o Arducopter, este inclinava-se e tocava de raspão 
+
+com as suas hélices no chão, partindo-as (figura 28). 
+
+
+
+65 
+ 
+
+ 
+
+Figura 28 - Helicóptero inclinando-se ao andar numa direção 
+
+Como já foi sido referido na secção 4.2, o trem de aterragem original era muito pouco 
+
+fiável, pois ao mínimo toque com o solo fazia com que as hélices se inclinassem para o 
+
+chão e além disso mostravam ser um material muito frágil. 
+
+Perante os primeiros resultados, foram pensadas novas alternativas relativas à estrutura, 
+
+nomeadamente o trem de aterragem e as hélices. Foram então alteradas as pernas do 
+
+helicóptero, das originais, para umas impressas na impressora 3D do laboratório. Quanto às 
+
+hélices, foram encomendadas 2 hélices pretas e duas verdes. Para testar novamente o 
+
+helicóptero em voo foram usadas as hélices de outro Arducopter (umas hélices duas 
+
+polegadas maiores que as que existiam anteriormente), a fim de verificar se as novas pernas 
+
+criadas serviam para o propósito.  
+
+Após o segundo voo os resultados obtidos foram os seguintes. 
+
+• Em voos de baixa altitude as novas pernas faziam com que este não se inclinasse 
+
+tanto para a frente (visto elas encontrarem-se mais perto dos motores). 
+
+• Com o uso das hélices do outro Arducopter, o voo tornava-se mais estável do que 
+
+com as hélices menores. 
+
+• Novamente, ao aterrar de uma altura considerável (cerca de 1 metro) tornava-se 
+
+difícil o controlo para uma aterragem suave. Este mau controlo implicava a quebra 
+
+de uma ou duas pernas. 
+
+
+
+66 
+ 
+
+Conclui-se por isso que novos meios tinham de ser usados, de forma a evitar a aterragem 
+
+brusca. Foi então pensada na instalação de um sonar para que a baixa altitude, o sonar 
+
+ajudasse a manter a altura. Então foi criada uma estrutura de montagem para o sonar na 
+
+impressora 3D, para ser colocada no Arducopter. O sonar foi disposto de maneira a que 
+
+fosse facilmente adaptado, para que quando não fosse necessária a sua utilização, este 
+
+pudesse ser facilmente retirado. 
+
+Quando a encomenda com as novas hélices chegou, as anteriores foram substituídas. Para 
+
+tentar resolver o problema de se conhecer a parte da frente do Arducopter, foi então posta 
+
+na parte da frente uma hélice verde ficando as restantes hélices a preto (figura 29). Após a 
+
+instalação do sonar na placa, foi testado o modo de voo Alt Hold. 
+
+ 
+
+Figura 29 - Nova disposição das hélices 
+
+Durante o voo não foi possível designar o modo de voo Alt Hold, pois o botão de 3 
+
+posições não estava a controlar o canal 5. Dentro do menu do emissor de rádio controlo era 
+
+possível definir certos comandos auxiliares para o canal 5, mas não era possível designar o 
+
+botão de 3 posições para esse canal. A solução para este problema foi designar um outro 
+
+controlo para o canal 5, a fim de testar se alterava o modo de voo. O comando escolhido foi 
+
+o pitch trim que é indicado na figura 30. 
+
+
+
+67 
+ 
+
+ 
+
+Figura 30 - Botão utilizado para mudar o modo de voo do Arducopter 
+
+Ao ser testado novamente, os resultados foram os seguintes: 
+
+• A aterragem e a descolagem eram feitas com muito mais fluidez, não aterrando tão 
+
+bruscamente.  
+
+• O Arducopter não mantinha a sua posição, fazendo certos desvios. 
+
+• O Arducopter quando se encontrava no modo Alt Hold, ao aterrar as suas hélices 
+
+não paravam de girar, sendo necessário alterar o modo para Stabilize, para que este 
+
+parasse os motores e que pudesse ser desarmado.  
+
+• Durante o voo no parque de estacionamento, o Arducopter sofreu a influência do 
+
+vento (figura 31). Apenas com o comando para levantar voo, este sofria um desvio 
+
+enorme desde a posição em que se encontrava inicialmente. 
+
+• O botão para o controlo do modo de voo é um botão semelhante a um 
+
+potenciómetro, em que se pode designar os valores rodando para a direita ou para a 
+
+esquerda, de forma a escolher o modo de voo. Por vezes o valor em que se 
+
+encontrava não era preciso, além de que a sua transição de um modo para o outro 
+
+levava mais tempo, do que se fosse o caso do botão de 3 posições. 
+
+
+
+68 
+ 
+
+ 
+
+Figura 31 - Arducopter em voo no modo Alt Hold 
+
+Para o último voo foi pensado o uso de um método de voo automático, em que fosse 
+
+definida uma missão. Então foi carregada uma missão (secção 6.2) que fizesse o 
+
+Arducopter levantar voo para uma altura de cerca de 3 metros, mantivesse a sua posição e 
+
+regressasse ao ponto onde estava quando descolou, caso o Arducopter desviasse por 
+
+influência do vento. Mas, visto que o espaço onde era para ser testado era no parque perto 
+
+da cantina da Universidade da Madeira, e isto implicava que no caso duma coordenada 
+
+errada de GPS o Arducopter embatesse contra um carro ou o edifício, em vez do modo 
+
+Auto (onde existia uma missão indicando os waypoints) foi utilizado o modo RTL. Assim, 
+
+quando o Arducopter estivesse uns metros fora de rota ele regressaria autonomamente, com 
+
+a mesma altura ao local onde havia descolado.  
+
+Infelizmente ao levantar o voo no modo Alt Hold, possivelmente devido ao vento que se 
+
+fazia sentir no local, o Arducopter perdeu o controlo e embateu no chão violentamente, 
+
+danificando algumas hélices e partindo as suas pernas.  
+
+Não foi possível efetuar mais voos de teste, visto não existir a possibilidade de substituir as 
+
+peças em tempo útil. 
+
+  
+
+
+
+69 
+ 
+
+9-Conclusões e trabalhos futuros 
+
+Neste capítulo será apresentada as conclusões e contribuições do projeto assim como as 
+
+perspetivas futuras. 
+
+9.1-Conclusões 
+Nos objetivos, tinha sido enunciado que se pretendia realizar a criação de pequenos 
+
+programas e o seu desenvolvimento em termos de modos de voo autónomos. Devido a um 
+
+lapso por parte dos CTT parte da encomenda foi reenviada ao fornecedor. Sendo que esta 
+
+continha componentes chave para o uso do helicóptero (carregador e controlo remoto). 
+
+Esses elementos apenas chegaram a 10 de julho de 2012, e devido a este acontecimento, 
+
+não foi possível fazer grandes desenvolvimentos no Arducopter. 
+
+Apesar desse curto tempo para ensaios, foi possível fazer vários voos e reter certas 
+
+observações importantes para o bom funcionamento do equipamento. Por outro lado, todo o 
+
+trabalho de pesquisa, instalação e configuração foi compilado nesta tese. Assim, quando for 
+
+necessário desenvolver outro projeto, utilizando o Arducopter, já não será necessário fazer 
+
+toda uma pesquisa exaustiva, a fim de verificar como funciona, como se instala e como se 
+
+controla o equipamento em voo. 
+
+9.2-Contribuições 
+Esta tese tem como principais contribuições o uso de equipamento de diversas áreas, como 
+
+a robótica, a informática e a eletrónica. Dispondo agora da estação de testes para o 
+
+Arducopter, quem necessitar de fazer um projeto nesta área, apenas tem que se preocupar 
+
+com os voos de teste, melhorias de voo e adaptação de novos sensores. Todas as restantes 
+
+informações relativas à montagem, descrição de hardware, descrição de software e de 
+
+como controlar o Arducopter em voo, têm apenas de ser consultadas nesta tese. 
+
+9.3- Trabalhos futuros 
+Relativamente aos problemas sentidos nos voos de testem, como por exemplo com as 
+
+pernas que se partiam, talvez fosse de melhorar esse tipo de estrutura, colocando por 
+
+exemplo uma esponja na sua base, de forma a absorver mais o impacto, no caso de uma 
+
+queda. 
+
+
+
+70 
+ 
+
+Quanto ao sonar, o facto de este ser facilmente descartável fazia que com as vibrações este 
+
+se desconectasse. Para resolver este problema o melhor seria soldar o equipamento à placa 
+
+de forma definitiva, evitando que este voltasse a desconectar-se. 
+
+No que diz respeito ao local de testes, talvez fosse mais indicado realizar os voos num local 
+
+mais isolado, espaçoso e de preferência com um relvado, de forma a não danificar tanto o 
+
+trem de aterragem ou o próprio helicóptero. 
+
+Por outro lado, seria bom arranjar mais equipamentos extra, como hélices suplentes e 
+
+pernas do trem de aterragem, para não se ter a pressão de só existir aquele material, e no 
+
+caso de uma queda, não ter-se que esperar por uma nova encomenda. 
+
+No futuro seria também bom a implementação de um sistema de telemetria, de forma a se 
+
+poder controlar o voo através de um GCS, receber o estado dos seus sensores e alterar a 
+
+missão em tempo-real. Também a adaptação de um sensor de optical flow, permitiria um 
+
+melhor voo no exterior, mesmo existindo vento, pois este sensor ajuda o helicóptero a 
+
+manter a sua posição em voo. 
+
+Uma forma de não danificar tantas vezes as hélices poderia passar por arranjar uma 
+
+estrutura que circundasse as hélices, permitindo com que estas não se partissem quando o 
+
+Arducopter fosse de encontro a uma parede ou obstáculo. 
+
+  
+
+
+
+71 
+ 
+
+Referências Bibliográficas 
+
+1. Fowers, S. G Fowers (agosto 2008), “Stabilization and control of a quad-rotor 
+
+micro-uav using vision sensors”, Tese de Mestrado of Science. 
+
+2. Eisenbei, H. (2009). “UAV Photogrammetry”, dissertação de mestrado No. 18515, 
+
+Institute of Geodesy and Photogrammetry, ETH Zurich, Switzerland, Mitteilungen, 
+
+Nr.105, p. 235. 
+
+3. DragonFly Innovations Inc, “Law Enforcement”. [Online] http://www.draganfly 
+
+.com/uav-helicopter/draganflyer-x6/applications/government.php [acedido a: 20 de 
+
+agosto de 2012]. 
+
+4. Wegener, S. S., Schoenung, S. M., Totah, J., Sullivan, D., Frank, J., Francis, E., 
+
+Frost, C., et al. (2004). “UAV Autonomous Operations for Airborne Science 
+
+Missions”, in AIAA 3rd Unmannned Unlimited Technical Conference, Workshop 
+
+and Exhibit, Artigo 2004-6416. 
+
+5. Knoth, C., Prinz, T., Loef, P. (outubro 2010), “Microcopter-Based Color Infrared ( 
+
+CIR ) Close Range Remote Sensing as a Subsidiary Tool for Precision Farming”, 
+
+In: Proceedings of the ISPRS Workshop on Methods for Change Detection and 
+
+Process Modelling, Universidade Presss Cologne, Alemanha.  
+
+6. DragonFly Innovations Inc, “Aerial Photography &amp;amp; Video”. [Online] 
+
+http://www.draganfly.com/uav-helicopter/draganflyer-x6/applications. [acedido a: 
+
+20 de agosto de 2012]. 
+
+7. Srikanth, M. B., Dydek, Z. T., Annaswamy, A. M., Lavretsky, E. (2009), “A Robust 
+
+Environment for Simulation and Testing of Adaptive Control for Mini-UAVs”, in 
+
+American Control Conference ACC’09, páginas 5398–5403. 
+
+8. Weng, K. W., Abidin, M. S. B. Z. (2006), “Design and Control of a Quad-Rotor 
+
+Flying Robot For Aerial Surveillance”, in 4th Student Conference on Research and 
+
+Development (SCOReD), paginas 173–177. 
+
+9. Mellinger, D., Shomin, M., Michael, N., Kumar, V. (2010.), “Trajectory Generation 
+
+and Control for Precise Aggressive Maneuvers with Quadrotors”, in International 
+
+Experimental Robotics. 
+
+
+
+72 
+ 
+
+10. Roberts, J. F., Stirling, T. S., Zufferey, J.-C., &amp;amp; Floreano, D. (setembro de 2007), 
+
+“Quadrotor Using Minimal Sensing For Autonomous Indoor Flight”, in 3rd US-
+
+European Competition and Workshop on Micro Air Vehicle Systems &amp;amp; European 
+
+Micro Air Vehicle Conference and Flight Competition. 
+
+11. Bouabdallah, S., Becker, M., Sieagwart, R. (setembro 2007), “Autonomous 
+
+Miniature Flying Robots: Coming Soon!”, in IEEE Robotics &amp;amp; Automation 
+
+Magazine,13(3). 
+
+12. Grisetti, G. Grzonka, S., Burgard, W. ( 2009), “Towards a navigation system for 
+
+autonomous indoor flying”, in IEEE Int. Conf. Robotics and Automantion,Kobe, 
+
+Japão. 
+
+13. Rafi, F., Khan, S., Shafiq, K., Shah, M. (maio de 2006), “Autonomous Target 
+
+Following by Unmanned Aerial Vehicles”, in Proceedings of the SPIE.  
+
+14. Saripalli, S., Montgomery, J. F., Sukhatme, G. S. ( maio de 2002), “Vision-based 
+
+autonomous landing of an unmanned aerial vehicle”, in Proceedings 2002 IEEE 
+
+International Conference on Robotics and Automation (Cat. No.02CH37292), 
+
+volume 3, páginas 2799–2804.  
+
+15. Wenzel, K. E., Masselli, A., Zell, A. (2010), “A Quadrocopter Hovering Above a 
+
+Person Wearing a Modified Cap”, in Proceedings of International Micro Air 
+
+Vehicle Conference and Flight Competition, Braunschweig, Germany, páginas 1-7. 
+
+16. Ollero, a., Martínez-de-Dios, J. R., Merino, L. (15 de Novembro de 2006), 
+
+“Unmanned aerial vehicles as tools for forest-fire fighting”, in Forest Ecology and 
+
+Management, volume 234, página S263. 
+
+17. Restas, A. (2006), “Wildfire Management Supported by UAV Based Air 
+
+Reconnaissance: Experiments and Results at the Szendro Fire Department”, in 
+
+Proceedings of Eleventh Forest Service Remote Sensing Application 
+
+Conference,Utah; American Society for Photogrammetry and Remote Sensing, 
+
+página 54. 
+
+18. Runge, H., Rack, W., Ruiz-Leon, A., Hepperle, M. (setembro de 2007), “A Solar 
+
+Powered HALE-UAV for Artic Reasearch”, in 1st CEAS European Air and Space 
+
+Conference, University of Canterbury , Gateway Antarctica , Christchurch , New 
+
+Zealand.  
+
+
+
+73 
+ 
+
+19. Rinaudo, F., Chiabrando, F., Lingua, A., &amp;amp; Spanó, A. (1 de setembro de 2012), 
+
+“Archaeological site monitoring: UAV phtogrammetry can be an answer”, volume 
+
+39-B5, páginas 583–588. 
+
+20. Sauerbier, M., Eisenbeiss, H. (2010), “UAVS for the Documentation of 
+
+archaeological excavations”, in IAPRS&amp;amp;SIS volume 38 (5), Newcastle upon 
+
+Tyne,UK.  
+
+21. Brumana, R., Oreni, D., Alba, M., Barazzetti, L., Cuca, B., Scaioni, M. (2000), 
+
+“Panoramic UAV views for landscape heritage analysis integrated with historical 
+
+maps atlases”, páginas 1–8. 
+
+22. Mellinger, D., Shomin, M., Kumar, V. (outubro de 2010), “Control of Quadrotors 
+
+for Robust Perching and Landing”, in Proceedings of the International Powered Lift 
+
+Conference. 
+
+23. Arducopter, “Flight Modes” [Online] http://code.google.com/p/arducopter/wiki/ 
+
+AC2_ModeSwitch. [acedido a: 16 de janeiro de 2012]. 
+
+24. Uavision, “Aplicações das Plataformas não Tripuladas (UAV)” [Online] 
+
+http://www.uavision.com/index.php?option=com_content&amp;amp;view=article&amp;amp;id=58&amp;amp;It
+
+emid=182&amp;amp;lang=pt#Aero-Apps-Media [acedido a 28 de julho de 2012]. 
+
+25. Nicol, C., Macnab, C. J. B. (2008), “ Robust neural network control of quadrotor 
+
+helicopter”, in Canadian Conference on Electrical and computer Engineering , 
+
+páginas 1233–1238. 
+
+26. Kemp, C. (2006). “Visual Control of a Miniature Quad-Rotor Helicopter”, tese de 
+
+doutoramento, Universidade de Cambridge. 
+
+27. Mellinger, D., Shomin, M., Michael, N., Kumar, V. (2010), “Cooperative Grasping 
+
+and Transport using Multiple Quadrotors”, in Proceeding of Internation 
+
+Symposioum on Distributed Autonomous Robotic Systems. 
+
+28. Arducopter UK, “What do I need for my Arducopter multi-rotor UAV?” [Online] 
+
+http://www.arducopter.co.uk/what-do-i-need.html [acedido a: 8 de fevereiro de 
+
+2012] . 
+
+29. Ardupilot-mega, “ArduPilot Mega hardware” [Online] http://code.google.com/ 
+
+p/ardupilot-mega/wiki/HardwareDetails. [acedido a: 20 de maio de 2012]. 
+
+
+
+74 
+ 
+
+30. Ardupilot-mega, “The ArduPilot Mega Hardware” [Online] http:// 
+
+code.google.com/p/ardupilot-mega/wiki/Hardware. [acedido a: 20 de maio de 
+
+2012].  
+
+31. Ardupilot-mega, “The ArduPilot Mega IMU shield Hardware” [Online] http:// 
+
+code.google.com/p/ardupilot-mega/wiki/IMUHardware. [acedido a: 20 de maio de 
+
+2012]. 
+
+32. DIY drones, “What are these switches?” [Online] http://diydrones.com/forum/ 
+
+topics/what-are-these-switches?page=1&amp;amp;commentId=705844%3AComment 
+
+%3A766906&amp;amp;x=1#705844Comment766906. [acedido a: 15 de julho de 2012]. 
+
+33. Arducopter, “LEDs and their meaning” [Online] http://code.google.com/p/ 
+
+arducopter/wiki/AC_LED. [acedido a: 18 de agosto de 2012]. 
+
+34. Arducopter, “The APM 2 Board” [Online] http://code.google.com/p/arducopter/ 
+
+wiki/APM2board.[acedido a: 14 de março de 2012]. 
+
+35. Arducopter, “Measuring your battery voltage and current consumption with APM” 
+
+[Online] http://code.google.com/p/arducopter/wiki/AC2_Current. [acedido a: 14 de 
+
+março]. 
+
+36. Arducopter, “Assembling the ArduCopter airframe” [Online] http:// 
+
+code.google.com/p/arducopter/wiki/AC2Airframe. [acedido a: 15 de novembro de 
+
+2011]. 
+
+37. Arducopter, “Attaching the props to the motors” [Online] http://code.google.com/p/ 
+
+arducopter/wiki/AC2_Props [acedido a: 16 de janeiro de 2012].  
+
+38. DIY drones, “ArduCopter Hexa with Heli landing gears and cameamount” [Online] 
+
+http://diydrones.com/photo/arducopter-hexa-with-heli?xg_source=activity. [acedido 
+
+a: 23 de junho de 2012]. 
+
+39. DIY drones, “Announcing the ArduCopter 3DR Pre-order” [Online] 
+
+http://diydrones.ning.com/profiles/blog/show?id=705844%3ABlogPost%3A589745
+
+&amp;amp;commentId=705844%3AComment%3A593845&amp;amp;xg_source=activity. [acedido a: 
+
+23 de junho de 2012]. 
+
+40. Hobby King, “Heavy duty landing gear for quad/mikrokopter! IDEAS?” [Online] 
+
+http://www.rcgroups.com/forums/showthread.php?t=1318380. [acedido a: 23 de 
+
+junho de 2012]. 
+
+
+
+75 
+ 
+
+41. Arducopter, “Using a magnetometer” [Online] http://code.google.com/p/ 
+
+arducopter/wiki/AC2_Magnetos. [acedido a: 14 de março de 2012]. 
+
+42. Arducopter, “Completing the ArduPilot Mega hardware” [Online] http:// 
+
+code.google.com/p/arducopter/wiki/AC2Assembly [acedido a: 15 de novembro de 
+
+2011].  
+
+43. Arducopter, “Sonar” [Online] http://code.google.com/p/arducopter/wiki/AC2_Sonar 
+
+[acedido a: 14 de março de 2012]. 
+
+44. Arducopter, “Choosing and loading the code” [Online] http://code.google.com/p/ 
+
+arducopter/wiki/Quad_LoadingPage. [acedido a: 19 de maio de 2012]. 
+
+45. Ardupirates, “Softwares_Building” http://code.google.com/p/ardupirates/wiki/ 
+
+Softwares_Building [Online][acedido a 28 de julho de 2012]. 
+
+46. Arducopter, “Setting up to Program ArduCopter” [Online] http://code.google.com/ 
+
+p/arducopter/wiki/ProgrammingSettingUp. [acedido a: 19 de maio de 2012]. 
+
+47. Arducopter, “Setting up your airframe” [Online] http://code.google.com/p/ 
+
+arducopter/wiki/AC2_Frame_Assembly [acedido a: 20 de Julho de 2012]. 
+
+48. Arduino, “Download the Arduino Software” [Online] http://arduino.cc/ 
+
+en/Main/Software [acedido a 28 de julho de 2012] 
+
+49. Arducopter, “Downloading and using the ArduCopter software with Arduino” 
+
+[Online] http://code.google.com/p/arducopter/wiki/Code. [acedido a: 19 de maio de 
+
+2012]. 
+
+50. Arducopter “Download: ArduCopter 2.6" [Online] http://code.google.com/ 
+
+p/arducopter/downloads/detail?name=ArduCopter-2.6.zip [ acedido a: 14 de março 
+
+de 2012]. 
+
+51. Arducopter, “The Mission Planner utility” [Online] http://code.google.com/p/ 
+
+arducopter/wiki/AC2_Mission. [acedido a: 15 de julho de 2012]. 
+
+52. Ardupilot-mega, “Downloads” [Online] http://code.google.com/p/ardupilot-mega/ 
+
+downloads/list [ acedido a: 14 de março de 2012] 
+
+53. Ardupilot-mega, “The ArduPilot Mega IMU shield Hardware” [Online] http:// 
+
+code.google.com/p/ardupilot-mega/wiki/IMUHardware. [acedido a: 20 de maio de 
+
+2012]. 
+
+
+
+76 
+ 
+
+54. Ardupilot-mega, “QGroundControl” [Online] http://code.google.com/p/ardupilot-
+
+mega/wiki/QGC. [acedido a: 20 de maio de 2012]. 
+
+55. Arducopter, “Using the Ground Station software” [Online] http://code.google.com/p 
+
+/arducopter/wiki/AC2_GCS. [acedido a: 15 de julho de 2012]. 
+
+56. Arducopter, “Using the Mission Planner Ground Station” [Online] http:// 
+
+code.google.com/p/arducopter/wiki/AC2_MPGCS. [acedido a: 15 de julho de 
+
+2012]. 
+
+57. Arducopter, “Mission Planning” [Online] http://code.google.com/p/arducopter/wiki/ 
+
+AC2_Waypoints. [acedido a: 15 de julho de 2012]. 
+
+58. Arducopter, “Downloading and analyzing log files” [Online] 
+
+http://code.google.com/p/arducopter/wiki/AC2_Logs. [acedido a: 15 de julho de 
+
+2012]. 
+
+59. DIY drones, “Useful tips for log analysis” [Online] http://www.diydrones.com 
+
+/profiles/blog/show?id=705844%3ABlogPost%3A801607 [acedido a: 15 de julho 
+
+de 2012] 
+
+60. Arducopter, “Using a computer joystick/gamepad instead of RC for manual control” 
+
+[Online] http://code.google.com/p/arducopter/wiki/Joystick. [acedido a: 15 de julho 
+
+de 2012]. 
+
+61. Arducopter, “Python scripting” [Online] http://code.google.com/p/arducopter/ 
+
+wiki/Python. [acedido a: 15 de julho de 2012]. 
+
+62. Arducopter, “Using the Command Line Interpreter (CLI) to configure ArduCopter” 
+
+[Online] http://code.google.com/p/arducopter/wiki/AC2CLI. [acedido a: 15 de julho 
+
+de 2012]. 
+
+63. NOAA, “Estimated Value of Magnetic Declination” [Online] http:// 
+
+www.ngdc.noaa.gov/geomagmodels/Declination.jsp [acedido a 28 de julho de 
+
+2012] 
+
+64. Arducopter, “Safety” [Online] http://code.google.com/p/arducopter/wiki/ 
+
+AC2_Safety.[acedido a: 20 de Julho de 2012]. 
+
+65. Arducopter, “Flying ArduCopter” [Online] http://code.google.com/p/ 
+
+arducopter/wiki/AC2_Flying.[acedido a: 16 de janeiro de 2012]. 
+
+
+
+77 
+ 
+
+66. Arducopter, “Radio and APM wiring setup” [Online] http://code.google.com/p/ 
+
+arducopter/wiki/AC2_Radio [acedido a: 15 de julho de 2012]. 
+
+67. Arducopter, “ESC calibration” [Online] http://code.google.com/p/arducopter/wiki/ 
+
+AC2_ESC. [acedido a: 16 de janeiro de 2012]. 
+
+68. Wikipedia, “PID controller” [Online] http://en.wikipedia.org/wiki/PID_controller 
+
+[acedido a: 15 de julho de 2012]. 
+
+69. Arducopter, “Tweaking ArduCopter parameters” [Online] http://code.google.com/p/ 
+
+arducopter/wiki/AC2_Tweaks [acedido a: 15 de julho de 2012]. 
+
+70. Arducopter, “First-time Setup” [Online] http://code.google.com/p/arducopter/wiki/ 
+
+AC2_First. [acedido a: 16 de janeiro de 2012]. 
+
+71. Arducopter, “AC2_Failsafe” [Online] http://code.google.com/p/arducopter/wiki/ 
+
+AC2_Failsafe. [acedido a: 27 de julho de 2012]. 
+
+72. YouTube, “How to Solder Bullet Connectors By Innov8tive Designs” [Online] 
+
+http://www.youtube.com/watch?v=MnldHRtjre8&amp;amp;feature=player_embedded 
+
+[acedido a: 15 de novembro de 2011] 
+
+73. Arducopter, “Soldering the motor connectors and power distribution board” 
+
+[Online] http://code.google.com/p/arducopter/wiki/AC2PowerDistro [acedido a: 16 
+
+de janeiro de 2012]. 
+
+74. Arducopter, “Introduction” [Online] http://code.google.com/p/arducopter/wiki/ 
+
+AC2_Motors [acedido a: 16 de janeiro de 2012]. 
+
+75. Robot Shop, “Sharp GP2Y0A710K0F IR Range Sensor - 100 to 550cm” [Online] 
+
+http://www.robotshop.com/ca/sharp-gp2y0a710k0f-ir-range-sensor-100-to-
+
+550cm.html [acedido a: 23 de junho de 2012]. 
+
+76. Arducopter, “Optical Flow Sensor” [Online] http://code.google.com/p/arducopter/ 
+
+wiki/AC2_OptFlow. [acedido a: 14 de março de 2012]. 
+
+77. Arducopter, “Using wireless data modules for telemetry and in-flight commands” 
+
+[Online] http://code.google.com/p/arducopter/wiki/Telem.[acedido a: 15 de julho de 
+
+2012]. 
+
+78. Arducopter, “Using the 3DR Radio for telemetry with APM 1” [Online] 
+
+http://code.google.com/p/arducopter/wiki/APM13DRadio. [acedido a: 15 de julho 
+
+de 2012]. 
+
+
+
+78 
+ 
+
+79. FTDIChip, “D2XX Direct Drivers” [Online] http://www.ftdichip.com/Drivers/ 
+
+D2XX.htm [acedido a 15 de julho de 2012]. 
+
+80. Arducopter, “Using Xbee radios for telemetry with APM 1” [Online] http:// 
+
+code.google.com/p/arducopter/wiki/APM1Wireless. [acedido a: 15 de julho de 
+
+2012].  
+
+81. Arducopter, “Adding a pitch/roll camera mount” [Online] http://code.google.com/p/ 
+
+arducopter/wiki/AC2_Camera. [acedido a: 14 de março de 2012]. 
+
+82. Arducopter, “Adding an On-Screen Display (OSD) board” [Online] http:// 
+
+code.google.com/p/arducopter/wiki/OSD. [acedido a: 14 de março de 2012]. 
+
+83. Arducam-osd, “MinimOSD - Introduction” [Online] http://code.google.com/p/ 
+
+arducam-osd/wiki/minimosd [ acedido a 14 de março de 2012]. 
+
+
+
+79 
+ 
+
+Anexos 
+
+  
+
+
+
+80 
+ 
+
+Anexo A-Manual de montagem do Arducopter 
+
+A.1-Montagem da placa Arduino 
+Material necessário para a montagem do núcleo do Arducopter (figura 32) [42]: 
+
+ 
+
+Figura 32- Kit de montagem da placa APM [42] 
+
+• ArduPilot Mega 
+o ArduPilotMega IMU Shield (Placa Azul) 
+o Arduino Compatible UAV Controller w/ ATMega2560 (Placa Vermelha) 
+o 3x16 Right Angle Pin Headers   
+o 2x Conn Header Male 36. Straight  
+o Conn Header Female  
+
+? 02 pos .1 
+? 08 pos .1 
+? 11 pos .1 
+? 14  pos .1 
+? 2x03 pos .1 
+? 2x13 pos .1 
+
+o 4 Resistências com um valor total de 3.9k ohm 
+
+Seguiram-se os seguintes passos [42]: 
+
+Começou-se por partir os headers macho (Conn Header Male 36. Straight) de forma a 
+
+encaixar nas fêmeas correspondentes (Conn Header Female), figura 33. 
+
+
+
+81 
+ 
+
+ 
+
+Figura 33 - Headers necessários [42] 
+
+Soldaram-se os headers de 90º (3x16 Right Angle Pin Headers) na placa vermelha, como 
+
+apresentado na figura 34.  
+
+ 
+
+Figura 34 - Placa APM com os headers de 90? soldados [42] 
+
+Colocaram-se os headers macho como apresentado na figura 35. 
+
+ 
+
+Figura 35 - Colocação dos restantes headers [42] 
+
+
+
+82 
+ 
+
+Uniram-se os headers fêmeas aos machos, rodaram-se a placa 180º e soldaram-se os pins 
+
+Com cuidado de não esquecer nenhum, figura 36.    
+
+ 
+
+Figura 36 - Headers soldados na placa [42] 
+
+Voltou-se novamente a placa 180º e colocou-se a placa azul sobre a vermelha. Em seguida 
+
+soldaram-se os pins à placa azul. Novamente com atenção para não esquecer nenhum dos 
+
+pins. Soldaram-se as resistências nos locais conforme assinalado a vermelho na figura 37, 
+
+de forma a servirem de divisores de tensão para sensores analógicos. 
+
+ 
+
+ 
+
+Figura 37 - Placa APM totalmente montada [42] 
+
+
+
+83 
+ 
+
+A.2-Soldagem dos conetores dos ESC (Electronics speed controls) (conetor 
+
+fêmea) e os conetores dos motores (Conetor macho). 
+Para realizar esta tarefa foi necessário um ferro de soldar e solda. Para a melhor execução 
+
+da tarefa deve-se usar uma tábua de madeira com um buraco com a espessura dos 
+
+conetores. Colocou -se a manga termo retrátil no fio do conetor, devem-se preencher os 
+
+conetores com solda, ligar o fio ao conetor e esperar que a solda solidifique [34]. Depois 
+
+ajustar a manga termo retrátil ao conetor, aplicar calor e esperar que a manga aperte. Em 
+
+caso de dúvidas, recomendasse que se visualize o seguinte vídeo na referência [72].  
+
+A.3-Montagem da placa de distribuição de energia 
+Para a montagem da placa de distribuição de energia (power distribution board) é 
+
+necessário soldar os Right Angle Pin Headers como mostra a figura 38. 
+
+ 
+
+Figura 38 - Imagem ilustrativa de como soldar os header pins [73] 
+
+Recomenda-se que se Preencha a área assinalada a cinzento, da figura 39, com uma grossa 
+
+camada de solda. 
+
+ 
+
+Figura 39 - Imagem ilustrativa de como preencher a placa com solda [73] 
+
+
+
+84 
+ 
+
+Em seguida foram soldados os cabos da alimentação da bateria, como apresentado na figura 
+
+40. 
+
+  
+
+Figura 40 - Imagem ilustrativa de como conectar os cabos de alimentação da bateria [73] 
+
+De seguida soldaram-se os cabos que recebem os sinais dos controladores, tendo em 
+
+atenção a orientação de como ligá-los, na figura 41 está assinalado correta de como ligar os 
+
+cabos através as iniciais das direções(“t” para trás, “f” para frente, “e” para esquerda e “d” 
+
+para direita). 
+
+ 
+
+Figura 41 - Imagem ilustrativa de como soldar os cabos de sinal à placa de distribuição de energia [73] 
+
+  
+
+
+
+85 
+ 
+
+Soldou-se depois os cabos de alimentação da placa APM, como pode ser observado pela 
+
+figura 42. 
+
+ 
+
+Figura 42 - Imagem ilustrativa de como soldar a alimentação da placa APM [73] 
+
+Finalmente, soldam-se os cabos dos controladores ESC à placa de distribuição de energia, 
+
+como apresentado na figura 43.  
+
+ 
+
+Figura 43 - Imagem ilustrativa de como soldar os conetores dos ESC à placa APM[73] 
+
+  
+
+
+
+86 
+ 
+
+O resultado final desta etapa pode ser observado na figura 44.  
+
+ 
+
+Figura 44 - Resultado final da instalação da placa de distribuição de energia 
+
+  
+
+
+
+87 
+ 
+
+Anexo B-Montagem da estrutura do Arducopter 
+
+Material necessário para montagem da estrutura [24]: 
+
+• 2 Placas da estrutura base 
+• 2 Placas da estrutura eletrónica 
+• 4 Braços (de alumínio de 21,5cm ou de 28cm) 
+• Placa da bateria 
+• Proteção de aterragem.  
+• 8 Espaçadores Macho-Fêmea M3 x 25mm 
+• 8 Parafusos M3 x 6mm de Nylon 
+• 4 Parafusos M3 x 20mm de aço  
+• 4 Espaçadores M3 x 12mm Macho-Fêmea 
+• 8 Parafusos M3 x 20mm de Nylon  
+• 20 Porcas M3 de Nylon  
+• 4 Porcas M3 de aço 
+
+B.1 – Montagem da secção central 
+Existem dois tipos de configurações para o quadcopter, em cruz (+) e em x (x). Neste 
+
+anexo seá apenas descrita a configuração em cruz. Quanto à configuração em x será 
+
+apresentada a diferença na montagem. Na configuração em + os parafusos devem ficar 
+
+como são apresentados na figura 45. Ou seja os 4 espaçadores Macho-Fêmea M3 x 25mm 
+
+devem ficar na placa superior da estrutura base, dispostos em cruz nas extremidades e 
+
+presos com os parafusos M3 x 6mm de Nylon, tal como mostra a figura 45. Da mesma 
+
+forma os 4 espaçadores M3 x 12mm Macho-Fêmea devem ser colocados nos buracos mais 
+
+ao centro, novamente em cruz e presos com as 4 porcas M3 de Nylon. Os parafusos M3 x 
+
+20mm de aço devem ser colocados no centro, mas em x em vez de cruz, atravessando as 
+
+duas placas, como apresenta a figura 45.  
+
+
+
+88 
+ 
+
+ 
+
+Figura 45 - Montagem das placas da estrutura base [24] 
+
+Por fim colocam-se os 8 parafusos M3 x 20mm de Nylon, como se apresenta na figura 46, 
+
+prendendo com as 8 porcas M3 de Nylon. 
+
+ 
+
+Figura 46 - Parte final da montagem da estrutura base 
+
+Os braços devem ser colocados na estrutura como está representado na figura 47 (entre os 
+
+dois parafusos de 20mm de Nylon). 
+
+
+
+89 
+ 
+
+ 
+
+Figura 47 - Montagem dos braços à estrutura 
+
+O suporte para a montagem da bateria deve ser montado rodando a estrutura 180? (ficando 
+
+a estrutura invertida). Na parte superior prende-se o suporte de montagem da bateria 
+
+apertando os parafusos de alumínio com 4 porcas M3 de aço, como se mostra na figura 48.  
+
+ 
+
+Figura 48 - Montagem do suporte de bateria 
+
+  
+
+
+
+90 
+ 
+
+A placa de distribuição de energia deve ser colocada no centro da estrutura e afixada com 4 
+
+parafusos M3 x 6mm de Nylon. De seguida a placa APM deve ser colocada na plataforma 
+
+superior e orientada para a frente do Arducopter como é apresentado na figura 49. 
+
+ 
+
+Figura 49 - Montagem da placa de distribuição de energia à estrutura 
+
+Após o passo anterior, prende-se a placa ATMega2560 à estrutura com 3 parafusos M3 x 
+
+6mm de Nylon e 3 porcas M3 de Nylon, tal como se pode ver na figura 50. 
+
+ 
+
+Figura 50 - Montagem da placa APM à estrutura [24] 
+
+Em seguida monta-se a IMU Shield sobre a placa ATMega2560 como é apresentado na 
+
+figura 51. No caso da configuração ser em x, a placa deverá ser rodada a 45? para a direita, 
+
+de forma a que se encontre virada para a frente do Arducopter. 
+
+
+
+91 
+ 
+
+ 
+
+Figura 51 - Montagem da placa APM à estrutura 
+
+Finalmente deve ser montada a estrutura de aterragem, assim como a estrutura que protege 
+
+o núcleo do helicóptero. A estrutura existente não muito resistente. 
+
+NOTA: devido ao tipo de material usado neste quadcopter é possível que, ao apertar-se e 
+
+desapertar-se os parafusos de nylon ou de plástico, estes venham a partir-se devido à sua 
+
+natureza frágil. 
+
+B.2-Trem de Aterragem 
+O trem de aterragem está diretamente ligado ao protetor do circuito principal do 
+
+Arducopter. Primeiro ligam-se as duas peças superiores do dome protetor como mostra a 
+
+figura 62 e prendem-se as duas peças centrais, com parafusos de 20mm de plástico e duas 
+
+porcas M3. Os parafusos devem ser postos de forma a que sejam presos com as porcas na 
+
+parte superior para terem mais espaço. Na parte inferior dos arcos de plástico pode-se ver 
+
+uma saliência, no fundo do arco, onde irão juntar-se os braços de alumínio. 
+
+  
+
+
+
+92 
+ 
+
+Consoante o tamanho do cabo do GPS deve-se pôr o GPS em cima (caso o cabo seja 
+
+suficientemente comprido) ou pô-lo na placa que se encontra sobre a placa APM, 
+
+prendendo com uma abraçadeira de serrilha, como se pode ver na figura 52. 
+
+ 
+
+Figura 52 - Dome protetor dos componentes de hardware [24] 
+
+No que diz respeito às pernas do trem de aterragem, basta prender o dome protetor à 
+
+estrutura (nomeadamente aos braços), prendendo cada peça que foi anteriormente impressa 
+
+na impressora 3D, com 3 parafusos de 20mm e 3 porcas M3, tal como se pode ver na figura 
+
+53. 
+
+ 
+
+Figura 53 - Peça substituta às pernas existentes no kit de montagem 
+
+
+
+93 
+ 
+
+Para instalar as pernas basta prender com um parafuso e uma porca cada perna a cada um 
+
+dos braços, como mostra a figura 54. 
+
+ 
+
+Figura 54 - Novas pernas criadas na impressora 3D 
+
+B.3-Montagem dos motores nos braços  
+Para se montar os motores nos braços do helicóptero utiliza-se as peças de acrílico 
+
+apresentadas na figura abaixo, prendendo-as com dois parafusos e duas porcas em plástico, 
+
+mas deixando espaço suficiente para prendê-las ao braço. Prende-se os motores as estas 
+
+peças com os 3 parafusos que se encontram juntamente com as peças do motor [74]. 
+
+ 
+
+Figura 55 - Montagem dos motores nos braços 
+
+Para finalizar prende-se o motor ao braço do helicóptero apertando as duas peças de acrílico 
+
+com a ajuda dos parafusos de plástico, finaliza-se prendendo um parafuso de metal e um 
+
+batente em borracha ao buraco disponível no motor como mostra a figura 55. 
+
+  
+
+
+
+94 
+ 
+
+Os fios do motor devem ser postos como demonstra a figura seguinte [74].  
+
+ 
+
+Figura 56 - Passagem dos fios do motor pelos braços do Arducopter [33] 
+
+Aos motores é necessário prender as hélices. Na montagem das hélices monta-se primeiro 
+
+as peças que se apresentam na figura 57 [74]. 
+
+ 
+
+Figura 57 - Passos para montar as hélices no motor 
+
+  
+
+
+
+95 
+ 
+
+De seguida monta-se a hélice utilizando estas peças pela ordem que se apresenta na figura 
+
+58 [74]. 
+
+ 
+
+Figura 58 - Montagem das hélices nos motores 
+
+Ao montarem-se as hélices é de ter em conta a configuração que se deseja para o 
+
+quadcopter (configuração em x ou em +). Pois de acordo com a configuração deve-se 
+
+escolher a forma correta de colocar cada hélice, de acordo com a sua rotação (no sentido 
+
+dos ponteiros do relógio ou no sentido contrário) com mostra a figura 59.  
+
+
+
+96 
+ 
+
+ 
+
+Figura 59 - Escolha correta das hélices segundo o tipo de estrutura em + ou em x [37] 
+
+B.4-Conexão dos ESC aos motores 
+Os controladores de velocidade ESC devem ser conectados de acordo com o seu sentido de 
+
+rotação, tal como mostra na figura 60. Caso a rotação seja no sentido dos ponteiros do 
+
+relógio deve-se ligar os conetores que derivam do motor da seguinte maneira: 
+
+A- O conetor de cor azul 
+B- O conetor de cor preta 
+C- O conetor de cor vermelha 
+
+Caso a rotação seja no sentido contrário ao dos ponteiros do relógio deve-se ligar os 
+
+conetores que derivam do motor da seguinte maneira: 
+
+A- O conetor de cor vermelha 
+B- O conetor de cor preta 
+C- O conetor de cor azul 
+
+
+
+97 
+ 
+
+ 
+
+Figura 60 - Configuração da conexão dos ESC aos motores 
+
+B.5-Ligação do controlo de rádio à APM  
+Ligam-se dois fios de 5v da PDB (Power Distribution Board) à placa APM. Após este 
+
+passo ligam-se os 4 fios que vêm da placa distribuidora de energia, como se mostra na 
+
+figura 61. De seguida ligam-se os 6 fios para ligarem o recetor do controlo remoto à APM, 
+
+e por fim ligam-se os dois fios de corrente do recetor como mostra a figura 61 [66]. 
+
+ 
+
+ 
+
+Figura 61 - Instalação do controlo de rádio à placa APM [66] 
+
+
+
+98 
+ 
+
+B.6-Ligação do controlo remoto 
+O que é necessário [66]: 
+
+• Deve-se ter no mínimo 5 canais na unidade de controlo remoto, mas 7 ou mais 
+canais são altamente recomendados. 
+
+Visto o Arducopter ser um helicóptero não deve-se usar o transmissor de controlo remoto 
+
+em modo helicóptero, mas configurado em modo de avião normal. Em alguns rádios este 
+
+modo é chamado “Acro” ou “fixed wing”. A eletrónica e o software do Arducopter 
+
+encarregar-se-ão de todas as misturas necessárias e não o rádio. É necessário saber como 
+
+estão configurados os comandos (verificando que interruptor corresponde a que canal). Em 
+
+muitos transmissores isto é algo que pode ser configurado. O canal 5 deve corresponder ao 
+
+botão de 3 posições (toggle switch). Existe uma correspondência dos controlos aos canais, 
+
+feita da seguinte forma [66]: 
+
+• Os canais de 1 a 4 – controlos de voo básicos (roll, pitch, throttle e yaw) 
+• O canal 5 – seleção do modo de voo (manual, auto, altitude hold, etc.)  
+• O canal 6 – Não é usado atualmente mas é reservado para controlos de câmara 
+• O canal 7 – não é atualmente usado, mas é reservado para fazer trimming dos 
+
+valores de rádio. 
+• O canal 8 – não é usado. Este canal é usado para voos de aviões e é muito perigoso 
+
+quando usado em quadcopters visto estes perderem a estabilização quando usado. 
+
+Os valores de output correspondem a estes canais do rádio são [66]: 
+
+• Canal 1- Roll para a esquerda -&gt; o valor mais baixo de PWM, roll para a direita -&gt; o 
+valor mais alto de PWM. 
+
+• Canal 2- Pitch para a frente -&gt; o valor mais baixo de PWM, pitch para trás -&gt; o 
+valor mais alto de PWM. (É preferível inverter o sentido deste controlo) 
+
+• Canal 3- Pouco throttle -&gt; o valor mais baixo de PWM, muito throttle -&gt; o valor 
+mais alto de PWM. 
+
+• Canal 4- Yaw para a esquerda -&gt; o valor mais baixo de PWM, yaw para a direita -&gt; 
+o valor mais alto de PWM. 
+
+• Canal 5- Configurável (geralmente usado para escolha do modo de voo). 
+• Canal 6- Configurável. 
+• Canal 7- Desligado-&gt; o valor mais baixo de PWM, ligado -&gt; o valor mais alto de 
+
+PWM. 
+
+
+
+99 
+ 
+
+B.7-Instalação do recetor de controlo remoto  
+Ligam-se os cabos fêmea-fêmea do recetor à APM, usando-se um cabo para cada canal que 
+
+se pretende controlar através da APM tal como se apresenta na figura 62 [66]. 
+
+ 
+
+Figura 62 - Ligação dos canais do recetor à placa APM 
+
+  
+
+
+
+100 
+ 
+
+Anexo C-Montagem de sensores opcionais 
+
+C.1-Sensor de infravermelhos 
+Este sensor é utilizado na deteção de obstáculos para voos no interior. [10] O modelo de 
+
+sensor de infravermelhos compatível com o Arducopter é o SharpGP2Y (figura 63). Para 
+
+medir a altura, o sensor deve ser colocado de forma semelhante ao sonar, para tentar manter 
+
+a altura. O seu alcance é muito curto, o uso de infravermelhos pode causar ruído quando é 
+
+utilizado em voos ao ar livre, devido à luz solar ter em parte luz infravermelha. Por causa 
+
+dessa limitação é normalmente utilizado em voos no interior [10]. 
+
+ 
+
+Figura 63- Sensor infravermelho SharpGP2Y [75] 
+
+C.2-Sensor ótico de fluxo (optical flow) 
+Este sensor serve para ter uma melhor performance quando utiliza-se o modo Loiter (modo 
+
+em que se mantém a posição em voo) com o Arducopter e baseia-se no sensor de ótico de 
+
+fluxo ADNS-3080. [76]. 
+
+C.2.1-Como ligar o sensor à placa 
+
+Solda-se diretamente os fios da placa azul (figura 64) e instala-se deixando a lente virada 
+
+para baixo e os pins apontando para a frente do Arducopter. 
+
+
+
+101 
+ 
+
+ 
+
+Figura 64- Instalação do optical flow na placa APM1 [76] 
+
+Pode-se testar o sensor seguindo os seguintes passos [76]: 
+
+• Carrega-se o ficheiro AP_OpticalFlow_test.pde na APM. 
+
+• Liga-se a placa APM com o serial monitor ou APM Mission Planner terminal. 
+
+• Escreve-se “c” para garantir que o sensor responde à placa APM. 
+
+• Escreve-se “m” para mover o sensor para a frente e para trás e verifica-se se os 
+
+valores de x e y mudam. Caso não mudem deve-se focar a lente para a esquerda ou 
+
+para a direita. 
+
+C.2.2-Como manter a posição do Arducopter em voo 
+
+Tal como num rato do computador, o sensor devolve o valor da média do movimento em x 
+
+e y da superfície visualizada num único movimento de um pixel, no sensor de optical flow, 
+
+o valor é referido numa escala, ou seja, os valores x e y do sensor podem ser convertidos 
+
+em distâncias reais baseando-se na altitude. Para converter os valores do sensor para 
+
+distâncias reais, é necessário saber a que altitude o Arducopter se encontra, pois se 
+
+existirem dois quadcopters que se movem à mesma distância, mas a diferentes altitudes, 
+
+quanto maior a altitude menos movimento será detetado, o que resultará em maiores valores 
+
+quando o helicóptero encontra-se a uma menor altitude [76].  
+
+Existem dois movimentos possíveis no Arducopter para que este se desloque no espaço. O 
+
+movimento roll (faz com que este se desloque para a esquerda ou para a direita inclinando-
+
+
+
+102 
+ 
+
+se segundo a direção estipulada), e o movimento pitch (faz o Arducopter deslocar-se para a 
+
+frente e para trás inclinando-se nas respetivas direções). Ao efetuar o roll ou o pitch, fará 
+
+com que os valores de x e y se alterem, pois é necessário inclinar o helicóptero 
+
+influenciando os valores. Ao contrário do problema anterior a altitude não tem influência 
+
+neste movimento.  
+
+Ao trabalharmos com este tipo de sensor deve-se ter em conta os seguintes aspetos [76]: 
+
+• O sensor apenas funciona em ambientes bem iluminados; 
+
+• É usada uma lente de foco-fixo, o que faz com que não se consiga focar objetos 
+
+mais perto que 30 cm; 
+
+• Fazer yaw (rotação do Arducopter para a esquerda e para a direita), fará com que o 
+
+sensor fique confuso, não conseguindo manter a posição. 
+
+C.3-Telemetria sem fios 
+Este tipo de dispositivo serve essencialmente de plataforma de comunicação entre o pc 
+
+(dispondo de um transmissor/recetor) e o Arducopter (dispondo também de um 
+
+transmissor/recetor). Essa comunicação é feita utilizando um software GCS (descrito na 
+
+secção 6), que é capaz de mandar dados para o Arducopter em pleno voo, assim como 
+
+receber dados provenientes dos sensores do Arducopter. Este tipo de sistema não se 
+
+encontra disponível no Arducopter existente na Universidade da Madeira, mas é muito útil 
+
+pois facilitará as missões de voos autónomos, quer para alterar o percurso de voo ou para 
+
+verificar o estado dos sensores em tempo real (quando este se encontra em voo). Apresenta 
+
+também outras funcionalidades como a transmissão de vídeo para o computador em tempo 
+
+real [77].  
+
+Para estabelecer uma ligação entre o computador e o Arducopter através de uma telemetria 
+
+sem fios, é necessário utilizar o programa APM Mission Planner. A descrição de como 
+
+criar a ligação encontra-se na secção 6.A tarefa de adicionar uma telemetria sem fios não é 
+
+muito difícil e estende imenso a capacidade do UAV. Existem dois modelos de telemetria 
+
+para o APM1 e para o APM2, esses modelos são o 3DR Radio e o Xbee. 
+
+  
+
+
+
+103 
+ 
+
+C.3.1-3DR Radio   
+
+Esta secção apresenta a informação relativa ao sensor de telemetria 3DR Radio. 
+
+O 3DR Radio tem como vantagens [78]: 
+
+• Ser pequeno; 
+
+• Barato; 
+
+• Com melhor alcance de sinal ao dispositivo Xbee; 
+
+• Ter um firmware open-source com o qual pode ser programado, tornando-o mais 
+
+personalizado. 
+
+A sua configuração é feita da seguinte forma [78]: 
+
+• São precisos dois 3DR Radio, um para o Arducopter e outro para a GCS; 
+
+• Um dos dipositivos contém uma porta USB para melhor ligação. No caso da GCS o 
+
+dispositivo utiliza o D2XX FTDI driver, que pode ser obtido nesta ligação [79]  
+
+O dispositivo usado no Arducopter dispõe de uma ligação de 6 pins FTDI (mas apenas 
+
+utilizamos os 4 fios como se pode observar através da figura 65) que liga-se facilmente à 
+
+porta de telemetria do Arducopter [78]. O dispositivo vem configurado com o baud rate de 
+
+57600. Esse valor pode ser alterado, através do Mission Planner [78]. 
+
+ 
+
+Figura 65- Ligação do 3DRadio à placa APM [78] 
+
+
+
+104 
+ 
+
+Para se configurar o sensor através do programa Mission Planner, após o dispositivo estar 
+
+conectado pelo Mission Planner, deve-se carregar nas teclas control+a, e aparecerá uma 
+
+janela onde se deve clicar no botão “load settings”. Isto fará com que sejam carregados os 
+
+dados de configuração necessários para o funcionamento do dispositivo de telemetria. O 
+
+parâmetro que controla o alcance dos rádios é o AIR_SPEED, este tem como valor padrão 
+
+de 64kbps, o que dará um alcance de cerca de um quilómetro. Quanto mais baixo for o 
+
+valor do AIR_SPEED maior será o alcance, mas a quantidade de dados pode ser 
+
+transmitida de uma só vez torna-se menor [78]. 
+
+O 3DR Radio tem 2 leds de estado, um vermelho e outro verde. O significado desses led é o 
+
+seguinte [78]: 
+
+• Led Verde intermitente - Procurando o rádio. 
+
+• Led Verde ligado - Foi feita a ligação com o rádio. 
+
+• Led vermelho intermitente -Está transmitindo dados. 
+
+• Led Vermelho ligado - Está em modo de update do firmware. 
+
+C.3.2-Xbee  
+
+Na Europa não é permitido utilizar o Xbee de 900MHz, deve ser então utilizado o de 
+
+2.4GHz [80]. 
+
+Liga-se o XtreamBee ao APM1, no XtreamBee existe um pequeno switch no qual podemos 
+
+definir o modo: master ou slave. O adaptador deve estar em modo master para esta ligação. 
+
+De seguida liga-se à placa, através da porta de telemetria como se encontra ilustrado na 
+
+figura 66 [80]. 
+
+ 
+
+Figura 66 - Ligação do Xbee à placa APM V1 [80] 
+
+
+
+105 
+ 
+
+No caso de se utilizar um XtreamBee com adaptador USB basta apenas ligá-lo ao 
+
+computador. Caso se esteja a utilizar um adaptador XtreamBee, deve-se conectá-lo com um 
+
+cabo FTDI e ligá-lo à porta USB do computador [80]. O adaptador deve estar no modo 
+
+MASTER, em seguida deve-se conectar ao Mission Planner, como está descrito na secção 
+
+6. 
+
+C.4-Gymbal da câmara 
+Este sistema faz com que a câmara se mantenha estável, independentemente dos 
+
+movimentos efetuados pelo Arducopter. O sistema funciona da seguinte forma: quando 
+
+existe uma variação do ângulo de voo, é feita também uma variação no ângulo da câmara, 
+
+com amplitude contrária, para que a câmara mantenha-se estável durante o voo [28]. O 
+
+Arducopter usado, não tem atualmente este sistema, contudo ele é facilmente configurável 
+
+tal como se explica de seguida. 
+
+C.4.1-Instalar o gymbal da câmara 
+
+Na instalação do gymbal, é preferível a configuração da estrutura em “x”, pois como foi 
+
+referido na secção 4.2.1, deve-se utilizar uma estrutura em “x” quando usamos uma câmara. 
+
+Para usar uma plataforma de montagem da câmara no Arducopter, recomenda-se a 
+
+instalação de uma estrutura hobbyking com pernas longas. Estas pernas são grandes o 
+
+suficiente para que ao aterrar, o Arducopter proteja a câmara de impactos, como podemos 
+
+verificar na figura 67 [81]. 
+
+Para a montagem do gymbal segue-se os seguintes procedimentos:  
+
+• Nos braços do Arducopter, devem ser feitos dois furos para ligar as pernas de 
+
+carbono e devem ser cortadas as pernas existentes no kit inicial do Arducopter. 
+
+• De seguida fazem-se 4 furos sobre o suporte de montagem da bateria e no suporte 
+
+da câmara, prendendo-a onde fica a bateria. 
+
+• Posiciona-se o sonar numa das 4 pernas, no encaixe entre as pernas e os braços, 
+
+usando uma braçadeira de serrilha aperta-se o sonar para que esteja a apontar 
+
+corretamente para o chão.  
+
+
+
+106 
+ 
+
+ 
+
+Figura 67 - Exemplo da montagem do gymbal da câmara  
+
+C.4.2-Como ligar os servos do gymbal  
+
+Através da figura 68, observamos que no conjunto de pins de output da placa APM, utiliza-
+
+se as saídas PWM 5 e 6 para os movimentos do servo da câmara. Usa-se o canal 5 para o 
+
+pitch da câmara, e o canal 6 para o roll. Isso faz com que os servos auto estabilizem a 
+
+câmara, sem ser necessário programar qualquer linha de código [81]. 
+
+ 
+
+Figura 68 - Canais de output para roll e pitch da câmara [81] 
+
+
+
+107 
+ 
+
+C.5-Placa On-Screen Display (OSD)  
+Na placa APM pode-se adicionar uma placa OSD (figura 69), chamada MinimOSD. Esta 
+
+placa lê todos os dados do MAVLink do stream de telemetria e carrega o stream do vídeo 
+
+proveniente de uma câmara no Arducopter, e através de um transmissor de vídeo sem fios 
+
+transmite o stream do vídeo em tempo real. É útil no caso de fazermos um voo em First 
+
+Person View (FPV), ou se queremos utilizar outro dispositivo sem ser o portátil para 
+
+visualizar os dados do Mission Planner [82]. 
+
+ 
+
+Figura 69 - Exemplo de um OSD (on screen display) [82] 
+
+A montagem e instalação do equipamento estão na referência [83]. Este dispositivo instala-
+
+se montando-o na porta de telemetria da placa APM, deve ser instalado juntamente com um 
+
+transmissor de vídeo de forma a poder enviar o que está a ser capturado pela câmara em 
+
+tempo real diretamente para o portátil. 
+
+C.6-Monitor de bateria  
+Um dos sensores opcionais que não se encontra no Arducopter usado na Universidade, é o 
+
+monitor de corrente da bateria. Este sensor é importante pois pode-se perder a noção do 
+
+tempo de voo do helicóptero e este ao ficar com pouca bateria e eventualmente cair. Uma 
+
+vez configurado o sensor de monitorização de voltagem e corrente da APM1, este irá 
+
+providenciar tanto dados de corrente e voltagem, como o consumo em miliamperes por 
+
+hora [35].  
+
+
+
+108 
+ 
+
+Conecta-se o sensor AttoPilot para a APM como mostra a figura 70. Devem-se usar os pins 
+
+AN0, AN1 e o pin GND.  
+
+ 
+
+Figura 70 - Imagem ilustrativa de como conectar o sensor AttoPilot [35] 
+
+O sensor é ativado pelo Mission Planner através do separador “configuration”. Os dados da 
+
+voltagem aparecerão no separador “flight data” do Mission Planner são os de “batery 
+
+voltage calced” [35]. 
+
+  
+
+
+
+109 
+ 
+
+Anexo D-Afinações dos termos PID 
+
+É possível afinar os valores de PID através do Mission Planner no separador 
+
+“configuration”. Estes valores servem para tornar o voo do helicóptero de acordo com a 
+
+nossa preferência, por exemplo quando queremos um voo que os comandos sejam mais 
+
+dinâmicos, ou por exemplo quando queremos que o helicóptero tenha um voo mais estável. 
+
+Ao altera-se os parâmetros pode-se personalizar o seu controlo de voo de acordo com o 
+
+desejado. 
+
+O parâmetro Stabilize é usado em todos os modos de voo exceto o Acro. Está feito para ser 
+
+simétrico no eixo de pitch e roll, mas os eixos podem ser afinados separadamente. Por 
+
+exemplo, quando existe mais peso sobre um dos eixos, tornando um dos eixos com maior 
+
+momento de inércia do que o outro, então torna-se desequilibrado tendo que ser afinado 
+
+separadamente. 
+
+Os parâmetros que podem ser afinados são [69]:  
+
+• Stabilize_P -&gt; rácio de rotação, quanto maior o seu valor mais rapidamente será 
+
+atingido o valor desejado. 
+
+• Stabilize_I -&gt; usado para compensar as variações do centro de gravidade. 
+
+• Stabilize_IMAX -&gt; valor máximo que a aeronave pode compensar as variações. 
+
+• Rate_P-&gt; Valor mais importante, este termo controla quanta potência é necessária 
+
+para fazer uma rotação. Quanto maior o peso e a força de potência do Arducopter a 
+
+ser utilizado, menor será o seu valor. 
+
+• Rate_I -&gt; Usado para ajudar a aeronave a atingir o Roll rate desejado. Deve ser 
+
+normalmente definido como 0 visto o seu ajustamento ser difícil. 
+
+• Rate_IMAX -&gt; valor máximo que o parâmetro RATE_I pode ter. 
+
+Quanto ao parâmetro YAW é utilizado para manter o ângulo de yaw específico, para isso, é 
+
+necessário configurar os seguintes parâmetros [69]: 
+
+• Stabilize_YAW_P-&gt; Serve para que a aeronave faça uma rotação sem oscilações 
+
+para o alvo desejado. Se o parâmetro for muito alto causará oscilação. 
+
+
+
+110 
+ 
+
+• Stabilize_YAW_I -&gt; Funciona como um corte do excesso de balanço do helicóptero. 
+
+Indica a rapidez que se leva até atingir o valor desejado, quanto mais alto o valor 
+
+mais rápido. 
+
+• Rate_YAW_P-&gt; Serve para ter mais controlo sobre o rácio de rotação, se for baixo 
+
+nunca parará de rodar, se for muito alto fará com que oscile. 
+
+• Rate_YAW_I -&gt; não é utilizado. 
+
+O parâmetro Loiter é usado para controlar a inclinação da aeronave em direção ao local de 
+
+loiter enquanto esta mantém a posição [69]. 
+
+• Loiter_P-&gt; é o rácio com que o Arducopter irá mover-se em direção ao ponto de 
+
+loiter. Se não for suficientemente alto ele irá desviar-se do local onde deve manter a 
+
+posição e se for muito alto irá oscilar perto da localização desejada. 
+
+• Loiter_I -&gt; Permitirá o Arducopter voar com ventos com o menor erro. Mas deve 
+
+ser usado com cuidado pois se o valor for alto demais fará com que ele oscile. 
+
+• Loiter_IMAX-&gt; Valor máximo de do parâmetro Loiter_I. 
+
+O parâmetro Nav_WP é usado para controlar o rácio de velocidade desde a aeronave ao 
+
+waypoint pretendido [69]. 
+
+• Nav_WP_P-&gt;Visto a velocidade máxima ser de 4m/s quanto maior for o parâmetro 
+
+maior será o pitch para atingir tal velocidade. 
+
+• Nav_WP_I -&gt;Permite voar frente a ventos. Quanto maior o valor mais frente faz ao 
+
+vento. 
+
+• Nav_WP_IMAX-&gt; quantidade de pitch que podemos adicionar para superar o vento. 
+
+O parâmetro Alt Hold é usado para manter a sua altitude usando o sensor de pressão [69]. 
+
+• Altitude hold P-&gt; É usado para converter o erro da altitude no ritmo de subida. 
+
+Quanto maior o seu valor mais rápido ele subirá. 
+
+• Altitude hold I-&gt; É usado quando o Arducopter tem dificuldade em manter a 
+
+posição quando dispõe de pouca bateria. 
+
+• Altitude hold IMAX-&gt; É a quantidade de throttle que pode ser ajustada. 
+
+
+
+111 
+ 
+
+O parâmetro Throttle Rate é usado para ajustar o ritmo de subida [69]. 
+
+• Throttle Rate P -&gt; Quantidade de throttle usado para alterar o ritmo de subida. 
+
+• Throttle Rate _I -&gt; Compensa o erro necessário para atingir o ritmo de subida 
+
+necessário. 
+
+• Throttle Rate _IMAX -&gt; Quantidade de Throttle Rate _I, pode-se adicioná-la ou 
+
+removê-la para atingir o ritmo de subida desejado. 
+
+Existem várias formas de afinação, para cada afinação implica um melhoramento no voo do 
+
+helicóptero, mas estas afinações devem sempre ser feitas com cuidado, pois uma má 
+
+afinação implica o voo descontrolado e a consequente queda do Arducopter [69].  
+
+Em baixo encontram-se descritas várias resoluções segundo os problemas do Arducopter 
+
+em voo [69]. 
+
+• O Arducopter oscila lentamente com longos movimentos quando estabilizado, então 
+
+deve-se baixar o parâmetro Stabilize Roll P. 
+
+• O Arducopter oscila rapidamente com movimentos curtos quando estabilizado, 
+
+então deve-se baixar o parâmetro Rate Roll P. 
+
+• O Arducopter sofre oscilações quando desce rapidamente, então aumenta-se o 
+
+parâmetro Rate Roll P, este parâmetro pode ser corrigido, mas é praticamente 
+
+impossível chegar a ótimos valores para tais oscilações.  
+
+• O Arducopter é muito lento, então aumenta-se o parâmetro Stabilize Roll P.  
+
+• Ao descolar o Arducopter faz yaw uns 15? para esquerda ou à direita, então os 
+
+motores não se encontram direitos ou os ESC não estão calibrados, um dos dois 
+
+deve ser corrigido. 
+
+• Depois de voos agressivos o Arducopter inclina-se para um lado cerca de 10? a 30?, 
+
+então deve-se arranjar maneira de remover as vibrações e esperar que a APM 
+
+corrija. 
+
+• O Arducopter não fica totalmente quieto no ar, então tenta-se correr o teste de nível 
+
+com o Arducopter numa superfície plana, ou voar em modo auto-trim num 
+
+ambiente sem vento. 
+
+
+
+112 
+ 
+
+• O Arducopter voa bem, mas quando está a pairar um dos motores começa a falhar 
+
+por 1 segundo, então um dos motores pode estar estragado ou os seus conetores 
+
+entre eles e os ESC podem estar com falhas. Deve-se tentar arranjá-lo ou substituí-
+
+lo por outro. 
+
+• A aeronave está constantemente a subir ou a descer em Alt Hold, então o parâmetro 
+
+Throttle P está muito alto ou muito baixo. Uma maneira de configurar o seu valor é 
+
+de pensar quantas vezes mexemos o stick de throttle para que ele pare 
+
+perfeitamente. Essa quantidade de tempo é proporcional ao valor necessário para o 
+
+parâmetro Throttle P. 
+
+• O Sonar não está a funcionar, então deve ser devido ao ruído elétrico dos ESC, 
+
+deve-se afastá-lo dos ESC ou utilizar cabos blindados. Pode também ser devido às 
+
+temperaturas serem muito baixas e o sonar parar de trabalhar. 
+
+Ao fazer Loiter a aeronave faz um círculo no sentido dos ponteiros do relógio ou ao 
+
+contrário, então deve-se ajustar a declinação da bússola até que helicóptero pare de circular. 
+
+
+	Raul_AndradeEngInformatica
+	Tese Final
+	Resumo
+	Abstract
+	Agradecimentos
+	Índice de Figuras
+	Acrónimos
+	1-Introdução
+	1.1-Motivação
+	1.2-Objetivos
+	1.4-Estrutura do documento
+
+	2-Estado da Arte
+	2.1-Funcionalidade dos UAV
+	2.1.1-Segurança Pública
+	2.1.2-Geologia e Arqueologia
+	2.1.3-Aquisição de imagens aéreas
+	2.1.4-Robótica
+
+
+	3-Explicação geral do sistema
+	4- Descrição do Arducopter
+	4.1-APM (ArduPilot Mega)
+	4.1.1-Alimentação da placa
+	4.1.2-Descrição da placa APM1
+	4.1.3-Descrição da placa oilpan
+	4.1.5-Descrição da APM2
+
+	4.2-Estrutura do quadcopter
+	4.2.1-Diferenças entre a estrutura em x ou em +
+	4.2.2-Trem de aterragem (estrutura de aterragem)
+
+	4.3-Motores/ESC (eletronic speed controls) /Hélices
+	4.4-Rádio transmissor e recetor
+	4.4.1-Rádio transmissor
+	4.4.2-Rádio recetor
+
+	4.5-Bateria e carregador
+	4.5.1-Bateria
+	4.5.2-Carregador
+
+	4.6-Sensores
+	4.6.1-Magnetómetro
+	4.6.1.1-Método 1
+	4.6.1.2-Método 2
+
+	4.6.2-GPS (Global Positioning System)
+	4.6.3-Sonar (sensor ultrassónico)
+
+
+	5- Software e programação
+	5.2-Programação em Arduino
+	5.3-Descrição do código
+	5.3.1-Pasta Libraries
+	5.3.2-Pasta Arducopter
+
+
+	6-APM Mission Planner
+	6.1-O que é a Ground Control Station
+	6.1.1-Utilizar o Mission Planner ground station
+
+	6.2-Definição de waypoints através de um editor point and click
+	6.2.1-Comandos básicos de waypoint
+	6.2.2-Carregar um voo autónomo para a placa APM quando não dispomos de um sistema de telemetria sem fios
+
+	6.3-Fazer download e análise dos ficheiros log
+	6.3.1-Fazer download
+	6.3.2-Analisar os ficheiros log
+
+	6.4-utilização de um gamepad /joystick para controlar o Arducopter manualmente em vez do controlo remoto
+	6.5-Scripting em Phyton
+	6.6-Controlo através do terminal CLI
+	6.6.1-Como configurar o Arducopter através do CLI
+
+
+	7-Configurações Pré-voo
+	7.1-Como funciona o sistema do Arducopter
+	7.2-Voo
+	7.3-Segurança
+	7.4-Armar e desarmar os motores
+	7.5-Calibrações dos acelerómetros através do controlo remoto
+	7.6-Primeiro Voo
+	7.7-Calibração dos controladores ESC
+	7.7.1-Calibração automática
+	7.7.2-Calibração Manual
+	7.7.3-Testes
+
+	7.8-Afinações dos parâmetros do controlador PID
+	7.9-Primeira configuração do Arducopter
+	7.10-Failsafe
+
+	8-Voos de teste e resultados
+	9-Conclusões e trabalhos futuros
+	9.1-Conclusões
+	9.2-Contribuições
+	9.3- Trabalhos futuros
+
+	Referências Bibliográficas
+	Anexos
+	Anexo A-Manual de montagem do Arducopter
+	A.1-Montagem da placa Arduino
+	A.2-Soldagem dos conetores dos ESC (Electronics speed controls) (conetor fêmea) e os conetores dos motores (Conetor macho).
+	A.3-Montagem da placa de distribuição de energia
+
+	Anexo B-Montagem da estrutura do Arducopter
+	B.1 – Montagem da secção central
+	B.2-Trem de Aterragem
+	B.3-Montagem dos motores nos braços
+	B.4-Conexão dos ESC aos motores
+	B.5-Ligação do controlo de rádio à APM
+	B.6-Ligação do controlo remoto
+	B.7-Instalação do recetor de controlo remoto
+
+	Anexo C-Montagem de sensores opcionais
+	C.1-Sensor de infravermelhos
+	C.2-Sensor ótico de fluxo (optical flow)
+	C.2.1-Como ligar o sensor à placa
+	C.2.2-Como manter a posição do Arducopter em voo
+
+	C.3-Telemetria sem fios
+	C.3.1-3DR Radio
+	C.3.2-Xbee
+
+	C.4-Gymbal da câmara
+	C.4.1-Instalar o gymbal da câmara
+	C.4.2-Como ligar os servos do gymbal
+
+	C.5-Placa On-Screen Display (OSD)
+	C.6-Monitor de bateria
+
+	Anexo D-Afinações dos termos PID
+
+
+</field>
+	</doc>
+</add>

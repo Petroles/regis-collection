@@ -1,0 +1,3979 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.23851</field>
+		<field name="filename">8113_S0103-17592009000100010.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+MÉTODO DA HISTERESE POR AUTO-AJUSTE PARA MINIMIZAÇÃO DE
+ESFORÇO DE CONTROLE NO SEPARADOR SUBMARINO VASPS
+
+André V. de Melo?
+andre@dep.fem.unicamp.br
+
+Adriane B. S. Serapião†
+adriane@rc.unesp.br
+
+José R. P. Mendes?
+jricardo@dep.fem.unicamp.br
+
+?UNICAMP/FEM/DEP - C.P. 6122 - CEP 13081-970 - Campinas (SP)
+
+†UNESP /IGCE/DEMAC- C.P. 178 - CEP 13506-900 - Rio Claro (SP)
+
+RESUMO
+
+Neste trabalho apresenta-se o estudo do desenvolvimento de
+um controlador não-tradicional baseado em um mecanismo
+de histerese com auto-ajuste para o controle de nível de lí-
+quido de um sistema de separação e bombeio submarino co-
+nhecido como VASPS. O controlador desenvolvido gera si-
+nais enviados para a bomba centrífuga submersa para con-
+trolar o nível de líquido no tanque do separador, evitando
+que ele atinja valores muito baixos que poderiam danificar
+a bomba ou valores muito altos que reduziriam a eficiência
+da separação líquido/gás. Os sinais de controle gerados pelo
+controlador visam solicitar a bomba o mínimo possível de
+modo a evitar o seu desgaste e falhas prematuras. Nas si-
+mulações, o controlador desenvolvido foi testado sob gran-
+des variações nas condições de operação, tais como golfadas,
+produzindo resultados bastante satisfatórios e promissores.
+
+PALAVRAS-CHAVE: separação submarina, BCS, engenharia
+de petróleo, controle inteligente, histerese.
+
+ABSTRACT
+
+This work presents a study of the development of a non-
+standard controller based on an auto-tuning hysteresis mech-
+anism, in order to control the liquid level inside of a sub sea
+separation and pumping system. The developed controller
+
+Artigo submetido em 17/09/2008 (Id:894)
+Revisado em 14/10/2008 e em 21/10/2008
+Aceito sob recomendação do Ed.Associado Prof. José Roberto C.Piqueira
+
+generates signals, which are sent to the electrical submersible
+pump to control the liquid level in the separator’s tank to
+avoid that it reach very low values, which could damage the
+pump, or very high values, which would reduce the liquid/gas
+separation efficiency. The controller must generate the mini-
+mum number of signals variations as possible to avoid wear
+on the pump and premature failures. In computer simula-
+tions, the developed controller was tested under large varia-
+tions in operation conditions, such as slugs, with reliable and
+promising results.
+
+KEYWORDS: subsea separation, ESP, petroleum engineer-
+ing, smart control, hysteresis.
+
+1 INTRODUÇÃO
+
+O sistema VASPS (vertical annular separation and pumping
+system) apresenta um conceito inovador de separação e bom-
+beamento bifásico submarino (França et al., 1996). Ele é
+composto, basicamente, de um separador ciclônico subma-
+rino e uma bomba do tipo BCS (bombeio centrífugo sub-
+merso). No separador ciclônico podem-se identificar três es-
+tágios de separação:
+
+• Separação primária: é composta por uma câmara de
+expansão, onde grande parte do gás é separado;
+
+• Separação secundária: é composta por uma estrutura
+helicoidal e utiliza o princípio de separação centrífuga;
+
+Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009 105
+
+
+
+Figura 1: Diagrama esquemático do sistema VASPS.
+
+• Separação terciária: é composta por uma “piscina” na
+qual o líquido se acumula e parte do gás é separada de
+forma gravitacional. Nesta piscina opera uma bomba
+elétrica do tipo BCS.
+
+Para uma melhor compreensão, a Figura 1 apresenta um es-
+quema do sistema VASPS com seus estágios de separação.
+As setas na figura representam o escoamento de fluido in-
+terno ao vaso.
+
+O bocal de entrada dá acesso a uma câmara de expansão que
+permite que a mistura de líquido e gás descarregue na dire-
+ção tangencial do separador. O campo centrífugo gerado na
+saída do bocal propicia que parte do gás seja liberada neste
+ponto. O líquido e o restante do gás disperso são empurrados
+contra as paredes, fluindo como um filme em direção a seção
+da hélice. O filme é acelerado na direção vertical, fluindo
+para a parte de baixo do separador. A separação gás-líquido
+ocorre em bolhas dispersas que se movem radialmente para
+o interior do hélice e alcançam a interface líquido/gás. Sobre
+o filme flui parte do gás previamente segregado, que alcança
+o anular de gás através dos furos existentes na parte cilín-
+drica central da hélice. A piscina na parte inferior do vaso
+coleta o líquido e algum gás eventualmente disperso. O lí-
+quido contido na piscina é bombeado para uma plataforma
+através da BCS, sendo que esta também atua no controle do
+nível da piscina. Este controle do nível é necessário porque
+caso o nível exceda um valor máximo, o líquido pode inva-
+dir o espaço ocupado pela hélice e prejudicar o processo de
+separação. Além disso, um grande aumento de nível pode
+provocar um aumento na pressão de separação, visto que o
+nível do líquido reduz o espaço que o gás pode ocupar no
+separador. No entanto, este aumento de pressão também de-
+pende do comprimento da linha de gás até a plataforma de
+
+VASPS
+
+Plataforma de 
+produção
+
+Manifold
+
+??????????? ?????
+ 
+
+Figura 2: Representação do sistema de produção submarino.
+
+produção. Este comprimento pode alcançar alguns quilôme-
+tros fazendo com que a pressão não seja tão sensível ao nível
+de liquido na piscina. Desta forma, cada caso deve ser anali-
+sado com cuidado. Outro ponto, quando o nível está abaixo
+do mínimo permitido a BCS pode ser danificada.
+
+O sistema VASPS pode ser instalado em um poço falso no
+leito submarino próximo aos poços de produção. A produção
+destes poços é escoada para um manifold submarino de pro-
+dução e, este por sua vez, envia a produção para o VASPS.
+No VASPS o gás é separado da fase líquida, pelo menos a
+maior parte. O escoamento após o VASPS é realizado em
+linhas diferentes de gás e liquido para uma plataforma de
+produção. O gás escoa para a plataforma pela própria pres-
+são de separação e o líquido é bombeado pela BCS. Uma
+representação de um sistema de produção com o VASPS está
+ilustrada na Figura 2.
+
+O sistema VASPS permite reduzir a pressão na cabeça dos
+poços, proporcionando desta forma um ganho de produção.
+Além disso, com a separação submarina de gás-liquido evita-
+se vários problemas caracteristicos do escoamento multifá-
+sico, como por exemplo, golfadas severas. Outro ponto que
+merece ser destacado é que, dependendo do cenário, existe a
+possibilidade de instalar o sistema VASPS em substituição a
+plataformas que possuem alto custo de manutenção, sendo a
+produção direcionada para outras plataformas proximas.
+
+Em despeito ao interesse apresentado pela tecnologia, desde
+sua primeira implantação em campo no Brasil o sistema apre-
+sentou algumas dificuldades em manter condições de opera-
+ção de projeto, dados os distúrbios causados pelo de entrada.
+Tais distúrbios aliados às não-linearidades de sistema difi-
+cultam a análise de tendência pela sua resposta, o que cria a
+necessidade de acompanhamento próximo de um operador.
+
+Dado tal panorama, surgiu a necessidade de desenvolver um
+controlador, de forma a melhorar o desempenho do sistema,
+em contraste com o requisito de preservar o BCS. Os sinais
+de controle gerados pelo controlador visam solicitar a bomba
+
+106 Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009
+
+
+
+o mínimo possível de modo a evitar o seu desgaste e falhas
+prematuras.
+
+Para o modelo em utilização neste trabalho, tem-se como va-
+riável controlada o nível do reservatório inferior de líquido,
+apresentado na Figura 1 como ‘piscina’, e como variável ma-
+nipulada a freqüência de rotação da bomba, o sinal de con-
+trole. A variável controlada deve seguir o valor da referência
+dentro de certa faixa de estabilidade definida entre um limite
+inferior (mínimo) e um limite superior (máximo), cujo nível
+máximo admitido na piscina representa o limiar para o abai-
+xamento da eficiência de separação de bolhas no helicóide, o
+que alimentaria a bomba com uma fração de gás muito alta
+no fluido, e cujo nível mínimo na piscina é determinado pela
+altura física da admissão da bomba, que não deve receber
+gás já separado. Em ambos os casos, o bombeamento estará
+comprometido, causando parada no sistema. Portanto, o sis-
+tema de controle deve impedir que o nível ultrapasse esses
+limiares. A solução aqui proposta é voltada para a estabiliza-
+ção do sinal de controle, de forma minimizar a quantidade de
+rampas de aceleração da bomba que realiza o BCS, aumen-
+tando sua vida útil e reduzindo custos operacionais
+
+2 METODOLOGIA
+
+O controle voltado ao desempenho de sistemas tem o ob-
+jetivo de acompanhar o sinal de referência (set point), de
+forma que a saída do sistema oscile o mínimo possível (Fi-
+gura 3a). Esta abordagem leva à possibilidade de análise do
+sinal de resposta para determinar comportamentos assintóti-
+cos da resposta do sistema. O sinal de controle, por sua vez,
+oscila de forma a corrigir os distúrbios impostos no processo,
+possuindo uma forma muitas vezes similar à do distúrbio de
+entrada. Este tipo de abordagem é necessário quando a tra-
+jetória do sinal de saída é importante, ou quando os limites
+de estabilidade da saída do processo são muito rígidos. Esta
+é a técnica mais utilizada na indústria, e já possui metodo-
+logias bem estabelecidas e vários produtos comercialmente
+disponíveis.
+
+Tal metodologia foi testada no VASPS, utilizando controle
+nebuloso direto (Teixeira et al., 2004, 2006) e controle PID
+nebuloso (De Melo et al., 2007a-b). Em ambos os ca-
+sos os controladores apresentam um desempenho satisfató-
+rio quanto à redução de sobressinal e tempo de estabilização,
+apresentando um baixo erro estacionário no regime transi-
+ente. Entretanto, a energia de controle é ainda acima do de-
+sejável no aspecto referente à necessidade de diminuição da
+quantidade de acionamentos do atuador.
+
+Em face aos problemas onde o componente crítico do sis-
+tema é o atuador, normalmente devido ao seu elevado custo
+- que pode também ser traduzido como baixo tempo mé-
+dio entre falhas (MTBF) – é desejável que este permaneça
+
+com o mínimo de utilização possível, ou com o mínimo de
+variações em sua condição de trabalho possíveis, permane-
+cendo no ponto ótimo de operação. Isso acontece no sistema
+VASPS, onde o motor elétrico da BCS é acionado por um in-
+versor que permite maior flexibilidade através do uso de uma
+gama de rotações diferentes, mas que acarreta em trabalho
+fora do ponto ótimo.
+
+Visando a redução do esforço ao qual a bomba está subme-
+tida, foi desenvolvido um controlador especificamente vol-
+tado ao tratamento do sinal de controle, de forma que este
+permaneça com poucas alterações, e a saída do sistema (ní-
+vel da piscina) oscile dentro de uma faixa de estabilidade pre-
+vista para o modelo dinâmico do processo, mantendo a efici-
+ência da separação (limite superior) e preservando a bomba
+(limite inferior). Assim, o comportamento (meramente ilus-
+trativo) desejado para o sistema controlado é apresentado na
+Figura 3b, e será o objetivo de controle usado no projeto do
+presente controlador.
+
+No VASPS a redução do esforço de controle pode prover um
+menor custo ao processo, uma vez que o atuador é o compo-
+nente crítico, em detrimento do melhor desempenho possível
+para o sistema. Este compromisso entre desempenho e es-
+forço de controle pode ser parametrizado de acordo com a
+faixa de estabilidade do processo físico controlado, respei-
+tando seus limites operacionais e utilizando a resposta do
+sistema para avaliar parâmetros que indiquem quando a al-
+teração no sinal de controle é realmente necessária. Para re-
+alizar este tipo de controle, será introduzido aqui o conceito
+de controle com histeres por auto-ajuste.
+
+2.1 Modelagem do sistema VASPS
+
+O sistema VASPS tem se apresentado um eficiente modelo
+de vaso separador com o método de elevação artificial adap-
+tado à explotação de petróleo em grandes lâminas d’água (Do
+Vale et al., 2002).
+
+Algumas caracteristicas próprias do VASPS é que ele não é
+um sistema compacto, possuindo em torno de 70 metros de
+altura. Também não apresenta uma válvula de controle de
+fluxo de saída, mas sim uma válvula choke instalada na linha
+de gás que pode estar alguns quilômetros de distância. Deste
+modo, é impraticável realizar o controle de nível de líquido
+na piscina através de uma contrapressão gerada pelo fecha-
+mento desta válvula na linha gás. Tampouco se pode realizar
+controle de pressão no vaso separador com a mesma veloci-
+dade (ou mesma ‘constante de tempo’) do controle de nível
+de líquido. Por tais razões, neste trabalho foi realizado ape-
+nas o controle de nível, tomando-se como restrições tanto o
+nível alto de líquido, de forma a garantir a eficiência de sepa-
+ração no helicóide, quanto o baixo nível de líquido, de forma
+a evitar a admissão do gás na bomba, que deve permanecer
+
+Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009 107
+
+
+
+Sinal de saída 
+da planta
+
+Set point
+
+Sinal de saída 
+da planta
+
+Set point
+
+ 
+a) controle por estabilidade do sinal de saída 
+
+Limite superior
+
+Limite inferior
+
+Sinal de saída 
+da planta
+
+Set point
+
+Limite superior
+
+Limite inferior
+
+Sinal de saída 
+da planta
+
+Set point
+
+ 
+b) controle por minimização do esforço do atuador 
+
+Figura 3: Estratégias de controle.
+
+submersa.
+
+No caso de uma linha de gás muito extensa, levou-se em
+conta apenas a dinâmica da variação do nível de líquido na
+piscina do separador. Assim, a saída de gás altera a pres-
+são no interno do VASPS, a uma taxa muito menor do que
+a variação de nível (h) ocorre frente às variações das vazões
+de entrada (qL_in) e saída (qL_out). Com isso, pôde-se con-
+siderar uma dinâmica mais simplificada com uma a taxa de
+variação de volume de líquido sendo dada por (1). A varia-
+ção do nível de líquido foi relacionada à variação de volume
+(VL) através de um fator geométrico expresso em (2):
+
+dVL
+
+dt
+= qL_in ? qL_out (1)
+
+dh
+
+dt
+=
+
+1
+?d2
+
+4
+
+dVL
+
+dt
+(2)
+
+onde d é o diâmetro interno equivalente do vaso separador na
+região de presença de líquido.
+
+Como a linha de gás do VASPS até a plataforma é muito ex-
+tensa, apenas a dinâmica da variação do nível de líquido na
+piscina do separador foi considerada porque o longo compri-
+mento da linha faz com que o gás não se comprima o sufici-
+ente para alterar a pressão de forma significativa, visto que a
+válvula da linha de gás fica completamente aberta.
+
+Os efeitos complexos da hidrodinâmica do escoamento he-
+licoidal interno ao VASPS não foram considerados uma vez
+
+que o escopo deste trabalho foi mais um estudo geral do sis-
+tema de controle para, numa segunda etapa, melhorar a mo-
+delagem física do sistema.
+
+Sobre à vazão de saída, é necessário considerar outro impor-
+tante elemento que deve estar presente na malha de controle
+– o atuador. Inicialmente, considerando a curva de carga do
+sistema versus a curva da bomba, poder-se-ia imaginar que
+a vazão constante do sistema no ponto de equilíbrio seria o
+resultado desta instalação. No entanto, no sistema real, tão
+embora a carga seja razoavelmente previsível – dada a co-
+luna hidráulica que corriqueiramente é o elemento dominante
+nesta composição – o acionamento do BCS através de inver-
+sor nos permite manipular a curva da bomba através da alte-
+ração de sua freqüência de rotação. Com isso, não só a vazão
+do sistema é alterada, como também a curva de carga sofre
+variações, uma vez que a componente de perda de carga por
+escoamento é afetada quando da variação da velocidade do
+fluido. Assim, o sistema é completamente dinâmico, não se
+restringindo à avaliação cartesiana de curvas de carga e da
+bomba estáticas.
+
+O diagrama de blocos do sistema VASPS é apresentado na
+Figura 4, sendo a curva da bomba BCS não linear expressa
+de acordo com (3), conforme proposto por Teixeira et al.
+(2006):
+
+Q?os = ?0.0577·f
+3 + 8.0786·f 2 ?249.18·f ?263.36 (3)
+
+onde Qos é a vazão de saída (bomba) em metros cúbicos
+por segundo e f é a freqüência de alimentação da bomba em
+Hertz.
+
+Nesta etapa de estudo foi adotada uma abordagem mais sim-
+plificada da curva da bomba e desconsiderou-se o efeito da
+pressão na vazão de saída da bomba. Em trabalhos futuros,
+esta influência será incorporada ao modelo.
+
+2.2 Modelagem do distúrbio
+
+Com o intuito de analisar tanto a robustez do controlador pro-
+posto, quanto a sensibilidade do sistema a variações no esco-
+amento, este trabalho apresenta um simulador de fluxo de
+entrada agressivo. Tal simulador é aqui chamado de ‘Gera-
+dor de Golfada’. O papel do gerador de golfadas no sistema
+é importante para a concepção e validação do modelo com-
+putacional.
+
+ 	
+??
+????
+ ???
+? Controlador Curva da bomba Dinâmica 
+do Nível
+
+Gerador de 
+Golfadas
+
++
+
+-
+
+	
+??
+????
+ ???
+? Controlador Curva da bomba Dinâmica 
+do Nível
+
+Dinâmica 
+do Nível
+
+Gerador de 
+Golfadas
+
++
+
+-
+
+ 
+
+Figura 4: Diagrama de blocos com o detalhamento da planta
+do sistema VASPS.
+
+108 Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009
+
+
+
+Tem po [s]
+
+V
+a
+zã
+
+o
+ d
+
+e
+ e
+
+n
+tr
+
+a
+d
+
+a
+ [
+
+m
+³/
+
+s
+]
+
+0.006
+
+0.008
+
+0.01
+
+0.012
+
+0.014
+
+0.016
+
+0 1000 2000 3000 4000 5000
+
+Q os – G erador 3
+Q os – G erador 2
+Q os – G erador 1
+
+Tem po [s]
+
+V
+a
+zã
+
+o
+ d
+
+e
+ e
+
+n
+tr
+
+a
+d
+
+a
+ [
+
+m
+³/
+
+s
+]
+
+0.006
+
+0.008
+
+0.01
+
+0.012
+
+0.014
+
+0.016
+
+0 1000 2000 3000 4000 5000
+
+Tem po [s]
+
+V
+a
+zã
+
+o
+ d
+
+e
+ e
+
+n
+tr
+
+a
+d
+
+a
+ [
+
+m
+³/
+
+s
+]
+
+0.006
+
+0.008
+
+0.01
+
+0.012
+
+0.014
+
+0.016
+
+0 1000 2000 3000 4000 5000
+
+Q os – G erador 3
+Q os – G erador 2
+Q os – G erador 1
+
+Q os – G erador 3
+Q os – G erador 2
+Q os – G erador 1
+
+ 
+
+Figura 5: Gerador de golfada.
+
+O gerador de golfadas consiste de uma componente ale-
+atória nos patamares de amplitude da vazão de entrada,
+assemelhando-se a uma onda quadrada, modificada com a
+inclusão de três alterações:
+
+1. o aumento da oscilação aleatória no patamar de vazão;
+
+2. a variação da freqüência das golfadas, tornando-as im-
+previsíveis; e
+
+3. a variação dos patamares de líquido, tornando as golfa-
+das diferentemente agressivas.
+
+O primeiro efeito, representado na Figura 5 como Gerador 1,
+foi combinado com o segundo para compor o sinal represen-
+tado como Gerador 2. A adição do terceiro efeito no gerador
+permitiu constituir o modelo final para a vazão de entrada,
+de forma que suas curvas tomam as formas apresentadas na
+figura como Gerador 3. Este último distúrbio foi o conside-
+rado nas simulações do presente trabalho.
+
+2.3 Modelagem do controlador
+
+Em trabalhos anteriores, alguns modelos de controladores fo-
+ram implementados para resolver o problema proposto. En-
+tretanto, estes modelos não se mostraram completamente sa-
+tisfatórios. O primeiro modelo adotava o conceito de Média
+Móvel do nível para decidir qual o valor da freqüência ideal.
+Tal conceito será explicado mais adiante. Este controlador
+usava um controle nebuloso cujas entradas eram o nível ins-
+tantâneo e a média do nível (De Melo et al., 2007d). Pode-se
+observar que neste controle haviam amplas regiões de esta-
+bilidade para o sinal de controle e a transição da condição
+estável para a condição crítica acontecia de maneira suave.
+Entretanto, estava presente um certo sinal de controle osci-
+latório entre as os patamares críticos. Além disso, não era
+possível ter uma variação ampla do set point e havia uma
+limitação operacional natural na escolha do sinal controle.
+
+Por estas razões propôs-se um controle Classificador base-
+ado na classificação do nível, pela sua proximidade com
+as situações críticas ou da faixa permitida (De Melo et al.,
+
+2007d), onde um controlador nebuloso identificaria o au-
+mento, a diminuição ou a manutenção da freqüência, de
+acordo com a classificação do sinal de entrada (nível). Este
+modelo também será explicado posteriormente. Em relação
+ao desempenho, este controlador permitia a variação do set
+point, o sinal de controle era mais sensível a alterações do ní-
+vel, de modo que as faixas de estabilidade tornaram-se mais
+estreitas. Por outro lado, o nível controlado mostrou não
+acompanhar as variações no set point e o sinal de controle
+também continuou oscilatório entre as os patamares de saída.
+
+Nesse contexto, foi proposto um conceito de controlador
+que mescla ambos os conceitos apresentados anteriormente
+(Classificador com Média), de forma a reduzir o efeito de
+grandes distúrbios através da realização de uma média móvel
+sobre a pertinência classificada, como também limitar a faixa
+de estabilidade em regiões de trabalho que permitam acom-
+panhar a ordem de grandeza do sinal de referência, ainda per-
+mitindo oscilação, mas em torno de mais pontos. Adicional-
+mente, uma vez que o controlador proposto é mais refinado,
+sendo também mais sensível às mudanças bruscas do sinal
+de controle, foi nec faz-se necessário adicionar um filtro de
+sinal entre o controlador e o atuador, simulando os efeitos de
+saturação de sinal, quantização e rampa máxima de aciona-
+mento.
+
+Este controlador apresentou resultados mais próximo do de-
+sejado, com melhorias consideráveis na qualidade do sinal
+de controle, que mostrou-se mais sensível a alteraçõe, com
+amplas regiões de estabilidade e transição suave da condição
+crítica para a estável. Também foi possível variar o set point,
+mantendo o sinal de controle estável próximo à referência.
+Contudo, o sinal de controle continuou oscilatório entre as
+os patamares de saída e houve o estacionamento do sinal de
+controle entre as regiões de trabalho.
+
+Ainda com as melhorias apresentadas no modelo Classifica-
+dor com Média, a transição entre conjuntos nebulosos apre-
+sentou a dificuldade de se manter na nova região de traba-
+lho até que a correção fosse plenamente estabelecida, o que
+levava a imaginar a aplicação do conceito de histerese para
+fixar a variação da saída até que o sistema retornasse com-
+pletamente à região de trabalho anterior por efeito do próprio
+comportamento do processo, e não apenas por correção do
+controlador.
+
+Assim, a histerese é inserida logo após o cálculo de média da
+pertinência do nível, de forma que o diagrama de blocos do
+do novo controlador é mostrado na Figura 6.
+
+Com o intuito de uma melhor manipulação da região de tra-
+balho, limitada acima e abaixo, este modelo trata o sinal de
+entrada com uma função de classificação que retorna uma
+pertinência relativa à distância entre o limite de estabilidade
+mais próximo (superior (LS) ou inferior (LI)) e o valor da
+
+Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009 109
+
+
+
+Média
+Móvel
+
+µ(t)
+_
+
+r(t) y(t)µ(t)
+Filtro
+
+u(t)
+Histerese
+
+Auto
+Ajuste
+
+ProcessoMédia
+Móvel
+
+µ(t)
+_
+µ(t)
+_
+
+r(t) y(t)µ(t)
+
+CLASSIFICADORCLASSIFICADOR
+
+SP
+
+1
+
+µ1
+LSLI
+
+1
+
+LSLI
+Filtro
+
+u(t)
+Histerese
+
+Auto
+Ajuste
+
+ProcessoProcesso
+µ2
+
+Média
+Móvel
+
+µ(t)
+_
+µ(t)
+_
+
+r(t) y(t)µ(t)
+Filtro
+
+u(t)
+Histerese
+
+Auto
+Ajuste
+
+ProcessoProcessoMédia
+Móvel
+
+µ(t)
+_
+µ(t)
+_
+
+r(t) y(t)µ(t)
+
+CLASSIFICADORCLASSIFICADOR
+
+SP
+
+1
+
+µ1
+LSLI
+
+1
+
+LSLI
+Filtro
+
+u(t)
+Histerese
+
+Auto
+Ajuste
+
+ProcessoProcesso
+µ2
+
+ 
+ 
+ 
+
+Figura 6: Diagrama de blocos do controlador histerese com
+auto-ajuste.
+
+LI r      r’ LS
+
+1?
+2
+
+?
+N
+
+?
+1
+
+Limite superior
+
+Limite Inferior
+
+r
+
+y(t)
+
+r’
+
+LI
+
+LS
+
+LI r      r’ LS
+
+1?
+2
+
+?
+N
+
+?
+1
+
+LI r      r’ LS
+
+1?
+2
+
+?
+N
+
+?
+1
+
+Limite superior
+
+Limite Inferior
+
+r
+
+y(t)
+
+r’
+
+LI
+
+LS Limite superior
+
+Limite Inferior
+
+r
+
+y(t)
+
+r’
+
+LI
+
+LS
+
+ 
+ 
+ 
+
+Figura 7: Ilustração da função utilizada pelo classificador.
+
+referência do nível r(t). Esta abordagem permite uma livre
+variação do sinal de referência (set point), dentro da região
+de trabalho do controlador, de forma que as funções de clas-
+sificação tomam novos coeficientes, que corrigem a distância
+entre os limites de estabilidade para o valor da nova referên-
+cia r’(t). A Figura 7 ilustra a construção das funções de clas-
+sificação de acordo com a referência, e a correção desta após
+a variação do set point ao longo do processo.
+
+Este conceito, baseado em conjuntos nebulosos (Pedrycz e
+Gomide, 1998), permite a parametrização da região de tra-
+balho, visto que a entrada é normalizada no intervalo [-1,1].
+Com a entrada normalizada, pode-se utilizar a idéia de valor
+de pertinência (µ) para esta, dada por (4), de forma que sua
+magnitude expresse a proximidade à instabilidade ou à refe-
+rência. Além disso, a inclinação da função de classificação
+provê uma rápida transição desta pertinência entre estes dois
+casos:
+
+µ(t) =
+
+?
+
+?
+
+?
+
+?
+
+?
+
+y(t)?LI
+r(t)?LI
+
+, y(t) &amp;lt;r(t)
+
+y(t)?LS
+LS?r(t)
+
+, y(t) ? r(t)
+
+(4)
+
+Posto isto, é possível resolver o problema de minimização
+das variações no acionamento através da atuação restrita à
+proximidade da região crítica. Com isso em mente, é pos-
+sível utilizar o classificador para monitorar os limites de
+estabilidade, e utilizar um mecanismo ajuste da freqüência
+da bomba, para calcular a rotação nas proximidades da re-
+gião crítica, realizando correções mais efetivas. No caso do
+VASPS, o limite inferior (LI) é considerado o nível mínimo
+admissível para evitar a quebra da bomba (QB) e o limite su-
+perior (LS) é o nível máximo admitido para evitar o prejuízo
+na eficiência da separação de bolhas no helicóide (PS).
+
+Adicionalmente, com o objetivo de avaliar a tendência do
+comportamento do sinal, este controlador realiza uma média
+móvel de acordo com uma janela parametrizável para cada
+processo através da variável n, de forma que a pertinência
+média (µ?) do nível, computado em (5), faz o papel de ajustar
+o tempo (t) de reação do sistema às variações no sinal de
+saída (µ).
+
+µ =
+1
+
+n
+
+t
+?
+
+i=t?n
+
+µ(t) (5)
+
+O ajuste realizado por este dispositivo, dependendo do valor
+selecionado para o parâmetro n, pode atrasar uma resposta
+necessária a um pico de vazão causado por uma golfada na
+entrada de fluido, e por isso é necessária a manutenção da
+leitura do nível instantâneo. Uma explicação mais detalhada
+das abordagens do modelo classificador e da média móvel
+para o problema de controle pode ser encontrada em De Melo
+et al. (2007c-d).
+
+O comportamento da histerese é dado pelas equações (6), (7),
+(8), (9) e (10), de forma que as regiões de trabalho podem ser
+identificadas na Figura 9. Os diferentes intervalos ilustrados
+na figura correspondem às regiões de trabalho que apresen-
+tam um valor constante de saída, fixando o sinal de controle
+(freqüência de rotação da bomba) enquanto o sistema per-
+manecer na respectiva faixa de trabalho. A alternância entre
+as equações apresentadas depende das variações na variável
+avaliada – a pertinência média – cujo universo de trabalho é
+normalizado no intervalo [-1,1].
+
+uP B (µ) =
+
+{
+
+uPB , µ(t) ? µ2 ? ?2
+uP S (µ), µ(t) &amp;lt;µ2 ? ?2
+
+(6)
+
+uP S (µ) =
+
+?
+
+?
+
+?
+
+uP B (µ), µ(t) ? µ2
+uPS , µ1 ? ?1 &amp;lt;µ(t) &amp;lt;µ2
+uZ (µ) , µ(t) ? µ1 ? ?1
+
+(7)
+
+uZ (µ) =
+
+?
+
+?
+
+?
+
+uP S (µ) , µ(t) ? µ1
+uZ , ?µ1 &amp;lt;µ(t) &amp;lt;µ1
+uN S (µ) , µ(t) ? ?µ1
+
+(8)
+
+uN S (µ) =
+
+?
+
+?
+
+?
+
+uZ (µ) , µ(t) ? ?µ1 + ?1
+uNS , ?µ2 &amp;lt;µ(t) &amp;lt;?µ1 + ?1
+uN B (µ), µ(t) ? ?µ2
+
+(9)
+
+uN B (µ) =
+
+{
+
+uNB , µ(t) &amp;lt;?µ2 + ?2
+uN S (µ), µ(t) ? ?µ2 + ?2
+
+(10)
+
+110 Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009
+
+
+
+A associação das funções uN B(µ), uN S(µ), uZ (µ), uP S(µ)
+e uP B(µ) constitui a função aplicada ao sinal de controle
+para gerar seu valor de saída. Este valor de saída por sua
+vez é dado pelas constantes uN B , uN S , uZ , uP S e uP B , de-
+pendendo do intervalo onde a pertinência média estiver lo-
+calizada e dependendo também do sinal de derivada de seu
+valor absoluto, que indica se o valor está se afastando ou se
+aproximando de zero.
+
+Por sua vez, os valores µ1, µ2 e seus opostos -µ1 e -µ2 são
+os valores de transição entre regiões de trabalho quando a
+derivada do módulo da pertinência média for positiva. Esta
+condição é chamada de histerese de subida. Por outro lado,
+caso o módulo da pertinência média estiver decrescendo, ou
+seja, caso a derivada de seu valor absoluto for negativa, tem-
+se a condição de histerese de descida, e neste caso o valor
+de transição entre as regiões de trabalho é deslocado em di-
+reção ao zero de um valor ?, chamado de intervalo de histe-
+rese. Assim, pode-se concluir que a transição entre regiões
+de operação na condição de histerese de descida é dada pelos
+valores (µ1 – ?1), (µ2 – ?2) e seus valores opostos (-µ1 +
+?1) e (-µ2+ ?2). Obviamente, como as pertinências usadas
+para os conjuntos nebulosos de entrada variam no intervalo
+[-1,1], o universo de trabalho da histerese também está com-
+preendido neste intervalo normalizado.
+
+A Figura 8 ilustra os conceitos de histerese de subida e de
+descida, bem como as regiões de trabalho rotuladas através
+do valor da respectiva constante de saída. Nesta, é possível
+verificar um curioso efeito da histerese sobre as regiões de
+trabalho, a saber:
+
+• Quando a região está ativa, o valor de transição para
+as regiões vizinhas é dado pelo maior delta dentre os
+valores de transição em seu entorno. Assim, pode-se
+dizer que o intervalo de trabalho é dado pela região ex-
+pandida no entorno do valor médio da pertinência para
+aquela região.
+
+• Quando a região não está ativa, para fins de transição
+de regiões, ela se afasta do zero de um valor igual ao
+intervalo de histerese. Dessa forma pode-se dizer que
+o intervalo de trabalho inativo total é dado pela região
+retraída fora do entorno do valor médio da pertinência.
+
+Este efeito nos permite verificar que a soma das regiões de
+trabalho ativas é maior do que o intervalo de operação total
+de um valor igual à soma de todos os intervalos de histerese
+encontrados entre as fronteiras de operação. Esta maior re-
+gião de trabalho real permite reduzir significativamente os
+acionamentos do atuador, zelando pela sua vida útil. Dessa
+forma, a Figura 8 ilustra a região expandida no entorno da
+pertinência média igual a zero. O valor da saída da histerese
+
+µ
+_
+
+pertinência média
+
+Histerese 
+de descida
+
+Histerese 
+de subida
+
+µ1-?1µ2 µ1µ2-?2 µ1-?1 µ1 µ2-?2 µ2u(t) =  uZ uPB
+uNB uNS
+
+uNS uPS
+
+uPS
+
+uNB uPBuZ
+
+0
+
+µ
+_
+µ
+_
+
+pertinência média
+
+Histerese 
+de descida
+
+Histerese 
+de subida
+Histerese 
+de subida
+
+µ1-?1µ2 µ1µ2-?2 µ1-?1 µ1 µ2-?2 µ2u(t) =  uZu(t) =  uZ uPBuPB
+uNBuNB uNSuNS
+
+uNSuNS uPSuPS
+
+uPSuPS
+
+uNBuNB uPBuPBuZuZ
+
+0
+ 
+
+ 
+ 
+
+Figura 8: Esquemático ilustrativo do comportamento da his-
+terese.
+
+u(t), como dado no diagrama de blocos, é dado pela função
+uZ (µ), cujo valor de saída é uZ .
+
+Neste ponto, pode-se retomar uma das considerações desen-
+volvidas na modelagem física do sistema VASPS, a dinâmica
+da variação da pressão. Havia-se considerado que o tempo
+de resposta da variação de pressão de gás era muito maior do
+que o do sistema de controle de nível, de forma que traba-
+lhando no transiente do controle de nível o sistema não seria
+afetado pela dinâmica da pressão. Assim, embora os efei-
+tos da variação da pressão não estejam claros na malha de
+controle de nível, se for tomado um tempo muito grande de
+avaliação da dinâmica interna do VASPS, talvez a amplitude
+de variação da pressão influencie a tal ponto que os valores
+constantes de saída uN B , uN S , uZ , uP S e uP B não mais es-
+tejam adequados às regiões de trabalho definidas para estes.
+Ou ainda, considerando tempos maiores, a depleção do re-
+servatório pode implicar na alimentação do sistema VASPS
+com uma pressão de admissão – ou uma vazão de líquido –
+declinante, causando o mesmo efeito.
+
+Assim, considerando-se o problema de minimização de es-
+forço de controle, e na tentativa de adaptar o controlador a
+condições dinâmicas de operação do sistema ao longo do
+tempo, foi desenvolvido um mecanismo de correção do valor
+do sinal de controle no equilíbrio, uZ , de forma que caso o
+sistema opere certa proporção de seu tempo fora da região de
+pertinência média igual a zero, o valor de uZ seja atualizado
+proporcionalmente. A importância desta correção é ilustrada
+por observações realizadas em simulação para um sistema
+dinamicamente variante no tempo, onde a faixa de erro nulo
+aplicando o sinal de controle u(t) invariante no valor de uZ ,
+gerou atuações que não mantiveram o sistema em equilíbrio,
+sendo necessária a atuação da faixa de operação vizinha para
+corrigir o sinal de saída y(t) e retornar a minimizar o erro.
+
+Para realizar o auto-ajuste, o regulador utiliza a média móvel
+do sinal de controle e a monitora até que esta atinja um valor
+entre uZ e uP S – por exemplo, 70% da distância entre os
+patamares – permanecendo ainda mais próximo do valor de
+equilíbrio, mas já indicando a tendência do sinal de controle
+se deslocar em direção a uma das extremidades da região de
+trabalho. Após este valor da média móvel ser atingido, uZ
+
+Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009 111
+
+
+
+assume este valor, e o sistema passa a ser referenciado a partir
+daí, sendo este o novo ponto de equilíbrio.
+
+Tendo sido idealizado para aplicações com uma grande cons-
+tante de tempo, o controlador também apresenta ferramentas
+que o permite lidar com sistemas mais rápidos, dado o alto
+grau de informações que este utiliza para definir a política de
+controle. A formulação do controlador real pode ser também
+mais ou menos conservadora, uma vez que os parâmetros do
+sistema permitem definir os limites permitidos para a variá-
+vel ontrolada e para a variável manipulada.
+
+O mérito de minimizar o esforço de controle requer, como
+reforçado no início da discussão, uma flexibilidade operaci-
+onal dos parâmetros de desempenho. Não obstante, as ten-
+tativas de minimizar o erro estacionário foram desenvolvidas
+de forma a contemplar tanto o sinal de controle, quanto de
+permitir brechas para que o compromisso com o desempe-
+nho fosse deixado para a decisão do projetista, podendo este
+dar um maior peso ao desempenho.
+
+O filtro de sinal inserido na malha tem o objetivo de simular
+as mínimas variações que são aplicadas ao sinal de controle
+antes que este seja aplicado aos terminais elétricos da bomba
+BCS, corrigindo picos de sinal e ruídos. Basicamente, o fil-
+tro é constituído de três elementos, aplicados na seqüência a
+seguir:
+
+• saturador – este elemento de segurança impede que o
+acionamento da bomba fique fora do intervalo estipu-
+lado como limites de funcionamento físico, limitando o
+universo de atuação das freqüências do inversor.
+
+• limitador de rampa – este dispositivo limita a derivada
+do sinal de controle a um valor máximo e a um valor
+mínimo, simulando as rampas de aceleração (rls) e de-
+saceleração permitidas no sistema (fls). Este limitador
+atua na malha de controle elétrico da bomba, que possui
+uma constante de tempo baixíssima, por vezes da ordem
+de milissegundos, de forma que as variações neste loop
+interno da bomba não se fazem perceptíveis no controle
+de nível. De qualquer forma, acionamentos repentinos
+na forma de ondas completamente quadradas são evita-
+dos.
+
+• quantizador – o último componente do filtro aplica um
+segurador de ordem zero, ou filtro ZOH, ao aciona-
+mento do sinal de controle na bomba, evitando sua os-
+cilação como sinal contínuo e portanto minimizando a
+oscilação do sinal nos terminais da bomba. Neste pro-
+jeto adotou-se degraus de 0,5 Hz, de forma a realizar
+variações suaves no acionamento.
+
+As funções aplicadas ao sinal de controle são dadas, respec-
+tivamente em (11), (12) e (13):
+
+uS = fS(u) =
+
+?
+
+?
+
+?
+
+max(u), u &gt; umax
+u, umin ? u ? umax
+min(u), u &amp;lt;umin
+
+(11)
+
+uLR(t) = fLR(uS (t)) =
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+uS (t ? 1) + u
+?
+max , uS (t) &gt; uS (t ? 1) + u
+
+?
+max
+
+uS (t) , uS(t ? 1) ? u
+?
+min ? uS (t) ?
+
+uS (t ? 1) + u
+?
+max
+
+uS (t ? 1) ? u
+?
+min , uS (t) &amp;lt;uS (t ? 1) ? u
+
+?
+min
+
+onde u? é a derivada de uS (t) no tempo t. (12)
+
+uQ(t) = fQ(uLR(t)) =
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+uLR(t ? 1) + 0.5 , uLR(t) ? uLR(t ? 1) + 0.5
+uLR(t ? 1) , uLR(t ? 1) ? 0.5&amp;lt;
+
+uLR(t) &amp;lt;uLR(t ? 1) + 0.5
+uLR(t ? 1) ? 0.5 , uLR(t) ? uLR(t ? 1) ? 0.5
+
+(13)
+
+Com este filtro, caso haja qualquer problema com o cômputo
+do sinal de controle acionando a BCS indevidamente, o sinal
+mais crítico a ser aplicado à bomba é um sinal com variação
+de meio em meio hertz, com derivada limitada e valor abso-
+luto limitado por mínimos e máximos, permanecendo dentro
+do universo desejado.
+
+3 RESULTADOS
+
+Uma vez que este controlador abrange os conceitos de um
+classificador na entrada e o cálculo da média móvel, é neces-
+sário realizar simulações para todo o conjunto de parâmetros.
+No entanto, serão feitas duas análises separadamente – uma
+para o controlador em si e sua dinâmica junto ao processo, e
+outra para a avaliação do efeito do mecanismo de auto-ajuste.
+Para conseguir uma simulação apenas avaliando o controla-
+dor, sem o mecanismo de auto-ajuste, basta manter a entrada
+do gerador de golfadas do sistema como descrito na seção
+2.2, pois o mecanismo de auto-ajuste apenas tem efeito após
+o sistema sofrer mudanças dinâmicas. No caso do VASPS,
+essa mudança dinâmica seria a depleção do reservatório de
+óleo, com o decaimento da pressão na formação. Consi-
+derando apenas a simulação do mecanismo de auto-ajuste,
+pode-se simular uma vazão de entrada decaindo e manter os
+parâmetros do controlador constantes, de forma a avaliar as
+correções impostas às freqüências de acionamento, uZ , uP S
+e uN S .
+
+112 Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009
+
+
+
+µ
+_
+
+pertinência média
+
+Histerese 
+de descida
+
+Histerese 
+de subida
+
+-25%-75% -35%-65% 25% 35% 65% 75%
+
+54 Hz
+
+54 Hz48 Hz 52 Hz
+
+48 Hz 52 Hz 56 Hz
+
+56 Hz 60 Hz
+
+60 Hz
+
+µ
+_
+µ
+_
+
+pertinência média
+
+Histerese 
+de descida
+
+Histerese 
+de subida
+Histerese 
+de subida
+
+-25%-75% -35%-65% 25% 35% 65% 75%
+
+54 Hz54 Hz
+
+54 Hz54 Hz48 Hz48 Hz 52 Hz52 Hz
+
+48 Hz48 Hz 52 Hz52 Hz 56 Hz56 Hz
+
+56 Hz56 Hz 60 Hz60 Hz
+
+60 Hz60 Hz
+
+ 
+ 
+ 
+
+Figura 9: Esquemático da histerese adaptado para o caso
+VASPS.
+
+3.1 Avaliação do controlador
+
+Para a avaliação do controlador foram realizadas inicial-
+mente simulações variando apenas o nível inicial e o sinal
+de referência, a fim de avaliar o transiente. Os demais parâ-
+metros, como as fronteiras entre regiões de trabalho, µ1 e µ2,
+a janela de histerese, ?, o valor da saída em cada região, uN B ,
+uN S , uZ , uP S e uP B , os limites de estabilidade do sistema,
+QB e PS, e o número de pontos utilizados na média móvel,
+n, foram mantidos constantes nas simulações iniciais. A Fi-
+gura 9 apresenta um esquemático para estas configurações,
+com os valores de µ1 igual a 0,35 e µ2 igual a 0,75, ? igual a
+10%, uZ valendo 54 Hz, uP S valendo 56 Hz, uN S em 52 Hz,
+uP B em 60 Hz e uN B em 48 Hz. Por fim, n foi configurado
+para 2000 pontos, rls e fls para 2%, taxa de amostragem para
+0,1 segundo, PS em 20 metros e QB em 40 metros.
+
+Foram realizadas quatro simulações com estes parâmetros.
+Para este controlador foi utilizado o gerador de golfadas apre-
+sentado, com amplitude e freqüência das golfadas de líquido
+variáveis. No primeiro par de simulações, mostrados na Fi-
+gura 10, a referência foi mantida constante (30 metros). O ní-
+vel inicial (N0) da piscina no sistema VASPS partiu com 30
+metros no gráfico da Figura 10.a, cuja reposta do controle da
+bomba é apresentada na Figura 10.c. Outra simulação com
+partida do nível inicial em 60 metros é mostrada na Figura
+10.b, com o respectivo resultado do controlador indicado em
+10.d.
+
+No segundo par de simulações, apresentados na Figura 11,
+variou-se o sinal de referência no segundo conjunto de si-
+mulações conforme o sinal pontilhado apresentado nas Figu-
+ras 11.a e 11.b, onde na primeira figura a partida do VASPS
+inicia-se com 30 metros, e na segunda com 60 metros. Os
+respectivos sinais de controle são mostrados nas Figuras 11.c
+e 11.d.
+
+Este modelo apresentou, pelas simulações, um sinal de con-
+trole sem oscilações curtas e freqüentes, bem como um erro
+estacionário condicionalmente proporcional. No entanto, o
+grau de compromisso entre qualidade do sinal de controle e
+desempenho, pode ser manipulado pelos parâmetros que fo-
+ram mantidos constantes nestas simulações. Além disso, o
+controlador foi submetido a bruscas variações da referência,
+
+não apresentando oscilações indevidas no sinal de controle,
+e acompanhando a referência dentro de uma faixa de proxi-
+midade.
+
+As variações da amplitude do sinal de saída, a rotação da
+bomba, para esta resposta parecem ser excedentes ao dese-
+jado para o VASPS, mas isso ocorre devido à quantidade de
+variações na referência no curto período de tempo. Caso o
+operador venha a fazê-lo em campo, o sistema obedecerá,
+pois está sendo projetado para isso. A recomendação, no en-
+tanto, é que caso se deseje a vida útil mais longa possível
+para a BCS, menores devem ser as variações na referência.
+
+O sistema apresentou uma transição de estados suave ao sair
+do patamar de nível inicial de 60 metros. A transição foi
+tão paulatina quanto a variação do nível permitiu. Embora
+este controlador apresente uma qualidade visível no sinal de
+controle, as simulações iniciais apresentaram um desempe-
+nho que ainda deixa a desejar no tempo de resposta e no erro
+estacionário, tão embora os resultados se apresentem muito
+próximo do desejado para o VASPS. As oscilações obvia-
+mente não permitem um controle de nível exemplar, mas o
+controle de rotação, que é o foco deste modelo, apresenta-
+se adequado para as simulações de longa duração que foram
+tomadas a partir de então.
+
+Após diversos experimentos, variando-se os parâmetros do
+controlador das mais diversas maneiras, as curvas conclusi-
+vas do melhor desempenho encontrado são apresentadas na
+Figura 12, onde se pode notar a melhoria em relação às si-
+mulações iniciais. No experimento com o desempenho mais
+próximo do desejado, a configuração usada considerou os va-
+lores de µ1 igual a 0,4 e µ2 igual a 0,8; ?1 igual a 40% e ?2
+igual a 30%; n com 6000 pontos; rls e fls em 10%; taxa de
+amostragem de 0,1 segundo; PS em 20 metros e QB em 40
+metros. As variações dos limiares de histerese foram inves-
+tigadas em dois casos, com os mesmos parâmetros acima es-
+tabelecidos. No primeiro caso, a variação de um limiar para
+outro (intervalo de histerese) na região aceitável de trabalho
+altera em 1 Hz a freqüência da rotação da bomba e nos ca-
+sos críticos as freqüências são as rotações mínima e máxima
+admissíveis da bomba. Assim, tem-se os valores de uZ = 54
+Hz, uP S = 55 Hz, uN S = 53 Hz, uP B = 60 Hz e uN B = 48
+Hz. No segundo caso, a variação do limiar nas fronteiras da
+região de trabalho altera a freqüência de rotação da bomba
+em 1,5 Hz, de modo que uZ = 54 Hz, uP S = 55,5 Hz, uN S
+= 52,5 Hz, uP B = 60 Hz e uN B = 48 Hz. É importante no-
+tar que o tempo de simulação destas curvas são estendidos
+em relação às simulações anteriores, de forma a realizar uma
+avaliação mais rigorosa. O tempo de simulação considerado
+foi de 100.000 unidades de tempo.
+
+É possível notar que após uma avaliação mais profunda do
+controlador, é possível concluir sobre o sistema a ponto de
+
+Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009 113
+
+
+
+N
+Referência
+
+fref fref
+
+N
+Referência
+
+a) b)
+
+c) d)
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+Resposta do Nível para o Nível Inicial N0=30 m
+
+Rotação da Bomba para o Nível Inicial N0=30 m
+
+Resposta do Nível para o Nível Inicial N0=60 m
+
+Rotação da Bomba para o Nível Inicial N0=60 m
+
+Tempo [s]Tempo [s] Tempo [s]
+
+Tempo [s] Tempo [s]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+N
+
+ív
+e
+
+l [
+m
+
+]
+
+N
+ív
+
+e
+l [
+
+m
+]
+
+N
+Referência
+
+fref fref
+
+N
+Referência
+
+a) b)
+
+c) d)
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+Resposta do Nível para o Nível Inicial N0=30 m
+
+Rotação da Bomba para o Nível Inicial N0=30 m
+
+Resposta do Nível para o Nível Inicial N0=60 m
+
+Rotação da Bomba para o Nível Inicial N0=60 m
+
+Tempo [s]Tempo [s] Tempo [s]
+
+Tempo [s] Tempo [s]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+N
+
+ív
+e
+
+l [
+m
+
+]
+
+N
+ív
+
+e
+l [
+
+m
+]
+
+N
+Referência
+N
+Referência
+
+freffref freffref
+
+N
+Referência
+N
+Referência
+
+a) b)
+
+c) d)
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+Resposta do Nível para o Nível Inicial N0=30 m
+
+Rotação da Bomba para o Nível Inicial N0=30 m
+
+Resposta do Nível para o Nível Inicial N0=60 m
+
+Rotação da Bomba para o Nível Inicial N0=60 m
+
+Tempo [s]Tempo [s] Tempo [s]
+
+Tempo [s] Tempo [s]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+N
+
+ív
+e
+
+l [
+m
+
+]
+
+N
+ív
+
+e
+l [
+
+m
+]
+
+a) b)
+
+c) d)
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+Resposta do Nível para o Nível Inicial N0=30 m
+
+Rotação da Bomba para o Nível Inicial N0=30 m
+
+Resposta do Nível para o Nível Inicial N0=60 m
+
+Rotação da Bomba para o Nível Inicial N0=60 m
+
+Tempo [s]Tempo [s] Tempo [s]
+
+Tempo [s] Tempo [s]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+N
+
+ív
+e
+
+l [
+m
+
+]
+
+N
+ív
+
+e
+l [
+
+m
+]
+
+ 
+ 
+ 
+
+Figura 10: Resposta para o controlador histerese com auto-ajuste, com referência constante.
+
+N
+Referência
+
+fref fref
+
+N
+Referência
+
+a) b)
+
+c) d)
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+Resposta do Nível para o Nível Inicial N0=30 m
+
+Rotação da Bomba para o Nível Inicial N0=30 m
+
+Resposta do Nível para o Nível Inicial N0=60 m
+
+Rotação da Bomba para o Nível Inicial N0=60 m
+
+Tempo [s]Tempo [s] Tempo [s]
+
+Tempo [s] Tempo [s]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+N
+
+ív
+e
+
+l [
+m
+
+]
+
+N
+ív
+
+e
+l [
+
+m
+]
+
+N
+Referência
+
+fref fref
+
+N
+Referência
+
+a) b)
+
+c) d)
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+Resposta do Nível para o Nível Inicial N0=30 m
+
+Rotação da Bomba para o Nível Inicial N0=30 m
+
+Resposta do Nível para o Nível Inicial N0=60 m
+
+Rotação da Bomba para o Nível Inicial N0=60 m
+
+Tempo [s]Tempo [s] Tempo [s]
+
+Tempo [s] Tempo [s]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+N
+
+ív
+e
+
+l [
+m
+
+]
+
+N
+ív
+
+e
+l [
+
+m
+]
+
+N
+Referência
+N
+Referência
+
+freffref freffref
+
+N
+Referência
+N
+Referência
+
+a) b)
+
+c) d)
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+Resposta do Nível para o Nível Inicial N0=30 m
+
+Rotação da Bomba para o Nível Inicial N0=30 m
+
+Resposta do Nível para o Nível Inicial N0=60 m
+
+Rotação da Bomba para o Nível Inicial N0=60 m
+
+Tempo [s]Tempo [s] Tempo [s]
+
+Tempo [s] Tempo [s]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+N
+
+ív
+e
+
+l [
+m
+
+]
+
+N
+ív
+
+e
+l [
+
+m
+]
+
+a) b)
+
+c) d)
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+20
+
+22
+
+24
+
+26
+
+28
+
+30
+
+32
+
+34
+
+36
+
+38
+
+40
+
+0 50001000 2000 3000 4000
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+0 50001000 2000 3000 4000
+
+Resposta do Nível para o Nível Inicial N0=30 m
+
+Rotação da Bomba para o Nível Inicial N0=30 m
+
+Resposta do Nível para o Nível Inicial N0=60 m
+
+Rotação da Bomba para o Nível Inicial N0=60 m
+
+Tempo [s]Tempo [s] Tempo [s]
+
+Tempo [s] Tempo [s]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+N
+
+ív
+e
+
+l [
+m
+
+]
+
+N
+ív
+
+e
+l [
+
+m
+]
+
+ 
+ 
+ 
+
+Figura 11: Resposta para o controlador Histerese com Auto-ajuste, com referência variável.
+
+configurá-lo para alguns poucos acionamentos por dia, de
+forma que mesmo sob as condições mais severas de traba-
+lho, caso o sistema permaneça dentro do escopo de atuação
+da bomba, é possível corrigir os distúrbios e trabalhar com
+acionamentos mais demorados e suaves.
+
+3.2 Avaliação do auto-ajuste
+
+É possível notar pela Figura 11 que talvez houvesse uma ro-
+tação constante para a zona de trabalho próxima ao erro nulo,
+que permitisse, idealmente, o equilíbrio para um distúrbio
+conhecido e controlado, dada pela média ponderada das ro-
+tações ativadas pelos tempos de atuação decorridos. Essa ro-
+
+114 Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009
+
+
+
+N
+N
+SP Nível
+
+1.5 Hz
+1 Hz
+
+f
+f ref
+
+ref 1.5 Hz
+1 Hz
+
+Nível e setpoint (QB=20,PS=40)
+
+0 10000 20000 30000 40000 50000 60000 70000 80000 90000 100000
+20
+
+25
+
+30
+
+35
+
+40
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+Sinal de Controle Total na Bomba
+
+0 10000 20000 30000 40000 50000 60000 70000 80000 90000 100000
+
+Tempo [s]
+
+Tempo [s]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+N
+
+ív
+e
+l 
+
+[m
+]
+
+N
+N
+SP Nível
+
+1.5 Hz
+1 Hz
+
+f
+f ref
+
+ref 1.5 Hz
+1 Hz
+
+Nível e setpoint (QB=20,PS=40)
+
+0 10000 20000 30000 40000 50000 60000 70000 80000 90000 100000
+20
+
+25
+
+30
+
+35
+
+40
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+Sinal de Controle Total na Bomba
+
+0 10000 20000 30000 40000 50000 60000 70000 80000 90000 100000
+
+Tempo [s]
+
+Tempo [s]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+N
+
+ív
+e
+l 
+
+[m
+]
+
+N
+N
+SP Nível
+
+1.5 Hz
+1 Hz
+
+N
+N
+SP Nível
+
+N
+N
+SP Nível
+
+1.5 Hz
+1 Hz
+
+f
+f ref
+
+ref 1.5 Hz
+1 Hz
+
+f
+f ref
+
+ref 1.5 Hz
+1 Hz
+
+Nível e setpoint (QB=20,PS=40)
+
+0 10000 20000 30000 40000 50000 60000 70000 80000 90000 100000
+20
+
+25
+
+30
+
+35
+
+40
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+Sinal de Controle Total na Bomba
+
+0 10000 20000 30000 40000 50000 60000 70000 80000 90000 100000
+
+Tempo [s]
+
+Tempo [s]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+N
+
+ív
+e
+l 
+
+[m
+]
+
+Nível e setpoint (QB=20,PS=40)
+
+0 10000 20000 30000 40000 50000 60000 70000 80000 90000 1000000 10000 20000 30000 40000 50000 60000 70000 80000 90000 100000
+20
+
+25
+
+30
+
+35
+
+40
+
+20
+
+25
+
+30
+
+35
+
+40
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+
+48
+
+50
+
+52
+
+54
+
+56
+
+58
+
+60
+
+62
+Sinal de Controle Total na Bomba
+
+0 10000 20000 30000 40000 50000 60000 70000 80000 90000 1000000 10000 20000 30000 40000 50000 60000 70000 80000 90000 100000
+
+Tempo [s]
+
+Tempo [s]
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+N
+
+ív
+e
+l 
+
+[m
+]
+
+ 
+
+ 
+ 
+
+Figura 12: Simulação do controlador com o melhor desempenho.
+
+tação proporcionaria uma vazão de saída que correspondesse
+ao balanço de massa do sistema. Sabe-se, no entanto, que a
+vazão recebida pelo VASPS advinda do(s) poço(s) se altera
+conforme as golfadas evoluem, de forma que o sistema está
+sendo sempre perturbado, e é impossível manter um equilí-
+brio perfeito com uma vazão de saída constante.
+
+Conceitualmente, entretanto, é desejado que a vazão de saída
+no equilíbrio seja o mais próxima possível da média das os-
+cilações da vazão de entrada, de forma a minimizar as altera-
+ções no sinal de controle. Assim, considerando que a rotação
+de saída é ativada em patamares constantes e que oscilam em
+torno da vazão ideal de saída, é possível computar a média
+móvel do sinal de controle ativado, da mesma forma que é
+feito na entrada com a pertinência classificada, e compará-
+lo com os patamares de saída parametrizados, encontrando a
+distância que a média móvel está de cada um deles. No sis-
+tema VASPS, esta distância foi configurada como sendo uma
+ponderação de 90% do valor do valor de equilíbrio, uZ , e 10
+% do valor da faixa subseqüente, uN S ou uP S , de forma que
+o valor de uZ é dado em (14):
+
+uZ =
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+uZ , (0, 90 · uZ ? 0, 10 · uN S)&amp;lt;
+
+1
+n
+
+t
+?
+
+t?n
+
+u(t) &amp;lt;(0, 90 · uZ + 0, 10 · uP S )
+
+0.90 · uZ + 0.10 · uP S ,
+
+1
+n
+
+t
+?
+
+t?n
+
+u(t) ? (0, 90 · uZ + 0, 10 · uP S )
+
+0.90 · uZ ? 0.10 · uN S,
+
+1
+n
+
+t
+?
+
+t?n
+
+u(t) ? (0, 90 · uZ ? 0, 10 · uN S )
+
+(14)
+
+A arbitragem sobre estes pesos advém das conclusões expe-
+rimentais que apontaram para a necessidade de mudanças su-
+aves no valor da rotação de equilíbrio, pois quando esta está
+deslocada do centro da faixa de operação do sinal de con-
+trole, mudanças maiores tornam-se muito bruscas no sentido
+onde há maior margem de variação do nível, a região distante
+da crítica. Ainda, quando o sistema busca novo patamar de
+equilíbrio devido a mudanças bruscas no sistema, alterações
+de maior magnitude no patamar de equilíbrio provaram que
+o retorno do sistema à condição de erro nulo tem dificulda-
+des em corrigir o valor de uZ devido à necessidade de uma
+média de ativações muito alta – ou muito baixa – no sentido
+oposto do acionamento, o que dificilmente ocorre quando o
+sistema retorna de um ponto de operação crítico.
+
+Por simplicidade computacional, o valor de saída do sinal de
+controle na faixa de transição, uN S ou uP S , é parametrizado
+pelo valor da saída nos outros intervalos, uZ e uN B ou uP B ,
+de forma que ao se alterar o valor de uZ , automaticamente
+todos os outros patamares para o sinal de controle também
+sejam corrigidos, de tal forma que o cômputo dos valores de
+uN S ou uP S são indicados em (15) e (16). É interessante no-
+tar que um acionamento para uN S ou uP S mais distante que
+a avaliação da média móvel do sinal de controle proporciona
+às faixas de correção um poder significativo de atuação, per-
+mitindo variações na média móvel condizentes com os pesos
+de 90% e 10% propostos.
+
+uN S =
+(2 · uZ + ·uN B)
+
+3
+(15)
+
+Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009 115
+
+
+
+uP S =
+(2 · uZ + ·uP B)
+
+3
+(16)
+
+Finalmente, para realizar as simulações, também é impor-
+tante ponderar sobre o valor do número de pontos usado na
+média móvel do sinal de controle. Diferentemente do n utili-
+zado na pertinência de entrada, não se deseja que o parâmetro
+para o sinal de controle seja muito grande, pois o tempo de
+reação que o sinal de controle deve possuir sobre o sistema
+deve ser muito menor, ou seja, sua alteração deve ser mais
+rápida, que o tempo de reação da resposta, uma vez que é o
+sinal de controle que propicia uma condição de trabalho es-
+tável. Assim, utilizando inicialmente um n para o sinal de
+controle no valor de 2000 pontos, em vez dos 4000 pontos
+propostos para o sistema, foram realizadas as simulações cu-
+jos resultados foram apresentados na Figura 13.
+
+As curvas apresentam a resposta do nível, o sinal de con-
+trole e o valor de uZ para duas condições simuladas, com
+valores da vazão de entrada do gerador de golfadas, o dis-
+túrbio, dadas pelas Figuras 13.c e 13.d. A primeira condição
+simula uma transição descontínua de grande amplitude no
+sistema, como por exemplo se um segundo poço ou manifold
+tivesse de ser interrompido bruscamente. Há duas transições
+de forma a melhor avaliar o transiente. A segunda condição
+representa um declínio linear na magnitude da vazão, repre-
+sentando uma queda linear de pressão no poço. Essa queda
+seria muito mais suave em campo, uma vez que a simulação
+possui uma duração de 20000 segundos, o que corresponde a
+um período de cinco horas e meia de trabalho.
+
+Em ambas as simulações é possível notar pelo valor de uZ
+três patamares de trabalho que foram buscados pelo meca-
+nismo de auto-ajuste, bem como o seu transiente, bastante
+evidente e representado pelas mudanças em degrau, que tam-
+bém foram refletidas no sinal de controle. É interessante no-
+tar que embora houvesse ativações das faixas de transição,
+em momento algum o sistema apresentou instabilidade na
+alteração de patamares, apresentando o comportamento de-
+sejado.
+
+4 CONCLUSÕES
+
+O desenvolvimento de sistemas de controle para processos
+contínuos apresenta possibilidades de melhorias de processo
+muito relevantes industrialmente. Este trabalho abordou as
+diferenças conceituais na proposição de métodos de solução
+dos objetivos de controle, objetivos estes bastante diferentes
+do caso ordinário encontrado na indústria. Adicionalmente,
+a aplicação proposta para estes novos conceitos ilustra uma
+amostra da gama de oportunidades encontradas na indústria
+do petróleo para o desenvolvimento e aplicação desta tecno-
+logia.
+
+Neste sentido, ao se abordar o problema de campo com uma
+estratégia de controle diferente da tradicional, focando os es-
+forços no requisito crítico do sistema, a bomba BCS, uma
+técnica alternativa de controle foi desenvolvida, provendo
+um controlador cada vez mais robustos frente à agressividade
+crescente dos parâmetros aplicados nas simulações.
+
+O estudo do caso VASPS apresentou um modelo de contro-
+lador voltado para a estabilização do sinal de controle, que
+mantém o sinal bem comportado, com variações suaves ao
+longo da região de projeto. Neste controlador, o sinal de con-
+trole mostrou-se sensível a alterações de projeto e de parâ-
+metros, permitiu o acompanhamento do sinal com set points
+variáveis, permitiu manipular a faixa de estabilidade do sis-
+tema e possibilitou transições suaves de condições críticas
+para estáveis.
+
+Embora o controlador desenvolvido não possa ser comparado
+diretamente com outros tipos de controladores, haja vista que
+este sistema de separação e bombeamento submarino possui
+um caráter único e inovador, sem concorrentes industriais di-
+retos, e muito menos apresenta tecnologia própria de con-
+trole estabelecida, é possível estimar a eficácia do controla-
+dor proposto contrastando com versões anteriores propostas
+e também através de informações advindas da sua operação
+do VASPS em campo. Os testes desenvolvidos para o con-
+trolador permitiram partir de uma configuração com cerca
+de 40 acionamentos curtos de velocidades diferentes no si-
+nal de controle com os modelos de controladores preceden-
+tes mencionados no curso deste artigo para, com a presente
+abordagem, algo em torno de apenas 10 acionamentos, con-
+siderando um dia de trabalho, o que está condizente com a
+informação de campo de que cada alteração na rotação da
+bomba é seguida de um intervalo de 2 a 3 horas no procedi-
+mento manual com acompanhamento de um operador. Além
+disso, outro ponto a considerar é que a duração dos aciona-
+mentos apresentaram duração maior que nos estudos anteri-
+ores. O sistema aqui simulado, no entanto, utilizou um sinal
+de distúrbio de entrada mais intenso que a média encontrada
+em campo, justamente para suplantar a desconfiança inerente
+a um modelo computacional.
+
+A adoção desta estratégia de controle permitiu o balancea-
+mento do compromisso desempenho versus esforço de con-
+trole. Portanto, o objetivo de reduzir o custo da operação em
+alto mar através da redução no número de intervenções sub-
+marinas causada pelo aumento da vida útil da bomba BCS
+foi plenamente alcançado.
+
+Também é importante frisar que esta técnica de controle in-
+teligente usando histerese com auto-ajuste não só se mos-
+trou adequada para o tratamento de sistemas contínuos, como
+também permitem uma maior facilidade na tomada de de-
+cisão automática para sintonia de parâmetros de controle.
+
+116 Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009
+
+
+
+e) Sinais de Controle Total e de Equilíbrio
+
+20
+
+25
+
+30
+
+35
+
+40
+
+N
+ív
+
+e
+l 
+
+[m
+]
+
+0 10000 20000
+Tempo [s]
+
+150005000
+
+0
+
+0.005
+
+0.01
+
+0.015
+
+0.02
+
+V
+a
+
+zã
+o
+
+ d
+e
+
+ e
+n
+
+tr
+a
+
+d
+a
+
+ [
+m
+
+3 /
+s
+
+]
+
+0 10000 20000
+Tempo [s]
+
+150005000
+
+20
+
+25
+
+30
+
+35
+
+40
+
+N
+ív
+
+e
+l 
+
+[m
+]
+
+0 10000 20000
+Tempo [s]
+
+150005000
+
+0
+
+0.005
+
+0.01
+
+0.015
+
+0.02
+
+V
+a
+
+zã
+o
+
+ d
+e
+
+ e
+n
+
+tr
+a
+
+d
+a
+
+ [
+m
+
+3 /
+s
+
+]
+
+0 10000 20000
+Tempo [s]
+
+150005000
+
+48
+50
+52
+54
+56
+58
+60
+62
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+
+0 10000 20000
+Tempo [s]
+
+150005000
+
+56
+58
+60
+62
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+
+0 10000 20000
+Tempo [s]
+
+150005000
+
+f
+ref
+
+u
+
+f
+ref
+
+uz
+
+f) Sinais de Controle Total e de Equilíbrio
+
+c) Sinal de distúrbio – Vazão de entrada [m3/s] d) Sinal de distúrbio – Vazão de entrada [m3/s]
+
+a) Resposta do sistema – Nível em metros b) Resposta do sistema – Nível em metros 
+
+48
+50
+52
+54
+
+f
+ref
+
+u
+
+f
+ref
+
+uz
+
+e) Sinais de Controle Total e de Equilíbrio
+
+20
+
+25
+
+30
+
+35
+
+40
+
+N
+ív
+
+e
+l 
+
+[m
+]
+
+0 10000 20000
+Tempo [s]
+
+150005000
+
+0
+
+0.005
+
+0.01
+
+0.015
+
+0.02
+
+V
+a
+
+zã
+o
+
+ d
+e
+
+ e
+n
+
+tr
+a
+
+d
+a
+
+ [
+m
+
+3 /
+s
+
+]
+
+0 10000 20000
+Tempo [s]
+
+150005000
+
+20
+
+25
+
+30
+
+35
+
+40
+
+N
+ív
+
+e
+l 
+
+[m
+]
+
+0 10000 20000
+Tempo [s]
+
+150005000
+
+0
+
+0.005
+
+0.01
+
+0.015
+
+0.02
+
+V
+a
+
+zã
+o
+
+ d
+e
+
+ e
+n
+
+tr
+a
+
+d
+a
+
+ [
+m
+
+3 /
+s
+
+]
+
+0 10000 20000
+Tempo [s]
+
+150005000
+
+48
+50
+52
+54
+56
+58
+60
+62
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+
+0 10000 20000
+Tempo [s]
+
+150005000
+
+56
+58
+60
+62
+
+F
+re
+
+q
+ü
+
+ê
+n
+
+c
+ia
+
+ [
+H
+
+z]
+
+0 10000 20000
+Tempo [s]
+
+150005000
+
+f
+ref
+
+u
+
+f
+ref
+
+uz
+
+f) Sinais de Controle Total e de Equilíbrio
+
+c) Sinal de distúrbio – Vazão de entrada [m3/s] d) Sinal de distúrbio – Vazão de entrada [m3/s]
+
+a) Resposta do sistema – Nível em metros b) Resposta do sistema – Nível em metros 
+
+48
+50
+52
+54
+
+f
+ref
+
+u
+
+f
+ref
+
+uz
+
+f
+ref
+
+u
+
+f
+ref
+
+uz
+
+ 
+
+ 
+ 
+
+Figura 13: Curvas para as simulações de teste do mecanismo de auto-ajuste.
+
+Neste sentido, há aplicações muito promissoras na área de
+controle para o desenvolvimento de técnicas de produção
+submarina, facilitando o gerenciamento remoto de campos
+de petróleo. É de fundamental interesse para a indústria que a
+confiabilidade dos sistemas seja alta, e o controle inteligente,
+por sua forma de concepção, pode prover a flexibilidade ne-
+cessária.
+
+Para projetos futuros, uma validação do controlador funcio-
+nando em uma aparato experimental em escala que reproduz
+as características do separador submarido deverá ser reali-
+zada em breve. Em termos de melhoria de projeto de con-
+trole, um novo modelo que introduza também análises predi-
+tivas de comportamento mostra-se bem interessante.
+
+REFERÊNCIAS
+
+De Melo, A.V.; Mendes, J.R.P.; Serapião, A.B.S. and Es-
+tevam, V (2007a), Fuzzy tuned PID control for the
+VASPS subsea separator, 6th Brazilian Conference on
+Dynamics, Control and their Applications (DINCON),
+São José do Rio Preto.
+
+De Melo, A.V.; Mendes, J.R.P.; Serapião, A.B.S; Guilherme
+I.R.. e Estevam, V (2007b), Controle supervisório in-
+teligente para o separador submarino VASPS, Anais
+do IV Congresso Rio Automação, IBP568_07, Instituto
+Brasileiro de Petróleo e Gás, Rio de Janeiro.
+
+De Melo, A.V.; Mendes, J.R.P.; Serapião, A.B.S. e Estevam,
+V (2007c). Minimização de esforço de controle para
+processos contínuos – estudo do separador VASPS, Re-
+vista Petro&amp;amp;Química, Vol.299.
+
+De Melo, A.V.; Mendes, J.R.P; Serapião, A.B.S. and Este-
+vam, V (2007d). Intelligent Supervision Control for the
+Vasps Separator, Brazilian Journal of Petroleum and
+Gas, Vol.1, No.2, pp. 67-77.
+
+Do Vale, O.R.; Garcia, J.E. and Villa, M (2002), VASPS ins-
+tallation and operation at Campos Basin. Offshore Te-
+chnology Conference, OTC 14003, Houston, Texas.
+
+França, F.A.; Rosa, E.S.; Bannwart, A.C.; Moura, L.F. and
+Alhanati, F.J (1996), Hydrodynamic studies on a cyclo-
+nic separator, Offshore Technology Conference, OTC
+8059, Houston, Texas.
+
+Pedrycz, W. and Gomide, F (1998). An Introduction to fuzzy
+sets: analysis and design, Massachusetts: MIT Press,
+465p.
+
+Teixeira, A.F.; Mendes, J.R.P.; Serapião, A.B.S. e Gui-
+lherme, I.R (2006). Controle inteligente para o sistema
+de separação e bombeamento submarino – VASPS, Rio
+Oil &amp;amp; Gás Expo and Conference, IBP1802_06, Rio de
+Janeiro.
+
+Teixeira, A.F.; Mendes, J.R.P.; Estevam, V.; Guilherme, I.R.;
+Morooka, C.K. e RIGO, J.E (2004), Um controlador
+
+Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009 117
+
+
+
+fuzzy para o sistema de separação e bombeamento sub-
+marino – VASPS, Rio Oil &amp;amp; Gás Expo and Conference,
+IBP11804, Rio de Janeiro.
+
+Wang, S.; Mohan, R.S.; Shoham, O. and Kouba, G.E
+(2001), Dynamic Simulation and Control-System De-
+sign for Gas/Liquid Cylindrical Cyclone Separators,
+SPE 71308, SPE Journal, pp.236-247.
+
+118 Revista Controle &amp;amp; Automação/Vol.20 no.1/Janeiro, Fevereiro e Março 2009
+
+
+</field>
+	</doc>
+</add>

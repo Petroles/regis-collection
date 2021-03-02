@@ -1,0 +1,6725 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.14511</field>
+		<field name="filename">20866_000595318.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL
+INSTITUTO DE MATEMÁTICA
+
+PROGRAMA DE PÓS-GRADUAÇÃO EM MATEMÁTICA APLICADA
+
+Simulação Numérica de Ondas Aquáticas
+Não-Lineares Permanentes
+
+por
+
+Sebastião Romero Franco
+
+Dissertação submetida como requisito parcial
+para a obtenção do grau de
+
+Mestre em Matemática Aplicada
+
+Prof. Dr. Leandro Farina
+Orientador
+
+Porto Alegre, Dezembro de 2006.
+
+
+
+ii
+
+CIP - CATALOGAÇÃO NA PUBLICAÇÃO
+
+Franco, Sebastião Romero
+
+Simulação Numérica de Ondas Aquáticas Não-Lineares
+Permanentes / Sebastião Romero Franco.—Porto Alegre:
+PPGMAp da UFRGS, 2006.
+
+70 p.: il.
+
+Dissertação (mestrado) —Universidade Federal do Rio
+Grande do Sul, Programa de Pós-Graduação em Matemática
+Aplicada, Porto Alegre, 2006.
+Orientador: Farina, Leandro
+
+Dissertação: Métodos Analíticos e Numéricos em Dinâmica
+de Fluidos
+Ondas em água, empinamento de ondas, método espectral.
+
+
+
+iii
+
+Simulação Numérica de Ondas Aquáticas
+
+Não-Lineares Permanentes
+por
+
+Sebastião Romero Franco
+
+Dissertação submetida ao Programa de Pós-Graduação em
+Matemática Aplicada do Instituto de Matemática da Universidade Fede-
+ral do Rio Grande do Sul, como requisito parcial para a obtenção do grau
+de
+
+Mestre em Matemática Aplicada
+
+Linha de Pesquisa: Métodos Analíticos e Numéricos em Dinâmica de
+Fluidos
+
+Orientador: Prof. Dr. Leandro Farina
+
+Banca examinadora:
+
+Prof.Dr. Eloi Melo Filho
+UFSC
+
+Profa. Dra. Nara Maria Luzzi Rosauro
+IPH/UFRGS
+
+Prof. Dr. Leonardo Fernandes Guidi
+PPGMAp/IM/UFRGS
+
+Dissertação apresentada e aprovada em
+08 de Dezembro de 2006.
+
+Profa. Dra. Mária Cristina Varrialle
+Coordenadora
+
+
+
+À meus pais, Rosonir e Olinda Franco.
+
+
+
+v
+
+AGRADECIMENTOS
+
+A Deus, por ter me dado saúde e paz.
+
+A minha família pelo incentivo que recebi.
+
+A minha namorada Carine, pela paciência e compreensão.
+
+Aos meus tios, Alceu e Cecília, com quem morei durante o período de
+
+graduação.
+
+Ao meu orientador Leandro Farina pelos ensinamentos, orientação e
+
+amizade.
+
+Ao professor Rudnei Dias da Cunha e Núbia Cadete Pedrosa pelo auxilio
+
+computacional.
+
+À CAPES pelo apoio financeiro.
+
+Ao Programa de Pós-Graduação em Matemática Aplicada pela oportu-
+
+nidade.
+
+
+
+vi
+
+Conteúdo
+
+LISTA DE FIGURAS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . viii
+
+LISTA DE TABELAS . . . . . . . . . . . . . . . . . . . . . . . . . . . . x
+
+LISTA DE SÍMBOLOS . . . . . . . . . . . . . . . . . . . . . . . . . . . . xi
+
+RESUMO . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . xiii
+
+ABSTRACT . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . xiv
+
+1 INTRODUÇÃO . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+
+2 DESCRIÇÃO DO PROBLEMA NÃO-LINEAR . . . . . . . . . . 3
+
+2.1 Equações Governantes . . . . . . . . . . . . . . . . . . . . . . . . . 3
+
+2.2 Condições de Contorno . . . . . . . . . . . . . . . . . . . . . . . . 6
+
+2.2.1 Condições de Contorno Cinemáticas . . . . . . . . . . . . . . . . . . . 6
+
+2.2.2 Condição de Contorno Dinâmica . . . . . . . . . . . . . . . . . . . . . 7
+
+2.3 Esquematização do Problema . . . . . . . . . . . . . . . . . . . . . 8
+
+3 TEORIA LINEAR . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+
+3.1 Formulação do Problema Linear . . . . . . . . . . . . . . . . . . . 10
+
+3.2 Soluções . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+
+3.3 Relação de Dispersão e Velocidade de Fase . . . . . . . . . . . . 13
+
+3.4 Classificação das Ondas em Relação à Profundidade . . . . . . 14
+
+3.5 Velocidade de Grupo . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+
+4 O PROBLEMA FRACAMENTE NÃO-LINEAR . . . . . . . . . 22
+
+4.1 Aproximação Para o Problema de Segunda Ordem . . . . . . . 23
+
+4.2 Solução Para o Problema de Segunda Ordem . . . . . . . . . . . 28
+
+5 ONDAS NÃO-LINEARES PERMANENTES . . . . . . . . . . . . 30
+
+
+
+vii
+
+5.1 Aproximação de Ondas Completamente Não-Lineares Perma-
+nentes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+
+6 SIMULAÇÃO NUMÉRICA . . . . . . . . . . . . . . . . . . . . . . . 37
+
+6.1 Solução das Equações Pelo Método de Newton . . . . . . . . . . 37
+
+6.2 Verificação do Código Fortran . . . . . . . . . . . . . . . . . . . . 39
+
+6.3 Empinamento de Ondas . . . . . . . . . . . . . . . . . . . . . . . . 42
+
+6.3.1 Modelagem . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+
+6.3.1.1 Mudanças das Profundidades na Zona de Empinamento das Ondas 45
+
+6.4 Resultados . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+
+6.4.1 Resultados Adicionais . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+
+6.4.1.1 Perfil das Ondas e seus Ângulos de Quebra . . . . . . . . . . . . . . 57
+
+7 CONCLUSÕES E PERSPECTIVAS . . . . . . . . . . . . . . . . . 63
+
+APÊNDICE A MÉTODO DE NEWTON . . . . . . . . . . . . . . 65
+
+A.1 Método de Newton em Dimensões Mais Altas . . . . . . . . . . 66
+
+BIBLIOGRAFIA . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 69
+
+
+
+viii
+
+Lista de Figuras
+
+Figura 2.1 Geometria das ondas em águas: Observe onde aplica-se as condições
+de contorno cinemáticas e dinâmica na superfície e no fundo da água. 9
+
+Figura 3.1 A velocidade de onda c para ondas de comprimento variável ? em águas
+com profundidade uniforme h. Note o comportamento assintótico da
+
+velocidade da onda c =
+(
+
+g?
+2?
+
+) 1
+2
+
+para águas profundas e c = (gh)
+1
+2 para
+
+ondas longas. De Lighthill [10]. . . . . . . . . . . . . . . . . . . . 17
+
+Figura 3.2 Velocidade de grupo: Observe que a linha contínua é uma linha ima-
+ginária que envolve um grupo de ondas dado pelos pontilhados. A
+velocidade com que essa envoltória se desloca é chamada de velocidade
+de grupo. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+
+Figura 6.1 Perfil das ondas: Na figura (a), foi graficado a linha (a) da tabela 6.1
+para o caso N = 32, enquanto que na figura (b) e (c) foram graficados
+as linhas (e) e (h) da tabela 6.1, respectivamente. . . . . . . . . . . 41
+
+Figura 6.2 Empinamento de uma onda quando a profundidade da água começa a
+diminuir . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+
+Figura 6.3 Procedimento numérico: Esta figura indica como modelamos a dimi-
+nuição e a troca das profundidades na zona de empinamento de ondas. 45
+
+Figura 6.4 Comparação dos resultados: Na figura (a), mostramos a altura da onda
+em função da profundidade da água. Enquanto que na figura (b),
+mostramos a velocidade da onda em função desta profundidade. A
+altura inicial da onda foi de H?0 = 93 mm e seu período inicial foi ?
+
+?
+0 =
+
+1, 0 s. A linha sólida indica os dados obtidos a partir das simulações
+numéricas e os pontos indicam os dados obtidos experimentalmente. 48
+
+Figura 6.5 Comparação dos resultados: Altura da onda em função da profundi-
+dade da água com H?0 = 39 mm e ?
+
+?
+0 = 1, 67 s. . . . . . . . . . . . . 50
+
+Figura 6.6 Comparação dos resultados: Altura da onda em função da profundi-
+dade da água com H?0 = 42 mm e ?
+
+?
+0 = 3, 33 s. . . . . . . . . . . . . 51
+
+Figura 6.7 Coeficiente de empinamento da onda em função da profundidade rela-
+tiva da água. São mostradas sete figuras, referentes aos valores experi-
+mentais dados por Eagleson [5]. Os valores iniciais para as simulações,
+encontram-se na tabela 6.2. . . . . . . . . . . . . . . . . . . . . . 54
+
+Figura 6.8 A evolução do parâmetro H?/?? e a altura de quebra de onda com-
+putacional,
+
+(
+H?
+
+??
+
+)
+b
+
+em função da profundidade relativa da água. Na
+figura (a), mostramos os resultados referentes à figura 6.4, na figura
+(b), referentes à figura 6.5 e na figura (c), referentes à figura 6.6 . . . 56
+
+
+
+ix
+
+Figura 6.9 A evolução do parâmetro H?/?? e a altura de quebra de onda compu-
+tacional,
+
+(
+H?
+
+??
+
+)
+b
+
+em função da profundidade relativa da água referente
+aos dados iniciais contidos na tabela 6.2 e mostrados também na figura
+6.7. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 57
+
+Figura 6.10 Perfil das ondas: A figura (I) mostra o perfil da onda no momento
+inicial, com ??0 = 300 mm, H
+
+?
+0 = 93 mm e ?
+
+?
+0 = 1, 0 s. A figura
+
+(II) mostra o perfil da onda no momento em que ela está prestes a
+quebrar, neste caso, a profundidade da água, indicada pela linha reta
+é ?? = 168, 421 mm. . . . . . . . . . . . . . . . . . . . . . . . . . 58
+
+Figura 6.11 Perfil das ondas: A figura (I) mostra o perfil da onda no momento
+inicial, com ??0 = 300 mm, H
+
+?
+0 = 39 mm e ?
+
+?
+0 = 1, 67 s. A figura (II)
+
+mostra o perfil da onda no momento em que ela está prestes a quebrar,
+nesse momento, a profundidade da água, indicada pela linha reta é
+?? = 93, 75 mm. . . . . . . . . . . . . . . . . . . . . . . . . . . . 59
+
+Figura 6.12 Perfil das ondas: A figura (I) mostra o perfil da onda no momento
+inicial, com ??0 = 300 mm, H
+
+?
+0 = 42 mm e ?
+
+?
+0 = 3, 33 s. A figura (II)
+
+mostra o perfil da onda no momento em que ela está prestes a quebrar.
+Nesse momento, a profundidade da água, indicada pela linha reta é
+?? = 106, 25 mm. . . . . . . . . . . . . . . . . . . . . . . . . . . . 60
+
+Figura 6.13 Perfil das ondas referentes ao caso (d) da tabela 6.3: A figura (I) mostra
+o perfil da onda no momento inicial e a figura (II) mostra o perfil da
+onda no momento de sua quebra. . . . . . . . . . . . . . . . . . . 62
+
+Figura A.1 Método iterativo de Newton para problemas bi-dimensionais. Ob-
+serve a rápida convergência da seqüencia {x0, x1, · · ·}, para a raíz
+z. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 66
+
+
+
+x
+
+Lista de Tabelas
+
+Tabela 3.1 Comportamento assintótico das funções hiperbólicas . . . . . . . . 15
+
+Tabela 3.2 Erros devido as aproximações feitas nas funções hiperbólicas contidas
+na fórmula da velocidade de fase da onda, segundo Kinsman [9]. Ob-
+serve que cp indica a velocidade de fase em águas profundas, enquanto
+que cr e c em águas rasas e intermediárias, respectivamente. . . . . 18
+
+Tabela 6.1 Comparação dos resultados para o quadrado da velocidade da onda
+quando e?kQ/c = 0, 5. Na coluna "Calc" mostramos os resultados ob-
+tidos pelo nosso código, enquanto que na coluna "ref[13]" são expostos
+os resultados apresentados no trabalho de Rienecker &amp;amp; Fenton [13]. . 40
+
+Tabela 6.2 Valores iniciais da profundidade da água, da altura, período e da incli-
+nação da onda. Estes dados serão usados para a construção da figura
+6.7. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 53
+
+Tabela 6.3 Dados referentes ao perfil das ondas: Nesta tabela mostramos os valo-
+res das alturas e períodos iniciais das ondas assim como as profundida-
+des da água e os ângulos formados nas cristas das ondas no momento
+em que elas quebram. . . . . . . . . . . . . . . . . . . . . . . . . 61
+
+
+
+xi
+
+LISTA DE SÍMBOLOS
+
+u vetor velocidade
+
+P pressão
+
+Pa pressão atmosférica
+
+? densidade da água
+
+g aceleração da gravidade
+
+? viscosidade
+
+t tempo
+
+? potencial de velocidades
+
+? elevação da superfície livre da água
+
+h profundidade da água
+
+a amplitude da onda
+
+H altura da onda
+
+? freqüência angular da onda
+
+? período da onda
+
+? comprimento de onda
+
+k vetor de onda
+
+k número de onda
+
+c velocidade de fase da onda
+
+cp velocidade de fase em águas profundas
+
+cr velocidade de fase em águas rasas
+
+cg velocidade de grupo
+
+
+
+xii
+
+? função corrente
+
+Q vazão volumétrica
+
+R constante de energia
+
+? profundidade média da água
+
+(?) indica que a variável é dimensional
+
+D nível de referência arbitrária
+
+N número de coeficientes de Fourier
+
+Bj coeficientes de Bernoulli
+
+cE velocidade Euleriana média
+
+cs velocidade de transporte de massa
+
+F fluxo de energia
+
+
+
+xiii
+
+RESUMO
+
+O presente trabalho apresenta um estudo sobre ondas de gravidade.
+
+São descritas as equações que governam o movimento de ondas lineares, fracamente
+
+não-lineares e completamente não-lineares. Foi implementado um método espectral
+
+que resolve, empregando o método de Newton, as equações completamente não-
+
+lineares que descrevem o movimento das ondas estacionárias em água. Com isso, é
+
+possível simular o empinamento das ondas, ou seja, o comportamento destas quando
+
+a profundidade da água diminui. Calcula-se a altura das ondas em função da pro-
+
+fundidade, o coeficiente de empinamento e o ângulo de quebra das ondas. Assim,
+
+pôde-se observar as relações destas propriedades com a quebra das ondas e associar
+
+os resultados numéricos com aqueles previstos pela teoria.
+
+
+
+xiv
+
+ABSTRACT
+
+A study on the propagation of gravity waves is presented. The go-
+
+verning equations for linear, weakly nonlinear and fully nonlinear water waves are
+
+described. A spectral method has been implemented which solves, employing the
+
+Newton method, the fully nonlinear equations describing the motion of steady wa-
+
+ves. It is then possible to simulate the shoaling of waves, that is, the behaviour of
+
+them when the water depth decreases. The wave height as a function of depth, the
+
+shoaling coefficient and the angle of wave breaking are calculated. It was possible
+
+to observe the relationship of these properties with the breaking of the waves and
+
+associate the numerical results with those predicted by the theory.
+
+
+
+1
+
+1 INTRODUÇÃO
+
+Um dos fenômenos naturais com grande volume de pesquisa são aqueles
+
+envolvendo ondas em água. O conhecimento das propriedades das ondas aquáticas
+
+são de fundamental importância em diversas atividades sócio-econômicas.
+
+Devido ao avanço na teoria de propagação de ondas, do grande desen-
+
+volvimento computacional e dos métodos numéricos, é possível fazer previsões do
+
+comportamento das ondas em água, viabilizando obras, como por exemplo, barra-
+
+gens, quebra-ondas e estruturas em alto mar que podem evitar prejuízos recorrentes
+
+da força das ondas.
+
+No capítulo 2 estudamos as equações governantes para o desenvolvi-
+
+mento das características das ondas em fluidos, no caso água. Para isso, partimos
+
+da equação de Navier-Stokes, fazemos algumas hipóteses adicionais e chegamos à
+
+equação de Laplace, que é a equação governante para o movimento da água. Para
+
+definirmos completamente o problema não-linear de ondas em água impomos tam-
+
+bém as condições de contorno, sendo estas as condições cinemáticas e dinâmica.
+
+O capítulo 3 mostra a linearização das equações descritas no capítulo
+
+2 e suas soluções. A partir destas soluções podemos descrever várias relações que
+
+definem o movimento das ondas em água como a equação que define a elevação
+
+da superfície livre da água, a relação de dispersão e as equações da velocidade de
+
+propagação das ondas, incluindo os casos limites de águas rasas e águas profundas.
+
+Depois de encontrar a velocidade com que a onda se propaga, analisamos como se
+
+propaga um grupo de ondas dispersivas, que é a velocidade com que a energia das
+
+ondas se propaga.
+
+No capítulo 4 fazemos comentários sobre o problema fracamente não-
+
+linear e desenvolvemos o problema que modela as ondas de Stokes de segunda ordem.
+
+
+
+2
+
+No capítulo 5 tratamos ondas estacionárias. A partir das equações des-
+
+critas no capítulo 2, descrevemos o problema tri-dimensional, não-linear e estacioná-
+
+rio. Desenvolvemos também as equações que descrevem o problema bi-dimensional
+
+completamente não-linear. Para isso, usamos expansões da função corrente em sé-
+
+ries de Fourier. Esta descreve o movimento estacionário da elevação da superfície
+
+livre da água.
+
+O capítulo 6 inicia descrevendo a elaboração de um código em Fortran
+
+90. Este código usa o método de Newton para encontrar uma aproximação para
+
+a solução das equações descritas no capítulo 5. A validação do código é feita de
+
+maneira comparativa com outros trabalhos. Depois de desenvolvido e validado o
+
+código, fazemos um estudo sobre empinamento de ondas. Como durante este tipo
+
+de fenômeno ocorre conservação do período e do fluxo de energia das ondas en-
+
+quanto a profundidade da água diminui, primeiramente definimos as novas equações
+
+usadas e mostramos como ocorrem as mudanças de profundidades no procedimento
+
+numérico adotado. A partir daí, simulamos vários casos de empinamento de ondas
+
+e realizamos um estudo comparativo com trabalhos de diversos autores. Com isso,
+
+podemos verificar a validade de nossas simulações além de obter propriedades sobre
+
+o empinamento e quebra das ondas como a altura e o ângulo de quebra das ondas.
+
+No capítulo 7 são apresentadas as conclusões sobre o trabalho e as
+
+perspectivas para os trabalhos futuros.
+
+
+
+3
+
+2 DESCRIÇÃO DO PROBLEMA NÃO-LINEAR
+
+Neste capítulo, faremos a descrição do problema não-linear de ondas de
+
+gravidade, ou seja, ondas em água onde a principal força restauradora é a aceleração
+
+da gravidade.
+
+O principal exemplo de ondas de gravidade são ondas dispersivas, gover-
+
+nadas pelo balanço entre a inércia do fluido e a tendência, sobre a ação da gravidade,
+
+para retornar ao estado de equilíbrio estável. Como a gravidade é uma força que
+
+atua na direção vertical e não faz distinção entre as direções horizontais, as ondas
+
+aqui consideradas são isotrópicas, ou seja, propagam-se da mesma forma em todas
+
+as direções.
+
+Os efeitos de dispersão são de grande importância para o desenvolvi-
+
+mento das ondas de gravidade; eles incorporam um grupo de complicados fenômenos
+
+que aparecem na maioria das ondas aquáticas. Normalmente o fenômeno mais no-
+
+tado é aquele em que a velocidade de propagação da onda varia com o comprimento
+
+da onda.
+
+Como neste trabalho consideramos apenas ondas gravitacionais, pode-
+
+mos desprezar a tensão superficial e as ondas capilares.
+
+2.1 Equações Governantes
+
+Nesta seção, veremos a descrição das equações que governam as on-
+
+das em água e formularemos um problema de valor de contorno geral, baseado na
+
+teoria descrita por Newman [12], Farina [6], Kinsman [9] e Whitham [18]. A par-
+
+tir daí, deduziremos características básicas e importantes sobre ondas aquáticas de
+
+superfície.
+
+
+
+4
+
+O estudo da propagação de ondas na superfície da água requer a con-
+
+sideração de algumas hipóteses das propriedades da água e do movimento realizado
+
+por ela. Para isso, consideramos um fluido:
+
+• Homogêneo;
+
+• Incompressível;
+
+• Com movimento irrotacional.
+
+Além disto,
+
+• A viscosidade e a tensão superficial são desprezíveis;
+
+• Não será considerada a forçante do vento;
+
+• A principal força restauradora é a gravidade.
+
+As coordenadas espaciais são denotadas aqui por (x,y,z) e as respec-
+
+tivas componentes do vetor de velocidade u são (u,v,w). A coordenada z está na
+
+direção vertical, ou seja, a aceleração da gravidade g está no sentido negativo de z.
+
+Como foi assumido que o fluido é incompressível, então a densidade ?
+
+é constante no tempo e no espaço. Assim, a equação da continuidade é
+
+? · u = 0. (2.1)
+
+A equação que indica a conservação do momento, dada pela equação
+
+de Navier-Stokes
+
+?u
+?t
+
++ (u · ?)u = ??
+(
+P
+
+?
++ gz
+
+)
++ ??u, (2.2)
+
+pode ser usada para descrever o movimento.
+
+
+
+5
+
+Na equação (2.2), P denota a pressão e ? a viscosidade do fluido. Como
+
+está sendo desprezado a viscosidade, o termo Laplaciano em (2.2) torna-se insigni-
+
+ficante. Logo, a equação de Navier-Stokes se reduz a
+
+?u
+?t
+
++ u · ?u = ??
+(
+P
+
+?
++ gz
+
+)
+, (2.3)
+
+conhecida como equação de Euler.
+
+Segundo Stoker [16], a lei da conservação de circulação afirma que para
+
+uma curva fechada C que se move com o fluido (isto é, C é constituída das mes-
+
+mas partículas do fluido), em um fluido não-viscoso, a circulação ?C , definida pela
+
+integral de linha
+
+?C =
+
+?
+C
+
+udx + vdy + wdz,
+
+é constante no tempo.
+
+Neste trabalho vamos assumir que esta constante é zero, ou seja, ?C ? 0
+
+para todas as curvas fechadas C. Fisicamente, isso indica que o fluido tenha estado
+
+em repouso ou teve velocidade constante em um determinado instante.
+
+A condição ?C ? 0 mostra diretamente do teorema de Stokes,
+?
+
+S
+u ds =?
+
+V
+(?× u)dv, onde S é fronteira da região V , que o rotacional de u se anula global-
+
+mente, ou seja,
+
+? × u = 0. (2.4)
+
+Isso implica que o escoamento é irrotacional. A equação (2.4) é equiva-
+
+lente ao fato que existe um potencial de velocidade ? tal que
+
+? × u = ? × (??) = 0 e
+
+u = ??.
+
+Substituindo na equação (2.1), temos que o potencial de velocidade
+
+satisfaz a equação de Laplace
+
+?? =
+?2?
+
+?x2
++
+?2?
+
+?y2
++
+?2?
+
+?z2
+= 0. (2.5)
+
+
+
+6
+
+2.2 Condições de Contorno
+
+Uma vez determinado a equação de Laplace como sendo a equação
+
+governante, tem-se agora que estabelecer as equações que definem as condições de
+
+contorno cinemáticas e dinâmica. Estas condições devem ser informadas para todo
+
+o contorno do domínio.
+
+Neste trabalho, consideramos um domínio ilimitado horizontalmente,
+
+como em um grande oceano. As fronteiras são a superfície livre e a batimetria do
+
+fundo.
+
+2.2.1 Condições de Contorno Cinemáticas
+
+A condição de contorno cinemática na superfície livre z = ?(x,y,t) é
+
+dada por
+D
+
+Dt
+(z ? ?(x,y,t)) = 0. (2.6)
+
+Fisicamente, isso significa que superfície livre se move com o fluido mas sempre
+
+contém as mesmas partículas dele.
+
+Desenvolvendo as derivadas na equação (2.6), podemos expressar a con-
+
+dição cinemática da superfície livre como
+
+??
+
+?t
++
+??
+
+?x
+
+??
+
+?x
++
+??
+
+?y
+
+??
+
+?y
+=
+??
+
+?z
+em z = ?(x,y,t). (2.7)
+
+onde
+
+(u,v,w) =
+
+(
+dx
+
+dt
+,
+dy
+
+dt
+,
+dz
+
+dt
+
+)
+=
+
+(
+??
+
+?x
+,
+??
+
+?y
+,
+??
+
+?z
+
+)
+é a velocidade na superfície livre.
+
+Analogamente, podemos obter a condição para o contorno no fundo.
+
+Denotando este como z = ?h(x,y), temos que
+
+D
+
+Dt
+(z + h(x,y,t)) = 0 em z = ?h(x,y,t),
+
+
+
+7
+
+ou equivalentemente,
+
+??
+
+?z
++
+?h
+
+?t
++
+??
+
+?x
+
+?h
+
+?x
++
+??
+
+?y
+
+?h
+
+?y
+= 0 em z = ?h(x,y,t). (2.8)
+
+que é a condição de fronteira do fundo.
+
+Para fundos estacionários, ou seja, sem a dependência temporal, a equa-
+
+ção (2.8) torna-se
+
+??
+
+?z
++
+??
+
+?x
+
+?h
+
+?x
++
+??
+
+?y
+
+?h
+
+?y
+= 0 em z = ?h(x,y).
+
+Para fundo horizontal fixo, a condição de fronteira é
+
+??
+
+?z
+= 0 em z = ?h(x,y).
+
+Agora, para ondas em águas profundas, ou seja, onde a onda não interage com o
+
+fundo, temos
+
+??
+
+?z
+= 0 quando z = ?h(x,y) ? ??. (2.9)
+
+2.2.2 Condição de Contorno Dinâmica
+
+Nesta seção, expressaremos a condição de contorno dinâmica. Esta diz
+
+respeito às forças envolvidas na superfície de contorno do fluido.
+
+Usamos a equação de Euler (2.3) que nos diz que
+
+?u
+?t
+
++ u · ?u = ??
+(
+P
+
+?
++ gz
+
+)
+. (2.10)
+
+Usando a identidade vetorial para fluidos irrotacionais
+
+u · ?u =
+1
+
+2
+?u2,
+
+temos de (2.10),
+?u
+?t
+
++
+1
+
+2
+?u2 = ??
+
+(
+P
+
+?
++ gz
+
+)
+.
+
+
+
+8
+
+Como u = ??, a equação de Euler simplifica a
+
+?
+(
+??
+
+?t
++
+
+1
+
+2
+|??|2
+
+)
+= ??
+
+(
+P
+
+?
++ gz
+
+)
+. (2.11)
+
+Integrando (2.11) temos,
+
+??
+
+?t
++
+
+1
+
+2
+|??|2 + gz = ?
+
+P
+
+?
++ A(t). (2.12)
+
+que é chamada de equação de Bernoulli. Observe que A depende unicamente de t e
+
+podemos supor A(t) ? 0, sem perda de generalidade.
+
+Levando em conta que a pressão imediatamente abaixo da superfície
+
+deve ser igual à pressão atmosférica Pa na equação (2.12), obtemos a condição di-
+
+nâmica da superfície livre
+
+??
+
+?t
++
+
+1
+
+2
+|??|2 + g? = ?
+
+Pa
+?
+
+em z = ?(x,y,t). (2.13)
+
+como
+
+|??|2 = ?? · ?? =
+(
+??
+
+?x
+
+)2
++
+
+(
+??
+
+?y
+
+)2
++
+
+(
+??
+
+?z
+
+)2
+a equação dinâmica (2.13) fica
+
+??
+
+?t
++
+
+1
+
+2
+
+[(
+??
+
+?x
+
+)2
++
+
+(
+??
+
+?y
+
+)2
++
+
+(
+??
+
+?z
+
+)2]
++ g? = ?
+
+Pa
+?
+
+em z = ?(x,y,t). (2.14)
+
+2.3 Esquematização do Problema
+
+Nesta seção veremos geometricamente como aplica-se as condições de
+
+contorno no problema de ondas em água. Para isso, agruparemos a equação de
+
+Laplace juntamente com as condições de contorno no mesmo sistema de equações.
+
+Assim temos
+
+
+
+9
+
+Figura 2.1: Geometria das ondas em águas: Observe onde aplica-se as condições de con-
+torno cinemáticas e dinâmica na superfície e no fundo da água.
+
+?????????????????????
+????????????????????
+
+?2?
+
+?x2
++
+?2?
+
+?y2
++
+?2?
+
+?z2
+= 0 em ? ? &amp;lt;z &amp;lt;0,
+
+??
+
+?t
++
+??
+
+?x
+
+??
+
+?x
++
+??
+
+?y
+
+??
+
+?y
+=
+??
+
+?z
+em z = ?(x,y,t),
+
+??
+
+?t
++
+
+1
+
+2
+
+[(
+??
+
+?x
+
+)2
++
+
+(
+??
+
+?y
+
+)2
++
+
+(
+??
+
+?z
+
+)2]
++ g? = ?
+
+Pa
+?
+
+em z = ?(x,y,t),
+
+??
+
+?z
++
+??
+
+?x
+
+?h
+
+?x
++
+??
+
+?y
+
+?h
+
+?y
+= 0 em z = ?h(x,y).
+
+(2.15)
+
+A figura 2.1 mostra a geometria de uma onda com a profundidade da
+
+água finita e também onde e como devemos impor as condições nas fronteiras da
+
+água. Observe que foi admitido uma onda em profundidade finita e estacionária
+
+?h(x,y).
+
+
+
+10
+
+3 TEORIA LINEAR
+
+Ondas superficiais reais são inerentemente não lineares. Porém, quando
+
+assumimos que as amplitudes das ondas são muito pequenas comparado com o
+
+comprimento de onda e com a profundidade da água, ou seja, a superfície da água
+
+é quase plana, podemos impor as condições de superfície livre em z = 0 e assim
+
+temos uma linearização do problema de ondas em água. Este é um procedimento
+
+bastante usado e apropriado em inúmeras situações. Neste capítulo, descrevemos
+
+resumidamente a teoria linear de ondas aquáticas.
+
+3.1 Formulação do Problema Linear
+
+Seguindo Whitham [18] e Farina [6], podemos expor a forma linearizada
+
+da condição de contorno cinemática (2.7) na superfície livre como
+
+??
+
+?t
+=
+??
+
+?z
+em z = 0, (3.1)
+
+enquanto que a forma linearizada da condição de contorno dinâmica (2.14), despre-
+
+zando a pressão atmosférica é
+
+??
+
+?t
++ g? = 0 em z = 0. (3.2)
+
+Diferenciando a equação (3.2) com respeito a t e substituindo na equação (3.1),
+
+temos
+?2?
+
+?t2
++ g
+
+??
+
+?z
+= 0 em z = 0. (3.3)
+
+A equação de Laplace e a condição de contorno no fundo constante juntamente com
+
+a equação (3.3) formam um problema linearizado independente de ?, que é expresso
+
+por
+
+
+
+11
+
+?????????????
+????????????
+
+?2?
+
+?x2
++
+?2?
+
+?y2
++
+?2?
+
+?z2
+= 0 em ? h &amp;lt;z &amp;lt;0,
+
+?2?
+
+?t2
++ g
+
+??
+
+?z
+= 0 em z = 0,
+
+??
+
+?z
+= 0 em z = ?h.
+
+(3.4)
+
+Depois de ser encontrado o potencial de velocidade ?, a equação (3.2)
+
+fornece na superfície livre média z = 0 a seguinte relação que explicita ? em termos
+
+da derivada temporal de ?.
+
+? = ?
+1
+
+g
+
+??
+
+?t
+. (3.5)
+
+3.2 Soluções
+
+Estudaremos soluções que descrevem o comportamento periódico das
+
+ondas, fazendo com que a condição de contorno exata seja automaticamente satis-
+
+feita no fundo. Para isso, supõe-se que a solução do problema linear (3.4) é dado da
+
+seguinte forma.
+
+? =
+ag
+
+?
+?(z)Re(e?i(k·q??t)), (3.6)
+
+onde o vetor q é um vetor de coordenadas q = (x,y).
+
+A equação (3.6) modela uma onda de amplitude a = H
+2
+, freqüência
+
+angular ? = 2?
+?
+
+e comprimento de onda é ? = 2?
+k
+
+. Aqui H é a altura, ? é o período
+
+e k = |k| o número de onda com k = (k1,k2) sendo o vetor de onda.
+
+Substituindo a equação (3.6) na equação de Laplace dada no problema
+
+(3.4), obtemos uma equação diferencial ordinária em ?, dada por:
+
+??? ? k2? = 0. (3.7)
+
+
+
+12
+
+A solução geral desta EDO é dada por
+
+?(z) = A senh kz + B cosh kz. (3.8)
+
+onde A e B são constantes arbitrárias. Para determiná-las impomos a condição de
+
+fundo do problema (3.4), que nos fornece ?
+?
+(z) = 0 em z = ?h. Daí temos que
+
+??(z) = Ak cosh kz + Bk senh kz,
+
+??(?h) = Ak cosh (?kh) + Bk senh (?kh) = 0.
+
+Portanto,
+
+Ak cosh (?kh) = ?Bk senh (?kh).
+
+Observe que cosh é uma função par e senh é ímpar. Logo temos
+
+A = B tanh kh.
+
+Assim
+
+?(z) = B( tanh kh senh kz + cosh kz),
+
+?(z) = B
+
+(
+senh kh
+cosh kh
+
+senh kz +
+cosh kh
+cosh kh
+
+cosh kz
+)
+,
+
+?(z) =
+B
+
+cosh kh
+( senh kh senh kz + cosh kh cosh kz).
+
+Usando a identidade trigonométrica
+
+cosh (? + ?) = cosh ? cosh ? + senh ? senh ?,
+
+temos
+
+?(z) = B
+cosh [k(z + h)]
+
+cosh kh
+. (3.9)
+
+Diferenciando (3.6) com respeito a t e usando o fato que cosseno é uma
+
+função par, temos:
+
+? =
+ag
+
+?
+?(z) cos [?(k · q ? ?t)],
+
+??
+
+?t
+=
+
+ag
+
+?
+?(z)? sen (k · q ? ?t),
+
+??
+
+?t
+= ag?(z) sen (k · q ? ?t).
+
+
+
+13
+
+Agora, usando (3.5) em z = 0 obtemos,
+
+?(x,y,t) = ?a?(0) sen (k · q ? ?t).
+
+Avaliando ?(0) na equação (3.9) temos
+
+?(0) = B.
+
+Com isso,
+
+? = ?aB sen (k · q ? ?t).
+
+Pela hipótese que a é a amplitude da onda, então temos que B = ?1. Logo,
+
+? = a sen (k · q ? ?t). (3.10)
+
+A equação (3.10) descreve o comportamento periódico da onda na superfície livre
+
+em q e t.
+
+3.3 Relação de Dispersão e Velocidade de Fase
+
+Nesta seção, usaremos as equações já descritas para desenvolver uma
+
+relação entre a freqüência ?, a profundidade da água h e o número de onda k, que
+
+é chamada de relação de dispersão. Também encontraremos uma fórmula para a
+
+velocidade de propagação de uma onda, chamada de velocidade de fase.
+
+Partindo da condição de contorno
+?2?
+
+?t2
+= ?g
+
+??
+
+?z
+em z = 0, descrita na
+
+seção 3.1, e usando a equação (3.6), temos
+
+?2
+
+?t2
+
+[ag
+?
+
+?(z) cos (k · q ? ?t)
+]
+
+= ?g
+?
+
+?z
+
+[ag
+?
+
+?(z) cos (k · q ? ?t)
+]
+,
+
+??2?(z) cos (k · q ? ?t) = ?g??(z) cos (k · q ? ?t),
+
+?2?(z) = ?g??(z).
+
+De (3.9), temos
+
+??2B
+cosh [k(z + h)]
+
+cosh kh
+= ?gkB
+
+senh [k(z + h)]
+cosh kh
+
+,
+
+
+
+14
+
+e em z = 0, temos
+
+?2
+cosh kh
+cosh kh
+
+= gk
+senh kh
+cosh kh
+
+,
+
+ou seja,
+
+?2 = gk tanh kh. (3.11)
+
+Esta equação é a chamada relação de dispersão para ondas lineares em profundidade
+
+finita. Ela expressa uma única relação entre ?, k e h. Se duas dessas variáveis são
+
+conhecidas, a terceira estará unicamente definida.
+
+Vejamos agora a velocidade de propagação de uma onda, ou velocidade
+
+de fase da onda, que por definição é dada por
+
+c =
+?
+
+?
+=
+?
+
+k
+. (3.12)
+
+Se usarmos a relação de dispersão (3.11), temos
+
+c2 =
+g
+
+k
+tanh kh. (3.13)
+
+A equação (3.13) mostra uma dependência da velocidade da onda com
+
+a profundidade da água e o número de onda. Para dados valores de k ou ?, essa
+
+equação mostra que a onda se propaga mais rapidamente em águas de maior profun-
+
+didade. Essa dependência da velocidade com o número de onda na equação (3.13) e
+
+também as dependências descritas na equação (3.11) caracterizam ondas dispersivas.
+
+No caso de ondas em água, como as ondas longas se propagam mais rapidamente
+
+que ondas curtas, para ondas se propagando longe da região onde foram geradas, as
+
+ondas mais longas vão precedendo progressivamente as mais curtas. Assim temos a
+
+dispersão gradativa do campo de ondas.
+
+3.4 Classificação das Ondas em Relação à Profundidade
+
+Devido à influência da profundidade da água nas equações apresentadas
+
+até o momento podemos classificar as ondas de gravidade como ondas em águas
+
+rasas, intermediárias e profundas. Esta classificação será útil no capítulo 6, quando
+
+
+
+15
+
+investigarmos empinamento de ondas. Usaremos aproximações assintóticas para as
+
+funções hiperbólicas contidas nas equações que definem o movimento e a velocidade
+
+das ondas.
+
+Tabela 3.1: Comportamento assintótico das funções hiperbólicas
+
+kh ? 0 kh ? ??
+senh kh kh ekh/2
+cosh kh 1 ekh/2
+tanh kh kh 1
+
+A tabela 3.1 mostra os comportamentos assintóticos das funções hiper-
+
+bólicas. Assim, quando kh ? 0, temos as seguintes aproximações para a relação de
+
+dispersão e a velocidade de fase da onda. Partindo da equação (3.11), temos que a
+
+relação de dispersão em águas rasas torna-se,
+
+?2 = gk(kh). (3.14)
+
+Agora, usando a equação (3.13), a velocidade de propagação da onda é
+
+aproximada da seguinte maneira,
+
+c2 =
+g
+
+k
+kh,
+
+ou seja,
+
+c = (gh)
+1
+2 . (3.15)
+
+Esta equação é chamada de velocidade de fase da onda em águas rasas.
+
+As aproximações quando kh ? ? representam ondas em águas pro-
+
+fundas, ou seja, a batimetria do fundo não influencia no desenvolvimento da onda.
+
+Faremos novamente a substituição dos valores assintóticos das funções hiperbólicas
+
+na relação de dispersão. Assim temos
+
+?2 = gk, (3.16)
+
+que é a relação entre freqüência e número de onda para ondas de gravidade em águas
+
+profundas, chamada de relação de dispersão para águas profundas. Esta relação pode
+
+
+
+16
+
+ser reescrita em termos da velocidade de fase da onda c. Para isso usamos a equação
+
+(3.13), e temos
+
+c2 =
+g
+
+k
+
+ou
+
+c =
+(g
+k
+
+) 1
+2
+. (3.17)
+
+Como ? =
+2?
+
+k
+, podemos escrever esta equação como
+
+c =
+
+(
+g?
+
+2?
+
+) 1
+2
+
+. (3.18)
+
+Esta dependência da velocidade da onda com a raiz quadrada do comprimento da
+
+onda implica em uma substancial variação da velocidade com o comprimento de
+
+onda. Isso reforça a propriedade que diz que ondas de maior comprimento se pro-
+
+pagam mais rapidamente, em águas profundas.
+
+Agora mostraremos alguns valores que são considerados limites para
+
+que a profundidade da água em relação ao comprimento de onda façam com que
+
+kh ? 0 e kh ? ?? na tabela 3.1.
+
+Seguindo Lighthill [10], para valores de kh &gt; 1, 75, temos
+
+0, 97 &amp;lt;tanh
+1
+2 (kh) &amp;lt;1, ou seja, tanh
+
+1
+2 (kh) ? 1. Assim, da equação (3.13) chegamos
+
+às equações (3.17) e (3.18). Isso significa que ? = 2?
+k
+
+ou ?(kh) = 2?h implica em
+
+2?h &gt; 1, 75? ou h &gt; 0, 28?. Então, para h &gt; 0, 28? podemos considerar que a
+
+onde está em águas profundas, ou seja, que a batimetria do fundo não influencia no
+
+desenvolvimento das ondas.
+
+Por outro lado, para valores de kh &amp;lt;0, 44, temos 0, 97 &amp;lt;tanh
+1
+2 (kh)
+
+(kh)
+1
+2
+
+&amp;lt;1,
+
+ou seja, tanh (kh) ? kh. Assim, da equação (3.13) chegamos à equação (3.15). Isso
+
+significa que ? = 2?
+k
+
+implica em 2?h &amp;lt;0, 44? ou h &amp;lt;0, 07?. Ou seja, para h &amp;lt;0, 07?
+
+podemos considerar ondas em águas rasas.
+
+Assim, podemos dizer que em profundidades entre 0, 07? e 0, 28? (cor-
+
+respondendo a comprimentos de onda entre 3, 5h e 14h) a velocidade de fase se dis-
+
+tancia significativamente de suas formas limites dadas nas equações (3.15) e (3.17),
+
+
+
+17
+
+Figura 3.1: A velocidade de onda c para ondas de comprimento variável ? em águas com
+profundidade uniforme h. Note o comportamento assintótico da velocidade
+
+da onda c =
+(
+
+g?
+2?
+
+) 1
+2
+
+para águas profundas e c = (gh)
+1
+2 para ondas longas. De
+
+Lighthill [10].
+
+para ondas em águas rasas e profundas, respectivamente. Neste caso, as ondas são
+
+consideradas em águas intermediárias. A figura (3.1) evidencia bem esse fato.
+
+Nesta figura, note o comportamento assintótico da velocidade da onda
+
+em relação à profundidade da água, que está em função do comprimento de onda.
+
+Nesta condição, a profundidade da água é chamada de profundidade relativa da água,
+
+ou seja, a razão entre a profundidade da água pelo comprimento de onda.
+
+A profundidade relativa da água nos informa se a onda encontra-se em
+
+águas rasas, intermediárias ou profundas. Segundo a teoria de Lighthill [10] vista
+
+acima, os valores limitantes da profundidade relativa são h/? &gt; 0, 28 para águas
+
+profundas, h/? &amp;lt;0, 07 para águas rasas e no intervalo 0, 07 &amp;lt;h/? &amp;lt;0, 28 se
+
+caracteriza o regime de águas intermediárias.
+
+Portanto, quando fazemos aproximações para as funções hiperbólicas
+
+contidas nas equações que governam o desenvolvimento das ondas em água, estamos
+
+cometendo erro. Para diminuir este erro, devemos ter o cuidado de usar um adequado
+
+
+
+18
+
+valor limite para a profundidade relativa, ou seja, devemos diminuir o valor limite
+
+da profundidade relativa em águas rasas e aumentar esse valor em águas profundas.
+
+Tabela 3.2: Erros devido as aproximações feitas nas funções hiperbólicas contidas na fór-
+mula da velocidade de fase da onda, segundo Kinsman [9]. Observe que cp
+indica a velocidade de fase em águas profundas, enquanto que cr e c em águas
+rasas e intermediárias, respectivamente.
+
+Erro em c/cp ou c/cr Profundidade Relativa
+devido as aproximações (h/?)
+
+hiperbólicas em (%) Águas profundas Águas rasas
+0,5 0,474 0,006
+1,0 0,417 0,010
+2,0 0,358 0,019
+5,0 0,277 0,048
+10,0 0,211 0,095
+
+Na tabela 3.2, Kinsman [9] mostrou os erros devido às aproximações
+
+feitas nas funções hiperbólicas que estão nas equações da velocidade de fase das
+
+onda. Estes erros foram calculados pela razão entre as velocidade de fase da onda
+
+em águas intermediárias e profundas, assim como pela razão entre as velocidade de
+
+fase da onda em águas intermediárias e rasas.
+
+Observe que se adotarmos os valores limites da profundidade relativa
+
+citados por Lighthill, h/? &gt; 0, 07 e h/? &amp;lt;0, 28, os erros são de aproximadamente
+
+5%.
+
+Verificando a tabela 3.2 vemos que outros valores para a profundidade
+
+relativa produzem erros menores nas aproximações assintóticas da velocidade de
+
+fase da onda. Por exemplo, os valores sugeridos no Manual de Engenharia Costeira
+
+(Coastal Engineering Manual ) [2], que levam em conta os seguintes valores limites
+
+da profundidade relativa para considerar ondas em águas rasas, intermediárias e
+
+profundas.
+
+• Ondas em águas rasas:
+h
+
+?
+&amp;lt;0, 05.
+
+• Ondas em águas intermediárias: 0, 05&amp;lt;
+h
+
+?
+&amp;lt;0, 5.
+
+
+
+19
+
+• Ondas em águas profundas:
+h
+
+?
+&gt; 0, 5.
+
+Observe que o erro cometido quando fazemos aproximações nas equa-
+
+ções que descrevem a velocidade de fase das ondas em águas profundas é menor que
+
+0, 5%, enquanto que o erro cometido ao assumir ondas em águas rasas é menor que
+
+5%.
+
+3.5 Velocidade de Grupo
+
+O movimento de um grupo de ondas pode ser considerado como o mo-
+
+vimento de um trem de ondas senoidais. Quando um grupo de ondas se propaga
+
+na água, cria-se uma linha imaginária que delimita o grupo. Essa linha encontra-se
+
+variando lentamente no espaço e no tempo e essa variação periódica forma vários
+
+pacotes de ondas. A velocidade com que essa linha imaginária envoltória se propaga
+
+chama-se velocidade de grupo.
+
+Figura 3.2: Velocidade de grupo: Observe que a linha contínua é uma linha imaginária
+que envolve um grupo de ondas dado pelos pontilhados. A velocidade com
+que essa envoltória se desloca é chamada de velocidade de grupo.
+
+A figura 3.2 mostra como ocorre o deslocamento dos pacotes de ondas.
+
+Observe que a curva com linha contínua representa a linha imaginária que envolve
+
+
+
+20
+
+os pacotes de ondas, enquanto que as curvas pontilhadas representam as ondas
+
+separadamente.
+
+Se observarmos em uma situação real o deslocamento de um grupo de
+
+ondas na água, veremos que a onda que está na frente do grupo vai diminuindo
+
+e some de repente! a frente é então ocupada pela onda que seguia logo atrás, a
+
+qual continuará também a diminuir de altura e desaparece. Em contrapartida,
+
+se seguirmos uma onda que progride atrás do grupo, verificamos que uma outra
+
+onda nasce atrás dela e vai progressivamente crescendo e depois também tende a
+
+desaparecer. Esse fenômeno continua se repetindo.
+
+O fato das ondas desaparecerem à frente de um grupo de ondas e sur-
+
+girem outras ondas atrás do mesmo grupo ocorre pela conservação de energia no
+
+sistema. Por isso, a velocidade de grupo é a velocidade de transporte de energia das
+
+ondas. Isso torna a velocidade de grupo mais importante que a velocidade de fase,
+
+de certa forma.
+
+Neste trabalho vamos examinar como ocorre o deslocamento de um
+
+grupo de ondas, verificando principalmente as relações existentes entre a velocidade
+
+de fase e a velocidade de grupo.
+
+Seguindo Lighthill [10], a velocidade de propagação de um grupo de
+
+ondas é definida como
+
+cg =
+d?
+
+dk
+. (3.19)
+
+Usando a relação de dispersão (3.11), temos que a velocidade de grupo pode ser
+
+expressa como
+
+cg =
+d
+
+dk
+(gk tanh kh)
+
+1
+2
+
+=
+1
+
+2
+(gk tanh kh)
+
+? 1
+2
+
+[
+g tanh kh +
+
+gkh
+
+cosh 2(kh)
+
+]
+e usando também a velocidade de fase da onda (3.13), temos que
+
+cg =
+1
+
+2
+
+[
+1 +
+
+2kh
+
+senh (2kh)
+
+]
+c. (3.20)
+
+
+
+21
+
+Esta é a relação entre velocidade de um grupo de ondas e velocidade de uma de-
+
+terminada onda desse grupo em águas de profundidade uniforme h. Observe que a
+
+velocidade com que o grupo de ondas se propaga depende da freqüência da onda,
+
+da profundidade da água e é proporcional à velocidade de fase da onda.
+
+No caso de águas profundas, a relação de dispersão é dada por (3.16).
+
+Assim a velocidade de grupo pode ser escrita como,
+
+cg =
+d
+
+dk
+(gk)
+
+1
+2 =
+
+1
+
+2
+
+(g
+k
+
+) 1
+2
+.
+
+Como a velocidade de fase em águas profundas é c =
+(
+
+g
+k
+
+) 1
+2 , temos
+
+cg =
+1
+
+2
+c. (3.21)
+
+Ou seja, a velocidade de um grupo de ondas em águas profundas é igual a metade
+
+da velocidade de fase de uma das ondas pertencentes ao grupo.
+
+Para águas rasas também podemos expressar a velocidade de grupo de
+
+uma maneira especial. Assim, usando a equação (3.14), temos
+
+cg =
+d?
+
+dk
+= (gh)
+
+1
+2 .
+
+Observando a equação (3.15), chegamos a seguinte expressão para velocidade de
+
+grupo em águas rasas.
+
+cg = c. (3.22)
+
+Assim, em águas rasas, a velocidade de fase e a velocidade de grupo das ondas
+
+coincidem.
+
+
+
+22
+
+4 O PROBLEMA FRACAMENTE
+NÃO-LINEAR
+
+Veremos agora um desenvolvimento do problema fracamente não-linear
+
+para ondas em águas profundas.
+
+Seguindo Stoker [16] e Newman [12], faremos aproximações para o pro-
+
+blema de ondas em água descrito na seção 2.3, que é dado por:
+
+?2?
+
+?x2
++
+?2?
+
+?y2
++
+?2?
+
+?z2
+= 0 em ? ? &amp;lt;z &amp;lt;0, (4.1)
+
+??
+
+?t
++
+
+1
+
+2
+
+[(
+??
+
+?x
+
+)2
++
+
+(
+??
+
+?y
+
+)2
++
+
+(
+??
+
+?z
+
+)2]
++ g? = 0 em z = ?(x,y,t), (4.2)
+
+??
+
+?t
++
+??
+
+?x
+
+??
+
+?x
++
+??
+
+?y
+
+??
+
+?y
+=
+??
+
+?z
+em z = ?(x,y,t), (4.3)
+
+??
+
+?z
+= 0 quando h(x,y,??) ? ?. (4.4)
+
+Observe que na equação (4.2) foi desprezada a pressão atmosférica.
+
+Veremos que a teoria de ondas de pequena amplitude pode ser obtida
+
+como uma aproximação da teoria das ondas. Para isto, faremos algumas hipóteses
+
+adicionais como supor que a velocidade das partículas da água, a elevação da super-
+
+fície livre z = ?(x,y,t), assim como todas as suas derivadas, são pequenas quanti-
+
+dades. Desta forma, podemos assumir que o potencial de velocidade ?(x,y,?,t) e a
+
+elevação da superfície da água ?(x,y,t) possuem a seguinte expansão em séries de
+
+potências com respeito ao parâmetro ?:
+
+? = ??(1) + ?2?(2) + ?3?(3) + ... , (4.5)
+
+e
+
+? = ?(0) + ??(1) + ?2?(2) + ... . (4.6)
+
+
+
+23
+
+4.1 Aproximação Para o Problema de Segunda Ordem
+
+Para facilitar os cálculos desenvolveremos aqui as expansões de ? e ?,
+
+segundo as respectivas equações (4.5) e (4.6), apenas até O(?2) e depois substituire-
+
+mos no sistema de equações (4.1-4.2-4.3) para obtermos as equações que formulam
+
+o problema segundo a teoria de Stokes 1.
+
+Como ? se refere a z = ? e ? = ?(x,y,t), para calcular as derivadas da
+
+função ? em relação a x,y e t, devemos usar a regra da cadeia.
+
+Para fazer as aproximações, expandiremos ? em série de Taylor em
+
+torno de z = 0 na equação (4.2). Assim temos
+
+? = ?
+1
+
+g
+
+??
+
+?t
+?
+
+1
+
+2g
+(?? · ??) em z = ?(x,y,t)
+
+? = ?
+1
+
+g
+
+[
+??
+
+?t
++
+
+1
+
+2
+?? · ??
+
+]
+z=0
+
++ ?
+?
+
+?z
+
+[
+?
+
+1
+
+g
+
+(
+??
+
+?t
++
+
+1
+
+2
+?? · ??
+
+)]
+z=0
+
++ · · · em z = 0,
+
+= ?
+1
+
+g
+
+(
+??
+
+?t
++
+
+1
+
+2
+?? · ??
+
+)
+?
+
+1
+
+g
+?
+?2?
+
+?t?z
++ O(?3) em z = 0
+
+Assim,
+
+? = ?
+1
+
+g
+
+??
+
+?t
+?
+
+1
+
+2g
+
+(
+??
+
+?x
+
+)2
+?
+
+1
+
+2g
+
+(
+??
+
+?y
+
+)2
+?
+
+1
+
+2g
+
+(
+??
+
+?z
+
+)2
+?
+
+1
+
+g
+?
+?2?
+
+?t?z
++ O(?3)
+
+Substituindo os termos da equação anterior em séries de potência de acordo com as
+
+equações (4.5) e (4.6), temos
+
+?(0) + ??(1) + ?2?(2) + O(?3) =
+
+1George Gabriel Stokes (1819-1903) foi um dos primeiros pesquisadores nesta área. Ele teve
+interesse particular em ondas de gravidade, periódicas e bi-dimensionais em água de profundidade
+infinita.
+
+
+
+24
+
+= ?
+1
+
+g
+
+[
+?
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?t
++
+??(1)
+
+?t
+
+)
++ ?2
+
+(
+??(1)
+
+?z
+
+??(1)
+
+?t
++
+??(2)
+
+?z
+
+??(0)
+
+?t
++
+??(2)
+
+?t
+
+)]
+?
+
+1
+
+2g
+
+[
+?
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?x
++
+??(1)
+
+?x
+
+)
++ ?2
+
+(
+??(1)
+
+?z
+
+??(1)
+
+?x
++
+??(2)
+
+?z
+
+??(0)
+
+?x
++
+??(2)
+
+?x
+
+)]2
+?
+
+1
+
+2g
+
+[
+?
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?y
++
+??(1)
+
+?y
+
+)
++ ?2
+
+(
+??(1)
+
+?z
+
+??(1)
+
+?y
++
+??(2)
+
+?z
+
+??(0)
+
+?y
++
+??(2)
+
+?y
+
+)]2
+?
+
+1
+
+2g
+
+[
+?
+??(1)
+
+?z
++ ?2
+
+??(2)
+
+?z
+
+]2
+?
+
+1
+
+g
+
+[
+?
+
+(
+?2?(1)
+
+?z?t
++
+??(1)
+
+?z
+
+??(0)
+
+?t
++
+?2?(1)
+
+?z2
+??(0)
+
+?t
+
+)
+?(0)+
+
+?2
+(
+?2?(2)
+
+?z?t
++
+??(1)
+
+?z
+
+??(1)
+
+?t
++
+??(2)
+
+?z
+
+??(0)
+
+?t
++
+?2?(1)
+
+?z2
+??(1)
+
+?t
++
+?2?(2)
+
+?z2
+??(0)
+
+?t
+
+)
+?(0)+
+
+?2
+(
+?2?(1)
+
+?z?t
++
+??(1)
+
+?z
+
+??(0)
+
+?t
++
+?2?(1)
+
+?z2
+??(0)
+
+?t
+
+)
+?(1)
+
+]
++ O(?3),
+
+como estamos interessados em termos O(?2), fazemos os cálculos e desprezamos os
+
+valores de maior ordem. Assim temos:
+
+?(0) + ??(1) + ?2?(2) + O(?3) =
+
+= ?
+?
+
+g
+
+[
+??(1)
+
+?z
+
+??(0)
+
+?t
++
+??(1)
+
+?t
++
+
+(
+?2?(1)
+
+?z?t
++
+??(1)
+
+?z
+
+??(0)
+
+?t
++
+?2?(1)
+
+?z2
+??(0)
+
+?t
+
+)
+?(0)
+
+]
+?
+
+?2
+
+g
+
+[(
+??(1)
+
+?z
+
+??(1)
+
+?t
++
+??(2)
+
+?z
+
+??(0)
+
+?t
++
+??(2)
+
+?t
+
+)
++
+
+1
+
+2
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?x
++
+??(1)
+
+?x
+
+)2
++
+
+1
+
+2
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?y
++
+??(1)
+
+?y
+
+)2
++
+
+1
+
+2
+
+(
+??(1)
+
+?z
+
+)2
++
+
+(
+?2?(1)
+
+?z?t
++
+??(1)
+
+?z
+
+??(0)
+
+?t
++
+?2?(1)
+
+?z2
+??(0)
+
+?t
+
+)
+?(1)+
+
+(
+?2?(2)
+
+?z?t
++
+??(1)
+
+?z
+
+??(1)
+
+?t
++
+??(2)
+
+?z
+
+??(0)
+
+?t
++
+?2?(1)
+
+?z2
+??(1)
+
+?t
++
+?2?(2)
+
+?z2
+??(0)
+
+?t
+
+)
+?(0)
+
+]
++ O(?3).
+
+
+
+25
+
+Da mesma maneira, expandindo em série de potências os termos da equação (4.3)
+
+temos:
+
+??
+
+?z
+=
+??
+
+?t
++
+??
+
+?x
+
+??
+
+?x
++
+??
+
+?y
+
+??
+
+?y
+em z = ?(x,y,t),
+
+?
+??(1)
+
+?z
++ ?2
+
+??(2)
+
+?z
++ O(?3) =
+
+=
+??(0)
+
+?t
++ ?
+
+??(1)
+
+?t
++ ?2
+
+??(2)
+
+?t
++
+
+[
+??(0)
+
+?x
++ ?
+
+??(1)
+
+?x
++ ?2
+
+??(2)
+
+?x
+
+]
+·
+
+[
+?
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?x
++
+??(1)
+
+?x
+
+)
++ ?2
+
+(
+??(1)
+
+?z
+
+??(1)
+
+?x
++
+??(2)
+
+?z
+
+??(0)
+
+?x
++
+??(2)
+
+?x
+
+)]
++
+
+[
+?
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?y
++
+??(1)
+
+?y
+
+)
++ ?2
+
+(
+??(1)
+
+?z
+
+??(1)
+
+?y
++
+??(2)
+
+?z
+
+??(0)
+
+?y
++
+??(2)
+
+?y
+
+)]
+·
+
+[
+??(0)
+
+?y
++ ?
+
+??(1)
+
+?y
++ ?2
+
+??(2)
+
+?y
+
+]
++ O(?3).
+
+Desenvolvendo os cálculos e desprezando os termos de ordem maior que O(?2), temos
+
+?
+??(1)
+
+?z
++ ?2
+
+??(2)
+
+?z
++ O(?3) =
+
+??(0)
+
+?t
++ ?
+
+[
+??(1)
+
+?t
++
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?x
++
+??(1)
+
+?x
+
+)
+??(0)
+
+?x
++
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?y
++
+??(1)
+
+?y
+
+)
+??(0)
+
+?y
+
+]
++ ?2
+
+[
+??(2)
+
+?t
++
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?x
++
+??(1)
+
+?x
+
+)
+??(1)
+
+?x
++
+
+(
+??(1)
+
+?z
+
+??(1)
+
+?x
++
+??(2)
+
+?z
+
+??(0)
+
+?x
++
+??(2)
+
+?x
+
+)
+??(0)
+
+?x
++
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?y
++
+??(1)
+
+?y
+
+)
+??(1)
+
+?y
++
+
+(
+??(1)
+
+?z
+
+??(1)
+
+?y
++
+??(2)
+
+?z
+
+??(0)
+
+?y
++
+??(2)
+
+?y
+
+)
+??(0)
+
+?y
+
+]
++ O(?3).
+
+
+
+26
+
+Desenvolvendo os cálculos e fazendo igualdade de polinômios em po-
+
+tências de ?, temos:
+
+Para ?0
+
+?(0) = 0 e
+??(0)
+
+?t
+= 0
+
+Para ?1
+
+?(1) = ?
+1
+
+g
+
+[
+??(1)
+
+?z
+
+??(0)
+
+?t
++
+??(1)
+
+?t
++
+
+(
+?2?(1)
+
+?z?t
++
+??(1)
+
+?z
+
+??(0)
+
+?t
++
+?2?(1)
+
+?z2
+??(0)
+
+?t
+
+)
+?(0)
+
+]
+
+??(1)
+
+?z
+=
+
+??(1)
+
+?t
++
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?x
++
+??(1)
+
+?x
+
+)
+??(0)
+
+?x
++
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?y
++
+??(1)
+
+?y
+
+)
+??(0)
+
+?y
+
+Para ?2
+
+?(2) = ?
+1
+
+g
+
+[(
+??(1)
+
+?z
+
+??(1)
+
+?t
++
+??(2)
+
+?z
+
+??(0)
+
+?t
++
+??(2)
+
+?t
+
+)
++
+
+1
+
+2
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?x
++
+??(1)
+
+?x
+
+)2
++
+
+1
+
+2
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?y
++
+??(1)
+
+?y
+
+)2
++
+
+1
+
+2
+
+(
+??(1)
+
+?z
+
+)2
++
+
+(
+?2?(1)
+
+?z?t
++
+??(1)
+
+?z
+
+??(0)
+
+?t
++
+?2?(1)
+
+?z2
+??(0)
+
+?t
+
+)
+?(1)+
+
+(
+?2?(2)
+
+?z?t
++
+??(1)
+
+?z
+
+??(1)
+
+?t
++
+??(2)
+
+?z
+
+??(0)
+
+?t
++
+?2?(1)
+
+?z2
+??(1)
+
+?t
++
+?2?(2)
+
+?z2
+??(0)
+
+?t
+
+)
+?(0)
+
+]
++ O(?3).
+
+??(2)
+
+?z
+=
+
+[
+??(2)
+
+?t
++
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?x
++
+??(1)
+
+?x
+
+)
+??(1)
+
+?x
++
+
+(
+??(1)
+
+?z
+
+??(1)
+
+?x
++
+??(2)
+
+?z
+
+??(0)
+
+?x
++
+??(2)
+
+?x
+
+)
+??(0)
+
+?x
++
+
+(
+??(1)
+
+?z
+
+??(0)
+
+?y
++
+??(1)
+
+?y
+
+)
+??(1)
+
+?y
++
+
+(
+??(1)
+
+?z
+
+??(1)
+
+?y
++
+??(2)
+
+?z
+
+??(0)
+
+?y
++
+??(2)
+
+?y
+
+)
+??(0)
+
+?y
+
+]
+
+
+
+27
+
+Reescrevendo os sistemas de ordem O(?1) e O(?2), levando em conta
+
+que ?(0) = 0,
+??(0)
+
+?t
+= 0 e as novas funções ?(1) e ?(2) são harmônicas, temos
+
+?1 :
+
+?????????????
+????????????
+
+??(1) = 0 em ? ? &amp;lt;z &amp;lt;0
+
+?(1) = ?
+1
+
+g
+
+??(1)
+
+?t
+
+??(1)
+
+?z
+=
+??(1)
+
+?t
+
+(4.7)
+
+?2 :
+
+??????????????????????
+?????????????????????
+
+??(2) = 0 em ? ? &amp;lt;z &amp;lt;0
+
+?(2) = ?
+1
+
+g
+
+[
+??(1)
+
+?z
+
+??(1)
+
+?t
++
+
+1
+
+2
+
+(
+??(1)
+
+?x
+
+)2
++
+
+1
+
+2
+
+(
+??(1)
+
+?y
+
+)2
++
+
+1
+
+2
+
+(
+??(1)
+
+?z
+
+)2
++
+??(2)
+
+?t
++
+?2?(1)
+
+?z?t
+?(1)
+
+]
+
+??(2)
+
+?z
+=
+
+??(2)
+
+?t
++
+??(1)
+
+?x
+
+??(1)
+
+?x
++
+??(1)
+
+?y
+
+??(1)
+
+?y
+
+(4.8)
+
+
+
+28
+
+4.2 Solução Para o Problema de Segunda Ordem
+
+Apresentaremos nesta seção os passos para encontrar uma solução para
+
+o problema (4.8) de segunda ordem de não-linearidade em águas profundas. A partir
+
+desta solução mostramos também a relação entre altura, período e número de onda,
+
+que é a relação de dispersão para ondas fracamente não-lineares em água.
+
+Para facilitar o desenvolvimento, seguindo Yuen &amp;amp; Lake [21], assumimos
+
+ondas planas na direção y. Assim, podemos considerar um caso particular como
+
+sendo o problema bi-dimensional.
+
+Como estamos interessados em encontrar soluções que descrevem o com-
+
+portamento periódico das ondas, fazendo com que a equação governante, Laplace e
+
+as condições de contorno cinemáticas e dinâmica sejam satisfeitas, assumiremos que
+
+a solução do problema fracamente não-linear é dado da seguinte forma:
+
+?(x,z,t) =
+N?
+
+j=1
+
+?j?j(z) sen [j(kx ? ?t)] (4.9)
+
+e
+
+?(x,t) =
+N?
+
+j=1
+
+?j cos [j(kx ? ?t)]. (4.10)
+
+Onde N é a ordem de não-linearidade do problema, ?j e ?j são constantes.
+
+Levando em conta que os ?(k) são harmônicos e usando a condição
+
+de fundo, que é automaticamente satisfeita, encontraremos as expressões para as
+
+funções ?j(z).
+
+Desenvolvemos as derivadas de ?(k)(x,z,t), ?(k)(x,t) e substituindo nas
+
+equações do problema (4.7) e (4.8) chegamos que
+
+?(1)(x,z,t) =
+?a
+
+k
+ekz sen (kx ? ?t),
+
+?(2)(x,z,t) = 0
+
+
+
+29
+
+e
+
+?(1)(x,t) = a cos (kx ? ?t),
+
+?(2)(x,t) =
+1
+
+2
+ka2 cos [2(kx ? ?t)].
+
+Assim a solução fracamente não-linear para o problema de segunda
+
+ordem em águas profundas é dado como sendo
+
+?(x,t) = a cos (kx ? ?t) +
+1
+
+2
+ka2 cos [2(kx ? ?t)] (4.11)
+
+e
+
+?(x,z,t) =
+?a
+
+k
+ekz sen (kx ? ?t). (4.12)
+
+onde a é a amplitude da onda.
+
+Expandindo a função ?(k) pode ser mostrado que a relação de dispersão
+
+para a solução de segunda ordem nas equações (4.11) e (4.12) é dada por
+
+? = (gk)
+1
+2
+
+(
+1 +
+
+1
+
+2
+k2a2
+
+)
+. (4.13)
+
+Note que a equação (4.13) é uma correção para as soluções lineares
+
+apresentadas no capítulo 3 e que também há dependência na amplitude da onda.
+
+
+
+30
+
+5 ONDAS NÃO-LINEARES PERMANENTES
+
+O problema de ondas estacionárias em água é um dos problemas mais
+
+clássicos da matemática aplicada. Existe um grande volume de literatura nessa área,
+
+tanto na área numérica, que permite resolver problemas altamente não lineares, como
+
+na analítica.
+
+Como estamos interessados no problema não-linear estacionário, se-
+
+guindo Groves [8] e Yeung [20], consideramos o problema descrito na seção 2.3 e
+
+fazemos algumas hipóteses adicionais, como
+
+?(x,y,t) = ?(x ? c1t,y ? c2t),
+
+?(x,y,z,t) = ?(x ? c1t,y ? c2t,z),
+
+que significa que a onda tem uma translação uniforme na direção horizontal xy,
+
+com velocidade c = (c1,c2). Pelo fato de não trabalharmos com o tempo, a partir
+
+daqui denotamos x e y como abreviações para x ? c1t e y ? c2t, respectivamente.
+
+Deste modo podemos escrever as equações não-lineares governantes para ondas tri-
+
+dimensionais estacionarias como
+
+?????????????????????
+????????????????????
+
+?2?
+
+?x2
++
+?2?
+
+?y2
++
+?2?
+
+?z2
+= 0 em ? h &amp;lt;z &amp;lt;?,
+
+??
+
+?z
+?
+??
+
+?x
+
+??
+
+?x
+?
+??
+
+?y
+
+??
+
+?y
+= 0 em z = ?(x,y),
+
+1
+
+2
+
+[(
+??
+
+?x
+
+)2
++
+
+(
+??
+
+?y
+
+)2
++
+
+(
+??
+
+?z
+
+)2]
++ g? = ?
+
+Pa
+?
+
+em z = ?(x,y),
+
+??
+
+?z
+?
+??
+
+?x
+
+??
+
+?x
+?
+??
+
+?y
+
+??
+
+?y
+= 0 em z = ?h,
+
+(5.1)
+
+Para o problema de ondas bi-dimensionais estacionárias, faremos uma
+
+formulação em termos da função corrente ?. Para isso, assumimos a partir daqui
+
+
+
+31
+
+que a coordenada x indica a direção horizontal, y indica a direção vertical e a origem
+
+do sistema cartesiano encontra-se no fundo da água. Lembrando que (u,v) são as
+
+componentes do vetor velocidade u, a função corrente ? é definida de tal forma que
+
+u =
+??
+
+?x
+=
+??
+
+?y
+, (5.2)
+
+e
+
+v =
+??
+
+?y
+= ?
+
+??
+
+?x
+. (5.3)
+
+Observe que ?(x,y) satisfaz a equação da continuidade (2.1) e a equação de Laplace
+
+(2.5), então
+?2?
+
+?x2
++
+?2?
+
+?y2
+= 0 em 0 &amp;lt;y &amp;lt;?(x). (5.4)
+
+As condições de contorno que devem ser satisfeitas pela função de corrente são
+
+?(x, 0) = 0, (5.5)
+
+na origem (fundo) e
+
+?(x,?(x)) = ?Q, (5.6)
+
+na superfície livre y = ?(x). Na equação (5.6) Q é a vazão volumétrica por unidade
+
+de comprimento. Neste caso, assumimos que o fluxo movendo-se da direita para
+
+a esquerda estará no sentido negativo. Na superfície livre, a pressão é constante,
+
+assim, pela equação de Bernoulli temos
+
+1
+
+2
+
+[(
+??
+
+?x
+
+)2
++
+
+(
+??
+
+?y
+
+)2]
++ g? = R, (5.7)
+
+onde R é a energia total do sistema.
+
+5.1 Aproximação de Ondas Completamente Não-Lineares
+
+Permanentes
+
+Faremos agora a apresentação do problema de ondas estacionárias com-
+
+pletamente não-lineares, baseado no trabalho de Rienecker &amp;amp; Fenton [13]. Estes
+
+
+
+32
+
+autores usaram um método espectral para aproximar o sistema de equações não
+
+lineares e o resolveram numericamente usando o método de Newton.
+
+Neste trabalho, a partir daqui, o símbolo (?) significa que a variável é
+
+dimensional. Todas as variáveis são adimensionalizadas com respeito à aceleração
+
+da gravidade, g? e à profundidade média da água, ??. Para isso, assumimos que a
+
+profundidade média da água é finita. Assim, faremos as seguintes substituições:
+
+x =
+x?
+
+??
+, y =
+
+y?
+
+??
+,
+
+? =
+??
+
+??
+, ? =
+
+???
+g???3
+
+,
+
+Q =
+Q??
+g???3
+
+, R =
+R?
+
+g???
+.
+
+Outras variáveis adimensionalizadas a serem introduzidas no problema são:
+
+• a velocidade de fase c =
+c?
+
+?
+g???
+
+,
+
+• o número de onda k = k??? =
+2?
+
+??
+??, onde ?? é o comprimento de onda,
+
+• o período da onda ? = ??
+?
+g?
+
+??
+,
+
+• o nível de referência arbitrária D =
+D?
+
+??
+.
+
+Se a simetria da onda pela crista for explorada, ?(x,y) pode ser escrita
+
+como
+
+?(x,y) = B0y +
+N?
+
+j=1
+
+Bj
+senh jky
+cosh jkD
+
+cos jkx, (5.8)
+
+satisfazendo a equação de Laplace e as condições de contorno (5.5) e (5.6). Pela
+
+condição de contorno (5.5), os coeficientes B0,B1, · · · ,BN são constantes para uma
+
+onda particular. Como hipótese, para resolvermos computacionalmente o problema,
+
+deveremos fazer N finito, ou seja, vamos truncar a série e obtermos uma solução
+
+aproximada para a solução. Para melhorar a solução obtida, devemos truncar a
+
+
+
+33
+
+série depois de ocorrer convergência da mesma, assim diminuiremos os erros obtidos
+
+através do truncamento desta. Assim a equação (5.6) torna-se,
+
+B0? +
+N?
+
+j=1
+
+Bj
+senh jk?
+cosh jkD
+
+cos jkx = ?Q, (5.9)
+
+e a equação (5.7) assume a forma
+
+1
+
+2
+
+[
+B0 + k
+
+N?
+j=1
+
+Bj
+cosh jk?
+cosh jkD
+
+cos jkx
+
+]2
++
+
+1
+
+2
+
+[
+k
+
+N?
+j=1
+
+Bj
+senh jk?
+cosh jkD
+
+cos jkx
+
+]2
++ ? = R,
+
+(5.10)
+
+para todo x.
+
+Nestas aproximações, observamos que os argumentos de senh jk?, cosh jk?
+
+e cosh jkD crescem muito para grandes valores de j. Isso pode causar indesejáveis
+
+erros numéricos antes de efetuarmos o cálculo da divisão, na equação (5.10). Para
+
+evitar esse tipo de problema, podemos aproximar os coeficientes de Fourier como
+
+cosh jk?
+cosh jkD
+
+?
+senh jk?
+cosh jkD
+
+? exp [jk(? ? D)], (5.11)
+
+para grande valores de j.
+
+O Parâmetro D é escolhido próximo a ?. Segundo Rienecker &amp;amp; Fenton
+
+[13], uma boa escolha é D = 1, correspondendo à profundidade relativa que carac-
+
+teriza o regime de águas intermediárias. Observe que as adimensionalizações de D?
+
+e ?? são idênticas. Logo, quando tomamos o valor do nível de referência arbitrário
+
+D = 1, estamos tomando o valor dimensional como D? = ??, ou seja, o valor de D?
+
+é aproximadamente o valor médio de ??. Vale lembrar que a origem está no fundo
+
+da água, então, a profundidade média ?? está próxima da elevação da superfície da
+
+água ??.
+
+Para resolver o problema numericamente, as equações (5.9) e (5.10)
+
+devem ser satisfeitas em 2N pontos. Esses serão distribuídos igualmente espaçados
+
+sobre um comprimento de onda. Por simetria, podemos trabalhar com apenas N + 1
+
+pontos, da crista ao cavado da onda.
+
+
+
+34
+
+Seja ?m = ?(xm) onde xm =
+m?
+
+2N
+, m = 0, 1, · · · ,N. Como ? =
+
+2?
+
+k
+,
+
+então, kxm =
+m?
+
+N
+. Assim que as equações (5.9) e (5.10) serão escritas como,
+
+B0?m +
+N?
+
+j=1
+
+Bj
+senhjk?
+
+cosh jkD
+cos
+
+(
+jm?
+
+N
+
+)
++ Q = 0 para m = 0, 1, · · · ,N, (5.12)
+
+e
+1
+
+2
+u2m +
+
+1
+
+2
+v2m + ?m ? R = 0 , (5.13)
+
+para m = 0, 1, · · · ,N, onde
+
+um = B0?m + k
+N?
+
+j=1
+
+jBj
+cosh jk?
+cosh jkD
+
+cos
+(
+jm?
+
+N
+
+)
+= u(xm,ym) e,
+
+vm = k
+N?
+
+j=1
+
+jBj
+senh jk?
+cosh jkD
+
+sen
+(
+jm?
+
+N
+
+)
+= v(xm,ym).
+
+Até aqui, já definimos 2N + 2 equações não lineares. Porém, estas
+
+envolvem 2N + 5 variáveis, que são, ?j, (j = 0, 1, · · · ,N), Bj (j = 0, 1, · · · ,N), k,
+
+Q e R. Assim, para obtermos uma solução, deveremos especificar mais três equações.
+
+Usando o fato que as variáveis são adimensionalizadas com respeito à
+
+profundidade média da água ??, podemos definir uma equação que envolve a elevação
+
+da superfície livre ?. Lembrando que a profundidade média adimensionalizada é
+
+unitária, temos ?
+S
+
+? dS =
+?
+
+2
+, (5.14)
+
+onde S é a distância horizontal contada da crista ao cavado da onda. Os limites
+
+inferior e superior são x0 e xN , referente às abscissas da crista e do cavado da onda,
+
+respectivamente.
+
+Usando a regra trapezoidal de integração numérica para aproximar
+
+(5.14), temos
+1
+
+2N
+
+[
+?0 + ?N + 2
+
+N?1?
+j=1
+
+?j
+
+]
+? 1 = 0. (5.15)
+
+
+
+35
+
+Ainda faltam especificar duas equações. Contudo, se atribuirmos valo-
+
+res para Q e R, podemos resolver de maneira única esse sistema de equações, com
+
+2N + 3 equações e 2N + 3 incógnitas.
+
+Contudo, para problemas práticos, geralmente são dados os valores da
+
+altura e período da onda, H e ?, respectivamente. Assim, ao invés de fornecermos
+
+os valores de Q e R, podemos atribuir duas equações adicionais para definir H e ?.
+
+Desta forma, temos
+
+?0 ? ?N ? H = 0, (5.16)
+
+onde ?0 provém da elevação da superfície na crista e ?N do cavado da onda. Esta
+
+equação sai diretamente da definição da altura onda, ou seja, a altura da onda é a
+
+distância do cavado à sua crista. A equação que envolve o período da onda, por sua
+
+vez, é dada por,
+
+kc? ? 2? = 0. (5.17)
+
+Esta equação é retirada de ? = 2?
+k
+
+, onde ? = c?. Observe que nesta equação foi
+
+usada mais uma variável, a velocidade da onda c. Logo, devemos definir mais uma
+
+equação ao nosso sistema.
+
+Nessa próxima equação, indicaremos qual será a velocidade com que a
+
+onda viaja. Para isso, deveremos especificar a velocidade Euleriana cE (corrente),
+
+por todo o fluido. Em águas estacionárias, a velocidade em cada nível do fluido é o
+
+valor negativo de B0. Quando consideramos o deslocamento relativo da onda, para
+
+algum lugar que esta se move, a velocidade da onda c está implícita, tal que, para
+
+ondas estacionárias podemos dizer que a velocidade Euleriana média é cE = c + B0.
+
+Assim, se a corrente cE é especificada, c satisfaz a equação
+
+c ? cE + B0 = 0. (5.18)
+
+Alternativamente, é apropriado especificar a velocidade média de par-
+
+tícula (que é a velocidade de transporte de massa, aqui denotada por cs). Em águas
+
+estacionárias com a profundidade média unitária, a vazão volumétrica Q é igual a
+
+velocidade média com que a partícula de fluido se move abaixo da onda. Portanto,
+
+
+
+36
+
+a velocidade de transporte de massa pode ser dado para esse tipo de ondas como
+
+cs = c ? Q, tal que, se a velocidade de transporte de massa cs for especificado, c
+
+satisfaz a equação
+
+c ? cs ? Q = 0. (5.19)
+
+Como já mencionamos, para resolver esse problema, não necessaria-
+
+mente os valores de H e ? devem ser especificados. Outras duas variáveis, no caso Q
+
+e R, poderão ser dadas em seus lugares. Caso ? seja especificado, então pela equação
+
+(5.17), obrigatoriamente um dos valores cE ou cs devem ser dados para serem usados
+
+nas equações (5.18) ou (5.19).
+
+Por fim, as 2N + 6 equações (5.12)-(5.19) formam um sistema fechado
+
+de variáveis (?j,Bj(j = 0, 1, · · · ,N),c,k,Q,R).
+
+
+
+37
+
+6 SIMULAÇÃO NUMÉRICA
+
+Para resolver o sistema de equações não-lineares (5.12)-(5.19) descrito
+
+na seção 5.1, implementamos um código em Fortran, baseando-se no método itera-
+
+tivo de Newton.
+
+A escolha deste método se dá pelo fato deste poder fornecer uma boa
+
+aproximação, necessitando de poucas iterações e conseqüentemente de um pequeno
+
+esforço computacional. Uma descrição mais detalhada deste método encontra-se no
+
+apêndice, onde seguindo Burden &amp;amp; Faires [1], fazemos um detalhado desenvolvimento
+
+para resolver sistemas de equações não-lineares no Rn.
+
+6.1 Solução das Equações Pelo Método de Newton
+
+O sistema de equações não-lineares (5.12)-(5.19) pode ser escrito como
+
+fi(?j,Bj,c,k,Q,R) = 0, i,j = 1, · · · , 2N + 6, (6.1)
+
+onde, para
+
+• i = 1, · · · ,N + 1, fi é representado pela equação (5.12);
+
+• i = N + 2, · · · , 2N + 2, fi é representado pela equação (5.13);
+
+• f2N +3 é representado pela equação (5.15);
+
+• f2N +4 é representado pela equação (5.16);
+
+• f2N +5 é representado pela equação (5.17);
+
+• f2N +6 é representado pela equação (5.18) ou (5.19).
+
+Esse sistema de equações pode ser resolvido pelo método iterativo de Newton (ou
+
+Newton-Rapson).
+
+
+
+38
+
+Para simplificar denotaremos
+
+F(x1,x2, · · · ,x2N +6) = fi(?j,Bj,c,k,Q,R)
+
+onde F é uma função diferenciável, como mostrado no apêndice.
+
+Pelo método de Newton-Rapson, a solução no passo p + 1 é dada por
+
+{x(p+1)} = {x(p)} ? [J]?1{f(p)}
+
+onde,
+
+Jij =
+?fi
+?xj
+
+(i,j = 1, 2, · · · , 2N + 6).
+
+Todas as derivadas da matriz jacobiana [J] podem ser obtidas de uma
+
+forma fechada, baseada nas equações dadas por f. Para obtermos maior estabilidade
+
+numérica, seguindo Fenton [7], que resolveu um problema similar a este, faremos os
+
+cálculos dessa matriz numericamente.
+
+A aproximação inicial para a solução é assumida como sendo uma onda
+
+linear senoidal, dada por
+
+?m = 1 +
+1
+
+2
+H cos
+
+(m?
+N
+
+)
+para m = 0, 1, · · · ,N,
+
+B0 = ?c,
+
+B1 = ?
+1
+
+4
+
+H
+
+ck
+
+Bj = 0 para j = 2, 3, · · · ,N,
+
+Q = c,
+
+R = 1 +
+1
+
+2
+c2,
+
+onde c e k são encontrados iterativamente a partir de
+
+k =
+2?
+
+?c
+, c =
+
+{
+tanh k
+
+k
+
+} 1
+2
+
+,
+
+com a suposição inicial de c = 1, correspondendo à aproximação de ondas longas.
+
+
+
+39
+
+6.2 Verificação do Código Fortran
+
+Para verificar a validade do código que resolve um sistema de equa-
+
+ções transcendentais não lineares através do método de Newton, utilizando como
+
+linguagem o Fortran 90, comparamos os resultados obtidos através das equações
+
+desenvolvidas na seção 5.1 com os resultados apresentados por Rienecker &amp;amp; Fenton
+
+[13], que por sua vez, foi comparado com os resultados de Cokelet [3].
+
+Como já vimos na seção 6.1, uma boa condição inicial para resolver o
+
+problema é dada pela teoria linear. Outros parâmetros requeridos aqui são a altura
+
+da onda H?, a profundidade média da água ?? e o número de pontos N, dados no
+
+domínio de metade do comprimento da onda ??.
+
+Agora, em vez de especificarmos o período da onda ?, especificamos o
+
+valor de d onde d = kQ/c. Uma vez que a onda é estacionária e a freqüência da onda
+
+está definida implicitamente na relação de dispersão, podemos reescrever a equação
+
+(5.17) como
+
+kQ ? cd = 0.
+
+A equação (5.18) que define a velocidade foi usada com o valor da velocidade Eu-
+
+leriana cE = 0. Isso significa que para alguma profundidade dada, a velocidade
+
+Euleriana média sobre um período é igual a zero, ou seja, não há correnteza na
+
+água.
+
+Para reproduzirmos a tabela mostrada em Rienecker &amp;amp; Fenton [13], foi
+
+usado um valor constante para d, onde e?d = 0, 5.
+
+O valor inicial para a relação de dispersão foi obtido de k = cd/Q, onde
+
+o valor inicial de Q é Q = c. Daí temos que k = d. Esse valor corresponde a um
+
+comprimento de onda asimensional ? ? 9, que é uma onda levemente longa, ou seja,
+
+ela está em águas com uma profundidade relativa 1
+20
+&amp;lt;?
+
+?
+&amp;lt;1
+
+2
+, que corresponde a
+
+águas intermediárias.
+
+
+
+40
+
+Tabela 6.1: Comparação dos resultados para o quadrado da velocidade da onda quando
+e?kQ/c = 0, 5. Na coluna "Calc" mostramos os resultados obtidos pelo nosso
+código, enquanto que na coluna "ref[13]" são expostos os resultados apresen-
+tados no trabalho de Rienecker &amp;amp; Fenton [13].
+
+k?c?2/g?
+
+N = 16 N = 32 N = 64
+H?/?? Calc. ref[13] Calc. ref[13] Calc. ref[13]
+
+(a) 0,1729974 0,615059 0,615059 0,615059 0,615059 0,615059 0,615059
+(b) 0,2526308 0,631112 0,631112 0,631112 0,631112 0,631112 0,631112
+(c) 0,3802643 0,666501 0,666501 0,666501 0,666501 0,666501 0,666501
+(d) 0,4944549 0,706443 0,706443 0,706443 0,706443 0,706443 0,706443
+(e) 0,6024470 0,748230 0,748231 0,748230 0,748230 0,748230 0,748230
+(f) 0,6512510 0,764457 0,764455 0,764401 0,764402 0,764403 0,764403
+(g) 0,6721430 0,767721 0,767725 0,767646 0,767676 0,767721 0,767748
+(h) 0,6832000 - - 0,757845 0,765720 0,766514 0,767070
+(i) 0,6908000 - - - - 0,764091 0,766000
+
+Depois de obtido o valor inicial de k, vamos utilizar a teoria linear des-
+
+crita na seção 6.1 para obter o valor inicial da velocidade c, dada por c =
+{
+
+tanh k
+k
+
+} 1
+2 ,
+
+juntamente com os valores iniciais que faltam para resolver o problema.
+
+Para resolver o problema falta fornecermos o valor de D que é funda-
+
+mental para obtermos convergência da solução numérica. Como visto anteriormente,
+
+devemos usar D = 1 para a profundidade média. Porém quando reproduzimos os
+
+dados que encontram-se na tabela 6.1, verificamos que, no momento em que aumen-
+
+tamos a altura da onda, passamos a ter maior instabilidade no sistema, ou seja, a
+
+convergência torna-se mais difícil e lenta. Para superarmos isso, a partir da linha
+
+(f), foram usados D = 1, 5, D = 2, 0 e D = 2, 5. Nessa tabela, os espaços que não
+
+possuem valores são os casos em que não houve convergência da solução através do
+
+método usado.
+
+Analisando a tabela 6.1, podemos notar que nossos resultados foram
+
+bem próximos dos resultados fornecidos por Rienecker &amp;amp; Fenton [13] e Cokelet [3].
+
+Isso implica que o nosso código é eficaz para o cálculo de ondas em água.
+
+
+
+41
+
+Figura 6.1: Perfil das ondas: Na figura (a), foi graficado a linha (a) da tabela 6.1 para o
+caso N = 32, enquanto que na figura (b) e (c) foram graficados as linhas (e)
+e (h) da tabela 6.1, respectivamente.
+
+Na figura 6.1, foi graficado o perfil de algumas das ondas citadas na
+
+tabela 6.1, com N = 32. Na figura 6.1(a), o gráfico corresponde à linha (a) da
+
+tabela 6.1. O eixo das abscissas mostra a coordenada x em sua forma adimensional.
+
+Note que o comprimento de onda adimensionalizado pela profundidade da água,
+
+? = ?
+?
+
+??
+? 9. O eixo das ordenadas indica a elevação da superfície livre ? = ?
+
+?
+
+??
+,
+
+também adimensionalizada pela profundidade da água. Observe que a origem foi
+
+assumida no fundo da água.
+
+As figuras 6.1(b) e 6.1(c), representam as linha (e) e (h) da tabela 6.1,
+
+respectivamente. O procedimento adotado para ambas foi o mesmo da figura 6.1(a).
+
+Note que, quando aumentamos a altura da onda, sua crista fica mais
+
+íngreme e seu cavado mais reto, que é característica de ondas não-lineares. Esta
+
+onda, por sua vez, está tendendo para uma possível quebra. Quando isso ocorre não
+
+vamos obter solução através do método de Newton pois este é formado por funções.
+
+
+
+42
+
+Ao quebrar, a onda empina-se para frente tornando-se multivaluada e logo não pode
+
+ser modelado por essa teoria.
+
+Podemos calcular também o a altura limite de uma onda que se propaga
+
+mantendo a sua forma. Em nosso caso, a onda está prestes a quebrar na linha (h)
+
+da tabela 6.1, uma vez que com os valores da linha (i) desta tabela, não houve
+
+convergência. Se pegarmos os três pontos posteriores a crista da onda na figura
+
+6.1(c) e traçarmos uma reta de regressão entre eles, obtemos a seguinte equação da
+
+reta:
+
+y = 1, 53009 ? 0, 57956 x.
+
+Assim, o ângulo de inclinação desta reta é ? = arctan (?0, 57956), o que implica que
+
+o ângulo interno formado na crista da onda, que é ? = 120o, que corresponde ao
+
+ângulo obtido por Stokes. Uma abordagem mais profunda a respeito desse ângulo
+
+de quebra das ondas será dada mais adiante.
+
+6.3 Empinamento de Ondas
+
+Como já mencionamos anteriormente, ondas em águas são caracteriza-
+
+das especialmente pela sua altura, comprimento e período. Outra característica é
+
+o fato delas serem eficientes no transporte de energia e não no transporte de ma-
+
+téria. Ou seja, se colocarmos um objeto flutuante na água, sob o efeito de ondas,
+
+ele sofrerá um movimento oscilatório com um pequeno deslocamento residual, pois
+
+as partículas de água se movem de forma quasi-circular ou elíptica, dependendo
+
+da profundidade da água. Agora, se observamos um grupo de ondas, veremos que
+
+algumas destas ondas somem e outras aparecem logo atrás, isso é característica do
+
+transporte de energia através delas.
+
+O empinamento de ondas ocorre quando elas propagam-se em águas
+
+intermediárias numa zona de profundidade variável e diminuindo gradativamente.
+
+Neste trabalho, vamos assumir que as mudanças de profundidade se dão de forma
+
+suave. Desta maneira, podemos admitir que a onda não reflete e consegue se "adap-
+
+
+
+43
+
+tar" a nova profundidade. Assim, como não há perda nem ganho de energia no
+
+sistema, o fluxo de energia se conserva.
+
+Usando a teoria da refração de ondas, pode-se mostrar que o período
+
+da onda também é constante durante o processo de empinamento e isso decorre da
+
+conservação de cristas para ondas permanentes.
+
+A figura 6.2 mostra uma ilustração para o empinamento de ondas, ob-
+
+serve que ocorre um aumento da altura da onda e seu cavado torna-se mais reto até
+
+que ela torna-se instável e sua tendência é propagar-se para frente e quebrar.
+
+Figura 6.2: Empinamento de uma onda quando a profundidade da água começa a diminuir
+
+O fenômeno de ondas incidentes empinando-se numa praia foi bem apro-
+
+ximado por Rienecker &amp;amp; Fenton [13], assumindo que se a inclinação do fundo menor
+
+que 4, 5o a onda age como se fosse permanente e com uma profundidade local cons-
+
+tante. Dada essa hipótese, uma aproximação simples despreza a dissipação por
+
+fricção com o fundo e assume que o período da onda e o fluxo de energia perma-
+
+necem constantes na troca de uma profundidade para outra. Isto é, assumimos
+
+que ocorre conservação de cristas e não há reflexão de energia com a diminuição da
+
+profundidade.
+
+6.3.1 Modelagem
+
+Para resolvermos o problema de empinamento de ondas, devido à redu-
+
+ção da profundidade, o sistema de equações visto na seção 5.1 deve ser modificado
+
+
+
+44
+
+para incluir as variáveis adicionais; altura da onda H e o fluxo de energia médio F,
+
+cujo valor adimensional pode ser escrito, seguindo Rienecker &amp;amp; Fenton [13], como:
+
+F =
+1
+
+2
+c3 ?
+
+3
+
+2
+c2Q + c
+
+(
+2R ? 1 ?
+
+1
+
+2
+QB0 ? ?2
+
+)
+? Q(R ? 1), (6.2)
+
+onde
+
+?2 =
+1
+
+2N
+
+[
+?20 + ?
+
+2
+N + 2
+
+N?1?
+j=1
+
+?2j
+
+]
+.
+
+Geralmente, neste tipo de problema, a profundidade inicial da água ??0,
+
+a altura inicial H?0 e o período inicial ?
+?
+0 são dados. A solução do sistema a partir
+
+da profundidade inicial fornece o fluxo de energia concordando com a equação (6.2).
+
+Para sucessivas profundidades, o período e o fluxo de energia serão conservados,
+
+enquanto que a altura da onda H será a variável do problema. Assim, devemos
+
+incluir no sistema equações adicionais para especificar a altura da onda para a
+
+profundidade inicial e fluxo de energia para as subseqüentes profundidades.
+
+As equações adicionais para o método iterativo de Newton são,
+
+f2N +7 =
+1
+
+2
+c3 ?
+
+3
+
+2
+c2Q + c
+
+(
+2R ? 1 ?
+
+1
+
+2
+QB0 ? ?2
+
+)
+? Q(R ? 1) ? F = 0
+
+e
+
+f2N +8 = H ?
+H?0
+??0
+
+= 0 para a profundidade inicial, e
+
+f2N +8 = F ? F0 = 0 para as subseqüentes profundidades.
+
+onde F0 é o fluxo de energia adimensionalizado pela profundidade média.
+
+Uma estimativa inicial para o fluxo de energia é dado de acordo com
+
+outras variáveis. Da aproximação de Stokes, temos
+
+F =
+?
+
+8
+
+c2H2
+
+?
+
+sinh k cosh k + k
+
+sinh2 k
+.
+
+Esta estimativa é necessária apenas para a primeira profundidade. Subseqüente-
+
+mente, para pequenas mudanças na profundidade, a solução seguinte pode ser usada
+
+como uma boa aproximação inicial para o problema contanto que a mudança na pro-
+
+fundidade seja calculada na adimensionalização.
+
+
+
+45
+
+6.3.1.1 Mudanças das Profundidades na Zona de Empinamento das Ondas
+
+Mostraremos agora como modelamos a diminuição da profundidade da
+
+água nas simulações numéricas. Como as variáveis usadas no problema foram adi-
+
+mensionalizadas com respeito à profundidade média da água, devemos fazer uma
+
+nova adimensionalização dessas variáveis, uma vez que há agora mudança na pro-
+
+fundidade da água.
+
+Figura 6.3: Procedimento numérico: Esta figura indica como modelamos a diminuição e
+a troca das profundidades na zona de empinamento de ondas.
+
+A figura 6.3 mostra como ocorrem as mudanças da profundidade da
+
+água no procedimento numérico. Observe que a variação da profundidade é uma
+
+sucessão de profundidades constantes e decrescentes. Assim, denotamos ?i+1 = r?i
+como a profundidade subseqüente à ?i. Pelo fato da profundidade ser decrescente,
+
+a constante r é sempre menor que 1.
+
+Para fazer as adimensionalizações após a primeira profundidade, foi
+
+feito o seguinte esquema: o sub-escrito 1 refere-se à convergência da solução anterior
+
+e o sub-escrito 2 refere-se à aproximação inicial da próxima profundidade.
+
+
+
+46
+
+Para providenciar uma estimativa inicial satisfatória das variáveis a se-
+
+rem usadas na nova profundidade levamos em conta que a troca das profundidades se
+
+dá de maneira suave, assim desprezamos reflexão das ondas e podemos usar a última
+
+solução obtida como uma boa aproximação inicial para usar na próxima profundi-
+
+dade, desde que esta seja readimensionalizada de acordo com a nova profundidade.
+
+Conforme a figura 6.3, definimos r = ??2/?
+?
+1 como sendo a razão entre
+
+as sucessivas profundidades. Assim as readimensionalizações são
+
+H2 =
+H?2
+??2
+
+=
+H?1
+??2
+
+=
+H1?
+
+?
+1
+
+??2
+? H2 =
+
+H1
+r
+,
+
+c2 =
+c?2
+
+(g??2)
+1
+2
+
+=
+c?1
+
+(g??2)
+1
+2
+
+=
+c1 (g?
+
+?
+1)
+
+1
+2
+
+(g??2)
+1
+2
+
+? c2 =
+c1
+
+r
+1
+2
+
+,
+
+k2 = k
+?
+2?
+
+?
+2 = k
+
+?
+1?
+
+?
+2 =
+
+k1
+??1
+??2 ? k2 = k1r,
+
+Q2 =
+Q?2
+
+[g(??2)
+3]
+
+1
+2
+
+=
+Q?1
+
+[g(??2)
+3]
+
+1
+2
+
+=
+Q1 [g(?
+
+?
+1)
+
+3]
+1
+2
+
+[g(??2)
+3]
+
+1
+2
+
+? Q2 =
+Q1
+
+r
+3
+2
+
+.
+
+Para a readimensionalização da variável R, levamos em conta a aproximação ini-
+
+cial dada na seção 6.1. Assim temos
+
+R2 = 1 +
+R?2
+g??2
+
+= 1 +
+R?1
+g??2
+
+= 1 +
+(R1 ? 1)g??1
+
+g??2
+? R2 =
+
+R1 ? 1
+r
+
+.
+
+Para as próximas adimensionalizações, dependemos da discretização espacial, in-
+
+dicando essa discretização por j, para j = 1, 2, · · · ,N temos
+
+(Bj)2 =
+(B?j )2
+
+g??2
+=
+
+(B?j )1
+
+g??2
+=
+
+(B?j )1g?
+?
+1
+
+g??2
+? (Bj)2 =
+
+(Bj)1
+
+r
+1
+2
+
+.
+
+Como a origem do sistema está no fundo da água, a readimensionalização da eleva-
+
+ção da superfície livre fica
+
+(?j)2 = 1 +
+(??j )2
+
+??2
+= 1 +
+
+(??j )1
+
+??2
+= 1 +
+
+[(?j)1 ? 1]??1
+??2
+
+? (?j)2 = 1 +
+(?j)1 ? 1
+
+r
+.
+
+
+
+47
+
+Ainda devemos fazer a readimensionalização do fluxo de energia e do período da
+
+onda, apesar destes permanecerem constantes:
+
+F2 =
+F?2
+
+? [g3(??2)
+5]
+
+1
+2
+
+=
+F?1
+
+? [g3(??2)
+5]
+
+1
+2
+
+=
+F1 ? [g
+
+3(??1)
+5]
+
+1
+2
+
+? [g3(??2)
+5]
+
+1
+2
+
+? F2 =
+F1
+
+r
+5
+2
+
+,
+
+?2 = ?
+?
+2
+
+(
+g
+
+??2
+
+) 1
+2
+
+= ??1
+
+(
+g
+
+??2
+
+) 1
+2
+
+= ?1
+
+(
+g??1
+g??2
+
+) 1
+2
+
+? ?2 =
+?1
+
+r
+1
+2
+
+.
+
+Como o fluxo de energia e o período se conservam, F0 deve ser substituído por
+F0
+
+r
+5
+2
+
+e ?0 substituído por
+?0
+
+r
+1
+2
+
+.
+
+6.4 Resultados
+
+Iniciamos esta sessão reproduzindo os resultados apresentados nos tra-
+
+balhos de Rienecker &amp;amp; Fenton [13], Stiassnie &amp;amp; Peregrine [15] e Eagleson [5]. Tam-
+
+bém serão mostrados dados experimentais com intuito de verificarmos a validade do
+
+nosso código.
+
+Devido à dificuldade de encontrarmos os dados experimentais na litera-
+
+tura foram ampliadas as figuras apresentadas nos trabalhos acima citados e feita a
+
+medida dos pontos experimentais. Estes dados experimentais foram obtidos a partir
+
+de um tanque de ondas com inclinação uniforme de 1/35 no trabalho de Stiassnie &amp;amp;
+
+Peregrine e de 1/15 no trabalho de Rienecker &amp;amp; Fenton. Posteriormente podemos
+
+ver que foram coletados dados até a posterior quebra da onda, ou seja, até onde as
+
+simulações numéricas não possam prever os resultados.
+
+Para a realização das simulações utilizando o nosso código, seguimos o
+
+trabalho de Rienecker &amp;amp; Fenton. Faremos também a dimensionalização dos parâ-
+
+metros para podermos comparar com os resultados de Stiassnie &amp;amp; Peregrine. Para
+
+isto, nestas primeiras simulações, usaremos uma profundidade inicial média da água
+
+de ??0 = 300 mm, a aceleração da gravidade g
+? = 9810 mm/s2, o nível de referência
+
+
+
+48
+
+Figura 6.4: Comparação dos resultados: Na figura (a), mostramos a altura da onda em
+função da profundidade da água. Enquanto que na figura (b), mostramos a
+velocidade da onda em função desta profundidade. A altura inicial da onda
+foi de H?0 = 93 mm e seu período inicial foi ?
+
+?
+0 = 1, 0 s. A linha sólida indica
+
+os dados obtidos a partir das simulações numéricas e os pontos indicam os
+dados obtidos experimentalmente.
+
+arbitrário D? igual à profundidade da água, ou seja, o valor adimensional D = 1
+
+e o número de aproximações para o coeficiente de Fourier N = 16. A inclinação
+
+do fundo foi usada como definida na sessão 6.3.1.1, com r ? 0, 999, ou seja, a pro-
+
+fundidade subseqüente é aproximadamente 0, 999 de uma certa profundidade. Para
+
+chegarmos a esse valor foram feitos vários testes e verificou-se que se mudamos esse
+
+valor da inclinação dentro de um limite para que não ocorra reflexão da onda, não
+
+haverá mudanças nos resultados.
+
+A figura 6.4(a) mostra a altura da onda em função da profundidade
+
+da água. Enquanto que a figura 6.4(b) mostra a velocidade da onda em função da
+
+profundidade da água. Para obter estes resultados, seguimos Rienecker &amp;amp; Fenton,
+
+onde os valores adimensionais da altura inicial e período inicial da onda são respec-
+
+
+
+49
+
+tivamente H0 = 0, 31 e ?0 = 5, 72. Seus valores dimensionais são encontrados da
+
+seguinte maneira:
+
+H = H
+?
+
+??
+, ? = ??
+
+(
+g?
+
+??
+
+) 1
+2
+
+H? = H??, ?? = ?
+(
+
+??
+
+g?
+
+) 1
+2
+
+H? = 0, 31 · 300 mm, ?? = 5, 72
+(
+
+300 mm
+9810 mm/s2
+
+) 1
+2
+
+H? = 93 mm, ?? = 1 s.
+
+Seguindo o trabalho de Stiassnie &amp;amp; Peregrine vemos que o valor inicial
+
+da altura da onda para este caso é H?0 = 96 mm. Por outro lado, através da fór-
+
+mula de adimensionalização com o valor proposto por Rienecker &amp;amp; Fenton e também
+
+através de várias simulações numéricas e comparações com os dados experimentais,
+
+podemos verificar que o valor adequado para a altura inicial é H?0 = 93 mm ou seu
+
+valor adimensionalizado, que é H0 = 0, 31. Na figura 6.4(a), foi mostrado como
+
+se comporta a altura da onda em função da profundidade do fluido no processo de
+
+empinamento da onda, ou seja, quando a onda tende à quebrar. A linha sólida in-
+
+dica os valores obtidos através das simulações, enquanto que os pontos significam os
+
+valores experimentais de Stiassnie &amp;amp; Peregrine, onde cada ponto significa um valor
+
+medido. Este esquema de representação será usado em todas as figuras apresentadas
+
+nesta sessão. Foi observado que quando a profundidade diminui, a onda começa a
+
+empinar-se e tender para o processo de quebra. Na figura 6.4(b) foi graficado a
+
+velocidade de fase da onda na unidade de m/s em função da profundidade da água.
+
+Neste caso, como prevê a teoria, podemos perceber que a onda viaja mais rapida-
+
+mente quando a profundidade é maior, ou seja, ocorre uma diminuição da velocidade
+
+da onda com a diminuição da profundidade da água o que também influencia no
+
+empinamento da onda, fazendo com que esta venha a quebrar.
+
+Na figura 6.5, assim como na figura 6.4(a), foi mostrado o comporta-
+
+mento da altura da onda em função da profundidade da água. Para reproduzirmos
+
+estes dados, inicialmente não obtivemos sucesso, pois o período inicial relatado em
+
+Rienecker &amp;amp; Fenton (?0 = 0, 95) é excessivamente pequeno. Para isso, seguimos o
+
+
+
+50
+
+Figura 6.5: Comparação dos resultados: Altura da onda em função da profundidade da
+água com H?0 = 39 mm e ?
+
+?
+0 = 1, 67 s.
+
+trabalho de Stiassnie &amp;amp; Peregrine para comparar os dados. Assim, pela adimensio-
+
+nalização temos
+
+H = H
+?
+
+??
+, ? = ??
+
+(
+g?
+
+??
+
+) 1
+2
+
+0, 13 = H
+?
+
+300 mm, ? = (1, 67 s)
+(
+
+9810 mm/s2
+
+300 mm
+
+) 1
+2
+
+H? ? 39 mm, ? ? 9, 55.
+
+A partir disto, podemos deduzir que o valor do período inicial da onda (?0 = 0, 95)
+
+dado em Rienecker &amp;amp; Fenton tenha sido provavelmente apenas um erro de impressão.
+
+Para os cálculos da figura 6.6 foram seguidos os valores adimensionais
+
+da altura e período iniciais da onda relatados por Rienecker &amp;amp; Fenton que são
+
+H0 = 0, 14 e ?0 = 19, 04. Agora, se tornamos estes valores dimensionais, chegaremos
+
+a um valor da altura inicial da onda um pouco diferente do valor indicado por
+
+Stiassnie &amp;amp; Peregrine, que é H?0 = 37, 5 mm. Isto é mostrado a seguir.
+
+
+
+51
+
+Figura 6.6: Comparação dos resultados: Altura da onda em função da profundidade da
+água com H?0 = 42 mm e ?
+
+?
+0 = 3, 33 s.
+
+H = H
+?
+
+??
+, ? = ??
+
+(
+g?
+
+??
+
+) 1
+2
+
+0, 14 = H
+?
+
+300 mm, 19, 04 = ?
+?
+(
+
+9810 mm/s2
+
+300 mm
+
+) 1
+2
+
+H? = 42 mm, ?? ? 3, 33 s.
+
+Conforme mostrado também na figura 6.6, podemos concluir que nossa
+
+simulação com H?0 = 42 mm e ?
+?
+0 = 3, 33 s se aproxima bem dos valores experi-
+
+mentais. Logo, deduzimos que os valores contidos em Rienecker &amp;amp; Fenton estão
+
+corretos.
+
+Nas figuras 6.5 e 6.6, assim como na figura 6.4, podemos fazer a com-
+
+paração entre o resultado obtido através da teoria e os dados experimentais onde,
+
+principalmente, comparamos a variação da altura da onda em função da profundi-
+
+dade da água quando esta começa a diminuir na zona de empinamento da onda. Os
+
+resultados obtidos através das simulações são bons pois podemos ver que ocorre um
+
+aumento na altura da onda conforme diminui a profundidade da água até a possível
+
+quebra da onda. Nossos cálculos se aproximam muito bem dos valores experimen-
+
+
+
+52
+
+tais. Se verificarmos os trabalhos de Stiassnie &amp;amp; Peregrine [15], juntamente com os
+
+de Rienecker &amp;amp; Fenton [13], veremos que nossos resultados são concordantes.
+
+Para as próximas simulações seguimos os trabalhos de Rienecker &amp;amp; Fen-
+
+ton [13] juntamente com o trabalho de Eagleson [5]. Eagleson, assim como Stiassnie
+
+&amp;amp; Peregrine nas simulações anteriores, forneceu em seu trabalho os valores dimensi-
+
+onais dos dados iniciais necessários para resolver o problema. Isso nos permite uma
+
+melhor observação, entendimento e comparação dos resultados.
+
+Apresentamos os resultados de sete simulações, que são mostrados na
+
+figura 6.7. Assim como no trabalho de Rienecker &amp;amp; Fenton [13], comparamos os
+
+resultados com os dados experimentais. Estes são obtidos de experimento com um
+
+tanque de ondas com uma inclinação uniforme de 1/15, segundo Eagleson.
+
+Para a realização das simulações que são indicadas nas linhas sólidas da
+
+figura 6.7, foram usados os valores iniciais da profundidade da água, da altura e do
+
+período da onda indicados na tabela 6.2. Nesta tabela, também são mostrados os
+
+valores da declividade inicial das ondas, que é dada por ? = H
+?
+
+??
+, segundo o trabalho
+
+de Eagleson e também através dos resultados obtidos a partir do nosso código. O
+
+nível de referência é D = 1, 0 em todos os casos exceto ao caso (f), onde D = 0, 9,
+
+isso deve-se ao fato da altura da onda ser um pouco menor neste caso.
+
+O número de aproximações para o coeficientes de Fourier utilizado em
+
+todas as simulações a partir daqui é N = 32.
+
+Para adimensionalisar a altura e o período da onda, foi usado a acele-
+
+ração da gravidade g? aproximada com g? = 32, 2 pés/s2 e a profundidade média
+
+da água ??0 descrita na tabela 6.2. Nesta tabela, a coluna "H
+?
+0/?
+
+?
+0 Ref[5]" fornece
+
+os valores da inclinação inicial da onda segundo Eagleson, enquanto que a coluna
+
+"H?0/?
+?
+0" fornece os valores calculados através de nosso código. Podemos ver que
+
+estes valores são bem próximos, o que indica que a relação de dispersão inicial está
+
+sendo calculada corretamente.
+
+
+
+53
+
+Tabela 6.2: Valores iniciais da profundidade da água, da altura, período e da inclinação
+da onda. Estes dados serão usados para a construção da figura 6.7.
+
+Onda ??0 (pés) H
+?
+0 (pés) ?
+
+?
+0 (s) H
+
+?
+0/?
+
+?
+0 Ref[5] H
+
+?
+0/?
+
+?
+0
+
+(a) 1,75 0,230 0,938 0,0528 0,051739
+(b) 1,75 0,234 1,101 0,0396 0,039545
+(c) 1,75 0,357 1,105 0,0598 0,059963
+(d) 1,75 0,440 1,235 0,0611 0,061695
+(e) 1,75 0,354 1,389 0,0420 0,041634
+(f) 1,75 0,186 1,428 0,0209 0,021037
+(g) 1,75 0,265 1,684 0,0237 0,023999
+
+Na figura 6.7, mostramos o coeficiente de empinamento da onda, ou
+
+coeficiente de empolamento de onda, que é dado por H
+H0
+
+, em função da respectiva
+
+profundidade relativa da água. O coeficiente de empinamento das ondas traduz
+
+unicamente a relação da altura da onda com diminuição da profundidade da água,
+
+enquanto que a profundidade relativa, como já mencionado na seção 3.4, indica se
+
+a onda está em águas rasas, intermediárias ou profundas. Se ?
+?
+
+??
+&amp;lt;0, 05, a onda
+
+é considerada em águas rasas. Se 0, 05 &gt; ?
+?
+
+??
+&amp;lt;0, 5, a onda é considerada em
+
+águas intermediárias e ?
+?
+
+??
+&gt; 0, 5 representa o regime de águas profundas, ou seja, a
+
+batimetria do fundo não tem influência sobre a onda.
+
+Observe que todas as curvas construídas na figura 6.7 referem-se a águas
+
+intermediárias tendendo para águas rasas. Nesta situação se caracteriza o empina-
+
+mento de ondas, ou seja, elas ficam mais íngremes tendendo para a quebra.
+
+Comparando nossos resultados com os dados experimentais retirados
+
+de Rieneker e Fenton [13], podemos ver que houve acordo.
+
+A seguir mostraremos outros resultados para enriquecer nosso estudo
+
+sobre o empinamento e quebra das ondas. A altura de quebra das ondas e também
+
+o ângulo formado na crista da onda no momento em que ela tende a quebrar serão
+
+abordados.
+
+
+
+54
+
+Figura 6.7: Coeficiente de empinamento da onda em função da profundidade relativa da
+água. São mostradas sete figuras, referentes aos valores experimentais dados
+por Eagleson [5]. Os valores iniciais para as simulações, encontram-se na
+tabela 6.2.
+
+6.4.1 Resultados Adicionais
+
+Esta sessão apresenta uma discussão acerca das simulações anteriores,
+
+verificando algumas propriedades sobre o empinamento e quebra das ondas.
+
+As ondas que movem-se na zona de empinamento de onda, em águas
+
+intermediárias, tornam-se instáveis e quebram quando a velocidade da partícula da
+
+água na crista da onda torna-se igual ou até maior que a velocidade de fase da onda.
+
+Na quebra de ondas, a altura da onda é limitada pela profundidade e
+
+comprimento de onda. Para uma dada profundidade da água e período da onda,
+
+há um limite máximo para a altura da onda. Quando a altura se aproxima desse
+
+limite, a onda torna-se instável e quebra. Este limite é chamado de altura de quebra
+
+da onda.
+
+
+
+55
+
+Em águas profundas, esta altura é função apenas do comprimento de
+
+onda, enquanto que em águas rasas e intermediárias ela é função do comprimento
+
+de onda e também da profundidade da água e também da declividade do fundo.
+
+Segundo a Organização Mundial de Meteorologia, (World Meteorological Organiza-
+
+ção, WMO) [14], a inclinação máxima da onda em águas profundas, onde ?
+?
+&gt; 0, 5
+
+é H
+?
+
+= 0, 141. Para águas intermediárias, com ?
+?
+&amp;lt;0, 5, temos uma altura máxima
+
+de quebra de H
+?
+
+= 0, 83. Já em laboratórios, essa altura de quebra não passa de(
+H
+?
+
+)
+max
+
+= 0, 78, que é a relação para a máxima altura de uma onda solitária.
+
+Nas simulações numéricas o método de Newton não fornece solução
+
+quando a onda tende a quebrar, pois sua crista empina-se para frente tornando-se
+
+multivaluada e impossível de simular. Neste caso o método diverge. Na última
+
+profundidade para a qual ocorreu convergência do sistema de equações através do
+
+método de Newton o parâmetro H?/?? define a altura de quebra da onda no método
+
+computacional. Nestas condições, chamaremos este parâmetro de altura de quebra
+
+de onda computacional e denotaremos como
+(
+H?
+
+??
+
+)
+b
+
+.
+
+A figura 6.8 mostra a evolução do parâmetro H?/?? e a altura de quebra
+
+de onda computacional para os casos referente aos resultados das figuras 6.4, 6.5 e
+
+6.6, respectivamente.
+
+Na figura 6.8(a) com altura e período inicial da onda sendo H?0 = 93
+
+mm e ??0 = 1, 0 s, respectivamente, a profundidade relativa inicial é
+?0
+?0
+
+= 0, 214 e
+
+a profundidade relativa na quebra da onda é ?
+?
+
+= 0, 13256. Isso indica que todo o
+
+processo de empinamento até a quebra da onda ocorreu em águas intermediárias.
+
+Na figura 6.8(b), com H?0 = 39 mm e ?
+?
+0 = 1, 67 s, a profundidade relativa inicial
+
+é ?0
+?0
+
+= 0, 1128 e a profundidade relativa na quebra da onda é ?
+?
+
+= 0, 0516. Essa
+
+onda também teve o processo de empinamento e quebra em águas intermediárias,
+
+mas podemos notar que a profundidade relativa da água é menor que a da figura
+
+6.8(a) e a onda quebra praticamente em águas rasas. Enquanto que, na figura 6.8(c),
+
+com H?0 = 42 mm e ?
+?
+0 = 3, 33 s, a profundidade relativa inicial é
+
+?0
+?0
+
+= 0, 0525 e a
+
+
+
+56
+
+Figura 6.8: A evolução do parâmetro H?/?? e a altura de quebra de onda computacional,(
+H?
+
+??
+
+)
+b
+em função da profundidade relativa da água. Na figura (a), mostramos
+
+os resultados referentes à figura 6.4, na figura (b), referentes à figura 6.5 e na
+figura (c), referentes à figura 6.6
+
+profundidade relativa na quebra da onda é ?
+?
+? 0, 027, ou seja, praticamente todo o
+
+processo de empinamento até a quebra da onda, ocorreu em águas rasas.
+
+Na figura 6.9 também é mostrado a evolução do parâmetro H?/?? e
+
+a altura de quebra de onda computacional,
+(
+
+H?
+
+??
+
+)
+b
+
+referente aos casos descritos na
+
+tabela 6.2 e figura 6.7. Podemos verificar que todo o processo de empinamento de
+
+onda, até a quebra, ocorre em águas intermediárias.
+
+Com as figuras 6.8 e 6.9, podemos ver que todas as ondas tiveram
+
+uma altura de quebra de H
+?
+? 0, 7. Essa altura de quebra representa um valor um
+
+pouco abaixo do valor indicado na literatura. Talvez isso ocorra devido às limitações
+
+naturais das simulações numéricas, como por exemplo o fato de truncarmos a série
+
+de Fourier nas equações que modelam o problema e também erros cometidos por
+
+arredondamentos.
+
+
+
+57
+
+Figura 6.9: A evolução do parâmetro H?/?? e a altura de quebra de onda computacional,(
+H?
+
+??
+
+)
+b
+em função da profundidade relativa da água referente aos dados iniciais
+
+contidos na tabela 6.2 e mostrados também na figura 6.7.
+
+6.4.1.1 Perfil das Ondas e seus Ângulos de Quebra
+
+Mostraremos nesta seção o perfil das ondas e o respectivo ângulo for-
+
+mado na crista da onda no momento que ela tende a quebrar. Este ângulo é chamado
+
+de ângulo de quebra.
+
+Segundo Longuet-Higgins [11] e WMO [14], temos que o limite máximo
+
+do ângulo de quebra é ? = 120o. Kinsman [9, pg. 273] mostrou uma dedução para
+
+este ângulo de quebra a partir da teoria de Stokes.
+
+Assim como todas as comparações feitas até o momento, graficaremos
+
+o perfil e calcularemos o ângulo de quebra de todas as ondas mencionadas até aqui.
+
+Após isso, faremos uma breve análise dos resultados obtidos.
+
+Para realização das figuras que mostram o perfil das ondas, usaremos
+
+a propriedade de simetria das ondas, como mencionado na seção 5.1. Com isso,
+
+
+
+58
+
+Figura 6.10: Perfil das ondas: A figura (I) mostra o perfil da onda no momento inicial,
+com ??0 = 300 mm, H
+
+?
+0 = 93 mm e ?
+
+?
+0 = 1, 0 s. A figura (II) mostra o
+
+perfil da onda no momento em que ela está prestes a quebrar, neste caso, a
+profundidade da água, indicada pela linha reta é ?? = 168, 421 mm.
+
+exibiremos o perfil de um comprimento de onda. Para facilitar, colocaremos a crista
+
+da onda na origem do sistema cartesiano.
+
+O perfil das ondas no momento inicial será denotado por (I) e no mo-
+
+mento de quebra este será denotado por (II). Para facilitar a visualização usaremos
+
+uma escala comum para o eixo das abscissas e outra escala comum para o eixo das
+
+ordenadas, em todas as figuras.
+
+Colocaremos, nas figuras, uma reta para indicar a profundidade média
+
+da água em cada caso. Esta reta e o uso de escalas comuns para os eixos das abscissas
+
+e das ordenadas melhoram a visualização gráfica. Com isso, podemos observar as
+
+variações entre o perfil inicial e na última iteração que ocorreu convergência das
+
+ondas. Os parâmetros mais observáveis são as alturas e os comprimentos das ondas.
+
+O ângulo interno formado na crista da onda é mostrado nas figuras (II),
+
+ou seja, no momento em que a onda está prestes a quebrar. Nesta condição, este
+
+ângulo será chamado de ângulo de quebra computacional. Os valores destes ângulos
+
+são difíceis de serem observados graficamente, pois os eixos das abscissas e ordenadas
+
+têm escalas diferentes.
+
+
+
+59
+
+Figura 6.11: Perfil das ondas: A figura (I) mostra o perfil da onda no momento inicial,
+com ??0 = 300 mm, H
+
+?
+0 = 39 mm e ?
+
+?
+0 = 1, 67 s. A figura (II) mostra o perfil
+
+da onda no momento em que ela está prestes a quebrar, nesse momento, a
+profundidade da água, indicada pela linha reta é ?? = 93, 75 mm.
+
+A figura 6.10(I) mostra o perfil inicial da onda referente à figura 6.4,
+
+com profundidade inicial da água, altura e período inicial da onda sendo ?? = 300
+
+mm, H? = 93 mm e ?? = 1, 0 s, respectivamente. A figura 6.10(II) mostra o perfil
+
+da onda no momento em que está prestes a quebrar. Nesta situação, a profundidade
+
+da água foi de ?? = 168, 421 mm e o ângulo de quebra computacional, aqui chamado
+
+de ?, foi 134, 12o.
+
+Para calcular o valor de ?, fizemos uma reta de regressão usando os
+
+três primeiros pontos após a crista da onda. A equação dessa reta é dada por
+
+y = 246, 44367 ? 0, 42324 · x.
+
+Com o coeficiente angular da reta, podemos calcular sua inclinação, que é ?22, 94o,
+
+com isso podemos chegar ao valor do ângulo ?, que é dado por
+
+? = 2(90o ? 22, 94o),
+
+? = 134, 12o.
+
+Essa maneira de calcular o ângulo ? será usado em todos os casos
+
+simulados neste trabalho.
+
+
+
+60
+
+Figura 6.12: Perfil das ondas: A figura (I) mostra o perfil da onda no momento inicial,
+com ??0 = 300 mm, H
+
+?
+0 = 42 mm e ?
+
+?
+0 = 3, 33 s. A figura (II) mostra o perfil
+
+da onda no momento em que ela está prestes a quebrar. Nesse momento, a
+profundidade da água, indicada pela linha reta é ?? = 106, 25 mm.
+
+A figura 6.11(I) mostra o perfil inicial da onda, usando a mesma onda
+
+descrita na figura 6.5, com profundidade inicial da água, altura e período inicial da
+
+onda sendo ?? = 300 mm, H? = 39 mm e ?? = 1, 67 s, respectivamente. Na figura
+
+6.11(II) é mostrado o perfil da onda no momento em que está prestes a quebrar.
+
+A profundidade da água nesse caso foi de ?? = 93, 75 mm. O ângulo de quebra
+
+calculado foi de ? = 142, 64o.
+
+A figura 6.12(I) mostra o perfil inicial da onda, usando os dados da
+
+onda descritos na figura 6.6, com profundidade inicial da água, altura e período
+
+inicial da onda, ?? = 300 mm, H? = 42 mm e ?? = 3, 33 s, respectivamente. A
+
+figura 6.12(II) mostra o perfil da onda no momento em que está prestes a quebrar,
+
+com profundidade da água de ?? = 106, 25 mm. O ângulo de quebra neste caso
+
+foi calculado usando apenas dois pontos após a crista da onda, isso devido ao fato
+
+dela empinar-se de maneira mais íngreme que nas figuras 6.10 e 6.11. O valor desse
+
+ângulo de quebra é 126, 20o.
+
+Com as figuras 6.10, 6.11 e 6.12, podemos verificar que o modo com
+
+que a onda empina-se depende diretamente do comprimento de onda. Para ondas
+
+
+
+61
+
+de maior comprimento, temos que o cavado da onda torna-se maior e mais reto, com
+
+isso a crista da onda tem uma elevação mais acentuada em relação ao comprimento
+
+de onda, uma vez que o ângulo formado na crista no momento da quebra da onda
+
+praticamente não se alterou. Isso pode ser verificado através da relação entre pro-
+
+fundidade da água e comprimento da onda, ou seja, a profundidade relativa, como
+
+mostrado na figura 6.8. Nesta figura, podemos ver que as ondas mostradas nas
+
+figuras 6.10 e 6.11 são consideradas em águas intermediárias, enquanto que a onda
+
+mostrada na figura 6.12 é considerada em águas rasas. Observamos também que
+
+ocorreu variação somente no comprimento de onda, uma vez que a profundidade
+
+inicial da água foi considerada a mesma em ambos os casos.
+
+Os próximos casos são referentes à tabela 6.2 e à figura 6.7. A tabela
+
+6.3 mostra as alturas e os períodos das ondas no momento inicial, além das profun-
+
+didades da água e os ângulos formados nas cristas das ondas no momento em que
+
+elas quebram. Observe que não expressamos a profundidade inicial da água, pois
+
+esta possui valor único de ??0 = 1, 75 pés, para todos os casos.
+
+Tabela 6.3: Dados referentes ao perfil das ondas: Nesta tabela mostramos os valores das
+alturas e períodos iniciais das ondas assim como as profundidades da água e
+os ângulos formados nas cristas das ondas no momento em que elas quebram.
+
+Onda H?0 (pés) ?
+?
+0 (s) ?
+
+?
+f (pés) ? (em graus)
+
+(a) 0,230 0,938 0,3817 124,14
+(b) 0,234 1,101 0,4110 123,60
+(c) 0,357 1,105 0.6066 122,48
+(d) 0,440 1,235 0,7140 119,30
+(e) 0,354 1,389 0,6591 124,48
+(f) 0,186 1,428 0,3989 130,49
+(g) 0,265 1,684 0,5644 128,58
+
+Para calcular os ângulos de quebra em todos os casos dados na tabela
+
+6.3, foram usados três pontos posteriores à crista da onda. Podemos notar que todos
+
+os ângulos de quebra foram praticamente idênticos e um pouco maior que o valor
+
+limite para o ângulo de quebra dado na literatura.
+
+
+
+62
+
+Figura 6.13: Perfil das ondas referentes ao caso (d) da tabela 6.3: A figura (I) mostra o
+perfil da onda no momento inicial e a figura (II) mostra o perfil da onda no
+momento de sua quebra.
+
+A figura 6.13 mostra o perfil das ondas referentes ao caso (d) da tabela
+
+6.3. Os outros casos descritos nesta tabela não serão graficados aqui, pois os perfis
+
+são praticamente idênticos a este.
+
+Assim como nas figuras 6.10, 6.11 e 6.12, a figura 6.13 mostra uma
+
+diminuição no comprimento de onda e um aumento de sua altura. Está é uma das
+
+principais características do empinamento de ondas. Como o cavado da onda torna-
+
+se mais reto e maior, a onda tem uma elevação mais íngreme perto de sua crista.
+
+Isso faz com que ela torne-se instável e possivelmente quebre.
+
+
+
+63
+
+7 CONCLUSÕES E PERSPECTIVAS
+
+Neste trabalho, foram deduzidas as equações que governam o movi-
+
+mento das ondas em água. Linearizando as equações, obtemos soluções periódicas
+
+que puderam ser utilizadas para mostrar expressões que modelam a relação de dis-
+
+persão e as velocidades de fase e de grupo para ondas em águas rasas, intermediárias
+
+e profundas.
+
+O problema fracamente não-linear foi deduzido fazendo aproximações
+
+em séries de potência a partir do problema não-linear. Foram mostrados explicita-
+
+mente os problemas de até ordem 2.
+
+A fim de executar simulações, desenvolvemos um código em Fortran
+
+baseado em um método espectral para resolver as equações que modelam o pro-
+
+blema completamente não-linear de ondas estacionárias. A eficácia do código foi
+
+comprovada através de comparações com resultados fornecidos por outros autores.
+
+O empinamento de ondas foi a principal aplicação de nosso trabalho.
+
+Com a hipótese que o fluxo de energia e o período das ondas permanecem constan-
+
+tes enquanto a profundidade da água diminui, foi possível fazer várias simulações,
+
+reproduzir resultados de outros autores, além de fazer comparações com dados expe-
+
+rimentais. As simulações numéricas permitiram também observar o comportamento
+
+das ondas na zona de empinamento. Com isso, foi possível graficar o perfil das
+
+ondas, assim como calcular sua altura e ângulo de quebra. Observou-se que con-
+
+forme a onda progredia na zona de empinamento, sua altura aumentava enquanto
+
+seu comprimento diminuía. Desta maneira ela tornava-se mais alta e íngreme, ou
+
+seja, o ângulo formado em sua crista diminuía até a possível quebra da onda.
+
+Os valores limites da altura e do ângulo para quebra de ondas foram
+
+atingidos aproximadamente nas simulações. De fato, a altura e o ângulo de quebra
+
+das ondas foram respectivamente menores e maiores que os valores fornecidos na
+
+
+
+64
+
+literatura. Os valores exatos previstos pela teoria não foram alcançados devido às
+
+limitações intrínsecas de um método numérico.
+
+Como perspectivas de trabalho, estudaremos o método espectral de alta
+
+ordem para solução de problemas transientes. Este método é conhecido como HOS
+
+(high-order spectral method ) e está descrito nos trabalhos de Dommermuth &amp;amp; Yue
+
+[4], Tsai &amp;amp; Yue [17] e Guangyu [19]. O método empregado em nosso trabalho pode
+
+ser visto como um caso particular deste método espectral de alta ordem.
+
+
+
+65
+
+Apêndice A MÉTODO DE NEWTON
+
+O método de Newton (ou método de Newton-Rapson), também conhe-
+
+cido como método das tangentes, tem o objetivo de encontrar uma aproximação
+
+para as raízes (ou zeros) de uma função diferenciável f.
+
+Para encontrar a solução, toma-se um ponto qualquer da função, pre-
+
+ferencialmente o mais próximo possível da solução desejada, calcula-se a equação
+
+da tangente (derivada) da função neste ponto e depois calcula-se o ponto de in-
+
+terseção da tangente ao eixo das abscissas e o valor da função f neste ponto de
+
+interseção. Repete-se esse processo até chegar à aproximação desejada das raízes da
+
+função. Caso ocorra convergência, isto ocorrerá rapidamente, pois o método possui
+
+convergência quadrática.
+
+Um dos defeitos do método é que precisa-se avaliar, em cada iteração, a
+
+função f e a sua derivada f ?. Além disso, o método converge apenas se a aproximação
+
+inicial estiver próxima da solução. Por isso, é preciso uma boa escolha para a
+
+aproximação inicial.
+
+Para facilitar os argumentos, assumimos que o valor da derivada f ? no
+
+ponto requerido é sempre diferente de zero.
+
+O método consiste em executar as iterações
+
+xk+1 = xk ?
+f(xk)
+
+f ?(xk)
+, (A.1)
+
+a partir de uma condição inicial bem escolhida x0, e assim obter aproximações
+
+sucessivas para a raiz z da função f. Isso pode ser visualizado melhor na figura A.1.
+
+Mostramos agora como como a fórmula descrita na equação (A.1) se
+
+relaciona com a idéia geométrica da figura A.1. Para isso, notamos que a inclinação
+
+da reta tangente ao gráfico de f no ponto (xk,f(xk)) é dada pela derivada f ?(xk).
+
+A única reta com inclinação f ?(xk) que passa por (xk,f(xk)) é dada pela equação
+
+y = f(xk) + f
+?(xk)(x ? xk).
+
+
+
+66
+
+Figura A.1: Método iterativo de Newton para problemas bi-dimensionais. Observe a rá-
+pida convergência da seqüencia {x0, x1, · · ·}, para a raíz z.
+
+O ponto xk+1 é definido como o valor de x para o qual y = 0. Isto é,
+
+0 = f(xk) + f
+?(xk)(xk+1 ? xk).
+
+Ou seja,
+
+xk+1 = xk ?
+f(xk)
+
+f ?(xk)
+.
+
+A.1 Método de Newton em Dimensões Mais Altas
+
+Suponha que F : Rn ? Rn seja uma função diferenciável e estejamos
+
+procurando x? tal que F(x?) = 0. Observe que F leva (x1,x2, ... ,xn) em um
+
+elemento de Rn, que pode ser explicitado por cada uma de suas componentes, isto
+
+é,
+
+F(x1,x2, . . . ,xn) = (f1(x1, . . . ,xn),f2(x1, . . . ,xn), . . . ,fn(x1, . . . ,xn)).
+
+
+
+67
+
+Então, achar um zero de F é achar uma solução das equações
+
+f1(x1, . . . ,xn) = 0
+
+f2(x1, . . . ,xn) = 0
+
+...
+...
+
+fn(x1, . . . ,xn) = 0
+
+que não são necessariamente lineares.
+
+Para generalizar, examinamos o método descrito para dimensão 1. As-
+
+sim, aproximando f pela sua expansão em Taylor de ordem 1, temos
+
+f(x) = f(x(k)) + f ?(x(k))(x ? x(k)) + R1(x), (A.2)
+
+ignorando R1, o ponto x(k+1) é definido pelo encontro dessa reta com o eixo das
+
+abscissas, ou seja
+
+0 = f(x(k)) + f ?(x(k))(x(k+1) ? x(k)),
+
+que é a fórmula de Newton dada na equação (A.1).
+
+A expansão em Taylor é igualmente válida em dimensão mais alta. Para
+
+primeira ordem, por exemplo, podemos escrever a equação (A.2) como
+
+F(x) = F(x(k)) + DF(x(k))(x ? x(k)) + R1(x),
+
+onde x? Rn, R1 e F são funções de Rn em Rn. DF(x) é a matriz jacobiana no ponto
+
+x, isto é,
+
+DF(x) =
+
+?
+????????????
+
+?f1
+?x1
+
+?f1
+?x2
+
+. . .
+?f1
+?xn
+
+?f2
+?x1
+
+?f2
+?x2
+
+. . .
+?f2
+?xn
+
+...
+...
+
+...
+...
+
+?fn
+?x1
+
+?fn
+?x2
+
+. . .
+?fn
+?xn
+
+?
+????????????
+
+.
+
+
+
+68
+
+Fica implícito que cada uma das derivadas parciais é calculada no ponto x. Por-
+
+tanto, o termo DF(x(k))(x ? x(k)) é a multiplicação de uma matriz por um vetor
+
+(coluna), que resulta em outro vetor.
+
+O resto R1 tem a propriedade que
+
+lim
+x?x(k)
+
+R1(x)
+
+||x ? x(k)||
+= 0.
+
+Para definir x(k+1), ignoramos R1 e igualamos a aproximação de pri-
+
+meira ordem a zero:
+
+0 = F(x(k)) + DF(x(k))(x(k+1) ? x(k)).
+
+Temos
+
+DF(x(k))x(k+1) = DF(x(k))x(k) ? F(x(k)).
+
+Logo,
+
+x(k+1) = x(k) ?
+[
+DF(x(k))
+
+]?1
+F(x(k)). (A.3)
+
+Observe que essa equação é um sistema linear, onde x(k+1) é a incógnita.
+
+O método descrito pela equação (A.3) é conhecido como método itera-
+
+tivo de Newton. Este método é usado para resolver sistemas de equações lineares e
+
+não-lineares.
+
+
+
+69
+
+Bibliografia
+
+[1] Burden, R. L., and Faires, J. D. Análise Numerica. Pioneira Thomson
+
+Learning: São Paulo, 2003. Traduzido por: Ricardo Lenzi Tombi.
+
+[2] Coastal and Hydraulics Laboratory - Engineer Research and
+
+Development Center. Coastal Engineering Manual. Vicksburg - Mis-
+
+sissippi, 2001.
+
+[3] Cokelet, E. D. Steep gravity waves in water of arbitrary uniform depth.
+
+Phil. Trans. R. Soc. A. 286 (1977), 183–230.
+
+[4] Dommermuth, D. G., and Yue, D. K. P. A high-order spectral method
+
+for the study of nonlinear gravity waves. Journal of Fluid Mechanics 184
+
+(1987), 267–288.
+
+[5] Eagleson, P. S. Properties of shoaling waves by theory and experiment.
+
+Transactions, American Geophysical Union 37 (1956), 565–572.
+
+[6] Farina, L. Ondas Oceânicas de Superfície. SBMAC, Brasil, 2006.
+
+[7] Fenton, J. D. The numerical solution of stedy water wave problems.
+
+Computers and Geosciences 14, 3 (1988), 357–368.
+
+[8] Groves, M. D. Steady water waves. Journal of Nonlinear Mathematical
+
+Physics 11, 4 (2004), 435–460.
+
+[9] Kinsman, B. Wind Waves - their generation and propagation on the ocean
+
+surface. Prentice-Hall, Inc.: New Jersey, 1965.
+
+[10] Lighthill, J. Waves in fluids. Cambrigge University: Cambrigge, 1979.
+
+[11] Longuet-Higgins, M. S., F.R.S., and Cokelet, E. D. The deforma-
+
+tion of steep surface waves on water I. a numerical method of computation.
+
+Proceedings of the Royal Society of London 350, 1660 (1976), 1–26.
+
+
+
+Referências Bibliográficas 70
+
+[12] Newman, J. N. Marine Hydrodynamics. MIT Press: Cambridge, 1977.
+
+[13] Rienecker, M. M., and Fenton, J. D. A fourier approximation
+
+method for steady water waves. Journal of Fluid Mechanics 104 (1981),
+
+119–137.
+
+[14] Secretariat of the World Meteorological Organization.
+
+Guide to Wave Analysis and Forecasting, second ed. Geneva - Switzer-
+
+land, 1998. WMO-No. 702.
+
+[15] Stiassnie, M., and Peregrine, D. H. Shoaling of finite-amplitude
+
+surface waves on water of slowly-varying depth. Journal of Fluid Mechanics
+
+97 (1980), 783–805.
+
+[16] Stoker, J. J. Water Waves. Institute of Mathematical Sciences New
+
+York University: New York, 1957.
+
+[17] Tsai, W., and Yue, D. K. P. Computation of nonlinear free-surface
+
+flows. Annual Reviews Fluids Mechanics 28 (1996), 249–278.
+
+[18] Whitham, G. B. Linear and Nonlinear Waves. John Wiley &amp;amp; Sons: New
+
+York, 1974.
+
+[19] Wu, G. Direct Simulation and Deterministic Predition of Larger-scale
+
+Nonlinear Ocean Wave-field. PhD thesis, Massachusetts Institute of Tech-
+
+nology, 2004.
+
+[20] Yeung, R. W. Numerical methods in free-surface flows. Annual Review
+
+of Fluid Mechanics 14 (1982), 395–442.
+
+[21] Yuen, H. C., and Lake, B. M. Nonlinear dinamics of deep-water gravity
+
+waves. Advances in Applied Mechanics 22 (1982), 67–229.
+
+
+</field>
+	</doc>
+</add>

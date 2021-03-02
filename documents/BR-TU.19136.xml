@@ -1,0 +1,6659 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.19136</field>
+		<field name="filename">26254_Lopes_GabrielaCantarelli_M.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+UNIVERSIDADE ESTADUAL DE CAMPINAS
+
+FACULDADE DE ENGENHARIA QUI?MICA
+
+A?REA DE CONCENTRAC?A?O
+
+DESENVOLVIMENTO DE PROCESSOS QUI?MICOS
+
+Desenvolvimento de Modelo Nume?rico
+Tridimensional e El??ptico para o Estudo de
+
+Escoamentos no Interior de Dutos
+Cil??ndricos.
+
+Autor: Gabriela Cantarelli Lopes
+
+Orientador: Prof. Dr. Jose? Roberto Nunhez
+
+Co-Orientador: Dr. Everton Moraes Matos
+
+Dissertac?a?o de Mestrado apresentada a? Faculdade de Engenharia Qu??mica como parte
+
+dos requisitos exigidos para a obtenc?a?o do t??tulo de Mestre em Engenharia Qu??mica.
+
+Campinas – Sa?o Paulo
+
+Junho de 2008
+
+
+
+FICHA CATALOGRA?FICA ELABORADA PELA BIBLIOTECA DA A?REA DE
+ENGENHARIA E ARQUITETURA – BAE – UNICAMP
+
+Lopes, Gabriela Cantarelli
+L881d Desenvolvimento de modelo nume?rico tridimensional e
+
+el??ptico para o estudo de escoamentos no interior de dutos
+cil??ndricos / Gabriela Cantarelli Lopes.- -Campinas, SP:
+[s.n.], 2008.
+
+Orientador: Jose? Roberto Nunhez
+Dissertac?a?o (mestrado) - Universidade Estadual de
+
+Campinas, Faculdade de Engenharia Qu??mica.
+
+1. Fluidodina?mica computacional (CFD). 2. Tubos. 3.
+Modelos matema?ticos. 4. Turbule?ncia. 5. Me?todos dos
+volumes finitos. 6. Equac?o?es diferenciais parciais - soluc?o?es
+nume?ricas. I. Nunhez, Jose? Roberto. II. Universidade
+Estadual de Campinas. Faculdade de Engenharia Qu??mica.
+III. T??tulo.
+
+T??tulo em Ingle?s: Development of three-dimensional and elliptical numerical
+model for the study of fluid flow in cylindrical ducts
+
+Palavras-chave em Ingle?s: Computational fluid dynamic, Cylindrical ducts,
+Three-dimensional and elliptical model, Turbulence,
+Coupled solution, Finite Volume Method
+
+A?rea de concentrac?a?o: Desenvolvimento de Processos Qu??micos
+Titulac?a?o: Mestre em Engenharia Qu??mica
+Banca examinadora: Marcos Akira D’avila, Waldir Pedro Martignoni
+Data da defesa: 27/06/2008
+Programa de Po?s-Graduac?a?o: Engenharia Qu??mica
+
+i
+
+
+
+Dissertac?a?o de Mestrado defendida por Gabriela Cantarelli Lopes e aprovada em 27 de
+
+junho de 2008 pela banca examinadora constitu??da pelos doutores:
+
+ii
+
+
+
+Este exemplar corresponde a? versa?o final da Dissertac?a?o de Mestrado em Engenharia
+
+Qu??mica.
+
+iii
+
+
+
+Agradecimentos
+
+Agradec?o ao professor Jose? Roberto Nunhez pela oportunidade de desenvolver um tra-
+
+balho que me permitiu adquirir amplo conhecimento da fluidodina?mica computacional;
+
+ao professor Milton Mori, pela chance de participar do projeto desenvolvido no PQGe1,
+
+tendo contato com pessoas competentes e qualificadas; ao Everton, pela co-orientac?a?o e
+
+dedicac?a?o em meu aprendizado de me?todos nume?ricos; ao Le?o e ao Ma?rcio, por estarem
+
+sempre dispostos a ajudar em tudo que precisei. Agradec?o tambe?m a? minha ma?e pela
+
+torcida e pela motivac?a?o; ao meu pai pelo apoio e orientac?a?o na escolha da Engenharia
+
+Qu??mica que, sem querer, acabou sendo a realizac?a?o de um sonho; a? minha irma? Ju-
+
+liana, por ser um exemplo de intelige?ncia e cultura, me motivando a seguir seus passos;
+
+a? Vo? Inha e a? tia Cau pela pacie?ncia e pela compreensa?o; ao Ricardo por partilhar
+
+comigo todos os momentos, tornando-os especiais; aos meninos (Shanti e Tu?lio) por
+
+me trazerem sempre muita paz e alegria; a? Janaina pela amizade desde sempre; a? Ana,
+
+Marcela e Stella pela amizade e pela o?tima companhia. Agradec?o a? todos os amigos
+
+do L-CFD2: Cezar, Alexandre, Ma?rcio, Ellen, Diener, Se?rgio, Daniel, Dani, Thiago,
+
+Jefferson.
+
+1Laborato?rio de Pesquisa em Processos Qu??micos e Gesta?o Empresarial
+2Laborato?rio de Fluidodina?mica Computacional
+
+iv
+
+
+
+Dedicato?ria
+Dedico este trabalho a todas as pessoas que passaram pela minha vida e que fazem
+
+parte dela, e com as quais aprendi lic?o?es valiosas que seguira?o norteando meu caminho
+
+para sempre.
+
+Ep??grafe
+“Aprender e? a u?nica coisa de que a mente nunca se cansa, nunca tem medo e nunca se
+
+arrepende.”
+
+– Leonardo da Vinci
+
+v
+
+
+
+Resumo
+
+Processos que envolvem escoamentos de fluidos no interior de dutos esta?o presentes em
+
+muitas aplicac?o?es industriais. Na indu?stria petroqu??mica um desses processos que vem
+
+se tornando cada vez mais importante e? o craqueamento catal??tico de frac?o?es pesadas
+
+do petro?leo, ja? que as converte em frac?o?es leves e mais nobres. Por causa da crescente
+
+demanda mundial por gasolina e GLP e a? sua alta rentabilidade para uma refinaria de
+
+petro?leo, unidades de craqueamento catal??tico em leito fluidizado (FCC) esta?o presentes
+
+em todo o mundo. Testes experimentais costumam ser usados no estudo dos feno?menos
+
+envolvidos nesse processo. Pore?m esse tipo de ana?lise possui alto custo, que pode ser
+
+reduzido com o uso de simulac?o?es computacionais em seu estudo inicial. Assim, o obje-
+
+tivo deste trabalho foi desenvolver um modelo tridimensional e el??ptico, em linguagem
+
+Fortran, capaz de fornecer dados para a ana?lise preliminar de escoamentos no interior
+
+de reatores de FCC. Na modelagem desses problemas sa?o usadas equac?o?es diferenciais
+
+parciais, e essas na?o possuem soluc?a?o anal??tica conhecida, sendo necessa?rio o emprego
+
+de me?todos nume?ricos para esse fim. Neste trabalho foi usado o Me?todo dos Volumes
+
+Finitos, que tem a func?a?o de substituir as equac?o?es diferenciais parciais por equac?o?es
+
+alge?bricas aplicadas a pequenos volumes de controle finitos pertencentes ao dom??nio.
+
+Uma das maiores dificuldades encontradas no tratamento nume?rico de escoamentos in-
+
+compress??veis e? a determinac?a?o de um campo de pressa?o que satisfac?a a Equac?a?o da
+
+Continuidade. Esse problema foi resolvido fazendo-se uso da abordagem acoplada de
+
+soluc?a?o. Para ana?lise do modelo foram obtidos perfis nume?ricos de velocidade e pressa?o
+
+para fluidos escoando em regimes laminar e turbulento, que foram validados usando-se
+
+os dados obtidos com a soluc?a?o anal??tica das equac?o?es, por correlac?o?es (semi-) emp??ricas
+
+ou por dados experimentais, conforme cada um dos casos. Notou-se que o modelo re-
+
+presenta muito bem casos laminares, e que nos casos turbulentos foi necessa?rio um
+
+maior refino da malha pro?ximo a parede do tubo. Tambe?m foram feitas simulac?o?es
+
+para que se pudessem observar as caracter??sticas tridimensionais, el??pticas e transientes
+
+da modelagem do escoamento. De maneira geral o modelo se mostrou bastante ra?pido,
+
+convergindo em poucas iterac?o?es.
+
+Palavras-Chave: Fluidodina?mica computacional; dutos cil??ndricos; modelo tridimen-
+
+sional e el??ptico; me?todo dos Volumes Finitos; soluc?a?o acoplada; turbule?ncia.
+
+
+
+Abstract
+
+Processes involving fluid flow in tubes are present in many industrial applications.
+
+In petrochemical industry one of these processes that are becoming more and more
+
+important is the fluid catalytic cracking of heavy petroleum fractions. This fact is due
+
+to the process capacity to convert heavy fractions in light and valuable ones. Because
+
+of the increasingly worldwide demand for gasoline and LPG and its high yield for a
+
+petroleum refinery, fluid catalytic cracking (FCC) units are present in the whole world.
+
+Experimental tests are used in the study of the phenomena involved in this process.
+
+However this kind of analysis has high cost which can be reduced by using computational
+
+simulations in its initial study. Thus, the aim of this work was the development of a
+
+three-dimensional and elliptical model in Fortran language in order to provide data
+
+for fluid flow preliminary analysis in FCC reactors. Partial differential equations were
+
+used in the modeling of these problems. These equations do not have known analytical
+
+solution, being necessary therefore the use of numerical methods. In this work the
+
+Finite Volume Method were applied with this purpose. This method has as a role to
+
+substitute the partial differential equations of the model for algebric equations applied
+
+to small finite control volumes of the domain. One of the biggest difficulties found in
+
+the numerical treatment of incompressible fluid flows is the determination of a pressure
+
+field that satisfies the Continuity Equation. This problem was solved using the coupled
+
+solution approach. For model analysis, numerical velocity and pressure profiles for
+
+laminar and turbulent flows were obtained, that had been validated using the data
+
+obtained through the analytical solution of the equations, by empirical correlations or
+
+by experimental data, according to each one of the cases. The model represented well
+
+laminar cases, and in the turbulent ones the mesh had to be more refined near the tube
+
+wall. Other simulations were performed in analyzing the three-dimensional, elliptical
+
+and transient model characteristics. In general, the model was very fast, converging in
+
+a few interations.
+
+Keywords: Computational fluid dynamic; cylindrical ducts; three-dimensional and
+
+elliptical model; Finite Volume Method; coupled solution; turbulence.
+
+
+
+Suma?rio
+
+Resumo vi
+
+Abstract vii
+
+Lista de Figuras xii
+
+Lista de Tabelas xiii
+
+Nomenclatura xiv
+
+1 Apresentac?a?o 1
+
+2 Revisa?o Bibliogra?fica 3
+
+2.1 O processo FCC . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+
+2.2 Fluidodina?mica Computacional . . . . . . . . . . . . . . . . . . . . . . 6
+
+2.3 Considerac?o?es Hidrodina?micas . . . . . . . . . . . . . . . . . . . . . . . 7
+
+2.4 Classificac?a?o Matema?tica de Escoamentos . . . . . . . . . . . . . . . . 11
+
+2.5 Turbule?ncia . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+
+3 Modelagem Matema?tica 18
+
+3.1 Hipo?teses do Modelo . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+
+3.2 Equac?o?es de Navier-Stokes . . . . . . . . . . . . . . . . . . . . . . . . . 19
+
+3.3 Modelo de Turbule?ncia . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+
+3.4 Condic?o?es de Contorno . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+
+viii
+
+
+
+4 Desenvolvimento Nume?rico 23
+
+4.1 Me?todo Nume?rico . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+
+4.2 Malha de Discretizac?a?o . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+
+4.3 Aproximac?a?o por Integral . . . . . . . . . . . . . . . . . . . . . . . . . 26
+
+4.4 Func?o?es de Interpolac?a?o . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+
+4.5 Tratamento Pressa?o-Velocidade . . . . . . . . . . . . . . . . . . . . . . 29
+
+4.6 Aplicac?a?o das Condic?o?es de Contorno . . . . . . . . . . . . . . . . . . . 31
+
+4.7 O Sistema de Equac?o?es Alge?bricas . . . . . . . . . . . . . . . . . . . . . 32
+
+4.8 Passo de Tempo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+
+4.9 Estrutura do Programa . . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+
+4.10 Converge?ncia . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 38
+
+5 Simulac?o?es e Ana?lise dos Resultados 39
+
+5.1 Escoamentos em Regime Laminar . . . . . . . . . . . . . . . . . . . . . 39
+
+5.2 Escoamentos em Regime Turbulento . . . . . . . . . . . . . . . . . . . 51
+
+6 Concluso?es 60
+
+Refere?ncias Bibliogra?ficas 63
+
+A Coeficientes das equac?o?es alge?bricas 66
+
+ix
+
+
+
+Lista de Figuras
+
+2.1 Configurac?a?o simplificada da regia?o de entrada de um reator riser (ROSA,
+
+2002). . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+
+2.2 Sistema de alimentac?a?o com angulac?a?o ajusta?vel (CHEN, 2006). . . . . 5
+
+2.3 Desenvolvimento do perfil de velocidade e variac?a?o da pressa?o na regia?o
+
+de entrada de um escoamento em um duto (WHITE, 2003). . . . . . . 8
+
+2.4 Comparac?a?o dos perfis de velocidade para escoamentos laminar (a) e
+
+turbulento (b) (WHITE, 2003) . . . . . . . . . . . . . . . . . . . . . . . 10
+
+2.5 Representac?a?o de uma componente da velocidade num escoamento tur-
+
+bulento usando o conceito de me?dia de Reynolds. . . . . . . . . . . . . 13
+
+2.6 Part??cula de fluido se movendo na direc?a?o ascendente como resultado da
+
+flutuac?a?o de velocidade nessa direc?a?o (C?ENGEL e CIMBALA, 2007). . 14
+
+2.7 Tensa?o de cisalhamento viscosa (laminar) e tensa?o de Reynolds (turbu-
+
+lenta) (Pope, 2000). . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+
+2.8 Regio?es do escoamento em termos de y+. . . . . . . . . . . . . . . . . . 17
+
+4.1 Malha na?o uniforme na direc?a?o radial. . . . . . . . . . . . . . . . . . . 25
+
+4.2 Esquematizac?a?o da malha de discretizac?a?o - plano r?. . . . . . . . . . . 25
+
+4.3 Esquematizac?a?o da malha de discretizac?a?o - plano zr. . . . . . . . . . . 25
+
+4.4 Conexo?es espacial e temporal da varia?vel ? na formulac?a?o totalmente
+
+impl??cita. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+
+4.5 Esquematizac?a?o do volume a oeste (W ) de um volume central (P ). . . 32
+
+4.6 Estrutura da Matriz dos Coeficientes . . . . . . . . . . . . . . . . . . . 34
+
+4.7 Algoritmo de resoluc?a?o do problema. . . . . . . . . . . . . . . . . . . . 37
+
+x
+
+
+
+5.1 Perfil de velocidade axial - plano zr . . . . . . . . . . . . . . . . . . . . 40
+
+5.2 Desenvolvimento do perfil de velocidade axial ao longo do cilindro. . . . 41
+
+5.3 Perfis nume?rico e anal??tico de velocidade axial para Re = 1 × 103, na
+regia?o plenamente desenvolvida. . . . . . . . . . . . . . . . . . . . . . . 42
+
+5.4 Perfis nume?rico e anal??tico de velocidade axial para Re = 2 × 103, na
+regia?o plenamente desenvolvida. . . . . . . . . . . . . . . . . . . . . . . 42
+
+5.5 Dados de queda de pressa?o obtidos numericamente e pela Equac?a?o de
+
+Darcy-Weisbach para Re = 1 × 103 ao longo do comprimento do cilindro. 43
+
+5.6 Dados de queda de pressa?o obtidos numericamente e pela Equac?a?o de
+
+Darcy-Weisbach para Re = 2 × 103 ao longo do comprimento do cilindro. 43
+
+5.7 Desenvolvimento do perfil de velocidade radial ao longo do cilindro. . . 44
+
+5.8 Vazo?es volume?tricas nas sec?o?es transversais ao longo do comprimento do
+
+cilindro. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+
+5.9 Vaza?o ma?ssica resultante da aplicac?a?o dos valores nume?ricos das varia?veis
+
+na equac?a?o de conservac?a?o de massa. . . . . . . . . . . . . . . . . . . . 46
+
+5.10 Geometria da regia?o de entrada do tubo. . . . . . . . . . . . . . . . . . 46
+
+5.11 Desenvolvimento do perfil de velocidade axial para Re = 1, 6×103 usando
+geometria esquematizada na Figura 5.10. . . . . . . . . . . . . . . . . . 47
+
+5.12 Dados de velocidade axial e radial representados vetorialmente. . . . . . 48
+
+5.13 Perfil de velocidade de entrada inclinado. . . . . . . . . . . . . . . . . . 48
+
+5.14 Representac?a?o vetorial das componentes radial e angular da velocidade
+
+no plano. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 49
+
+5.15 Representac?a?o vetorial da velocidade no espac?o. . . . . . . . . . . . . . 49
+
+5.16 Desenvolvimento do perfil de velocidade axial ao longo do tempo. . . . 50
+
+5.17 Queda de pressa?o - teste de independe?ncia de malha variando nvz. . . . 51
+
+5.18 Queda de pressa?o - teste de independe?ncia de malha variando nvr. . . . 52
+
+5.19 Perfis de velocidade axial nume?rico e obtido pela lei de pote?ncia para
+
+Re = 2 × 104, e dados experimentais para Re = 2, 7281 × 104, na regia?o
+plenamente desenvolvida. . . . . . . . . . . . . . . . . . . . . . . . . . . 53
+
+xi
+
+
+
+5.20 Perfis de velocidade axial nume?rico e obtido pela lei de pote?ncia para
+
+Re = 4 × 104, e dados experimentais para Re = 4, 8997 × 104, na regia?o
+plenamente desenvolvida. . . . . . . . . . . . . . . . . . . . . . . . . . . 53
+
+5.21 Perfis de velocidade axial nume?rico e obtido pela lei de pote?ncia para
+
+Re = 10 × 104, na regia?o plenamente desenvolvida. . . . . . . . . . . . 54
+
+5.22 Dados de queda de pressa?o obtidos numericamente e pela Equac?a?o de
+
+Darcy-Weisbach para Re = 2 × 104 ao longo do comprimento do cilindro. 55
+
+5.23 Dados de queda de pressa?o obtidos numericamente e pela Equac?a?o de
+
+Darcy-Weisbach para Re = 4 × 104 ao longo do comprimento do cilindro. 56
+
+5.24 Dados de queda de pressa?o obtidos numericamente e pela Equac?a?o de
+
+Darcy-Weisbach para Re = 10 × 104 ao longo do comprimento do cilindro. 56
+
+5.25 Representac?a?o vetorial da velocidade do gaso?leo vaporizado no interior
+
+de um reator riser. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+
+5.26 Representac?a?o da queda de pressa?o no interior de um reator riser. . . . 59
+
+xii
+
+
+
+Lista de Tabelas
+
+5.1 Comprimentos de entrada hidrodina?micos - laminar . . . . . . . . . . . 40
+
+5.2 Comprimentos de entrada hidrodina?micos (Equac?a?o 2.2) - turbulento . 54
+
+5.3 Comprimentos de entrada hidrodina?micos (Equac?a?o 2.3) - turbulento . 54
+
+A.1 Coeficientes da equac?a?o alge?brica resultante do tratamento nume?rico da
+
+Equac?a?o de Quantidade de Movimento na direc?a?o axial- EQMz. . . . . 67
+
+A.2 Coeficientes da equac?a?o alge?brica resultante do tratamento nume?rico da
+
+Equac?a?o de Quantidade de Movimento na direc?a?o radial - EQMr. . . . 68
+
+A.3 Coeficientes da equac?a?o alge?brica resultante do tratamento nume?rico da
+
+Equac?a?o de Quantidade de Movimento na direc?a?o angular - EQM?. . . 69
+
+A.4 Coeficientes da equac?a?o alge?brica resultante do tratamento nume?rico da
+
+Equac?a?o da Continuidade. . . . . . . . . . . . . . . . . . . . . . . . . . 70
+
+xiii
+
+
+
+Nomenclatura
+
+Letras Latinas
+
+a a?rea [m2]
+
+A coeficientes das equac?o?es alge?bricas [kg/s ou m2]
+
+A? a?rea perpendicular a? direc?a?o angular [m
+2]
+
+Ar a?rea perpendicular a? direc?a?o radial [m
+2]
+
+Az a?rea perpendicular a? direc?a?o axial [m
+2]
+
+A+ constante de van Driest
+
+B vetor resposta do sistema de equac?o?es alge?bricas [kg.m/s2]
+
+D dia?metro do cilindro [m]
+
+f fator de atrito, forc?as externas
+
+F forc?a [N ]
+
+?
+g acelerac?a?o da gravidade [m/s2]
+
+k constante
+
+L comprimento do cilindro [m]
+
+Le comprimento de entrada hidrodina?mico [m]
+
+lm comprimento de mistura [m]
+
+m? vaza?o ma?ssica [kg/s]
+
+P pressa?o [P a]
+
+xiv
+
+
+
+Q vaza?o volume?trica [m3/s]
+
+r posic?a?o radial [m]
+
+R raio do cilindro [m]
+
+Re nu?mero de Reynolds
+
+t tempo [s]
+
+T intervalo de tempo grande [s] ou temperatura [K]
+
+umax velocidade ma?xima [m/s]
+
+v vetor velocidade [m/s]
+
+V volume [m3]
+
+v velocidade me?dia [m/s]
+
+v
+?
+
+flutuac?a?o da velocidade [m/s]
+
+vz, u velocidade axial [m/s]
+
+vr, v velocidade radial [m/s]
+
+v? velocidade angular [m/s]
+
+v? velocidade de atrito [m/s]
+
+x posic?a?o ao longo do comprimento do cilindro [m]
+
+y dista?ncia a partir da parede [m]
+
+y+ dista?ncia adimensional da parede
+
+z posic?a?o axial [m]
+
+Letras Gregas
+
+? posic?a?o angular [m]
+
+? metade da largura do canal ou do dia?metro do cilindro [m]
+
+? rugosidade da parede [m] ou quantidade residual
+
+xv
+
+
+
+µ viscosidade [kg/(m.s)]
+
+µef viscosidade efetiva [kg/(m.s)]
+
+µt viscosidade turbulenta [kg/(m.s)]
+
+? varia?vel gene?rica
+
+? massa espec??fica [kg/m3]
+
+? tensa?o normal [P a]
+
+? tensa?o de cisalhamento [P a]
+
+?turb tensa?o turbulenta [P a]
+
+?? tensa?o na parede [P a]
+
+? tempo relativo
+
+? ??ndice de esparsidade
+
+Subscritos
+
+e face leste do volume de controle
+
+w face oeste do volume de controle
+
+n face norte do volume de controle
+
+s face sul do volume de controle
+
+f face posterior do volume de controle
+
+b face anterior do volume de controle
+
+P centro do volume de controle
+
+E centro do volume de controle a? leste do volume P
+
+W centro do volume de controle a? oeste do volume P
+
+N centro do volume de controle a? norte do volume P
+
+S centro do volume de controle a? sul do volume P
+
+xvi
+
+
+
+F centro do volume de controle a? jusante do volume P
+
+B centro do volume de controle a? montante do volume P
+
+Superescritos
+
+0 tempo inicial
+
+S??mbolos e Operadores
+
+? operador de diferenc?a
+
+? gradiente
+
+?· divergente
+
+Siglas
+
+CF D computational fluid dynamic
+
+DN S direct numerical simulation
+
+F CC fluid catalytic craking
+
+GLP ga?s liquefeito do petro?leo
+
+LES large eddy simulation
+
+LP G liquefied petroleum gas
+
+RAN S Reynolds averaged Navier-Stokes
+
+xvii
+
+
+
+Cap??tulo 1
+
+Apresentac?a?o
+
+O escoamento de fluidos e? um feno?meno de extrema importa?ncia para os en-
+
+genheiros, ja? que esta? presente na maior parte das aplicac?o?es industriais, onde o escoa-
+
+mento no interior em tubos circulares e?, sem du?vida, o mais comum deles. O estudo
+
+desses feno?menos pode ser feito experimentalmente, pore?m o alto custo que costuma
+
+estar envolvido nessa pra?tica em determinados casos, tem impulsionado o uso de si-
+
+mulac?o?es computacionais em sua ana?lise preliminar.
+
+O intuito deste trabalho foi desenvolver uma ferramenta pra?tica e completa,
+
+em linguagem Fortran, para o estudo de processos envolvendo escoamentos de fluidos
+
+no interior de tubos cil??ndricos. Sua principal motivac?a?o, no entanto, foi o estudo do
+
+processo de craqueamento catal??tico em leito fluidizado (FCC) em refinarias de petro?leo,
+
+ja? que, por converter res??duos da destilac?a?o em produtos com maior valor agregado, e?
+
+um processo comercialmente e ambientalmente muito importante. Existem atualmente
+
+pacotes comerciais capazes de realizar simulac?o?es desse tipo de escoamento. Pore?m o
+
+desenvolvimento de um simulador pro?prio traz vantagens como a maior rapidez nas
+
+simulac?o?es, por resolver um problema espec??fico, e a fa?cil implementac?a?o de novos
+
+modelos na?o presentes nos softwares comerciais.
+
+O modelo matema?tico que descreve o escoamento, neste trabalho, e? tridimen-
+
+sional, el??ptico e transiente. Para isso foram consideradas todas as componentes do
+
+vetor velocidade e os termos difusivos e temporais presentes nas equac?o?es de Navier-
+
+Stokes. Tambe?m na?o foram impostos planos de simetria no dom??nio do problema.
+
+Outra caracter??stica e? a flexibilidade na definic?a?o da condic?a?o de entrada para a ve-
+
+locidade, permitindo a realizac?a?o de simulac?o?es de escoamentos com diferentes perfis
+
+de velocidade de entrada. Dessa forma, o modelo desenvolvido permite uma ana?lise
+
+1
+
+
+
+bastante completa do problema, possibilitando variac?o?es no sistema de alimentac?a?o do
+
+reator, bem como um estudo mais detalhado do escoamento em sua regia?o de entrada,
+
+de processos de recirculac?a?o e formac?a?o de vo?rtices.
+
+As equac?o?es do modelo foram aproximadas numericamente usando-se o Me?todo
+
+dos Volumes Finitos, e o sistema de equac?o?es foi enta?o resolvido para todas as varia?veis
+
+simultaneamente, usando-se abordagem acoplada de soluc?a?o. Foram usadas malhas
+
+de discretizac?a?o estruturadas uniformes ou na?o. As func?o?es de interpolac?a?o upwind e
+
+diferenc?as centrais foram empregadas para que as varia?veis estivessem arranjadas de
+
+maneira co-localizada, e essas foram interpoladas temporalmente usando-se formulac?a?o
+
+totalmente impl??cita. Para escoamentos turbulentos foi adotado o conceito de viscosi-
+
+dade turbulenta, que foi calculada a partir da teoria de comprimento de mistura de
+
+Prandtl.
+
+Nos cap??tulos seguintes o presente trabalho sera? detalhado de acordo com a
+
+seguinte estrutura: no Cap??tulo 2 e? apresentada a revisa?o da teoria necessa?ria a? sua
+
+compreensa?o; em seguida, no Cap??tulo 3, sa?o mostradas as equac?o?es diferenciais e
+
+alge?bricas usadas na modelagem do escoamento; o Cap??tulo 4 traz detalhes do trata-
+
+mento nume?rico das equac?o?es diferenciais e o desenvolvimento do co?digo em questa?o;
+
+por fim, sa?o mostradas as simulac?o?es realizadas para fluidos em diferentes regimes de
+
+escoamento, bem como, a ana?lise dos resultados e concluso?es (Cap??tulos 5 e 6).
+
+2
+
+
+
+Cap??tulo 2
+
+Revisa?o Bibliogra?fica
+
+A seguir sera? feita uma revisa?o de assuntos e conceitos pertinentes a? com-
+
+preensa?o deste trabalho. A Sec?a?o 2.1 e? dedicada a? descric?a?o do processo de craque-
+
+amento catal??tico em leito fluidizado (FCC) em risers, bem como a geometria desse
+
+tipo de reator e suas condic?o?es de operac?a?o. Apesar de haver, neste cap??tulo, um
+
+to?pico (Sec?a?o 2.2) referente ao processo de fluidodina?mica computacional (CFD), ha?
+
+um cap??tulo (Cap??tulo 4) destinado exclusivamente ao detalhamento da soluc?a?o do
+
+problema, incluindo a descric?a?o dos me?todos nume?ricos usados, ja? que esta parte e?
+
+fundamental no desenvolvimento deste trabalho. Na Sec?a?o 2.3 e? feita uma ana?lise qua-
+
+litativa de escoamentos em regimes laminar e turbulento. Sa?o apresentadas tambe?m
+
+correlac?o?es anal??ticas e (semi-) emp??ricas que sa?o usadas para a validac?a?o de parte dos
+
+resultados obtidos com o uso do modelo nume?rico. Com o intuito de ajudar na escolha
+
+no tratamento nume?rico do problema uma classificac?a?o matema?tica de escoamentos e?
+
+mostrada na Sec?a?o 2.4. Por fim, na Sec?a?o 2.5, e? apresentada a teoria sobre modelagem
+
+de processos turbulentos.
+
+2.1 O processo FCC
+
+O craqueamento catal??tico em leito fluidizado (FCC) e? uma das etapas do
+
+refino do petro?leo que surgiu da necessidade de se agregar maior valor comercial a seus
+
+subprodutos. E? um processo bastante lucrativo, ja? que converte o res??duo obtido na
+
+destilac?a?o em produtos de maior valor agregado, como a gasolina e o GLP. Segundo
+
+Chen (2006), cerca de 45% da produc?a?o mundial de gasolina e? proveniente de unidades
+
+de FCC.
+
+3
+
+
+
+Figura 2.1: Configurac?a?o simplificada da regia?o de entrada de um reator riser (ROSA,
+
+2002).
+
+O res??duo usado como carga nesse processo e? conhecido como gaso?leo e ate?
+
+alguns anos era composto por uma mistura de o?leos leves e pesados obtidos no fra-
+
+cionamento a va?cuo. No entanto, de acordo com Abadie (1997), a tende?ncia mundial
+
+nos u?ltimos anos e? processar cargas as mais pesadas poss??veis. Dessa forma, sa?o usados
+
+atualmente gaso?leos provenientes do processo de destilac?a?o atmosfe?rica.
+
+A reac?a?o de craqueamento ocorre em um reator cil??ndrico vertical, conhecido
+
+como riser, que costuma ter dia?metro que pode variar entre 0, 2 ? 2, 0 m (ROSA, 2002)
+e altura de ate? 40 m. Ele possui duas entradas distintas: uma para alimentac?a?o do
+
+gaso?leo, e outra para a entrada do catalisador. Na Figura 2.1 esta? esquematizada uma
+
+configurac?a?o simplificada desta regia?o, ja? que esse processo e? feito por meio de bicos
+
+injetores de carga. O catalisador usado na reac?a?o de craqueamento e? recuperado em
+
+um regenerador que fica acoplado ao riser.
+
+Got??culas de gaso?leo, na fase l??quida, entram no reator carregadas por vapor
+
+d’a?gua - 0, 5 a 3% em massa da alimentac?a?o (HAN et al, 2000) - a cerca de 300?C
+
+(ROSA, 2002). O catalisador (proveniente do regenerador), que esta? a uma temperatura
+
+superior a? temperatura de ebulic?a?o do gaso?leo, e? alimentado por outra entrada. Ao se
+
+misturarem, as duas correntes trocam calor e o gaso?leo e? vaporizado, e so? enta?o comec?a
+
+a ser craqueado.
+
+A temperatura necessa?ria para a vaporizac?a?o e craqueamento de gaso?leos prove-
+
+nientes da destilac?a?o a va?cuo raramente ultrapassa 550?C (ABADIE, 1997). Ja? as cargas
+
+mais pesadas necessitam de temperaturas na faixa de 680-710?C (HAN et al, 2000).
+
+4
+
+
+
+O sistema de alimentac?a?o do riser e?, segundo Chen (2006), de longe, o mais
+
+cr??tico componente a ser considerado no projeto de reatores de uma unidade FCC,
+
+ja? que a mistura entre as fases influencia muito no rendimento da reac?a?o. Como as
+
+reac?o?es de craqueamento ocorrem apenas apo?s a vaporizac?a?o do gaso?leo alimentado, ele
+
+deve ser misturado ao catalisador quente, de forma que este fornec?a calor e o vaporize
+
+rapidamente, da maneira mais eficiente poss??vel.
+
+Embora a maioria das unidades modernas de FCC possuam um sistema de
+
+alimentac?a?o ajustado numa determinada angulac?a?o fixa, algumas delas ve?m utilizando
+
+esses sistemas com angulac?a?o varia?vel, como pode ser visto na Figura 2.2.
+
+Figura 2.2: Sistema de alimentac?a?o com angulac?a?o ajusta?vel (CHEN, 2006).
+
+Theologos e Markatos (1993) usaram um modelo matema?tico tridimensional
+
+e bifa?sico para simular o processo de FCC em risers. Na entrada do reator estavam
+
+distribu??dos ao longo de sua circunfere?ncia 8 bicos injetores de carga inclinados a 60?.
+
+Posteriormente esse trabalho foi continuado por Theologos et al (1997) com o estudo
+
+de entradas com 3 e 12 bicos injetores. Eles quiseram mostrar que a maneira como a
+
+alimentac?a?o e? realizada influencia o desempenho do processo ao longo de todo o reator.
+
+Segundo os autores, devido a? turbule?ncia intensa e na?o homogeneidade do escoamento
+
+na regia?o da entrada, balanc?os unidimensionais na?o podem ser aplicados nessa a?rea.
+
+Eles afirmam que e o uso de planos de simetria axial e radial impossibilita o estudo
+
+de escoamentos com essas caracter??sticas, ja? que anulam as componentes da velocidade
+
+normais a essas a?reas.
+
+Ja? Neri e Gidaspow (2000) simularam o escoamento no interior de um riser
+
+5
+
+
+
+usando uma modelagem transiente e bidimensional. O modelo foi usado na predic?a?o
+
+de escoamentos bifa?sicos, dando e?nfase a? geometria das regio?es de entrada e sa??da e
+
+a?s caracter??sticas transientes das part??culas. Eles tambe?m notaram que a imposic?a?o de
+
+simetria axial resulta numa distribuic?a?o errada das part??culas, e que a correta repre-
+
+sentac?a?o da geometria na regia?o de entrada e? crucial na descric?a?o da regia?o inferior do
+
+riser.
+
+2.2 Fluidodina?mica Computacional
+
+A modelagem matema?tica de problemas que envolvem escoamentos de fluidos
+
+resulta muitas vezes em equac?o?es diferenciais parciais na?o lineares, que na?o te?m soluc?a?o
+
+anal??tica desconhecida. Na soluc?a?o nume?rica de um problema desse tipo, cada equac?a?o
+
+que modela o feno?meno e? convertida num conjunto de equac?o?es alge?bricas que sera?
+
+tanto maior quanto mais pro?ximo se deseja que o resultado esteja do processo real. Na
+
+soluc?a?o desse sistema de equac?o?es se torna necessa?rio o aux??lio computacional.
+
+A fluidodina?mica computacional (CFD - Computacional Fluid Dynamics) e?
+
+uma das a?reas da meca?nica dos fluidos que usa me?todos nume?ricos e algoritmos na
+
+soluc?a?o e ana?lise de problemas que envolvem escoamentos de fluidos. Estes esta?o pre-
+
+sentes na maior parte dos processos industriais, e apesar de sua ana?lise poder ser feita
+
+com o uso de testes experimentais, estudos que se baseiam somente nesse tipo de pro-
+
+cedimento possuem um alto custo. Esse fator faz com que, cada vez mais, sejam usadas
+
+simulac?o?es computacionais na ana?lise inicial desses processos.
+
+Com o uso de te?cnicas de CFD para?metros relevantes de um problema podem
+
+ser avaliados numericamente e alterados facilmente ate? que o resultado da simulac?a?o
+
+atenda a?s exige?ncias do projeto. Em geral, o procedimento computacional na flu-
+
+idodina?mica tem o intuito de fazer as investigac?o?es experimentais mais eficientes, a
+
+custos e tempos menores do que apenas utilizando te?cnicas emp??ricas.
+
+Mercado et al (2001) desenvolveram em seu trabalho um modelo nume?rico
+
+usando te?cnicas de CFD. Seu trabalho envolveu a simulac?a?o de escoamentos turbulentos
+
+com troca te?rmica em tubos. As equac?o?es de fluxo que modelam esse feno?meno foram
+
+integradas numericamente usando um Me?todo de Diferenc?as Finitas de quarta ordem na
+
+direc?a?o radial. Uma caracter??stica interessante dessa formulac?a?o e? que para escoamentos
+
+em regime laminar o me?todo e? na?o-iterativo, o que torna a simulac?a?o muito mais ra?pida
+
+que a efetuada por pacotes convencionais de CFD.
+
+6
+
+
+
+Ja? Souza et al (2005) criaram um co?digo nume?rico que tem como objetivo
+
+encontrar as condic?o?es de operac?a?o que minimizem a formac?a?o de coque durante o
+
+processo de craqueamento de frac?o?es pesadas do petro?leo. Na integrac?a?o das equac?o?es
+
+de conservac?a?o que modelam o sistema eles usaram o Me?todo dos Volumes Finitos.
+
+Apesar de ter apresentado o?timos resultados quanto a hidrodina?mica do processo, esse
+
+modelo, assim como o desenvolvido por Mercado et al (2001), tem o uso limitado a
+
+escoamentos simples, ja? que nesses trabalhos a componente radial da velocidade foi
+
+considerada desprez??vel em relac?a?o a? componente axial, e foi adotada simetria axial ao
+
+longo do cilindro.
+
+2.3 Considerac?o?es Hidrodina?micas
+
+Impulsionado pela importa?ncia te?cnica de escoamentos em dutos, o estudo
+
+detalhado da natureza do desenvolvimento do escoamento em sua regia?o de entrada
+
+tem se tornado fundamental (SPARROW, 1964 citado por MUNIZ, 1995).
+
+No escoamento de um fluido que entra em um tubo circular com velocidade uni-
+
+forme, as part??culas que esta?o em contato com a superf??cie te?m sua velocidade reduzida
+
+a zero. Essas part??culas tendem a retardar o movimento das part??culas da camada de
+
+fluido adjacente como resultado do atrito entre elas, e assim sucessivamente. Para que
+
+a vaza?o de massa atrave?s da sec?a?o transversal seja mantida constante, a velocidade do
+
+fluido na sec?a?o me?dia do tubo e? aumentada. Como resultado um gradiente de veloci-
+
+dade se desenvolve ao longo do tubo. O escoamento fluido passa, enta?o, a possuir duas
+
+regio?es distintas: a camada limite, onde as tenso?es de cisalhamento sa?o elevadas provo-
+
+cando altos gradientes de velocidade, e uma regia?o externa a? camada limite, tambe?m
+
+conhecida como regia?o de escoamento na?o-viscoso, onde tenso?es de cisalhamento sa?o
+
+desprez??veis, na?o havendo variac?a?o de velocidade. O encolhimento da regia?o de escoa-
+
+mento inv??scido termina com a mistura da camada limite na linha do centro. Enta?o
+
+os efeitos viscosos se estendem por toda a sec?a?o transversal e o escoamento e? dito ple-
+
+namente desenvolvido. A dista?ncia da entrada ate? onde essa condic?a?o e? alcanc?ada e?
+
+chamada de comprimento de entrada hidrodina?mico (Le). A partir da?? o perfil de ve-
+
+locidade na?o mais varia em relac?a?o ao comprimento do tubo (x), a tensa?o na parede
+
+passa a ser constante e a queda de pressa?o decresce linearmente com x. Esses detalhes
+
+podem ser vistos na Figura 2.3.
+
+Muniz (1995) estudou o desenvolvimento da camada limite na regia?o de en-
+
+trada de tubos de sec?a?o transversal circular para escoamentos em regime laminar. O
+
+7
+
+
+
+Figura 2.3: Desenvolvimento do perfil de velocidade e variac?a?o da pressa?o na regia?o de
+
+entrada de um escoamento em um duto (WHITE, 2003).
+
+tratamento nume?rico do problema foi feito usando o Me?todo dos Volumes Finitos. Ele
+
+obteve valores de Le para uma faixa de 5 &amp;lt;Re &amp;lt;10
+3 e os comparou com algumas
+
+correlac?o?es encontradas na literatura. O autor observou que a correlac?a?o proposta por
+
+Langhaar (1942), citado por Muniz (1995), apesar de na?o apresentar bons resultados
+
+para Reynolds muito baixos, pode servir como uma estimativa inicial para o ca?lculo do
+
+comprimento de entrada. Nessa correlac?a?o Le e? dado por:
+
+(
+Le
+D
+
+)
+lam
+
+= 0, 0575 · ReD (2.1)
+
+Em escoamentos turbulentos, as camadas limites crescem rapidamente e Le e?
+
+relativamente menor do que no caso laminar. Para tubos de parede lisa, de acordo com
+
+White (2003), seu valor e? de aproximadamente:
+
+(
+Le
+D
+
+)
+turb
+
+? 4, 40 · Re1/6D (2.2)
+
+Ja? C?engel e Cimbala (2007) sugerem o uso de outra correlac?a?o para o ca?lculo
+
+do comprimento de entrada para esse tipo de escoamento:
+
+(
+Le
+D
+
+)
+turb
+
+= 1, 359 · Re1/4D (2.3)
+
+8
+
+
+
+O gradiente de pressa?o ?P = P1 ?P2, associado ao escoamento interno simples
+(sem influe?ncia da gravidade e considerando apenas a componente axial da velocidade)
+
+de um fluido na regia?o plenamente desenvolvida, a partir de uma posic?a?o axial x1
+
+para uma posic?a?o final x2 pode ser estimado usando-se a equac?a?o de Darcy-Weisbach
+
+(INCROPERA e DEWITT, 2003):
+
+?P = f ·
+? · vz 2
+
+2 · D
+· (x2 ? x1) (2.4)
+
+em que ? e? a massa espec??fica do fluido, D e? o dia?metro do cilindro e f e? uma tensa?o de
+
+cisalhamento adimensional na parede (POTTER e WIGGERT, 2004) conhecida como
+
+fator de atrito de Darcy.
+
+Para escoamentos laminares (Re &amp;lt;2000), o fator de atrito de Darcy e? dado
+
+por:
+
+f =
+64
+
+Re
+(2.5)
+
+Em escoamentos turbulentos, ale?m de estar relacionado ao nu?mero de Reynolds,
+
+o fator de atrito e? func?a?o da rugosidade da parede do tubo. Esses dados foram obtidos
+
+experimentalmente e podem ser encontrados graficamente no denominado Diagrama
+
+de Moody. Para escoamentos com Re &gt; 4000 os dados foram ajustados por Haaland
+
+(1983), citado por Johnson (1998), que chegou a? seguinte correlac?a?o para esses casos:
+
+f ?
+
+??
+??0, 782 · ln
+
+?
+?6, 9
+
+Re
++
+
+(
+?
+
+3, 7 · D
+
+)1,11??
+??
+?
+?2
+
+(2.6)
+
+em que ? e? a rugosidade da parede do tubo. Para tubos lisos ? = 0.
+
+Segundo Potter e Wiggert (2004) existe uma zona cr??tica (2000 &amp;lt;Re &amp;lt;4000)
+
+que acopla o escoamento turbulento ao laminar. Essa regia?o pode apresentar um escoa-
+
+mento oscilante que existe alternativamente entre turbulento e laminar. Dessa forma
+
+na?o ha? uma correlac?a?o confia?vel para o fator de atrito para essa faixa de Reynolds.
+
+Em escoamentos laminares o movimento do fluido e? altamente ordenado, di-
+
+ferentemente de escoamentos turbulentos, onde o movimento e? bastante irregular e
+
+caracterizado por flutuac?o?es de velocidade que resultam em perfis de velocidade mais
+
+planos do que no escoamento laminar (Figura 2.4).
+
+O perfil de velocidade de um fluido incompress??vel escoando em regime lami-
+
+nar, com velocidade predominantemente axial, na regia?o plenamente desenvolvida no
+
+9
+
+
+
+Figura 2.4: Comparac?a?o dos perfis de velocidade para escoamentos laminar (a) e tur-
+
+bulento (b) (WHITE, 2003)
+
+interior de um cilindro horizontal em regime permanente (desprezando a influe?ncia da
+
+gravidade) pode ser determinado pela soluc?a?o anal??tica da equac?a?o que modela esse
+
+feno?meno. Nesse caso a componente axial da velocidade depende apenas da posic?a?o
+
+radial (r), como pode ser visto na Equac?a?o 2.7.
+
+vz(r)
+
+vz
+= 2 ·
+
+[
+1 ?
+
+(
+r
+
+R
+
+)2]
+(2.7)
+
+em que vz e? a velocidade me?dia do fluido sobre a sec?a?o tranversal do tubo.
+
+Para escoamentos turbulentos, operando nas mesmas condic?o?es descritas ante-
+
+riormente, a distribuic?a?o de velocidades pode ser determinada utilizando-se uma cor-
+
+relac?a?o emp??rica denominada lei de pote?ncia (POTTER e WIGGERT, 2004):
+
+vz
+vz,max
+
+=
+(
+
+y
+
+R
+
+) 1
+n
+
+(2.8)
+
+em que,
+
+vz,max =
+(n + 1)(2n + 1)
+
+2n2
+vz (2.9)
+
+e,
+
+n =
+1
+?
+
+f
+(2.10)
+
+em que f e? o fator de atrito de Darcy.
+
+10
+
+
+
+2.4 Classificac?a?o Matema?tica de Escoamentos
+
+Problemas envolvendo escoamentos podem ser divididos em tre?s classes: el??pticos,
+
+parabo?licos e hiperbo?licos. Essa classificac?a?o e? feita com base no tipo de equac?a?o
+
+que rege o feno?meno em questa?o e, de acordo com Maliska (2004), apesar de ser um
+
+conceito puramente matema?tico, do ponto de vista nume?rico e? muito importante, ja?
+
+que, conhecendo-se as caracter??sticas das equac?o?es e? poss??vel obter vantagens computa-
+
+cionais, como menor tempo de processamento e armazenamento de varia?veis.
+
+Problemas parabo?licos e hiperbo?licos podem ser resolvidos por um processo de
+
+marcha no tempo e/ou espac?o. Nesses tipos de soluc?a?o apenas condic?o?es de contorno a
+
+montante sa?o necessa?rias. A diferenc?a entre eles e? que o processo de marcha parabo?lica
+
+se da? ao longo de uma coordenada (espacial ou temporal), enquanto que a hiperbo?lica
+
+se desenvolve em func?a?o das caracter??sticas do problema. Os termos convectivos das
+
+equac?o?es de Navier-Stokes sa?o parabo?licos uma vez que as varia?veis envolvidas sa?o
+
+transmitidas apenas no sentido da velocidade em uma dada direc?a?o.
+
+Quando as informac?o?es f??sicas do problema sa?o transmitidas em todas as direc?o?es
+
+coordenadas o problema e? dito el??ptico. Na soluc?a?o desse tipo de problema duas
+
+condic?o?es de contorno sa?o necessa?rias em cada sentido de uma dada coordenada. Ter-
+
+mos difusivos e de pressa?o conferem caracter??sticas el??pticas a um escoamento.
+
+E? poss??vel um mesmo escoamento possuir mais de uma dessas caracter??sticas
+
+simultaneamente. As equac?o?es de conservac?a?o de quantidade de movimento transientes,
+
+considerando-se os efeitos viscosos em todas as direc?o?es coordenadas, por exemplo, sa?o
+
+parabo?licas no tempo e el??pticas no espac?o.
+
+2.5 Turbule?ncia
+
+A maior parte dos escoamentos presentes em aplicac?o?es pra?ticas se encontra
+
+sob condic?o?es turbulentas. A turbule?ncia e? um processo complexo, principalmente por
+
+ser tridimensional e insta?vel, que tem grande influe?ncia nas caracter??sticas do fluxo. Ela
+
+ocorre quando as forc?as inerciais que atuam sobre o fluido se tornam significativas se
+
+comparadas a?s forc?as viscosas. Processos sob condic?o?es de fluxo turbulentas sa?o indus-
+
+trialmente muito usados, ja? que, devido a?s flutuac?o?es aleato?rias das propriedades do
+
+escoamento, aumentam significativamente a transfere?ncia de massa, momento e calor.
+
+Alguns pesquisadores afirmam que e? poss??vel descrever escoamentos turbulentos
+
+11
+
+
+
+usando apenas as equac?o?es de Navier-Stokes, sem adicionar nenhuma outra informac?a?o.
+
+Essa abordagem e? conhecida por DNS (“Direct Numerical Simulation”). Nesse tipo de
+
+simulac?a?o, para que se possam estudar todas as estruturas da turbule?ncia, o dom??nio
+
+do problema deve ser dividido em volumes ainda menores que o tamanho dos menores
+
+vo?rtices. Assim, a magnitude dos recursos computacionais envolvidos nessas simulac?o?es
+
+e? muito elevada, limitando sua aplicac?a?o ao estudo de escoamentos mais simples.
+
+Similar a? DNS, a Simulac?a?o de Grandes Escalas (“Large Eddy Simulation” -
+
+LES ) e? uma das abordagens aplicadas na soluc?a?o nume?rica de escoamentos turbulentos.
+
+Essa te?cnica consiste na soluc?a?o direta das equac?o?es nas regio?es onde se encontram os
+
+maiores vo?rtices e na aplicac?a?o de modelo alge?brico simples para a predic?a?o dos menores
+
+vo?rtices, o que diminui os recursos computacionais necessa?rios para a simulac?a?o.
+
+Apesar de fornecer detalhes da estrutura de escoamentos turbulentos, as si-
+
+mulac?o?es por DNS e LES requerem um refino muito grande da malha nume?rica e o uso
+
+de passos de tempos muito pequenos, o que as torna invia?veis ou desnecessa?rias em
+
+determinados casos.
+
+Outra alternativa na soluc?a?o de problemas turbulentos e? a aproximac?a?o das
+
+flutuac?o?es turbulentas por um valor me?dio, o que da? origem a equac?o?es aproximadas
+
+conhecidas por “Reynolds Averaged Navier-Stokes (RANS) Equations”. O uso das
+
+equac?o?es RANS reduz muito o esforc?o computacional se comparado a?s simulac?o?es DNS
+
+e LES. Apesar de fazer uso de modelos emp??ricos ou semi-emp??ricos para descrever o
+
+comportamento e os efeitos da tensa?o de Reynolds, essa abordagem fornece informac?o?es
+
+de como a turbule?ncia afeta o escoamento me?dio, o que permite a identificac?a?o de
+
+mecanismos do transporte turbulento. Por isso e? geralmente adotada na soluc?a?o de
+
+problemas de engenharia.
+
+Em um escoamento turbulento as tre?s componentes do vetor velocidade sa?o
+
+diferentes de zero. Na abordagem de me?dia de Reynolds elas podem ser representadas
+
+como a soma de um valor me?dio no tempo e de uma flutuac?a?o devido a turbule?ncia
+
+(Figura 2.5):
+
+vz = vz + v
+?
+
+z vr = vr + v
+?
+
+r v? = v? + v
+?
+
+? (2.11)
+
+Esse tambe?m e? o caso de outras propriedades do escoamento, como a pressa?o
+
+(P = P + P
+?
+) e a temperatura (T = T + T
+
+?
+). O valor me?dio de uma propriedade ? em
+
+determinado local e? determinado pela me?dia ao longo de um intervalo de tempo que
+
+seja suficientemente grande para que a me?dia de tempo se equipare a uma constante
+
+12
+
+
+
+(C?ENGEL e CIMBALA, 2007):
+
+? =
+1
+
+T
+
+? t0+T
+t0
+
+? dt (2.12)
+
+Assim, a flutuac?a?o turbulenta dessa propriedade e?, em me?dia, igual a zero
+
+(?? = 0).
+
+Figura 2.5: Representac?a?o de uma componente da velocidade num escoamento turbu-
+
+lento usando o conceito de me?dia de Reynolds.
+
+No escoamento turbulento de um fluido, num tubo horizontal, na direc?a?o axial,
+
+que tem vr e v? iguais a zero, as flutuac?o?es destas componentes da velocidade fazem com
+
+que part??culas do fluido passem de uma camada de fluido para outra camada adjacente,
+
+que se move a uma velocidade mais alta, causando um efeito retardador sobre ela. A
+
+componente da forc?a resultante do movimento de uma part??cula do fluido que passa
+
+por uma a?rea dA com velocidade v?r para a camada vizinha a ela (Figura 2.6) e? dada
+
+por (POTTER e WIGGERT, 2004):
+
+dF = ?? · v
+?
+
+r · dA · v
+?
+
+z (2.13)
+
+em que v
+?
+z e? a variac?a?o negativa da componente axial da velocidade devido a? troca de
+
+quantidade de movimento e (? · v?r · dA) e? o fluxo de massa atrave?s da a?rea.
+
+Assim, a forc?a de cisalhamento por unidade de a?rea, devido ao movimento dos
+
+turbilho?es das part??culas de fluido, e? dada por:
+
+dF
+
+dA
+= ? · v
+
+?
+
+z · v
+?
+
+r (2.14)
+
+13
+
+
+
+Figura 2.6: Part??cula de fluido se movendo na direc?a?o ascendente como resultado da
+
+flutuac?a?o de velocidade nessa direc?a?o (C?ENGEL e CIMBALA, 2007).
+
+em que (v
+?
+z · v
+
+?
+r) e?, na me?dia, uma quantidade negativa, ja? que um v
+
+?
+r positivo gera um
+
+v
+?
+z negativo.
+
+A me?dia temporal dessa grandeza pode ser interpretada como sendo uma tensa?o
+
+de cisalhamento turbulenta, que e? na verdade uma troca de quantidade de movimento,
+
+mas como tem o mesmo efeito de uma tensa?o, pode ser assim chamada (POTTER e
+
+WIGGERT, 2004). Assim:
+
+?turb = ?? · v
+?
+zv
+
+?
+r (2.15)
+
+em que ?v?zv
+?
+r e? conhecida como tensa?o de Reynolds.
+
+Pode-se observar, nesse caso, que tanto v
+?
+zv
+
+?
+? como v
+
+?
+rv
+
+?
+? teriam seu valor igual
+
+a zero, ja? que a oscilac?a?o v
+?
+? na?o moveria part??culas para uma camada de fluido com
+
+velocidade mais alta ou mais baixa.
+
+Estudos mostram que a tensa?o de cisalhamento em escoamentos turbulentos,
+
+devido a?s flutuac?o?es de suas propriedades, e? muito maior que em escoamentos laminares.
+
+Uma maneira de definir a tensa?o de cisalhamento total que age nesse tipo de escoamento
+
+e? atrave?s da soma de uma componente laminar e outra turbulenta:
+
+? = ?lam + ?turb (2.16)
+
+em que a componente laminar (viscosa), que contribui para o atrito entre as camadas
+
+na direc?a?o do escoamento, e? dada por ?lam = ?µ dv/dr, e a componente turbulenta,
+
+14
+
+
+
+que representa o atrito entre as part??culas do fluido, esta? relacionada a?s componentes de
+
+flutuac?a?o da velocidade, como e? mostrado na Equac?a?o 2.15. Os valores relativos dessas
+
+componentes em func?a?o da dista?ncia relativa da parede podem ser vistos na Figura 2.7.
+
+Figura 2.7: Tensa?o de cisalhamento viscosa (laminar) e tensa?o de Reynolds (turbulenta)
+
+(Pope, 2000).
+
+Para modelar a tensa?o de Reynolds em termos dos gradientes de velocidade
+
+me?dia diversas formulac?o?es semi-emp??ricas, conhecidas tambe?m como Modelos de Tur-
+
+bule?ncia, foram desenvolvidas ao longo do tempo. A primeira tentativa de modelar
+
+feno?menos turbulentos foi proposta por Boussinesq, em 1877. Ele sugeriu que a tensa?o
+
+de cisalhamento turbulenta fosse modelada de forma ana?loga a? tensa?o laminar, ou seja:
+
+?turb = ?? · v
+?
+zv
+
+?
+r = µt ·
+
+dvz
+dy
+
+(2.17)
+
+em que µt e? conhecida como viscosidade turbulenta. Diferentemente da viscosidade
+
+laminar, a viscosidade turbulenta e? uma propriedade do escoamento e na?o do fluido.
+
+Dessa maneira, retomando a Equac?a?o 2.16, a tensa?o total sobre o fluido pode
+
+ser representada por:
+
+? = (µ + µt) ·
+?v
+
+?y
+(2.18)
+
+Foi poss??vel, a partir da??, o estudo do escoamento turbulento como sendo la-
+
+minar, pore?m modificando a viscosidade molecular a partir do conceito de viscosidade
+
+turbulenta.
+
+Como ja? observado, no escoamento turbulento de um fluido, no interior de
+
+um cilindro, em que sua direc?a?o principal e? a axial (vr = 0; v? = 0), por causa das
+
+15
+
+
+
+flutuac?o?es turbulentas, part??culas de fluido passam de uma camada para outra. O
+
+movimento do fluido na direc?a?o axial juntamente com esse movimento de mudanc?a de
+
+camada na direc?a?o radial, faz com que vo?rtices sejam formados. Baseado no tamanho
+
+me?dio desses vo?rtices foi que, no in??cio do se?culo 19, Prandtl desenvolveu o conceito
+
+de comprimento de mistura lm, e chegou na seguinte expressa?o para a estimativa da
+
+viscosidade turbulenta:
+
+µt = ? · l2m ·
+??????v?y
+
+????? (2.19)
+O comprimento de mistura lm na?o e? uma constante. Ele pode ser func?a?o das
+
+caracter??sticas do escoamento e da dista?ncia que a porc?a?o de fluido se encontra da
+
+parede.
+
+Como pode ser visto na Figura 2.7, perto da parede a tensa?o de Reynolds e? zero
+
+e, consequ?entemente, a tensa?o total nesse local e? igual apenas a? contribuic?a?o viscosa
+
+(laminar). Dessa forma, nessa regia?o, a viscosidade molecular e a componente viscosa
+
+da tensa?o sa?o grandezas importantes. Para analisar o escoamento pro?ximo a? parede
+
+foram definidos para?metros como a velocidade de atrito v? e a dista?ncia adimensional
+
+da parede y+ em escalas viscosas:
+
+v? =
+
+(
+??
+?
+
+)1/2
+(2.20)
+
+y+ =
+? · y · v?
+
+µ
+(2.21)
+
+em que ?? e? a tensa?o de cisalhamento na parede, que pode ser definida em termos do
+
+fator de atrito de Darcy:
+
+?? =
+f · ? · v
+
+8
+(2.22)
+
+Diferentes regio?es, ou camadas, na regia?o pro?xima a? parede, podem ser definidas
+
+com base na magnitude de y+. Por exemplo, na regia?o viscosa de parede (y+ &amp;lt;50)
+
+a viscosidade molecular tem efeito significativo sobre a tensa?o de cisalhamento. Esse
+
+efeito pode ser desprezado na regia?o externa, em que y+ &gt; 50. Ja? na subcamada viscosa
+
+(y+ &amp;lt;5), a tensa?o de Reynolds pode ser negligenciada, ja? que e? muito pequena quando
+
+comparada a? tensa?o viscosa (Figura 2.8). E? importante observar que com o aumento
+
+do nu?mero de Reynolds ha? o encolhimento da regia?o viscosa, ja? que as forc?as inerciais
+
+sa?o cada vez maiores.
+
+16
+
+
+
+Figura 2.8: Regio?es do escoamento em termos de y+.
+
+17
+
+
+
+Cap??tulo 3
+
+Modelagem Matema?tica
+
+A modelagem matema?tica do problema foi feita usando-se as Equac?o?es de
+
+Navier-Stokes. A soluc?a?o dessas equac?o?es fornece as varia?veis necessa?rias para o es-
+
+tudo de escoamentos de fluidos. Como auxiliares no estudo de escoamentos turbulen-
+
+tos foram adotados modelos alge?bricos de turbule?ncia de acordo com a influe?ncia das
+
+tenso?es viscosa e de Reynolds em determinadas regio?es do escoamento.
+
+3.1 Hipo?teses do Modelo
+
+As hipo?teses consideradas na modelagem do feno?meno em questa?o foram:
+
+• Fluido incompress??vel. Segundo Potter e Wiggert (2004), escoamentos de gases a
+baixas velocidades podem ser considerados incompress??veis quando o Nu?mero de
+
+Mach, que e? definido pela divisa?o da velocidade do fluido pela velocidade do som
+
+nesse meio, for menor do que 0, 3;
+
+• Fluido Newtoniano, ou seja, a tensa?o de cisalhamento e? diretamente proporcional
+a? taxa de deformac?a?o do fluido;
+
+• Escoamento monofa?sico;
+
+• Sistema isote?rmico;
+
+• A parede do cilindro e? lisa (rugosidade igual a zero);
+
+• O escoamento e? transiente.
+
+18
+
+
+
+3.2 Equac?o?es de Navier-Stokes
+
+Conhecidas como Equac?o?es de Navier-Stokes, a equac?a?o de conservac?a?o de
+
+massa e as tre?s equac?o?es de conservac?a?o de quantidade de movimento compo?e o sistema
+
+de equac?o?es fundamentais no ca?lculo das quatro inco?gnitas (as tre?s componentes do
+
+vetor velocidade e a pressa?o) que descrevem o escoamento de fluidos. Elas sa?o equac?o?es
+
+diferenciais parciais derivadas dos princ??pios de conservac?a?o de massa e quantidade de
+
+movimento.
+
+A equac?a?o de conservac?a?o de massa, tambe?m conhecida como equac?a?o da Con-
+
+tinuidade, escrita para um sistema gene?rico de coordenadas espaciais e? dada por:
+
+??
+
+?t
++ ? · (?
+
+?
+v ) = 0 (3.1)
+
+Para fluido incompress??vel (? = constante) e sistema de coordenadas cil??ndricas,
+
+a Equac?a?o 3.1 pode ser reescrita como:
+
+? · (
+?
+v ) =
+
+?vz
+?z
+
++
+1
+
+r
+
+? (r vr)
+
+?r
++
+
+1
+
+r
+
+?v?
+??
+
+= 0 (3.2)
+
+em que vz, vr e v? sa?o as componentes do vetor velocidade nas direc?o?es axial, radial e
+
+angular, respectivamente.
+
+As equac?o?es de conservac?a?o de quantidade de movimento, em cada uma das i
+
+coordenadas do espac?o, podem ser representadas por:
+
+?
+
+[
+?vi
+?t
+
++ ? · (vi
+?
+v )
+
+]
+= ??P ? ? · ? + ?fi (3.3)
+
+em que os termos do lado esquerdo da igualdade representam a variac?a?o da velocidade
+
+com o tempo dentro do volume de controle, e a troca de momento devido a? convecc?a?o;
+
+e os termos do lado direito da igualdade representam o gradiente de pressa?o, o atrito
+
+viscoso e as demais forc?as externas que agem sobre o fluido, como o campo graitacional,
+
+por exemplo.
+
+Escrevendo a Equac?a?o 3.3 em coordenadas cil??ndricas em cada uma das direc?o?es
+
+espaciais, considerando cilindro vertical, tem-se:
+
+Direc?a?o axial - z:
+
+? ·
+[
+?vz
+?t
+
++
+1
+
+r
+·
+?(r · vr · vz)
+
+?r
++
+
+1
+
+r
+·
+?(v? · vz)
+
+??
++
+
+?(vz · vz)
+?z
+
+]
+=
+
+?
+[
+1
+
+r
+·
+?(r · ?rz)
+
+?r
++
+
+1
+
+r
+·
+???z
+??
+
++
+??zz
+?z
+
+]
++ ?· ?gz ?
+
+?P
+
+?z
+(3.4)
+
+19
+
+
+
+Direc?a?o radial - r:
+
+? ·
+[
+?vr
+?t
+
++
+1
+
+r
+·
+?(r · vr · vr)
+
+?r
++
+
+1
+
+r
+·
+?(v? · vr)
+
+??
++
+
+?(vz · vr)
+?z
+
+?
+v? · v?
+
+r
+
+]
+=
+
+?
+[
+1
+
+r
+·
+?(r · ?rr)
+
+?r
++
+
+1
+
+r
+·
+???r
+??
+
+?
+???
+r
+
++
+??zr
+?z
+
+]
+?
+
+?P
+
+?r
+(3.5)
+
+Direc?a?o angular - ?:
+
+? ·
+[
+?v?
+?t
+
++
+1
+
+r
+·
+?(r · vr · v?)
+
+?r
++
+
+1
+
+r
+·
+?(v? · v?)
+
+??
++
+
+?(vz · v?)
+?z
+
++
+vr · v?
+
+r
+
+]
+=
+
+?
+[
+
+1
+
+r2
+·
+?(r2 · ?r?)
+
+?r
++
+
+1
+
+r
+·
+????
+??
+
++
+??z?
+?z
+
+]
+?
+
+1
+
+r
+·
+?P
+
+??
+(3.6)
+
+em que P e? a pressa?o,
+?
+g e? a acelerac?a?o da gravidade, µ e? a viscosidade do fluido, e,
+
+?ij e ?ij sa?o as tenso?es normais e de cisalhamento, respectivamente, que agem sobre o
+
+fluido. Estas sa?o dadas, para fluido newtoniano e em coordenadas cil??ndricas, por:
+
+?rr = ?2 · µ ·
+?vr
+?r
+
+(3.7)
+
+??? = ?2 · µ ·
+[
+1
+
+r
+·
+?v?
+??
+
++
+vr
+r
+
+]
+(3.8)
+
+?zz = ?2 · µ ·
+?vz
+?z
+
+(3.9)
+
+?r? = ??r = ?µ ·
+[
+r ·
+
+?(v?/r)
+
+?r
++
+
+1
+
+r
+·
+?vr
+??
+
+]
+(3.10)
+
+??z = ?z? = ?µ ·
+[
+?v?
+?z
+
++
+1
+
+r
+·
+?vz
+??
+
+]
+(3.11)
+
+?zr = ?rz = ?µ ·
+[
+?vz
+?r
+
++
+?vr
+?z
+
+]
+(3.12)
+
+3.3 Modelo de Turbule?ncia
+
+Como mostrado na Sec?a?o 2.5 do Cap??tulo 2, a viscosidade turbulenta foi cal-
+
+culada a partir da teoria de comprimento de mistura de Prandtl, que assume que,
+
+µt = ? · l2m ·
+??????v?r
+
+????? (3.13)
+20
+
+
+
+O comprimento de mistura lm foi calculado de acordo com as regio?es definidas
+
+pela influe?ncia das tenso?es viscosa e de Reynolds em determinadas regio?es do escoa-
+
+mento. Como pode ser visto na Figura 2.8 essas regio?es sa?o delimitadas em relac?a?o a?
+
+dista?ncia adimensional da parede y+. Foram usados, enta?o, os seguintes modelos de
+
+turbule?ncia:
+
+• Na regia?o externa (y+ &gt; 50) foi usada a expressa?o proposta por Nikuradse (Rodi,
+1984):
+
+lm = R
+
+[
+0, 14 ? 0, 08
+
+(
+1 ?
+
+y
+
+R
+
+)2
+? 0, 06
+
+(
+1 ?
+
+y
+
+R
+
+)4]
+(3.14)
+
+• Na regia?o viscosa intermedia?ria (5 &amp;lt;y+ &amp;lt;50), foi usado o modelo proposto por
+van Driest (Rodi, 1984):
+
+lm = k · y ·
+[
+1 ? exp
+
+(
+?
+
+y+
+
+A+
+
+)]
+(3.15)
+
+em que k e A+ sa?o constantes e tem seu valor igual a, respectivamente, 0, 41 e 26.
+
+• Na subcamada viscosa (0 &amp;lt;y+ &amp;lt;5) ou no ponto mais pro?ximo da parede, em
+que o gradiente de velocidade e? muito elevado, foi usada uma estimativa feita por
+
+Prandtl e Ka?rma?n (WHITE, 1991):
+
+lm = y
+2 (3.16)
+
+A viscosidade efetiva foi, enta?o, calculada por:
+
+µef = µ + µt (3.17)
+
+3.4 Condic?o?es de Contorno
+
+A especificac?a?o das condic?o?es de contorno de um problema e? necessa?ria para
+
+que este possa ser resolvido. Existem dois tipos de condic?a?o de contorno:
+
+1. Dirichlet: em que o valor da varia?vel dependente e? conhecido na fronteira;
+
+2. Neumann: em que o gradiente dessa varia?vel, normal a? superf??cie, e? conhecido.
+
+21
+
+
+
+Em problemas el??pticos que envolvem escoamentos internos e incompress??veis
+
+podem ser especificadas as seguintes condic?o?es f??sicas de contorno:
+
+• Na Entrada: o campo de velocidade e? conhecido e o gradiente de pressa?o e? zero;
+
+v|z=0 = ventrada (3.18)
+
+?P
+
+?z
+
+?????
+z=0
+
+= 0 (3.19)
+
+• Na Sa??da: o campo de pressa?o e? conhecido e o gradiente de velocidade e? igual a
+zero;
+
+P|z=L = Psaida (3.20)
+
+?v
+
+?z
+
+?????
+z=L
+
+= 0 (3.21)
+
+• Na parede (sem deslizamento): a velocidade do fluido e? igual a? velocidade
+da parede, ou seja, o fluido esta? parado. Como na?o ha? fluxo atrave?s da parede, o
+
+gradiente de pressa?o e? nulo;
+
+v|r=R = 0 (3.22)
+
+?P
+
+?r
+
+?????
+r=R
+
+= 0 (3.23)
+
+22
+
+
+
+Cap??tulo 4
+
+Desenvolvimento Nume?rico
+
+Como mostrado no cap??tulo anterior, na modelagem matema?tica do problema
+
+em questa?o foram usadas as Equac?o?es de Navier-Stokes, que por serem equac?o?es di-
+
+ferenciais parciais na?o lineares te?m soluc?a?o anal??tica apenas para escoamentos simples
+
+operando em condic?o?es ideais. Assim, para tratar de problemas que envolvem escoa-
+
+mentos reais e? necessa?rio o emprego de me?todos nume?ricos. O me?todo nume?rico tem o
+
+papel de substituir a equac?a?o diferencial por um conjunto de equac?o?es alge?bricas que
+
+sa?o aplicadas a um nu?mero discreto de locais no espac?o e no tempo. A? soluc?a?o dessas
+
+equac?o?es esta? embutido um erro que e? tanto menor quanto mais discretizado estiver o
+
+dom??nio do problema.
+
+Todo o desenvolvimento nume?rico realizado neste trabalho, incluindo a des-
+
+cric?a?o do me?todo utilizado, sua aplicac?a?o, caracter??sticas, e a esquematizac?a?o do algo-
+
+ritmo de soluc?a?o, e? apresentado nos to?picos a seguir.
+
+4.1 Me?todo Nume?rico
+
+O ponto de partida na aplicac?a?o de qualquer me?todo nume?rico e? a determinac?a?o
+
+do modelo matema?tico que rege o feno?meno em questa?o, ou seja, das equac?o?es em sua
+
+forma diferencial e das condic?o?es de contorno do sistema. Deve-se enta?o escolher um
+
+me?todo que aproxime as equac?o?es diferenciais parciais por um sistema de equac?o?es
+
+alge?bricas aplicadas a um conjunto discreto de locais no espac?o e no tempo. Exis-
+
+tem diversos me?todos com essa finalidade, mas os mais usados sa?o Diferenc?as Finitas,
+
+Volumes Finitos e Elementos Finitos. Cada um desses, aplicados na resoluc?a?o de um
+
+mesmo problema, acarretara? no mesmo resultado desde que a malha de aplicac?a?o das
+
+23
+
+
+
+equac?o?es alge?bricas seja bastante refinada.
+
+Neste trabalho foi usado o Me?todo dos Volumes Finitos na discretizac?a?o das
+
+equac?o?es diferenciais. Nessa abordagem o dom??nio do problema e? subdividido em uma
+
+se?rie de volumes de controle finitos sobre os quais devem ser aplicadas as equac?o?es
+
+aproximadas de forma que estas satisfac?am a conservac?a?o da propriedade em questa?o
+
+em cada um desses volumes. Essas equac?o?es podem ser obtidas, no Me?todo dos Volumes
+
+Finitos, de duas maneiras distintas. Uma delas e? a realizac?a?o do balanc?o em questa?o
+
+sobre cada volume. A outra e? integrar, no espac?o e no tempo, a equac?a?o em sua forma
+
+diferencial sobre o volume elementar. Apesar dos dois procedimentos serem equiva-
+
+lentes, o mais indicado deles e? o segundo, ja? que a deduc?a?o de equac?o?es diferenciais que
+
+representam determinados feno?menos pode na?o ser simples.
+
+4.2 Malha de Discretizac?a?o
+
+A localizac?a?o discreta no dom??nio sobre as quais as varia?veis sera?o calculadas
+
+e? definida por uma malha de discretizac?a?o, que e? essencialmente uma representac?a?o
+
+nume?rica da geometria do dom??nio como um nu?mero finito de subdom??nios.
+
+Foram usadas, neste trabalho, malhas estruturadas. Esse tipo de malha permite
+
+que os volumes em uma dada direc?a?o sejam numerados consecutivamente. Assim, a
+
+posic?a?o de qualquer ponto da malha pode ser identificada por ??ndices (i, j, k).
+
+Para escoamentos turbulentos com altos valores de Reynolds, foram usadas
+
+malhas na?o uniformes na direc?a?o radial que expandem a partir da parede num fator
+
+fixo (Figura 4.1). Nesses casos seria computacionalmente dispendioso usar uma malha
+
+uniforme, ja? que esta deveria ser fina o bastante para capturar com precisa?o as carac-
+
+ter??sticas do fluxo pro?ximo a?s paredes.
+
+Em problemas tridimensionais cada volume discreto faz fronteira com outros
+
+seis volumes. Assim, na malha aplicada a um cilindro, um dado volume elementar P
+
+tem como vizinhos seus volumes a leste (E), a oeste (W ), a norte (N ), a sul (S), a
+
+jusante (F ) e a montante (B), como pode ser visto nas Figuras 4.2 e 4.3. As letras
+
+minu?sculas e, w, n, s, f , b representam as faces do volume P .
+
+24
+
+
+
+Figura 4.1: Malha na?o uniforme na direc?a?o radial.
+
+Figura 4.2: Esquematizac?a?o da malha de discretizac?a?o - plano r?.
+
+Figura 4.3: Esquematizac?a?o da malha de discretizac?a?o - plano zr.
+
+25
+
+
+
+4.3 Aproximac?a?o por Integral
+
+Para um problema em tre?s dimenso?es, o fluxo total que atravessa cada volume
+
+elementar deve ser igual a soma do fluxo que atravessa cada uma das seis faces do vo-
+
+lume. Esse procedimento e? equivalente ao processo de integrac?a?o da equac?a?o diferencial
+
+sobre esse volume. Num escoamento em regime transiente ou quando se deseja usar um
+
+me?todo de marcha pseudo-temporal, a equac?a?o deve tambe?m ser integrada no tempo.
+
+Pode-se perceber que tre?s classes de termos, em sua forma diferencial, se
+
+repetem nas equac?o?es de Navier-Stokes (Sec?a?o 3.2). A seguir sera? apresentada a in-
+
+tegrac?a?o desses termos, para a varia?vel gene?rica ?, de forma a obter sua localizac?a?o
+
+discreta no tempo e no espac?o.
+
+*Termo transiente:
+
+Ao integrar a func?a?o f (t) = ??/?t no tempo a varia?vel ? e? localizada tem-
+
+poralmente. Como essa func?a?o na?o e? dependente de qualquer posic?a?o espacial, ao ser
+
+integrada no espac?o, ? e? avaliada no centro (P ) do volume de controle, como pode ser
+
+visto a seguir.
+
+? t+?t
+t
+
+?
+V
+
+??
+
+?t
+·dV ·dt =
+
+?
+V
+
+(
+? ? ?0
+
+)
+·dV =
+
+(
+?|P ? ?
+
+0
+???
+P
+
+)
+·?r ·?z ·??· r|P (4.1)
+
+em que o ??ndice 0 indica que ? esta? sendo avaliada no tempo imediatamente anterior
+
+ao atual. As varia?veis no tempo atual sa?o representadas sem qualquer ??ndice. O termo
+
+(?r.?z.??. r|P ) representa o ca?lculo aproximado do volume dV .
+
+*Termo convectivo:
+
+Um exemplo de um termo convectivo que e? func?a?o da posic?a?o axial z foi re-
+
+presentado pela func?a?o f (z) = ?(?.vz)/?z. Essa func?a?o foi integrada de uma posic?a?o
+
+s (face sul do volume) ate? n (face norte do volume), e em seguida integrada no tempo.
+
+Por essa func?a?o na?o ser dependente do tempo, a varia?vel ? pode estar localizada em
+
+qualquer intervalo de tempo entre t e t + ?t. Essa escolha sera? feita na pro?xima sec?a?o
+
+deste cap??tulo, e aqui a varia?vel fica avaliada num tempo relativo ? que pode variar
+
+desde 0 (tempo anterior) ate? 1 (tempo atual). Essas informac?o?es esta?o mostradas na
+
+igualdade a seguir:
+
+26
+
+
+
+? t+?t
+t
+
+?
+V
+
+?(? · vz)
+?z
+
+· dV · dt =
+[? t+?t
+
+t
+
+? n
+s
+
+?(? · vz)
+?z
+
+· dz · dt
+]
+.?r.??. r|P ={? t+?t
+
+t
+[ (? · vz)|n ? (? · vz)|s] dt
+
+}
+.?r.??. r|P =[
+
+(? · vz)|
+?
+n ? (? · vz)|
+
+?
+s
+
+]
+.?t.?r.??. r|P (4.2)
+
+O termo (?r.??. r|P ) representa a a?rea normal ao fluxo convectivo.
+
+*Termo difusivo:
+
+O mesmo procedimento realizado na integrac?a?o do termo convectivo e? usado
+
+na integrac?a?o dos termos difusivos, aqui exemplificados pela func?a?o f (z) = ?
+?z
+
+(
+? · ??
+
+?z
+
+)
+:
+
+? t+?t
+t
+
+?
+V
+
+?
+
+?z
+
+(
+? ·
+
+??
+
+?z
+
+)
+dV dt =
+
+[? t+?t
+t
+
+? n
+s
+
+?
+
+?z
+
+(
+? ·
+
+??
+
+?z
+
+)
+· dz · dt
+
+]
+.?r.??. r|P ={? t+?t
+
+t
+
+[(
+? ·
+
+??
+
+?z
+
+)?????
+n
+
+?
+(
+? ·
+
+??
+
+?z
+
+)?????
+s
+
+]
+dt
+
+}
+.?r.??. r|P =?
+
+?(? · ??
+?z
+
+)?????
+?
+
+n
+
+?
+(
+? ·
+
+??
+
+?z
+
+)?????
+?
+
+s
+
+?
+? .?t.?r.??. r|P (4.3)
+
+4.4 Func?o?es de Interpolac?a?o
+
+A integrac?a?o das equac?o?es de conservac?a?o no volume de controle gerou termos
+
+com ??ndices que representam a localizac?a?o espacial e temporal das varia?veis.
+
+Para facilitar o controle dos ??ndices das varia?veis na implementac?a?o computa-
+
+cional foi usado, neste trabalho, o arranjo espacial co-localizado das varia?veis, ou seja,
+
+tanto as grandezas vetoriais quanto as escalares devem estar localizadas no centro dos
+
+volumes de controle. Segundo Maliska (2004) o uso desse tipo de arranjo pode acarretar
+
+em problemas de estabilidade que podem surgir devido ao acoplamento entre a pressa?o
+
+e a velocidade. Como neste trabalho as equac?o?es do modelo foram resolvidas simul-
+
+taneamente (como sera? apresentado na Sec?a?o 4.5), esse problema e? descartado. Deve-se
+
+lembrar tambe?m que a integrac?a?o dos termos convectivos e difusivos gerou varia?veis
+
+avaliadas num tempo relativo ?, que deve ser aqui determinado.
+
+27
+
+
+
+Assim, para que as varia?veis estejam convenientemente localizadas no tempo e
+
+no espac?o faz-se necessa?rio o uso de func?o?es de interpolac?a?o.
+
+Na interpolac?a?o dos termos convectivos optou-se pelo uso do esquema “upwind ”.
+
+Por trabalhar em func?a?o da direc?a?o do fluxo convectivo esse esquema de interpolac?a?o
+
+garante a positividade dos coeficientes das equac?o?es alge?bricas resultantes da aplicac?a?o
+
+procedimento de aproximac?a?o nume?rica. Essa escolha foi feita ja? que, de acordo com
+
+a maioria dos autores, coeficientes negativos podem conferir a? soluc?a?o do problema
+
+dificuldades tais como diverge?ncia e oscilac?o?es nume?ricas. Segundo Ferziger e Peric?
+
+(1999), coeficientes positivos sa?o importantes porque um aumento no valor da varia?vel
+
+em um ponto da malha deve levar a um aumento (e na?o a diminuic?a?o) no valor da
+
+varia?vel nos volumes vizinhos, desde que as outras condic?o?es permanec?am constantes.
+
+Existem outros esquemas de interpolac?a?o que conferem essa mesma caracter??stica aos
+
+coeficientes, pore?m, de acordo com Marchi (1993), o “upwind ” ale?m de dar a? soluc?a?o
+
+boa estabilidade, e? o esquema de mais simples implementac?a?o. A aplicac?a?o da func?a?o
+
+“upwind ” pode ser vista a seguir:
+
+(? · v)|n = [ v|n , 0] · ?|P ? [? v|n , 0] · ?|N (4.4)
+
+em que, “[ v|n , 0]” representa “o maior valor entre v|n e 0”. Enta?o, se v|n &gt; 0 a
+igualdade dada pela Equac?a?o 4.4 se resume a:
+
+(? · v)|n = v|n · ?|P (4.5)
+
+Caso contra?rio, se v|n &amp;lt;0:
+
+(? · v)|n = v|n · ?|N (4.6)
+
+Ou seja, se a velocidade na face n for positiva, a varia?vel ? e? avaliada no centro do
+
+pro?prio volume de controle, e, se for negativa, ? estara? localizada no centro do volume
+
+a norte do volume em que se esta? trabalhando.
+
+Ja? aos termos difusivos e a?s varia?veis que se encontram nas faces dos volumes
+
+de controle, foi aplicada a func?a?o de interpolac?a?o “diferenc?as centrais”. Exemplos do
+
+uso dessa func?a?o esta?o apresentados genericamente para a varia?vel ?, pelas Equac?o?es
+
+4.7 e 4.8:
+
+??
+
+?z
+
+?????
+n
+
+=
+?|N ? ?|P
+
+?z
+(4.7)
+
+28
+
+
+
+?|n =
+?|N + ?|P
+
+2
+(4.8)
+
+Como ja? observado, ao integrar uma dada func?a?o no tempo deve-se decidir em
+
+que posic?a?o temporal ela sera? avaliada. Uma maneira conveniente de representar uma
+
+varia?vel ? num tempo relativo ? e? dada pela func?a?o de interpolac?a?o:
+
+?? = ? · ? + (1 ? ?) · ?0 (4.9)
+
+em que 0 &amp;lt;? &amp;lt;1.
+
+Neste trabalho foi usado ? = 1. Para esse valor de ?, ?? = ?, ou seja, ? pode ser
+
+interpretada como se estivesse sendo tomada sempre no tempo atual. Essa formulac?a?o
+
+e? conhecida como totalmente impl??cita, e implica que o ca?lculo da varia?vel ? no centro
+
+do volume P e? feito com base no seu valor em P no tempo anterior e em seu valor
+
+nos volumes vizinhos no tempo atual, como esta? esquematizado na Figura 4.4 para um
+
+problema unidimensional.
+
+Figura 4.4: Conexo?es espacial e temporal da varia?vel ? na formulac?a?o totalmente
+
+impl??cita.
+
+4.5 Tratamento Pressa?o-Velocidade
+
+Uma das maiores dificuldades em se resolver numericamente as equac?o?es de
+
+Navier-Stokes esta? ligada a? determinac?a?o de um campo de pressa?o que satisfac?a a
+
+Equac?a?o da Continuidade para escoamentos incompress??veis. Essa dificuldade decorre
+
+do fato de que diferentemente das equac?o?es de momento, que possuem a func?a?o de de-
+
+terminar suas respectivas componentes da velocidade, a equac?a?o da continuidade na?o
+
+possui uma varia?vel dominante. Assim, resta a ela o papel de determinar o campo de
+
+29
+
+
+
+pressa?o do sistema. Por na?o possuir termos de pressa?o, essa func?a?o se torna imposs??vel
+
+se nenhum me?todo for usado na modificac?a?o desse sistema de equac?o?es. Existem basi-
+
+camente duas abordagens para resolver esse problema: o me?todo acoplado e o segregado
+
+de soluc?a?o das equac?o?es.
+
+No me?todo segregado na?o ha? uma equac?a?o expl??cita para a pressa?o. As equac?o?es
+
+de momento sa?o resolvidas para um campo de pressa?o estimado. A pressa?o e? enta?o
+
+corrigida, e as velocidades recalculadas. Esse processo iterativo e? feito ate? que o campo
+
+de pressa?o satisfac?a a Equac?a?o da Continuidade.
+
+Ja? o me?todo acoplado trabalha com a criac?a?o de uma equac?a?o para a pressa?o
+
+a partir da Equac?a?o da Continuidade. A ide?ia ba?sica nessa abordagem e? fazer com que
+
+a pressa?o aparec?a tambe?m nessa equac?a?o, mas mantendo a presenc?a das velocidades.
+
+Dessa forma as tre?s equac?o?es de conservac?a?o de momento e a equac?a?o de conservac?a?o de
+
+massa passam a possuir termos de pressa?o e velocidade e sa?o resolvidas simultaneamente
+
+para determinac?a?o de todas as inco?gnitas.
+
+Hanby et al (1996) desenvolveram um trabalho em que compararam esses dois
+
+me?todos. Eles observaram que me?todo de soluc?a?o acoplado convergiu em muito menos
+
+iterac?o?es que o me?todo segregado (em geral em pelo menos uma ordem de magnitude).
+
+Pore?m o desempenho desse me?todo foi pior quando o nu?mero de Reynolds foi aumen-
+
+tado.
+
+A principal vantagem do uso do me?todo segregado e? que, quando comparado
+
+com o me?todo acoplado, ele possui menor custo de armazenamento computacional e
+
+menor tempo de processamento (DENG e TANG, 2002). Pore?m, esse tipo de soluc?a?o
+
+e? conhecido por dificultar a converge?ncia em escoamentos com grande presenc?a de
+
+vo?rtices, onde o acoplamento entre as equac?o?es de momento radial e angular e? forte
+
+(HANBY et al, 1996).
+
+No atual trabalho foi empregada a soluc?a?o acoplada da pressa?o e da veloci-
+
+dade. A mudanc?a da equac?a?o da Continuidade foi feita partindo-se da discretizac?a?o
+
+das equac?o?es de Navier-Stokes. Para cada uma das equac?o?es de conservac?a?o de mo-
+
+mento a respectiva componente da velocidade avaliada na face ate? a qual a equac?a?o
+
+foi integrada (limite superior da integrac?a?o) e? isolada. Essas equac?o?es sa?o enta?o subs-
+
+titu??das na equac?a?o de conservac?a?o de massa. Esse procedimento esta? ilustrado, a
+
+seguir, para um problema unidimensional:
+
+A equac?a?o de conservac?a?o de quantidade de movimento arranjada em func?a?o
+
+30
+
+
+
+da velocidade na fronteira e do volume P e? func?a?o das seguintes varia?veis:
+
+ue = ue(uP , uE, PP , PE) (4.10)
+
+E a equac?a?o de conservac?a?o de massa, para esse caso, pode ser conveniente-
+
+mente arranjada da seguinte maneira:
+
+m?e ? m?w = ?.
+[
+ae.ue ? aw.
+
+(
+uW + uP
+
+2
+
+)]
+= 0 (4.11)
+
+Substituindo ue da Equac?a?o 4.10 na Equac?a?o 4.11 chega-se a uma equac?a?o que
+
+depende das varia?veis:
+
+f = f (uP , uE, uW , PP , PE) (4.12)
+
+em que f representa a equac?a?o da Continuidade modificada, que antes era func?a?o apenas
+
+da velocidade e agora tambe?m e? func?a?o da pressa?o.
+
+A vantagem em se usar a soluc?a?o acoplada e direta do sistema de equac?o?es
+
+alge?bricas e? que uma u?nica matriz envolvendo todos os coeficientes e? criada e todas as
+
+inco?gnitas sa?o resolvidas simultaneamente. Assim, o problema do acoplamento entre
+
+as varia?veis desaparece.
+
+4.6 Aplicac?a?o das Condic?o?es de Contorno
+
+Como foi visto ate? aqui, apo?s dividir o dom??nio do problema em volumes ele-
+
+mentares, integrar as equac?o?es que modelam o feno?meno sobre cada um desses volumes
+
+e aplicar as func?o?es de interpolac?a?o, chega-se a um conjunto de equac?o?es alge?bricas.
+
+Pore?m estas equac?o?es sa?o va?lidas apenas para os volumes internos do dom??nio. Para os
+
+volumes de fronteira o procedimento de obtenc?a?o das equac?o?es alge?bricas e? similar ao
+
+realizado para os volumes internos, com a diferenc?a de que nesses volumes devem ser
+
+aplicadas as condic?o?es de contorno, como e? mostrado a seguir.
+
+1. Para valor fixo e conhecido da varia?vel na fronteira ( ?|f ront):
+
+• Na integrac?a?o dos termos convectivos, em que o valor da varia?vel deve ser
+avaliado na fronteira do volume, foi substitu??do ali o valor de ?|f ront, sem
+aplicac?a?o das func?o?es de interpolac?a?o.
+
+31
+
+
+
+• Nos termos em que, apo?s a integrac?a?o, chegou-se ao gradiente da varia?vel na
+fronteira do volume de controle, a func?a?o de interpolac?a?o Diferenc?as Finitas
+
+foi aplicada a meio volume. Ou seja,
+
+? ?|f ront =
+?|f ront ? ?|P
+
+d
+(4.13)
+
+em que d e? a dista?ncia da fronteira ate? o centro do volume.
+
+2. Para valor fixo e conhecido do gradiente da varia?vel na fronteira (??|f ront):
+
+• Quando, apo?s a integrac?a?o, o valor da varia?vel deve ser avaliado na fronteira,
+esta foi interpolada da seguinte maneira:
+
+?|f ront = ?|P + d · ? ?|f ront (4.14)
+
+em que d e? a dista?ncia da fronteira ate? o centro do volume.
+
+• No caso em que o valor do gradiente da varia?vel e? avaliado na fronteira, seu
+valor foi simplesmente substitu??do ali.
+
+A modelagem do problema foi efetuada tridimensionalmente de modo a garantir
+
+que simulac?o?es de escoamentos mais complexos, com perfis de velocidade de entrada
+
+varia?veis, pudessem ser feitas. Dessa forma, na?o foi adotado nenhum plano de simetria e
+
+o valor da varia?vel no volume a oeste dos volumes centrais foi tomado como sendo igual
+
+ao seu valor no volume diametralmente oposto, como esta? esquematizado na Figura 4.5.
+
+Figura 4.5: Esquematizac?a?o do volume a oeste (W ) de um volume central (P ).
+
+4.7 O Sistema de Equac?o?es Alge?bricas
+
+Apo?s integrar as equac?o?es que regem o feno?meno e aplicar as func?o?es de in-
+
+terpolac?a?o convenientes para cada caso, chega-se a um sistema de equac?o?es alge?bricas.
+
+Cada uma dessas equac?o?es relaciona o valor da varia?vel no centro do volume com seu
+
+32
+
+
+
+valor no centro dos volumes vizinhos e com as outras varia?veis presentes no sistema, e
+
+te?m o seguinte aspecto:
+
+A?P · ?P = A?N · ?N + A?S · ?S + A?E · ?E + A?W · ?W +
+
+A?F · ?F + A?B · ?B +
+?
+j
+
+?
+i
+
+A?j,i · ?j,i + B? (4.15)
+
+em que ? e? a varia?vel principal, A sa?o os termos que multiplicam as varia?veis, o ??ndice
+
+j indica as demais varia?veis ? presentes, i sa?o os volumes em que estas u?ltimas sa?o
+
+calculadas e B inclui os demais termos da equac?a?o, entre eles esta?o os valores das
+
+varia?veis avaliadas no tempo anterior ao atual e as demais forc?as que atuam sobre o
+
+fluido.
+
+Os coeficientes das equac?o?es resultantes do tratamento nume?rico das equac?o?es
+
+diferenciais, representadas pela Equac?a?o 4.15, sa?o apresentados nas Tabelas A.1, A.2,
+
+A.3 e A.4 do Ape?ndice A.
+
+Como cada equac?a?o diferencial da? origem a n equac?o?es alge?bricas (em que n e?
+
+o nu?mero de volumes elementares em que o dom??nio e? dividido), o nu?mero de equac?o?es
+
+alge?bricas sera? tanto maior quanto mais refinada for a malha.
+
+As equac?o?es que modelam um problema tridimensional de um fluido monofa?sico
+
+escoando no interior de um cilindro sa?o as tre?s equac?o?es de conservac?a?o de quantidade
+
+de movimento e a equac?a?o da Continuidade. Dessa forma, se o dom??nio for dividido em
+
+n volumes, o nu?mero de equac?o?es alge?bricas resultantes sera? igual a 4n. Nesse caso, as
+
+varia?veis a serem calculadas sa?o as tre?s componentes da velocidade e a pressa?o. Como
+
+essas sa?o estimadas para cada volume elementar, tem-se 4n varia?veis, e o sistema esta?,
+
+portanto, bem estabelecido.
+
+Em cada uma das 4n equac?o?es do sistema esta?o presentes, como varia?veis ativas,
+
+todas as componentes do vetor velocidade e a pressa?o. E como ja? visto na sec?a?o 4.5, na
+
+soluc?a?o acoplada entre pressa?o e velocidade ha? a criac?a?o de uma u?nica matriz envolvendo
+
+todos os coeficientes, e o sistema e? resolvido para todas as varia?veis simultaneamente.
+
+Nesse caso o sistema linear pode ser representado por:
+
+?
+???????
+
+Avz ,vz Avz ,vr Avz ,v? Avz ,P
+
+Avr,vz Avr,vr Avr,v? Avr,P
+
+Av?,vz Av?,vr Av?,v? Av?,P
+
+AP,vz AP,vr AP,v? AP,P
+
+?
+??????? ·
+?
+???????
+
+vz
+
+vr
+
+v?
+
+P
+
+?
+??????? =
+
+?
+???????
+
+Bvz
+
+Bvr
+
+Bv?
+
+BP
+
+?
+??????? (4.16)
+
+em que A?? representa uma matriz composta dos coeficientes que multiplicam a varia?vel
+
+33
+
+
+
+? da equac?a?o que tem ? como sua varia?vel principal.
+
+Para um problema em que o dom??nio foi dividido em 100 volumes elementares,
+
+a matriz dos coeficientes tem a forma apresentada na Figura 4.6, que e? meramente
+
+ilustrativa. A cor preta representa os elementos na?o nulos, enquanto a cor branca os
+
+nulos.
+
+Figura 4.6: Estrutura da Matriz dos Coeficientes
+
+Como se pode observar, a matriz dos coeficientes tem alto ??ndice de esparsidade,
+
+que e? definido por:
+
+? =
+
+[
+1 ?
+
+nu?mero de elementos na?o nulos
+
+nu?mero de elementos total
+
+]
+(4.17)
+
+Para o problema que possui a matriz dos coeficientes representada pela Figura
+
+4.6, ? = 0, 95. Isso significa que 95% dos elementos da matriz dos coeficientes sa?o iguais
+
+a zero.
+
+Assim o ??ndice de esparsidade influi fortemente na escolha do me?todo utilizado
+
+na resoluc?a?o do sistema linear, que segundo Maliska (2004) e? responsa?vel por cerca de 60
+
+a 70% do tempo computacional necessa?rio para a soluc?a?o de um determinado problema
+
+em meca?nica dos fluidos. Ao empregar me?todos diretos de soluc?a?o, e? necessa?rio o
+
+manuseio de toda a matriz, incluindo os elementos nulos. Para se ter uma soluc?a?o mais
+
+34
+
+
+
+precisa do problema em questa?o, o nu?mero de volumes de controle deve ser aumentado.
+
+Com isso, o sistema linear a ser resolvido aumenta igualmente em nu?mero de equac?o?es,
+
+pore?m o esforc?o computacional cresce de forma na?o linear, tornando seu uso invia?vel.
+
+Me?todos bastante indicados para a resoluc?a?o de sistemas lineares esparsos sa?o
+
+os me?todos indiretos, como o me?todo de decomposic?a?o LU incompleta, por exemplo.
+
+A ide?ia ba?sica desse tipo de soluc?a?o e? encontrar uma matriz pro?xima a? original, ar-
+
+mazenando e trabalhando apenas com seus elementos na?o nulos. O sistema e? enta?o
+
+resolvido iterativamente, pore?m o tempo de soluc?a?o e? consideravelmente menor.
+
+Sa?o encontradas atualmente subrotinas prontas, em linguagem Fortran, que
+
+fazem uso de me?todos indiretos na soluc?a?o de sistemas de equac?o?es. Pore?m, a maior
+
+parte delas so? pode ser aplicada aos casos em que a matriz dos coeficientes possui
+
+elementos na?o nulos apenas em algumas diagonais pre? definidas. Dessa forma, por
+
+causa da complexidade da matriz que compo?e o sistema de equac?o?es alge?bricas neste
+
+trabalho, apesar da vantagem no uso desse tipo de me?todo, foi usado o Me?todo de
+
+Decomposic?a?o LU simples, que trabalha tambe?m com os coeficientes nulos da matriz
+
+na soluc?a?o do sistema linear resultante. Uma subrotina que seja capaz de resolver esse
+
+sistema de equac?o?es usando um me?todo indireto podera? ser implementada num trabalho
+
+futuro, fazendo com que seu tempo de soluc?a?o seja bastante reduzido.
+
+4.8 Passo de Tempo
+
+Um fator de extrema importa?ncia na boa converge?ncia do me?todo nume?rico e?
+
+a escolha de um passo de tempo (?t) apropriado.
+
+Em problemas predominantemente convectivos uma boa estimativa para ?t e?
+
+obtida pela divisa?o de uma escala de comprimento por uma escala de velocidade, como,
+
+por exemplo, do comprimento do dom??nio pela velocidade me?dia do fluido (ANSYS
+
+CFX-Solver Theory Guide 11.0):
+
+?t =
+L
+
+v
+(4.18)
+
+Mesmo para o caso problemas estaciona?rios, por na?o acarretar complicac?o?es
+
+adicionais, e? importante manter o termo transiente nas equac?o?es que modelam o feno?meno.
+
+Nesse caso segue-se uma abordagem de transiente distorcido em que um procedimento
+
+de falsa marcha no tempo e? aplicado, e ?t passa a funcionar como um fator de relaxac?a?o,
+
+facilitando a converge?ncia nume?rica.
+
+35
+
+
+
+4.9 Estrutura do Programa
+
+As equac?o?es de conservac?a?o de quantidade de movimento que modelam o
+
+feno?meno estudado neste trabalho sa?o na?o-lineares. Como ja? visto, a aproximac?a?o
+
+nume?rica dessas equac?o?es da? origem a um sistema linear de equac?o?es. Pore?m a matriz
+
+dos coeficientes conte?m elementos dependentes das varia?veis e precisa, portanto, ser
+
+atualizada ao longo das iterac?o?es, ate? que o resultado convirja.
+
+Apesar de ter como motivac?a?o o estudo do processo FCC em risers, o co?digo
+
+nume?rico desenvolvido neste trabalho permite a obtenc?a?o de dados de velocidade e
+
+pressa?o para qualquer fluido newtoniano e incompress??vel escoando em regimes lami-
+
+nar ou turbulento, com perfis de velocidade de entrada varia?veis, no interior de dutos
+
+cil??ndricos verticais ou horizontais. Dessa forma, as propriedades do fluido, a geometria
+
+do cilindro e o perfil de velocidades na entrada devem ser definidos antes de se iniciar
+
+o processo iterativo. Com esses dados, juntamente com o campo inicial das varia?veis e
+
+sua estimativa para o tempo seguinte em todo o dom??nio do problema, e? determinado
+
+o regime de escoamento sobre o qual o fluido esta? submetido. Se o escoamento e? tur-
+
+bulento, calcula-se a viscosidade turbulenta com o uso dos modelos de turbule?ncia, e a
+
+viscosidade do fluido e? acrescida deste valor. E enta?o os campos de velocidade e pressa?o
+
+em todo o dom??nio sa?o calculados.
+
+Para o caso transiente, o valor das varia?veis, convergido para um tempo t0 +?t,
+
+retorna ao in??cio do programa como sendo o novo campo inicial das varia?veis, e a soluc?a?o
+
+e? obtida para o tempo seguinte ate? que o regime permanente seja atingido. O algoritmo
+
+que descreve esse processo iterativo e a partir do qual foi desenvolvido o co?digo nume?rico
+
+do presente trabalho pode ser visto na Figura 4.7.
+
+Se o interesse for apenas a soluc?a?o do problema em regime permanente, pode-se
+
+avanc?ar no tempo cada vez que o campo de varia?veis for obtido. Esse procedimento
+
+resulta numa soluc?a?o transiente distorcida, ja? que o problema na?o foi convergido para
+
+cada intervalo de tempo. A importa?ncia do uso dessa abordagem para problemas esta-
+
+ciona?rios ja? foi ressaltada na sec?a?o anterior deste cap??tulo.
+
+36
+
+
+
+Figura 4.7: Algoritmo de resoluc?a?o do problema.
+
+37
+
+
+
+4.10 Converge?ncia
+
+Diversos fatores podem influenciar na soluc?a?o nume?rica de um problema, como,
+
+por exemplo, o refino da malha, a dimensa?o do intervalo de tempo e o uso de coeficientes
+
+de relaxac?a?o. Encontrar uma boa combinac?a?o desses para?metros e? fundamental para
+
+que o processo iterativo seja consistente e esta?vel. Essas sa?o as condic?o?es necessa?rias e
+
+suficientes para que haja converge?ncia.
+
+A soluc?a?o de um problema e? dita consistente quando a aproximac?a?o nume?rica
+
+gera resultados que reproduzem os obtidos diretamente pela equac?a?o diferencial, se as
+
+dimenso?es da malha e do tempo tendem a zero. Segundo Maliska (2004), quando o
+
+me?todo dos volumes finitos e? usado na obtenc?a?o das equac?o?es em sua forma discreta,
+
+o modelo nume?rico e? sempre consistente. Ja? as instabilidades nume?ricas podem ocor-
+
+rer devido a dificuldades no acoplamento entre as varia?veis que podem fazer com que
+
+algumas delas evoluam mais ra?pido que as outras.
+
+De acordo com Tu et al (2007), tre?s aspectos sa?o importantes para considerar
+
+que um processo iterativo alcanc?ou a converge?ncia:
+
+1. Os balanc?os de massa e momento devem ser fechados;
+
+2. Todas as equac?o?es discretizadas devem parecer ter convergido quando alcanc?arem
+
+uma determinada tolera?ncia para todos os volumes locais;
+
+3. A soluc?a?o nume?rica na?o mais deve variar com iterac?o?es adicionais.
+
+Assim e? necessa?rio que um crite?rio de converge?ncia, que decide quando esse
+
+processo ira? parar, seja definido. Normalmente o processo iterativo continua ate? que
+
+n??veis residuais se reduzam a uma quantidade particular ?. Neste trabalho esse res??duo
+
+foi calculado, como sugerido por Maliska (2004), por:
+
+??????P ? ?
+?
+P
+
+?
+
+????? ? ? (4.19)
+em que o sobrescrito ? indica o valor da varia?vel calculado na iterac?a?o anterior, e ? e? a
+diferenc?a entre o maior e o menor valor da varia?vel ? ao longo do dom??nio do problema:
+
+? = ?max ? ?min (4.20)
+
+38
+
+
+
+Cap??tulo 5
+
+Simulac?o?es e Ana?lise dos Resultados
+
+Com a finalidade de validar o modelo nume?rico desenvolvido neste trabalho,
+
+foram realizadas simulac?o?es de escoamentos em regimes laminar e turbulento para va?rios
+
+valores de Reynolds. Nesses casos os perfis de velocidade axial de entrada do fluido eram
+
+uniformes com suas componentes radial e angular nulas e os escoamentos se deram no
+
+interior de tubos cil??ndricos horizontais (para que os efeitos da gravidade pudessem
+
+ser desprezados). Esses resultados foram enta?o validados usando-se a pro?pria soluc?a?o
+
+anal??tica das equac?o?es, por correlac?o?es (semi-) emp??ricas ou por dados experimentais,
+
+conforme cada um dos casos. Tambe?m foram feitas diferentes simulac?o?es para que
+
+se pudessem observar caracter??sticas tridimensionais, el??pticas e transientes do escoa-
+
+mento, e a simulac?a?o de um escoamento com as especificac?o?es geome?tricas e operacionais
+
+comumente encontradas para reatores riser de unidades FCC.
+
+O programa foi executado em computador com processador Intel Pentuim 4,
+
+com 2.8 GHz de velocidade, e 2 GB de memo?ria RAM. O tempo de processamento
+
+variou conforme a malha usada em cada caso, sendo de, no ma?ximo, 45 horas para as
+
+malhas mais refinadas.
+
+A descric?a?o e resultados dessas simulac?o?es, bem como sua ana?lise, sera?o apre-
+
+sentados a seguir.
+
+5.1 Escoamentos em Regime Laminar
+
+Simulac?o?es de escoamentos em regime laminar foram feitas para Re = 1×103 e
+Re = 2 × 103 em um tubo de 20 cm de dia?metro e 30 m de comprimento. Foram usadas
+malhas estruturadas uniformes contendo 1600 volumes (20 na direc?a?o axial, 20 na radial
+
+39
+
+
+
+e 4 na angular). Nos casos laminares na?o foram realizados estudos de independe?ncia de
+
+malha.
+
+Na Figura 5.1 pode-se observar o perfil de velocidades, para Re = 2×103, obtido
+apo?s o sistema atingir o regime permanente. Essa simulac?a?o foi feita para um cilindro
+
+de 50 m de comprimento. A regia?o de entrada hidrodina?mica, onde a velocidade ainda
+
+e? func?a?o da posic?a?o ao longo do comprimento do cilindro, pode ser vista claramente.
+
+Figura 5.1: Perfil de velocidade axial - plano zr
+
+A partir da Equac?a?o 2.1 foram calculados os comprimentos de entrada hidrodina?micos
+
+Le para os dois valores de Reynolds:
+
+Tabela 5.1: Comprimentos de entrada hidrodina?micos - laminar
+
+Le/D Le(m) Le/L
+
+Re = 1 × 103 57,5 11,5 0,38
+Re = 2 × 103 115,0 23,0 0,77
+
+O desenvolvimento do perfil de velocidade obtido numericamente ao longo do
+
+comprimento do cilindro, para Re = 2 × 103, pode ser visto na Figura 5.2. Pode-se
+notar que a partir de z/L = 0, 75 o perfil praticamente na?o mais varia, mostrando,
+
+portanto, que o limite entre a regia?o de entrada e a regia?o plenamente desenvolvida se
+
+encontra pro?ximo desse local, e confirmando o valor de Le/L apresentado na Tabela
+
+5.1.
+
+40
+
+
+
+Figura 5.2: Desenvolvimento do perfil de velocidade axial ao longo do cilindro.
+
+A validac?a?o dos dados nume?ricos de velocidade foi feita atrave?s da comparac?a?o
+
+com o resultado anal??tico (Equac?a?o 2.7). Ja? a pressa?o foi validada com o uso da Equac?a?o
+
+de Darcy-Weisbach e do fator de atrito de Darcy para escoamentos laminares (Equac?o?es
+
+2.4 e 2.5).
+
+Nas Figuras 5.3 e 5.4 sa?o apresentados os perfis de velocidade axial anal??ticos e
+
+obtidos pelo modelo nume?rico, para Re = 1 × 103 e Re = 2 × 103 respectivamente, em
+func?a?o do raio adimensional do cilindro, na regia?o em que o escoamento e? plenamente
+
+desenvolvido.
+
+Ja? os dados de queda de pressa?o em func?a?o do comprimento adimensional do
+
+cilindro, para Re = 1 × 103 e Re = 2 × 103, podem ser vistos nas Figuras 5.5 e
+5.6, respectivamente. Pode-se notar que a partir de um determinado valor de z/L a
+
+pressa?o relativa decresce linearmente com z, indicando que a partir da?? o escoamento
+
+e? plenamente desenvolvido. Essa caracter??stica tambe?m po?de ser observada na Figura
+
+2.3, quando foi definida teoricamente a regia?o de entrada hidrodina?mica. As linhas
+
+tracejadas, presentes nas Figuras 5.5 e 5.6, foram feitas a partir dos valores calculados
+
+pela Equac?a?o 2.1 e mostrados na Tabela 5.1. Elas delimitam a regia?o de entrada e a
+
+regia?o de escoamento plenamente desenvolvido, e apresentam boa concorda?ncia com os
+
+dados nume?ricos.
+
+41
+
+
+
+Figura 5.3: Perfis nume?rico e anal??tico de velocidade axial para Re = 1 × 103, na regia?o
+plenamente desenvolvida.
+
+Figura 5.4: Perfis nume?rico e anal??tico de velocidade axial para Re = 2 × 103, na regia?o
+plenamente desenvolvida.
+
+42
+
+
+
+Figura 5.5: Dados de queda de pressa?o obtidos numericamente e pela Equac?a?o de
+
+Darcy-Weisbach para Re = 1 × 103 ao longo do comprimento do cilindro.
+
+Figura 5.6: Dados de queda de pressa?o obtidos numericamente e pela Equac?a?o de
+
+Darcy-Weisbach para Re = 2 × 103 ao longo do comprimento do cilindro.
+
+43
+
+
+
+O desenvolvimento do perfil da componente radial da velocidade ao longo do
+
+comprimento adimensional do cilindro, para Re = 1 × 103, pode ser visto na Figura
+5.7. Pode-se notar que o valor da varia?vel vr e? diferente de zero pro?ximo a? entrada do
+
+tubo. Esse mesmo comportamento tambe?m foi observado por outros autores como Mu-
+
+niz (1995) e Glodberg e Folk (1988), que realizaram estudos nume?ricos sobre a regia?o
+
+de entrada hidrodina?mica. Apesar de estar presente na maior parte dos trabalhos
+
+envolvendo o estudo nume?rico de escoamentos com velocidade de entrada predominan-
+
+temente axial, essa caracter??stica na?o e? encontrada quando esses problemas sa?o resolvi-
+
+dos analiticamente ou em dados emp??ricos. Pro?ximo a entrada do cilindro os valores
+
+das componentes da velocidade deveriam tender a? condic?a?o de contorno imposta nessa
+
+regia?o. Glodberg e Folk (1988) afirmam que, por causa do ra?pido decaimento no valor
+
+da componente axial da velocidade quando o fluido entra em contato com a parede,
+
+onde e? imposta condic?a?o de na?o deslizamento ( vz|r=R = 0), ha? uma compensac?a?o na
+varia?vel vr, causando esse desvio.
+
+Figura 5.7: Desenvolvimento do perfil de velocidade radial ao longo do cilindro.
+
+Ao calcular a vaza?o volume?trica nas sec?o?es transversais a? direc?a?o do escoamento
+
+a partir dos dados de velocidade encontrados numericamente, observou-se outro desvio
+
+em relac?a?o a? vaza?o de entrada pro?ximo a essa regia?o (Figura 5.8). Apesar de possuir
+
+pequena ordem de magnitude (&amp;lt;0, 4%), na?o influenciando no estudo do escoamento,
+
+esse erro pode ser justificado pelo comportamento nume?rico da componente radial da
+
+44
+
+
+
+Figura 5.8: Vazo?es volume?tricas nas sec?o?es transversais ao longo do comprimento do
+
+cilindro.
+
+velocidade (Figura 5.7) na regia?o de entrada.
+
+Os valores nume?ricos das componentes da velocidade foram aplicados na equac?a?o
+
+de conservac?a?o de massa a fim de verificar seu fechamento. Mais uma vez foi observado
+
+um leve desvio nos volumes pro?ximos a? entrada, principalmente na regia?o da parede do
+
+tubo, como pode ser visto na Figura 5.9. Esse fato pode ser, mais uma vez, explicado
+
+pela imposic?a?o da condic?a?o de velocidade nula na parede, fazendo com que haja uma
+
+diferenc?a muito grande entre ela e a velocidade de entrada do fluido assim que o esse
+
+entra em contato com a superf??cie, provocando um pequeno desvio nume?rico.
+
+Ainda em regime laminar, para Re = 1, 6 × 103, foi realizada uma simulac?a?o
+em que a entrada do cilindro representava 1/3 de seu dia?metro, como esquematizado
+
+na Figura 5.10. Nesse caso, o cilindro tinha 20 cm de dia?metro e 8 m de comprimento.
+
+Para que se pudesse analisar o resultado na regia?o mais pro?xima a? parede foi usada
+
+uma malha contendo 600 volumes (10 na direc?a?o axial, 15 na radial e 4 na angular) na?o
+
+uniforme na direc?a?o radial que se expandia a partir dali num fator fixo igual a 1, 10.
+
+O resultado dessa simulac?a?o pode ser visto na Figura 5.11, que mostra o desen-
+
+volvimento do perfil de velocidade axial, e onde nota-se a presenc?a de valores negativos,
+
+e 5.12, em que pode-se perceber a formac?a?o de zonas de recirculac?a?o de fluido pro?ximo
+
+45
+
+
+
+Figura 5.9: Vaza?o ma?ssica resultante da aplicac?a?o dos valores nume?ricos das varia?veis
+
+na equac?a?o de conservac?a?o de massa.
+
+Figura 5.10: Geometria da regia?o de entrada do tubo.
+
+46
+
+
+
+a? entrada do tubo. Essa caracter??stica somente pode ser observada se o problema for
+
+tratado como sendo el??ptico. Da?? a importa?ncia de na?o desprezar os termos difusivos
+
+em sua modelagem.
+
+Figura 5.11: Desenvolvimento do perfil de velocidade axial para Re = 1, 6×103 usando
+geometria esquematizada na Figura 5.10.
+
+Foi realizada tambe?m uma simulac?a?o em que o perfil de velocidade de entrada
+
+era inclinado a 80? em relac?a?o a? sec?a?o transversal do cilindro, possuindo componentes
+
+axial, radial e angular na?o nulas, como esta? esquematizado na Figura 5.13. Nesse caso o
+
+regime de escoamento era laminar com Re = 2×103 e foi usada uma malha na?o uniforme
+na direc?a?o radial se expandindo num fator de 1, 20 a partir da parede, contendo 900
+
+volumes (15 na direc?a?o axial, 15 na radial e 4 na angular). O tubo tinha 14, 5 m de
+
+altura e 20 cm de dia?metro.
+
+Na Figura 5.14 e? mostrada a representac?a?o vetorial das componentes radial e
+
+angular da velocidade em um corte transversal do cilindro a 0, 50 m da entrada. Nota-
+
+se que pelo problema ter sido modelado tridimensionalmente os resultados se mostram
+
+sem nenhuma simetria nesse caso. A representac?a?o espacial do vetor velocidade numa
+
+dada posic?a?o angular do dom??nio pode ser vista na Figura 5.15. Nesse caso percebe-se
+
+que os vetores possuem componentes nas tre?s direc?o?es coordenadas.
+
+47
+
+
+
+Figura 5.12: Dados de velocidade axial e radial representados vetorialmente.
+
+Figura 5.13: Perfil de velocidade de entrada inclinado.
+
+48
+
+
+
+Figura 5.14: Representac?a?o vetorial das componentes radial e angular da velocidade no
+
+plano.
+
+Figura 5.15: Representac?a?o vetorial da velocidade no espac?o.
+
+49
+
+
+
+Para que se pudessem visualizar as caracter??sticas de um escoamento ao longo
+
+do tempo, e observar a aplicac?a?o do processo transiente real, foi feita uma simulac?a?o,
+
+para Re = 1 × 103, em que o passo de tempo foi de 0, 1 s. Nesse caso o cilindro tinha
+20 cm de dia?metro e 20 m de comprimento, e foi usada uma malha de discretizac?a?o
+
+contendo 900 volumes (15 na direc?a?o axial, 15 na radial e 4 na angular). O desen-
+
+volvimento da velocidade axial no dom??nio com o tempo, ate? que o processo atingisse o
+
+regime permanente, pode ser visto na Figura 5.16. Deve-se notar que, conforme a cor
+
+se torna menos uniforme, o perfil fica menos achatado ate? que, em t = 0, 9 s, atinge sua
+
+forma final (permanente).
+
+Figura 5.16: Desenvolvimento do perfil de velocidade axial ao longo do tempo.
+
+50
+
+
+
+5.2 Escoamentos em Regime Turbulento
+
+Os escoamentos em regime turbulento foram simulados para Re = 2×104, Re =
+4×104 e Re = 10×104, no interior de um cilindro de 20 cm de dia?metro e 8 m de altura.
+Nesses casos, foram realizados testes de independe?ncia de malha. Esses testes, para
+
+Re = 4 × 104, podem ser vistos nas Figuras 5.17 e 5.18, onde esta?o apresentados dados
+de queda de pressa?o obtidos em simulac?o?es em que o volume de controle foi discretizado
+
+usando-se malhas de diferentes tamanhos. Como pode-se observar a variac?a?o do nu?mero
+
+de volumes na direc?a?o axial pouco influencia no resultado nume?rico. Ja? o refino da
+
+malha na direc?a?o radial tem um efeito bastante significativo sobre o resultado.
+
+Dessa maneira, nos casos em que Re = 2 × 104 e Re = 4 × 104, foi estabelecido
+o uso de malhas uniformes contendo 704 volumes (8 na direc?a?o axial, 22 na radial
+
+e 4 na angular) e 1312 volumes (8 na direc?a?o axial, 41 na radial e 4 na angular),
+
+respectivamente. Na simulac?a?o do escoamento com Re = 10×104 foi usada uma malha
+na?o uniforme na direc?a?o radial que expandia a partir da parede num fator fixo igual a
+
+1,03. Esta continha 1600 volumes (8 na direc?a?o axial, 50 na radial e 4 na angular).
+
+Figura 5.17: Queda de pressa?o - teste de independe?ncia de malha variando nvz.
+
+51
+
+
+
+Figura 5.18: Queda de pressa?o - teste de independe?ncia de malha variando nvr.
+
+Os dados obtidos para velocidade axial foram validados com os valores dessa
+
+varia?vel calculados pela correlac?a?o emp??rica (lei de pote?ncia) dada pela Equac?a?o 2.8.
+
+Ale?m disso, foram usados dados experimentais de escoamentos operando sob Re =
+
+2, 7281×104 e Re = 4, 8997×104, encontrados no trabalho de Haber (1966), citado por
+Souza et al (2006), na validac?a?o dos dados nume?ricos para os casos em que Re = 2×104
+
+e Re = 4 × 104.
+
+Os perfis de velocidade axial obtidos nas simulac?o?es, os calculados pela cor-
+
+relac?a?o emp??rica e, para os casos descritos anteriormente, os dados experimentais, na
+
+regia?o plenamente desenvolvida do escoamento, podem ser vistos nas Figuras 5.19,
+
+5.20 e 5.21. Pode-se observar uma boa concorda?ncia entre os dados nume?ricos, os
+
+calculados pela lei de pote?ncia e os dados experimentais de Habber. Ja? no caso em
+
+que Re = 10 × 104 (Figura 5.21) observa-se um desvio entre os dados nume?ricos e os
+calculados pela correlac?a?o emp??rica, principalmente na regia?o pro?xima a parede onde
+
+acredita-se ser necessa?rio um maior refino da malha.
+
+52
+
+
+
+Figura 5.19: Perfis de velocidade axial nume?rico e obtido pela lei de pote?ncia para
+
+Re = 2 × 104, e dados experimentais para Re = 2, 7281 × 104, na regia?o plenamente
+desenvolvida.
+
+Figura 5.20: Perfis de velocidade axial nume?rico e obtido pela lei de pote?ncia para
+
+Re = 4 × 104, e dados experimentais para Re = 4, 8997 × 104, na regia?o plenamente
+desenvolvida.
+
+53
+
+
+
+Figura 5.21: Perfis de velocidade axial nume?rico e obtido pela lei de pote?ncia para
+
+Re = 10 × 104, na regia?o plenamente desenvolvida.
+
+A partir de duas diferentes correlac?o?es, dadas pelas Equac?o?es 2.2 e 2.3, encon-
+
+tradas nas obras de White (2003) e C?engel e Cimbala (2007), respectivamente, foram
+
+elaboradas as Tabelas 5.2 e 5.3 contendo os dados calculados para o comprimento de
+
+entrada hidrodina?mico para Re = 2 × 104, Re = 4 × 104 e Re = 10 × 104.
+
+Tabela 5.2: Comprimentos de entrada hidrodina?micos (Equac?a?o 2.2) - turbulento
+
+Le/D Le(m) Le/L
+
+Re = 2 × 104 22,9 4,6 0,57
+Re = 4 × 104 25,7 5,1 0,64
+Re = 10 × 104 30,0 6,0 0,75
+
+Tabela 5.3: Comprimentos de entrada hidrodina?micos (Equac?a?o 2.3) - turbulento
+
+Le/D Le(m) Le/L
+
+Re = 2 × 104 16,2 3,2 0,40
+Re = 4 × 104 19,3 3,8 0,48
+Re = 10 × 104 24,2 4,8 0,60
+
+54
+
+
+
+Como nas simulac?o?es de escoamentos laminares a validac?a?o dos dados de pressa?o
+
+para as simulac?o?es de escoamentos em regime turbulento foi feita comparando-os aos
+
+valores obtidos com o uso da Equac?a?o de Darcy-Weisbach (Equac?a?o 2.4) e do fator de
+
+atrito de Darcy, desta vez ajustado para Re &gt; 4 × 103 (Equac?a?o 2.6). Os dados de
+queda de pressa?o nume?ricos e os obtidos com o uso dessa correlac?a?o, para Re = 2×104,
+Re = 4 × 104 e Re = 10 × 104, em func?a?o do comprimento adimensional do cilindro,
+sa?o apresentados graficamente nas Figuras 5.22, 5.23 e 5.24, respectivamente. As linhas
+
+tracejadas verticais indicam os locais em que os escoamentos passam a ser plenamente
+
+desenvolvidos a partir dos valores calculados pelas Equac?o?es 2.2 e 2.3 (apresentados nas
+
+Tabelas 5.2 e 5.3). Os valores calculados pela Equac?a?o 2.3 parecem representar melhor
+
+os dados nume?ricos que os encontrados pela Equac?a?o 2.2.
+
+Figura 5.22: Dados de queda de pressa?o obtidos numericamente e pela Equac?a?o de
+
+Darcy-Weisbach para Re = 2 × 104 ao longo do comprimento do cilindro.
+
+55
+
+
+
+Figura 5.23: Dados de queda de pressa?o obtidos numericamente e pela Equac?a?o de
+
+Darcy-Weisbach para Re = 4 × 104 ao longo do comprimento do cilindro.
+
+Figura 5.24: Dados de queda de pressa?o obtidos numericamente e pela Equac?a?o de
+
+Darcy-Weisbach para Re = 10 × 104 ao longo do comprimento do cilindro.
+
+56
+
+
+
+Para que se pudesse analisar as caracter??sticas do escoamento no reator riser
+
+de uma unidade FCC, foi realizada uma simulac?a?o em que o dom??nio do problema tinha
+
+a base dividida em duas regio?es de entrada, como mostrado na Figura 2.1. Os perfis
+
+de velocidade de entrada foram considerados uniformes e se desenvolvendo a partir do
+
+local onde as duas correntes se encontram. Tambe?m a partir da?? a altura do reator era
+
+de 14, 5 m, e seu dia?metro de 0, 20 m. O fluido foi alimentado na entrada principal (base
+
+do reator) com velocidade axial de 5 m/s e, na entrada lateral, com velocidade radial de
+
+?2, 5 m/s. Foi considerado que o fluido e? um gaso?leo proveniente da destilac?a?o a va?cuo
+com ponto me?dio de ebulic?a?o de 488?C. Nessa temperatura a viscosidade cinema?tica
+
+estimada (ALTGELT e BODUSZYNSKI, 1994) para a frac?a?o obtida da destilac?a?o do
+
+petro?leo cru Arabian Heavy, e? de 83 cS (ou 8, 3 × 10?5 m2/s). Nessas condic?o?es o
+escoamento se apresenta em regime turbulento com Re = 12.048. Foi usada uma malha
+
+com 900 volumes (15 na direc?a?o axial, 15 na radial e 4 na angular), na?o uniforme na
+
+direc?a?o radial que se expandia num fator de 1, 20 a partir da parede.
+
+Os dados obtidos de velocidade e de pressa?o, em relac?a?o ao raio e a? altura do
+
+cilindro, esta?o representados nas Figuras 5.25 e 5.26, respectivamente.
+
+Essa simulac?a?o na?o representa o processo real de escoamento no interior do
+
+reator riser de uma unidade de FCC, ja? que nesse caso na?o foram considerados feno?menos
+
+como troca te?rmica e interac?a?o com a fase particulada que tambe?m deveria estar pre-
+
+sente na forma do catalisador da reac?a?o. Assim, esses dados na?o puderam ser validados
+
+e nem comparados com outros encontrados na literatura.
+
+57
+
+
+
+Figura 5.25: Representac?a?o vetorial da velocidade do gaso?leo vaporizado no interior de
+
+um reator riser.
+
+58
+
+
+
+Figura 5.26: Representac?a?o da queda de pressa?o no interior de um reator riser.
+
+59
+
+
+
+Cap??tulo 6
+
+Concluso?es
+
+Como pode ser observado nos resultados nume?ricos obtidos, o modelo repre-
+
+senta muito bem casos laminares, nos quais na?o foi preciso grande refino da malha na
+
+direc?a?o radial. Ja? nos casos turbulentos, como esperado, quanto mais elevado o nu?mero
+
+de Reynolds, maior o refino necessa?rio da malha, principalmente na regia?o pro?xima a?
+
+parede do tubo, onde ocorre a transic?a?o entre a regia?o dominada pelos efeitos viscosos
+
+(pro?xima a? superf??cie) e a regia?o predominantemente turbulenta, fazendo com que ali
+
+o escoamento apresente caracter??sticas insta?veis. Essas instabilidades aumentam ainda
+
+mais conforme o escoamento se torna mais turbulento, o que faz com que essa transic?a?o
+
+seja mais brusca. Apesar dos modelos de turbule?ncia usados serem simples (modelos
+
+alge?bricos), os resultados obtidos nas simulac?o?es dos casos turbulentos, em que esses
+
+foram validados, foram bastante satisfato?rios.
+
+Na maior parte das simulac?o?es foram usadas malhas mais refinadas na direc?a?o
+
+radial do que nas demais direc?o?es. Dessa forma, em alguns casos, a raza?o de aspecto, que
+
+e? definida como a divisa?o entre a maior e a menor aresta de um dado volume, e? bastante
+
+grande. Isso significa que o volume e? muito esticado para um dos lados. Alguns autores
+
+afirmam que o uso de malhas com raza?o de aspecto muito elevada podem provocar
+
+problemas na definic?a?o dos resultados ou na capacidade de converge?ncia. Apesar disso,
+
+nos casos em que os resultados puderam ser validados, esses problemas na?o foram
+
+observados, indicando que na determinac?a?o nume?rica dos para?metros de escoamentos
+
+simples, em tubos retos, e sem presenc?a de zonas de recirculac?a?o, a proporc?a?o dos
+
+volumes da malha na?o e? um fator limitante.
+
+Com relac?a?o ao sistema de equac?o?es alge?bricas, notou-se que o nu?mero de
+
+coeficientes da matriz principal que o representa aumentava muito para malhas mais
+
+60
+
+
+
+refinadas, ja? que esse nu?mero e? igual a quatro vezes o nu?mero de volumes em que
+
+o dom??nio e? dividido. Dessa forma, ao se usar malhas muito refinadas, o armazena-
+
+mento computacional e o tempo de soluc?a?o se tornaram bastante elevados. Essa e? uma
+
+das desvantagens da soluc?a?o acoplada das equac?o?es usada nesse trabalho. Em con-
+
+trapartida, como relatado por outros autores, observou-se que o nu?mero de iterac?o?es
+
+necessa?rias para que a soluc?a?o convergisse, usando essa abordagem, foi muito pequeno,
+
+especialmente nos casos laminares. Assim, uma maneira de driblar o problema da ne-
+
+cessidade do refino excessivo da malha, foi o uso de malhas na?o uniformes mais refinadas
+
+quando pro?ximas a?s paredes.
+
+O modelo nume?rico desenvolvido neste trabalho possibilitou a realizac?a?o de
+
+simulac?o?es de escoamentos no interior de dutos cil??ndricos de forma pra?tica, ra?pida e
+
+bastante completa. Por ser tridimensional e el??ptico, permite ainda estudos de escoa-
+
+mentos com diferentes perfis de velocidade de entrada, ana?lise de feno?menos difusivos
+
+e visualizac?a?o de processos de recirculac?a?o e escoamentos rotacionais.
+
+Deve ficar claro que, apesar da motivac?a?o deste trabalho ter sido o estudo do
+
+processo FCC em risers, o modelo na?o e? adequado para esse fim. O processo de FCC
+
+e? bastante complexo e dif??cil de ser completamente modelado, ja? que envolve diversos
+
+feno?menos como, troca te?rmica, reac?o?es qu??micas, adsorc?a?o, interac?a?o entre as fases,
+
+turbule?ncia intensa, entre outros. Um passo importante no desenvolvimento de um
+
+simulador para esse caso ja? foi dado, que foi a criac?a?o de uma ferramenta que permite
+
+o estudo tridimensional de escoamentos fluidos. Esse simulador podera? ser melhorado,
+
+num trabalho futuro, com a incorporac?a?o de novas equac?o?es e modelos. As etapas para
+
+a adaptac?a?o do modelo atual para que seja poss??vel simular com veracidade o processo
+
+de FCC esta?o listados a seguir:
+
+• As equac?o?es de conservac?a?o de massa global e de quantidade de movimento devem
+ser aplicadas a cada uma das fases presentes no escoamento, incluindo termos de
+
+transfere?ncia entre as fases. No escoamento no interior de reatores riser esta?o
+
+presentes tre?s fases, pore?m costuma-se usar modelos pseudo-homoge?neos, em que
+
+sa?o consideradas apenas duas fases: uma fase gasosa, composta por got??culas de
+
+gaso?leo e frac?o?es de hidrocarbonetos vaporizados misturadas ao vapor d’a?gua; e
+
+uma fase particulada, que na abordagem Euleriana e? considerada como cont??nua.
+
+• Ale?m dessas, devem tambe?m ser acrescentadas equac?o?es de conservac?a?o para cada
+espe?cie qu??mica presente no sistema.
+
+• Devem tambe?m estar presentes equac?o?es de conservac?a?o de energia para as fases
+
+61
+
+
+
+fluida e particulada;
+
+• Uma equac?a?o para prever a variac?a?o da massa espec??fica da fase fluida, que na?o
+e? constante nessas operac?o?es, tambe?m deve ser acrescentada;
+
+• Como a a?rea superficial das part??culas de catalisador muda durante o processo de
+adsorc?a?o, necessita-se uma equac?a?o que preveja essa variac?a?o;
+
+• Deve ser feito o acre?scimo de uma equac?a?o para o ca?lculo do coeficiente de arraste
+entre as fases;
+
+• Deve estar presente a Equac?a?o de continuidade entre as fases;
+
+• Deve haver um modelo de adsorc?a?o, ja? que de acordo com Martignoni (1998),
+a adsorc?a?o de hidrocarbonetos no catalisador tem um importante efeito sobre a
+
+hidrodina?mica e a cine?tica qu??mica;
+
+• Um modelo cine?tico, prevendo as reac?o?es de craqueamento que ocorrem no inte-
+rior do reator. Normalmente e? proposta uma rede cine?tica baseada em pseudo-
+
+componentes. Para isso usam-se te?cnicas de agrupamento de componentes em
+
+grupos de mole?culas representativas conforme semelhanc?a de suas propriedades;
+
+Apesar do co?digo desenvolvido parecer simples pela sua limitac?a?o no estudo
+
+de escoamentos presentes em aplicac?o?es pra?ticas, o fato do modelo ser tridimensional e
+
+sem simplificac?o?es inerentes a? imposic?a?o de planos de simetria fez com que o tratamento
+
+nume?rico das equac?o?es e sua implementac?a?o computacional fossem tarefas relativamente
+
+complexas. Dessa forma, foi poss??vel o aprimoramento do conhecimento da linguagem
+
+Fortran e de estrate?gias de programac?a?o, ale?m da aquisic?a?o de vasta compreensa?o de
+
+processos fluidodina?micos e de seu tratamento nume?rico, ja? que esses conceitos foram
+
+extensamente trabalhados na teoria e na pra?tica.
+
+62
+
+
+
+Refere?ncias Bibliogra?ficas
+
+ABADIE, E. Craqueamento Catal??tico. PETROBRAS, 1997.
+
+ALTGELT, K. H.; BODUSZYNSKI, M. M. Composition and Analysis of Heavy
+
+Petroleum Fractions. Marcel Dekker Inc., 1994.
+
+ANSYS CFX-Solver Theory Guide. ANSYS CFX Release 11.0. 1996-2006 ANSYS
+
+Europe, Ltd.
+
+BAI, D.; ZHU, J.; JIN, Y.; YU, Z. Simulation of FCC catalyst regeneration in a riser
+
+regenerator. Chemical Engineering Journal, 71, 97-109 (1998).
+
+C?ENGEL, Y. A.; CIMBALA, J. M. Meca?nica dos Fluidos: Fundamentos e Aplicac?o?es.
+
+Mc-Grall Hill, 2007.
+
+CHEN, Y. Recents Advances in FCC technology. Powder Technology, v. 163, p. 2-8,
+
+2006.
+
+DECKER, R. K. Modelagem e simulac?a?o tridimensional transiente do escoamento ga?s-
+
+so?lido. Dissertac?a?o de Mestrado - UNICAMP, 2003.
+
+DENG, Q. H.; TANG, G. F. Special treatment of pressure correction based on continuity
+
+conservation in a pressure-based algorithm. Numerical Heat Transfer, Part B, v. 42,
+
+73-92, 2002.
+
+FERZIGER, J. H.; PERIC?, M. Computacional Methods for Fluid Dynamics. Springer,
+
+1999.
+
+FREIRE, A. P. S.; MENUT, P. P. M.; SU, J. TURBULE?NCIA. ABCM, 2002
+
+GOLDBERG, I. S.; FOLK, R. T. Solutions for steady and nonsteady entrance flow
+
+in a semi-infinite circular tube at very low reynolds numbers. SIAM J. Appl. Math.
+
+Vol.48, N.4, 1988.
+
+63
+
+
+
+HAN, I.; CHUNG, C.; RIGGS, J. B. Modeling of a fluidized catalytic cracking process.
+
+Computers and Chemical Engineering, 24, 1681-1687 (2000).
+
+HANBY, R. F.; SILVESTER, D. J.; CHEN, J. W. A comparison of coupled
+
+and segregated iterative solution techniques for incompressible swiriling flow.
+
+International Journal for Numerical Methods in Fluids, v.22, 353-373, 1996.
+
+INCROPERA, F. P.; DEWITT, D. P. Fundamentos de transfere?ncia de calor e de
+
+massa. LTC Editora. Quinta edic?a?o, 2003.
+
+JOHNSON, R. W. The Handbook of Fluid Dynamics. CRC Press, 1998.
+
+MACHADO, M. B. Modelagem Tridimensional da Dispersa?o de Poluentes em Rios.
+
+Tese de Doutorado - UNICAMP, 2006.
+
+MALISKA, C. R. Transfere?ncia de Calor e Meca?nica dos Fluidos Computacional. LTC
+
+Editora. Segunda edic?a?o, 2004.
+
+MARCHI, C. H. High order schemes for the solution of fluid flows without numerical
+
+dispersion. Journal of the Brazilian Society of Mechanical Sciences, v.15, n.3, 231-249,
+
+1993.
+
+MARTIGNONI, W. P. Modelling and simulation of FCC riser reactors: an heteroge-
+
+neous approach. Ph.D. Dissertation - University of Western Ontario, 1998.
+
+MERCADO, E. R. V.; SOUZA, V. C.; GUIRARDELLO, R.; NUNHEZ, J. R. Modeling
+
+flow and heat tranfer in tubes using a fast CFD formulation. Computers and Chemical
+
+Engineering, v.25, 713-722, 2001.
+
+MUNIZ, L. A. R. Me?todo dos Volumes Finitos Aplicados a? Problemas de Escoamentos
+
+Bidimensionais na Regia?o de Entrada de Dutos Cil??ndricos. Dissertac?a?o de Mestrado
+
+- UNICAMP, 1995.
+
+NERI, A.; GISAPOW, D. Riser Hydrodynamics: Simulation Using Kinetic Theory.
+
+AIChE Journal, v.46, n.1, 2000.
+
+POPE, S. B. Turbulent Flows. Cambridge University Press, 2000.
+
+POTTER, M. C.; WIGGERT, D. C. Meca?nica dos Fluidos. Sa?o Paulo: Pioneira
+
+Thomson Learning, 2004.
+
+RODI, W. Turbulence modelling. In Turbulence models and their application in
+
+hydraulics. Germany, 1984.
+
+64
+
+
+
+ROSA, L. M. Simulac?a?o de Reac?o?es Qu??micas e Consumo de Calor em Risers. Dis-
+
+sertac?a?o de Mestrado - UNICAMP, 2002.
+
+SOUZA, B. A.; MATOS, E. M.; GUIRARDELLO, R.; NUNHEZ, J. R. Predicting coke
+
+formation due to thermal cracking inside tubes of petrochemical fired heaters using a
+
+fast CFD formulation. Journal of Petroleum Science and Engineering, v.51, 138-148,
+
+2006.
+
+THEOLOGOS, K. N.; MARKATOS, N. C. Advanced Modeling of Fluid Catalytic
+
+Cracking Riser - Type Reactors. AIChE Journal, v.39, n.6, p.1007-1016,1993.
+
+THEOLOGOS, K. N.; NIKOU, I. D.; LYGEROS, A. I.; MARKATOS, N. C. Simulation
+
+and Design of Fluid Catalytic Cracking Riser - Type Reactors. AIChE Journal, v.43,
+
+n.2, 1997.
+
+TU, J.; YEOH, G. H.; LIU, C. Computational Fluid Dynamics: A Practical Approach.
+
+Butterworth-Heinemann, 2007.
+
+WHITE, F. M. Viscous Fluid Flow. Mc Graw-Hill, 1991.
+
+WHITE, F. M. Fluid Mechanics. Mc Graw-Hill, 2003.
+
+65
+
+
+
+Ape?ndice A
+
+Coeficientes das equac?o?es alge?bricas
+
+Nas Tabelas A.1, A.2, A.3 e A.4, a seguir, sa?o apresentados os coeficientes
+
+das equac?o?es resultantes do tratamento nume?rico das Equac?o?es de Conservac?a?o de
+
+Quantidade de Movimento e da Equac?a?o da Continuidade, representadas pela Equac?a?o
+
+A.1. Essa equac?a?o foi apresentada na Sec?a?o 4.7 deste trabalho, mas esta? reescrita a
+
+seguir para facilitar a visualizac?a?o de seus coeficientes.
+
+A?P · ?P = A?N · ?N + A?S · ?S + A?E · ?E + A?W · ?W +
+
+A?F · ?F + A?B · ?B +
+?
+j
+
+?
+i
+
+A?j,i · ?j,i + B? (A.1)
+
+em que ? e? a varia?vel principal, A sa?o os termos que multiplicam as varia?veis, o ??ndice
+
+j indica as demais varia?veis ? presentes, i sa?o os volumes em que estas u?ltimas sa?o
+
+calculadas e B inclui os demais termos da equac?a?o.
+
+66
+
+
+
+Tabela A.1: Coeficientes da equac?a?o alge?brica resultante do tratamento nume?rico da
+
+Equac?a?o de Quantidade de Movimento na direc?a?o axial- EQMz.
+
+Coeficiente Varia?vel Valor
+
+AzP vzP ?
+?V
+?t
+
++ ?
+[(
+
+re
+rP
+
+[vre, 0] +
+rw
+rP
+
+[?vrw, 0]
+)
+Ar +(
+
+1
+rP
+
+[v?f , 0] +
+1
+
+rP
+[?v?b, 0]
+
+)
+A? + ([vzn, 0] + [?vzs, 0]) Az
+
+]
++(
+
+re
+rP
+
+µe +
+rw
+rP
+
+µw
+)
+
+Ar
+?r
+
++
+(
+
+1
+r2
+P
+µf +
+
+1
+r2
+P
+µb
+
+)
+A?
+??
+
++ 2 (µn + µs)
+Az
+?z
+
+AzN vzN ? [?vzn, 0] Az + 2µn Az?z
+AzS vzS ? [vzs, 0] Az + 2µs
+
+Az
+?z
+
+AzE vzE ?
+re
+rP
+
+[?vre, 0] Ar + rerP µe
+Ar
+?r
+
+AzW vzW ?
+rw
+rP
+
+[vrw, 0] Ar +
+rw
+rP
+
+µw
+Ar
+?r
+
+AzF vzF ?
+1
+
+rP
+[?v?f , 0] A? + 1r2
+
+P
+µf
+
+A?
+??
+
+AzB vzB ?
+1
+
+rP
+[v?b, 0] A? +
+
+1
+r2
+P
+µb
+
+A?
+??
+
+AzrN vrN
+(
+
+re
+rP
+
+µe ? rwrP µw
+)
+
+Ar
+4?z
+
+AzrS vrS ?
+(
+
+re
+rP
+
+µe ? rwrP µw
+)
+
+Ar
+4?z
+
+AzrN E vrN,E
+re
+rP
+
+µe
+Ar
+4?z
+
+AzrSE vrS,E ? rerP µe
+Ar
+4?z
+
+AzrN W vrN,W ?rwrP µw
+Ar
+4?z
+
+AzrSW vrS,W
+rw
+rP
+
+µw
+Ar
+4?z
+
+Az?N v?N
+(
+
+1
+rP
+
+µf ? 1rP µb
+)
+
+A?
+4?z
+
+Az?S v?S ?
+(
+
+1
+rP
+
+µf ? 1rP µb
+)
+
+A?
+4?z
+
+Az?N F v?N,F
+1
+
+rP
+µf
+
+A?
+4?z
+
+Az?SF v?S,F ? 1rP µf
+A?
+4?z
+
+Az?N B v?N,B ? 1rP µb
+A?
+4?z
+
+Az?SB v?N,B
+1
+
+rP
+µb
+
+A?
+4?z
+
+AzP N PN ?Az
+AzP P PP Az
+
+Bz ? ?vz0P
+?V
+?t
+
++ ?
+?
+gz ?V
+
+67
+
+
+
+Tabela A.2: Coeficientes da equac?a?o alge?brica resultante do tratamento nume?rico da
+
+Equac?a?o de Quantidade de Movimento na direc?a?o radial - EQMr.
+
+Coeficiente Varia?vel Valor
+
+ArP vrP ?
+?V
+?t
+
++ ?
+[(
+
+re
+rP
+
+[vre, 0] +
+rw
+rP
+
+[?vrw, 0]
+)
+Ar +(
+
+1
+rP
+
+[v?f , 0] +
+1
+
+rP
+[?v?b, 0]
+
+)
+A? + ([vzn, 0] + [?vzs, 0]) Az
+
+]
++
+
+2
+(
+
+re
+rP
+
+µe +
+rw
+rP
+
+µw
+)
+
+Ar
+?r
+
++
+(
+
+1
+r2
+P
+µf +
+
+1
+r2
+P
+µb
+
+)
+A?
+??
+
++ (µn + µs)
+Az
+?z
+
++
+
+2 µP
+r2
+P
+
+?V
+
+ArN vrN ? [?vzn, 0] Az + µn Az?z
+ArS vrS ? [vzs, 0] Az + µs
+
+Az
+?z
+
+ArE vrE ?
+re
+rP
+
+[?vre, 0] Ar + 2 rerP µe
+Ar
+?r
+
+ArW vrW ?
+rw
+rP
+
+[vrw, 0] Ar + 2
+rw
+rP
+
+µw
+Ar
+?r
+
+ArF vrF ?
+1
+
+rP
+[?v?f , 0] A? + 1r2
+
+P
+µf
+
+A?
+??
+
+ArB vrB ?
+1
+
+rP
+[v?b, 0] A? +
+
+1
+r2
+P
+µb
+
+A?
+??
+
+ArzE vzE (µn ? µs) Az4?r
+ArzW vzW ? (µn ? µs) Az4?r
+ArzEN vzE,N µn
+
+Az
+4?r
+
+ArzW N vzW,N ?µn Az4?r
+ArzES vzE,S ?µs Az4?r
+ArzW S vzW,S µs
+
+Az
+4?r
+
+Ar?P v?P 2?
+v?0
+
+P
+
+rp
+?V
+
+Ar?E v?E
+(
+
+1
+rE
+
+µf ? 1rE µb
+)
+
+A?
+4?r
+
+Ar?W v?W ?
+(
+
+1
+rW
+
+µf ? 1rW µb
+)
+
+A?
+4?r
+
+Ar?F v?F ?µP 1r2
+P
+
+??
+?V
+
+Ar?B v?B µP
+1
+
+r2
+P
+
+??
+?V
+
+Ar?EF v?E,F
+1
+
+rE
+µf
+
+A?
+4?r
+
+Ar?W F v?W,F ? 1rW µf
+A?
+4?r
+
+Ar?EB v?E,B ? 1rE µf
+A?
+4?r
+
+Ar?W B v?W,B
+1
+
+rW
+µf
+
+A?
+4?r
+
+ArP E PE ?Ar
+ArP P PP Ar
+
+Br ? ?vr0P
+?V
+?t
+
+? (v?
+0
+P
+
+)2
+
+rP
+?V
+
+68
+
+
+
+Tabela A.3: Coeficientes da equac?a?o alge?brica resultante do tratamento nume?rico da
+
+Equac?a?o de Quantidade de Movimento na direc?a?o angular - EQM?.
+
+Coeficiente Varia?vel Valor
+
+A?P v?P ?
+?V
+?t
+
++ ?
+[(
+
+re
+rP
+
+[vre, 0] +
+rw
+rP
+
+[?vrw, 0]
+)
+Ar +(
+
+1
+rP
+
+[v?f , 0] +
+1
+
+rP
+[?v?b, 0]
+
+)
+A? + ([vzn, 0] + [?vzs, 0]) Az
+
+]
++(
+
+r3e
+r3
+P
+µe +
+
+r3w
+r3
+P
+µw
+
+)
+Ar
+?r
+
++ 2
+(
+
+1
+r2
+P
+µf +
+
+1
+r2
+P
+µb
+
+)
+A?
+??
+
++ (µn + µs)
+Az
+?z
+
++
+
+?
+vr0
+
+P
+
+rP
+?V
+
+A?N v?N ? [?vzn, 0] Az + µn Az?z
+A?S v?S ? [vzs, 0] Az + µs
+
+Az
+?z
+
+A?E v?E ?
+re
+rP
+
+[?vre, 0] Ar +
+r3e
+r3
+P
+µe
+
+Ar
+?r
+
+A?W v?W ?
+rw
+rP
+
+[vrw, 0] Ar + 2
+r3w
+r3
+P
+µw
+
+Ar
+?r
+
+A?F v?F ?
+1
+
+rP
+[?v?f , 0] A? + 2 1r2
+
+P
+µf
+
+A?
+??
+
+A?B v?B ?
+1
+
+rP
+[v?b, 0] A? + 2
+
+1
+r2
+P
+µb
+
+A?
+??
+
+A?zF vzF (µn ? µs) Az4rP ??
+A?zB vzB ? (µn ? µs) Az4rP ??
+A?zF N vzF,N µn
+
+Az
+4rP ??
+
+A?zBN vzB,N ?µn Az4rP ??
+A?zF S vzF,S ?µs Az4rP ??
+A?zBS vzB,S µs
+
+Az
+4rP ??
+
+A?rP vrP ??
+v?0
+
+P
+
+rp
+?V + (µf ? µb) A?r2
+
+P
+
+A?rF vrF
+
+(
+re
+r2
+P
+µe ? rwr2
+
+P
+µw
+
+)
+Ar
+
+4??
++ µf
+
+A?
+r2
+P
+
+A?rB vrB ?
+(
+
+re
+r2
+P
+µe ? rwr2
+
+P
+µw
+
+)
+Ar
+
+4??
+? µb A?r2
+
+P
+
+A?rF E vrF,E
+re
+r2
+P
+µe
+
+Ar
+4??
+
+A?rBE vrB,E ? rer2
+P
+µe
+
+Ar
+4??
+
+A?rF W vrF,W ?rwr2
+P
+µw
+
+Ar
+4??
+
+A?rBW vrB,W
+rw
+r2
+P
+µw
+
+Ar
+4??
+
+A?P F PF ?A?
+A?P P PP A?
+
+B? ? ?v?0P
+?V
+?t
+
++
+vr0
+
+P
+v?0
+
+P
+
+rP
+?V
+
+69
+
+
+
+Tabela A.4: Coeficientes da equac?a?o alge?brica resultante do tratamento nume?rico da
+
+Equac?a?o da Continuidade.
+
+Coeficiente Varia?vel Valor
+
+AP zP vzP
+cdz
+
+P
++ccz
+
+P
+
+cdzn+cc
+z
+n
+· Az ? Az2
+
+AP zE vzE ?
+(
+
+cdz
+E
+
++ccz
+E
+
+cdzn+cc
+z
+n
+· Az +
+
+cdrz1?cd
+r
+z2
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar
+
+)
+AP zW vzW ?
+
+(
+cdz
+
+W
++ccz
+
+W
+
+cdzn+cc
+z
+n
+· Az +
+
+cdrz1?cd
+r
+z2
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar
+
+)
+AP zF vzF ?
+
+(
+cdz
+
+F
++ccz
+
+F
+
+cdzn+cc
+z
+n
+· Az +
+
+cd?z1?cd
+?
+z2
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+)
+AP zB vzB ?
+
+(
+cdz
+
+B
++ccz
+
+B
+
+cdzn+cc
+z
+n
+· Az +
+
+cd?z1?cd
+?
+z2
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+)
+AP zS vzS ?
+
+(
+cdz
+
+S
++ccz
+
+S
+
+cdzn+cc
+z
+n
+· Az + Az2
+
+)
+AP zEN vzE,N ?
+
+(
+cdrz1
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar
+
+)
+AP zES vzE,S
+
+cdrz2
+cdre+cc
+
+r
+e
+· r|e
+
+r|P
+· Ar
+
+AP zW N vzW,N
+cdrz1
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar
+
+AP zW S vzW,S ?
+(
+
+cdrz2
+cdre+cc
+
+r
+e
+· r|e
+
+r|P
+· Ar
+
+)
+AP zF N vzF,N ?
+
+(
+cd?z1
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+)
+AP zF S vzF,S
+
+cd?z2
+cd?
+
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+AP zBN vzB,N
+cd?z1
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+AP zBS vzB,S ?
+(
+
+cd?z2
+cd?
+
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+)
+AP rP vrP
+
+cdr
+P
+
++ccr
+P
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar ?
+
+r|w
+r|P
+
+Ar
+2
+? cd
+
+?
+rP 2
+
+?cd?
+rP 1
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+AP rW vrW ?
+(
+
+cdr
+W
+
++ccr
+W
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar ?
+
+r|w
+r|P
+
+Ar
+2
+
+)
+AP rF vrF ?
+
+(
+cdr
+
+F
++ccr
+
+F
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar +
+
+cd?
+rF
+
++cd?r1?cd
+?
+r2
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+)
+AP rB vrB ?
+
+(
+cdr
+
+B
++ccr
+
+B
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar ?
+
+cd?
+rB
+
++cd?r1?cd
+?
+r2
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+)
+AP rN vrN ?
+
+(
+cdr
+
+N
++ccr
+
+N
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar +
+
+cdzr1?cd
+z
+r2
+
+cdzn+cc
+z
+n
+· Az
+
+)
+AP rS vrS ?
+
+(
+cdr
+
+S
++ccr
+
+S
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar ?
+
+cdzr1?cd
+z
+r2
+
+cdzn+cc
+z
+n
+· Az
+
+)
+AP rN E vrN,E ?
+
+(
+cdzr1
+
+cdzn+cc
+z
+n
+· Az
+
+)
+AP rN W vrN,W
+
+cdzr2
+cdzn+cc
+
+z
+n
+· Az
+
+AP rSE vrS,E
+cdzr1
+
+cdzn+cc
+z
+n
+· Az
+
+AP rSW vrS,W ?
+(
+
+cdzr2
+cdzn+cc
+
+z
+n
+· Az
+
+)
+AP rF E vrF,E ?
+
+(
+cd?r1
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+)
+AP rF W vrF,W
+
+cd?r2
+cd?
+
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+AP rBE vrB,E
+cd?r1
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+AP rBW vrB,W ?
+(
+
+cd?r2
+cd?
+
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+)
+
+70
+
+
+
+Coeficiente Varia?vel Valor
+
+AP ?P v?P
+cd?
+
+P
++cc?
+
+P
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A? ? 1r|P ·
+
+A?
+2
+? cc
+
+r
+?P
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar
+
+AP ?E v?E ?
+(
+
+cd?
+E
+
++cc?
+E
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A? ?
+
+cdr?1?cd
+r
+?2
+
+cdre+cc
+r
+e
+· 1
+
+r|E
+· r|e
+
+r|P
+· Ar
+
+)
+AP ?W v?W ?
+
+(
+cd?
+
+W
++cc?
+
+W
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A? ?
+
+cdr?1?cd
+r
+?2
+
+cdre+cc
+r
+e
+· 1
+
+r|W
+· r|e
+
+r|P
+· Ar
+
+)
+AP ?F v?F
+
+cdr
+?F
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar
+
+AP ?B v?B ?
+(
+
+cd?
+B
+
++cc?
+B
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A? + 1r|P ·
+
+A?
+2
+
++
+cdr
+
+?B
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar
+
+)
+AP ?N v?N ?
+
+(
+cd?
+
+N
++cc?
+
+N
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A? +
+
+cdz?1?cd
+z
+?2
+
+cdzn+cc
+z
+n
+· Az
+
+)
+AP ?S v?S ?
+
+(
+cd?
+
+S
++cc?
+
+S
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A? +
+
+cdz?1?cd
+z
+?2
+
+cdzn+cc
+z
+n
+· Az
+
+)
+AP ?EF v?E,F ?
+
+(
+cdr?1
+
+cdre+cc
+r
+e
+· 1
+
+r|P
+· r|e
+
+r|P
+· Ar
+
+)
+AP ?EB v?E,B
+
+cdr?2
+cdre+cc
+
+r
+e
+· 1
+
+r|P
+· r|e
+
+r|P
+· Ar
+
+AP ?W F v?W,F
+cdr?1
+
+cdre+cc
+r
+e
+· 1
+
+r|P
+· r|e
+
+r|P
+· Ar
+
+AP ?W B v?W,B ?
+(
+
+cdr?2
+cdre+cc
+
+r
+e
+· 1
+
+r|P
+· r|e
+
+r|P
+· Ar
+
+)
+AP ?N F v?N,F ?
+
+(
+cdz?1
+
+cdzn+cc
+z
+n
+· Az
+
+)
+AP ?N B v?N,B
+
+cdz?2
+cdzn+cc
+
+z
+n
+· Az
+
+AP ?SF v?S,F
+cdz?1
+
+cdzn+cc
+z
+n
+· Az
+
+AP ?SB v?S,B ?
+(
+
+cdz?2
+cdzn+cc
+
+z
+n
+· Az
+
+)
+AP P P PP
+
+cP z
+N
+
+cdzn+cc
+z
+n
+· Az +
+
+cP r
+E
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar +
+
+cP ?
+F
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+AP P E PE
+cP r
+
+E
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar
+
+AP P F PF
+cP ?
+
+F
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+AP P N PN
+cP z
+
+N
+
+cdzn+cc
+z
+n
+· Az
+
+BP - ?
+(
+
+cbz
+
+cdzn+cc
+z
+n
+· Az + cb
+
+r
+
+cdre+cc
+r
+e
+· r|e
+
+r|P
+· Ar + cb
+
+?
+
+cd?
+f
++cc?
+
+f
+· 1
+
+r|P
+· A?
+
+)
+
+em que,
+
+71
+
+
+
+cdzP =
+(
+
+re
+rP
+
+µe +
+rw
+rP
+
+µw
+)
+
+Ar
+?r
+
++
+(
+
+1
+r2
+P
+µf +
+
+1
+r2
+P
+µb
+
+)
+A?
+??
+
++ 2 (µn + µs)
+Az
+?z
+
+cczP = ?
+?V
+?t
+
++ ?
+[(
+
+re
+rP
+
+[vre, 0] +
+rw
+rP
+
+[?vrw, 0]
+)
+Ar +
+
+(
+1
+
+rP
+[v?f , 0] +
+
+1
+rP
+
+[?v?b, 0]
+)
+A? +
+
+([vzn, 0] + [?vzs, 0]) Az
+]
+
+cdzn = 4.µn
+Az
+?z
+
+cczn = 2.? [?vzn, 0] Az
+cdzE =
+
+re
+rP
+
+µe
+Ar
+?r
+
+cczE = ?
+re
+rP
+
+[?vre, 0] Ar
+cdzW =
+
+rw
+rP
+
+µw
+Ar
+?r
+
+cczW = ?
+rw
+rP
+
+[vrw, 0] Ar
+
+cdzF =
+1
+
+r2
+P
+µf
+
+A?
+??
+
+cczF = ?
+1
+
+rP
+[?v?f , 0] A?
+
+cdzB =
+1
+
+r2
+P
+µb
+
+A?
+??
+
+cczB = ?
+1
+
+rP
+[v?b, 0] A?
+
+cdzS = 2.µs
+Az
+?z
+
+cczS = ? [vzs, 0] Az
+
+cdzr1 =
+re
+rP
+
+. µe
+4.?z
+
+.Ar cd
+z
+r2 =
+
+rw
+rP
+
+. µw
+4.?z
+
+.Ar
+
+cdz?1 =
+1
+
+rP
+.
+
+µf
+4.?z
+
+.A? cd
+z
+?2 =
+
+1
+rP
+
+. µb
+4.?z
+
+.A?
+
+cP zN = Az cP
+z
+P = Az
+
+cbz = ?vz0P
+?V
+?t
+
++ ?
+?
+gz ?V
+
+cdrP =
+(
+4. re
+
+rP
+µe + 2.
+
+rw
+rP
+
+µw
+)
+
+Ar
+?r
+
++
+(
+
+1
+r2
+P
+µf +
+
+1
+r2
+P
+µb
+
+)
+A?
+??
+
++ (µn + µs)
+Az
+?z
+
++ 2 µP
+r2
+P
+
+?V
+
+ccrP = ?
+?V
+?t
+
++ ?
+[(
+
+re
+rP
+
+[vre, 0] +
+rw
+rP
+
+[?vrw, 0]
+)
+Ar +
+
+(
+1
+
+rP
+[v?f , 0] +
+
+1
+rP
+
+[?v?b, 0]
+)
+A? +
+
+([vzn, 0] + [?vzs, 0]) Az
+]
+
+cdre = 4.
+re
+rP
+
+µe
+Ar
+?r
+
+ccre = 2.?
+re
+rP
+
+[?vre, 0] Ar
+cdrW = 2
+
+rw
+rP
+
+µw
+Ar
+?r
+
+ccrW = ?
+rw
+rP
+
+[vrw, 0] Ar
+
+cdrF =
+1
+
+r2
+P
+µf
+
+A?
+??
+
+ccrF = ?
+1
+
+rP
+[?v?f , 0] A?
+
+cdrB =
+1
+
+r2
+P
+µb
+
+A?
+??
+
+ccrB = ?
+1
+
+rP
+[v?b, 0] A?
+
+cdrN = µn
+Az
+?z
+
+ccrN = ? [?vzn, 0] Az
+cdrS = µs
+
+Az
+?z
+
+ccrS = ? [vzs, 0] Az
+
+cdrz1 =
+µn
+
+4.?r
+.Az cd
+
+r
+z2 =
+
+µs
+4.?r
+
+.Az
+
+cdr?1 =
+µf
+
+4.?r
+.A? cd
+
+r
+?2 =
+
+µb
+4.?r
+
+.A?
+
+cd?rF =
+µP
+r2
+P
+. 1
+??
+
+.?V cd?rB =
+µP
+r2
+P
+. 1
+??
+
+.?V
+
+ccr?P = 2.v?
+0
+P .?.
+
+?V
+rP
+
+cP rE = Ar cP
+r
+P = Ar
+
+cbr = ?vr0P
+?V
+?t
+
+? (v?
+0
+P
+
+)2
+
+rP
+?V
+
+cd?P =
+(
+
+r3e
+r3
+P
+µe +
+
+r3w
+r3
+P
+µw
+
+)
+Ar
+?r
+
++
+(
+
+4
+r2
+P
+µf +
+
+2
+r2
+P
+µb
+
+)
+A?
+??
+
++ (µn + µs)
+Az
+?z
+
+cc?P = ?
+?V
+?t
+
++ ?
+[(
+
+re
+rP
+
+[vre, 0] +
+rw
+rP
+
+[?vrw, 0]
+)
+Ar +
+
+(
+1
+
+rP
+[v?f , 0] +
+
+1
+rP
+
+[?v?b, 0]
+)
+A? +
+
+([vzn, 0] + [?vzs, 0]) Az
+]
+
+72
+
+
+
+cd?f = 4.
+1
+
+r2
+P
+µf
+
+A?
+??
+
+cc?f = 2.?
+1
+
+rP
+[?v?f , 0] A?
+
+cd?E =
+r3e
+r3
+P
+µe
+
+Ar
+?r
+
+cc?E = ?
+re
+rP
+
+[?vre, 0] Ar
+cd?W = 2
+
+r3w
+r3
+P
+µw
+
+Ar
+?r
+
+cc?W = ?
+rw
+rP
+
+[vrw, 0] Ar
+
+cd?B = 2
+1
+
+r2
+P
+µb
+
+A?
+??
+
+cc?B = ?
+1
+
+rP
+[v?b, 0] A?
+
+cd?N = µn
+Az
+?z
+
+cc?N = ? [?vzn, 0] Az
+cd?S = µs
+
+Az
+?z
+
+cc?S = ? [vzs, 0] Az
+
+cd?z1 =
+1
+
+rP
+. µn
+4.??
+
+.Az cd
+?
+z2 =
+
+1
+rP
+
+. µs
+4.??
+
+.Az
+
+cd?r1 =
+re
+r2
+P
+. µe
+4.??
+
+.Ar cd
+?
+r2 =
+
+rw
+r2
+P
+. µw
+4.??
+
+.Ar
+
+cdr?P 1 = v?
+0
+P
+
+?V.?t
+rP
+
+cdr?P 2 = (µf ? µb).
+A?
+r2
+P
+
+cdr?F =
+µf
+r2
+P
+.A? cdr
+
+?
+B =
+
+µb
+r2
+P
+.A?
+
+cP ?F =
+A?
+rP
+
+cP ?P =
+A?
+rP
+
+cb? = ?v?0P
+?V
+?t
+
++
+vr0
+
+P
+v?0
+
+P
+
+rP
+?V
+
+73
+
+
+	Resumo
+	Abstract
+	Lista de Figuras
+	Lista de Tabelas
+	Nomenclatura
+	Apresentação
+	Revisão Bibliográfica
+	O processo FCC
+	Fluidodinâmica Computacional
+	Considerações Hidrodinâmicas
+	Classificação Matemática de Escoamentos
+	Turbulência
+
+	Modelagem Matemática
+	Hipóteses do Modelo
+	Equações de Navier-Stokes
+	Modelo de Turbulência
+	Condições de Contorno
+
+	Desenvolvimento Numérico
+	Método Numérico
+	Malha de Discretização
+	Aproximação por Integral
+	Funções de Interpolação
+	Tratamento Pressão-Velocidade
+	Aplicação das Condições de Contorno
+	O Sistema de Equações Algébricas
+	Passo de Tempo
+	Estrutura do Programa
+	Convergência
+
+	Simulações e Análise dos Resultados
+	Escoamentos em Regime Laminar
+	Escoamentos em Regime Turbulento
+
+	Conclusões
+	Referências Bibliográficas
+	Coeficientes das equações algébricas
+
+</field>
+	</doc>
+</add>

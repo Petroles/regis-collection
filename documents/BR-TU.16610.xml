@@ -1,0 +1,6946 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.16610</field>
+		<field name="filename">23272_000386285.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+ 1 
+
+MINISTÉRIO DA EDUCAÇÃO 
+
+UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL 
+
+PROGRAMA DE PÓS-GRADUAÇÃO EM ENGENHARIA MECÂNICA 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Simulação Numérica dos Campos Térmico e Hidrodinâmico 
+
+em Estufas de Plasticultura 
+
+ 
+
+ 
+
+ 
+
+ 
+
+por 
+
+ 
+
+ 
+
+ 
+
+Ivan Jorge Boesing 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Dissertação de Mestrado 
+
+ 
+
+ 
+
+ 
+
+Porto Alegre, Março de 2001 
+
+
+
+ 2 
+
+Simulação Numérica dos Campos Térmico e Hidrodinâmico 
+
+em Estufas de Plasticultura 
+
+ 
+
+ 
+
+por 
+
+ 
+
+Ivan Jorge Boesing 
+
+Físico 
+
+ 
+
+ 
+
+Dissertação submetida ao Corpo Docente do Programa de Pós-graduação em Engenharia 
+
+Mecânica, PROMEC, da Escola de Engenharia Mecânica da Universidade Federal do Rio 
+
+Grande do Sul, como parte dos requisitos para obtenção do Título de 
+
+ 
+
+ 
+
+Mestre em Engenharia 
+
+ 
+
+ 
+
+Área de Concentração:  Fenômenos de Transporte 
+
+Orientador: Prof. Dr. Horácio A. Vielmo 
+
+ 
+
+ 
+
+ 
+
+Comissão de Avaliação: 
+
+ 
+
+ Prof. Dr. Paulo S. Schneider, PROMEC / UFRGS 
+
+ Prof. Dr. Sérgio L. Frey, PROMEC / UFRGS 
+
+ Prof. Dr. Rosa L. D. Blanco, ULBRA / Porto Alegre 
+
+ 
+
+ 
+
+Prof. Dr. Alberto Tamagna 
+
+Coordenador do PROMEC 
+
+ 
+
+Porto Alegre, Março de 2001 
+
+
+
+ 3 
+
+AGRADECIMENTOS 
+
+ 
+
+ 
+
+Ao Professor Horácio Antonio Vielmo por sua dedicação e orientação do trabalho, 
+
+especialmente por sua contribuição para minha formação pessoal. 
+
+Aos meus familiares Noemio, Rosane e Nícolas. A minha namorada Patrícia e seus 
+
+familiares. 
+
+Aos professores, colegas e funcionários do PROMEC. 
+
+À UFRGS por proporcionar esta dissertação. Ao CNPQ pelo apoio financeiro através 
+
+da bolsa de estudos. Ao CESUP pela disponibilização do supercomputador CRAY T94. 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+iii 
+
+iii 
+
+ÍNDICE 
+
+ 
+
+ 
+
+1  Introdução ................................................................................................................................ 01 
+
+1.1  Motivação ........................................................................................................................ 01 
+
+1.2 Revisão Bibliográfica ...................................................................................................... 02 
+
+1.2.1 Catalogação de estufas experimentais ................................................................... 03 
+
+1.2.2 Simulação Numérica de Convecção Natural Turbulenta em Cavidades ............... 05 
+
+1.3 Escopo da Dissertação ..................................................................................................... 07 
+
+2  Apresentação do Problema ...................................................................................................... 09 
+
+2.1  A Estufa ........................................................................................................................... 09 
+
+2.2  Modelo Físico .................................................................................................................. 10 
+
+2.3  Propriedades Físicas ........................................................................................................ 12 
+
+2.4  Equações Governantes ..................................................................................................... 13 
+
+2.4.1  Os Modelos de Turbulência ................................................................................... 14 
+
+2.4.2  Modelo ?-? ............................................................................................................. 14 
+
+2.5 Modelo ?-? para Baixos Números de Reynolds utilizado no presente Trabalho ............ 17 
+
+3  Metodologia de Solução .......................................................................................................... 22 
+
+3.1  Simulação Numérica ........................................................................................................ 22 
+
+3.1.1  Malha Computacional ................................................................................................... 23 
+
+3.1.2  Condições de Contorno ................................................................................................ 29 
+
+3.1.3  Condições Iniciais ........................................................................................................ 31 
+
+3.1.4  Critério de Convergência .............................................................................................. 33 
+
+4  Validação da Implementação da Metodologia......................................................................... 35 
+
+5  Simulações e Resultados Obtidos ............................................................................................ 39 
+
+5.1  Resumo das Configurações Utilizadas ............................................................................ 39 
+
+5.2  Resultados Obtidos .......................................................................................................... 40 
+
+5.2.1  Análise dos Campos Térmico e Hidrodinâmico .................................................... 40 
+
+5.2.2  Análise da Turbulência .......................................................................................... 53 
+
+6  Conclusões e Sugestões para Futuros Trabalhos ..................................................................... 55 
+
+Referências Bibliográficas .......................................................................................................... 58 
+
+ 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+iv 
+
+iv 
+
+RESUMO 
+
+ 
+
+ 
+
+A presente dissertação de mestrado apresenta um método numérico de solução de um 
+
+transiente periódico típico que ocorre em estufas com cobertura plástica utilizadas na agricultura. 
+
+Em regiões que apresentam baixas temperaturas em períodos do inverno, tem-se um decaimento 
+
+da produção, ou mesmo a destruição dos vegetais. 
+
+É apresentada uma simulação de um sistema de baixo custo financeiro, visando a 
+
+melhora da situação de inverno. 
+
+Com a intenção de reduzir os picos de temperatura negativos que ocorrem durante 
+
+algumas noites, foi adotada uma solução que visa aumentar a quantidade de calor armazenado 
+
+durante o dia para que ele possa ser utilizado durante a noite. Ela consiste em armazenadores de 
+
+calor em forma sensível: água contida em tonéis de 200 l, introduzidos no interior da estufa. 
+
+A razão de aspecto da estufa, relação comprimento largura, é 5:1. A estufa possui 
+
+altura média de 3 m e o solo é considerado até 1m de profundidade. 
+
+A abordagem numérica é realizada através do Método dos Volumes Finitos, sendo 
+
+realizada em forma transiente não linear, bidimensional e cartesiana. A temperatura externa e a 
+
+radiação solar são introduzidas com passo de tempo de 15 min, e com período de 24 h. 
+
+O modelo de turbulência ?-? para baixos números de Reynolds foi adotado para 
+
+resolver a convecção natural turbulenta. Utiliza-se o modelo de Jones e Launder, 1972 
+
+modificado por Henkes et. al., 1991. 
+
+O presente código computacional é validado através de trabalhos da literatura que 
+
+abordam o estudo de convecção natural turbulenta em cavidades com paredes diferentemente 
+
+aquecidas. 
+
+São apresentados resultados para os campos de temperatura, função de corrente e 
+
+velocidade. É simulada a estufa sem e com a presença dos tonéis. O nível entálpico das massas 
+
+no interior da estufa é comparado durante o transiente. 
+
+A presente abordagem é comparada com a empregada em Vielmo e Schneider, 1997, 
+
+que utiliza um modelo de turbulência simplificado, onde a viscosidade é aumentada 
+
+adequadamente para simular o escoamento turbulento da mesma estufa. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+v 
+
+v 
+
+ABSTRACT 
+
+ 
+
+ 
+
+This dissertation presents a numerical method for the solution of a typical periodic 
+
+transiente phenomenon that occurs in agricultural plastic covered greenhouses. In regions where 
+
+there are low temperatures during the winter season, there is a yield reduction or even the total 
+
+loss of the produce. 
+
+A low cost system simulation is presented, aiming at a winter season performance 
+
+improvement. 
+
+A solution to increase the heat stored during daytime to be used at night was adopted, 
+
+with the goal of reducing the peaks of negative dawn temperature. It consists in storage for 
+
+sensible heat: water stored in 200 liters barrels kept in the greehouse. 
+
+The aspect ratio (length to width relation) of the greenhouse is 5:1. Its average height 
+
+is 3 meters, and the soil is considered to the depth of 1 meter. 
+
+The numerical analysis is performed throughout the Finite Volume Method, using a 
+
+two-dimensional Cartesian nonlinear transient model. External temperature and solar radiation 
+
+are introduced with a 15 minutes time step within a period of 24 hours. 
+
+The ?-? turbulence model for low Reynolds numbers was adopted to model the 
+
+turbulence natural convection. It was used the model of Jones and Launder, 1972, modified by 
+
+Henkes et al., 1991. 
+
+This computational code is validated through published solutions of turbulence 
+
+natural convection in cavities with unequally heated. 
+
+Results for the temperature, stream function and velocity fields are presented. The 
+
+greenhouse is simulated both with and without the barrels. The enthalpy level of masses inside 
+
+the greenhouse is checked during the transient. 
+
+The present approach is compared to the work of Vielmo and Schneider, 1997, which 
+
+uses a simplified turbulence modeling in the same greenhouse, where the turbulence is accounted 
+
+for throughout an adequate increase in the viscosity. 
+
+ 
+
+ 
+
+  
+
+ 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+vi 
+
+vi 
+
+LISTA DE SÍMBOLOS 
+
+ 
+
+ 
+
+SÍMBOLO 
+
+ 
+
+1?c  constante ................................................................................................................... [-] 
+
+2?c  constante ................................................................................................................... [-] 
+
+3?c  constante ................................................................................................................... [-] 
+
+cD constante ................................................................................................................... [-] 
+
+c? constante ................................................................................................................... [-] 
+
+cP calor específico a pressão constante ................................................................ [J/kg.K] 
+
+cZ1 constante ................................................................................................................... [-] 
+
+cZ2 constante ................................................................................................................... [-] 
+
+D termo fonte da equação de ? (equação 2.19) ..................................................... [m
+2
+/s
+
+3
+] 
+
+E termo fonte do modelo (equação 2.20) ........................................................... [kg/ms
+4
+] 
+
+f1 função de amortecimento ......................................................................................... [-] 
+
+f2 função de amortecimento ......................................................................................... [-] 
+
+f? função de amortecimento ......................................................................................... [-] 
+
+Fui Termo fonte da equação de Navier-Stokes ................................................... [kg
+2
+/s.m
+
+2
+] 
+
+g aceleração gravitacional ..................................................................................... [m/s
+2
+] 
+
+G? taxa de produção de flutuação de energia cinética turbulenta ........................ [kg/ms
+4
+] 
+
+H altura da cavidade ................................................................................................... [m] 
+
+K condutividade térmica .................................................................................... [W/m.K] 
+
+L Comprimento de escala de Prandtl ........................................................................... [-] 
+
+NE nível entálpico (equação 5.1).................................................................................. [kJ] 
+
+P pressão ................................................................................................................... [Pa] 
+
+P? produção de energia cinética turbulenta ......................................................... [kg/ms
+3
+] 
+
+Pr número de Prandtl ............................................................................................... [?/?] 
+
+Ra número de Rayleigh ................................................................................................. [-] 
+
+Ret número de Reynolds turbulento (equação 2.25) ...................................................... [-] 
+
+restemp critério de convergência da equação da energia (equação 3.3) ................................ [-] 
+
+SP termo fonte da equação da energia ................................................................... [W/m
+3
+] 
+
+SS termo fonte da equação da energia ................................................................... [W/m
+3
+] 
+
+STi termo fonte da equação da energia ................................................................... [W/m
+3
+] 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+vii 
+
+vii 
+
+smax resíduo de massa ...................................................................................................... [-] 
+
+smaxnor resíduo de massa normalizado (equação 3.2) ........................................................... [-] 
+
+t tempo ...................................................................................................................... [s] 
+
+T temperatura ............................................................................................................ [ºC] 
+
+T
+IA 
+
+temperatura na iteração anterior ............................................................................ [ºC] 
+
+Tc menor temperatura do domínio .............................................................................. [ºC] 
+
+Tr Temperatura de referência ..................................................................................... [ºC] 
+
+u velocidade na direção horizontal x ...................................................................... [m/s] 
+
+v velocidade na direção vertical y .......................................................................... [m/s] 
+
+uij velocidade ........................................................................................................... [m/s] 
+
+ij
+u  velocidade média ................................................................................................. [m/s] 
+
+u’ij flutuação de velocidade ....................................................................................... [m/s] 
+
+vol volume do volume de controle computacional ..................................................... [m
+3
+] 
+
+xi posicionamento do volume de controle  na direção horizontal ................................ [-] 
+
+xj posicionamento do volume de controle  na direção vertical .................................... [-] 
+
+xtotal número total de volumes na direção ......................................................................... [-] 
+
+ 
+
+ 
+
+LETRAS GREGAS 
+
+ 
+
+? coeficiente de difusividade térmica .................................................................... [m
+2
+/s] 
+
+?x o coeficiente de refinamento da malha ..................................................................... [-] 
+
+? coeficiente de expansão térmica .......................................................................... [?C
+-1
+
+] 
+
+?T diferença de temperatura ........................................................................................ [?C] 
+
+? dissipação da energia cinética turbulenta .......................................................... [m
+2
+/s
+
+3
+] 
+
+? energia cinética turbulenta ................................................................................. [m
+2
+/s
+
+2
+] 
+
+? viscosidade molecular ..................................................................................... [kg/m.s] 
+
+? viscosidade cinemática ...................................................................................... [m
+2
+/s] 
+
+?t viscosidade cinemática turbulenta ..................................................................... [m
+2
+/s] 
+
+? densidade ......................................................................................................... [kg/m 
+3
+] 
+
+??  constante ................................................................................................................... [-] 
+
+?? número de Prandtl para equação de ? (equação 2.20) .............................................. [-] 
+
+?T número de Prandtl turbulento ................................................................................... [-] 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+viii 
+
+viii 
+
+SUB ÍNDICES 
+
+ 
+
+i posicionamento do volume 
+
+ij coordenadas no plano cartesiano 
+
+p   pressão 
+
+c menor temperatura 
+
+T turbulento 
+
+t turbulento 
+
+x direção de refinamento 
+
+ 
+
+ 
+
+SUPER ÍNDICES 
+
+ 
+
+IA iteração anterior 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+ix 
+
+ix 
+
+LISTA DE FIGURAS 
+
+ 
+
+ 
+
+Figura Página 
+
+1.1 Estufa com aquecimento passivo através de sacos contendo água, Santamouris 
+
+et. al.,1994 ................................................................................................................ 03 
+
+1.2 Estufa com aquecimento passivo através tanques contendo água, Santamouris, 
+
+et. al.,1994 ................................................................................................................ 04 
+
+1.3  Estufa com aquecimento através de tubos enterrados, Santamouris, et. al., 1996 ... 04 
+
+2.1  Corte Transversal da Estufa ..................................................................................... 09 
+
+2.2 Proposta de solução original com duas fileiras de tonéis coletores-armazenadores 
+
+de calor, uma na face Norte e outra na Sul ............................................................... 10 
+
+2.3 Domínio de cálculo com a hipótese de simetria, subsolo, nova forma dos tonéis 
+
+e forma aproximada da cobertura ............................................................................. 11 
+
+3.1  Temperatura ambiente e radiação solar utilizados no presente trabalho .................. 22 
+
+3.2  Divisão do domínio em regiões para aplicação do refinamento de malha  
+
+junto a cada parede física, sem tonéis ...................................................................... 23 
+
+3.3  Malha sem tonel, 129 x 117 volumes ...................................................................... 24 
+
+3.4  Largura dos volumes de controle na direção x ......................................................... 25 
+
+3.5  Largura dos volumes de controle na direção y ......................................................... 25 
+
+3.6 Refinamento de malha adotado junto a cada parede física coincidente com limites 
+
+de malha computacional ........................................................................................... 26 
+
+3.7 Refinamento de malha adotado junto a cada parede física não coincidente com 
+
+limites de malha computacional, utilizada no telhado, tonéis e solo ....................... 27 
+
+3.8  Divisão do domínio em regiões para aplicação do refinamento de malha  
+
+junto a cada parede física, com tonéis ...................................................................... 28 
+
+3.9  Malha com tonel, 147 x 129 volumes ...................................................................... 28 
+
+3.10  Largura dos volumes de controle na direção x ......................................................... 29 
+
+3.11  Largura dos volumes de controle na direção y ......................................................... 29 
+
+3.12 Condições iniciais para o campo de temperaturas em tempo t = 0 h ....................... 32 
+
+3.13  Fator multiplicador para o campo de inicial de ? e ? . Este fator é baseado  
+
+na menor distância entre o volume e a parede mais próxima ................................... 32 
+
+4.1 Condições de contorno para equação da energia ...................................................... 35 
+
+4.2 A figura (a) é a solução para as linhas de função de corrente de Barakos e  
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+x 
+
+x 
+
+Mitsoulis e a (b) é a solução do presente trabalho ................................................. 36 
+
+4.3 Componente vertical da velocidade na altura média da cavidade junto à parede  
+
+ quente. O gráfico (a) refere-se ao trabalho de Liu e Wen, 1999, o gráfico (b) é a  
+
+ solução do presente trabalho com os losangos representando os pontos da malha .. 37 
+
+4.4 Os gráficos (a) e (b) mostram a componente vertical da velocidade na altura média  
+
+ da cavidade do lado da parede fria. O gráfico (a) refere-se ao trabalho de Liu e Wen, 
+
+ 1999, o gráfico (b) é a solução do presente trabalho com os losangos representando 
+
+ os pontos da malha.................................................................................................... 37 
+
+4.4 Evolução dos resíduos de massa e de energia para o problema de Liu e Wen,  
+
+ao longo da presente solução .................................................................................... 38 
+
+5.1a Campo de temperaturas, 2h, estufa com tonéis, presente trabalho ........................... 41 
+
+5.1b Campo de temperaturas, 3h 30 min, estufa com tonéis, presente trabalho ............... 42 
+
+5.1c Campo de temperaturas, 5h 15 min, estufa com tonéis, presente trabalho .............. 42 
+
+5.2a Funções de corrente, 2h, estufa com tonéis, presente trabalho ................................ 43 
+
+5.2b Funções de corrente, 3h 30 min, estufa com tonéis, presente trabalho .................... 43 
+
+5.2c Funções de corrente, 5h 15 min, estufa com tonéis, presente trabalho .................... 44 
+
+5.3a Campo de velocidades, 2h, estufa com tonéis, presente trabalho ............................ 44 
+
+5.3b Campo de velocidades, 3h 30 min, estufa com tonéis, presente trabalho ................ 45 
+
+5.3c Campo de velocidades, 5h 15 min, estufa com tonéis, presente trabalho ................ 45 
+
+5.4a Campo de velocidades verticais, 2h da madrugada, em m/s .................................... 46 
+
+5.4b Campo de velocidades verticais, 3h 30 min da madrugada, em m/s ........................ 46 
+
+5.5 Campo de velocidades de uma região ampliada da base do tonel ............................ 47 
+
+5.6 Campos de velocidade e de temperatura de uma região ampliada do topo do 
+
+ tonel .......................................................................................................................... 48 
+
+5.7 Campos de velocidade e de temperatura de uma região ampliada da altura média 
+
+do tonel ..................................................................................................................... 49 
+
+5.8 Campo de temperaturas e de velocidades ampliados da base do plano de simetria.. 50 
+
+5.9 Campo de temperaturas na madrugada, 3 h e 45 min, para o modelo de Vielmo e 
+
+Schneider da estufa com tonéis ................................................................................ 51 
+
+5.10 Presente solução e solução de V-S, na região das roseiras para a simulação com  
+
+tonéis ........................................................................................................................ 52 
+
+5.11  Valores de ? e ?, junto a parede vertical acima do tonel modelado, no tempo 
+
+t = 10 h ..................................................................................................................... 53 
+
+5.5 Região A, durante o período inicial da manhã, registrou instabilidade térmica e 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xi 
+
+xi 
+
+valores de ? e ? acima do normal ............................................................................. 54 
+
+ 
+
+ 
+
+ 
+
+LISTA DE TABELAS 
+
+ 
+
+ 
+
+Tabela Página 
+
+ 
+
+2.1  Propriedades físicas do ar ......................................................................................... 12 
+
+2.2  Propriedades físicas da água ..................................................................................... 12 
+
+2.3  Propriedades físicas da terra ..................................................................................... 12 
+
+2.4  Constantes utilizadas no modelo ?-? de turbulência ................................................ 21 
+
+3.1  Condições de contorno ............................................................................................. 30 
+
+3.2  Condições inicias de u, v, T, ? e ?. em tempo t = 0 h ............................................... 31 
+
+6.1  Ganho de temperatura das estufas com aquecimento passivo, com armazenadores de 
+
+calor contendo água ............................................................................................. 56 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xii 
+
+xii 
+
+1 INTRODUÇÃO 
+
+ 
+
+ 
+
+1.1 MOTIVAÇÃO 
+
+ 
+
+ 
+
+O presente trabalho teve como maior fator motivador a existência do Projeto 
+
+“Desenvolvimento de Mecanismos Visando o Controle Térmico do Ambiente Interno de Estufas 
+
+para Plasticultura”, financiado pela FAPERGS, SEBRAE, via FUNDATEC e com participação 
+
+da Agro Pecuária Clarice Ltda. Neste foi necessário aperfeiçoar uma ferramenta de modelagem e 
+
+simulação computacional dos processos de transferência e armazenamento de calor envolvidos 
+
+nas estufas (Vielmo e Schneider, 1997). Como o escoamento em questão ocorre em forma 
+
+turbulenta, um modelo que simule a turbulência precisou ser adotado. 
+
+A necessidade de proteger certas culturas vegetais dos malefícios causados por 
+
+climas frios deu origem à chamada plasticultura. Trata-se do emprego de estufas com o objetivo 
+
+de obter temperaturas mais adequadas ao cultivo, além de um melhor controle de pragas e 
+
+irrigação. As estufas, objeto deste trabalho, destinam-se ao cultivo de rosas. São de forma 
+
+retangular, alongada na direção leste-oeste, possuem áreas de 481 m
+2
+ e suas demais formas e 
+
+dimensões são mostradas no capitulo 2. Sua estrutura é feita em madeira e a cobertura é de 
+
+plástico transparente. 
+
+Sob o ponto de vista térmico, caracterizam-se por um alto ganho de radiação solar 
+
+através de sua cobertura e paredes laterais transparentes, o que, considerando a baixa taxa de 
+
+troca de calor com o solo (Tzaferis et. al., 1992), causa um rápido aumento da temperatura do ar 
+
+no seu interior. Daí a necessidade de ventilação mesmo ao longo de certos dias de inverno, 
+
+colocando-se calor fora nestes casos. 
+
+A baixa inércia térmica, associada a grandes perdas de calor por convecção e 
+
+radiação, faz com que durante as noites frias de inverno a temperatura no interior da estufa caia a 
+
+ponto de prejudicar as plantas, podendo mesmo ocorrer o congelamento de sua seiva. A busca de 
+
+solução para este problema é a motivação principal deste trabalho. Naturalmente o que o 
+
+agricultor deseja são níveis de temperatura, umidade e radiação solar compatíveis com o máximo 
+
+crescimento das plantas ao longo de todo o ano e com o menor custo possível. 
+
+Considerando a realidade econômica do pequeno agricultor, que não permite 
+
+soluções que exijam investimentos consideráveis, como por exemplo o suprimento de calor a 
+
+partir de um aquecedor a óleo, a gás, ou mesmo elétrico, o presente trabalho descreve e analisa 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xiii 
+
+xiii 
+
+uma proposta de solução coerente com esta realidade econômica. Esta necessidade de baixo 
+
+custo inviabiliza processos de aquecimento citados e reduz a algumas possibilidades: 
+
+ 
+
+? controle de radiação com alterações na composição do plástico de cobertura; 
+
+? redução das perdas de calor por convecção com introdução de dupla cobertura; 
+
+? redução dos picos negativos de temperatura com a introdução de tanques de 
+
+armazenamento de energia térmica. 
+
+ 
+
+Esta última foi a escolhida devido à possibilidade de utilização de tonéis metálicos, 
+
+reutilizados, contendo água como armazenador de energia, tornando a solução de baixíssimo 
+
+custo e praticável pelos pequenos agricultores da região. 
+
+Uma vez definida a solução da agregação de tonéis de água, existe ainda a 
+
+necessidade de otimizar a quantidade de tonéis por estufa, que representa a melhor relação custo-
+
+benefício. Uma vez que os tonéis ocupam um certo espaço, é necessário levar em consideração a 
+
+possibilidade de redução da área utilizável da estufa . Os tonéis devem possuir uma distância 
+
+mínima entre si, a fim de expor também as suas laterais à troca de calor. 
+
+ 
+
+ 
+
+ 
+
+1.2  REVISÃO BIBLIOGRÁFICA 
+
+ 
+
+ 
+
+A redução do consumo da energia utilizada no aquecimento de ambientes é 
+
+amplamente estudado. Na agricultura estudam-se estufas passivas, ativas e um misto das duas. A 
+
+maior parte destes estudos são experimentais. Técnicas de conforto térmico são adaptadas para a 
+
+agricultura de modo semelhante ao que se utiliza em habitações. Ainda é parca a bibliografia de 
+
+trabalhos que se destinam a simulações numéricas nesta área. Considerando que uma estufa de 
+
+cobertura plástica possui características de uma cavidade, pode-se aplicar os estudos de 
+
+cavidades que a literatura nos apresenta para adotar um modelo adequado. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xiv 
+
+xiv 
+
+1.2.1 CATALOGAÇÃO DE ESTUFAS EXPERIMENTAIS 
+
+ 
+
+ 
+
+Santamouris, et. al., 1994, abordaram 95 estufas operando em vários climas. Elas 
+
+foram classificadas e tiveram seus sistemas de aquecimento avaliados. As estufas dividiam-se 
+
+pelo tipo de armazenador de calor que utilizavam: tanques contendo água (40), armazenador de 
+
+calor em forma latente (11), leito de rocha (14), tubos enterrados (18) e outros tipos (12). Estufas 
+
+localizadas no sul da Europa, onde o clima é mais ameno, possuíam gastos em combustível para 
+
+aquecimento em torno de 7,5 l/m
+2
+ por ano. Algumas estufas são descritas com tanques de água 
+
+de 4m
+3
+ colocados na sua face norte, em que a temperatura do ar interno chega a atingir 10ºC 
+
+acima da mínima temperatura ambiente externa. A figura 1.1 representa uma das configurações 
+
+apresentadas por Santamouris de estufas passivas com armazenadores de calor na forma de 
+
+bolsões contendo água. 
+
+ 
+
+ 
+
+Figura 1.1 – Estufa com aquecimento passivo através de sacos contendo água, 
+
+Santamouris, et. al., 1994 
+
+ 
+
+Estufas com sistemas de aquecimento acoplados atingiram resultados satisfatórios. 
+
+Estes sistemas apresentam tanques de inércia térmica com água e trocadores de calor água-ar. 
+
+Como exemplo, pode-se citar que, num certo caso, o monitoramento em estufas, sem o sistema 
+
+acoplado, registrou temperaturas médias de 0ºC, enquanto naquelas que possuíam o sistema 
+
+obteve registros entre 5 e 6ºC. Na figura 1.2 está representada outra forma de estufa com 
+
+armazenadores de calor na fora passiva. São tanque de armazenamento contendo água, com 
+
+volume que atinge até 4 m
+3
+. 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xv 
+
+xv 
+
+ 
+
+Figura 1.2 – Estufa com aquecimento passivo através tanques contendo água, 
+
+Santamouris, et. al., 1994 
+
+ 
+
+ 
+
+Figura 1.3 – Estufa com aquecimento através de tubos enterrados,  
+
+Santamouris, et. al., 1996 
+
+ 
+
+Em outro trabalho Santamouris, et. al., 1996, mostraram um estudo referente a 
+
+conservação de energia com o arranjo de tubos enterrados no solo, conforme ilustra a figura 1.3. 
+
+Foram estudadas 16 estufas, situadas no Canadá (2), Japão (2) e Europa (12). Os tubos foram 
+
+enterrados entre 0,5 e 2 m da superfície, com ar ventilando através deles, transferindo calor para 
+
+o solo durante o dia. Durante a noite, o calor armazenado no solo era transferido para o interior 
+
+das estufas. As estufas analisadas tiveram um consumo de energia para o aquecimento entre 30 e 
+
+60% menor do que as estufas sem o sistema de tubos enterrados. Análises numéricas foram 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xvi 
+
+xvi 
+
+realizadas em uma das estufas (Atenas, Grécia), com o auxílio do software TRNSYS, para 
+
+determinar a performance térmica. 
+
+ 
+
+ 
+
+ 
+
+1.2.2 SIMULAÇÃO NUMÉRICA DE CONVECÇÃO NATURAL TURBULENTA 
+
+EM CAVIDADES 
+
+ 
+
+ 
+
+Devido a escassez de material bibliográfico em estufas, propriamente, o enfoque da 
+
+pesquisa voltou-se para o estudo de convecção natural turbulenta em cavidades. Adotando a 
+
+hipótese de que o modelo físico adotado no presente trabalho apresenta escoamento 
+
+hidrodinâmico e comportamento térmico característico de cavidades, os estudos voltados à estas 
+
+foram analisados. 
+
+Análise do comportamento térmico e hidrodinâmico dependentes de convecção 
+
+natural turbulenta ganharam espaço na década de setenta e são alvo de diversos estudos a partir 
+
+da década de oitenta. 
+
+Jones e Launder, 1972, introduzem um modelo de turbulência a duas equações, 
+
+chamado ?-? Low Reynolds Number (LRN). Este modelo procura resolver problemas que 
+
+caracterizam-se por números de Reynolds baixos, característicos de convecção natural 
+
+turbulenta. Já os modelos tradicionais existentes foram desenvolvidos para resolver problemas de 
+
+escoamento forçado com números de Reynolds mais elevados. 
+
+Markatos e Pericleous, 1984, estudam os escoamentos laminar e turbulento e a troca 
+
+de calor em cavidades com paredes laterais diferentemente aquecidas. Os escoamentos 
+
+analisados possuem números de Rayleigh, 
+232
+
+Pr/TgHRa ?????  entre 103 e 1016, onde ? 
+
+é a densidade do fluido [kg/m
+3
+], g é a aceleração da gravidade [m/s
+
+2
+], H é a altura da cavidade 
+
+[m], ? é o coeficiente de expansão térmica [ºC
+-1
+
+], ?T é a diferença de temperatura característica 
+
+[ºC], Pr é o número de Prandtl [?/?; onde ? é viscosidade cinemática e ? é o coeficiente de 
+
+difusividade térmica -m
+2
+/s;  ? é a viscosidade molecular - kg/m.s]. Para números de Ra acima de 
+
+10
+6
+, foi adotado um modelo de turbulência a duas equações ?-? de Launder e Spalding, 1974. 
+
+Para os escoamentos com Ra até 10
+3
+, foi utilizada uma malha igualmente espaçada. Acima deste 
+
+valor, a malha foi sendo refinada junto as paredes. Com uma malha de 60 x 120 volumes, 
+
+chegou-se a uma independência de malha para valores de Ra ? 10
+8
+.  
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xvii 
+
+xvii 
+
+Lars Davidson, 1990, propõe a solução de uma cavidade com razão de aspecto 5:1 
+
+com seu modelo ?-? LRN. Este modelo deriva dos modelos de Jones e Launder, 1972, e Lam e 
+
+Bermhorst, 1981. Davidson utiliza um refinamento de malha, junto as paredes, que foi utilizado 
+
+neste trabalho, como será visto no capítulo 3. 
+
+Henkes et. al., 1991, realizam trabalho de comparação com modelos de turbulência 
+
+para resolução de convecção natural turbulenta em cavidades. São comparados os modelos: 
+
+ 
+
+? ?-? tradicional com funções de parede logarítmicas, Rodi, 1980 
+
+? ?-? para baixos números de Reynolds, Chien, 1980 
+
+? ?-? para baixos números de Reynolds, Jones e Launder, 1972 
+
+ 
+
+Tanto Davidson e Henkes comparam seus resultados com dados experimentais  de 
+
+Cheesewright et al., 1986, para cavidades com razão de aspecto maior do que 1:1. Henkes 
+
+também utiliza dados experimentais de MacGregor e Emery, 1969, Cowan et al., 1982 e Bets e 
+
+Dafa’Alla, 1986. 
+
+Barakos et al., 1994, utilizam o modelo ?-? tradicional com funções de parede para 
+
+simular a convecção natural em cavidade quadrada. O número de Ra nos escoamentos laminares 
+
+e turbulentos simulados varia entre 10
+3
+ e 10
+
+10
+ sem o modelo de turbulência quando o 
+
+escoamento é laminar e com ele quando o escoamento é turbulento. Os resultados são 
+
+comparados com o trabalho de Vahl Davis, 1983. São realizadas avaliações quanto ao 
+
+comportamento da viscosidade turbulenta para os regimes analisados em relação a variação do 
+
+número de Ra. 
+
+Efeitos da transição, comparação entre cavidade e placa plana, dependência do 
+
+número de Ra e dependência da altura da cavidade são analisados em Henkes e Hoogendoorn, 
+
+1994. Neste, são utilizados os mesmos modelos para análise utilizados em Henkes et al., 1991. 
+
+Os fluidos analisados são ar e água e o refinamento de malha adotado utiliza malhas com até 
+
+160 x 160 pontos. Neste trabalho, é aconselhado que se façam testes com modelos de 
+
+turbulência mais avançados, como o de tensões de Reynolds. 
+
+Vielmo e Schneider, 1997, propuseram uma modelagem de turbulência simplificada, 
+
+com um aumento adequado da viscosidade molecular para simular a turbulência. É utilizado a 
+
+solução de armazenadores de calor, tonéis de 200 l contendo água, para aumentar a inércia 
+
+térmica da estufa. O solo é incorporado ao domínio analisado. São consideradas trocas de calor 
+
+através de coeficiente de troca global e a radiação solar também é considerada. A estufa é 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xviii 
+
+xviii 
+
+analisada de forma transiente e é simulada com a utilização do Método dos Volumes Finitos. As 
+
+equações do movimento e da energia são resolvidas de forma acoplada. O trabalho de Vielmo e 
+
+Schneider será objetivo de estudo na presente dissertação. 
+
+Xu et al., 1998, propõe um novo modelo a uma equação que utilizado juntamente com 
+
+o modelo ?-? LRN reduz os altos custos computacionais de simulações de convecção natural 
+
+turbulenta em ambientes com dimensões de 2,5 x 7,9 m, como a utilizada no trabalho. O modelo 
+
+de Xu é utilizado próximo a parede e o ?-? LRN é utilizado no restante do domínio. Conforme 
+
+este trabalho, o custo computacional é muito menor do que quando se utiliza o modelo ?-? LRN 
+
+ou o modelo de tensões de Reynolds. 
+
+ 
+
+ 
+
+ 
+
+1.3 ESCOPO DA DISSERTAÇÃO 
+
+ 
+
+ 
+
+Com o objetivo de melhor descrever os fenômenos físicos que ocorrem em estufas 
+
+utilizadas na agricultura, a solução da equações diferenciais que regem estes fenômenos é 
+
+objetivada nesta dissertação. 
+
+Considerando que a estufa possui características de uma cavidade, o estudo da 
+
+convecção natural turbulenta em cavidades é abordado neste trabalho. Devido a variação da 
+
+temperatura externa a estufa e a radiação solar, o estudo é realizado de forma transiente. Com o 
+
+objetivo de aumentar a inércia térmica da estufa são colocados em seu interior tonéis de 200 l 
+
+contendo água. A função dos tonéis é receber calor através radiação  solar durante o dia e 
+
+devolve-lo ao interior da estufa durante a noite. 
+
+A abordagem numérica é realizada de forma bidimensional e transiente. O Método 
+
+dos Volumes Finitos (MVF) é utilizado no acoplamento das equações diferenciais, originalmente 
+
+desenvolvido por Patankar, 1980. O MVF original foi modificado a fim de resolver o transiente. 
+
+Também foi otimizado vetorialmente com a finalidade de ser processado por um 
+
+supercomputador Cray T94. O programa é validado através da literatura, referenciando-se em 
+
+problemas de cavidades. 
+
+Após a validação do programa, simula-se a estufa em duas configurações: com e sem 
+
+os tonéis de armazenagem de calor. As trocas de calor dos tonéis são realizadas através de um 
+
+coeficiente de troca de calor global.  
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xix 
+
+xix 
+
+No capítulo 2 é apresentada a geometria da estufa, a caracterização bidimensional e a 
+
+forma de análise em regime transiente. São descritas considerações em relação a cultura e o 
+
+revestimento da estufa. É apresentada a solução para o aumento da inércia térmica na forma de 
+
+tonéis contendo água. A turbulência é caracterizada  por baixa escala, através do número de 
+
+Rayleigh da ordem de 10
+6
+. 
+
+As equações governantes são apresentadas e, é escolhido o modelo ?-? para 
+
+solucionar, devido aos proibitivos custos computacionais, a impossibilidade de simulação direta 
+
+das equações de Navier-Stokes. Dentre os modelos ?-?, é escolhido o modelo  ?-? LRN (Low 
+
+Reynolds Number) para baixos números de Reynolds de Jones e Launder, 1972, modificado 
+
+segundo Henkes et al., 1991,  
+
+No capítulo 3 a metodologia de solução numérica é apresentada. As malhas 
+
+empregadas para simulação, em sistema cartesiano, do problema bidimensional são apresentadas. 
+
+Tanto a radiação solar, computada no termo fonte da equação da energia, quanto condições de 
+
+contorno de temperatura prescrita para a cobertura são tratadas de forma transiente. O critério de 
+
+convergência é adotado concomitantemente para o fluxo de massa e para a resíduo da equação da 
+
+energia. 
+
+O capítulo 4 dedica-se a validação do programa utilizado frente as soluções 
+
+encontradas na literatura para os problemas de convecção natural turbulenta em cavidades. Estas 
+
+são  aquecidas nas paredes laterais e adiabáticas no topo e na base. 
+
+O capítulo 5 descreve os resultados obtidos nas duas configurações analisadas. As 
+
+características do escoamento hidrodinâmico e térmico acoplados, são analisadas em momentos 
+
+característicos do transiente. São abordados os campos de temperatura e comentados os níveis de 
+
+entalpia da simulação realizada através do modelo de Vielmo e Schneider com o presente. São 
+
+realizadas considerações em relação as temperaturas máximas e mínimas, internas e externas das 
+
+estufas, com e sem tonéis. Utiliza-se os estudos de Santamouris, et. al., 1994 e Santamouris, et. 
+
+al., 1996 para comparar os resultados obtidos. A produção e dissipação de energia cinética 
+
+turbulenta e a viscosidade turbulenta é analisada junto a parede lateral, acima do tonel em um 
+
+certo momento do transiente.  
+
+O capítulo 6 é dedicado as conclusões e as sugestões para os futuros trabalhos. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xx 
+
+xx 
+
+2  APRESENTAÇÃO DO PROBLEMA 
+
+ 
+
+ 
+
+ 
+
+2.1  A ESTUFA 
+
+ 
+
+ 
+
+Trata-se de uma estufa típica com 50 m de comprimento, 9,6 m de largura e pé-
+
+direito de 2,4 m. Devido a razão de aspecto ser de 5:1 entre comprimento e a largura, assume-se 
+
+que não ocorrem variações longitudinalmente em nenhuma variável de interesse, o que 
+
+simplifica geometricamente o estudo para um caso bidimensional. A figura 2.1 representa um 
+
+corte transversal ao comprimento,  que foi utilizado para definição do domínio do problema. 
+
+ 
+
+  
+
+Figura 2.1 - Corte Transversal da Estufa 
+
+ 
+
+As roseiras, bem como qualquer vegetal que poderia servir de análise para este tipo de 
+
+estudo, sofrem variações consideráveis de tamanho ao longo do tempo, desde sua germinação ou 
+
+enxerto até a época da colheita. Este fator de crescimento acarreta em uma necessidade de tratar 
+
+o mesmo como um modelo físico dinâmico. Neste trabalho as roseiras são consideradas, para 
+
+análise, com uma altura média fixa de 1m. 
+
+Foi adotada a hipótese de simetria ao eixo vertical com a finalidade de simplificar a 
+
+geometria do problema e reduzir o esforço computacional. Foi incorporada ao domínio uma 
+
+porção do solo de 1 m de profundidade, que comporta-se como armazenador de energia. Esta 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxi 
+
+xxi 
+
+profundidade será analisada no trabalho, como sendo ideal ou não. 
+
+Possíveis danificações ou alterações na estrutura, tais como plástico rasgado, aberturas 
+
+para ventilação ou trânsito de pessoas, foram desprezadas no presente trabalho.  
+
+ 
+
+ 
+
+ 
+
+2.2 MODELO FÍSICO   . 
+
+ 
+
+ 
+
+Ficando clara a necessidade do aumento da inércia térmica destas estufas, foram 
+
+colocadas no seu interior duas fileiras de tonéis de 200 litros cheios de água. Uma delas num 
+
+prolongamento junto à face norte, com os tonéis deitados, numa configuração de coletor solar 
+
+acumulador. A outra num prolongamento junto à face sul, com os tonéis na posição vertical. Este 
+
+arranjo é mostrado na figura 2.2. 
+
+A idéia é que estes tonéis absorvam calor ao longo do dia e devolvam-no à noite, 
+
+impedindo assim o decaimento excessivo das temperaturas no interior da estufa. 
+
+Com o objetivo de avaliar a solução acima descrita, recorreu-se à simulação 
+
+numérica do comportamento deste tipo de estufa com e sem os tonéis. 
+
+ 
+
+ 
+
+Figura 2.2 - Proposta de solução original com duas fileiras de tonéis coletores-armazenadores de 
+
+calor, uma na face Norte e outra na Sul 
+
+ 
+
+Considerando o aspecto de simetria e o tratamento cartesiano, foi então definido o 
+
+domínio, conforme mostra a figura 2.3. Os tonéis de água não mantiveram a forma cilíndrica 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxii 
+
+xxii 
+
+original. Eles foram modelados de forma a manter a mesma área de troca de calor e o mesmo 
+
+volume de água no seu interior. Dessa forma, representam satisfatoriamente o comportamento 
+
+térmico dos tonéis originais. 
+
+ 
+
+ 
+
+Figura 2.3 - Domínio de cálculo com a hipótese de simetria, subsolo, nova forma dos tonéis e 
+
+forma aproximada da cobertura 
+
+ 
+
+O ganho de radiação solar é computado no termo fonte da equação da energia, tanto 
+
+nos volumes que representam as plantas quanto nos que representam a água no interior dos 
+
+tonéis, com o adequado produto transmitância-absortância efetiva para cada caso. No caso das 
+
+plantas, o ganho é computado no topo das mesmas e ao longo de sua altura, na face norte a 20 
+
+cm dos tonéis modelados. A perda de calor dos tonéis para o exterior é considerada através de 
+
+um coeficiente global de troca. As perdas radiativas noturnas não são levadas em conta no 
+
+presente trabalho. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxiii 
+
+xxiii 
+
+2.3 PROPRIEDADES FÍSICAS 
+
+ 
+
+ 
+
+O número de Rayleigh, tendo como dimensão característica a altura 3 m e a diferença 
+
+de temperatura média de 20 ºC, possui ordem de grandeza igual a 10
+6
+, indicando a presença de 
+
+turbulência em baixa escala. 
+
+As propriedades físicas adotadas encontram-se descritas nas tabelas 2.1, 2.2 e 2.3. 
+
+ 
+
+ 
+
+Tabela 2.1 – Propriedades físicas do ar 
+
+ 
+
+? 1,27 kg/m
+3
+ Pr 0,72 
+
+k 0,025 W/mK ? 1,73 10
+-5
+
+ kg/s m 
+
+cp 1000 J/kg K ? 2,5 10
+-5
+
+ m
+2
+/s 
+
+ 
+
+ 
+
+ 
+
+Tabela 2.2 – Propriedades físicas da água 
+
+ 
+
+? 998 kg/m
+3
+ ? 0,25 cm
+
+2
+/s 
+
+k 0,59 W/mK ? 0,1  kg/s m 
+
+cp 4187 J/kg K   
+
+ 
+
+ 
+
+ 
+
+Tabela 2.3 – Propriedades físicas da terra 
+
+ 
+
+? 2000 kg/m
+3
+ cp 4187 J/kg K 
+
+k 0,59 W/mK   
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxiv 
+
+xxiv 
+
+2.4  EQUAÇÕES GOVERNANTES 
+
+ 
+
+ 
+
+As equações da continuidade, quantidade de movimento e da energia podem ser escritas, 
+
+respectivamente, da seguinte forma: 
+
+ 
+
+                                                          0
+x
+
+u
+
+j
+
+j
+?
+
+?
+
+?
+         j=1,2,3  (2.1) 
+
+ 
+
+                    F
+x
+
+u
+
+x
+
+u
+
+xx
+
+p
+
+x
+
+uu
+
+t
+
+u
+iu
+
+i
+
+j
+
+j
+
+i
+
+jij
+
+jii
+?
+
+?
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+?????
+
+?
+?
+
+?
+?
+?
+?
+
+?
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+?     i,j=1,2,3  (2.2) 
+
+ 
+
+                                                S
+x
+
+T
+k
+
+xx
+
+T
+u
+
+t
+
+T
+iT
+
+iij
+
+j
+??
+
+?
+
+?
+?
+?
+
+?
+??
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+       i,j=1,2,3 (2.3) 
+
+ 
+
+onde iu são as componentes do vetor velocidade, Fui são as componentes das forças de volume, 
+
+? é a massa específica, T é a temperatura, ? é viscosidade molecular, k é a condutividade 
+
+térmica, S?? é o termo de fonte da equação da energia. O termo S?? é composto pelo calor 
+
+absorvido através da radiação solar, SS, e pela perda de calor dos tonéis para o meio externo, SP. 
+
+Obtendo-se: 
+
+ 
+
+                                                                  
+PSTi
+
+SSS ??  (2.4) 
+
+ 
+
+É possível obter-se uma solução universal e independente de parâmetros empíricos 
+
+em problemas que envolvem escoamentos turbulentos através da solução direta das equações de 
+
+Navier-Stokes para todas as escalas de turbulência. No entanto, essa forma de análise, conhecida 
+
+como Simulação Numérica Direta (SND), exige o emprego de malhas muito refinadas no 
+
+processamento numérico. Para a maioria dos escoamentos de interesse em engenharia, a 
+
+resolução requerida conduz a um número de volumes na malha e a um número de intervalos de 
+
+tempo impossíveis de processar nos computadores mais avançados da atualidade. Também a 
+
+determinação da condição inicial do campo de velocidades é ainda um problema em aberto. Com 
+
+a finalidade de obter uma solução aproximada daquela que seria obtida com o emprego da SND 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxv 
+
+xxv 
+
+foram criados modelos de turbulência, que utilizam constantes empíricas na solução. O método 
+
+mais utilizado e conhecido atualmente é o modelo a duas equações chamado de ?-?. 
+
+ 
+
+ 
+
+ 
+
+2.4.1  OS MODELOS DE TURBULÊNCIA 
+
+ 
+
+ 
+
+Um modelo de turbulência é definido como um conjunto de equações diferenciais ou 
+
+algébricas que determinam os termos de transporte turbulento nas equações de escoamento 
+
+médio, fechando o sistema de equações. Atualmente, os modelos têm sido agrupados conforme o 
+
+número de equações diferenciais empregadas. Assim, os modelos a zero equação são os modelos 
+
+algébricos. Os chamados modelos a uma equação empregam uma equação diferencial que deve 
+
+ser resolvida para obter-se os valores das quantidades turbulentas. Já os modelos denominados a 
+
+duas equações envolvem duas equações diferenciais e utiliza diretamente as equações de 
+
+transporte das quantidades turbulentas. 
+
+ 
+
+ 
+
+ 
+
+2.4.2  MODELO ?-? 
+
+ 
+
+ 
+
+Quando a isotropia prevalece, casos em que o número de Reynolds é elevado, a taxa 
+
+de dissipação ? é igual a viscosidade cinemática vezes a vorticidade de flutuação ? ?? ?i ju x
+2
+
+, Eq. 
+
+(2.5). 
+
+ 
+
+i,j=1,2,3                  (2.5) 
+
+ 
+
+Uma equação de transporte para a vorticidade de flutuação e para a dissipação ??? 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxvi 
+
+xxvi 
+
+Tennekes e Lumley, 1972, pode ser obtida das equações de Navier-Stokes. Estas equações 
+
+contêm correlações complexas cujo comportamento é pouco conhecido e, por isso, deve ser 
+
+proposto um modelo tal que faça aquela equação tratável. A equação de ? contém termos que 
+
+representam a taxa de variação, de convecção, de difusão, de geração de vorticidade devido ao 
+
+alongamento do vórtice conectado à cascata de energia, e destruição viscosa da vorticidade. A 
+
+difusão é modelada pela proposta de um gradiente. Os termos de geração e destruição não podem 
+
+ser modelados separadamente. A equação de ? com a expressão de Kolmogorov-Prandtl juntas 
+
+formam o modelo chamado de ?-?.  
+
+Considerando a expressão de Kolmogorov-Prandtl (2.6) e a equação da dissipação ? 
+
+(2.7), 
+
+ 
+
+ Lkct ?? ?  (2.6) 
+
+ 
+
+ 
+L
+
+c
+
+2/3
+
+D
+
+?
+? ?  (2.7) 
+
+ 
+
+em que L é uma escala de comprimento do movimento turbulento, ?t é a viscosidade cinemática 
+
+turbulenta, ? é a dissipação de energia cinética turbulenta, ? é a produção de energia cinética 
+
+turbulenta, c’? e cD são constantes, pode-se escrever para a viscosidade turbulenta a relação 
+
+ 
+
+ 
+?
+
+?
+? ?
+
+2
+
+t c?  (2.8) 
+
+ 
+
+A equação de ? (2.9), 
+
+ 
+
+L
+c
+
+x
+g
+
+x
+
+U
+
+x
+
+U
+
+x
+
+U
+
+xxx
+U
+
+t
+
+23
+
+D
+
+ik
+
+t
+
+i
+
+j
+
+i
+
+i
+
+j
+
+j
+
+i
+
+t
+
+ik
+
+t
+
+ii
+
+i
+
+?
+
+?
+
+??
+
+?
+
+?
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+??
+
+?
+
+?
+
+?
+
+?
+
+?
+
+??
+
+?
+
+??
+???
+
+?
+?
+
+?
+?
+?
+?
+
+?
+???
+
+?
+
+?
+?
+?
+
+?
+???  
+
+(2.9) 
+
+ 
+
+substituindo o último termo do lado direito por ?, fica na forma: 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxvii 
+
+xxvii 
+
+?
+?
+
+??
+
+?
+
+?
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+??
+
+?
+
+?
+
+?
+
+?
+
+?
+
+??
+
+?
+
+??
+???
+
+?
+?
+
+?
+?
+?
+?
+
+?
+???
+
+?
+
+?
+?
+?
+
+?
+???
+
+x
+g
+
+x
+
+U
+
+x
+
+U
+
+x
+
+U
+
+xxx
+U
+
+t ik
+
+t
+
+i
+
+j
+
+i
+
+i
+
+j
+
+j
+
+i
+
+t
+
+ik
+
+t
+
+ii
+
+i  
+
+i,j=1,2,3              (2.10) 
+
+ 
+
+e a segunda equação obtém-se utilizando a equação (2.11) para Z = ? , 
+
+ 
+
+     S
+L
+
+ZcP
+k
+
+Z
+c
+
+x
+
+ZL
+
+xx
+
+Z
+U
+
+t
+
+Z
+2Z1Z
+
+iZii
+
+i ????
+?
+?
+
+?
+?
+?
+?
+
+?
+???
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+    i,j=1,2,3   (2.11) 
+
+ 
+
+com auxílio das expressões da viscosidade turbulenta (2.6) e da equação de ? em função da 
+
+escala de comprimento (2.7). Obtendo-se, 
+
+ 
+
+           ? ?
+?
+
+?
+
+?
+
+?
+
+?
+
+??
+
+?
+
+?
+
+?
+
+?
+
+?
+
+??
+
+?
+
+??
+???
+
+?
+
+2
+
+231
+
+i
+
+t
+
+ii
+
+i cGcPc
+xxx
+
+U
+t
+
+????
+?
+
+?
+?
+?
+
+?
+???      i,j=1,2,3   (2.12) 
+
+ 
+
+onde 
+
+ 
+
+                                                 
+x
+
+U
+
+x
+
+U
+
+x
+
+U
+P
+
+j
+
+i
+
+i
+
+j
+
+j
+
+i
+
+t
+
+?
+
+?
+
+?
+
+?
+
+?
+
+?
+? ?
+
+?
+?
+
+?
+?
+?
+?
+
+?
+??             i,j=1,2,3   (2.13) 
+
+ 
+
+e 
+
+ 
+
+                                                            
+x
+
+gG
+i
+
+t
+
+i
+
+?
+
+??
+
+?
+
+?
+?
+
+?
+
+?               i,j=1,2,3       (2.14) 
+
+ 
+
+1?c  , 2?c  , 3?c  e ??  são constantes empíricas, conforme Rodi, 1984. 
+
+Esse modelo tem sido aplicado com sucesso em muitos problemas de camadas 
+
+limites bidimensionais, Spalding, 1971; Tennekes e Lumley, 1972; Jones e Launder, 1972; 
+
+Launder e Spalding, 1974; Singhal e Spalding, 1975; de escoamentos em tubos Stephenson, 
+
+1976; Chien 1980; de escoamentos livres Launder et. al., 1976, de escoamentos com recirculação 
+
+Nielsen, 1973; Elgobashi e Pun, 1974; Scholz et. al., 1976; Minh e Chassaing, 1977; Gosman et. 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxviii 
+
+xxviii 
+
+al., 1979; Durst e Rastogi, 1979; em camadas limites tridimensionais Samuel  e Joubert, 1974, 
+
+em escoamentos confinados Rastogi e Rodi, 1978, em cavidades Cowan, 1982; Markatos, e 
+
+Pericleous, 1984; Chesswright, 1986; Vahl Davis, 1986; Ince e Launder, 1988; Henkes e 
+
+Hoogendoorn, 1989; Davidson, 1990; Henkes, 1991; Barakos e Mitsoulis, 1994; Henkes e 
+
+Hoogendoorn, 1994; Xu, 1998; em jatos Guirk e Rodi, 1979. Um grande número de escoamentos 
+
+foram simulados, utilizando as mesmas constantes empíricas, para camadas de cisalhamento 
+
+fracas e jatos axissimétricos, porém, deve-se substituir algumas constantes por funções, sendo 
+
+que para escoamentos com recirculação sem confinamento, não foram obtidos bons resultados 
+
+em relação aos experimentos. Esses casos em que a simulação não pode ser alcançada com 
+
+constantes padrões são os responsáveis pela falta de universalidade do método. Além disso, o 
+
+modelo ?-? despreza o transporte de tensões turbulentas ou considera-as apenas de uma maneira 
+
+aproximada, por exemplo, com um modelo de tensão algébrico em escoamentos ou regiões do 
+
+escoamento onde a precisão deste transporte é importante. Isto ocorre em regiões onde não é 
+
+válido o conceito de viscosidade turbulenta, onde o modelo ?-? torna-se muito simples e onde 
+
+devem ser empregadas as equações de transporte para tensões individuais. Os modelos que 
+
+levam em conta os efeitos comentados acima são os chamados modelos de equação de 
+
+tensão/fluxo.  
+
+ 
+
+ 
+
+ 
+
+2.5  MODELO ?-????DE BAIXOS REYNOLDS UTILIZADO NO PRESENTE 
+
+TRABALHO 
+
+ 
+
+ 
+
+O modelo de turbulência adotado é o ?-? para baixos números de Reynolds (LRN – 
+
+Low-Reynolds-Number), conforme Jones e Launder, 1972. Este modelo sofreu pequenas 
+
+alterações, seguindo sugestões propostas por Henkes et al., 1991, em trabalho de comparação de 
+
+modelos de turbulência aplicados na resolução de problemas de convecção laminar e turbulenta 
+
+em cavidades com paredes diferentemente aquecidas. Esta versão modificada é apresentada no 
+
+presente trabalho. 
+
+ 
+
+As equações que compõem o modelo são as seguintes: 
+
+ 
+
+Equação da Conservação da Massa, 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxix 
+
+xxix 
+
+ 
+
+ 0
+y
+
+v
+
+x
+
+u
+?
+
+?
+
+?
+?
+
+?
+
+?
+   (2.15) 
+
+ 
+
+Equação da Conservação da Quantidade de Movimento na direção horizontal x, 
+
+ 
+
+? ? ? ? ?
+?
+
+?
+?
+?
+
+?
+??
+?
+
+?
+??
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+?
+
+?
+
+?
+??
+
+?
+
+?
+?
+?
+
+?
+?
+?
+
+?
+?
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+?
+
+?
+
+?
+??
+
+?
+
+?
+?
+
+?
+
+?
+
+?
+
+?
+
+x
+
+v
+
+y
+
+u
+
+yx
+
+u
+2
+
+xx
+
+p1
+
+y
+
+u
+v
+
+x
+
+u
+u
+
+t
+
+u
+tt
+
+????
+?
+
+ 
+
+ (2.16) 
+
+ 
+
+em que u é a velocidade na direção horizontal, ? é a viscosidade cinemática, ?t é a viscosidade 
+
+cinemática turbulenta. 
+
+ 
+
+Equação da Conservação da Quantidade de Movimento na direção vertical y, 
+
+ 
+
+? ?
+1
+
+( ) 2
+c t
+
+v v v p v
+u v g T T
+
+t x y x y y
+? ? ?
+
+?
+
+? ?? ?? ? ? ? ? ?
+? ? ? ? ? ?? ?? ?
+
+? ? ? ? ? ?? ?? ?
+ 
+
+                                                                        ? ?t
+u v
+
+x y x
+? ?
+
+? ?? ?? ? ?
+? ? ?? ?? ?
+? ? ?? ?? ?
+
+   (2.17) 
+
+ 
+
+em que v é a velocidade na direção vertical, g é a aceleração da gravidade, ? é o coeficiente de 
+
+expansão volumétrica, T é a temperatura no volume em cálculo e Tc é a menor temperatura do 
+
+domínio. 
+
+Equação da Energia, 
+
+ 
+
+?
+?
+
+?
+?
+?
+
+?
+
+?
+
+?
+?
+?
+?
+
+?
+?
+?
+?
+
+?
+?
+
+?
+
+?
+??
+
+?
+
+?
+?
+?
+
+?
+
+?
+
+?
+?
+?
+?
+
+?
+?
+?
+?
+
+?
+?
+
+?
+
+?
+?
+
+?
+
+?
+?
+
+?
+
+?
+?
+
+?
+
+?
+
+y
+
+T
+
+Pryx
+
+T
+
+Prxy
+
+T
+v
+
+x
+
+T
+u
+
+t
+
+T
+
+T
+
+t
+
+T
+
+t
+
+?
+
+??
+
+?
+
+??
+   (2.18) 
+
+ 
+
+em que T é a temperatura, Pr é o número de Prandtl, ?T é o número de Prandtl turbulento. Esta 
+
+equação é acrescida do termo fonte STi,já descrito na equação (2.4). 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxx 
+
+xxx 
+
+ Equação da Produção de Energia Cinética Turbulenta, 
+
+ 
+
+t tu v
+t x y x x y y
+
+k k
+
+? ?? ? ? ? ?
+? ?
+
+? ?
+
+? ? ? ?? ? ? ?? ? ? ? ? ? ?
+? ? ? ?? ? ? ?? ? ? ? ? ?
+? ? ? ?? ? ? ? ? ? ?? ? ? ?
+? ? ? ?? ? ? ?
+
+ 
+
+P G D?
+? ?
+
+? ? ? ?                            (2.19) 
+
+ 
+
+em que ? é a energia cinética turbulenta, ?? é o número de Prandtl para a equação de ?, D é um 
+
+termo fonte do modelo. 
+
+ 
+
+Equação da Dissipação de Energia Cinética Turbulenta, 
+
+      
+
+t tu v
+t x y x x y y
+
+? ?? ? ? ? ?
+? ?
+
+? ?
+? ?
+
+? ? ? ?? ? ? ?? ? ? ? ? ? ?
+? ? ? ?? ? ? ?? ? ? ? ? ?
+? ? ? ?? ? ? ? ? ? ?? ? ? ?
+? ? ? ?? ? ? ?
+
+ 
+
+? ?1 1 3 2 2c f P c G c f E
+?
+
+?
+? ? ? ? ? ?
+
+? ?? ? ? ?
+? ?? ?
+
+                  (2.20) 
+
+ 
+
+onde ? é a dissipação de energia cinética turbulenta, ?? é número de Prandtl para a equação de ?, 
+
+P? é o termo fonte de geração de energia cinética turbulenta, G? é a taxa de produção de 
+
+flutuação de energia cinética turbulenta, c1?, c2? , c3? são constantes empíricas, f1 e f2 são funções 
+
+de amortecimento e E é um termo fonte do modelo. Sendo,  
+
+ 
+
+ ??
+??
+
+? /
+2
+
+fc
+t
+?    (2.21)  
+
+ 
+
+onde c? é uma constante e f?, também é uma de amortecimento. Estas funções de amortecimento 
+
+são dadas por, 
+
+ 
+
+ ?
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+
+?
+
+?
+?
+
+50
+t
+
+Re1
+
+5,2
+expf
+
+?
+   (2.22) 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxxi 
+
+xxxi 
+
+ 0
+1
+
+f ?    (2.23) 
+
+ 
+
+ ?
+?
+?
+
+?
+?
+????
+
+2
+t
+
+Reexp3,01
+2
+
+f    (2.24) 
+
+ 
+
+em que o termo Ret representa o número de Reynolds turbulento, calculado pela expressão 
+
+ 
+
+ 
+??
+
+?
+2
+
+t
+Re ?    (2.25) 
+
+ 
+
+Os termos P? e G? são respectivamente descritos por, 
+
+ 
+
+ 
+?
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+
+??
+?
+
+?
+??
+?
+
+?
+
+?
+
+?
+???
+
+?
+
+?
+??
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+??
+
+?
+
+?
+?
+?
+
+?
+
+?
+
+?
+?
+
+2
+
+y
+
+v
+2
+
+x
+
+v
+
+y
+
+u
+2
+
+x
+
+u
+2
+
+t
+P ?
+?
+
+   (2.26) 
+
+ 
+
+ 
+y
+
+T
+g
+
+T
+
+tG
+?
+
+?
+?? ?
+?
+
+?
+
+?
+   (2.27) 
+
+ 
+
+e os termos fonte D e E são descritos da seguinte forma: 
+
+ 
+
+ 
+?
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+
+?
+
+?
+?
+
+?
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+
+?
+
+?
+??
+
+2
+
+y
+
+2
+
+x
+2D
+
+??
+?    (2.28) 
+
+ 
+
+ 
+
+?
+?
+?
+
+?
+
+?
+?
+?
+
+?
+?
+?
+
+?
+?
+?
+
+?
+
+?
+
+?
+???
+
+?
+
+?
+??
+?
+
+?
+
+?
+
+?
+??
+
+2
+
+2
+
+2
+
+2t
+x
+
+v
+
+y
+
+u
+2E ??    (2.29) 
+
+ 
+
+Para as constantes descritas nas equações, foram utilizados os valores mostrados 
+
+descritos na Tabela 2.4. 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxxii 
+
+xxxii 
+
+Tabela 2.4: Constantes utilizadas no modelo ?-? de turbulência 
+
+ 
+
+c? 0,09 ?T 1,0 
+
+c1? 1,44 ?? 1,0 
+
+c2? 1,92 ?? 1,3 
+
+ 
+
+ 
+
+A constante c3? possui valores distintos sugeridos por alguns autores, como c3? = 1, 
+
+nas paredes verticais (onde se encontram os maiores gradientes de temperatura) e c3? = 0, nas 
+
+paredes horizontais (que são adiabáticas), no trabalho de Rodi, 1980. Outro exemplo é c3? = 0,7/ 
+
+c1?, apresentado por Fraikin et al., 1982, e c3? = 1, em trabalho de Ince e Launder ,1988. 
+
+No presente trabalho, é utilizada uma aproximação que satisfaz os limites de máximo 
+
+e mínimo que foi sugerida no trabalho de Henkes 
+
+ 
+u
+
+v
+tanhc
+
+3
+?
+
+?    (2.30) 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxxiii 
+
+xxxiii 
+
+3  Metodologia de Solução 
+
+ 
+
+ 
+
+3.1  SIMULAÇÃO NUMÉRICA 
+
+ 
+
+ 
+
+Considerando que a estufa possui um comprimento 5,2 vezes maior do que a sua 
+
+largura (50,16 m x 9,6 m), foi adotada a hipótese de que não existem variações significativas ao 
+
+longo do comprimento. Dessa forma, resolve-se as equações da energia e do movimento em 
+
+forma cartesiana bidimensional. 
+
+A temperatura ambiente, radiação solar e ventos variáveis ao longo de cada dia 
+
+impõem à estufa condições de contorno transientes. Considerando que não hajam infiltrações de 
+
+ar externo através das paredes e da cobertura das estufas, tem-se um problema de convecção 
+
+natural transiente no seu interior, com ganhos e perdas de calor também em forma radiante. 
+
+ 
+
+ 
+
+Figura 3.1 – Temperatura ambiente e radiação solar utilizados no presente trabalho 
+
+ 
+
+Devido ao caráter aproximadamente senoidal na sua média, tanto da temperatura 
+
+ambiente externa como da radiação solar, no seu meio ciclo positivo, resolve-se o regime 
+
+transiente periódico. Estas distribuições constam na Fig. 3.1. 
+
+0 2 4 6 8 10 12 14 16 18 20 22 24
+
+Tempo (h)
+
+-50
+
+0
+
+50
+
+100
+
+150
+
+200
+
+250
+
+300
+
+350
+
+400
+
+450
+
+500
+
+550
+
+600
+
+650
+
+R
+a
+d
+
+ia
+ç
+ã
+o
+
+ S
+o
+
+la
+r 
+
+(W
+/m
+
+²)
+
+-5
+
+-4
+
+-3
+
+-2
+
+-1
+
+0
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+T
+e
+
+m
+p
+
+e
+ra
+
+tu
+ra
+
+ A
+m
+
+b
+ie
+
+n
+te
+
+ (
+ºC
+
+)
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxxiv 
+
+xxxiv 
+
+3.1.1  MALHA COMPUTACIONAL 
+
+ 
+
+ 
+
+Para a construção da malha computacional, o domínio foi dividido em regiões. 
+
+Quatro regiões horizontais e três verticais para a estufa sem tonéis. Cinco regiões horizontais e 
+
+quatro verticais para a estufa com tonéis (figuras 3.2 e 3.8). 
+
+ 
+
+ 
+
+Figura 3.2 - Divisão do domínio em regiões para aplicação do refinamento de malha junto de 
+
+cada parede física, sem tonéis 
+
+ 
+
+A região horizontal A, onde se localiza o solo, recebeu a dimensão de 0,1 m para 
+
+cada volume de controle, na direção vertical. A região vertical A recebeu espaçamento igual de 
+
+0,1 m a partir da linha de simetria até uma distância de 0,8 m, onde foi aplicada a equação 3.1, 
+
+para gerar a distribuição dos volumes de controle. Essa equação também foi utilizada para as 
+
+demais regiões é  sugerida por Davidson, 1990, definindo o posicionamento do volume de 
+
+controle, xi assim: 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxxv 
+
+xxxv 
+
+                ? ?
+?
+?
+
+?
+
+?
+?
+
+?
+
+?
+
+?
+?
+
+?
+
+?
+?
+
+?
+
+?
+
+??
+
+?
+?
+
+?
+?
+?
+
+?
+?
+?
+
+?
+?
+?
+
+?
+?
+
+?
+
+?
+?
+
+?
+5,0tanh
+
+1
+2n
+
+2i
+2tanh5,0
+
+xx
+x
+
+x
+
+totali
+?
+
+?
+
+ (3.1) 
+
+ 
+
+em que i é o número de volumes, dado por 2 ? i ? n, sendo n = (número de volumes da região na 
+
+direção calculada + 2) e ?x o coeficiente de refinamento da malha na direção calculada. O valor 
+
+do comprimento da região é computado no termo xtotal. 
+
+ 
+
+ 
+
+Figura 3.3 - Malha sem tonel, 129 x 117 volumes 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxxvi 
+
+xxxvi 
+
+ 
+
+Figura 3.4 - Largura dos volumes de controle na direção x 
+
+ 
+
+ 
+
+ 
+
+Figura 3.5 - Largura dos volumes de controle na direção y. 
+
+ 
+
+A malha gerada para a configuração sem tonéis está representada na figura 3.3. A 
+
+largura dos volumes de controle nas direções x e y pode ser visualizada nas figuras 3.4 e 3.5. 
+
+Junto a cada parede física, suas dimensões ficam abaixo de 10
+-4
+
+ m. A malha computacional 
+
+0.0 0.4 0.8 1.2 1.6 2.0 2.4 2.8 3.2 3.6 4.0 4.4
+
+Altura da estufa (m)
+
+0.000
+
+0.005
+
+0.010
+
+0.015
+
+0.020
+
+0.025
+
+0.030
+
+0.035
+
+0.040
+
+0.045
+
+0.050
+
+0.055
+
+0.060
+
+0.065
+
+0.070
+
+0.075
+
+0.080
+
+0.085
+
+0.090
+
+0.095
+
+0.100
+
+0.105
+
+0.110
+
+0.115
+
+L
+a
+rg
+
+u
+ra
+
+ d
+o
+
+ v
+o
+
+lu
+m
+
+e
+ d
+
+e
+ c
+
+o
+n
+
+tr
+o
+
+le
+ n
+
+a
+ d
+
+ir
+e
+
+ç
+ã
+o
+
+ Y
+ (
+
+m
+)
+
+0.0 0.4 0.8 1.2 1.6 2.0 2.4 2.8 3.2 3.6 4.0 4.4
+
+Altura da estufa (m)
+
+0.000
+
+0.005
+
+0.010
+
+0.015
+
+0.020
+
+0.025
+
+0.030
+
+0.035
+
+0.040
+
+0.045
+
+0.050
+
+0.055
+
+0.060
+
+0.065
+
+0.070
+
+0.075
+
+0.080
+
+0.085
+
+0.090
+
+0.095
+
+0.100
+
+0.105
+
+0.110
+
+0.115
+
+L
+a
+rg
+
+u
+ra
+
+ d
+o
+
+ v
+o
+
+lu
+m
+
+e
+ d
+
+e
+ c
+
+o
+n
+
+tr
+o
+
+le
+ n
+
+a
+ d
+
+ir
+e
+
+ç
+ã
+o
+
+ Y
+ (
+
+m
+)
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxxvii 
+
+xxxvii 
+
+empregada é de 129 x 117 volumes sem a presença de tonéis, e de 147 x 129 volumes para a 
+
+simulação com a presença deles. 
+
+A figura 3.6 destaca o tratamento adotado junto a cada parede coincidente com os 
+
+limites da malha, enquanto a figura 3.7 o refinamento nas paredes físicas que formam o 
+
+decaimento do telhado, os tonéis modelados e o solo. 
+
+ 
+
+Figura 3.6 – Refinamento de malha adotado junto a cada parede física coincidente com limites 
+
+de malha computacional 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxxviii 
+
+xxxviii 
+
+ 
+
+Figura 3.7 – Refinamento de malha adotado junto a cada parede física não coincidente com 
+
+limites de malha computacional, utilizada no telhado, tonéis e solo 
+
+ 
+
+Para a situação em que os tonéis se fazem presentes, foi necessária a inserção de 
+
+outra região tanto na direção x como na direção y. A figura 3.8 mostra a nova subdivisão do 
+
+domínio. 
+
+A figura 3.9 representa a malha gerada para a configuração com tonéis. As figuras 
+
+3.10 e 3.11 representam o novo dimensionamento dos volumes de controle nas direções x e y. As 
+
+modificações se deram apenas nas regiões vizinhas ao tonel modelado. 
+
+Os modelos de turbulência, sejam com função de parede ou de funções de 
+
+amortecimento junto a elas, necessitam de um refinamento na malha computacional junto a cada 
+
+parede física. Isso se faz necessário pela necessidade da região de subcamada viscosa, junto a 
+
+cada parede, estar contida numa região onde os gradientes de velocidade e de temperatura podem 
+
+iniciar instabilidades e transição para a turbulência. Como esta subcamada é muito fina, 
+
+paralelamente à parede, necessita-se de uma malha fortemente refinada. 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xxxix 
+
+xxxix 
+
+Figura 3.8 - Divisão do domínio em regiões para aplicação do refinamento de malha junto a cada 
+
+parede física, com tonéis 
+
+ 
+
+Figura 3.9 - Malha com tonel, 147 x 129 volumes 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xl 
+
+xl 
+
+ 
+
+Figura 3.10 - Largura dos volumes de controle na direção x 
+
+ 
+
+ 
+
+Figura 3.11  Largura dos volumes de controle na direção y. 
+
+ 
+
+ 
+
+ 
+
+3.1.2  CONDIÇÕES DE CONTORNO        
+
+ 
+
+ 
+
+As condições de contorno para as equações do movimento são de não deslizamento e 
+
+0.0 0.4 0.8 1.2 1.6 2.0 2.4 2.8 3.2 3.6 4.0 4.4 4.8
+
+Largura da estufa (m)
+
+0.000
+
+0.005
+
+0.010
+
+0.015
+
+0.020
+
+0.025
+
+0.030
+
+0.035
+
+0.040
+
+0.045
+
+0.050
+
+0.055
+
+0.060
+
+0.065
+
+0.070
+
+0.075
+
+0.080
+
+0.085
+
+0.090
+
+0.095
+
+0.100
+
+0.105
+
+0.110
+
+0.115
+
+0.120
+
+L
+a
+g
+
+u
+ra
+
+ d
+o
+
+ v
+o
+
+lu
+m
+
+e
+ d
+
+e
+ c
+
+o
+n
+
+tr
+o
+
+le
+ n
+
+a
+ d
+
+ir
+e
+
+ç
+ã
+
+o
+ X
+
+ (
+m
+
+)
+
+0.0 0.4 0.8 1.2 1.6 2.0 2.4 2.8 3.2 3.6 4.0 4.4
+
+Altura da estufa (m)
+
+0.000
+
+0.005
+
+0.010
+
+0.015
+
+0.020
+
+0.025
+
+0.030
+
+0.035
+
+0.040
+
+0.045
+
+0.050
+
+0.055
+
+0.060
+
+0.065
+
+0.070
+
+0.075
+
+0.080
+
+0.085
+
+0.090
+
+0.095
+
+0.100
+
+0.105
+
+0.110
+
+0.115
+
+L
+a
+rg
+
+u
+ra
+
+ d
+o
+
+ v
+o
+
+lu
+m
+
+e
+ d
+
+e
+ c
+
+o
+n
+
+tr
+o
+
+le
+ n
+
+a
+ d
+
+ir
+e
+
+ç
+ã
+o
+
+ Y
+ (
+
+m
+)
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xli 
+
+xli 
+
+impermeabilidade nas paredes, na cobertura, nos tonéis e no solo. Derivada nula e 
+
+impermeabilidade na plano de simetria. A tabela 3.1 apresenta um resumo das condições de 
+
+contorno. 
+
+ 
+
+Tabela 3.1 – Condições de contorno e variáveis prescritas 
+
+ 
+
+Equação Direção Posição Condição de contorno 
+
+u, v, T, ? 
+
+e ? 
+
+horizontal  x = 0 
+0
+
+x
+
+u
+?
+
+?
+
+?
+, 0
+
+x
+
+v
+?
+
+?
+
+?
+, 0
+
+x
+
+T
+?
+
+?
+
+?
+, 
+
+0
+x
+?
+
+?
+
+??
+ e 0
+
+x
+?
+
+?
+
+??
+ 
+
+u, v, T, ? 
+
+e ? 
+
+vertical y = 0 
+0
+
+y
+
+u
+?
+
+?
+
+?
+, 0
+
+y
+
+v
+?
+
+?
+
+?
+, 0
+
+y
+
+T
+?
+
+?
+
+?
+, 
+
+0
+y
+?
+
+?
+
+??
+ e 0
+
+y
+?
+
+?
+
+??
+ 
+
+u, v, ? e 
+
+? 
+
+horizontal 
+
+e vertical 
+
+x = 0 a  4,8 m e 
+
+y = 0 a 1 m (solo) 
+
+u = 0, v = 0, ? = 0 e ? = 0 
+
+u, v, ? e 
+
+? 
+
+horizontal 
+
+e vertical 
+
+x = 4,7 a 4,8 m e 
+
+y = 1 a 2,6 m (tonel) 
+
+u = 0, v = 0, ? = 0 e ? = 0 
+
+u, v, ?, ? 
+
+e T 
+
+horizontal 
+
+e vertical 
+
+x = 1,6 a 4,8 m e y = 3,9 a 4,4 
+
+m; 
+
+ x = 3,2 a 4,8 m,  y = 3,5 a 3,9 m 
+
+(telhado); 
+
+x = 0 a 1,6 m e y = 4,4 m; 
+
+ x = 4,8 m e y = 1,0 a 3,4 m 
+
+u = 0, v = 0, ? = 0, ? = 0 e T = 
+
+senóide da figura 3.1 
+
+ 
+
+Para a equação da energia foi prescrita temperatura ambiente (meio externo à estufa) 
+
+nas paredes e na cobertura, conforme valores plotados na figura 3.1. Isolamento na plano de 
+
+simetria; volume de terra isolado nas laterais e na parte inferior do solo (1 m de profundidade). 
+
+Nas equações da produção e dissipação da energia cinética turbulenta, adota-se 
+
+valores para ? e ?  nulos nas paredes, na cobertura, nos tonéis e no solo.  
+
+O método numérico de solução é o de Volumes Finitos, conforme apresentado por 
+
+Patankar, 1980, Maliska, 1995, Versteeg e Malalasekera, 1995 e Ferziger e Peric, 1997. 
+
+Para a solução do sistema de equações lineares algébricas, criadas pelo Método dos 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xlii 
+
+xlii 
+
+Volumes Finitos, foi utilizado o método segregado linha por linha TDMA. A interpolação 
+
+convecção difusão é resolvida com a aplicação do esquema Power Law. O tratamento do 
+
+acoplamento pressão-velocidade é realizado pelo SIMPLEC, Van Doormal e Raithby, 1984. 
+
+ 
+
+ 
+
+ 
+
+3.1.3  CONDIÇÕES INICIAIS 
+
+ 
+
+ 
+
+As condições iniciais serviram apenas para inicializar a busca do regime periódico. 
+
+Os campos iniciais de velocidade, de temperatura, de energia cinética turbulenta e de dissipação 
+
+de energia cinética turbulenta estão mostrados na tabela 3.2. 
+
+ 
+
+Tabela 3.2 – Condições inicias de u, v, T, ? e ?. em tempo t = 0 h 
+
+ 
+
+Variável Ar interno Solo Tonéis 
+
+u (m/s) 0 0 0 
+
+v (m/s) 0 0 0 
+
+T (ºC) 3 5 7 
+
+? (m
+2
+/s
+
+2
+) 5.10
+
+-1
+ 0 0 
+
+? (m
+2
+/s
+
+3
+) 10
+
+-4
+ 0 0 
+
+ 
+
+O campo de temperaturas está ilustrado na figura 3.12, para um tempo t = 0 h. Os 
+
+campos para ? e ? receberam um fator de multiplicação para cada volume à medida que esses se 
+
+aproximam das paredes. A figura 3.13 ilustra este fator. A justificativa deste fator pode ser 
+
+compreendida pelo fato de que o modelo adota valores nulos para ? e ? junto a cada parede. A 
+
+medida que a distância cresce em função da parede, para o caso de cavidades, estes valores 
+
+também tendem a crescer, até uma certa distância e depois voltam a cair. Devido ao escoamento 
+
+de todo o domínio sofrer fortes influências da região junto da parede, este fator é coerente. A 
+
+medida que a distância cresce este fator não faz sentido. Como não existem dados para  a 
+
+distância limite, e por conveniência da própria convergência, manteve-se esse fator para todo o 
+
+domínio. 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xliii 
+
+xliii 
+
+ 
+
+Figura 3.12 – Condições iniciais para o campo de temperaturas em tempo t = 0 h 
+
+ 
+
+Figura 3.13 – Fator multiplicador para o campo inicial de ? e ? . Este fator é baseado na menor 
+
+distância entre o volume e a parede mais próxima 
+
+ 
+
+0.00 0.50 1.00 1.50 2.00 2.50 3.00 3.50 4.00 4.50
+
+Largura (m)
+
+0.00
+
+0.50
+
+1.00
+
+1.50
+
+2.00
+
+2.50
+
+3.00
+
+3.50
+
+4.00
+
+A
+lt
+
+u
+ra
+
+ (
+m
+
+)
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xliv 
+
+xliv 
+
+As condições iniciais referentes ao campo de temperaturas foram atribuídas com base 
+
+no trabalho de Santamouris, Mihalakakou et. al., 1996. Os valores de ? e ? seguiram valores na 
+
+ordem de grandeza encontrados por Davidson, 1990, em seu estudo de convecção natural 
+
+turbulenta em cavidades e foram adequados de maneira a facilitar a convergência. 
+
+ 
+
+ 
+
+ 
+
+3.1.4  CRITÉRIO DE CONVERGÊNCIA 
+
+ 
+
+ 
+
+O incremento de tempo adotado para a solução do transiente foi de 900 segundos. 
+
+Para realizar a verificação de convergência, foi feita a normalização do máximo resíduo de 
+
+massa por unidade  volume computacional. Esta técnica se faz necessária para a validação de 
+
+todo o processo de simulação numérica empregado. É importante salientar que o Método dos 
+
+Volumes Finitos, empregado na solução numérica deste trabalho, é um método que busca 
+
+essencialmente a conservação do princípio físico que norteou a obtenção da equação diferencial. 
+
+O cálculo do máximo resíduo por unidade volume encontrado na malha computacional é 
+
+necessário para que se possa garantir a integridade do método, bem como manter os resultados 
+
+obtidos dentro de um limite de erro mínimo que possa ser considerado desprezível. A 
+
+normalização evita que baixos valores de velocidade, que possam resultar em pequenos resíduos 
+
+de massa, também sejam proporcionalmente pequenos em relação a estas velocidades. 
+
+Cada passo de tempo é calculado de forma totalmente implícita e considerado 
+
+convergido quando o resíduo de massa normalizado (smaxnor), verificado em todos os volumes 
+
+de controle do domínio, for menor do que 10
+-6
+
+ para o problema hidrodinâmico. 
+
+Concomitantemente, quando o critério de convergência relativo da equação da energia (restemp) 
+
+for menor que 10
+-5
+
+. 
+
+Esses são definidos da seguinte forma: 
+
+ 
+
+                                                      
+
+max
+fluxo
+
+maxs
+normaxs ?  (3.2) 
+
+ 
+
+e 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xlv 
+
+xlv 
+
+ 
+T
+
+TT
+restemp
+
+IA
+?
+
+?  (3.3) 
+
+ 
+
+em que smax é o maior resíduo de massa encontrado dentre todos os volumes de controle do 
+
+domínio, e 
+max
+
+fluxo  é o módulo do maior valor do fluxo de massa nas faces do volume de 
+
+controle. Nestas equações, T refere-se à temperatura na iteração atual, e T
+IA
+
+ à temperatura na 
+
+iteração anterior.  
+
+Durante a simulação do transiente, a rapidez da convergência variou em certos 
+
+períodos. Na a madrugada, logo após as 0 h, momento em que os gradientes de temperaturas 
+
+eram baixos, fez-se necessária a utilização de uma subrelaxação mais severa. No início de cada 
+
+novo passo de tempo, em média 50 iterações, foram subrelaxadas por um fator duas vezes menor 
+
+do que eram normalmente utilizado. 
+
+Fato semelhante ocorreu com as equações da energia, da produção e da dissipação da 
+
+energia cinética turbulenta durante um período diurno. A partir das 7 h e 30 min da manhã, 
+
+quando a radiação solar passava dos 50 W/m
+2
+ (ver figura 3.1), até 9 h esse calor absorvido no 
+
+topo das roseiras instabilizava critério de convergência restemp, forçando a utilização da 
+
+subrelaxação. 
+
+Procurando diminuir o efeito da subrelaxação, localizou-se os volumes que mais 
+
+eram afetados e trocou-se a subrelaxação das equações em todo o domínio pela subrelaxação do 
+
+termo fonte de radiação, na equação da energia, nos volumes identificados como possíveis 
+
+divergentes. 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xlvi 
+
+xlvi 
+
+ 
+
+4 Validação da implementação da metodologia 
+
+ 
+
+ 
+
+Devido a ausência de dados experimentais, foram realizadas simulações dos casos 
+
+que constam na maioria do trabalhos realizados em cavidades como o de Henkes &amp;amp; 
+
+Hoogendoorn, 1989; Henkes et al., 1991; Markatos e Pericleous, 1984; Barakos e Mitsoulis, 
+
+1994; Liu e Wen, 1999. Foi escolhida uma das configurações de cavidades que Barakos e 
+
+Mitsoulis apresentam para ser comparada neste. A configuração com o número de Rayleigh, 
+
+Ra=10
+10
+
+, daquele trabalho. Outra comparação é realizada com o trabalho de Liu e Wen, para 
+
+Ra=10
+9
+. 
+
+Na figura 4.1 encontram-se as condições de contorno da cavidade quadrada de altura H e 
+
+largura L para a equação da energia. Ela é diferentemente aquecida nas paredes laterais e o topo 
+
+e a base são adiabáticas. O problema é de solução permanente, mas foi resolvido de forma 
+
+transiente a fim de otimizar a convergência. A malha empregada é de 56 x 56 volumes e 
+
+desigualmente espaçada. Ela é fortemente refinada junto as paredes, obedecendo a equação 3.1 
+
+sugerida por Davidson, 1990. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Figura 4.1 – Condições de contorno para a equação da energia 
+
+ 
+
+Na figura 4.2a são reproduzidas as linhas de função de corrente de Barakos e 
+
+Mitsoulis, enquanto que na a figura 4.2b é apresentada a solução deste trabalho. 
+
+Os valores de velocidade do presente trabalho apresentaram pequenas variações daquelas 
+
+apresentadas por Barakos e Mitsoulis. Estas pequenas diferenças na velocidade vertical ao longo 
+
+da metade da cavidade, podem ser analisadas na figura 4.3. As isolinhas do presente trabalho, 
+
+Parede Quente (303K) Parede Fria (283K) 
+
+Parede adiabática 
+
+Parede adiabática 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xlvii 
+
+xlvii 
+
+que representam a função de corrente, apresentam pequenas variações em relação à figura do 
+
+trabalho de Barakos e Mitsoulis. Elas aparecem nos cantos inferior direito e superior esquerdo da 
+
+cavidade.  
+
+ 
+
+ (a) Barakos e Mitsoulis, 1994 (b) Presente solução 
+
+Figura 4.2 – A figura (a) é a solução para as linhas de função de corrente de Barakos e Mitsoulis 
+
+e a (b) é a solução do presente trabalho 
+
+ 
+
+As figuras 4.3 e 4.4 representam a componente de velocidade vertical na altura 
+
+média, em que o presente trabalho é comparado com o trabalho de Liu e Wen. Na figura 4.3b a 
+
+velocidade vertical atinge 0 m/s antes da posição 0,03 e o pico de velocidade é em torno de 0,23 
+
+m/s. Na figura 4.3a os valores de velocidade apresentados no trabalho de Liu e Wen e o 
+
+experimental, são iguais a 0 m/s a partir da posição 0,5 e o pico de velocidade atinge valores em 
+
+torno de 0,23 m/s. Na mesma figura o modelo de Ince e Launder atinge pico aproximado de 0,28 
+
+m/s e a partir da posição 0,3 o gráfico chega a 0 m/s. Ou seja, a curva do presente trabalho, da 
+
+figura 4.3b, se assemelha ao trabalho de Liu e Wen e aos dados experimentais nos valores de 
+
+pico. A posição em que a velocidade atinge 0 m/s se assemelha ao trabalho de Ince e Launder. 
+
+Na figura 4.4 são apresentados os valores da velocidade vertical no lado oposto ao da 
+
+figura 4.3. Os valores são praticamente iguais e as considerações realizadas para a figura 4.3 
+
+também se fazem válidas para essa. Os losangos plotados sobre as curvas das figuras 4.3b e 4.4b 
+
+são referentes aos pontos da malha, o que demonstra a eficiência da malha em capturar a camada 
+
+limite. 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xlviii 
+
+xlviii 
+
+ (a) Liu e Wen, 1999 (b) Presente trabalho 
+
+Figura 4.3 – Componente vertical da velocidade na altura média da cavidade junto à parede 
+
+quente. O gráfico (a) refere-se ao trabalho de Liu e Wen, 1999, o gráfico (b) é a solução do 
+
+presente trabalho com os losangos representando os pontos da malha 
+
+ (a) (b) 
+
+Figura 4.4 – Os gráficos (a) e (b) mostram a componente vertical da velocidade na altura média 
+
+da cavidade do lado da parede fria. O gráfico (a) refere-se ao trabalho de Liu e Wen, 1999, o 
+
+gráfico (b) é a solução do presente trabalho com os losangos representando os pontos da malha 
+
+ 
+
+Na figura 4.5 encontra-se a evolução, quanto ao critério de convergência, da 
+
+simulação realizada para a comparação com o trabalho de Liu e Wen, 1999.A solução foi 
+
+0.0 0.1 0.2
+Posição x/L
+
+-0.1
+
+0.0
+
+0.1
+
+0.2
+
+0.3
+
+V
+e
+lo
+
+c
+id
+
+a
+d
+
+e
+ (
+
+m
+/s
+
+)
+
+0.8 0.9 1.0
+Posição x/L
+
+-0.3
+
+-0.2
+
+-0.1
+
+0.0
+
+0.1
+
+V
+e
+lo
+
+c
+id
+
+a
+d
+
+e
+ (
+
+m
+/s
+
+)
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+xlix 
+
+xlix 
+
+considerada convergida quando o critério de resíduo de massa smaxnor e o da energia restemp 
+
+fossem concomitantemente menores, respectivamente, que 10
+-6
+
+ e 10
+-5
+
+. 
+
+ 
+
+ 
+
+Figuras 4.5 – Evolução dos resíduos de massa e de energia para o problema de Liu e Wen, 
+
+ao longo da presente solução 
+
+ 
+
+ 
+
+0 400 800 1200 1600
+
+Iterações
+
+0.0E+0
+
+5.0E-5
+
+1.0E-4
+
+1.5E-4
+
+2.0E-4
+
+2.5E-4
+
+3.0E-4
+
+3.5E-4
+
+4.0E-4
+
+4.5E-4
+
+5.0E-4
+
+5.5E-4
+
+6.0E-4
+
+6.5E-4
+
+R
+e
+
+s
+íd
+
+u
+o
+
+Critério de Convergência
+
+smaxnor
+
+restemp
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+l 
+
+l 
+
+ 
+
+5 SIMULAÇÕES E RESULTADOS OBTIDOS 
+
+ 
+
+ 
+
+Neste trabalho são resolvidas duas configurações de estufa, com e sem tonéis, 
+
+seguindo as propostas adotadas por Vielmo e Schneider (V-S), 1997. Os campos de velocidade e 
+
+de temperatura são resolvidos ao longo de todo um dia típico de inverno, e analisados em 
+
+momentos considerados significativos deste dia. 
+
+No trabalho de V-S, o escoamento em regime turbulento é tratado de forma 
+
+simplificada, com um aumento da viscosidade e da condutividade térmica apropriados. 
+
+Com a adoção do modelo de turbulência ?-?, testado em cavidades com paredes 
+
+verticais aquecidas e horizontais adiabáticas, cria-se a oportunidade de avaliar o desempenho 
+
+deste tipo de modelo em ambientes de maiores dimensões. A turbulência junto à parede lateral é 
+
+analisada. O comportamento de ?, ? e ?t junto as paredes são analisados. 
+
+Na falta de dados experimentais, os campos de velocidade e de temperatura são 
+
+confrontados com os apresentados por V-S. Ë confrontado o nível entálpico durante um período 
+
+de 24 h na estufa com tonéis. 
+
+ 
+
+ 
+
+ 
+
+5.1 RESUMO DAS CONFIGURAÇÕES UTILIZADAS . 
+
+ 
+
+ 
+
+Configuração sem tonéis - Estufa aquecida com energia solar em regime transiente, 
+
+com temperatura ambiente e com radiação solar 
+
+senoidais. . 
+
+ 
+
+Configuração com tonéis -  Números total dos tonéis igual a 80. Distância de 0,4 m entre os 
+
+toneis. No programa isso resulta em uma altura do reservatório 
+
+equivalente a 1,6 m de altura e 0,1 m de largura. A área de 
+
+recepção de radiação solar em cada tonel é de 1,6 m
+2
+, e a de troca 
+
+de calor com a vizinhança é de 1,95 m
+2
+. A área total de troca de 
+
+calor de todos os tonéis da estufa é de 156 m
+2
+ enquanto que a área 
+
+que recebe radiação é de 128 m
+2
+. Os tonéis trocam calor através 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+li 
+
+li 
+
+de toda sua área superficial, enquanto que apenas uma parte dessa 
+
+área fica exposta aos raios solares. Considerando a hipótese de 
+
+simetria no plano vertical, conforme mostrado nas figuras 2.1 e 
+
+2.2, os valores reduzem-se pela metade. 
+
+ 
+
+ 
+
+ 
+
+5.2 RESULTADOS OBTIDOS 
+
+ 
+
+ 
+
+Os resultados são apresentados de forma a analisar: 
+
+? O comportamento do modelo ?-? para baixos números de Reynolds, desenvolvido 
+
+por Jones e Launder e modificado por Henkes. São analisados fisicamente campos de 
+
+temperatura, velocidade e função de corrente de alguns passos de tempo; 
+
+? A presença dos tonéis no comportamento térmico é analisada em comparação a 
+
+solução de V-S. É mostrado o nível entálpico da presente solução e confrontado com 
+
+o obtido por V-S; 
+
+? São apresentados valores da produção e dissipação de energia cinética turbulenta, 
+
+junto da parede lateral para um certo passo de tempo. 
+
+ 
+
+ 
+
+ 
+
+5.2.1  ANÁLISE DE CAMPOS TÉRMICO E HIDRODINÂMICO 
+
+ 
+
+ 
+
+De posse do código computacional de V-S, reproduziu-se as mesmas condições 
+
+físicas utilizadas no presente trabalho. As figuras 5.1a, 5.1b e 5.1c mostram o campo de 
+
+temperaturas durante a madrugada até antes do amanhecer. Durante o período da madrugada, o 
+
+campo de temperaturas manteve-se por grande parte do tempo com valores em torno de -2,0 ºC. 
+
+O valor de temperatura atribuído no solo, no campo inicial, foi de 5 ºC (ver figura 3.10a). Esta 
+
+região não apresentou grandes variações, sendo que as maiores ocorreram próximas ao tonel. 
+
+As temperaturas externas para as figuras 5.1a, 5.1b e 5.1c são respectivamente iguais 
+
+a –2,33 ºC, -2,9 ºC e –2,7 ºC. No horário das 2 h, a temperatura na altura das roseiras manteve-se 
+
+entre –1,0 e –1,5 ºC. Nesse período pode-se observar, conjuntamente com as figuras 5.2a e 5.3a 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lii 
+
+lii 
+
+em que o tonel se encontra com temperatura em torno de 1,0 ºC, aproximadamente 3,5 ºC acima 
+
+da temperatura ambiente. 
+
+As funções de corrente mostradas nas figuras 5.2a, 5.2b e 5.2c representam 
+
+respectivamente os mesmos períodos das figuras 5.1a, 5.1b e 5.1c. Durante a madrugada, o solo 
+
+e o tonel fornecem calor para o ar interno concomitantemente com a perda de calor através da 
+
+parede lateral e telhado. O movimento descendente do ar junto à parede estabelece o sentido 
+
+horário de movimento do vórtice maior. O ar é aquecido pelo solo gerando uma corrente quente 
+
+que ascende até o telhado, junto a linha de simetria. Observando, em conjunto as figuras 5.1a, 
+
+5.1b, 5.1c, 5.2a, 5.2b e 5.2c, juntamente com as figuras 5.3a, 5.3b e 5.3c, que representam os 
+
+campos de velocidade, respectivamente na mesma cronologia, pode-se observar esse fenômeno 
+
+físico de maneira mais completa. 
+
+Nas figuras 5.1 (a, b, c) verifica-se a perda de calor de forma mais acentuada na 
+
+região superior e lateral acima do tonel. Este fato demonstra que um isolamento térmico 
+
+ineficiente acentua a diminuição da temperatura interna da estufa, prejudicando a cultura. 
+
+ 
+
+ 
+
+ 
+
+Figura 5.1a – Campo de temperaturas, 2h, estufa com tonéis, presente trabalho 
+
+0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5
+
+Largura da estufa (m)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+3.5
+
+4.0
+
+A
+lt
+
+u
+ra
+
+ d
+a
+ e
+
+s
+tu
+
+fa
+ (
+
+m
+)
+
+-4.0'C
+
+-3.5'C
+
+-3.0'C
+
+-2.5'C
+
+-2.0'C
+
+-1.5'C
+
+-1.0'C
+
+-0.5'C
+
+0.0'C
+
+0.5'C
+
+1.0'C
+
+1.5'C
+
+2.0'C
+
+2.5'C
+
+3.0'C
+
+3.5'C
+
+4.0'C
+
+4.5'C
+
+5.0'C
+
+5.5'C
+
+6.0'C
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+liii 
+
+liii 
+
+ 
+
+Figura 5.1b – Campo de temperaturas, 3h 30 min, estufa com tonéis, presente trabalho 
+
+ 
+
+ 
+
+ 
+
+Figura 5.1c – Campo de temperaturas, 5h 15 min, estufa com tonéis, presente trabalho 
+
+0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5
+
+Largura da estufa (m)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+3.5
+
+4.0
+
+A
+lt
+
+u
+ra
+
+ d
+a
+ e
+
+s
+tu
+
+fa
+ (
+
+m
+)
+
+-4.0'C
+
+-3.5'C
+
+-3.0'C
+
+-2.5'C
+
+-2.0'C
+
+-1.5'C
+
+-1.0'C
+
+-0.5'C
+
+0.0'C
+
+0.5'C
+
+1.0'C
+
+1.5'C
+
+2.0'C
+
+2.5'C
+
+3.0'C
+
+3.5'C
+
+4.0'C
+
+4.5'C
+
+5.0'C
+
+5.5'C
+
+6.0'C
+
+0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5
+
+Largura da estufa (m)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+3.5
+
+4.0
+
+A
+lt
+
+u
+ra
+
+ d
+a
+ e
+
+s
+tu
+
+fa
+ (
+
+m
+)
+
+-4.0'C
+
+-3.5'C
+
+-3.0'C
+
+-2.5'C
+
+-2.0'C
+
+-1.5'C
+
+-1.0'C
+
+-0.5'C
+
+0.0'C
+
+0.5'C
+
+1.0'C
+
+1.5'C
+
+2.0'C
+
+2.5'C
+
+3.0'C
+
+3.5'C
+
+4.0'C
+
+4.5'C
+
+5.0'C
+
+5.5'C
+
+6.0'C
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+liv 
+
+liv 
+
+ 
+
+Figura 5.2a – Funções de corrente, 2h, estufa com tonéis, presente trabalho 
+
+ 
+
+ 
+
+Figura 5.2b – Funções de corrente, 3h 30 min, estufa com tonéis, presente trabalho 
+
+0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5
+
+Altura da estufa (m)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+3.5
+
+4.0
+
+L
+a
+rg
+
+u
+ra
+
+ d
+a
+ e
+
+s
+tu
+
+fa
+ (
+
+m
+)
+
+0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5
+
+Largura da estufa (m)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+3.5
+
+4.0
+
+A
+lt
+
+u
+ra
+
+ d
+a
+ e
+
+s
+tu
+
+fa
+ (
+
+m
+)
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lv 
+
+lv 
+
+ 
+
+Figura 5.2c – Funções de corrente, 5h 15 min, estufa com tonéis, presente trabalho 
+
+ 
+
+ 
+
+Figura 5.3a – Campo de velocidades, 2h, estufa com tonéis, presente trabalho 
+
+0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5
+
+Largura da estufa (m)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+3.5
+
+4.0
+
+A
+lt
+
+u
+ra
+
+ d
+a
+ e
+
+s
+tu
+
+fa
+ (
+
+m
+)
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lvi 
+
+lvi 
+
+Figura 5.3b – Campo de velocidades, 3h 30 min, estufa com tonéis, presente trabalho 
+
+ 
+
+Figura 5.3c – Campo de velocidades, 5h 15 min, estufa com tonéis, presente trabalho 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lvii 
+
+lvii 
+
+ 
+
+Figura 5.4a – Campo de velocidades verticais, 2h da madrugada, em m/s, estufa com tonéis 
+
+ 
+
+ 
+
+Figura 5.4b – Campo de velocidades verticais, 3h 30 min da madrugada, em m/s, estufa com 
+
+tonéis 
+
+ 
+
+As 3 h e 30 min a corrente ascendente junto ao tonel fica mais intensa. Neste 
+
+momento a temperatura do tonel encontra-se em torno de 0,5 ºC e a do ambiente próxima de –3,0 
+
+ºC, proporcionando uma diferença de temperatura de 3,5 ºC aproximadamente. Este aumento da 
+
+troca de calor junto ao tonel gera um vórtice próximo dele, que gira em sentido anti-horário. Este 
+
+-0.20
+
+-0.16
+
+-0.12
+
+-0.08
+
+-0.04
+
+0.00
+
+0.04
+
+0.08
+
+0.12
+
+0.16
+
+0.20
+
+0.24
+
+-0.16
+
+-0.12
+
+-0.08
+
+-0.04
+
+0.00
+
+0.04
+
+0.08
+
+0.12
+
+0.16
+
+0.20
+
+0.24
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lviii 
+
+lviii 
+
+vórtice gira em sentido oposto ao vórtice maior do lado direito, que começa a diminuir de 
+
+proporções. Estas observações podem ser analisadas nas figuras 5.4a e 5.4b, onde encontram-se 
+
+plotadas as velocidades verticais v. 
+
+A figura 5.5 mostra os vetores velocidade de uma região na base do tonel. Essa 
+
+figura representa o horário das 2 h da madrugada. A região foi ampliada para melhor 
+
+visualização da formação de vórtices. O solo e o tonel apresentam campos de velocidade nulos. 
+
+Junto do solo e do tonel percebe-se a camada limite, com um gradiente de velocidades menor 
+
+próximo do solo em comparação com a lateral do tonel.. A metodologia de solução é eficiente 
+
+em capturar as recirculações que aparecem no canto inferior direito. 
+
+ 
+
+ 
+
+Figura 5.5 – Campo de velocidades de uma região ampliada da base do tonel 
+
+ 
+
+A figura 5.6 apresenta outra ampliação do campo de velocidades (b) e do campo de 
+
+temperaturas (a). Nessa figura é mostrado o topo do tonel e o degrau inferior do telhado. Existe 
+
+no lado esquerdo do tonel um corrente de ar ascendente causada pelo aquecimento do ar junto ao 
+
+tonel. No lado direito da figura (b) o ar é resfriado pela parede lateral, que se encontra a 
+
+temperatura ambiente, e tem um movimento descendente. No topo do tonel o ar encontra-se 
+
+praticamente estagnado. Na figura (a), percebe-se que a temperatura é mais baixa no meio 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lix 
+
+lix 
+
+externo e mais alta no tonel em relação ao ar interno. Os campos representados nessas figuras 
+
+correspondem ao horário de 3 h e 30 min da madrugada. 
+
+ 
+
+ 
+
+ (a) (b) 
+
+Figura 5.6 – Campos de velocidade e de temperatura de uma região ampliada do topo do tonel 
+
+ 
+
+ 
+
+Uma ampliação do campo de temperaturas e do campo de velocidades da altura 
+
+média do tonel encontra-se na figura 5.7. Nessa figura o campo de temperaturas está 
+
+representado em (a) e o campo de velocidades em (b). O tonel recebeu um tratamento térmico 
+
+através de coeficiente de troca global, em que as trocas de calor com o meio externo são 
+
+computadas no termo fonte. Nota-se em (a) que o lado direito do tonel encontra-se com um fraco 
+
+gradiente de temperaturas e o lado direito troca calor por convecção e condução com o ar interno 
+
+com um forte gradiente de temperaturas. Esse gradiente do lado esquerdo do tonel gera, através 
+
+do empuxo,  o perfil de velocidades em mostrado em (b). Toda região em que se encontra o tonel 
+
+possui campo de velocidades nulo, como percebe-se do lado direito da figura (b). Os campos 
+
+representados nessas figuras correspondem ao horário 3 h e 30 min da madrugada. 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lx 
+
+lx 
+
+ (a) (b) 
+
+ 
+
+Figura 5.7 – Campos de velocidade e de temperatura de uma região ampliada da altura média do 
+
+tonel 
+
+ 
+
+O plano de simetria junto do solo encontra-se ampliado na figura 5.8. Nessa figura o 
+
+campo de temperaturas está representado em (a) e o campo de velocidades em (b). A corrente de 
+
+ar ascendente junto do plano de simetria encontra-se mostrada na figura (b). Em observação 
+
+conjunta de (a) e (b), nota-se que o ar aquecido sobe quase verticalmente do lado esquerdo. Na 
+
+base das figuras uma recirculação altera o perfil de velocidades que provem do lado direito, 
+
+causando uma reversão do perfil da camada limite. Os campos representados nessas figuras 
+
+correspondem ao horário 5 h e 15 min da madrugada. Na posição horizontal igual a 0,5 m nota-
+
+se que a diferença de temperaturas em apenas 10 cm de altura atinge cerca de 5 ºC. O solo varia 
+
+sua temperatura de forma amena e basicamente na região de contato com o ar. A medida que 
+
+profundidade no solo aumenta o gradiente de temperaturas diminui. 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lxi 
+
+lxi 
+
+ (a) (b) 
+
+ 
+
+Figura 5.8 – Campo de temperaturas e de velocidades ampliados da base do plano de simetria 
+
+ 
+
+O modelo simplificado utilizado por V-S apresenta campos de temperatura 
+
+semelhantes. A geometria adotada difere apenas na inclinação do telhado, que possui um número 
+
+maior de degraus. Este fato acarreta em um domínio interno da estufa, com uma área 
+
+aproximadamente 4% menor. Juntando-se a não utilização, em V-S, da temperatura da cobertura 
+
+prescrita em 1 ºC menor do que a temperatura ambiente, para representar perdas térmicas, todas 
+
+as demais condições físicas entre aquele e este são as mesmas. 
+
+A figura 5.9 representa o campo de temperaturas da solução de V-S no início da 
+
+manhã, onde a radiação começa a ser absorvida pela estufa. O tonel está a uma temperatura 10ºC 
+
+maior do que a maior parte da estufa. A legenda mostra um campo de temperatura entre os 
+
+valores –2 ºC e 12 ºC. Uma vez que os maiores valores de temperatura pertencem a região 
+
+ocupada pelos tonéis, o acumulo de isolinhas prejudica esta visualização na figura 5.9. Os tonéis 
+
+armazenaram uma quantidade de calor maior na solução de V-S do que no presente trabalho. 
+
+Esse fato parece ter contribuído para que o campo de temperaturas do presente não atingisse os 
+
+valores encontrados por V-S. Em relação ao ar interno, o tonel, no presente trabalho, não atingiu 
+
+valores de temperatura tão elevados. 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lxii 
+
+lxii 
+
+ 
+
+Figura 5.9 – Campo de temperaturas na madrugada, 3 h 45 min, para o modelo de V-S da estufa 
+
+com tonéis 
+
+ 
+
+ 
+
+A figura 5.10 mostra os valores de temperatura obtidas por Vielmo e Schneider, na 
+
+região das roseiras. Conforme já foi comentado, o presente trabalho e o de V-S não são 
+
+totalmente iguais, diferenciam-se condição de contorno e na geometria. A condição de contorno 
+
+da cobertura é igual a temperatura ambiente subtraída de 1 ºC e o telhado possui mais degraus 
+
+ocasionando uma diferença de 4% no domínio em que o ar está contido. Apesar dessas 
+
+diferenças, pode-se notar na figura 5.10 uma semelhança no padrão das curvas que representam a 
+
+temperatura ao longo de 24 h no meio do domínio a uma altura de 0,8 m do solo. Ambos 
+
+trabalhos mantiveram a temperatura, ao longo da noite, acima da temperatura ambiente e 
+
+atingiram um pico de valores semelhantes durante o dia. O presente trabalho, com a adoção do 
+
+modelo de turbulência, elevou a temperatura com uma defasagem menor em relação a radiação 
+
+solar bem como o decréscimo dela também. 
+
+ 
+
+0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5
+
+Largura (m)
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+2.0
+
+2.5
+
+3.0
+
+3.5
+
+4.0
+
+A
+lt
+u
+ra
+
+ (
+m
+
+)
+
+-4.0C
+
+-3.5C
+
+-3.0C
+
+-2.5C
+
+-2.0C
+
+-1.5C
+
+-1.0C
+
+-0.5C
+
+0.0C
+
+0.5C
+
+1.0C
+
+1.5C
+
+2.0C
+
+2.5C
+
+3.0C
+
+3.5C
+
+4.0C
+
+4.5C
+
+5.0C
+
+5.5C
+
+6.0C
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lxiii 
+
+lxiii 
+
+ 
+
+Figura 5.10 – Presente solução e solução de V-S, na região das roseiras para a simulação com 
+
+tonéis 
+
+ 
+
+ 
+
+Os campos de temperatura não se mostraram homogêneos em todo o domínio, como pode ser 
+
+visto na figura 5.1 (a, b, c). Este fato dificulta muito uma comparação global da presença ou não 
+
+dos tonéis durante o transiente. Uma alternativa é recorrer à função Entalpia, integrada em todo o 
+
+volume interno da estufa, ou seja, o nível entálpico global (NE) da estufa em relação a uma 
+
+temperatura arbitrária. A temperatura de referência mínima (Tr), que não é alcançada em 
+
+nenhum momento da simulação. Durante o transiente, calcula-se NE para cada volume após ser 
+
+atingida a convergência do passo de tempo. A equação 5.1 descreve o cálculo realizado para 
+
+obtenção do nível entálpico, 
+
+ 
+
+                                                      ? ?? )TrT(volcNE ijpij ?  (5.1) 
+
+ 
+
+onde ij são as coordenadas no plano cartesiano, e vol [m
+3
+] é o volume do volume de controle ij. 
+
+ 
+
+ 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lxiv 
+
+lxiv 
+
+5.2.2  ANÁLISE DA TURBULÊNCIA  
+
+ 
+
+ 
+
+O modelo de turbulência empregado no presente trabalho é largamente aplicado no estudo de 
+
+cavidades. Na parede vertical, acima do tonel modelado, são analisados os valores de ? e ?, como 
+
+mostra a figura 5.11. 
+
+Junto à parede, os valores de ? e ? são iguais a zero. A energia cinética turbulenta ?, 
+
+cresce a medida que a distância em relação a parede aumenta, fortemente até 3 cm desta e de 
+
+maneira mais suave a partir desta distância. A dissipação da energia cinética turbulenta possui 
+
+um comportamento diferente. Partindo da parede em zero, atinge seu pico ainda muito próximo 
+
+dela,  e começa a reduzir seu valor até a distância de 3 cm desta. Igualmente a partir desta 
+
+distância a variação se torna mais suave. 
+
+Na maior parte do transiente, os valores de ? mantiveram-se entre 10
+-1
+
+ e 10
+-5
+
+ m
+2
+/s
+
+3
+, 
+
+enquanto que os valores de ? atingiram 3.10
+1
+ m
+
+2
+/s
+
+2
+. Os maiores valores de ? e ? foram 
+
+registrados, na maior parte do transiente, próximos ao tonel e ao telhado. 
+
+ 
+
+ 
+
+Figura 5.11 – Valores de ? e ?, junto à parede vertical acima do tonel modelado, no tempo t =10h 
+
+ 
+
+O refinamento de malha no interior do domínio, onde se localiza o ar interno, pode 
+
+ter contribuído na solução de maneira a alterar os resultados. Em alguns momentos os valores de 
+
+0.00 0.02 0.04 0.06 0.08 0.10
+
+Distância em relação a parede (m)
+
+0.0
+
+0.4
+
+0.8
+
+1.2
+
+1.6
+
+2.0
+
+2.4
+
+2.8
+
+3.2
+
+3.6
+
+4.0
+
+4.4
+
+4.8
+
+k
+ (
+
+m
+²/
+
+s
+²)
+
+E
+ (
+
+m
+²/
+
+s
+³)
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lxv 
+
+lxv 
+
+? e ? cresceram aproximadamente 400%, em relação ao restante do domínio, nas regiões 
+
+verticais de refinamento. A figura 5.12 ilustra as regiões que registraram estes valores. Estas 
+
+regiões encontram-se na altura do topo das roseiras, onde é computado o termo fonte de radiação 
+
+solar. Conforme já foi mencionado no capítulo 3, ocorreu a necessidade de subrelaxar a equação 
+
+da energia. É importante salientar que a presença física das rosas não foi considerada no presente 
+
+trabalho. A radiação foi computada na região em que deverá localizar-se o topo das roseiras em 
+
+futuros trabalhos. 
+
+ 
+
+Figura 5.12 – Região A, durante o período inicial da manhã, registrou instabilidade térmica e 
+
+valores de ? e ? acima do normal 
+
+ 
+
+A princípio o modelo matemático e a solução numérica adotados são capazes de resolver tais 
+
+refinamentos no interior do domínio. Como não foi encontrado nenhum caso de cavidade com 
+
+este tipo de refinamento interno, não há referência que possa justificar tais resultados. 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lxvi 
+
+lxvi 
+
+6  CONCLUSÕES E SUGESTÕES PARA FUTUROS TRABALHOS 
+
+ 
+
+ 
+
+O comportamento térmico da estufa, no período diurno, mostrou-se fortemente 
+
+dependente da absorção da radiação solar. No período noturno as perdas de calor através da 
+
+cobertura plástica conduziu os fenômenos térmicos e hidrodinâmicos. 
+
+Com o presente trabalho, foi possível utilizar uma ferramenta de análise numérica 
+
+para simular os transientes térmico e hidrodinâmico, de uma estufa destinada à agricultura. 
+
+O modelo de turbulência adotado forneceu resultados fisicamente consistentes. A 
+
+presente formulação poderá ser aplicada em futuras otimizações que deverão ser realizadas neste 
+
+tipo de estufa. O programa desenvolvido, que utilizou o modelo ?-? para baixos números de Re, 
+
+de Jones e Launder, 1972, revisto por Henkes et. al., 1991, encontrou a convergência sem 
+
+grandes esforços na maioria do transiente periódico. As maiores dificuldades, em relação a 
+
+convergência, foram encontradas em duas situações. Uma das dificuldades ocorreu no período 
+
+diurno, no início da manhã, quando a radiação solar começava a ser absorvida pela estufa. O 
+
+início da incidência de radiação gerou a necessidade de uma subrelaxação mais forte na equação 
+
+da energia. O outro aspecto foi o de regiões internas com refinamento de malha, já mencionado 
+
+na seção 5.2.2. Em que as regiões apontadas na figura 5.12 sofreram alterações nas equações de 
+
+?,? e T, que necessitaram de uma maior subrelaxação e maior número de iterações para atingir a 
+
+convergência. 
+
+Foi testada uma solução de baixo custo para os picos negativos de temperaturas 
+
+registrados em culturas de rosas da região serrana do estado do Rio Grande do Sul. A colocação 
+
+de tonéis cheios de água, com a função de armazenadores de calor, foi demonstrada como uma 
+
+solução para elevar a temperatura interna das estufas. No interior da estufa, na região de cultivo 
+
+das rosas, registrou-se um ganho de aproximadamente 1 ºC em relação à temperatura ambiente 
+
+no momento mais crítico. Este valor é menor do que os 2,5ºC apresentados no trabalho de 
+
+Vielmo e Schneider. Porém, o presente trabalho apresentou uma baixa defasagem temporal 
+
+quanto ao aumento de temperatura em relação à radiação solar, aproximadamente 1 h mais 
+
+rápida do que o modelo de V-S.   
+
+Embora a presença dos tonéis tenham cumprido o seu papel, elevando a temperatura 
+
+interna, esse aumento é relativamente pequeno. Isto se deve provavelmente às perdas excessivas 
+
+de calor que ocorrem durante a noite, tanto deles mesmos, conforme se pode observar na figura 
+
+5.1c, como através de toda o revestimento da estufa. Isto evidencia a necessidade do isolamento 
+
+térmico mais aprimorado no período noturno. 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lxvii 
+
+lxvii 
+
+Estas conclusões coincidem com as de Santamouris et. al. (1994), de forma 
+
+aproximada. As estufas, daquele trabalho, que possuíam cobertura de plástico e armazenadores 
+
+de calor que utilizavam água, mostraram ganho de temperatura que variavam conforme a relação 
+
+da área da estufa e do volume de água utilizado nos tanques de armazenagem. 
+
+A tabela 6.1 mostra o ganho de temperatura das estufas com a utilização dos tanques 
+
+armazenadores de calor. Nessa tabela encontra-se a razão entre a área de cultivo e a quantidade 
+
+de água utilizada em três estufas estudados no trabalho de Santamouris e o presente. 
+
+ 
+
+Tabela 6.1 – Ganho de temperatura das estufas com aquecimento passivo, com armazenadores de 
+
+calor contendo água 
+
+ 
+
+Local Área (m
+2
+) Cultura Vol. de água (m
+
+3
+) Ganho 
+
+(ºC) 
+
+Vol. água / 
+
+Área 
+
+Bet-Dagan - IL 1000 rosas 400 11 0,40 
+
+Helsink – SF 30 tomates 6 2 0,20 
+
+Fanar – RL 287 melões 25,6 2 0,09 
+
+Presente  480 - 16 1 0,03 
+
+ 
+
+ 
+
+Aumentos maiores de temperaturas exigem maior quantidade de água por área de 
+
+plantio. Associados a esta propriedade, outros tipos de cobertura como: vidro, plástico ou PVC 
+
+duplo;  acoplamento de outras formas de troca e armazenamento de calor como tubos enterrados; 
+
+podem ser inseridos na estufa com o intuito de aumentar a sua temperatura interna. 
+
+ 
+
+ 
+
+A partir deste trabalho é possível indicar algumas sugestões para futuros trabalhos: 
+
+? Revestimento plástico duplo no telhado 
+
+O aumento no material de revestimento, e consequentemente no custo da estufa, 
+
+pode ser justificado pela redução da perda de calor para o meio externo. A transferência de calor 
+
+para o meio externo se dá em grande parte através do material utilizado no revestimento. Com o 
+
+emprego de um telhado duplo, entre 1 e 4 cm de distância entre as camadas de plástico, procura-
+
+se reduzir a transferência de calor. As duas películas seriam mantidas afastadas através do 
+
+insuflamento de ar com o auxílio de um pequeno ventilador; 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lxviii 
+
+lxviii 
+
+ 
+
+? Variação da profundidade do solo no domínio computacional 
+
+Simular variações na profundidade do solo, que faz parte do domínio computacional, 
+
+com o intuito de encontrar a região mais profunda do solo que influencia os 
+
+resultados numéricos obtidos. Encontrando-se um limite, a partir do qual a 
+
+transferência de calor para o restante do domínio computacional seja desprezível, 
+
+pode-se então otimizar a colocação de sensores no solo e ratificar a independência de 
+
+domínio computacional nesta região; 
+
+ 
+
+? Considerar a presença das roseiras e de aberturas 
+
+Considerando as roseiras haverá um aumento da viscosidade e consequentemente 
+
+uma redução dos valores de velocidade nessa região. As aberturas para passagem de 
+
+funcionários e prováveis rasgos no revestimento plástico não foram computados. 
+
+Estas perdas de energia deverão ser consideradas para comparação com futuros 
+
+dados experimentais; 
+
+  
+
+? Simular a presente configuração aplicando o modelo ?-??standard para confrontação de 
+
+resultados com o modelo ?-??LRN. 
+
+Alguns trabalhos apresentam pouca diferença de resultados entre os modelos 
+
+standard e LRN. Com a utilização do modelo standard, podería-se verificar a eficiência do 
+
+mesmo para um problema de convecção natural turbulenta em grandes cavidades; 
+
+ 
+
+? Utilizar outras malhas no lugar das cartesianas 
+
+A utilização de coordenadas curvilíneas facilitaria o tratamento geométrico da estufa. 
+
+A estufa poderia ser simulada conservando plenamente suas caraterísticas geométricas. Esta 
+
+adoção também reduziria o custo computacional no que tange ao número de volumes, uma vez 
+
+que o telhado necessitaria de apenas um refinamento para cada direção. O número de volumes 
+
+reduziria em torno de 60%; 
+
+ 
+
+? A confrontação dos resultados obtidos pelo presente trabalho com uma simulação do 
+
+programa comercial Fluent, tanto em coordenadas cartesianas quanto em malhas não 
+
+estruturadas. 
+
+ 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lxix 
+
+lxix 
+
+REFERÊNCIAS BIBLIOGRÁFICAS 
+
+ 
+
+ 
+
+Barakos, G. and Mitsoulis, E., 1994, “Natural Convection Flow in a Square Cavity 
+
+Revisited: Laminar and Turbulent Models with Wall Functions”, International Journal for 
+
+Numerical Methods in Fluids, vol. 18, pp. 695-719. 
+
+Bejan, A.,1984, “Convection Heat Transfer”, John Wiley &amp;amp; Sons, USA. 
+
+Betts, P. L. and DafaÁlla, A. A., 1986, “Turbulent Buoyant Air Flow in a Rectangular 
+
+Cavity”, HTC, vol. 60, pp. 83-91. 
+
+Chesswright, R., King, K. J., Ziai, S., 1986, “Experimental Data for the Validations of 
+
+Computer Codes for the Prediction of Two-Dimensional Buoyant Cavity Flows”, HTD, vol. 60, 
+
+pp 75-81. 
+
+Chesswright, R. and Ziai, S., 1986, “Distributions of Temperature and Local Heat-
+
+Transfer Rate in Turbulent Natural Convection in a Large Retangular Cavity”, Proc. 8th Int. 
+
+heat Transfer Conf., pp 1465-1470. 
+
+Chien, K.-Y., 1980, “Predictions of Channel and Boundary Layer Flows with a Low-
+
+Reynolds-Number Two-Equation Model of Turbulence”, AIAA, 80-0134. 
+
+Cowan, G. H., Lovegrove, P. C., Quarini, G. L., 1982, “Turbulent Natural Convection 
+
+Heat Trandfer in Vetical Single Water-Filled Cavities”, Proc. 7th Int. heat Transfer Conf., vol. 
+
+2, pp. 195-204. 
+
+Davidson, L., 1990, “Calculation of the Turbulent Buoyancy-Driven Flow in a 
+
+Rectangular Cavity using an Efficient Solver and two Different Low Reynolds Number k-? 
+
+Turbulence Models”, Numerical Heat Transfer, Part A vol. 18, pp. 129-147. 
+
+Durst, F. and Rastogi A.K. , 1979, “Theoretical and experimental investigation of 
+
+turbulent flows with separation, Turbulent Shear Flows I”, Springer Verlag, Heidelberg. 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lxx 
+
+lxx 
+
+Elgobashi S.E. and Pun W.M. , 1974, “A theoretical and experimental study of turbulent 
+
+diffusion flows in cylindrical furnaces”, Proc. 15th Symposium on Combustion. 
+
+Ferziger, J.H. and Peric, M., 1997. “Computational Methods for Fluid Dynamics”, 
+
+Springer. 
+
+Fraikin, M. P., Portier, J. J., Fraikin, C. J., 1982, “Application of a ?-? Turbulence 
+
+model to na Enclosed Buoyancy Driven Recirculating Flow, Chem. Engng. Commun., vol 13, 
+
+pp. 289-314. 
+
+Gosman A.D., Khalil E.E., Whitelaw J.H., 1979, “The calculation of two-dimensional 
+
+turbulent recirculanting flows, Turbulent Shear Flows I”, Springer Verlag, Heidelberg. 
+
+Henkes, R.A.W.M. and Hoogendoorn, C. J., 1994, “Scaling of the Turbulent Natural 
+
+Convection Flow in a Heated Square Cavity”, Transactions of the ASME, vol. 116, pp. 400-
+
+408.  
+
+Henkes, R.A.W.M., Van Der Vlugt, F. F. and Hoogendoorn, C. J., 1991, “Natural-
+
+Convection Flow in a Square Cavity Calculated with Low-Reynolds-Number Turbulence 
+
+Models”, International Journal of Heat and Mass Transfer, vol. 34, pp. 377-388.  
+
+Henkes, R.A.W.M. and Hoogendoorn, C. J., 1989, “Comparison of Turbulence Models 
+
+for Natural Convection Boundary Layer Along a Heated Vertical Plate”, International Journal 
+
+of Heat and Mass Transfer, vol. 32, pp. 157-169.  
+
+Ho Minh, H. and Chassaing, P., 1977, “Pertubations of turbulent pipe flow, 
+
+Proceeedings Symposium on Turbulent Shear Flows”, Pennsylvania State University. 
+
+Ince N. Z. and Launder, B. E., 1988, “Computation of Turbulent Natural Convection in 
+
+closed Rentangular Cavities”, 2nd U. K. National Conference on Heat Transfer, Glasgow, pp 
+
+1389-1400. 
+
+Jones, I. P. and Launder, B. E. , 1972, “The Prediction of Laminarization with a Two-
+
+Equation Model of Turbulence”, International Journal of Heat and Mass Transfer, vol. 15, 
+
+pp. 301-314. 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lxxi 
+
+lxxi 
+
+Lam, C. K. G. and Bremhorst, K., 1981, “A Modified Form of the ?-? Model for 
+
+Predicting Wall Turbulence”, Journal of Fluids Engineering, vol. 103, pp. 456-460. 
+
+Launder, B.E., Morse, A.P., Rodi, W. and Spalding, D.B., 1973, “The prediction of 
+
+free-shear flows - a comparison of the performance of six turbulence models”, Proc. NASA 
+
+Langley Free Turbulent Shear Flows Conf., Vol.1, NASA SP 320. 
+
+Liu, F. e Wen, J. X., 1999, “Development and Validation of ab advanced Turbulence 
+
+Model for Buoyancy Driven Flows in Enclosures”, International Journal of Heat and Mass 
+
+Transfer, Vol.42, pp. 3967-3981. 
+
+MacGregor, R. K. and Emery, A. F., 1969, “Free Convection Through Vertical Plane 
+
+Layers-Moderate and High Prandtl number Fluids”, International Journal of Heat and Mass 
+
+Transfer, vol. 91, pp. 391-403. 
+
+Maliska, C.R., 1995. “Transferência de Calor e Mecânica dos Fluidos 
+
+Computacional”, LTC – Livros Técnicos e Científicos Editora S.A., Rio de Janeiro. 
+
+Markatos, N. C. and Pericleous, K. A., 1984, “Laminar and Turbulent Natural 
+
+Convection in na Encolsed Cavity”, International Journal of Heat and Mass Transfer, vol. 
+
+27, pp. 755-772. 
+
+Mc Guirk J.J., e Rodi, W., 1979, “The calculation of three-dimensional turbulent free 
+
+jets, Turbulent Shear Flows I”, Springer Verlog, Heidelberg. 
+
+Nielsen, P., 1973, “Berechnung der Luftbewegung in einem zwangsbelufteten Raum”, 
+
+Gesundheitsingenieur 94, Heft 10, pp. 299-302. 
+
+Patankar, S.V., 1980. “Numerical Heat Transfer and Fluid Flow”, MacGraw Hill, - 
+
+New York 
+
+Rastogi, A.K. e Rodi, W., 1978, “Predictions of heat and mass transfer in open 
+
+channels”, Journal of the Hydraulics Division, ASCE, No.HY3, pp.397-420. 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lxxii 
+
+lxxii 
+
+Rodi W., 1984, “Turbulence models and their applications in hydraulics - a state of the 
+
+art review”, Institut für Hydromechanik, University of Karlsruhe, Federal Republic of 
+
+Germany,  2nd ed. 
+
+Samuel, A.E. e Joubert, P.M., 1974, “A boundary layer developing in na increasingly 
+
+adverse pressure gradient”, Journal of Fluid Mechanics, vol.66, Part 33, pp. 481-505. 
+
+Santamouris, M, Balaras, E., Dascalaki, E. and Vallindras, M. , 1994, “Passive Solar 
+
+Agricultural Greenhouses: A Worldwide Classification and Evaluation of Technologies and 
+
+Systems used for Heating Purposes”, Solar Energy Vol. 53, nº 5, pp. 411-426. 
+
+Santamouris, M., Mihalakakou, G., Balaras C.A., Lewis, J.O., Vallindras, M., Argiriou, 
+
+A. , 1996, “Energy Conservation in Greehouses with Buried Pipes”, Energy, vol. 5, pp. 353-360. 
+
+Scholz, R., Kohlmann, J., Wolf, P., 1976, “Berechnung turbulenter Strömungen in 
+
+durchströmten Räumen”, ZAMM 56, T502-T505. 
+
+Tennekes, H. e Lumley, J.L., 1972, A First Course in Turbulence, MIT-Press, 
+
+Cambridge, Mass. 
+
+Tzaferis, A., Liparakis, D., Santamouris, M. and Argiriou, A., 1992, “Analysis of the 
+
+Accuracy and Sensitivity of Eight Models to Predict the Performance of Earth-to-Air Heat 
+
+Exchangers”, Energy and Buildings, vol. 18, pp. 35-43. 
+
+Vahl Davis, G. De, 1983, “Natural Convection of Air in Square Cavity, a Bench-Mark 
+
+Numerical Solution”, International Journal for Numerical Methods in Fluids, vol. 3, pp. 249-
+
+264. 
+
+Van Doormal, J.P. e Raithby, G.D., 1984. “Enhancements of the Simple Method for 
+
+Predicting Imcompressible Fluid Flow”. Numerical Heat Transfer, vol 7, pp. 147-163. 
+
+Versteeg, H.K. &amp;amp; Malalasekera, W., 1995. “An Introduction to Computational Fluid 
+
+Dynamics – The Finite Volume Method”, Longman Scientific &amp;amp; Technical. 
+
+
+
+_____________________________________________________________Introdução 
+
+ 
+
+lxxiii 
+
+lxxiii 
+
+Vielmo, H. A. and Schneider, P.S. ,1 1992, “Melhoramentos e Simulação Numérica do 
+
+Comportamento Térmico de Estufas para Plasticultura”, Egatea – Revista da Escola de 
+
+Engenharia, Vol. 25, Nº 4,  Escola de Engenharia da Ufrgs, Porto Alegre, RS – Brasil, 1997. 
+
+Xu, W., Chen, Q., Nieuwstadt, F. T. M., 1998, “A New Turbulence model for Near-
+
+Wall natural Convection”, International Journal of Heat and Mass Transfer, vol. 41, pp. 377-
+
+388. 
+
+ 
+
+
+</field>
+	</doc>
+</add>

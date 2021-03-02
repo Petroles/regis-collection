@@ -1,0 +1,5289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.10963</field>
+		<field name="filename">16165_327322.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+UNIVERSIDADE FEDERAL DE SANTA CATARINA
+DEPARTAMENTO DE AUTOMAC?A?O E SISTEMAS
+
+Felipe Fernandes Thome?
+
+CONTROLE PREDITIVO ROBUSTO DE SISTEMAS
+NA?O LINEARES COM ATRASO
+
+Floriano?polis
+
+2013
+
+
+
+
+
+Felipe Fernandes Thome?
+
+CONTROLE PREDITIVO ROBUSTO DE SISTEMAS
+NA?O LINEARES COM ATRASO
+
+Dissertac?a?o de mestrado submetida ao
+Programa de Po?s-Graduac?a?o em En-
+genharia de Automac?a?o e Sistemas para
+a obtenc?a?o do Grau de Mestre em En-
+genharia de Automac?a?o e Sistemas.
+Orientador: Prof. Dr. Julio Elias Normey-
+Rico
+Coorientador: Prof. Dr. Tito Lu??s
+Maia Santos
+
+Floriano?polis
+
+2013
+
+
+
+Catalogac?a?o na fonte elaborada pela biblioteca da
+Universidade Federal de Santa Catarina
+
+A ficha catalogra?fica e? confeccionada pela Biblioteca Central.
+
+Tamanho: 7cm x 12 cm
+
+Fonte: Times New Roman 9,5
+
+Maiores informac?o?es em:
+
+http://www.bu.ufsc.br/design/Catalogacao.html
+
+
+
+Felipe Fernandes Thome?
+
+CONTROLE PREDITIVO ROBUSTO DE SISTEMAS
+NA?O LINEARES COM ATRASO
+
+Esta Dissertac?a?o de mestrado foi julgada aprovada para a ob-
+tenc?a?o do T??tulo de “Mestre em Engenharia de Automac?a?o e
+Sistemas”, e aprovada em sua forma final pelo Programa de Po?s-
+Graduac?a?o em Engenharia de Automac?a?o e Sistemas.
+
+Floriano?polis, 20 de dezembro de 2013.
+
+Prof. Dr. Jomi Fred Hu?bner
+Coordenador do Curso
+
+Banca Examinadora:
+
+Prof. Dr. Julio Elias Normey-Rico
+Presidente – Orientador – DAS – UFSC
+
+Prof. Dr. Henrique Simas – EMC – UFSC
+
+Prof. Dr. Augustinho Plucenio – DAS – UFSC
+
+Prof. Dr. Rodolfo Ce?sar Costa Flesh – DAS – UFSC
+
+
+
+
+
+AGRADECIMENTOS
+
+A? minha ma?e Alaine e ao meu pai Dorival pelo amor, pelos
+ensinamentos, pelo suporte e pela confianc?a que sempre depositaram
+em mim. Aos meus irma?o pelo amor, amizade e companheirismo. Aos
+meus grandes amigos pela companhia nos momentos de alegria e pela
+forc?a nos momentos de dificuldade. Meu muito obrigado ao professor
+Julio pelos seus ensinamentos e por sua grande amizade e tambe?m ao
+professor Tito pelo grande apoio durante todo esse trabalho.
+
+
+
+
+
+Se o homem soubesse as vantagens de ser
+bom, seria homem de bem so? por ego??smo.
+
+Santo Agostinho
+
+
+
+
+
+RESUMO
+
+Nesse trabalho e? proposta uma estrate?gia de Controle Preditivo capaz
+de controlar de forma robusta processos modelados de forma na?o li-
+near com atraso de transporte. Essa abordagem e? interessante quando
+considera-se a crescente importa?ncia dos controladores preditivos em
+controle de processos complexos, devido principalmente a sua grande
+inserc?a?o na indu?stria de petro?leo e ga?s. O trabalho apresenta uma re-
+visa?o do controle preditivo na?o linear e do controle preditivo robusto
+de processos com atraso de transporte. Como resultado dessa ana?lise
+opta-se por focar os estudos no controlador PNMPC (Practical Non-
+linear Predictive Control ) e nas estrate?gias de compensac?a?o de atraso
+baseadas no preditor de Smith filtrado, dado que essas oferecem as me-
+lhores propriedades para a proposta do trabalho. Sa?o realizados estu-
+dos da robustez do PNMPC observando o comportamento da incerteza
+equivalente quando esse controlador esta? configurado para controlar
+processos com atraso de transporte. E? demonstrado que a incerteza
+equivalente traz consigo um acu?mulo de varia?veis da correc?a?o forne-
+cida pelo modelo de perturbac?a?o, sendo esse um feno?meno indesejado,
+pois aumenta a norma da incerteza equivalente levando a uma menor
+robustez do controle em malha fechada. Esse estudo traz um cami-
+nho alternativo para aumentar a robustez do PNMPC, pois evidencia
+o acu?mulo das varia?veis de correc?a?o e traz a possibilidade da utilizac?a?o
+de compensadores de atraso expl??citos, elucidando um esquema de con-
+trole com o PNMPC atuando como um controlador prima?rio que utiliza
+uma predic?a?o fornecida por um preditor para o ca?lculo do controle; le-
+vando assim a uma nova configurac?a?o, o PNMPC com um modelo de
+perturbac?a?o modificado. Propo?e-se uma estrate?gia mais robusta para
+o controle preditivo na?o linear de processos com atraso de transporte,
+o PNMPC com compensac?a?o expl??cita do atraso via PSF (preditor de
+Smith filtrado). E e? comprovado analiticamente tanto para o caso li-
+near quanto para o caso na?o linear o aumento da robustez no controle
+de processos com atraso de transporte das estrate?gias desenvolvidas
+nesse trabalho, o PNMPC, o PNMPC modificado e o PNMPC com
+compensac?a?o de atraso via preditor de Smith filtrado. Para a demons-
+trac?a?o anal??tica da robustez utiliza-se a abordagem da observac?a?o do
+comportamento da incerteza equivalente, poss??vel quando referencia-se
+o esquema de controle mais o preditor de forma equivalente e analisa-
+se a relac?a?o entre as incertezas. Ainda, durante todo o trabalho sa?o
+
+
+
+apresentadas simulac?o?es de controle que evidenciam o ganho de robus-
+tez das estrate?gias desenvolvidas, simulac?o?es essas que comparam as
+respostas dina?micas do controle em malha fechada das tre?s estrate?gias,
+PNMPC, PNMPC Modificado e PNMPC com compensac?a?o de atraso
+via preditor de Smith filtrado tanto para o caso linear quanto para o
+caso na?o linear considerando incertezas na estimac?a?o dos atrasos.
+Palavras-chave: PNMPC, PSF, Controle Preditivo, Robustez
+
+
+
+ABSTRACT
+
+It is proposed a predictive control strategy able do robustly control
+nonlinear processes with transport delay. This approach is interesting
+when it is considered the growing importance of predictive controllers
+for controlling complex processes, mainly due to its large insertion in
+the oil and gas industry. This work presents an overview of the nonli-
+near predictive control and robust predictive control of processes with
+transport delay. As a result of this analysis it is chosen to focus the stu-
+dies on the controller PNMPC (Pratical Nonlinear Predictive Control)
+and on the transport delay compensantion strategies based on filtered
+Smith predictor as they offer the best properties for the proposed work.
+It is performed studies of the robustness of PNMPC observing the beha-
+vior of the equivalente uncertainty when the controller is configured to
+control processes with transport delay. It is shown that the equivalent
+uncertainty brings with itself an accumulation of the correction variable
+provided by the disturbance model, it is an unwanted phenomenon be-
+cause it increases the norm of the equivalent uncertainty decreasing the
+robustness of closed loop control. This study provides an alternative
+way to increase the robustness of the PNMPC for demonstrating the
+accumulation of the correction variable and it brings the possibility of
+using explicit delay compensators. It can clarify a control scheme with
+PNMPC acting as a primary controller that uses a prediction provided
+by a predictor for the calculation of control. It is proposed a robust non-
+linear predictive control of processes with transport delay, the PNMPC
+with explicit delay compensation via FSP (filtered Smith predictor.
+And it is analytically demonstrated for both linear and nonlinear cases
+the increase of the robustness in control process with transport delay.
+For the analytical demonstration of the robustness it is observed the
+behavior of the equivalent uncertainty, that is possible when it is re-
+ferenced the control scheme more the predictor, in a equivalent way,
+for analyse the relationship between uncertainties. Also, control si-
+mulations show the robustness gain of the developed strategies, these
+simulations compare the dynamic responses, of the closed loop control,
+of the three strategies: PNMPC, modified PNMPC and the PNMPC
+with delay compensator via FSP, for both linear and nonlinear cases
+and considering uncertainties in the transport delay.
+Keywords: PNMPC, FSP, Predictive Control, Robustness
+
+
+
+
+
+LISTA DE FIGURAS
+
+Figura 1 Controle preditivo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+
+Figura 2 Modelo de perturbac?a?o do PNMPC . . . . . . . . . . . . . . . . . . . . 45
+
+Figura 3 Diagrama de blocos para um controle com atraso . . . . . . 50
+
+Figura 4 Preditor de Smith . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+
+Figura 5 Preditor de Smith filtrado . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 52
+
+Figura 6 Estrutura para implementac?a?o do preditor de Smith fil-
+trado. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 53
+
+Figura 7 Controle MPC com compensac?a?o expl??cita do atraso . . . 56
+
+Figura 8 Simulac?a?o de controle PNMPC sem erros de modelagem 60
+
+Figura 9 Simulac?a?o de controle PNMPC com erros de modelagem 60
+
+Figura 10 Modelo de perturbac?a?o do PNMPC . . . . . . . . . . . . . . . . . . . . 61
+
+Figura 11 PNMPC e a predic?a?o expl??cita . . . . . . . . . . . . . . . . . . . . . . . . . 63
+
+Figura 12 Respostas temporais; d = 10 e dn = 8 . . . . . . . . . . . . . . . . . . 70
+
+Figura 13 Respostas temporais; d = 80 e dn = 64 . . . . . . . . . . . . . . . . . 71
+
+Figura 14 Respostas temporais; d = 80 e dn = 64 . . . . . . . . . . . . . . . . . 76
+
+Figura 15 Respostas temporais; d = 20 e dn = 18 . . . . . . . . . . . . . . . . . 78
+
+Figura 16 Respostas temporais; d = 100 e dn = 89 . . . . . . . . . . . . . . . 78
+
+Figura 17 Respostas temporais com Preditor Modificado; d = 100
+e dn = 89 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 78
+
+Figura 18 Resposta temporal do controle do reator com o PNMPC 80
+
+Figura 19 Resposta temporal do controle do reator com o PNMPC
+Modificado . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 80
+
+Figura 20 PNMPC com compensac?a?o de atraso via preditor de
+Smith filtrado . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 82
+
+Figura 21 Preditor de Smith filtrado; d = 100 e ? = 70 . . . . . . . . . . . 84
+
+Figura 22 Preditor modificado; d = 100 e ? = 70 . . . . . . . . . . . . . . . . . 84
+
+Figura 23 Controle Linear com Compensac?a?o de Atraso . . . . . . . . . . 87
+
+Figura 24 Esquema equivalente de Controle . . . . . . . . . . . . . . . . . . . . . . 87
+
+
+
+
+
+LISTA DE ABREVIATURAS E SIGLAS
+
+PID Proportional, Integral and Derivative - Proporcional, In-
+tegral e Derivativo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+
+DMC Dynamic Matrix Control - Controle por Matriz Dina?mica 22
+
+GPC Generalized Predictive Control - Controle Preditivo Ge-
+neralizado . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+
+LMPC Linear Model Predictive Control - Controle Preditivo
+baseado em Modelo Linear . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+
+NMPC Nonlinear Model Predictive Control - Controle Preditivo
+baseado em Modelo Na?o Linear . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+
+MPC Model Predictive Control - Controle Preditivo baseado
+em Modelo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+
+PNMPC Pratical Nonlinear Model Predictive Control - Controle
+Preditivo Pra?tico baseado em Modelo Na?o Linear . . . . . . . . . . 23
+
+SPF Smith Predictor Filtered - Preditor de Smith filtrado . . 23
+
+SQP Sequential Quadratic Programming - Programac?a?o Qua-
+dra?tica Sequencial . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+
+EPSAC Extended Prediction Self-Adaptive Control - Controlador
+Preditivo Auto-Adaptativo Estendido . . . . . . . . . . . . . . . . . . . . . . 30
+
+MAC Model Algorithmic Control - Controle Algor??tmico base-
+ado em Modelo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+
+ARIMA Auto-Regressive and Integrated Moving Average - Auto-
+Regressivo e de Me?dia Mo?vel Integrada . . . . . . . . . . . . . . . . . . . . 33
+
+SISO Single-Input Single-Output - Uma Entrada e Uma Sa??da 35
+
+QP Quadratic Programming - Programac?a?o Quadra?tica . . . . 36
+
+MIMO Multiple-Input Multiple-Output - Mu?ltiplas Entradas e
+Mu?ltiplas Sa??das . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 37
+
+NARMAX Nonlinear Auto-regressive with Moving Average and Exo-
+genous Inputs - Auto-Regressivo Na?o Linear com Me?dia Mo?vel
+e Entradas Exo?genas . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 44
+
+BIBO Bounded Input Bounded Output - Entrada Limitada Sa??da
+Limitada . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 91
+
+SBAI Simpo?sio Brasileiro de Automac?a?o Inteligente . . . . . . . . . 108
+
+
+
+
+
+LISTA DE SI?MBOLOS
+
+R Conjunto dos nu?meros reais . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+a Vetor com dimenso?es apropriadas . . . . . . . . . . . . . . . . . . . . 30
+
+a(k) Elemento k do vetor a . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+
+a(k+j|k) Predic?a?o para y(k +j) dadas as informac?o?es do instante
+k . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+
+Rp Conjunto dos vetores de dimensa?o p com nu?meros reais 30
+a Se?rie de valores . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+
+ai Elemento i da se?rie a . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+
+A Matriz com dimenso?es apropriadas . . . . . . . . . . . . . . . . . . . . 31
+
+A Func?a?o de transfere?ncia . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+
+A(z?1) Matriz de transfere?ncia pulsada . . . . . . . . . . . . . . . . . . . . . . . 31
+
+A(s) Func?a?o de transfere?ncia cont??nua . . . . . . . . . . . . . . . . . . . . . . 31
+
+z?1 Operador atraso unita?rio . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+
+? Operador de incremento, ? = 1 ?z?1 . . . . . . . . . . . . . . . . 31
+?a Incremento unita?rio do vetor a . . . . . . . . . . . . . . . . . . . . . . . . 31
+
+?a(k) Incremento de a(k) em k, ?a(k) = a(k) ?a(k ? 1) . . . . 31
+a? Derivada de a. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 37
+?a
+?x
+
+Derivada parcial de a em relac?a?o a x . . . . . . . . . . . . . . . . . . 41
+?a
+?x
+|(a(i),x(i))Derivada parcial de a em relac?a?o a x, aplicada no ponto
+(a(i),u(i)) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+
+I Matriz identidade . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+
+A(: ,n) coluna n da matriz A . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+
+q?1 Operador deslocamento unita?rio . . . . . . . . . . . . . . . . . . . . . . 45
+
+A(ej?) Resposta em freque?ncia de A(z?1) . . . . . . . . . . . . . . . . . . . 56
+
+A(j?) Resposta em freque?ncia de A(s) . . . . . . . . . . . . . . . . . . . . . . 56
+
+a ? b Valor do a tende a b . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 63
+||A|| Norma induzida da matriz A. . . . . . . . . . . . . . . . . . . . . . . . . . 69
+A Conjunto de matrizes A. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 86
+
+a Seque?ncia indefinida de valores do vetor a. . . . . . . . . . . . . 95
+
+a[i,j] Seque?ncia definida de valores de a, a[i,j] = {a(i), . . . ,a(j)} 95
+|a|s Norma induzida do vetor a. . . . . . . . . . . . . . . . . . . . . . . . . . . . 95
+
+
+
+
+
+SUMA?RIO
+
+1 INTRODUC?A?O . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+1.1 OBJETIVOS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+1.2 REVISA?O DA LITERATURA . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+1.3 ORGANIZAC?A?O DO TRABALHO . . . . . . . . . . . . . . . . . . . . . . 27
+2 CONTROLE PREDITIVO . . . . . . . . . . . . . . . . . . . . . . . . . 29
+2.1 CONTROLE PREDITIVO BASEADO EM MODELO LI-
+
+NEAR . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+2.1.1 Modelo de Predic?a?o . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+2.1.2 Modelo de Perturbac?a?o . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+2.1.3 Reposta Livre e Forc?ada . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+2.1.4 Func?a?o Objetivo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+2.1.5 Trajeto?ria de Refere?ncia e Restric?o?es . . . . . . . . . . . . . . 35
+2.1.6 Obtenc?a?o da Lei de Controle . . . . . . . . . . . . . . . . . . . . . . . 36
+2.2 CONTROLE PREDITIVO BASEADO EM MODELO NA?O
+
+LINEAR . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 37
+2.2.1 Me?todos com Modelos de Processo Na?o Linear na
+
+Func?a?o Objetivo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 38
+2.2.2 Me?todos com Modelos de Processo Particulares . . . . 38
+2.2.3 Me?todos com Modelos Linearizados . . . . . . . . . . . . . . . . 39
+2.3 PRATICAL NONLINEAR MODEL PREDICTIVE CON-
+
+TROL . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 40
+2.3.1 Obtenc?a?o Nume?rica das Predic?o?es . . . . . . . . . . . . . . . . . 44
+2.3.2 Modelo de Perturbac?a?o . . . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+2.4 CONCLUSA?O . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+3 COMPENSAC?A?O DE ATRASO . . . . . . . . . . . . . . . . . . . . 49
+3.1 PREDITOR DE SMITH . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 49
+3.2 PREDITOR DE SMITH FILTRADO . . . . . . . . . . . . . . . . . . . . 51
+3.3 COMPENSAC?A?O DE ATRASO EM CONTROLADORES
+
+PREDITIVOS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 53
+3.4 CONCLUSA?O . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 56
+4 PNMPC COM COMPENSAC?A?O DE ATRASO RO-
+
+BUSTA . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 59
+4.1 MODIFICAC?A?O NO ESQUEMA DE CORREC?A?O DA PREDI-
+
+C?A?O NO PNMPC . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 61
+4.1.1 Ana?lise da Incerteza Equivalente em um PNMPC
+
+Linear . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 62
+4.1.2 Preditor Modificado . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 71
+
+
+
+4.1.3 Preditor Modificado em um PNMPC Na?o Linear . . 76
+4.1.4 Estudo de Caso . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 78
+4.2 PNMPC COM COMPENSAC?A?O DE ATRASO VIA PRE-
+
+DITOR DE SMITH FILTRADO . . . . . . . . . . . . . . . . . . . . . . . . . 80
+4.3 CONCLUSA?O . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 83
+5 ANA?LISE DE ROBUSTEZ . . . . . . . . . . . . . . . . . . . . . . . . . 85
+5.1 DESCRIC?A?O DAS INCERTEZAS . . . . . . . . . . . . . . . . . . . . . . . 85
+5.2 ANA?LISE LINEAR DA ROBUSTEZ . . . . . . . . . . . . . . . . . . . . . 86
+5.2.1 Compensac?a?o de Atraso Expl??cita . . . . . . . . . . . . . . . . . . 88
+5.2.2 Compensac?a?o de Atraso Modificada . . . . . . . . . . . . . . . . 89
+5.2.3 Compensac?a?o via Preditor de Smith Filtrado . . . . . . 90
+5.3 ANA?LISE NA?O LINEAR DA ROBUSTEZ . . . . . . . . . . . . . . . . 94
+5.3.1 PNMPC . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 96
+5.3.2 PNMPC Modificado . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 100
+5.3.3 PNMPC via Preditor de Smith Filtrado . . . . . . . . . . . 102
+5.4 CONCLUSA?O . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 105
+6 CONSIDERAC?O?ES FINAIS . . . . . . . . . . . . . . . . . . . . . . . 107
+REFERE?NCIAS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 109
+
+
+
+21
+
+1 INTRODUC?A?O
+
+Grande parte dos processos existentes na indu?stria de petro?leo e
+ga?s utilizam controladores preditivos [1]. Neste cena?rio eles esta?o fre-
+quentemente configurados em uma segunda camada, para o constante
+ajuste dos set points de controladores PID (Proportional, Integral and
+Derivative), por sua vez configurados em uma primeira camada de con-
+trole [2].
+
+A crescente utilizac?a?o dessas estrate?gias pode ser atribu??da ao
+fato de elas facilitarem a declarac?a?o de problemas de controle relativa-
+mente complexos, como os casos de controle de processos multivaria?veis,
+processos integradores, processos insta?veis, processos na?o lineares e pro-
+cessos com atraso de transporte. Outras vantagens importantes sa?o a
+declarac?a?o simples e direta de restric?o?es de controle e de processo e
+tambe?m a relativa praticidade de ajuste do controlador, que o viabiliza
+para pessoas com conhecimentos superficiais na teoria de controle de
+processos [3].
+
+A respeito da expressa?o Controle Preditivo, e? importante sali-
+entar que ela na?o se refere a uma estrate?gia de controle apenas, mas
+a um grupo vasto de estrate?gias de controle que possuem as seguintes
+caracter??sticas em comum [3]:
+
+• a utilizac?a?o de um modelo do processo para predizer a magnitude
+de suas sa??das em um horizonte de tempo futuro predeterminado;
+
+• a utilizac?a?o de um me?todo de otimizac?a?o para calcular o esforc?o
+de controle futuro, que atrave?s da otimizac?a?o de uma func?a?o custo
+busca, dentre outros objetivos, a minimizac?a?o do erro de segui-
+mento a refere?ncia futura;
+
+• a utilizac?a?o da estrate?gia do horizonte deslizante, que significa a
+cada instante de amostragem calcular uma seque?ncia de valores
+de controle futuro necessa?rios para se otimizar uma func?a?o custo
+e aplicar apenas o primeiro valor de controle desse horizonte.
+
+Ainda no contexto do controle preditivo, as estrate?gias mais utili-
+zadas na indu?stria sa?o aquelas aplicadas ao controle preditivo de proces-
+sos lineares, LMPC (Linear Model Predictive Control ), como as te?cnicas
+DMC (Dynamic Matrix Control ) e GPC (Generalized Predictive Con-
+trol ), que desde a de?cada de 70 consolidaram-se como as principais
+estrate?gias preditivas. Como na verdade, em esse?ncia, todos processos
+sa?o na?o lineares, a pra?tica corrente e? a linearizac?a?o em torno de pontos
+
+
+
+22
+
+de operac?a?o e a utilizac?a?o das estrate?gias de controle preditivo para
+processos lineares [4].
+
+Contudo, a evoluc?a?o da concorre?ncia industrial que acentua a
+necessidade de maior rendimento dos processos de produc?a?o e a pre-
+senc?a de novas restric?o?es cada vez mais severas demandadas principal-
+mente por regulamentac?o?es governamentais, como aquelas relacionadas
+a? sau?de e ao meio ambiente, exigem um maior desempenho dos con-
+troladores. E ainda, a viabilizac?a?o do controle de diferentes e novos
+processos com na?o linearidades mais complexas, oriundos das necessi-
+dades de novos setores industriais, so? pode ser dada com a utilizac?a?o
+de modelos na?o lineares para representar a sua dina?mica [5]. Assim,
+a aplicac?a?o do controle preditivo em processos na?o lineares, NMPC
+(Nonlinear Model Predictive Control ), surge como uma boa soluc?a?o
+para essas questo?es.
+
+Como a aplicac?a?o de controle preditivo requer a utilizac?a?o de um
+modelo do processo, essa necessidade de um maior desempenho pode
+requerer modelos mais realistas, na?o apenas linearizac?o?es em pontos de
+operac?o?es fixos. Isso e? necessa?rio tanto porque o grau de na?o lineari-
+dade dos processos controlados pode ser alto quanto porque os pontos
+de operac?o?es podem ser varia?veis. Para suprir essa necessidade surgi-
+ram com o decorrer do tempo diversas te?cnicas MPC (Model Predictive
+Control ) que apresentam maior desempenho ao controlar sistemas na?o
+lineares. Uma das va?rias classificac?o?es [1] agrupa as te?cnicas em 3 con-
+juntos:
+
+1. te?cnicas que utilizam diretamente um modelo na?o linear geral e
+tambe?m um algor??tmo de otimizac?a?o na?o linear gene?rico. Es-
+sas te?cnicas, apesar de gerais, na?o se apresentam interessantes
+quando avalia-se o seu desempenho1 [1];
+
+2. te?cnicas que utilizam modelos na?o lineares espec??ficos para cada
+situac?a?o e um algor??tmo de otimizac?a?o particular. Essas te?cnicas,
+apesar de apresentarem bom desempenho, sa?o relativamente com-
+plexas, o que diminui as possibilidades de aplicac?a?o. Ale?m de que
+o processo na?o linear em questa?o deve se adequar a cada caso es-
+pec??fico;
+
+3. te?cnicas que usam formas aproximadas para o ca?lculo das predic?o?es
+do processo na?o linear de forma tal a utilizar um algor??tmo de oti-
+mizac?a?o linear.
+
+1Essas estrate?gias podem demandar um alto desempenho computacional, mesmo
+sem fornecer grandes vantagens quando comparadas com te?cnicas LMPC
+
+
+
+23
+
+Dentre as te?cnicas de controle preditivo na?o linear do terceiro
+grupo acima citado, o PNMPC (Pratical Nonlinear Model Predictive
+Control ) [1] vem apresentando bom desempenho e vasta possibilidade
+de aplicac?a?o, o que o torna interessante quando avalia-se simplicidade.
+
+Outro componente comum no comportamento dos processos,
+principalmente nos da indu?stria de petro?leo e ga?s, e? o atraso. Esse
+feno?meno aparece devido ao tempo necessa?rio para o transporte de
+mate?ria, de energia e de informac?a?o, bem como quando va?rios processos
+de baixa ordem compo?em o sistema a ser controlado ou devido tambe?m
+ao tempo necessa?rio para o ca?lculo do pro?ximo esforc?o de controle [6].
+
+A dificuldade de controlar em malha fechada esses tipos de pro-
+cessos e? tradicionalmente reconhecida pela literatura. Ela pode ser
+explicada pelo fato de a ac?a?o de controle a ser aplicada no instante
+atual ser calculada com base em um erro entre a sa??da e o set point
+referente a um tempo anterior ao atraso. Esse feno?meno tambe?m pode
+ser explicado no dom??nio da freque?ncia, no qual o atraso de transporte
+diminui a margem de fase do sistema sob controle de forma acentuada
+podendo provocar a instabilidade em malha fechada [6]. Sa?o justamente
+estes fatores que fazem com que controladores baseados em estrate?gias
+cla?ssicas, como os controladores PID, somente sejam capazes de manter
+a estabilidade de processos controlados de forma conservadora, ou seja,
+submetendo-os a dina?micas lentas [6].
+
+Alguns estudos apresentaram estrate?gias interessantes para con-
+tornar o problema do atraso de transporte e conseguir-se melhor desem-
+penho dos controladores. A maioria dessas estrate?gias sa?o baseadas nas
+ideias do preditor de Smith [7], que pode alcanc?ar bom desempenho em
+malhas locais. Como mencionado inicialmente, o controle de processos
+com atraso e? tambe?m uma das vantagens de controladores preditivos,
+que tratam intrinsecamente esse problema, ja? que fazem uso de um mo-
+delo do processo para predizer sa??das futuras, podendo simplesmente
+considerar aquelas que aparecem apo?s o efeito do atraso.
+
+No entanto, o marco teo?rico que apresenta uma estrate?gia com
+alto desempenho robusto para controladores preditivos em plantas com
+atraso so? aparece em [4], com a utilizac?a?o de um filtro de robustez
+espec??fico para lidar com problemas de incerteza e perturbac?o?es des-
+conhecidas, dando origem ao GPC com base no FSP, Filtered Smith
+Predictor.
+
+Problemas como os levantados acima, nos quais deseja-se con-
+trolar processos com dina?micas na?o lineares complexas e variac?a?o cons-
+tante de pontos de operac?a?o ou deseja-se controlar processos com longos
+atrasos de transporte, sa?o ha? algum tempo resolvidos individualmente
+
+
+
+24
+
+de forma satisfato?ria. No entanto, percebe-se certa care?ncia no que diz
+respeito ao desenvolvimento de uma estrate?gia eficiente, que apresente
+alto desempenho robusto ao controlar processos que possuam as duas
+problema?ticas acima citadas ao mesmo tempo e ainda que fac?a uso das
+diversas vantagens oferecidas pelos controladores preditivos. E? nesse
+contexto que esse projeto de pesquisa se faz presente e tem como obje-
+tivo principal o estudo e o desenvolvimento de uma estrate?gia que seja
+capaz de lidar com todas essas questo?es de forma robusta.
+
+1.1 OBJETIVOS
+
+A partir da contextualizac?a?o inicial e? poss??vel listar os objetivos
+desse projeto. O problema exposto ressalta a necessidade do desenvol-
+vimento de uma estrate?gia robusta para o controle preditivo de proces-
+sos na?o lineares com atraso de transporte. Assim, declara-se o objetivo
+principal por:
+
+• unificar a compensac?a?o robusta do atraso e o controle preditivo
+para sistemas na?o lineares utilizando a estrate?gia FSP e o al-
+gor??tmo PNMPC.
+
+Para alcanc?ar esse objetivo, dois objetivos espec??ficos foram es-
+tabelecidos, sendo eles:
+
+1. elaborar um algor??tmo para implementar um controlador predi-
+tivo MPC que integre o FSP com o PNMPC;
+
+2. analisar as propriedades de robustez da estrate?gia de controle
+desenvolvida.
+
+1.2 REVISA?O DA LITERATURA
+
+A utilizac?a?o de controladores preditivos segue em uma crescente
+ascensa?o ha? mais de 30 anos. O destaque principal se da? ao setor pe-
+troqu??mico, ocupando sempre as atenc?o?es da maioria dos fornecedores
+que acabam investindo na modernizac?a?o dos seus controladores prediti-
+vos, transformando-os de tempos em tempos. Pesquisas que organizam
+as gerac?o?es desses equipamentos mostram que ja? se pode considerar a
+presenc?a de uma quarta gerac?a?o dessa tecnologia [8], confirmando as-
+sim sua ra?pida evoluc?a?o. Tal crescimento incentiva sempre mais e mais
+
+
+
+25
+
+as pesquisas cient??ficas relacionadas ao desenvolvimento das estrate?gias
+de controle preditivo.
+
+Demandas industriais tambe?m da?o corpo a?s pesquisas em torno
+de estrate?gias NMPC. Atualmente existem diversas estrate?gias relacio-
+nadas ao controle preditivo de sistemas na?o lineares, que podem ser
+agrupadas da seguinte maneira [1]:
+
+• as que utilizam um algor??tmo de otimizac?a?o gene?rico e tambe?m
+modelos na?o lineares generalizados para o controle dos processos
+na?o lineares;
+
+• as que utilizam modelos na?o lineares espec??ficos e algor??tmos de
+otimizac?a?o tambe?m espec??ficos para o mesmo propo?sito;
+
+• as que podem utilizar diversos modelos lineares e tambe?m oti-
+mizac?a?o linear para controlar processos na?o lineares.
+
+A respeito do primeiro grupo de estrate?gias, encontra-se na oti-
+mizac?a?o de func?o?es objetivo com a presenc?a de modelos de predic?a?o
+na?o lineares a principal soluc?a?o para o ca?lculo dos esforc?os de con-
+trole. Essa otimizac?a?o pode ser realizada atrave?s da utilizac?a?o da Pro-
+gramac?a?o Na?o Linear ou SQP (Sequential Quadratic Programming ).
+Devido a utilizac?a?o de modelos lineares gene?ricos esses algor??tmos po-
+dem ser aplicados em diversas situac?o?es. No entanto, possuem baixo
+desempenho [9].
+
+No segundo grupo de estrate?gias de controle preditivo de siste-
+mas na?o lineares, a dificuldade de desempenho oriunda da utilizac?a?o
+dos me?todos de otimizac?a?o escolhidos pode ser contornada com a uti-
+lizac?a?o de modelos na?o lineares espec??ficos, como por exemplo Se?ries
+de Volterra [10], em conjunto com a utilizac?a?o de um me?todo mais
+simples de otimizac?a?o na?o linear. No entanto, o processo real deve res-
+peitar todas as restric?o?es exigidas pela te?cnica de modelagem espec??fica
+adotada.
+
+No terceiro grupo de estrate?gias, tem-se aquelas que fazem uso
+de diversos modelos lineares e tambe?m de otimizac?a?o linear. Esses
+tipos de estrate?gias sa?o tambe?m referidas em outros contextos, como
+MPC robusto [11–13], MPC adaptativo [14] e MPC escalonado [15].
+Vale ressaltar o baixo desempenho desses algor??tmos e o alto custo
+computacional agregado as suas utilizac?o?es [1].
+
+Geralmente muitos processos na?o lineares sa?o modelados utili-
+zando algor??tmos, a exemplo de redes neurais, que fornecem as sa??das
+nominais dos processos dadas as entradas e os estados atuais. Com a
+
+
+
+26
+
+premissa da existe?ncia de tais abordagens de modelagem, mais recente-
+mente, em [1], foi desenvolvida uma estrate?gia eficiente para o controle
+de muitos desses processos na?o lineares. Essa estrate?gia, PNMPC, tem
+em seu cerne a aproximac?a?o linear do modelo de predic?a?o na?o linear
+a cada instante de amostragem e a consecutiva otimizac?a?o quadra?tica,
+similar, portanto, a? formulac?a?o tradicional do algor??tmo GPC. No en-
+tanto, o diferencial dessa te?cnica e? a maneira pela qual ela define a
+linearizac?a?o do modelo de predic?a?o na?o linear a cada instante de amos-
+tragem. Nela tambe?m e? utilizada a formulac?a?o tradicional de ca?lculo da
+predic?a?o dividindo a resposta livre da resposta forc?ada e e? proposta ape-
+nas a linearizac?a?o nume?rica da resposta forc?ada, enquanto mante?m-se
+maior proximidade da resposta real do processo ao utilizar um modelo
+na?o linear para determinar a resposta livre [1]. O algor??tmo PNMPC
+tem sido implementado em va?rias situac?o?es pra?ticas, demonstrando um
+bom compromisso entre desempenho, simplicidade e velocidade [1]. Por
+isso ele sera? o algor??tmo NMPC escolhido para esse trabalho.
+
+Sobre a evoluc?a?o das abordagens que tratam do controle predi-
+tivo de processos com atraso de transporte, ha? algum tempo ja? foi mos-
+trada a possibilidade de se contornar o problema do atraso de forma
+impl??cita, ou seja, utilizando os pro?prios para?metros do controlador
+para compensar internamente o atraso [3]. Por esse motivo, durante
+muito tempo, acreditou-se que o atraso na?o apresentava problemas aos
+algor??tmos MPC e isso explica, em parte, a evoluc?a?o lenta da literatura
+de Controle Preditivo para sistemas com atraso [2]. Shi, Chai e Yue
+[16] tambe?m ja? apontaram que existem poucos algor??tmos MPC vol-
+tados para tratar da questa?o do atraso de maneira expl??cita, ou seja,
+realizar uma compensac?a?o do atraso sem envolver o controlador pre-
+ditivo [16]. E ainda, os algor??tmos MPC mais utilizados na indu?stria
+usam func?o?es custo com horizonte finito [8], sendo que a literatura que
+estuda o efeito do atraso em algor??tmos MPC de horizonte finito e? ainda
+mais escassa do que aquela baseada em horizonte infinito [2].
+
+Apesar dessas dificuldades, surgiram algumas abordagens que
+tratam o efeito do atraso em algor??tmos MPC de horizonte finito, como
+a proposta em [17], que e? interessante por apresentar uma maneira
+para compensar o atraso de forma expl??cita. Mas por outro lado esse
+trabalho na?o estuda o efeito de incertezas no atraso. Outro trabalho
+que aborda a questa?o do atraso em estrate?gias MPC de horizonte finito
+e? o apresentado em [18], com o atraso expresso na forma de incertezas
+polito?picas, sendo poss??vel assim estabilizar o sistema de forma robusta
+na presenc?a de restric?o?es no controle e incertezas no atraso. No entanto,
+o esforc?o computacional nesse caso fica dependente do tamanho do
+
+
+
+27
+
+atraso nominal, o que e? impro?prio para atrasos muito longos. Outro
+trabalho, apresentado recentemente em [19], mostra uma estrate?gia de
+controle preditivo robusto para sistemas com atraso com caracter??sticas
+importantes como controle por zonas e dom??nio de atrac?a?o aumentado,
+mas ainda o comprimento do atraso afeta o tamanho da representac?a?o,
+como ocorre em [18].
+
+No contexto da linha de pesquisa apresentada em [17], uma es-
+trutura de compensac?a?o baseada no FSP pode ser utilizada no controle
+preditivo para sistemas com atraso. Esse trabalho iniciou-se com os
+desenvolvimentos contidos em [4], nos quais foram demonstrados para
+sistemas sem restric?o?es que o desempenho robusto de estrate?gias MPC
+convencionais poderia ser melhorado a partir da utilizac?a?o de um fil-
+tro de robustez. Seguiu-se enta?o por diversas extenso?es e adaptac?o?es
+culminando no trabalho realizado em [2], no qual a partir de um deta-
+lhamento entre as diferenc?as entre a compensac?a?o de atraso realizada
+de forma impl??cita nos controladores MPC e a compensac?a?o de atraso
+realizada via preditor de Smith filtrado, demonstrou-se que o preditor
+de Smith filtrado pode ser utilizado para melhorar a robustez de con-
+troladores preditivos na presenc?a tambe?m de restric?o?es. Devido as suas
+qualidades, a estrate?gia FSP sera? utilizada nesse trabalho.
+
+Como proposta tem-se enta?o a combinac?a?o das estrate?gias FSP
+e PNMPC para o controle de uma classe de processos na?o lineares com
+atraso. Trabalhos anteriores ja? propuseram te?cnicas para o controle de
+processos na?o lineares com atraso de transporte, como o apresentado
+em [20]. O autor utiliza um algor??tmo de linearizac?o?es sucessivas combi-
+nado com uma compensac?a?o de atraso via preditor de Smith, e mostra
+um ganho nos resultados obtidos quando comparado com te?cnicas li-
+neares de controle que utilizam um modelo do processo linearizado.
+Pretende-se agora estender as propriedades de robustez existentes nos
+LMPC com preditor de Smith filtrado para o caso de controladores
+PNMPC com preditor de Smith filtrado.
+
+1.3 ORGANIZAC?A?O DO TRABALHO
+
+Os pro?ximos cap??tulos apresentam o trabalho realizado no pro-
+jeto, partindo das refere?ncias teo?ricas, passando pelo desenvolvimento,
+ate? chegar a?s concluso?es. No cap??tulo 2 e? apresentado o embasamento
+teo?rico necessa?rio para a compreensa?o do controle preditivo, com os
+conceitos principais relacionados a?s estrate?gias de controle preditivo
+baseado em modelo linear, uma abordagem introduto?ria ao controle
+
+
+
+28
+
+preditivo baseado em modelo na?o linear e finalizado com um detalha-
+mento especial da estrate?gia PNMPC.
+
+O cap??tulo 3 conte?m nas suas duas primeiras sec?o?es o emba-
+samento teo?rico necessa?rio para a compreensa?o das te?cnicas de com-
+pensac?a?o de atraso denominadas preditor de Smith e preditor de Smith
+filtrado, as quais servem de base a? apresentac?a?o da terceira sec?a?o desse
+mesmo cap??tulo, na qual e? abordada a tema?tica relacionada a? com-
+pensac?a?o de atraso em controladores preditivos.
+
+No cap??tulo 4 e? detalhada parte dos desenvolvimentos relaciona-
+dos ao objetivo principal desse projeto: estudar a estrate?gia PNMPC
+com vistas a torna?-la mais robusta. Na sua primeira sec?a?o e? apresen-
+tado o desenvolvimento de uma modificac?a?o no esquema tradicional de
+correc?a?o da predic?a?o no PNMPC e na sua segunda sec?a?o e? apresentada
+uma nova estrate?gia de controle preditivo de processos na?o lineares com
+compensac?a?o robusta de atraso, o PNMPC com compensac?a?o robusta
+de atraso via preditor de Smith filtrado.
+
+No cap??tulo 5 o desenvolvimento final do objetivo desse projeto
+e? apresentado atrave?s de ana?lises de robustez para tre?s estrate?gias es-
+pec??ficas, o PNMPC, o PNMPC com o esquema de correc?a?o da predic?a?o
+modificado e o PNMPC com compensac?a?o de atraso robusta via pre-
+ditor de Smith filtrado, sendo essas duas u?ltimas as estrate?gias desen-
+volvidas nesse trabalho.
+
+Por fim, as concluso?es e os u?ltimos comenta?rios esta?o contidos
+no cap??tulo 6.
+
+
+
+29
+
+2 CONTROLE PREDITIVO
+
+O termo controle preditivo pode muitas vezes levar a? conclusa?o
+de que se esta referindo a uma estrate?gia espec??fica de controle. Na
+verdade essa designac?a?o e? utilizada para retratar uma ampla fam??lia de
+controladores que obte?m uma ac?a?o de controle atrave?s da minimizac?a?o
+de uma func?a?o objetivo, a qual contempla, dentre diversas varia?veis o
+erro entre a sa??da predita em um horizonte futuro e a refere?ncia [6].
+
+Os algor??tmos que fazem parte da fam??lia Controle Preditivo pos-
+suem em comum as caracter??sticas de utilizarem um modelo expl??cito do
+processo sob controle para obterem uma predic?a?o, utilizada no ca?lculo
+da pro?xima ac?a?o de controle, um me?todo de obtenc?a?o da lei de con-
+trole e tambe?m uma func?a?o objetivo a ser minimizada. Sendo que as
+diferentes opc?o?es de modelo, func?a?o objetivo e me?todo de ca?lculo do
+controle geram as diversas verso?es de controladores preditivos propostos
+na literatura.
+
+Nesse trabalho a intenc?a?o e? propor uma estrate?gia de Controle
+Preditivo capaz de controlar de forma robusta processos na?o lineares
+com atraso de transporte. Com vistas a introduzir a teoria que formula
+o PNMPC apresentam-se na sec?a?o 2.1 os principais conceitos acerca de
+controladores preditivos lineares, em seguida na sec?a?o 2.2 apresenta-se
+tambe?m uma introduc?a?o sobre o controle preditivo de processos na?o
+lineares e, por fim, na sec?a?o 2.3 apresenta-se o PNMPC.
+
+2.1 CONTROLE PREDITIVO BASEADO EM MODELO LINEAR
+
+Como citado inicialmente, um controlador preditivo e? definido
+principalmente pelo modelo que utiliza para predizer o estado futuro
+do processo sob controle, pela func?a?o objetivo que utiliza para calcular
+a ac?a?o de controle e por u?ltimo pelo me?todo de otimizac?a?o utilizado
+para o ca?lculo. A seguir apresenta-se um pouco sobre cada uma des-
+sas caracter??sticas de uma estrate?gia de controle preditivo baseado em
+modelo linear.
+
+2.1.1 Modelo de Predic?a?o
+
+O modelo de predic?a?o e? provavelmente o elemento mais impor-
+tante dentro do controlador. Ele deve ser capaz de representar ade-
+
+
+
+30
+
+quadamente a dina?mica do processo sob controle, pois assim e? poss??vel
+obter as predic?o?es para a sa??da do processo que sera?o utilizadas no
+ca?lculo para a pro?xima ac?a?o de controle.
+
+Figura 1 – Controle preditivo
+
+As diferentes estrate?gias de LMPC utilizam diferentes formas
+para representar as relac?o?es entre entradas manipuladas, perturbac?o?es
+e sa??das do processo. Geralmente o modelo e? separado em duas partes:
+o modelo do processo propriamente dito e o modelo das perturbac?o?es,
+ambos necessa?rios para o ca?lculo das predic?o?es. Os modelos mais usados
+para representar o processo sa?o:
+
+• Resposta impulsiva: utilizado no MAC (Model Algorithmic
+Control ) e em casos especiais no GPC e no EPSAC (Extended
+Prediction Self-Adaptive Control ). A relac?a?o entrada sa??da e? dada
+pela equac?a?o (2.1).
+
+y (k) =
+
+??
+i=1
+
+hiu (k ? i) (2.1)
+
+Sendo1 hi as amostras da sa??da do processo correspondentes a?
+aplicac?a?o de um impulso na entrada do mesmo. Como essa seque?ncia
+e? infinita, a resposta e? truncada para os primeiros N valores, ou
+seja, o modelo somente pode ser usado com plantas esta?veis, nas
+quais hi ? 0 quando i ??:
+
+1Nesse trabalho o operador atraso sera? representa por z?1, sendo z uma varia?vel
+complexa
+
+
+
+31
+
+y (k) =
+
+N?
+i=1
+
+hiu (k ? i) = H
+(
+z?1
+)
+u (k) . (2.2)
+
+Sendo, na equac?a?o (2.2), H
+(
+z?1
+)
+
+= h1z
+?1 + h2z
+
+?2 +· · ·+ hNz?N .
+A predic?a?o da sa??da em k + j dado o instante k – y? (k + j|k) –
+usando esse modelo e? calculada conforme a equac?a?o (2.3).
+
+y? (k + j|k) =
+N?
+i=1
+
+hiu (k + j ? i|t) = H
+(
+z?1
+)
+u (k + j|k) (2.3)
+
+Vale citar tambe?m algumas vantagens e desvantagens desse tipo
+de representac?a?o. Como vantagens tem-se: representac?a?o intui-
+tiva; na?o e? necessa?rio um modelo do processo; pode tambe?m ser
+utilizada sem complexidade adicional em plantas multivaria?veis; e
+descreve de forma direta algumas complexidades da dina?mica de
+processos como o atraso de transporte e comportamentos de fase
+na?o m??nima. Como desvantagens podem ser citadas: e? preciso
+um elevado nu?mero de para?metros para descrever o processo e
+na?o e? poss??vel utilizar essa representac?a?o em processos insta?veis.
+
+• Resposta ao degrau. Usada pelo DMC e suas variantes. E?
+similar ao modelo anterior, mas usa um degrau unita?rio como
+sinal de entrada. Para sistemas esta?veis a resposta truncada e? a
+da equac?a?o (2.4).
+
+y (k) = y(0) +
+
+N?
+i=1
+
+gi?u (k ? i) = y(0) + G
+(
+z?1
+)(
+
+1 ?z?1
+)
+u (k)
+
+(2.4)
+
+Sendo os gi as amostras da sa??da obtida ao aplicar o degrau e
+?u = u (k) ? u (k ? 1). Considerando o sistema no ponto de
+operac?a?o y(0) = 0, a predic?a?o pode ser calculada pela equac?a?o
+(2.5).
+
+
+
+32
+
+y? (k + j|k) =
+N?
+i=1
+
+gi?u (k + j ? i|k) (2.5)
+
+E? simples obter esse modelo a partir da equac?a?o (2.3) usando
+
+hi = gi ? gi?1
+
+e tambe?m as propriedades da evoluc?a?o discreta.
+
+Esse modelo tem as mesmas vantagens e desvantagens que o an-
+terior.
+
+• Func?a?o de transfere?ncia. Esse modelo e? usado no GPC. Utiliza
+o conceito de func?a?o de transfere?ncia G(z?1) = B(z?1)/A(z?1)
+como na equac?a?o (2.6).
+
+A
+(
+z?1
+)
+y (k) = B
+
+(
+z?1
+)
+u (k) (2.6)
+
+Sendo:
+
+A
+(
+z?1
+)
+
+=1 + a1z
+?1 + a2z
+
+?2 + · · · + anaz?na
+
+B
+(
+z?1
+)
+
+=1 + b1z
+?1 + b2z
+
+?2 + · · · + bnbz?nb.
+
+A predic?a?o e? calculada como na equac?a?o (2.7).
+
+y? (k + j|k) =
+B
+(
+z?1
+)
+
+A (z?1)
+u (k + j|k) (2.7)
+
+A possibilidade de representar processos insta?veis e a pouca quan-
+tidade de para?metros necessa?rios para descrever o comportamento
+de um processo sa?o as grandes vantagens desse tipo de mode-
+lagem. No entanto, a necessidade do conhecimento pre?vio da
+ordem para identificar o modelo do processo pode tornar a pa-
+rametrizac?a?o do controlador mais complexa do que quando sa?o
+utilizados modelos baseado em resposta impulsiva e baseado em
+resposta ao degrau.
+
+
+
+33
+
+• Espac?o de estados.Utiliza-se do conceito de estados para in-
+terpretar a dina?mica do sistema como uma transic?a?o de estados.
+Representa-se o sistema como na equac?a?o (2.8).
+
+x (k) =Ax (k ? 1) + Bu (k ? 1)
+y (k) =Cx (k) (2.8)
+
+Sendo x o estado. A predic?a?o e? calculada como em (2.9).
+
+y? (k + j|k) = Cx? (k + j|k)
+
+= C
+
+[
+Akx (k) +
+
+k?
+i=1
+
+Ai?1Bu (k + j ? i|k)
+
+]
+(2.9)
+
+Sendo A, B e C matrizes de dimenso?es compat??veis.
+
+Esta forma de modelagem apresenta grande vantagem quando os
+processos sob controle sa?o multivaria?veis. No entanto, ha? o in-
+conveniente quando ha? a necessidade de representar estados na?o
+mensura?veis atrave?s de observadores, aumentando assim a com-
+plexidade do ca?lculo do controle; e torna-se complicado a ana?lise
+das incertezas.
+
+2.1.2 Modelo de Perturbac?a?o
+
+Uma escolha adequada para modelar as perturbac?o?es e? ta?o im-
+portante quanto a forma de modelar a predic?a?o da sa??da em relac?a?o
+a? varia?vel manipulada. Os modelos mais utilizados para a descric?a?o
+de perturbac?o?es determin??sticas e estoca?sticas sa?o os modelos auto-
+regressivo integrado de me?dia mo?vel (Auto-Regressive and Integrated
+Moving Average (ARIMA)). Nesse caso, as diferenc?as entre a sa??da do
+modelo e do processo, representadas por n(k), sa?o modeladas como na
+equac?a?o (2.10).
+
+n (k) =
+C
+(
+z?1
+)
+
+D (z?1)
+e (k) (2.10)
+
+O polino?mio D inclui um integrador ? = 1 ? z?1 e e (k) e?
+
+
+
+34
+
+um ru??do branco de me?dia zero. Os demais para?metros do polino?mio
+D
+(
+z?1
+)
+
+e do polino?mio C
+(
+z?1
+)
+
+sa?o usados para descrever as carac-
+ter??sticas estoca?sticas de n (k).
+
+Esse modelo permite representar mudanc?as aleato?rias, offsets e
+outros feno?menos normalmente encontrados nos meios industriais. Esse
+modelo e? usado diretamente no GPC.
+
+2.1.3 Reposta Livre e Forc?ada
+
+Na maioria das estrate?gias de Controle Preditivo baseado em
+modelo linear considera-se a seque?ncia de controle composta por duas
+partes, uma resposta livre, uf (k), e a uma resposta forc?ada, uc(k):
+
+u (k) = uf (k) + uc (k) .
+
+Nesse esquema, uf (k) conte?m os valores passados da entrada
+e no futuro e? mantida constante e igual ao u?ltimo valor da varia?vel
+manipulada, como a seguir:
+
+uf (k ? j) =u (k ? j) para j = 1,2, . . .
+uf (k + j) =u (k ? 1) para j = 0,1,2, . . .
+
+E uc (k) e? zero no passado e no futuro e? igual ao controle a ser
+aplicado pelo controlador, como a seguir:
+
+uc (k ? j) =0 para j = 1,2, . . .
+uc (k + j) =u (k + j) ?u (k ? 1) para j = 0,1,2, . . .
+
+Assim, e? poss??vel separar a predic?a?o para a sa??da do processo em
+duas partes, a resposta livre - yf (k) - uma predic?a?o para a entrada igual
+a uf (k), e a resposta forc?ada - yc (k) - uma predic?a?o para a entrada
+igual a uc (k).
+
+2.1.4 Func?a?o Objetivo
+
+As func?o?es objetivo utilizadas nas estrate?gias de Controle Predi-
+tivo sa?o na sua maioria formuladas para, dentre outras intenc?o?es, mini-
+
+
+
+35
+
+mizar o erro entre a sa??da futura y? e a refere?ncia desejada r. Apesar de
+possu??rem esse objetivo em comum, os diversos algor??tmos de LMPC
+utilizam diferentes func?o?es objetivo para calcular a lei de controle, que
+tambe?m geralmente penalizam o incremento de controle ?u.
+
+Dessa forma, uma expressa?o no caso SISO (Single-Input Single-
+Output ) para as func?o?es objetivo e? a presente na equac?a?o (2.11).
+
+J =
+
+N2?
+j=N1
+
+? (k) [y? (k + j|k) ?r (k + j)]2
+
++
+
+Nu?
+j=1
+
+? (k) [?u (k + j ? 1)]2 (2.11)
+
+Na equac?a?o (2.11) percebe-se os seguintes para?metros: N1, N2,
+Nu, ? (k) e ? (k). N1 e N2 sa?o os horizontes de predic?a?o m??nimo e
+ma?ximo. Nu e? o horizonte de controle. Os valores desses para?metros
+definem os instantes nos quais deseja-se que a sa??da siga a refere?ncia
+e nos quais e? importante limitar a ac?a?o de controle. Quando tem-se a
+presenc?a do atraso d, pode-se escolher N1 &gt; d, pois na?o havera? resposta
+do sistema a? entrada u (k) ate? o tempo t = d. Os coeficientes ? (k) e
+? (k) sa?o as seque?ncias de ponderac?a?o do erro e do esforc?o de controle.
+
+2.1.5 Trajeto?ria de Refere?ncia e Restric?o?es
+
+O LMPC permite utilizar valores futuros da refere?ncia para o
+ca?lculo do sinal de controle. Isso pode possibilitar, por exemplo, que
+o sistema atinja mais rapidamente o novo valor desejado. Essa carac-
+ter??stica torna-se interessante tambe?m em algumas aplicac?o?es nas quais
+as refere?ncias futuras sa?o conhecidas antecipadamente.
+
+Pode-se tambe?m utilizar estrate?gias para suavizar as mudanc?as
+de refere?ncia, assim como os filtros nas estruturas cla?ssicas de controle
+com dois graus de liberdade. Uma forma para esse sinal e? a expressa
+na equac?a?o (2.12)
+
+r (k + j) = ?r (k + j ? 1) + (1 ??) r? (k + j) , (2.12)
+
+sendo ? um valor entre 0 e 1. Representa-se assim um filtro passa bai-
+xas de primeira ordem ajusta?vel para suavizar mais (? ? 1) ou menos
+
+
+
+36
+
+(? ? 0) a refere?ncia futura.
+Restric?o?es tambe?m podem ser utilizadas para limitar as ac?o?es de
+
+controle, o incremento de controle e os valores atingidos pela a sa??da
+do processo. Como na realidade todos os processos esta?o sujeitos a
+restric?o?es, e? poss??vel afirmar que essa e? uma das maiores vantagens dos
+controladores preditivos.
+
+Para descrever matematicamente as restric?o?es consideram-se as
+barreiras impostas pela especificac?a?o de controle como limites na am-
+plitude dos sinais de controle, do atuador (umin,umax), limites nos in-
+crementos dos sinais de controle do atuador (?umin,?umax) e limites
+nos sinais de sa??da (ymin,ymax). Assim:
+
+umin ? Tu + u (k ? 1) ? umax
+?umin ? u ? ?umax
+ymin ? y ? ymax.
+
+Sendo T uma matriz com a dimensa?o adequada. Essas restric?o?es
+podem ser expressas como [3]:
+
+Ru ? c
+
+Dadas essas condic?o?es, o problema de otimizac?a?o de um MPC
+como DMC ou GPC passa a ser definido como:
+
+Min J
+sujeito a : Ru ? c
+
+Esse tipo de problema e? conhecido como problema de programa-
+c?a?o quadra?tica (Quadratic Programming , QP), pois uma func?a?o quadra?tica
+com restric?o?es lineares deve ser otimizada. Para resolve?-lo devem-se
+utilizar me?todos nume?ricos, como me?todo de ponto interior [3].
+
+2.1.6 Obtenc?a?o da Lei de Controle
+
+O u?ltimo passo que compo?e a obtenc?a?o dos valores de controle
+nas estrate?gias de Controle Preditivo e? a determinac?a?o do valor de
+?u (k + j|k) com j = 0 ... Nu ? 1. Para isso seguem-se os seguintes
+passos:
+
+
+
+37
+
+1. ca?lculo do valor de y? (k + j|k) como func?a?o dos controles futuros;
+
+2. substituic?a?o dos valores de y? e w na func?a?o J;
+
+3. minimizac?a?o da func?a?o J considerando as ponderac?o?es e as res-
+tric?o?es, se existirem.
+
+Desta forma e? poss??vel obter uma seque?ncia de ac?o?es de controle
+futuras. Mas a aplicac?a?o do valor de controle segue o conceito do
+horizonte deslizante, assim, apesar de obter-se uma seque?ncia futura
+de controle, apenas a primeira ac?a?o de controle e? aplicada [3].
+
+2.2 CONTROLE PREDITIVO BASEADO EM MODELO NA?O LI-
+NEAR
+
+Para o controle preditivo de processos na?o lineares, a estrate?gia
+tradicionalmente utilizada para a obtenc?a?o de um modelo de predic?a?o,
+necessa?rio para a tarefa de predizer as sa??das futuras, e? a linearizac?a?o.
+Esse tipo de estrate?gia e? comum, pois de fato pode-se dizer que todos
+os processos reais sa?o na?o lineares [1]. Para demonstrar essa te?cnica
+considera-se um modelo na?o linear MIMO (Multiple-Input Multiple-
+Output ) de um processo como o da equac?a?o (2.13).
+
+x? = f(x,u)
+y(x) = h(x)
+
+(2.13)
+
+Sendo, na equac?a?o (2.13), x um vetor com os estados do processo
+e y um vetor com as sa??das. A te?cnica de linearizac?a?o faz uso do conceito
+de pontos de equil??brio, que podem ser obtidos tomando x? = 0, ou
+f(xeq,ueq) = 0 e yeq = h(xeq), sendo respectivamente yeq, xeq e ueq as
+sa??das, os estados e as entradas nos pontos de equil??brio. Considerando
+um ponto de equil??brio na origem, determina-se a equac?a?o.
+
+x? = Ax + Bu,
+y = Cx,
+
+(2.14)
+
+Sendo A, B e C como segue em (2.15).
+
+A = ?f
+?x
+|xeq,ueq
+
+B = ?f
+?u
+|xeq,ueq
+
+C = ?h
+?x
+|xeq,ueq
+
+(2.15)
+
+Os autovalores da matriz A indicam a estabilidade dos pontos
+de equil??brio (xeq,ueq). Ale?m disso, o modelo apresentado na equac?a?o
+
+
+
+38
+
+(2.14) na forma de equac?o?es de estado cont??nuas pode ser convertido
+na forma de equac?o?es de estado discretas.
+
+No entanto, quando a complexidade dos processos em questa?o
+aumenta, e? necessa?rio recorrer a estrate?gias que considerem com maior
+precisa?o as na?o linearidades impostas. Nesse a?mbito, encontram-se na
+literatura diversas te?cnicas, que se analisam nas sec?o?es 2.2.1, 2.2.2 e
+2.2.3.
+
+2.2.1 Me?todos com Modelos de Processo Na?o Linear na Func?a?o
+Objetivo
+
+Nesses casos e? poss??vel declarar o problema de otimizac?a?o im-
+posto pela estrate?gia por uma equac?a?o na forma:
+
+J =
+
+N2?
+j=N1
+
+? (j) [y? (k + j|k) ?r (k + j)]2
+
++
+
+Nu?
+j=1
+
+? (j) [?u (k + j ? 1)]2 (2.16)
+
+Sujeito a :
+x(k + 1) = f(x(k),u(k))
+
+y(k) = h(x(k)),
+
+sendo r o vetor com as refere?ncias futuras, x o vetor dos estados, y o
+vetor das sa??das, u o vetor com as entradas. Ainda, f e h sa?o func?o?es
+cont??nuas e diferencia?veis.
+
+Nesses casos, a otimizac?a?o e? realizada por algor??tmos especiali-
+zados na soluc?a?o de func?o?es na?o lineares, como Sequential Quadratic
+Programming (SQP), nos quais tambe?m sa?o utilizados o mecanismo de
+horizonte deslizante.
+
+Como discutido em [9], esses me?todos possuem a desvantagem
+de apresentarem incerteza no tempo de resposta, devido a questo?es
+iterativas de converge?ncia, m??nimos locais etc.
+
+2.2.2 Me?todos com Modelos de Processo Particulares
+
+Quando um processo em questa?o pode ser modelado por al-
+guns modelos particulares, podem-se utilizar me?todos de otimizac?a?o
+
+
+
+39
+
+espec??ficos obtendo soluc?o?es mais simples, com melhor desempenho.
+Esse e? o caso por exemplo das Se?ries de Volterra ou dos modelos de
+Hammerstein [21] e [22].
+
+No entanto, e? preciso que o caso em questa?o se enquadre na
+aproximac?a?o, pois sena?o na?o e? poss??vel manter a robustez conforme
+alterem-se os pontos de operac?a?o.
+
+2.2.3 Me?todos com Modelos Linearizados
+
+Esse me?todo consiste em utilizar um LMPC que incorpore linea-
+rizac?o?es em va?rios pontos de operac?a?o e tambe?m te?cnicas de tratamento
+de erro de modelagem. Seguem alguns exemplos:
+
+• Me?todo min-max
+
+O objetivo dessa estrate?gia e? determinar uma ac?a?o de controle que
+minimize uma func?a?o objetivo auxiliar, J?. Sendo que essa func?a?o
+objetivo auxiliar e? o valor ma?ximo da func?a?o objetivo, J, que
+engloba adicionalmente o conjunto de perturbac?o?es e incertezas
+ao qual o processo esta? submetido. Ao considerar-se o conjunto
+de perturbac?a?o em w pode-se declarar esse problema como em
+(2.17).
+
+u = arg min J?(w,yp,up,u)
+
+J? = arg max J(w,yp,up,u,w) (2.17)
+
+Mesmo havendo alguns trabalhos que propoem estrate?gias para
+diminuir o custo computacional dessa te?cnica [23], essa aborda-
+gem na?o se mostra computacionalmente atrativa em comparac?a?o
+com outras estrate?gias NMPC.
+
+• Ponderac?a?o de mu?ltiplos modelos lineares
+
+Para alguns processos na?o lineares e? poss??vel obter diversos mo-
+delos linearizados em va?rios pontos de equil??brio, {(xn,un)} com
+x? = f(xn,un) = 0 com n = 1 ...?. Em certas situac?o?es, o modelo
+na?o linear pode ser obtido atrave?s de combinac?o?es dos diversos
+modelos linearizados em pontos de equil??brios diferentes.
+
+Dado um modelo na?o linear, (2.18),
+
+
+
+40
+
+x? = f(x,u)
+y = h(x)
+
+(2.18)
+
+caso existam diversos pontos de equil??brio, para o ponto (xi,ui),
+e? poss??vel obter o modelo (2.19).
+
+x? = Ai(x?xi) + Bi(u?ui)
+y = h(xi) + Ci(x?xi) (2.19)
+
+Com Ai =
+?f(x,u)
+?x
+|(xi,ui), Bi =
+
+?f(x,u)
+?u
+|(xi,ui) e Ci =
+
+?h(x,u)
+?x
+|(xi,ui).
+
+Ainda, esses modelos cont??nuos podem ser discretizados, para Aid,
+Bid e C
+
+i
+d. A ponderac?a?o proposta nessa estrate?gia pode ser repre-
+
+sentada por (2.20).
+
+[Ad,Bd] =
+
+N?
+i=1
+
+?i[A
+i
+d,B
+
+i
+d], onde
+
+N?
+i=1
+
+?i = 1 (2.20)
+
+Em geral, o esquema de ponderac?a?o na?o e? ta?o simples de se de-
+terminar. Esse tipo de abordagem foi estudada no contexto de
+controle MPC robusto [13], de MPC adaptativo [14] e de MPC
+escalonado [24].
+
+• Linearizac?o?es a cada instante de amostragem
+Existem estrate?gias que estendem o conceito de resposta livre e
+resposta forc?ada, usando um modelo na?o linear para obter a res-
+posta livre e um modelo linear para obter a resposta forc?ada.
+Assim o problema de otimizac?a?o na?o linear pode ser transfor-
+mado numa seque?ncia de problemas de otimizac?a?o linear [1]. No
+entanto, essa estrate?gia na?o garante a obtenc?a?o do o?timo nem a
+converge?ncia do processo iterativo.
+
+2.3 PRATICAL NONLINEAR MODEL PREDICTIVE CONTROL
+
+A estrate?gia PNMPC, proposta por Plucenio [1], tem o objetivo
+de fornecer um caminho simples e eficaz para o Controle Preditivo de
+sistemas na?o lineares. A premissa inicial e? o fato de que em algor??tmos
+como o DMC e o GPC utiliza-se uma representac?a?o para a predic?a?o
+ao longo do horizonte de predic?a?o, y?, como uma func?a?o do vetor de
+incrementos futuros de controle ?u, (2.21).
+
+
+
+41
+
+y? = f + G?u (2.21)
+
+Sabe-se tambe?m que, mesmo atrave?s de caminhos diferentes, em
+ambas as estrate?gias (GPC e DMC) o princ??pio de superposic?a?o pre-
+sente em modelos lineares permite uma forma simples de calcular y?.
+Mas, para o caso na?o linear o princ??pio da superposic?a?o na?o e? verda-
+deiro. Assim, busca-se descrever a evoluc?a?o dos estados do sistema
+ao longo do horizonte de predic?a?o utilizando uma representac?a?o linear
+dos estados em relac?a?o aos incrementos de controle futuro, similar a?
+equac?a?o (2.21).
+
+Como, independentemente da linearidade dos sistemas, as u?nicas
+varia?veis que podem alterar o valor das predic?o?es futuras sa?o de fato os
+incrementos futuros ?u, utiliza-se uma linearizac?a?o em func?a?o dessas
+varia?veis e na?o o conceito de ponto de equil??brio. Enta?o, assume-se
+que as predic?o?es para esse caso, y?, dependem dos controles passados,
+up, das sa??das presentes e passadas, yp, e dos incrementos de controle
+futuros, ?u, (2.22).
+
+y? = f(yp,up,?u) (2.22)
+
+Assim, com a aproximac?a?o proposta, o vetor de predic?o?es fica
+reescrito como em (2.23).
+
+y? = f + GPNMPC?u (2.23)
+
+Sendo f = f(yp,up) e GPNMPC =
+?y?
+??u
+
+o Jacobiano de y?. Vale
+ressaltar que a representac?a?o das predic?o?es da equac?a?o (2.23) nada mais
+e? do que uma linearizac?a?o de primeira ordem da se?rie de Taylor para
+?u = 0, podendo tambe?m ser indicada como uma linearizac?a?o pela
+se?rie de Maclaurin.
+
+Para demonstrar a formulac?a?o da estrate?gia considera-se o sis-
+tema dina?mico na?o linear cont??nuo e diferencia?vel com uma entrada e
+uma sa??da representado pela equac?a?o (2.24).
+
+y(k) = f(y(k ?na),y(k ?na + 1),...,y(k ? 1),
+u(k ?nu),u(k ?nu + 1),...,u(k ? 1)),
+
+(2.24)
+
+sendo na e nb os maiores atrasos de y e u respectivamente.
+Considerando um horizonte de controle futuro m devera? aparecer
+
+as entradas futuras na forma representada na equac?a?o (2.25).
+
+
+
+42
+
+u(k) = u(k ? 1) + ?u(k)
+u(k + 1) = u(k) + ?u(k + 1) = u(k ? 1) + ?u(k)
+
++?u(k + 1)
+... =
+
+...
+u(k + m? 1) = u(k ? 1) + ?u(k) + ?u(k + 1) + ...
+
++?u(k + m? 1)
+
+(2.25)
+
+Como limita-se o horizonte futuro a m, deve-se assumir que as
+entradas posteriores a k + m? 1 sa?o iguais a u(k + m? 1). Utilizando
+enta?o a equac?a?o (2.24) para calcular as predic?o?es tem-se (2.26).
+
+y?(k + 1) = f(y(k ?na + 1),...,y(k),u(k ?nu + 1),...,u(k))
+y?(k + 2) = f(y(k ?na + 2),...,y(k + 1),u(k ?nu + 2),...,
+
+u(k + 1))
+... =
+
+...
+y?(k + p) = f(y?(k ?na + p),...,y?(k + p? 1),u(k ?nu + 1),...,
+
+u(k + m? 1))
+(2.26)
+
+Substituindo as relac?o?es apresentadas em (2.25), o conjunto de
+equac?o?es apresentadas em (2.26) passa a ser dado por (2.27).
+
+y?(k + 1) = f(y(k ?na + 1),...,y(k),u(k ?nu + 1),...,u(k ? 1),
+?u(k))
+
+y?(k + 2) = f(y(k ?na + 2),...,y?(k + 1),u(k ?nu + 2),...,u(k ? 1),
+?u(k), ?u(k + 1))
+
+... =
+...
+
+y?(k + p) = f(y?(k ?na + p),...,y?(k + p? 1),u(k ?nu + 1),...,
+u(k ? 1),?u(k),?u(k + 1),...,?u(k + m? 1))
+
+(2.27)
+Para simplificar a notac?a?o pode-se denominar o conjunto de en-
+
+tradas passadas por up e o conjunto de sa??das passadas por yp. Dessa
+forma, as expresso?es em (2.27) se reduzem a?s expresso?es em (2.28).
+
+
+
+43
+
+y?(k + 1) = f(yp,up,?u(k))
+y?(k + 2) = f(yp,up,?u(k),?u(k + 1))
+
+... =
+...
+
+y?(k + p) = f(yp,up,?u(k), ?u(k + 1), ...,
+?u(k + m? 1))
+
+(2.28)
+
+Observando as equac?o?es presentes em (2.28) e? poss??vel concluir
+que as u?nicas varia?veis capazes de alterar o valor das sa??das futuras
+sa?o os incrementos futuros da ac?a?o de controle, ?u(k), ?u(k + 1), ... e
+?u(k + m? 1).
+
+Dadas as definic?o?es em (2.29), sendo l um vetor de dimensa?o
+m x 1 com todos os elementos iguais a um e D uma matriz triangular
+inferior m x m com todos os elementos na?o nulos iguais a um, e? poss??vel
+simplificar a notac?a?o.
+
+yp : Conjunto de valores passados e presente de y
+up : Conjunto de valores passados de u
+u : u0 + ?u
+u0 : u(k ? 1)l
+?u : D?u
+
+?u : [?u(k) ?u(k + 1) ... ?u(k + m? 1)]T
+
+(2.29)
+
+Assim, as predic?o?es em (2.27) podem ser reescritas como em
+(2.30).
+
+y? = f(yp,up,?u) (2.30)
+
+Utilizando enta?o o mesmo procedimento exposto na equac?a?o
+(2.23) e? poss??vel encontrar a equac?a?o (2.31).
+
+y = f(yp,up,u0) +
+?y?
+
+?u
+
+????
+u=u0
+
+?u (2.31)
+
+Substituindo em (2.31) as equac?o?es (2.29) tem-se a equac?a?o (2.32).
+
+?y?
+
+?u
+?u =
+
+?y?
+
+??u
+?u (2.32)
+
+Definindo finalmente f = f(yp,up,u0) e GPNMPC =
+?yp
+??u
+
+???
+u=u0
+
+,
+
+sendo f o vetor de predic?o?es que seria obtido para ?u = 0 e GPNMPC
+o gradiente das saidas preditas com relac?a?o ao vetor dos incrementos
+
+
+
+44
+
+de controle ?u calculado para ?u = 0, retorna-se a? notac?a?o presente
+na equac?a?o (2.23):
+
+y? = f + GPNMPC?u.
+
+2.3.1 Obtenc?a?o Nume?rica das Predic?o?es
+
+Diferentemente das estrate?gias de Controle Preditivo lineares nas
+quais a te?cnica PNMPC se baseia, o GPC e o DMC, o enfoque dado
+por Plucenio em [1] foi a soluc?a?o nume?rica do problema de predizer
+as sa??das futuras. Isto se deve principalmente ao fato de existir uma
+grande quantidade de caminhos diferentes para a modelagem de proces-
+sos na?o lineares, como por exemplo: redes neurais artificiais, modelos
+NARMAX etc. Assim, ao inve?s de pressupor a disponibilidade de um
+modelo matema?tico do processo para se obter as predic?o?es, para esse
+propo?sito foi concebida uma estrutura compat??vel a modelagem de pro-
+cessos atrave?s de algor??tmos nume?ricos, aumentando a praticidade da
+te?cnica.
+
+Esse algor??tmo nume?rico necessa?rio para computar as predic?o?es
+deve ser capaz de fornecer as sa??das futuras, y?, quando fornecidos os
+valores dos controles e sa??das passados e o vetor de incrementos de con-
+troles futuros, ?u. Assim, a cada iterac?a?o deve-se executar o seguinte
+procedimento:
+
+1. obter o vetor p x 1, y?0, executando o algor??tmo que modela o
+processo, utilizando para isso incrementos futuros nulos ?u =
+[0 ... 0]T ;
+
+2. fazer f = y?0;
+
+3. obter o vetor y?1 executando o algor??tmo que modela o processo,
+utilizando para isso as entradas e sa??das passadas, com um va-
+lor ? pequeno e na?o nulo como primeiro incremento futuro, por
+exemplo
+
+uk?1
+1000
+
+. Para o caso de uma entrada: ?u = [? 0 ... 0]T ;
+
+4. fazer GPNMPC(: ,1) =
+y?1?y?0
+?
+
+, ou seja, a derivada parcial aproxi-
+mada para a sa??da e a entrada em questa?o;
+
+5. obter o vetor y?2 executando o algor??tmo que modela o processo
+utilizando para isso as entradas e sa??das passadas, com um valor ?
+pequeno e na?o nulo como segundo incremento futuro, por exemplo
+uk?1
+1000
+
+. Para o caso de uma entrada: ?u = [0 ? ... 0]T ;
+
+
+
+45
+
+6. fazer GPNMPC(: ,2) =
+y?2?y?0
+?
+
+, ou seja, a derivada parcial aproxi-
+mada para a sa??da e a entrada em questa?o;
+
+7. proceder com o mesmo ca?lculo para se obter todas as colunas de
+GPNMPC.
+
+Apo?s a obtenc?a?o do vetor de predic?o?es y? na forma de (2.23)
+utiliza-se o mesmo me?todo de ca?lculo nume?rico presente nos algor??tmos
+GPC e DMC para a obtenc?a?o da ac?a?o de controle. E? interessante
+ressaltar que no procedimento de ca?lculo de ?u a u?nica diferenc?a do
+PNMPC perante o GPC e o DMC e? o fato da resposta livre ser na?o
+linear.
+
+2.3.2 Modelo de Perturbac?a?o
+
+Como apresentado na sec?a?o 2.1.2 desse cap??tulo, as estrate?gias de
+controle preditivo contam geralmente com um modelo de perturbac?a?o
+incorporado ao mecanismo de predic?a?o. Essa estrutura torna a es-
+trate?gia de controle capaz de rejeitar perturbac?o?es e ru??dos.
+
+A estrate?gia PNMPC utiliza uma versa?o expl??cita do mecanismo
+de correc?a?o das predic?o?es utilizado pelo algor??tmo GPC. Adiciona-se a
+cada predic?a?o a integral do erro de predic?a?o filtrado.
+
+Figura 2 – Modelo de perturbac?a?o do PNMPC
+
+O modelo de perturbac?a?o funciona como uma espe?cie de obser-
+vador, que fornece uma correc?a?o a ser adicionada a cada predic?a?o. A
+figura 2 conte?m o diagrama de blocos desse observador utilizado no
+PNMPC. Pode-se perceber nela que a cada instante de amostragem
+calcula-se o erro entre a sa??da que o preditor obte?m para o instante k,
+y?(k|k ? 1), e a sa??da real, y(k), equac?a?o 4.11.
+
+y(k) ? y?(k|k ? 1) = e(k) (2.33)
+
+
+
+46
+
+Com vistas a garantir a rejeic?a?o de perturbac?o?es em degrau, o
+erro de predic?a?o para o instante atual e? filtrado por um filtro passa-
+baixas F = 1
+
+DF(z)
+, integrado e somado a? sa??da predita para o pro?ximo
+
+instante, y?SC(k|k?1). Utilizando a representac?a?o em transformada de
+Z e assumindo ? = 1 ?z?1 tem-se (2.34).
+
+Y(z) ? (z?1e(z)k1
+?
+
+F + Y?SC(z)) = E(z)
+
+Y(z) ? y?SC(z) = E(z)(1 + z?1 k11?z?1 F)
+E(z) =
+
+DF(z)?
+(DF(z)?+z?1k1)
+
+(y(z) ? Y?SC(z))
+(2.34)
+
+Supondo que o sistema em malha fechada seja esta?vel, enta?o na
+vizinhanc?a de um ponto de operac?a?o e? poss??vel aplicar o teorema do
+valor final. Considerando perturbac?o?es do tipo degrau, sendo ? a sua
+magnitude, obte?m-se (2.35).
+
+E(z) =
+DF(z)?
+
+(DF(z)?+z?1ki)
+(y(z) ? y?SC(z))
+
+e(?) = limz?1(1 ?z?1)
+DF(z)?
+
+(DF(z)?+z?1ki)
+?
+
+1?z?1
+
+e(?) = limz?1
+DF(z)(1?z?1)
+
+(DF(z)?+z?1ki)
+? = 0
+
+(2.35)
+
+Observando a deduc?a?o (2.35) e? poss??vel concluir que e? garan-
+tido erro nulo em regime permanente (contanto que a perturbac?a?o em
+questa?o tenha o comportamento de um sinal degrau).
+
+Em geral, deseja-se ale?m da garantia de erro nulo em regime
+permanente tambe?m que a rejeic?a?o do erro de perturbac?a?o respeite uma
+dina?mica determinada. Para isso, no modelo apresentado, a func?a?o
+
+de transfere?ncia
+E(z)
+
+Y(z)?y?SC(z)
+deve possuir polos relacionados com essa
+
+especificac?a?o de rejeic?a?o. Assim, seja ?(k) = y(k) ? y?SC(k), pode-se
+determinar a func?a?o de transfere?ncia H(z) que relaciona ? a e, como
+em (2.36).
+
+H(z) =
+E(z)
+?(z)
+
+H(z) =
+DF(z)(1?z?1)
+
+DF(z)(1?z?1+z?1ki)
+(2.36)
+
+Enta?o, como esperado pelo projeto desse observador o trata-
+mento do erro de modelagem depende da parametrizac?a?o do filtro F e
+do ganho integral ki. A equac?a?o (2.37) conte?m uma soluc?a?o direta e
+simples para a determinac?a?o do filtro, o que torna a equac?a?o (2.36) na
+forma apresentada em (2.38).
+
+
+
+47
+
+F(z) =
+1
+
+1 ?fdz?1
+(2.37)
+
+H(z) =
+z2 ? (1 + fd)z + fd
+
+z2 ? (1 + fd ?ki)z + fd
+(2.38)
+
+O projeto do filtro pode ser resumido na determinac?a?o de uma
+func?a?o de transfere?ncia desejada para H(z). Caso utilize-se um po-
+lino?mio de segunda ordem para representar um filtro de dina?mica cri-
+ticamente amortecida, e? poss??vel dizer que:
+
+z2 ? (1 + fd ?ki)z + fd = z2 ? 2az + a2 = (z ?a)2,
+
+e assim parametrizar fd = a
+2 e ki = 1 + a
+
+2 ? 2a.
+O ajuste de a envolve uma condic?a?o de compromisso entre a
+
+velocidade de resposta a perturbac?a?o (para a ? 0) e a eliminac?a?o de
+ru??dos, bem como a pro?pria robustez do controle em malha fechada.
+
+2.4 CONCLUSA?O
+
+Nesse cap??tulo apresentaram-se os principais conceitos sobre Con-
+trole Preditivo baseado em modelo linear, como o fato de utilizarem um
+modelo de predic?a?o para as sa??das futuras e a utilizac?a?o de um procedi-
+mento espec??fico de otimizac?a?o para a obtenc?a?o dos valores de controle
+futuro. A partir da apresentac?a?o dos principais conceitos de LMPC
+foi poss??vel introduzir os controladores preditivos baseados em mode-
+los na?o lineares. Assim, em seguida, apresentou-se uma classificac?a?o
+das diversas te?cnicas bem como uma introduc?a?o das suas principais
+caracter??sticas.
+
+Por fim foram apresentados os conceitos dos controladores PNM
+PC, as bases teo?ricas da sua formulac?a?o e alguns aspectos pra?ticos da
+sua implementac?a?o. Essas estrate?gias sa?o importantes por fornecerem
+um caminho pra?tico e eficaz para o controle preditivo de processos
+na?o lineares. Lembrando que, conforme apresentado no cap??tulo 1,
+utilizar as vantagens proporcionadas pelo controle preditivo, como o
+uso de restric?o?es, em processos com complexas na?o linearidades e? uma
+importante contribuic?a?o dadas as tende?ncias de maior complexidade
+nos processos encontrados nas aplicac?o?es pra?ticas.
+
+Assim, com a intenc?a?o de aumentar o espectro de aplicac?a?o do
+PNMPC e apresentar uma estrate?gia robusta para o controle preditivo
+
+
+
+48
+
+de processos na?o lineares com atraso de transporte, sera?o apresentados
+no cap??tulo 3 alguns conceitos a respeito de compensac?a?o de atraso de
+transporte.
+
+
+
+49
+
+3 COMPENSAC?A?O DE ATRASO
+
+No contexto do controle preditivo na?o linear em sistemas com
+atraso de transporte e? importante dedicar uma atenc?a?o especial ao pro-
+blema de atraso. Para controladores cla?ssicos, por exemplo, na medida
+em que longos atrasos comec?am a aparecer nos processos a margem de
+fase do sistema comec?a a diminuir, diminuindo tambe?m a robustez do
+controle.
+
+Com o passar do tempo foram desenvolvidas algumas estrate?gias
+para contornar essa questa?o, como os compensadores de atraso, tambe?m
+conhecidos por preditores. Nesse cena?rio de predic?a?o, seria intuitivo
+pensar que quanto melhor a predic?a?o mais qualificado seria o compen-
+sador de atraso, no entanto vale mencionar a seguinte passagem de
+[6]: “o melhor preditor na?o e? aquele que produz melhores predic?o?es em
+malha aberta, mas sim o melhor desempenho em malha fechada”.
+
+Apesar da predic?a?o estar invariavelmente relacionada a um mo-
+delo nominal, um preditor deve ser projetado para levar em consi-
+derac?a?o perturbac?o?es, erros de modelagem e ru??dos de controle. Isso
+porque compensadores de atraso robustos devem permitir melhores res-
+postas em malha fechada. As sec?o?es 3.1, 3.2 e 3.3 apresentam os com-
+pensadores utilizados nesse trabalho.
+
+3.1 PREDITOR DE SMITH
+
+Para introduzir o problema de controle de processos com atraso
+de transporte considera-se o diagrama de blocos da figura 3, sendo r(t) o
+sinal de refere?ncia desejado para a sa??da, C(s) a func?a?o de transfere?ncia
+representando o controlador, q(t) o sinal de perturbac?a?o no controle,
+G(s) a func?a?o de transfere?ncia representando o processo sem o atraso, L
+o atraso de transporte e y(t) a sa??da. Por esse esquema e? poss??vel notar
+a presenc?a do atraso nas equac?o?es caracter??sticas de malha fechada,
+como na equac?a?o (3.1).
+
+Y(s)
+R(s)
+
+=
+C(s)G(s)e?sL
+
+1+C(s)G(s)e?sL
+
+Y(s)
+Q(s)
+
+=
+G(s)e?sL
+
+1+C(s)G(s)e?sL
+
+(3.1)
+
+Essa presenc?a do atraso na equac?a?o caracter??stica ocasiona a
+reduc?a?o da margem de fase de malha fechada, degradando o desempe-
+nho ou ate? causando instabilidade. Isso inevitavelmente impo?e limites
+
+
+
+50
+
+Figura 3 – Diagrama de blocos para um controle com atraso
+
+ao desempenho do controle em malha fechada, como detalhado em [6].
+Uma soluc?a?o para esse problema e? uma estrutura de controle
+
+que permite uma predic?a?o da sa??da apo?s o atraso em adic?a?o com o erro
+atual, proposta em [7].
+
+Essa estrate?gia, conhecida por preditor de Smith, esta? apresen-
+tada na figura 4, sendo Gn(s) a func?a?o de transfere?ncia que representa
+o modelo nominal do processo, y?(t + Ln) a sa??da do modelo nominal
+apo?s o atraso, Ln o atraso nominal, y? a sa??da do modelo nominal para
+o instante atual, ep(t) o erro entre a sa??da real e a sa??da nominal para
+o instante atual e yp(t) a predic?a?o para a sa??da fornecida pelo preditor
+de Smith.
+
+Para essa formulac?a?o as novas func?o?es de transfere?ncia, sem con-
+siderar incertezas, ou seja, Gn(s) = G(s) e Ln = L, que relacionam a
+sa??da com a refere?ncia e com a perturbac?a?o sa?o as descritas na equac?a?o
+(3.2).
+
+Y(s)
+R(s)
+
+=
+C(s)G(s)e?Ls
+
+1+C(s)G(s)
+Y(s)
+Q(s)
+
+= G(s)e?Ls
+[
+1 ? C(s)G(s)e
+
+?Ls
+
+1+C(s)G(s)
+
+] (3.2)
+
+Figura 4 – Preditor de Smith
+
+
+
+51
+
+A estrate?gia criada por Smith foi um marco na literatura de
+controle de processos com atraso, principalmente por encontrar um
+caminho para o atraso na?o interferir na equac?a?o caracter??stica de malha
+fechada, 1 + C(s)G(s), fazendo desaparecer o efeito de degradac?a?o da
+margem de fase.
+
+Outras duas caracter??sticas muito importantes dessa estrate?gia
+sa?o o fato de permitir o projeto de um controlador para um sistema com
+atraso a partir de um modelo sem atraso e tambe?m a percepc?a?o de um
+limite de desempenho imposto pelo atraso. E? poss??vel concluir tal fato
+ao considerar-se um controlador ideal, como o dado pela equac?a?o (3.3)
+e determinar a equac?a?o da resposta de controle, equac?a?o (3.4). Assim
+percebe-se que sempre existira? no m??nimo 2L de atraso na resposta a
+perturbac?a?o.
+
+C(s)
+
+1 + C(s)G(s)
+= G(s)?1 (3.3)
+
+Y(s) = R(s)e?Ls + G(s)e?Ls[Q(s) ? Q(s)e?Ls]
+= R(s)e?Ls + G(s)e?Ls[1 ?e?Ls]Q(s) (3.4)
+
+Apesar do grande avanc?o obtido no controle de processos com
+atraso de transporte com a utilizac?a?o do preditor de Smith, um grande
+problema e? o fato da resposta a? perturbac?a?o conter os polos de malha
+aberta, como pode ser percebido na equac?a?o (3.2). Assim sendo, sa?o
+herdadas todas as desvantagens presentes em estrate?gias de controle
+por cancelamento.
+
+3.2 PREDITOR DE SMITH FILTRADO
+
+O preditor de Smith filtrado e? um compensador de atraso que
+permite a obtenc?a?o de uma melhor soluc?a?o de compromisso entre robus-
+tez e desempenho de rejeic?a?o de perturbac?a?o que o preditor de Smith.
+Essa estrate?gia foi desenvolvida por Normey-Rico e Camacho em [6]
+atrave?s da inclusa?o de um filtro para eliminar os polos indesejados da
+resposta a? perturbac?a?o sem interferir na resposta ao seguimento de re-
+fere?ncia. Esse filtro, Fr(s), e? inserido na posic?a?o indicada na figura
+5.
+
+A configurac?a?o de controle apresentada no diagrama de blocos
+da figura 5 em um cena?rio sem a presenc?a de incertezas faz com que as
+relac?o?es entre a refere?ncia e a perturbac?a?o se tornem as apresentadas
+
+
+
+52
+
+Figura 5 – Preditor de Smith filtrado
+
+nas equac?o?es (3.5). E assim Fr(s) pode ser ajustado para eliminar os
+
+polos indesejados de
+Y(s)
+Q(s)
+
+.
+
+Y(s)
+R(s)
+
+= C(s)G(s)e?Ls
+
+Y(s)
+Q(s)
+
+= G(s)e?sLn
+[
+1 ? C(s)G(s)e
+
+?sLn Fr(s)
+1+C(s)G(s)
+
+]
+= G(s)e?sLn
+
+{
+1+[1?e?sLn Fr(s)]C(s)G(s)
+
+1+C(s)G(s)
+
+} (3.5)
+Deve-se ressaltar que para processos que na?o sa?o esta?veis na?o e?
+
+poss??vel utilizar o preditor de Smith filtrado1 da forma representada na
+figura 5 devido a problemas com a estabilidade interna.
+
+Em uma implementac?a?o no dom??nio do tempo discreto, sendo
+TS o per??odo de amostragem, Gn(z) a discretizac?a?o com sustentador
+de ordem zero do modelo nominal do processo Gn(s), dn = Ln/TS o
+atraso discreto e F(z) e C(z) discretizac?o?es de F(s) e C(s). Deve-se
+parametrizar S(z) = Gn(z)[1?Fr(z)z?dn ] em uma estrutura de blocos
+como a apresentada na figura 6.
+
+Assim, a pro?pria estrutura interna do controlador equivalente
+Ceq(z), equac?a?o (3.6) no esquema de controle da figura 6, e? ajustada
+para eliminar os polos indesejados e acelerar a resposta a? perturbac?a?o.
+
+Ceq(z) =
+C(z)Fr(z)
+
+1 + C(z)Gn(z)(1 ?zdFr(z))
+(3.6)
+
+Essa estrutura de controle evidencia a importa?ncia do filtro de
+
+1Como mencionado na sec?a?o 3.1, por ter a caracter??stica de controle por cance-
+lamento o preditor de Smith na?o pode ser utilizado para processos insta?veis
+
+
+
+53
+
+Figura 6 – Estrutura para implementac?a?o do preditor de Smith filtrado
+
+robustez Fr(z). Em [2] detalha-se a influe?ncia do filtro na robustez
+do processo controlado em malha fechada comparando as curvas de
+resposta em freque?ncia. Da relac?a?o em (3.7) e? poss??vel notar que dado
+um modelo sem atraso Gn(z), um controlador C(z) e um limitante para
+o erro de modelagem ?P?(ej?), o filtro de robustez deve ser sintonizado
+respeitando-se uma fronteira robusta ??.
+
+|Fr(ej?)| ?
+????1 + C(ej?)Gn(ej?)C(ej?)Gn(ej?)
+
+?????P?(ej?)?1 = ??(j?) (3.7)
+Mais uma vez deve-se destacar a importa?ncia do filtro por ter
+
+um papel crucial na garantia da estabilidade interna quando processos
+BIBO insta?veis esta?o sendo controlados, ale?m de permitir o ajuste da
+resposta a perturbac?a?o e o acre?scimo da robustez do controle em malha
+fechada, existindo entre essas duas u?ltimas caracter??sticas um compro-
+misso entre o aumento da velocidade ou o aumento da robustez.
+
+3.3 COMPENSAC?A?O DE ATRASO EM CONTROLADORES PRE-
+DITIVOS
+
+Como apresentado no cap??tulo 2, o esquema de predic?a?o rea-
+lizado nos controladores preditivos pode ser divido em uma resposta
+livre e uma resposta forc?ada. Quando um processo sob controle apre-
+senta atraso de transporte, naturalmente as predic?o?es produzidas pela
+resposta livre possuem a caracter??stica de um compensador de atraso.
+Essa caracter??stica de compensac?a?o de atraso pode ser evidenciada caso
+
+
+
+54
+
+analise-se o esquema de predic?a?o realizado na resposta livre [2].
+E? interessante observar o comportamento da compensac?a?o de
+
+atraso presente na determinac?a?o da resposta livre utilizando uma repre-
+sentac?a?o em espac?o de estados, pois observando-se o efeito das varia?veis
+durante a recursa?o pode-se analisar tambe?m a robustez do esquema de
+predic?a?o. De fato, e? essa a abordagem utilizada nesse trabalho para
+analisar a robustez das estrate?gias envolvidas.
+
+Para o caso em espac?o de estados, no qual um modelo como
+o presente na equac?a?o (3.8) e? usado para representar o processo, as
+predic?o?es sa?o realizadas de forma recursiva, como em (3.9).
+
+x(k + 1) = Ax(k) + Bu(k ?d)
+y(k) = Cx(k)
+
+(3.8)
+
+x(k + 1|k) = Ax(k) + Bu(k ?d)
+x(k + 2|k) = Ax(k + 1|k) + Bu(k ?d + 1)
+
+= A2x(k) + ABu(k ?d) + Bu(k ?d + 1)
+x(k + 3|k) = Ax(k + 2|k) + Bu(k ?d + 2)
+
+= A3x(k) + A2Bu(k ?d) + ABu(k ?d + 1)
++Bu(k ?d + 2)
+
+...
+
+x(k + d|k) = Adx(k) +
+?d
+j=1 A
+
+j?1Bu(k ? j)
+
+(3.9)
+
+Assim a predic?a?o para a sa??da apo?s o atraso y(k + d|k) pode ser
+determinada utilizando a expressa?o (3.10).
+
+y(k + d|k) = CAdx(k) + C
+d?
+j=1
+
+Aj?1Bu(k ? j) (3.10)
+
+Pode-se observar na equac?a?o (3.10) que a ac?a?o de controle u(k)
+somente surtira? efeito no comportamento nominal do sistema apo?s o
+instante k + d. Essa compensac?a?o de atraso impl??cita e? utilizada em
+controladores preditivos em espac?o de estados e tambe?m pode ser de-
+monstrada sua equivale?ncia para controladores GPC [2].
+
+A compensac?a?o impl??cita existente nos controladores preditivos
+tradicionais fornece um me?todo de se tratar o problema do atraso. No
+entanto, com o tempo diversas desvantagens foram percebidas, como
+o fato do aumento do esforc?o computacional necessa?rio para se tratar
+problemas de controle em processos com grandes atrasos de transporte,
+a dificuldade de se analisar a robustez e tambe?m o impedimento de se
+
+
+
+55
+
+utilizar estrate?gias eficientes para o tratamento de atraso de transporte,
+como o preditor de Smith filtrado [2].
+
+Em [17] propo?s-se uma te?cnica para simplificar o problema da
+compensac?a?o de atraso nos controladores MPC, conhecida como com-
+pensac?a?o de atraso expl??cita [2]. O objetivo dessa te?cnica e? separar o
+problema de predic?a?o do atraso do problema de otimizac?a?o, simplifi-
+cando o ca?lculo de controle bem como fornecendo uma alternativa para
+se analisar separadamente a influe?ncia do mecanismo de compensac?a?o
+de atraso na robustez do controle em malha fechada.
+
+Assim, considerando um sistema como o representado na equac?a?o
+(3.8) e a seguinte func?a?o objetivo:
+
+? =
+1
+
+2
+
+N?
+k=0
+
+[x(k)TQxx(k) + u(k)
+TQuu(k)],
+
+para o caso nominal e para N &gt; d, dado que u(k) somente surtira?
+efeito apo?s x(k + d + 1) e? poss??vel alterar as varia?veis d passos a frente,
+considerando o modelo da equac?a?o (3.11), sendo x?(k) = x(k + d|k).
+
+x?(k) = Ax?(k) + Bu(k)
+y(k + d) = Cx?(k)
+
+(3.11)
+
+Mais uma vez, no caso nominal,
+
+x?(k) = x(k + d|k) = Adx(k) +
+?d
+j=1 A
+
+j?1Bu(k ? 1)
+
+= Adx(k) + [Ad?1B Ad?2B ... B]
+
+?
+? u(k ?d)u(k ?d? 1)
+
+. . .u(k ? 1)
+
+?
+? .
+
+Essa substituic?a?o de varia?veis permite redefinir a func?a?o objetivo
+para uma nova formulac?a?o, equac?a?o (3.12). Sendo N
+
+?
+= N ?d.
+
+?
+?
+
+=
+1
+
+2
+
+N
+??
+
+k=0
+
+[x?(k)TQxx?(k) + u(k)
+TQuu(k)] (3.12)
+
+Pode-se notar que a relac?a?o (3.13) e? respeitada, ja? que ? ? ?
+?
+
+e?
+um termo constante, que na?o depende das varia?veis de controle a serem
+aplicadas a partir do instante atual, e portanto na?o ira? influenciar o
+resultado no procedimento de otimizac?a?o.
+
+
+
+56
+
+? = ?
+?
++
+
+1
+
+2
+
+d?1?
+k=0
+
+[x(k)TQxx(k)] (3.13)
+
+E? interessante observar tambe?m que utilizando tal representac?a?o
+o controle em malha fechada se assemelha ao que esta? apresentado no fi-
+gura 7. Assim, essa compensac?a?o expl??cita permite que um controlador
+MPC possa ser ajustado em refere?ncia a um processo sem atraso, pois
+uma predic?a?o realizada pela compensac?a?o expl??cita e? utilizada para o
+ca?lculo do pro?ximo valor de controle.
+
+Figura 7 – Controle MPC com compensac?a?o expl??cita do atraso
+
+No a?mbito desse trabalho a compensac?a?o expl??cita do atraso pos-
+sibilita a ana?lise do compensador de atraso no que diz respeito a ro-
+bustez. Ale?m do mais, a partir dessa ana?lise e? poss??vel tambe?m propor
+novos esquemas de compensac?a?o e a utilizac?a?o de esquemas mais ro-
+bustos, como e? o caso do preditor de Smith filtrado.
+
+Sabe-se no entanto que tradicionalmente grande parte dos es-
+quemas de compensac?a?o de atraso, principalmente aqueles baseados no
+preditor de Smith, sa?o utilizados em uma representac?a?o entrada-sa??da.
+Com o intuito de realizar a conversa?o de modelos entrada-sa??da para
+espac?o de estados sem a necessidade de estimadores podem ser utiliza-
+das algumas representac?o?es na?o-m??nimas, [3], [2].
+
+3.4 CONCLUSA?O
+
+Nesse cap??tulo apresentaram-se os principais conceitos a respeito
+de compensac?a?o de atraso utilizados nesse trabalho. Na primeira sec?a?o
+foram apresentados os principais conceitos a respeito do preditor de
+Smith, o que permitiu um embasamento teo?rico para o conteu?do apre-
+
+
+
+57
+
+sentado na sec?a?o 3.2, preditor de Smith filtrado.
+Por u?ltimo foram apresentadas tambe?m as principais considera-
+
+c?o?es a respeito da compensac?a?o de atraso realizada em controladores
+preditivos, bem como uma alternativa de compensac?a?o de atraso, a
+compensac?a?o expl??cita, que traz maior flexibilidade na compensac?a?o de
+atraso permitindo o estudo da robustez, a proposic?a?o de modificac?o?es
+para contornar problemas de robustez, bem como a aplicac?a?o de outras
+estrate?gias de predic?a?o.
+
+Dadas as introduc?o?es realizadas nos cap??tulos 2 e 3 e? poss??vel
+estudar de forma mais detalhada a robustez de controladores prediti-
+vos na?o lineares, como o PNMPC, quando configurados para controlar
+processos com atraso de transporte, utilizando ainda variadas formas
+de compensac?a?o de atraso. Sendo assim, no cap??tulo 4 sera? estudado o
+comportamento das incertezas no esquema de compensac?a?o de atraso
+do PNMPC, com a finalidade de avaliar a sua robustez, bem como sera?o
+propostas modificac?o?es e alterac?o?es nesse esquema de compensac?a?o com
+a finalidade de atingir um comportamento de elevada robustez.
+
+
+
+58
+
+
+
+59
+
+4 PNMPC COM COMPENSAC?A?O DE ATRASO
+ROBUSTA
+
+Para se obter uma estrate?gia de Controle Preditivo com com-
+pensac?a?o de atraso robusta e? necessa?rio primeiramente explorar as
+suas caracter??sticas relacionadas ao controle de processos com atraso
+de transporte.
+
+Assim, a partir do que esta? apresentado no cap??tulo 2, e? poss??vel
+perceber que a estrate?gia de controle PNMPC, do ponto de vista da
+compensac?a?o de atraso de transporte, utiliza um esquema de controle
+semelhante ao utilizado no GPC e no DMC. Isso faz com que toda
+a problema?tica relacionada a? compensac?a?o impl??cita de atraso que es-
+ses tipos de controladores apresentam (ja? que no procedimento de oti-
+mizac?a?o e? poss??vel apenas desconsiderar os instantes de predic?a?o nos
+quais o efeito do atraso e? aparente) tambe?m ocorra nas aplicac?o?es do
+PNMPC em processos com atraso de transporte.
+
+Ale?m disso, a compensac?a?o de atraso realizada em ambos os con-
+troladores preditivos tem o comportamento robusto afetado de maneira
+significativa pelo tamanho do atraso nominal, o que na?o e? interessante
+do ponto de vista pra?tico para aplicac?a?o em sistemas com atrasos longos
+[2].
+
+Para ilustrar a baixa robustez do esquema de compensac?a?o de
+atraso impl??cito no PNMPC considere o controle do processo apresen-
+tado na equac?a?o (4.1), [25], com a diferenc?a de que e? considerada aqui
+a presenc?a de um atraso de transporte entre a varia?vel de controle e a
+varia?vel medida. A inclusa?o do atraso e? interessante ja? que, como apre-
+sentado nas sec?o?es iniciais, e? comum a presenc?a desse tipo de feno?meno
+em grande parte das aplicac?o?es pra?ticas.
+
+y(k) =
+2,5y(k ? 1)y(k ? 2)
+
+1 + y(k ? 1)2 + y(k ? 2)2
+
++ 0,3 cos(0,5(y(k ? 1) + y(k ? 2))) + 1,2u(k ? 1 ? 60)
+(4.1)
+
+Para controlar esse processo, parametriza-se um controlador PN
+MPC com horizonte de predic?a?o efetivo de 3 amostras (desconsiderando
+os 60 instantes iniciais nos quais o efeito do atraso e? percebido), N1 = 61
+e N2 = 63, o horizonte de controle em 3, Nu = 3, ponderac?o?es na
+predic?a?o de 0,001, ? = 0,001, e ponderac?o?es no controle de 1, ? = 1,
+
+
+
+60
+
+[1]. Ainda, para diminuir o efeito de ru??dos, ajusta-se o para?metro do
+filtro que estima o erro de predic?a?o em 0,7, a = 0,7.
+
+A figura 8 apresenta esse processo controlado pelo controlador
+PNMPC configurado e sem a presenc?a de incertezas. Em seguida e?
+utilizado um modelo com 17% a menos de incerteza no atraso, figura
+9. Analisando ambas as simulac?o?es de controle e? poss??vel perceber
+que um ajuste do PNMPC capaz de obter um bom resultado, tanto
+no que diz respeito ao seguimento de refere?ncia quanto a eliminac?a?o
+das perturbac?o?es constantes, passa a instabilizar o processo controlado
+quando e? utilizado um modelo incerto para predizer as suas sa??das. Isso
+ocorre pois o esquema de compensac?a?o do atraso na?o e? robusto a essa
+condic?a?o de incerteza.
+
+0 100 200 300 400 500 600 700
+0
+
+1
+
+2
+
+3
+
+4
+
+tempo (amostra)
+
+sa
+íd
+
+a
+
+ 
+
+ 
+
+saída
+referência
+perturbação
+
+0 100 200 300 400 500 600 700
+0
+
+1
+
+2
+
+3
+
+tempo (amostra)
+
+e
+n
+
+tr
+a
+
+d
+a
+
+Figura 8 – Simulac?a?o de controle PNMPC sem erros de modelagem
+
+0 100 200 300 400 500 600 700
+0
+
+2
+
+4
+
+6
+
+tempo (amostra)
+
+sa
+íd
+
+a
+
+ 
+
+ 
+
+saída
+referência
+perturbação
+
+0 100 200 300 400 500 600 700
+0
+
+1
+
+2
+
+3
+
+4
+
+tempo (amostra)
+
+e
+n
+
+tr
+a
+
+d
+a
+
+Figura 9 – Simulac?a?o de controle PNMPC com erros de modelagem
+
+Em vista desses problemas torna-se importante estudar o es-
+quema de compensac?a?o de atraso e o modelo de perturbac?a?o utilizados
+no PNMPC para avaliar a possibilidade de elaborar maneiras de apri-
+
+
+
+61
+
+morar a robustez desses controladores.
+
+4.1 MODIFICAC?A?O NO ESQUEMA DE CORREC?A?O DA PREDI-
+C?A?O NO PNMPC
+
+Os controladores preditivos utilizam originalmente uma estrate?-
+gia de compensac?a?o de atraso impl??cita, na qual e? poss??vel eliminar a
+influe?ncia do atraso na dina?mica de malha fechada dos sistemas contro-
+lados simplesmente ignorando os instantes preditos iniciais, referentes
+ao atraso de transporte, no ca?lculo do pro?ximo incremento de controle.
+No entanto, para que eles atinjam um desempenho satisfato?rio e? essen-
+cial possu??rem a capacidade de eliminar o efeito de perturbac?o?es cons-
+tantes, ja? que na maioria das aplicac?o?es elas estara?o invariavelmente
+presentes.
+
+Para alcanc?ar esse objetivo e? necessa?rio que as perturbac?o?es se-
+jam rejeitadas em regime permanente, e assim a sa??da predita convirja
+para a sa??da real mesmo sob a presenc?a de perturbac?o?es constantes.
+Isso e? poss??vel atrave?s da presenc?a de um modelo de perturbac?a?o in-
+corporado no esquema de predic?a?o.
+
+Como mencionado no cap??tulo 3, o modelo de perturbac?a?o ado-
+tado originalmente no PNMPC obte?m uma estimativa das incertezas
+futuras atrave?s de um observador particular, que realiza um tratamento
+no erro de predic?a?o do instante anterior. Esse mecanismo esta? repre-
+sentado na figura 10, na qual y(k) representa a sa??da real no instante
+k, ysc(k|k ? 1) representa a sa??da predita para o instante k sem con-
+siderar uma parcela adicional proveniente do modelo de perturbac?a?o,
+z?1 representa o operador atraso, ki o ganho do integrador e DF(z) o
+denominador do filtro.
+
+Figura 10 – Modelo de perturbac?a?o do PNMPC
+
+Assim percebe-se que o erro de predic?a?o do instante anterior
+e? filtrado e integrado para se obter uma espe?cie de correc?a?o para as
+predic?o?es futuras.
+
+
+
+62
+
+Para avaliar a robustez desse esquema de compensac?a?o do atraso
+e? interessante designar separadamente o conjunto de predic?o?es referen-
+tes a? compensac?a?o do atraso do conjunto de predic?a?o apo?s o efeito do
+atraso. Esse tipo de representac?a?o, como apresentado no cap??tulo 3, e?
+tambe?m conhecido como compensac?a?o de atraso expl??cita, [2].
+
+4.1.1 Ana?lise da Incerteza Equivalente em um PNMPC Linear
+
+Para analisar o efeito da correc?a?o de incertezas utilizada na es-
+trate?gia PNMPC, inicia-se o estudo a partir do problema desenvolvido
+com um modelo linear. Essa escolha se justifica pela simplicidade da
+ferramenta de ana?lise de robustez a ser utilizada. Assim considere a
+representac?a?o discreta e invariante no tempo de um processo, como em
+(4.2).
+
+x(k + 1) = Ax(k) + Bu(k ?d) + w(k)
+y(k) = Cx(k)
+
+(4.2)
+
+Na equac?a?o (4.2), d representa o atraso nominal, x(k) ? Rn e?
+o vetor de estados em k, u(k) ? Rp e? o vetor de sinais de controle,
+w(k) ? Rn representa a perturbac?a?o aditiva e y(k) ? Rq o vetor de
+sa??das, uma combinac?a?o linear dos estados.
+
+Aqui representam-se as incertezas e as perturbac?o?es relacionadas
+ao modelo atrave?s do vetor w(k), que de forma aditiva incorpora essas
+informac?o?es ao modelo nominal escolhido para representar um processo
+linear em questa?o. Essa forma de representac?a?o e? interessante, pois
+ale?m de ser facilmente obtida, desde que no pro?ximo instante de amos-
+tragem da sa??da real seja subtra??da a sa??da nominal, (4.3), e? capaz de
+representar grande parte das incertezas e perturbac?o?es associadas a um
+modelo.
+
+w(k) = x(k + 1) ? [Ax(k) + Bu(k ?d)] (4.3)
+
+Para a determinac?a?o das incertezas, na equac?a?o (4.3) tem-se:
+x(k + 1) representando o vetor de estados obtidos no instante k + 1 e
+Ax(k) + Bu(k ?d) a predic?a?o nominal do pro?ximo instante de amos-
+tragem.
+
+
+
+63
+
+A predic?a?o expl??cita permite, como em um preditor de Smith,
+calcular a ac?a?o de controle com base no sistema sem atraso e aplica?-la
+no sistema com atraso usando o valor predito, figura 11. Isso e? poss??vel
+devido a? predic?a?o para a sa??da em x(k + d) no instante k, indicada por
+x?(k+d|k). Percebe-se aqui tambe?m a generalidade dessa demonstrac?a?o,
+pois ao se representar a lei de controle por u(k) = ?(.), a ana?lise engloba
+diversas estrate?gias de controle na?o lineares, como o PNMPC.
+
+Figura 11 – PNMPC e a predic?a?o expl??cita
+
+Essa predic?a?o deve possuir duas principais caracter??sticas, x?(k +
+d|k) = x(k + d) se w(k) = 0, ?k ? 0 e x(k + d|k) ? x(k + d) se
+w(k) ? wss, no qual wss e? um valor real e constante. O que e? conhecido
+como caracter??stica de seguimento de predic?a?o nominal e de rejeic?a?o de
+perturbac?a?o constante na predic?a?o, [26].
+
+Caso as incertezas fossem conhecidas seria poss??vel predizer os
+estados atrave?s da utilizac?a?o de um simples preditor o?timo, como na
+equac?a?o (4.4).
+
+x(k + 1) =Ax(k) + Bu(k ?d) + w(k)
+x(k + 2) =Ax(k + 1|k) + Bu(k ?d + 1) + w(k + 1)
+x(k + 2) =A[Ax(k) + Bu(k ?d) + w(k)]
+
++ Bu(k ?d + 1) + w(k + 1)
+x(k + 2) =A2x(k) + ABu(k ?d) + Bu(k ?d + 1)
+
++ Aw(k) + w(k + 1)
+
+... =
+...
+
+
+
+64
+
+x(k + d) =Adx(k) +
+
+d?
+j=1
+
+Aj?1Bu(k ? j)
+
++
+
+d?1?
+j=0
+
+Ad?1?jw(k + j) (4.4)
+
+Mas como as incertezas futuras na?o sa?o conhecidas e? preciso
+utilizar alguma espe?cie de observador para obte?-las. De fato, como
+apresentado no cap??tulo 2 e como esta? representado na figura 10, a
+estrate?gia PNMPC incorpora um observador espec??fico para estimar
+as incertezas futuras. Em [1] demonstram-se as propriedades de se-
+guimento da predic?a?o nominal e tambe?m de rejeic?a?o da perturbac?a?o
+constante nas predic?o?es do PNMPC. Ale?m do observador utilizado no
+PNMPC tambe?m e? poss??vel estimar as incertezas atrave?s de outros
+observadores, a exemplo do utilizado em [27].
+
+Uma representac?a?o semelhante para as correc?o?es aplicadas ori-
+ginalmente pelo PNMPC e? indicar a utilizac?a?o de um observador para
+estimar a perturbac?a?o em regime, wss. A sa??da desse observador, que
+pode ser indicada por ?(k), deve respeitar a relac?a?o
+
+lim
+k??
+
+?(k) = lim
+k??
+
+w(k) = wss,
+
+ja? que o modelo de perturbac?a?o utilizado no PNMPC garante a rejeic?a?o
+de perturbac?a?o constante na predic?a?o.
+
+Essa adic?a?o da correc?a?o referente ao modelo de perturbac?a?o e?
+razoa?vel para todos os instantes de predic?a?o do horizonte, visto que
+?(k) representa a informac?a?o mais pro?xima de wss em k e assume-se
+que w(k) ? wss. Dessa forma, o modelo de perturbac?a?o do PNMPC faz
+?(k+j) = ?(k), ?j. Essa nova considerac?a?o leva a? predic?a?o apresentada
+em (4.5), sendo x(k + t|k) a predic?a?o para x(k + t) no instante k, que
+de fato e? o que implicitamente e? realizado no controlador PNMPC.
+
+x?(k + 1|k) =Ax(k) + Bu(k ?d) + ?(k)
+x?(k + 2|k) =Ax?(k + 1|k) + Bu(k ?d + 1) + ?(k)
+x?(k + 2|k) =A[Ax(k) + Bu(k ?d) + ?(k)]
+
++ Bu(k ?d + 1) + ?(k)
+
+
+
+65
+
+x?(k + 2|k) =A2x(k) + ABu(k ?d) + Bu(k ?d + 1)
++ A?(k) + ?(k)
+
+... =
+...
+
+x?(k + d|k) =Adx(k) +
+d?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Ad?1?j?(k)
+
+(4.5)
+
+Sob o ponto de vista da estrate?gia de controle e? interessante rela-
+cionar o processo a controlar mais o esquema de predic?a?o a um modelo
+equivalente de controle. Esse modelo equivalente pode ser representado
+como nas equac?o?es (4.6) e (4.7), nas quais ?(k) e? a incerteza aditiva
+equivalente e ?(k) e? o erro de predic?a?o. E? poss??vel ainda observar a
+ause?ncia do atraso entre dois instantes subsequentes nesse modelo equi-
+valente, caracter??stica essa incorporada pela compensac?a?o do atraso via
+modelo de predic?a?o.
+
+x?(k + d + 1|k + 1) = Ax?(k + d|k) + Bu(k) + ?(k) (4.6)
+x(k + d) = x?(k + d|k) + ?(k + d) (4.7)
+
+A propagac?a?o da incerteza real nesse modelo equivalente causada
+pelo modelo de predic?a?o e? refletida em ?, assim, a sua ana?lise pode
+revelar as propriedades de robustez do esquema de controle equivalente,
+quando da presenc?a do modelo de predic?a?o. Para isso e? necessa?rio
+relacionar ?(k) e ?(k) a w(k) e verificar o comportamento do modelo
+de perturbac?a?o sob a perspectiva do modelo de predic?a?o.
+
+A partir da equac?a?o (4.6) e? poss??vel perceber que ?(k) e? equiva-
+lente a:
+
+?(k) = x?(k + d + 1|k + 1) ? [Ax?(k + d|k) + Bu(k)],
+
+e assim atrave?s da relac?a?o entre ?(k) e w(k) obte?m-se meios para ava-
+liar a robustez do esquema de compensac?a?o de atraso do controlador
+PNMPC (quando parametrizado para controlar processos lineares).
+
+Antes de estender a relac?a?o exposta em (4.6) e? poss??vel demons-
+trar que x?(k +d+ 1|k + 1) pode ser obtido utilizando o mesmo esquema
+de predic?a?o utilizado para se obter x?(k + d|k), como em (4.5), desde
+
+
+
+66
+
+que seja tomado x(k + 1) como o ponto de refere?ncia inicial, resultando
+na equac?a?o (4.8).
+
+x?(k + 1|k + 1) =Ax(k + 1) + Bu(k ?d + 1) + ?(k + 1)
+x?(k + 2|k + 1) =Ax?(k + 2|k + 1) + Bu(k ?d + 2) + ?(k + 1)
+x?(k + 2|k + 1) =A[Ax(k + 1) + Bu(k ?d + 1) + ?(k + 1)]
+
++ Bu(k ?d + 2) + ?(k + 1)
+x?(k + 2|k + 1) =A2x(k + 1) + ABu(k ?d + 1) + Bu(k ?d + 2)
+
++ A?(k + 1) + ?(k + 1)
+
+... =
+...
+
+x?(k + d|k + 1) =Adx(k + 1) +
+d?
+j=1
+
+Aj?1Bu(k ? j + 1)
+
++
+
+d?1?
+j=0
+
+Ad?1?j?(k + 1) (4.8)
+
+E atrave?s das predic?o?es x?(k + d|k), equac?a?o (4.5), e x?(k + d +
+1|k + 1), equac?a?o (4.8), e? poss??vel estender a equac?a?o (4.6) na forma
+apresentada em (4.9).
+
+?(k) =Adx(k + 1) +
+
+d?
+j=1
+
+Aj?1Bu(k + 1 ? j) +
+d?1?
+j=0
+
+Ad?1?j?(k + 1)
+
+? [A(Adx(k) +
+d?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Ad?1?j?(k)) + Bu(k)]
+
+?(k) =Adx(k + 1) + Bu(k) +
+
+d?
+j=2
+
+Aj?1Bu(k + 1 ? j)
+
++
+
+d?1?
+j=0
+
+Ad?1?j?(k + 1) ? [A(Adx(k) + Ad?1Bu(k ?d)
+
++
+
+d?1?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Ad?1?j?(k)) + Bu(k)]
+
+
+
+67
+
+?(k) =Adx(k + 1) +
+
+d?1?
+j=1
+
+AjBu(k ? j) +
+d?1?
+j=0
+
+Ad?1?j?(k + 1)
+
+?AAdx(k) ?AdBu(k ?d) ?A
+d?1?
+j=1
+
+Aj?1Bu(k ? j)
+
+?A
+d?1?
+j=0
+
+Ad?1?j?(k) + Bu(k) ?Bu(k)
+
+?(k) =Ad[x(k + 1) ?Ax(k) ?Bu(k ?d)] +
+d?1?
+j=1
+
+AjBu(k ? j)
+
+?A
+d?1?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Ad?1?j?(k + 1)
+
+?A
+d?1?
+j=0
+
+Ad?1?j?(k)
+
+?(k) =Ad[x(k + 1) ?Ax(k) ?Bu(k ?d)] +
+d?1?
+j=1
+
+AjBu(k ? j)
+
+?
+d?1?
+j=1
+
+AjBu(k ? j) +
+d?1?
+j=0
+
+Ad?1?j?(k + 1) ?
+d?1?
+j=0
+
+Ad?j?(k)
+
+?(k) =Ad[x(k + 1) ?Ax(k) ?Bu(k ?d)] + ?(k + 1) ?Ad?(k)
+
++
+
+d?2?
+j=0
+
+Ad?1?j?(k + 1) ?
+d?1?
+j=1
+
+Ad?j?(k)
+
+?(k) =Ad[x(k + 1) ?Ax(k) ?Bu(k ?d) ??(k)] + ?(k + 1)
+
++
+
+d?2?
+j=0
+
+Ad?1?j?(k + 1) ?
+d?2?
+j=0
+
+Ad?1?j?(k)
+
+=Ad[x(k + 1) ?Ax(k) ?Bu(k ?d) ??(k)] + ?(k + 1)
+
++
+
+d?2?
+j=0
+
+Ad?j?1[?(k + 1) ??(k)]
+
+(4.9)
+
+Assim, a incerteza aditiva equivalente, modificada pelo esquema
+de predic?a?o, pode ser descrita como na equac?a?o (4.10).
+
+
+
+68
+
+?(k) =Ad[w(k) ??(k)] +
+d?1?
+j=1
+
+Aj[?(k + 1) ??(k)] + ?(k + 1) (4.10)
+
+Em primeiro lugar, percebe-se que as duas propriedades funda-
+mentais de seguimento de predic?a?o nominal e rejeic?a?o de perturbac?a?o
+constante na predic?a?o continuara?o presentes, mesmo com a utilizac?a?o
+de um esquema de compensac?a?o expl??cita.
+
+Isso porque se w(k) ? wss, o modelo de perturbac?a?o utilizado
+faz com que tanto ?(k) ? wss quanto ?(k + 1) ? wss e assim, da
+equac?a?o (4.10), e? poss??vel perceber que ?(k) ? wss. Ja? no caso de
+w(k) = 0, o modelo de perturbac?a?o do PNMPC faz com que ?(k) = 0,
+?(k + 1) = 0 e assim tambe?m ?(k) = 0. Ou seja, pelos casos citados e?
+poss??vel perceber que x(k +d+ 1|k + 1) ? x(k +d+ 1) e que respeitam-
+se as propriedades de seguimento de predic?a?o nominal e rejeic?a?o de
+perturbac?a?o constante na predic?a?o.
+
+Ainda, percebe-se que caso a matriz A seja positiva definida, e
+assim o modelo nominal seja insta?vel, quanto maior o atraso nominal
+maior sera? a norma induzida1 da matriz Ad, o que tende a aumentar a
+norma da incerteza aditiva equivalente, ?. E assim, quando o modelo
+nominal for insta?vel, a norma de ? tendera? a crescer conforme cresc?a o
+atraso nominal, o que prejudicara? o desempenho do processo controlado
+em malha fechada, ja? que a predic?a?o e? usada para o ca?lculo do pro?ximo
+incremento de controle e ? afeta diretamente a predic?a?o.
+
+O outro ponto em questa?o refere-se ao comportamento da varia?vel
+de correc?a?o, ?, aplicada a cada elemento de predic?a?o. E? interessante
+notar que na incerteza equivalente ela se apresenta de forma acumu-
+lada. Isso acontece, pois, como a cada instante de predic?a?o e? aplicado
+o mesmo valor de correc?a?o, apo?s o per??odo referente ao atraso nominal
+esses valores va?o se acumulando continuamente. E assim, de forma
+semelhante, esse acu?mulo pode aumentar a norma de ? e tambe?m pre-
+judicar a robustez em malha fechada.
+
+Em contrapartida da ana?lise da incerteza equivalente tem-se
+tambe?m a ana?lise do erro de predic?a?o, apresentada na equac?a?o (4.11).
+E? interessante notar que ?(k) tera? seu efeito notado apenas na resposta
+temporal da rejeic?a?o das perturbac?o?es constantes, sem afetar a robustez
+do controle em malha fechada. Vale ressaltar que problemas relacio-
+nados a robustez sa?o origina?rios no fato de que a informac?a?o utilizada
+
+1A norma induzida de uma matriz e? definida por ||A|| , max
+w 6=0
+
+||Aw||
+||w||
+
+
+
+69
+
+para o ca?lculo do pro?ximo incremento de controle, nesse esquema de
+compensac?a?o de atraso, e? x(k + d|k), a qual depende diretamente da
+incerteza equivalente, ?(k).
+
+?(k + d) =x(k + d) ? x?(k + d|k)
+
+=[Adx(k) +
+
+d?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Ad?1?jw(k + d? j)]
+
+? [Adx(k) +
+d?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Ad?1?j?(k)]
+
+?(k + d) =
+
+d?1?
+j=0
+
+Ad?j?1[w(k + j) ??(k)],
+
+e assim,
+
+?(k) =
+
+d?1?
+j=0
+
+Ad?j?1[w(k ?d + j) ??(k ?d)].
+
+Ainda, utilizando algumas manipulac?o?es, e? poss??vel sintetizar
+esse resultado, obtendo:
+
+?(k) = Ad?1[w(k ?d) ??(k ?d)] + Ad?2[w(k ?d + 2) ??(k ?d)]
++ ... + A[w(k ? 2) ??(k ?d)] + [w(k ? 1) ??(k ?d)]
+= [w(k ? 1) ??(k ?d)] + A[w(k ? 2) ??(k ?d)]
++ ... + Ad?2[w(k ?d + 2) ??(k ?d)] + Ad?1[w(k ?d) ??(k ?d)]
+
+=
+
+d?
+j=1
+
+Aj?1[w(k ? j) ??(k ?d)]. (4.11)
+
+Novamente, como esperado, e? poss??vel notar que se ?(k) ? wss,
+enta?o limk???(k) = wss e ?(k + d) ? 0. Assim, da equac?a?o (4.7)
+verifica-se a rejeic?a?o da perturbac?a?o na predic?a?o e tambe?m que x?(k +
+d|k) ? x(k + d).
+
+As figuras 12 e 13 retratam como o desempenho em robustez
+
+
+
+70
+
+do PNMPC ainda e? dependente do tamanho do atraso nominal, carac-
+ter??stica essa na?o deseja?vel para esquemas de compensac?a?o de atraso.
+Nessas figuras o processo (4.12) e? controlado utilizando o modelo (4.13).
+
+y(k + 1) = 0,92y(k) + 0,25u(k ? 1 ?d) (4.12)
+
+y(k + 1) = 0,9y(k) + 0,25(k ? 1 ?dn) (4.13)
+
+E ainda, para controla?-lo, parametriza-se um controlador PN
+MPC com horizonte de predic?a?o efetivo de 3 amostras (desconside-
+rando os d instantes iniciais nos quais o efeito do atraso e? percebido),
+o horizonte de controle em 3, ponderac?o?es na predic?a?o de 0,001 e pon-
+derac?o?es no controle de 1. Ainda, ajusta-se o para?metro do filtro que
+estima o erro de predic?a?o em 0,7.
+
+Para representar a influe?ncia do atraso nominal na robustez, na
+figura 12 representa-se a resposta temporal do processo com um atraso
+de d = 10 controlado pelo PNMPC que utiliza um modelo de predic?a?o
+com atraso de dn = 8. E? poss??vel perceber que, como o atraso nominal
+e? curto, um erro de 25% a menos de incerteza no atraso na?o prejudica
+o desempenho da dina?mica em malha fechada.
+
+No entanto, na figura 13 representa-se a instabilizac?a?o da dina?mi-
+ca em malha fechada quando o atraso e? maior, d = 80, tambe?m com
+25% a menos de incerteza no atraso, dn = 64. Assim, uma mesma
+parametrizac?a?o para o controlador PNMPC que estabiliza a dina?mica
+em malha fechada quando o atraso nominal e? curto pode instabiliza?-la
+quando o atraso nominal for maior.
+
+Figura 12 – Respostas temporais; d = 10 e dn = 8
+
+
+
+71
+
+Figura 13 – Respostas temporais; d = 80 e dn = 64
+
+Essa caracter??stica e? a mesma observada no GPC para controle
+de sistemas com atraso, como ilustrado em [2] e [6].
+
+4.1.2 Preditor Modificado
+
+A partir do que foi exposto na sec?a?o 4.1.1 tem-se que a incer-
+teza equivalente, da equac?a?o (4.6), ?(k), possui um forte impacto na
+robustez do controle PNMPC em malha fechada, visto que ela atuara?
+na predic?a?o x?(k +d|k) que e? utilizada para calcular as varia?veis de con-
+trole. Sendo assim, e? lo?gico pensar que conforme diminui-se o seu efeito
+nas predic?o?es, maior desempenho em robustez e? poss??vel alcanc?ar.
+
+Observando a equac?a?o (4.10) ve?-se tambe?m que, caso o acu?mulo
+de ? diminua, ou seja eliminado, a norma de ? ira? diminuir. Dimi-
+nuindo a norma de ? diminui-se tambe?m o seu impacto nas predic?o?es
+e por conseque?ncia pode-se melhorar a robustez do controle em ma-
+lha fechada. Uma forma de eliminar esse acu?mulo e? alterar o esquema
+de correc?a?o das predic?o?es, estabelecendo um novo esquema de com-
+pensac?a?o de atraso, no qual a predic?a?o utilizada para calcular a pro?xima
+varia?vel de controle e? x?(k + d|k), (4.14).
+
+x?(k + 1|k) =Ax(k) + Bu(k ?d) + ?(k ?d + 1)
+x?(k + 2|k) =Ax?(k + 1|k) + Bu(k ?d + 1) + ?(k ?d + 2)
+x?(k + 2|k) =A[Ax(k) + Bu(k ?d) + ?(k ?d + 1)]
+
++ Bu(k ?d + 1) + ?(k ?d + 2)
+
+
+
+72
+
+x?(k + 2|k) =A2x(k) + ABu(k ?d) + Bu(k ?d + 1)
++ A?(k ?d + 1) + ?(k ?d + 2)
+
+... =
+...
+
+x?(k + d|k) =Adx(k) +
+d?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Aj?(k ? j)
+
+(4.14)
+
+Essa alterac?a?o e? interessante visto que as incertezas desconheci-
+das na?o sa?o garantidamente constantes em um horizonte de predic?a?o
+do atraso, como preve? o PNMPC ao fazer ?(k ? d ? 1) = ?(k ? d) =
+... = ?(k). Ale?m disso, como os observadores utilizados para os mo-
+delos de perturbac?a?o sa?o esta?veis e ?(k) ? wss, a mesma relac?a?o e?
+respeitada para os instantes anteriores de ?, ou seja, ?(k ?d) ? wss,
+?(k ? d + 1) ? wss, ..., ?(k ? 1) ? wss, mantendo as propriedades
+fundamentais de um compensador de atraso.
+
+O novo modelo equivalente devido a? presenc?a desse novo esquema
+de predic?a?o pode ser representado como em (4.15) e (4.16), sendo ?(k)
+a nova incerteza aditiva equivalente e ?(k) o novo erro de predic?a?o.
+
+x?(k + d + 1|k + 1) = Ax?(k + d|k) + Bu(k) + ?(k) (4.15)
+x(k + d) = x?(k + d|k) + ?(k + d) (4.16)
+
+Para visualizar as novas propriedades de robustez e? necessa?rio
+relacionar a nova incerteza aditiva equivalente com a incerteza aditiva
+real. Para isso descreve-se ?(k) como em (4.17).
+
+?(k) = x?(k + d + 1|k + 1) ? [Ax?(k + d|k) + Bu(k)] (4.17)
+
+Assim como e? poss??vel obter a predic?a?o x?(k + d|k) dado o valor
+do instante x(k), pode-se tambe?m obter a predic?a?o x?(k + d + 1|k + 1)
+caso fosse dado x(k + 1), como em (4.18).
+
+x?(k + 2|k + 1) =Ax(k + 1) + Bu(k ?d + 1) + ?(k ?d + 2)
+x?(k + 3|k + 1) =Ax?(k + 2|k + 1) + Bu(k ?d + 2) + ?(k ?d + 3)
+
+
+
+73
+
+x?(k + 3|k + 1) =A2x(k + 1) + ABu(k ?d + 1) + Bu(k ?d + 2)
++ A?(k ?d + 2) + ?(k ?d + 3)
+
+... =
+...
+
+x?(k + d + 1|k + 1) =Adx(k + 1) +
+d?
+j=1
+
+Aj?1Bu(k ? j + 1)
+
++
+
+d?1?
+j=0
+
+Aj?(k ? j + 1) (4.18)
+
+Substituindo x?(k + d + 1|k + 1) e x?(k + d|k) em (4.17) e? poss??vel
+encontrar a relac?a?o entre ? e w, como em (4.19).
+
+?(k) =Adx(k + 1) +
+
+d?
+j=1
+
+Aj?1Bu(k + 1 ? j)
+
++
+
+d?1?
+j=0
+
+Aj?(k ? j + 1 ? [A(Adx(k)
+
++
+
+d?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Aj?(k ? j)) + Bu(k)]
+
+?(k) =Adx(k + 1) + Bu(k) +
+
+d?
+j=2
+
+Aj?1Bu(k + 1 ? j)
+
++
+
+d?1?
+j=0
+
+Aj?(k ? j + 1) ? [A(Adx(k) + Ad?1Bu(k ?d)
+
++
+
+d?1?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Aj?(k ? j)) + Bu(k)]
+
+?(k) =Adx(k + 1) +
+
+d?1?
+j=1
+
+AjBu(k ? j) +
+d?1?
+j=0
+
+Aj?(k ? j + 1)
+
+?AAdx(k) ?AdBu(k ?d) ?A
+d?1?
+j=1
+
+Aj?1Bu(k ? j)
+
+
+
+74
+
+?A
+d?1?
+j=0
+
+Aj?(k ? j) + Bu(k) ?Bu(k)
+
+?(k) =Ad[x(k + 1) ?Ax(k) ?Bu(k ?d)] +
+d?1?
+j=1
+
+AjBu(k ? j)
+
+?A
+d?1?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Aj?(k ? j + 1)
+
+?A
+d?1?
+j=0
+
+Aj?(k ? j)
+
+?(k) =Ad[x(k + 1) ?Ax(k) ?Bu(k ?d)]
+
++
+
+d?1?
+j=1
+
+AjBu(k ? j) ?
+d?1?
+j=1
+
+AjBu(k ? j)
+
++
+
+d?1?
+j=0
+
+Aj?(k ? j + 1) ?A
+d?1?
+j=0
+
+Aj?(k ? j)
+
+?(k) =Ad[x(k + 1) ?Ax(k) ?Bu(k ?d)] + ?(k) ?Ad?(k ?d)
+
++
+
+d?1?
+j=1
+
+Aj?(k ? j + 1) ?
+d?2?
+j=0
+
+Aj+1?(k ? j)
+
+?(k) =Ad[x(k + 1) ?Ax(k) ?Bu(k ?d) ??(k ?d + 1)] + ?(k + 1)
+
++
+
+d?1?
+j=1
+
+Aj?(k ? j + 1) ?
+d?1?
+j=1
+
+Aj?(k ? j + 1)
+
+E assim,
+
+?(k) = Ad[w(k) ??(k ?d + 1)] + ?(k + 1) (4.19)
+
+Observando a equac?a?o (4.19) e? poss??vel perceber que ?(k) mante?m
+as propriedades fundamentais de compensadores de atraso: seguimento
+de predic?a?o nominal e rejeic?a?o de perturbac?a?o constante na predic?a?o.
+Isso porque, caso w(k) = 0, pelo observador utilizado, ?(k?d) = ?(k) =
+0 e ?(k) = 0. Bem como se w(k) ? wss, pelo modelo de perturbac?a?o
+utilizado, ?(k ?d) ? wss e ?(k) ? wss, levando ?(k) ? wss. E, para
+ambas as situac?o?es, a predic?a?o tende ao valor real
+
+No entanto, diferentemente do esquema de predic?a?o original do
+
+
+
+75
+
+PNMPC, no qual ? sofre forte influe?ncia de acu?mulo das varia?veis de
+correc?a?o durante o per??odo equivalente ao atraso nominal, e consequen-
+temente prejudica a robustez do controle em malha fechada, ? na?o mais
+apresenta esse feno?meno indesejado.
+
+Ainda, o erro de predic?a?o nesse caso e? dado pela equac?a?o (4.20).
+
+?(k + d) = x(k + d) ? x?(k + d|k)
+
+= [Adx(k) +
+
+d?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Ad?1?jw(k + d? j)]
+
+? [Adx(k) +
+d?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Aj?(k ? j)]
+
+E assim,
+
+?(k) =
+
+d?1?
+j=0
+
+Aj[w(k + j + 1) ??(k ? j)]. (4.20)
+
+Mais uma vez, a equac?a?o (4.20) esclarece a evide?ncia do cumpri-
+mento da propriedade de rejeic?a?o de perturbac?a?o constante na predic?a?o,
+ja? que se ?(k) ? wss, enta?o limk???(k) = wss e ?(k + d) ? 0.
+
+Para ilustrar o ganho de robustez quando esse segundo esquema
+de compensac?a?o de atraso e? utilizado considera-se a mesma parame-
+trizac?a?o do controlador PNMPC utilizada nos exemplos apresentados
+nas figuras 12 e 13, no entanto, utilizando agora o preditor modificado
+para determinar a predic?a?o para x(k + d).
+
+Na figura 14, ve?-se que a resposta temporal em malha fechada,
+nas condic?o?es nas quais o atraso real do processo (4.12) e? de 80 amostras
+e o atraso nominal do modelo (4.13) e? de 64 amostras (um erro de
+25% na estimativa do atraso), na?o apresenta mais um comportamento
+insta?vel.
+
+E? interessante notar como esse esquema de compensac?a?o de atraso
+proposto pode ser aplicado em diversos tipos de controladores. Ele
+pode ser aplicado em um controlador cla?ssico de realimentac?a?o de es-
+tados, no qual, em conjunto com um observador das incertezas, forne-
+ceria predic?o?es ate? k + d|k que o controlador utilizaria para calcular o
+pro?ximo valor de controle, como enunciado em [6]. Outra aplicac?a?o, se-
+guindo a linha do que foi apresentado para o PNMPC, seria a utilizac?a?o
+
+
+
+76
+
+Figura 14 – Respostas temporais; d = 80 e dn = 64
+
+de um esquema de compensac?a?o de atraso expl??cita em controladores
+MPC tornando-os mais robustos quando utilizados para o controle de
+processos com longo atraso de transporte.
+
+4.1.3 Preditor Modificado em um PNMPC Na?o Linear
+
+Como apresentado no cap??tulo 2 o PNMPC e? projetado para me-
+lhorar o desempenho de controladores preditivos quando configurados
+para controlar processos com na?o linearidades complexas. A intenc?a?o
+e? obter uma estrate?gia com uma relac?a?o adequada entre desempenho,
+velocidade e simplicidade. Para isso utiliza-se uma nova abordagem de
+linearizac?a?o na resposta forc?ada, fazendo uma aproximac?a?o linear da
+sa??da predita em relac?a?o aos incrementos de controle futuros.
+
+A sua concepc?a?o original preve? um modelo de perturbac?a?o capaz
+de garantir a rejeic?a?o de perturbac?o?es constantes, utilizando um obser-
+vador particular para obter correc?o?es que sa?o adicionadas em cada uma
+das predic?o?es de todo o horizonte.
+
+Sendo assim, em (4.2), w ? wss, mesmo quando controla-se um
+processo atrave?s de um modelo na?o linear e o modelo de perturbac?a?o
+e? tambe?m utilizado para, em regime, rejeitar poss??veis perturbac?o?es
+constantes fazendo com que x(k + d|k) ? x(k + d).
+
+Por similaridade ao caso linear e? poss??vel concluir que em um
+esquema de compensac?a?o de atraso expl??cita, no qual um modelo de
+perturbac?a?o faz com que ? ? wss para que x(k + d|k) ? x(k + d),
+essas correc?o?es ?(k) aplicadas em cada instante de predic?a?o de um
+horizonte causara?o o mesmo efeito de aumentar a norma da incerteza
+equivalente, de forma semelhante ao que ocorreu na equac?a?o (4.10).
+
+
+
+77
+
+Enta?o, a modificac?a?o proposta na sec?a?o 4.1.1 tambe?m se faz coerente
+para o caso na?o linear e esse efeito indesejado de aumento da norma da
+incerteza equivalente pode ser diminu??do com a eliminac?a?o do acu?mulo
+das correc?o?es.
+
+Para ilustrar o aumento da robustez com PNMPC utilizado para
+controlar um processo modelado de forma na?o linear, realiza-se uma si-
+mulac?a?o de controle utilizando o processo da equac?a?o (4.21) com o
+modelo da equac?a?o (4.22), no qual observa-se um erro de modelagem
+importante nos coeficientes do modelo. Parametriza-se o PNMPC com
+horizonte de predic?a?o efetivo de 3 amostras (desconsiderando os d ins-
+tantes iniciais nos quais o efeito do atraso e? percebido), o horizonte
+de controle em 3, ponderac?o?es na predic?a?o de 0,001 e ponderac?o?es no
+controle de 1. Ainda, ajusta-se o para?metro do filtro que estima o erro
+de predic?a?o em 0,9.
+
+y(k) =
+2,5y(k ? 1)y(k ? 2)
+
+1 + y(k ? 1)2 + y(k ? 2)2
+
++ 0,3 cos(0,5(y(k ? 1) + y(k ? 2))) + 1,2u(k ? 1 ?d)
+(4.21)
+
+y(k) =
+7y(k ? 1)y(k ? 2)
+
+1 + y(k ? 1)2 + y(k ? 2)2
+
++ 0,1 cos(0,3(y(k ? 1) + y(k ? 2))) + 1,2u(k ? 1 ?dn)
+(4.22)
+
+Na figura 15 tem-se a situac?a?o na qual o atraso real e? 20 com
+um erro percentual na estimativa do atraso de 11%, ou seja, dn = 18.
+Na figura 16 observa-se o efeito de instabilidade quando aumenta-se o
+tamanho do atraso nominal para 100 instantes de amostragem, com
+apenas 11% de erro percentual na estimativa do atraso. E na figura 17
+ve?-se com a utilizac?a?o do preditor modificado que o controle em malha
+fechada torna-se mais robusto, mantendo a estabilidade da resposta em
+malha fechada.
+
+
+
+78
+
+Figura 15 – Respostas temporais; d = 20 e dn = 18
+
+Figura 16 – Respostas temporais; d = 100 e dn = 89
+
+Figura 17 – Respostas temporais com Preditor Modificado; d = 100 e
+dn = 89
+
+4.1.4 Estudo de Caso
+
+Para representar o comportamento robusto de um PNMPC que
+utiliza o esquema de predic?a?o modificado proposto nesse trabalho, considera-
+
+
+
+79
+
+se o controle de concentrac?a?o em um reator insta?vel comum na indu?stria
+de petro?leo e ga?s. A dina?mica em malha aberta de alguns reatores
+qu??micos com misturas na?o ideais podem ser descritos pelo modelo de
+Choellete, como na equac?a?o diferencial na?o linear da equac?a?o (4.23),
+[26].
+
+dc
+
+dt
+=
+f(t)
+
+v
+[ci(t) ? c(t)] ?
+
+kic(t)
+
+[k2c(t) + 1]2
+, (4.23)
+
+sendo c(t) a concentrac?a?o na sa??da do reator, ci(t) a concentrac?a?o na
+entrada do reator, f(t) a vaza?o na entrada do reator, k1 = 10 l/s,
+k2 = 10 mol/s e v = 11 l o volume do reator. Para a simulac?a?o de
+controle considera-se a vaza?o de entrada em f = 0.033 l/s, o tempo de
+amostragem T = 1 s, uma discretizac?a?o do processo como a da equac?a?o
+(4.24), e ainda um atraso de transporte entre a varia?vel de entrada e a
+sa??da de 20 instantes de amostragem.
+
+c(k) = c(k?1) +
+f(k ? 1)
+
+v
+[ci(k?1?20)?c(k?1)]?
+
+kic(k ? 1)
+[k2c(k ? 1) + 1]2
+
+(4.24)
+E? configurado enta?o um controlador PNMPC com horizontes de
+
+controle e de predic?a?o de 3 instantes de amostragem (desconsiderando
+os d instantes iniciais nos quais o efeito do atraso e? percebido), pon-
+derac?a?o no controle de 0,5, ponderac?a?o no erro da saida futura de 3,
+filtro de estimativa do erro de predic?a?o de 0,8 e e? utilizado um modelo
+de predic?a?o como o da equac?a?o (4.25), com 30% de erro na estimativa
+do atraso.
+
+c(k) = c(k?1) +
+f(k ? 1)
+
+v
+[ci(k?1?28)?c(k?1)]?
+
+kic(k ? 1)
+[k2c(k ? 1) + 1]2
+
+(4.25)
+A seguir e? utilizado um controlador PNMPC com o esquema
+
+de predic?a?o modificado, utilizando o mesmo ajuste dado na situac?a?o
+anterior. As figuras 18 e 19 conte?m as respostas temporais de ambas as
+simulac?o?es e a partir delas e? poss??vel verificar o comportamento robusto
+do PNMPC Modificado.
+
+No cap??tulo 5 sera? demonstrado como a norma da incerteza equi-
+valente se relaciona com as correc?o?es e como reduz-se esse efeito de
+acu?mulo atrave?s da utilizac?a?o do preditor modificado para o caso na?o
+linear. Pore?m, antes de finalizar esse cap??tulo e? apresentada outra forma
+de correc?a?o das predic?o?es, baseada no FSP.
+
+
+
+80
+
+Figura 18 – Resposta temporal do controle do reator com o PNMPC
+
+Figura 19 – Resposta temporal do controle do reator com o PNMPC
+Modificado
+
+4.2 PNMPC COM COMPENSAC?A?O DE ATRASO VIA PREDITOR
+DE SMITH FILTRADO
+
+Como demonstrado em [6], um esquema de compensac?a?o de
+atraso adequado deve possuir duas caracter??sticas essenciais: eliminar
+a influe?ncia do atraso na malha de controle e ser capaz de rejeitar per-
+turbac?o?es constantes. Essas caracter??sticas sa?o importantes porque o
+atraso tende a degradar a robustez conforme aumenta.
+
+Nesse contexto, os compensadores devem ser projetados para
+garantir um bom desempenho do controle em malha fechada, e na?o
+apenas fornecerem boas predic?o?es, ja? que elas estara?o inevitavelmente
+atreladas a modelos nominais.
+
+No caso dos controladores PNMPC essa afirmativa e? ainda mais
+justifica?vel, pois em situac?o?es nas quais processos com na?o linearidades
+
+
+
+81
+
+complexas esta?o sendo controlados, a tende?ncia em se obter predic?o?es
+diferentes das sa??das reais e? maior, bem como a exige?ncia em torno
+da robustez. Como o principal benef??cio da compensac?a?o de atraso
+via preditor de Smith filtrado e? melhorar a robustez sem prejudicar o
+desempenho nominal do processo controlado, e? interessante associa?-la
+ao controle PNMPC de processos com longos atrasos de transporte.
+
+No entanto, a compensac?a?o de atraso via preditor de Smith fil-
+trado e? uma estrate?gia utilizada tradicionalmente em esquemas de con-
+trole entrada-sa??da, quando utilizados modelos lineares para represen-
+tar a dina?mica dos processos. Em [2] estabelece-se um caminho para se
+utilizar tal estrate?gia de compensac?a?o de atraso quando um modelo em
+espac?o de estados linear representa o processo a controlar, mas ainda
+trata-se de uma representac?a?o linear.
+
+Com vistas a aumentar a robustez dos controladores PNMPC e
+sabendo que o objetivo das predic?o?es em um esquema de compensac?a?o
+de atraso e? melhorar o desempenho em malha fechada do controle,
+propo?e-se a compensac?a?o de atraso via preditor de Smith filtrado com
+o uso do PNMPC como controlador prima?rio da seguinte forma:
+
+1. compensac?a?o de atraso expl??cita;
+
+2. predic?a?o via preditor de Smith filtrado, com filtro linear;
+
+3. controle baseado nas predic?o?es.
+
+Em relac?a?o a? compensac?a?o de atraso expl??cita e? importante res-
+saltar que o esquema de controle e? dado como na figura 11, ou seja, ao
+inve?s de obterem-se as predic?o?es,
+
+y? = f(yp,up,?u),
+
+ou na forma como sa?o realizadas no PNMPC:
+
+y? = f(yp,up) +
+?y?
+
+??u
+?u,
+
+de maneira impl??cita, nas quais y? representa o vetor de predic?o?es para
+a sa??da durante o horizonte de predic?a?o, f(.) representa uma func?a?o
+na?o linear que modela o processo, yp o vetor de sa??das passadas, up
+o vetor de controles passados, ?u o vetor de incrementos de controles
+futuros e ?y?
+
+??u
+uma linearizac?a?o entre o vetor de sa??das preditas e o
+
+vetor de incremento de controles futuros, obte?m-se separadamente os d
+primeiros instantes, sendo que d representa o atraso de transporte.
+
+
+
+82
+
+Para isso, a nova predic?a?o para d, y(k + d|k), e? obtida utilizando
+a relac?a?o (4.26), sendo y?(k + d|k) a predic?a?o a ser utilizada para o
+ca?lculo dos incrementos de controle futuros, y?(k + d|k) uma predic?a?o
+o?tima para a sa??da (obtida por exemplo, atrave?s de um modelo sem
+o atraso de transporte), Fr(z
+
+?1) um filtro linear, que assim como o
+determinado em [4] deve ser esta?vel e possuir ganho unita?rio, y(k) a
+sa??da real e y?(k) a sa??da atual do modelo. Esse esquema de controle
+essa representado na figura 20.
+
+y?(k + d|k) = y?(k + d) + Fr(z?1)[y(k) ? y?(k)] (4.26)
+
+Figura 20 – PNMPC com compensac?a?o de atraso via preditor de Smith
+filtrado
+
+Ainda na figura 20, nota-se que nesse novo esquema de controle
+o PNMPC utiliza as predic?o?es para a sa??da apo?s o atraso, dadas pelo
+modelo equivalente de predic?a?o com o preditor de Smith filtrado, no
+ca?lculo dos pro?ximos incrementos de controle. Ou seja, tanto a resposta
+livre quanto a resposta forc?ada sera?o calculadas como se a predic?a?o fosse
+a sa??da mais recente.
+
+Deve-se ressaltar que a estrate?gia de compensac?a?o indicada na
+figura 20 so? e? aplica?vel para processos que possuem apenas pontos de
+equil??brio esta?veis. Para os outros casos deve-se acoplar o filtro em
+ambos os modelos de predic?a?o, modelo do processo com o atraso e
+modelo do processo sem o atraso, buscando a estabilidade interna do
+controlador.
+
+Para ilustrar o aumento de robustez proporcionado pela aplicac?a?o
+da compensac?a?o de atraso via preditor de Smith filtrado, apresenta-se
+o controle do processo representado pela equac?a?o (4.21) utilizando o
+modelo representado pela equac?a?o (4.22), mas agora com erro na esti-
+
+
+
+83
+
+mativa do atraso de 42%. Assim, tem-se d = 100 e dn = 70.
+Nesse exemplo ajusta-se o controlador PNMPC com um hori-
+
+zonte de predic?a?o igual a 3 instantes de amostragem, um horizonte
+de controle igual a 3, ponderac?o?es na predic?a?o de 0,001 e o filtro de
+correc?a?o do erro de predic?a?o do PNMPC em 0,9. Para a compensac?a?o
+via preditor de Smith filtrado utiliza-se um filtro linear (4.27)2.
+
+Fr(z
+?1) =
+
+0,04
+
+z ? 0,96
+(4.27)
+
+Nas figuras 21 e 22 e? poss??vel perceber que quando o erro esti-
+mado para o atraso de transporte aumenta, mesmo a compensac?a?o de
+atraso via preditor modificado, proposta na sec?a?o 4.1.3, na?o e? capaz
+de garantir a robustez do controlador PNMPC. No entanto, a com-
+pensac?a?o de atraso via preditor de Smith filtrado garante a robustez
+nessas circunsta?ncias sem prejudicar o desempenho nominal do contro-
+lador para mudanc?as de set point.
+
+E? poss??vel perceber tambe?m que em contrapartida o desempe-
+nho da resposta de rejeic?a?o da perturbac?a?o diminui para o caso no qual
+o preditor de Smith filtrado e? utilizado. Essa caracter??stica e? igual a?
+observada no caso linear, dado o compromisso entre robustez e rejeic?a?o
+de perturbac?o?es. No entanto, estrate?gias de ajustes do filtro, como as
+desenvolvidas em [2], podem ser adaptadas para o caso linear no qual
+parte da dina?mica do processo na?o linear for modelada linearmente, a
+exemplo de modelos na?o lineares representados por modelos de Ham-
+merstein, [22].
+
+4.3 CONCLUSA?O
+
+Nesse cap??tulo apresentou-se um estudo de robustez para o es-
+quema de compensac?a?o do atraso impl??cito do PNMPC, no caso do
+controle de um processo representado por um modelo linear. Esse es-
+tudo possibilitou uma ana?lise mais detalhada dos principais fatores que
+influenciam na robustez do controlador. Assim, foi desenvolvido um
+preditor modificado utilizando a compensac?a?o expl??cita do atraso, que
+na?o considera mais o sinal de correc?a?o constante ao longo do intervalo
+de predic?a?o do atraso. Foi demonstrado enta?o, atrave?s de estudos de
+
+2Sabe-se que a freque?ncia de corte do filtro esta? relacionada com a robustez do
+controle em malha fechada. Te?cnicas de ajuste do filtro do preditor de Smith filtrado
+na?o sa?o o objetivo desse trabalho, mas pode-se encontrar maiores informac?o?es em
+[6] e [2].
+
+
+
+84
+
+Figura 21 – Preditor de Smith filtrado; d = 100 e ? = 70
+
+Figura 22 – Preditor modificado; d = 100 e ? = 70
+
+caso, o melhor desempenho em relac?a?o a robustez desse novo esquema.
+Por u?ltimo apresentou-se a aplicac?a?o da compensac?a?o do atraso
+
+via preditor de Smith filtrado em controladores PNMPC com modelos
+na?o lineares. Atrave?s de exemplos ilustrou-se o bom desempenho em
+relac?a?o a? robustez da estrate?gia de compensac?a?o de atraso para o caso
+de controle de processos modelados na?o linearmente.
+
+Esses exemplos ilustrativos motivam a ana?lise de robustez a ser
+apresentada no cap??tulo 5, no qual demonstra-se o porque? do melhor
+desempenho das estrate?gias de compensac?a?o de atraso propostas para
+o controle PNMPC em processos com longos atrasos de transporte.
+
+
+
+85
+
+5 ANA?LISE DE ROBUSTEZ
+
+Como discutido nos cap??tulos anteriores, os compensadores de
+atraso sa?o geralmente sens??veis ao erro na estimac?a?o do atraso de trans-
+porte. Sendo assim a ana?lise de robustez e? importante para classificar
+a robustez das diversas estrate?gias quando aplicadas em situac?o?es nas
+quais ha? incertezas em relac?a?o ao processo real a ser controlado.
+
+Em [6], pode-se observar que os compensadores de atraso de-
+vem, ale?m de cumprir o seu papel fundamental de evitar que o atraso
+de transporte influencie o desempenho em malha fechada do processo
+controlado, manter o comportamento robusto independentemente da
+magnitude do atraso nominal. Assim, pode-se perceber tambe?m nos
+exemplos apresentados em [6], no cap??tulo 9, que as estrate?gias GPC
+e DMC (assim como a estrate?gia PNMPC) originalmente na?o aten-
+dem esse requisito, enquanto o uso do preditor de Smith filtrado como
+estrutura de predic?a?o do atraso faz com que elas atendam.
+
+Para verificar as caracter??sticas de robustez das estrate?gias apre-
+sentadas nesse trabalho sera? representada a propagac?a?o das incertezas
+reais perante o esquema resultante de controle, considerando o contro-
+lador prima?rio PNMPC e as respectivas estrate?gias de compensac?a?o de
+atraso: compensac?a?o impl??cita do pro?prio PNMPC, compensac?a?o de
+atraso modificada proposta no cap??tulo 4 e compensac?a?o de atraso via
+preditor de Smith Filtrado em unia?o com o PNMPC tambe?m proposta
+no cap??tulo 4. Ainda, sera? primeiramente analisada a propagac?a?o das
+incertezas considerando o controle de processos lineares, como em [2],
+e em seguida analisada a propagac?a?o das incertezas de forma generali-
+zada, considerando tambe?m processos na?o lineares, como em [28].
+
+5.1 DESCRIC?A?O DAS INCERTEZAS
+
+Processos reais apresentam variac?o?es relacionadas a qualquer
+modelo proposto para representa?-lo, variac?o?es essas oriundas de diver-
+sas fontes de incertezas, como: ru??dos, perturbac?o?es na?o mensura?veis,
+erros na modelagem do processo etc. Essas variac?o?es podem causar
+problemas relacionados a estabilidade ou a violac?o?es de restric?o?es, no
+caso de controladores preditivos.
+
+Existem diversas maneiras de representar essas incertezas, a exem-
+plo das incluso?es polito?picas e das incertezas aditivas. As incluso?es po-
+lito?picas, como em (5.1), sendo Ai as matrizes dina?micas representando
+
+
+
+86
+
+modelos sujeitos a diferentes incertezas, possuem a vantagem de indi-
+car separadamente cada uma das incertezas e assim permitir meios de
+se tratar cada uma delas individualmente. Ja? a formulac?a?o de incerte-
+zas aditivas, como em (5.2), apesar de ser mais conservadora, permite
+englobar mais facilmente todo o tipo de incerteza, ale?m de permitir
+tambe?m a obtenc?a?o dos valores reais de incertezas experimentalmente.
+
+x(k + 1) = Ax(k) + Bu(k ?d) ; A ? A
+
+A = {A : A =
+N?
+i=1
+
+?iAi;
+
+N?
+i=1
+
+?i = 1; ?i ? 0} (5.1)
+
+x(k + 1) = Ax(k) + Bu(k ?d) + w(k)
+w(k) = x(k + 1) ?Ax(k) ?Bu(k ?d) (5.2)
+
+Ainda, em esquemas de compensac?a?o de atraso sabe-se que o
+atraso na?o deve afetar o desempenho nominal em malha fechada. No
+entanto, nesses esquemas, uma predic?a?o para a sa??da do processo e? uti-
+lizada para controlar o processo real. Assim, e? preciso estudar a relac?a?o
+entre as incertezas reais e as incertezas propagadas pela predic?a?o para
+poder observar qual o efeito do atraso e qual a robustez da estrate?gia
+de controle resultante.
+
+5.2 ANA?LISE LINEAR DA ROBUSTEZ
+
+Nessa sec?a?o sera? apresentada a ana?lise de robustez dos esque-
+mas de compensac?a?o propostos. Sera? analisada a propagac?a?o da incer-
+teza atrave?s do compensador de atraso utilizado, isso primeiramente
+levando em considerac?a?o modelos lineares para representar os proces-
+sos em questa?o.
+
+Essa ferramenta de ana?lise de robustez justifica-se pelo fato de
+que nos esquemas de controle via compensac?a?o do atraso um compen-
+sador produz uma predic?a?o para a sa??da do processo apo?s o efeito do
+atraso e os controladores prima?rios fazem uso dessa predic?a?o para rea-
+lizarem o ca?lculo do pro?ximo valor de controle. Assim, deve-se analisar
+a forma pela qual a incerteza real propaga-se no esquema de com-
+pensac?a?o de atraso e tambe?m impacta a predic?a?o, que como dito, sera?
+a informac?a?o utilizada para o ca?lculo do pro?ximo esforc?o de controle.
+
+
+
+87
+
+Assim, pelo ponto de vista do controle, e? poss??vel dizer que um
+esquema de controle como o apresentado na figura 23, no qual um
+controlador prima?rio calcula os esforc?os de controle, u(k), comparando
+a predic?a?o da sa??da apo?s o efeito do atraso, y?(k) = y(k + d|k), com a
+refere?ncia, e? equivalente ao esquema de controle da figura 24, no qual
+esta? evidenciado um modelo equivalente. Atrave?s dessa descric?a?o e?
+poss??vel relacionar as incertezas w(k) e w?(k) e verificar o impacto na
+robustez devido a uma poss??vel modificac?a?o do comportamento dessa
+informac?a?o.
+
+Figura 23 – Controle Linear com Compensac?a?o de Atraso
+
+Figura 24 – Esquema equivalente de Controle
+
+
+
+88
+
+5.2.1 Compensac?a?o de Atraso Expl??cita
+
+Como apresentado no cap??tulo 4, dada uma representac?a?o linear,
+discreta e invariante no tempo de um processo a controlar, como em
+(5.3), sendo x(k) ? Rn o vetor de estados em k, u(k) ? Rp o vetor de
+varia?veis de controle, y(k) ? Rq o vetor com as sa??das, w(k) ? Rn o
+vetor com as incertezas aditivas, d o atraso de transporte e A, B e C
+as matrizes que modelam o processo, e? poss??vel utilizar um esquema de
+compensac?a?o expl??cita para predizer as sa??das apo?s o efeito do atraso e
+utiliza?-las no ca?lculo do controle, como na figura 23. Como apresentado
+em [13], esse modelo de compensac?a?o e? similar a? compensac?a?o de atraso
+impl??cita utilizada em um MPC (tambe?m utilizada no PNMPC) e ainda
+para a ana?lise de propagac?a?o da incerteza nessa sec?a?o sera? considerado
+o modelo de perturbac?a?o do PNMPC.
+
+x(k + 1) = Ax(k) + Bu(k ?d) + w(k)
+y(k) = Cx(k)
+
+(5.3)
+
+A equac?a?o (5.4) apresenta a predic?a?o referente ao esquema de
+compensac?a?o do PNMPC, no qual x?(k +d|k) representa o valor predito
+para x(k+d) no instante k. E ainda, e? possivel representar o esquema de
+controle de forma equivalente, sem a presenc?a do atraso, como na figura
+24. Assim, na equac?a?o (5.5), que representa esse modelo equivalente, e?
+poss??vel notar a ause?ncia do atraso de transporte.
+
+x?(k + d|k) =Adx(k) +
+d?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Ad?1?j?(k)
+
+(5.4)
+
+x?(k + d + 1|k + 1) = Ax?(k + d|k) + Bu(k) + ?(k) (5.5)
+x(k + d) = x?(k + d|k) + ?(k + d) (5.6)
+
+A ana?lise das incertezas propagadas, ?(k), torna poss??vel o es-
+tudo da robustez. Como demonstrado no cap??tulo 4, para esse caso
+tem-se a relac?a?o apresentada na equac?a?o (5.7).
+
+
+
+89
+
+?(k) =Ad[w(k) ??(k)] +
+d?1?
+j=1
+
+Aj[?(k + 1) ??(k)] + ?(k + 1). (5.7)
+
+Em relac?a?o ao erro de predic?a?o, tem-se a relac?a?o apresentada na
+equac?a?o (5.8).
+
+?(k) =
+
+d?
+j=1
+
+Aj?1[w(k ? j) ??(k ?d)] (5.8)
+
+Novamente, as principais concluso?es para esse caso envolvem o
+comportamento da varia?vel de correc?a?o, ?(k), adicionada nas predic?o?es
+pelo modelo de perturbac?a?o do PNMPC. Como em cada instante de
+predic?a?o e? aplicado o mesmo valor de correc?a?o, apo?s o per??odo igual
+ao tempo de atraso ocorre o acu?mulo dessas correc?o?es, o que pode
+aumentar a norma de ?(k) e diminuir a robustez em malha fechada,
+ja? que ?(k) interfere na obtenc?a?o de x?(k + d|k), que e? a informac?a?o
+utilizada para o co?mputo do pro?ximo esforc?o de controle.
+
+5.2.2 Compensac?a?o de Atraso Modificada
+
+A modificac?a?o do modelo de perturbac?a?o do PNMPC proposta
+nesse projeto foi apresentada no cap??tulo 4, bem como a avaliac?a?o da
+sua robustez. Enta?o, para a representac?a?o em espac?o de estados linear
+e invariante no tempo de um processo a controlar, como em (5.3), a
+nova predic?a?o e? a representada na equac?a?o (5.9).
+
+x?(k + d|k) = Adx(k) +
+d?
+j=1
+
+Aj?1Bu(k ? j) +
+d?1?
+j=0
+
+Aj?(k ? j)
+
+(5.9)
+
+O novo modelo equivalente resultante da utilizac?a?o da predic?a?o
+modificada, representado pela equac?a?o (5.10), modifica a relac?a?o entre
+a incerteza resultante, ?(k), e a incerteza real, w(k), apresentada na
+equac?a?o (5.12).
+
+
+
+90
+
+x?(k + d + 1|k + 1) = Ax?(k + d|k) + Bu(k) + ?(k) (5.10)
+x(k + d) = x?(k + d|k) + ?(k + d) (5.11)
+
+?(k) = Ad[w(k) ??(k ?d)] + ?(k) (5.12)
+
+O novo erro de predic?a?o pode ser relacionado a? incerteza real
+conforme a equac?a?o (5.13).
+
+?(k) =
+
+d?1?
+j=0
+
+Aj[w(k ? j ? 1) ??(k ?d? j)]. (5.13)
+
+Percebe-se enta?o o acre?scimo de robustez que essa modificac?a?o no
+modelo de perturbac?a?o do PNMPC proposta promove, ja? que o acu?mulo
+das varia?veis de correc?a?o que ocorria, equac?a?o (5.7), e? quase na sua
+totalidade eliminado. Isso porque o termo somato?rio que representa
+o acu?mulo das varia?veis de correc?a?o se propagando pela predic?a?o e?
+eliminado.
+
+O reflexo desse feno?meno e? que a incerteza equivalente e? menos
+influenciada pelas varia?veis de correc?a?o e por conseque?ncia afeta menos
+a predic?a?o, fazendo com que a robustez do controle em malha fechada
+seja maior.
+
+5.2.3 Compensac?a?o via Preditor de Smith Filtrado
+
+No cap??tulo 4 apresentou-se tambe?m a estrate?gia de controle que
+contempla a unificac?a?o do controle preditivo PNMPC com um esquema
+de compensac?a?o de atraso expl??cito via preditor de Smith filtrado. Em
+seguida, sera? apresentada uma ana?lise da robustez atrave?s do compor-
+tamento da incerteza.
+
+E? de conhecimento em controle de processos com atraso que o
+preditor de Smith filtrado foi concebido para controle entrada-sa??da [6]
+e [2]. Como foi escolhida a representac?a?o em espac?o de estados para
+demonstrar as propriedades de robustez das estrate?gias em questa?o,
+e? poss??vel utilizar uma sa??da auxiliar, como em (5.14), desde que os
+estados sejam mensura?veis.
+
+
+
+91
+
+x(k + 1) = Ax(k) + Bu(k ?d) + w(k)
+ya(k) = x(k) (5.14)
+
+Obtendo assim uma representac?a?o em espac?o de estados, relacio-
+nando as matrizes A e B com o modelo em func?a?o de transfere?ncia
+(5.15), como em (5.16).
+
+x(k) = ya(k) = G(z
+?1)u(k ?d) + Q(z?1)w(k) (5.15)
+
+G(z?1) = (I ?Az?1)?1Bz?1
+
+Q(z?1) = (I ?Az?1)?1z?1 (5.16)
+
+Estabelece-se enta?o uma relac?a?o entre as representac?o?es e a pos-
+sibilidade de demonstrar a robustez atrave?s de uma representac?a?o em
+espac?os de estados linear.
+
+Assim, dado um modelo nominal (5.17), assim como apresentado
+no cap??tulo 4 na equac?a?o (4.26), por similaridade define-se a predic?a?o
+via preditor de Smith filtrado em espac?o de estados como em (5.18).
+
+x?(k + 1) = Ax?(k) + Bu(k ?d)
+y?a(k) = x?(k) (5.17)
+
+x?(k) = x(k + d|k) = x?(k + d) + Fr(z?1)[x?(k) ?x(k)] (5.18)
+
+Para processos BIBO (Bounded Input Bounded Output ) esta?veis
+e? poss??vel aplicar a compensac?a?o de atraso como na figura 20, ou de
+forma equivalente em espac?o de estados como em (5.18). No entanto,
+para sistemas que na?o sa?o BIBO esta?veis essa formulac?a?o na?o e? va?lida,
+sendo necessa?rio expressar a predic?a?o como em (5.19). Sendo S uma
+matriz de transfere?ncia BIBO esta?vel.
+
+x?(k) = S(z?1)u(k) + Fr(z
+?1)x(k) (5.19)
+
+
+
+92
+
+Para avaliar a robustez considera-se o modelo equivalente de
+predic?a?o, modelo do processo mais o preditor, como em (5.20). Dessa
+forma, a incerteza equivalente pode ser determinada pela expressa?o
+(5.21).
+
+x?(k + 1) = Ax?(k) + Bu(k) + w?(k)
+
+ya(k) = x(k) = x?(k ?d) + e(k) (5.20)
+
+w?(k) = x?(k + 1) ?Ax?(k) ?Bu(k) (5.21)
+
+A fim de encontrar a relac?a?o entre a incerteza equivalente e a
+incerteza real e conseguir assim analisar a robustez desse esquema de
+predic?a?o, substitui-se a equac?a?o (5.18) na equac?a?o (5.21), obtendo as-
+sim a relac?a?o expressa em (5.22).
+
+w?(k) = x?(k + d + 1) ? Fr(z?1)x?(k + 1) + Fr(z?1)x(k + 1)
+?A[x?(k + d) ? Fr(z?1)x?(k) + Fr(z?1)x(k)] ?Bu(k)
+
+(5.22)
+
+Como para o caso nominal na?o sa?o consideradas as incertezas, e?
+poss??vel estabelecer a relac?a?o da equac?a?o (5.23).
+
+x?(k + d + 1) = Ax?(k + d) + Bu(k) (5.23)
+
+E assim, a equac?a?o (5.22) pode ser expressa como em (5.24).
+
+w?(k) = ? Fr(z?1)x?(k + 1) + Fr(z?1)x(k + 1) + AFr(z?1)x(k)
+?AFr(z?1)x(k)
+= Fr(z
+
+?1)[x(k + 1) ? x?(k + 1)] + AFr(z?1)[x(k) ? x?(k)]
+(5.24)
+
+Finalizando a ana?lise, pode-se substituir x?(k + 1) da equac?a?o
+(5.17) e x(k + 1) da equac?a?o (5.14), encontrando a relac?a?o expressa na
+equac?a?o (5.25).
+
+
+
+93
+
+w?(k) = Fr(z
+?1)[Ax(k) + Bu(k ?d) + w(k) ?Ax?(k) ?Bu(k ?d)]
+
+?AFr(z?1)[x(k) ? x?(k)]
+= Fr(z
+
+?1)w(k) + [Fr(z
+?1)A?AFr(z?1)][x(k) ? x?(k)]
+
+(5.25)
+
+A deduc?a?o anterior foi apresentada de forma similar em [2], e
+pode-se mais uma vez observar que caso as perturbac?o?es sejam cons-
+tantes e Fr(1) = I, enta?o w?(k) ? w(k) para k ? ?. Ainda, vale
+mencionar que para o caso linear Fr(z
+
+?1) e? uma matriz de trans-
+fere?ncia arbitra?ria e, se adequadamente escolhida a relac?a?o Fr(z
+
+?1)A =
+AFr(z
+
+?1)1 e? verdadeira, reduzindo a equac?a?o (5.25) para a relac?a?o em
+(5.26).
+
+w?(k) = Fr(z
+?1)w(k) (5.26)
+
+A relac?a?o apresentada na equac?a?o (5.26) evidencia o comporta-
+mento da incerteza equivalente, sendo esse diferente das relac?o?es apre-
+sentadas nos esquemas do PNMPC tradicional e do PNMPC modi-
+ficado. Aqui, um ajuste adequado do filtro faz com que o efeito da
+incerteza equivalente possa ser manipulado.
+
+Assim, ao passo que nos casos anteriores a relac?a?o entre a in-
+certeza equivalente e a incerteza real era afetada apenas pelo atraso
+nominal e tambe?m por para?metros do modelo utilizado, agora essa
+relac?a?o pode ser modificada atrave?s da utilizac?a?o do filtro de robustez
+e enta?o requisitos de controle, como: robustez e ajuste da resposta a
+perturbac?o?es, podem ser manipulados. Nos casos anteriores a robustez
+dependia apenas de para?metros do sistema.
+
+Em relac?a?o ao erro de predic?a?o, da equac?a?o (5.14) e? possivel
+estabelecer a relac?a?o em (5.27). Da predic?a?o via preditor de Smith
+filtrado, e? poss??vel estende?-la para a relac?a?o em (5.28).
+
+1Para isso o filtro de robustez deve possuir uma forma diagonal com func?o?es de
+
+transfere?ncias SISO ide?nticas, como Fr(z
+?1) =
+
+?
+????
+
+F(z?1) 0 ... 0
+0 F(z?1) ... 0
+.
+.
+.
+
+.
+
+.
+
+.
+. . .
+
+.
+
+.
+
+.
+0 0 ... F(z?1)
+
+?
+????.
+
+Essa restric?a?o e? simples para o caso de processos esta?veis em malha aberta, ja? que
+a escolha de F(z?1) e? livre [6].
+
+
+
+94
+
+e(k) = x(k) ? x?(k ?d) (5.27)
+
+e(k) = x(k) ? x?(k) ? Fr(z?1)[x(k ?d) ? x?(k ?d)]
+= [I ?z?dFr(z?1)][x(k) ? x?(k)] (5.28)
+
+Utilizando as relac?o?es expressas em (5.15) e? poss??vel descrever a
+relac?a?o do erro de predic?a?o com a incerteza real pela equac?a?o (5.29).
+Como apresentado em [2], essa relac?a?o permite estabelecer um limitante
+para o erro de predic?a?o, dado um limitante natural para as incertezas
+reais e, em adic?a?o a um conjunto limitante para as incertezas preditas,
+garantir tambe?m a satisfac?a?o robusta de restric?o?es.
+
+e(k) = [I ?z?dFr(z?1)]Q(z?1)w(k) (5.29)
+
+Ao se comparar os tre?s casos, dados pelas equac?o?es (5.7), (5.12)
+e (5.26), ve?-se que o PNMPC e? a estrate?gia na qual a incerteza predita
+tende a possuir a maior magnitude e assim tornar o esquema de controle
+menos robusto. Em contrapartida, o PNMPC com compensac?a?o de
+atraso via preditor de Smith filtrado e? o caso no qual o esquema de
+controle pode apresentar a maior robustez, visto que o filtro pode ser
+ajustado para aumentar a robustez, como detalhado em [6] e [2]. Deve-
+se ressaltar tambe?m a capacidade de se ajustar o filtro para melhorar
+o desempenho da resposta a perturbac?o?es [6].
+
+No entanto, e? importante lembrar tambe?m que o PNMPC Modi-
+ficado apresenta uma formulac?a?o simples e pode tambe?m aumentar con-
+sideravelmente a robustez, apresentando assim uma boa relac?a?o custo-
+benef??cio.
+
+5.3 ANA?LISE NA?O LINEAR DA ROBUSTEZ
+
+Assim como na sec?a?o 5.2, sera? apresentada uma ana?lise com-
+parativa da robustez das tre?s estrate?gias envolvidas nesse projeto: o
+PNMPC, o PNMPC com o esquema de compensac?a?o do atraso utili-
+zando um modelo de perturbac?a?o modificado e o PNMPC com com-
+pensac?a?o de atraso via preditor de Smith filtrado. No entanto, sera?
+dado agora um enfoque ao caso mais geral, analisando a robustez de
+
+
+
+95
+
+processos modelados por sistemas na?o lineares com atraso de trans-
+porte. Mais uma vez sera? utilizada a comparac?a?o entre o comporta-
+mento das incertezas preditas.
+
+Essa linha de ana?lise destaca o diferencial da estrate?gia PNMPC,
+que e? a possibilidade de se utilizarem as vantagens dos controladores
+preditivos em processos na?o lineares em conjunto com estrate?gias efici-
+entes de controle de processos com atraso de transporte, como e? o caso
+do preditor de Smith filtrado.
+
+Para expor a ana?lise considera-se um sinal discreto no tempo,
+x, e a sua amostra em um instante qualquer k, x(k). x e? usado
+para representar uma seque?ncia e para representar uma seque?ncia de-
+finida entre dois instantes diferentes i e j tem-se x[i,j], sendo x[i,j] =
+{x(i), . . . ,x(j)}. Ainda, |x|s, representa a norma induzida de vetor.
+
+Para representar um processo na?o linear com atraso utiliza-se
+um modelo como o apresentado na equac?a?o (5.30).
+
+x(k + 1) = f (x(k),u(k ?d)) + w(k) (5.30)
+
+As incertezas esta?o representadas de forma aditiva, como em
+(5.31).
+
+w(k) = x(k + 1) ?f (x(k),u(k ?d)) (5.31)
+
+Com vistas a definir uma soluc?a?o temporal para o modelo repre-
+sentado em (5.30), considera-se um modelo equivalente sem a presenc?a
+do atraso de transporte, como em (5.32). Para esse modelo equivalente
+define-se enta?o a func?a?o ?? (·), equac?a?o (5.33), que descreve a soluc?a?o
+do sistema no instante k para uma condic?a?o inicial x, uma seque?ncia
+de controle u e uma seque?ncia de incertezas w aplicadas ao sistema.
+
+x?(k + 1) = f (x?(k),u(k)) + w?(k) (5.32)
+
+?? (k,x,u,w) (5.33)
+
+Expressando (5.33) para os modelos na?o lineares com atraso con-
+firma-se o fato de sua resposta temporal sofrer a influe?ncia do atraso.
+Como apresentado em (5.34), nesses casos o estado em um instante k
+
+
+
+96
+
+e? determinado em um instante anterior k ?d e por uma seque?ncia de
+controle tal que o u?ltimo instante de controle que atua sobre o processo
+e? k ?d? 1.
+
+x(k) = ??(k ?d,x(d),u[0,k?d?1],w[d,k?1]) (5.34)
+
+Vale ressaltar tambe?m que o instante inicial x(d), representado
+na equac?a?o (5.34), e? o estado mais recente a na?o sofrer a influe?ncia da
+seque?ncia de controle u[0,k?d?1].
+
+Para simplificar o caso no qual na?o ha? incertezas (caso nominal)
+utiliza-se a relac?a?o (5.35).
+
+?? (k,x,u,0) = ?? (k,x,u) (5.35)
+
+Essas definic?o?es sa?o importantes para a demonstrac?a?o da robus-
+tez no caso no qual o PNMPC e? utilizado em conjunto com a com-
+pensac?a?o expl??cita do atraso via preditor de Smith filtrado. O estudo
+de robustez do PNMPC e do PNMPC modificado segue nas sec?o?es 5.3.1
+e 5.3.2.
+
+5.3.1 PNMPC
+
+Assim como na ana?lise linear, a robustez do PNMPC sera? aqui
+analisada atrave?s do estudo do comportamento da incerteza predita.
+Vale lembrar que nessa estrate?gia de controle e? poss??vel distinguir a
+predic?a?o realizada ate? o instante de atraso da predic?a?o realizada a par-
+tir do atraso ate? o fim do horizonte de predic?a?o. Essa distinc?a?o des-
+taca a existe?ncia de um esquema de compensac?a?o impl??cita que realiza
+uma predic?a?o dos estados do processo a ser utilizada para o ca?lculo do
+pro?ximo valor de controle.
+
+Tambe?m como no caso linear, um modelo de perturbac?a?o for-
+nece a cada instante de predic?a?o um sinal de correc?a?o, ?, no qual ?(k)
+representa o sinal de correc?a?o baseado no erro de predic?a?o (erro entre
+a sa??da predita e a sa??da real) do instante de amostragem k. E ?[i,j]
+representa uma seque?ncia do sinal ? igual a ?[i,j] = {?(i), . . . ,?(j)}.
+
+Como o atraso existente no processo faz com que a ac?a?o de con-
+trole u(k) so? afete o processo em k+d, pode-se utilizar as informac?o?es ja?
+conhecidas ate? enta?o para representar a predic?a?o, que como dito inicial-
+mente, no caso do PNMPC, e? realizada de forma impl??cita. Assim, con-
+
+
+
+97
+
+siderando a equac?a?o (5.30) d passos a frente obte?m-se a representac?a?o
+em (5.36).
+
+x(k + d + 1) = f (x(k + d),u(k)) + w(k + d). (5.36)
+
+Contudo, uma vez que x(k + d) na?o e? conhecido no instante
+k, pode-se realizar uma predic?a?o baseada nas informac?o?es dispon??veis
+nesse instante, representada por x(k + d|k). Esse tipo de predic?a?o tem
+por objetivo representar o sistema atrave?s de um modelo sem atraso,
+conforme indicado na equac?a?o (5.37).
+
+x(k + d + 1|k + 1) = f (x(k + d|k),u(k)) + w?(k) (5.37)
+
+Sendo w?(k) 6= w(k + d), pois x(k + d|k) 6= x(k + d) e x(k + d +
+1|k) 6= x(k + d + 1). Por fim, como x(k + d|k) e? definido no instante k
+e x(k + d + 1|k + 1) e? definido no instante k + 1, pode-se utilizar uma
+notac?a?o simplificada dada por x(j + d|j) = x?(j), (5.38).
+
+x?(k + 1) = f (x?(k),u(k)) + w?(k). (5.38)
+
+Essa representac?a?o e? interessante, ja? que em esquemas de con-
+trole com compensac?a?o do atraso, o controlador principal utiliza uma
+predic?a?o para o valor dos estados e das sa??das apo?s o efeito do atraso
+no ca?lculo do pro?ximo valor de controle a ser aplicado no processo com
+atraso. Assim, a representac?a?o em (5.38) e? importante, pois em con-
+junto com a representac?a?o do processo com atraso (5.30) possibilita o
+estudo do comportamento da incerteza predita, atrave?s do estudo do
+pior caso de |w?(k)|s.
+
+E? importante ressaltar que estrate?gias de compensac?a?o de atraso
+distintas induzira?o a predic?o?es diferenciadas, devido ao comportamento
+de w?(k). Enta?o, uma forma de ana?lise do comportamento robusto das
+estrate?gias de compensac?a?o de atraso e? observar o comportamento dessa
+incerteza. Esse tipo de estudo e? amplo, pois a ana?lise de robustez inde-
+pende do controlador prima?rio, que e? aquele projetado para o modelo
+sem atraso.
+
+Com vistas a demonstrar analiticamente a propriedade de ro-
+bustez do PNMPC estudando o comportamento da incerteza predita,
+restringem-se os processos sob ana?lise para aqueles descritos por func?o?es
+f(x,u) localmente Lipschitz cont??nuas em x, no dom??nio X ×U, com
+f(0,0) = 0. Essa restric?a?o possibilita expressar a relac?a?o da equac?a?o
+(5.39), [28]. Sendo 0 &amp;lt;Lf &amp;lt;? a constante de Lipschitz.
+
+
+
+98
+
+|f (x(i),u) ?f (x(j),u) |s ? Lf|x(i) ?x(j)|s (5.39)
+
+Ao se restringir os processos utilizando func?o?es localmente Lips-
+chitz para representa?-los e? poss??vel demonstrar tambe?m que as suas
+respostas temporais, dadas por (5.33), sa?o func?o?es localmente Lipschitz
+cont??nuas em x, para todo x ? X e u ? U, para diferentes condic?o?es
+iniciais sob uma mesma seque?ncia de controle. E ainda, a constante de
+Lipschitz da func?a?o que modela o processo em questa?o ira? se propagar
+conforme esta? apresentado na equac?a?o (5.40).
+
+???
+(
+j,a,u[0,j?1]
+
+)
+? ??
+
+(
+j,b,u[0,j?1]
+
+)
+?s ? L
+
+j
+f?a? b?s (5.40)
+
+Essa relac?a?o surge devido a caracter??stica recursiva na obtenc?a?o
+da soluc?a?o dos estados, como demonstrado pela seque?ncia de equac?o?es
+em (5.41)
+
+???(j,a,u[0,j?1]) ? ??(j,b,u[0,j?1])?s
+
+= ?f(??(j ? 1,a,u[0,j?2]),u(j ? 1))?
+f(??(j ? 1,b,u[0,j?2]),u(j ? 1))?s
+
+? Lf???(j ? 1,a,u[0,j?2]) ? ??(j ? 1,b,u[0,j?2])?s
+
+? Lf?f(??(j ? 2,a,u[0,j?3]),u(j ? 2))?
+f(??(j ? 2,b,u[0,j?3]),u(j ? 2))?s
+
+? L2f???(j ? 2,a,u[0,j?3]) ? ??(j ? 2,b,u[0,j?3])?s
+
+?
+...
+
+? Ljf?a? b?s (5.41)
+
+A partir das constatac?o?es enunciadas e? poss??vel enta?o analisar a
+
+
+
+99
+
+propagac?a?o das incertezas pelo mecanismo de predic?a?o do PNMPC.
+Considerando-se as equac?o?es (5.37) e (5.38), utilizando a desigual-
+dade triangular e a equac?a?o (5.39), chega-se a? desigualdade da equac?a?o
+(5.42).
+
+|w?(k)|s =|x(k + d + 1|k + 1) ?f (x(k + d|k),u(k)) |s
+=|f(x(k + d|k + 1),u(k)) + ?(k + 1) ?f (x(k + d|k),u(k)) |s
+?|f(x(k + d|k + 1),u(k)) ?f (x(k + d|k),u(k)) |s
+
++ |?(k + 1)|s
+?Lf|x(k + d|k + 1) ?x(k + d|k)|s + |?(k + 1)|s (5.42)
+
+Realizando o mesmo procedimento a partir da equac?a?o (5.42),
+verifica-se a relac?a?o (5.43).
+
+|w?(k)|s ?Lf|f(x(k + d? 1|k + 1),u(k ? 1)) ?f(x(k + d? 1|k),
+u(k ? 1))|s + Lf|?(k + 1) ??(k)|s + |?(k + 1)|s
+?L2f|x(k + d? 1|k + 1) ?x(k + d? 1|k)|s
+
++ Lf|?(k + 1) ??(k)|s + |?(k + 1)|s
+?L2f|f(x(k + d? 2|k + 1),u(k ? 2)) ?f(x(k + d? 2|k),
+
+u(k ? 2))|s +
+2?
+j=1
+
+L
+j
+f|?(k + 1) ??(k)|s + |?(k + 1)|s
+
+?L3f|x(k + d? 2|k + 1) ?x(k + d? 1|k)|s
+
++
+
+2?
+j=1
+
+L
+j
+f|?(k + 1) ??(k)|s + |?(k + 1)|s (5.43)
+
+Repetindo os passos recursivamente a partir de (5.43), obte?m-se
+um limitante para w?(k) dado pela equac?a?o (5.44).
+
+|w?(k)|s ?Ldf|x(k + 1|k + 1) ?x(k + 1|k)|s
+
++
+
+d?1?
+j=1
+
+L
+j
+f|?(k + 1) ??(k)|s + |?(k + 1)|s
+
+|w?(k)|s ?Ldf|x(k + 1) ?f(x(k),u(k ?d)) ??(k)|s
+
+
+
+100
+
++
+
+d?1?
+j=1
+
+L
+j
+f|?(k + 1) ??(k)|s + |?(k + 1)|s
+
+=Ldf|w(k) ??(k)|s +
+d?1?
+j=1
+
+L
+j
+f|?(k + 1) ??(k)|s
+
++ |?(k + 1)|s (5.44)
+
+As principais concluso?es para esse caso envolvem mais uma vez
+o comportamento da varia?vel de correc?a?o, ?, adicionada nas predic?o?es
+pelo modelo de perturbac?a?o original do PNMPC. Como e? aplicado o
+mesmo valor de correc?a?o em cada instante de predic?a?o, em um per??odo
+igual ao tempo de atraso ocorrera? sempre o acu?mulo dessas correc?o?es,
+como pode ser observado na equac?a?o (5.44). Efeito esse potenciali-
+zado pelo tamanho do atraso nominal. Esse comportamento aumenta
+a norma de w? diminuindo assim a robustez em malha fechada, pois w?
+altera o valor de x?(k + d|k), informac?a?o utilizada para o co?mputo do
+pro?ximo esforc?o de controle.
+
+Assim, a influe?ncia das correc?o?es aplicadas em cada instante de
+predic?a?o encontrada no caso linear tambe?m se faz presente no caso na?o
+linear.
+
+5.3.2 PNMPC Modificado
+
+Para demonstrar as propriedades de robustez do PNMPC Modi-
+ficado considera-se a modificac?a?o no modelo de perturbac?a?o proposta
+no cap??tulo 4. Assim, ate? o instante k+d|k de um horizonte de predic?a?o
+sera?o utilizadas as correc?o?es calculadas nos instantes de amostragem
+anteriores. Vale ressaltar novamente que na medida em que o principal
+objetivo da utilizac?a?o de ?(k) e? a eliminac?a?o do erro de predic?a?o na pre-
+senc?a de perturbac?a?o constante e? poss??vel utilizar tambe?m os valores
+de ?(k?d+ 1), ..., ?(k?1). Isso e? permitido, pois se ?(k) ? wss, enta?o
+?(k ? i) ? wss, i = 1,...,d ? 1. Dessa forma, o esquema de predic?a?o
+modificado passa a ser descrito pela recursa?o em (5.45).
+
+
+
+101
+
+x(k + 1|k) = f(x(k),u(k ?d)) + ?(k ?d + 1)
+x(k + 2|k) = f(x(k + 1|k),u(k ?d + 1)) + ?(k ?d + 2)
+
+... =
+...
+
+x(k + d|k) = f(x(k + d? 1|k),u(k ? 1)) + ?(k) (5.45)
+
+Como para esse preditor modificado, a diferenc?a x(k +d|k + 1)?
+x(k + d|k) e? dada por:
+
+x(k + d|k + 1) ?x(k + d|k) =f(x(k + d? 1|k + 1),u(k ? 1)) + ?(k)
+?f(x(k + d? 1|k),u(k ? 1)) ??(k)
+
+?Lf|x(k + d? 1|k + 1) ?x(k + d? 1|k)|s,
+
+pode-se repetir os passos de recursa?o a partir da equac?a?o (5.42) e obter-
+se um novo limitante para w?(k) dado pela equac?a?o (5.46).
+
+|w?(k)|s ?Lf|x(k + d|k + 1) ?x(k + d|k)|s + |?(k + 1)|s
+?L2f|x(k + d? 1|k + 1) ?x(k + d? 1|k)|s + |?(k + 1)|s
+
+?
+...
+
+?Ldf|x(k + 1|k + 1) ?x(k + 1|k)|s + |?(k + 1)|s
+?Ldf|x(k + 1) ?f(x(k),u(k ?d)) ??(k ?d + 1)|s
+
++ |?(k + 1)|s
+?Ldf|w(k) ??(k ?d + 1)|s + |?(k + 1)|s (5.46)
+
+Mais uma vez, como no caso linear, e? poss??vel perceber o acre?sci-
+mo na robustez que a modificac?a?o proposta acarreta. Isso ocorre devido
+a? eliminac?a?o do acu?mulo das correc?o?es, o que diminui a norma do pior
+caso da incerteza predita. Deve-se ressaltar tambe?m que, para o caso
+no qual Lf &amp;lt;1 (sistemas na?o lineares apenas com pontos de equil??brio
+esta?veis), o crescimento do atraso nominal na?o altera o desempenho
+robusto de maneira significativa na medida que Ldf assume valores me-
+nores para valores maiores de d, assim como ocorre com o preditor de
+Smith. Por outro lado, a grande vantagem dessa estrate?gia se compa-
+rada ao preditor de Smith, e? que ela pode ser aplicada de forma direta
+
+
+
+102
+
+em sistemas na?o-lineares com pontos de equil??brio insta?veis. A respeito
+do esforc?o computacional, o preditor modificado e o preditor convencio-
+nal se equivalem, pois em ambos os casos a predic?a?o e? obtida de forma
+iterativa, sendo necessa?rio o mesmo nu?mero de iterac?o?es.
+
+5.3.3 PNMPC via Preditor de Smith Filtrado
+
+Nessa sec?a?o e? apresentada a ana?lise de robustez atrave?s do es-
+tudo da propagac?a?o das incertezas na predic?a?o realizada por um FSP
+que esta? associado a um controlador PNMPC, para o controle de pro-
+cessos na?o lineares com compensac?a?o de atraso robusta. Novamente, a
+respeito da modelagem do sistema pode-se dizer que os processos sob
+ana?lise sa?o bem descritos pela equac?a?o (5.30) e as incertezas descritas
+de forma aditiva, como em (5.31).
+
+Ainda, para representar a soluc?a?o de um sistema na forma (5.30),
+dados um instante inicial, um estado inicial e uma seque?ncia de controle
+e de incertezas tem-se a equac?a?o (5.33).
+
+Com vistas a apresentar o esquema de predic?a?o realizado por um
+compensador de atraso FSP define-se o modelo nominal de um processo
+como o apresentado pela equac?a?o (5.30), na?o considerando a presenc?a
+de incertezas, equac?a?o (5.47).
+
+x?(k + 1) = f (x?(k),u(k ?d)) (5.47)
+
+Dessa forma, uma predic?a?o o?tima para o estado atual pode ser
+realizada a partir do modelo nominal do processo definido na equac?a?o
+(5.47), resultando na expressa?o apresentada na equac?a?o (5.48).
+
+x?(k + d|k) = ?
+(
+d,x?(k),u[k?d,k?1]
+
+)
+(5.48)
+
+Como apresentado no cap??tulo 4, a predic?a?o para o estado atual
+realizada por um compensador de atraso FSP em processos assinto-
+ticamente esta?veis e? a predic?a?o o?tima apresentada na equac?a?o (5.48)
+adicionada a uma parcela referente a? diferenc?a entre a sa??da real e
+a sa??da nominal atual filtrada, o que resulta na expressa?o apresen-
+tada na equac?a?o (5.49). No entanto, deve-se ressaltar novamente que
+a aplicac?a?o da estrate?gia de compensac?a?o de atraso via preditor de
+Smith foi formulada para representac?o?es entrada-sa??da. Para contor-
+nar essa restric?a?o pode-se considerar uma sa??da auxiliar ya(k) = x(k).
+E ainda, sabe-se que para processos insta?veis e? necessa?rio realizar uma
+adaptac?a?o ao esquema de predic?a?o, mas que, para efeito de ana?lise, na?o
+
+
+
+103
+
+modifica a propagac?a?o das incertezas.
+
+x?(k) = x(k + d|k) = x?(k + d|k) + Fr
+(
+z?1
+)
+
+(x(k) ? x?(k)) (5.49)
+
+Mais uma vez, os processos na?o lineares aqui representados pos-
+suem a evoluc?a?o dos estados descrita por uma func?a?o localmente Lips-
+chitz cont??nua, e assim a relac?a?o apresentada na equac?a?o (5.39) e? ver-
+dadeira. E tambe?m a func?a?o que representa a soluc?a?o dos estados e? lo-
+calmente Lipschitz cont??nua para diferentes condic?o?es iniciais sob uma
+mesma seque?ncia de controle e pode-se afirmar tambe?m que a relac?a?o
+de (5.40) e? verdadeira.
+
+Para representar o modelo equivalente devido ao mecanismo de
+predic?a?o do PNMPC com FSP considere um modelo, como o apresen-
+tado na equac?a?o (5.37). E caso o estado x?(k + 1) seja obtido tomando
+o estado x(k + 1) como condic?a?o inicial, a predic?a?o sera? da forma apre-
+sentada em (5.50).
+
+x?(k + 1) = x?(k + d + 1|k + 1) + Fr
+(
+z?1
+)
+
+(x(k + 1) ? x?(k + 1)) (5.50)
+
+Sendo x?(k +d+ 1|k + 1) obtido atrave?s da expressa?o apresentada
+na equac?a?o (5.51).
+
+x?(k + d + 1|k + 1) = ?
+(
+d,x?(k + 1),u[k?d+1,k]
+
+)
+(5.51)
+
+Para a ana?lise da propagac?a?o das incertezas atenta-se inicial-
+mente para uma equac?a?o que modela o comportamento equivalente do
+processo mais o esquema de compensac?a?o, equac?a?o (5.37). Tomando
+a incerteza predita como refere?ncia e? poss??vel estabelecer uma relac?a?o
+entre a sua norma e a norma da incerteza real partindo da relac?a?o
+(5.52).
+
+|w?(k)| = |x?(k + 1) ?f(x?(k),u(k))| (5.52)
+
+Substituindo os valores das predic?o?es dadas pelo compensador
+de atraso FSP, (5.49) e (5.50), obte?m-se a equac?a?o (5.53).
+
+|w?(k)| =|x?(k + d + 1|k + 1) + Fr
+(
+z?1
+)
+
+(x(k + 1) ? x?(k + 1))
+?f
+
+(
+x?(k + d|k) + Fr
+
+(
+z?1
+)
+
+(x(k) ? x?(k)) ,u(k)
+)
+|
+
+(5.53)
+
+
+
+104
+
+A partir da diferenc?a triangular entre normas, e? poss??vel expres-
+sar a equac?a?o (5.53) pela equac?a?o (5.54).
+
+|w?(k)| ?|x?(k + d + 1|k + 1) ?f(x?(k + d|k) + Fr(z?1)
+(x(k) ? x?(k)),u(k))| + |Fr(z?1)(x(k + 1) ? x?(k + 1))|
+
+(5.54)
+
+Utilizando a definic?a?o de evoluc?a?o de estados, (5.33), e? poss??vel
+relacionar a equac?a?o (5.54) na forma expressa pela equac?a?o (5.55).
+
+|w?(k)| ?|f
+(
+?
+(
+d? 1,x?(k + 1),u[k?d+1,k?1]
+
+)
+,u(k)
+
+)
+?f
+
+(
+x?(k + d|k) + Fr
+
+(
+z?1
+)
+
+(x(k) ? x?(k)) ,u(k)
+)
+|
+
++ |Fr
+(
+z?1
+)
+
+(x(k + 1) ? x?(k + 1)) |
+(5.55)
+
+Como os processos na?o lineares sob ana?lise respeitam a relac?a?o
+(5.39), pode-se simplificar a equac?a?o (5.55), obtendo a relac?a?o expressa
+na equac?a?o (5.56).
+
+|w?(k)| ?Lf|?(d? 1,x?(k + 1),u[k?d+1,k?1]) ? x?(k + d|k) + Fr(z?1)
+(x(k) ? x?(k))| + |Fr(z?1)(x(k + 1) ? x?(k + 1))|
+
+(5.56)
+
+Mais uma vez, pela desigualdade triangular entre normas e pela
+definic?a?o de evoluc?a?o dos estados pode-se representar a relac?a?o (5.56)
+utilizando a equac?a?o (5.57).
+
+|w?(k)| ?Lf|?
+(
+d? 1,x?(k + 1),u[k?d+1,k?1]
+
+)
+??
+
+(
+d,x?(k),u[k?d,k?1]
+
+)
+|
+
++ Lf|Fr
+(
+z?1
+)
+
+(x(k) ? x?(k)) |
++ |Fr
+
+(
+z?1
+)
+
+(x(k + 1) ? x?(k + 1)) | (5.57)
+
+Devido a? similaridade das soluc?o?es, e? poss??vel expressar a equac?a?o
+(5.57) como em (5.58).
+
+
+
+105
+
+|w?(k)| ?Lf|?
+(
+d? 1,x?(k + 1),u[k?d+1,k?1]
+
+)
+??
+
+(
+d? 1,f (x?(k),u(k ?d)) ,u[k?d+1,k?1]
+
+)
+|
+
++ Lf|Fr
+(
+z?1
+)
+
+(x(k) ? x?(k)) |
++ |Fr
+
+(
+z?1
+)
+
+(x(k + 1) ? x?(k + 1)) | (5.58)
+
+Da relac?a?o demonstrada nas equac?o?es (5.41) e? poss??vel represen-
+tar a relac?a?o em (5.58) pela equac?a?o (5.59).
+
+|w?(k)| ?Ldf|x?(k + 1) ?f (x?(k),u(k ?d)) |
++ Lf|Fr
+
+(
+z?1
+)
+
+(x(k) ? x?(k)) |
++ |Fr
+
+(
+z?1
+)
+
+(x(k + 1) ? x?(k + 1)) | (5.59)
+
+Devido a? igualdade proveniente da definic?a?o do modelo nominal
+do processo, equac?a?o (5.47), e? poss??vel simplificar a equac?a?o (5.59) e
+obter a relac?a?o (5.60).
+
+|w?(k)| ?Lf|Fr
+(
+z?1
+)
+
+(x(k) ? x?(k)) |
++ |Fr
+
+(
+z?1
+)
+
+(x(k + 1) ? x?(k + 1)) | (5.60)
+
+Essa relac?a?o apresentada na equac?a?o (5.60) deixa clara a dife-
+renc?a entre o comportamento da incerteza equivalente, em comparac?a?o
+com as relac?o?es apresentadas tanto no PNMPC tradicional quanto no
+PNMPC modificado. No PNMPC com o preditor de Smith filtrado o
+filtro age diretamente sobre o erro entre o estado nominal e o estado
+real. Assim, um ajuste adequado do filtro permite a manipulac?a?o dessa
+diferenc?a, o que pode impactar em um aumento de robustez do controle
+em malha fechada. Ja? nos casos anteriores, PNMPC e PNMPC modi-
+ficado, a incerteza equivalente e? afetada pelo atraso nominal e tambe?m
+por para?metros do modelo utilizado.
+
+5.4 CONCLUSA?O
+
+Como comentado durante essa sec?a?o, a ana?lise da robustez e?
+muito importante, pois estrate?gias de controle que utilizam uma predi-
+c?a?o para o ca?lculo do pro?ximo valor de controle esta?o naturalmente
+
+
+
+106
+
+sujeitas ao comportamento da incerteza predita, que depende tanto do
+modelo de perturbac?a?o quanto do esquema de compensac?a?o de atraso
+utilizado.
+
+Assim, para garantir boa robustez em um esquema de controle
+que utiliza compensadores de atraso e? importante que essa incerteza
+predita possua algumas caracter??sticas especiais, como na?o ser influ-
+enciada por para?metros do modelo, em especial o tamanho do atraso
+nominal e tambe?m pelas varia?veis do observador utilizado para estimar
+as incertezas reais.
+
+Foi demonstrado tanto para o caso linear como para o caso na?o
+linear que no PNMPC a incerteza predita, que faz parte da predic?a?o,
+sofre influe?ncia da dina?mica do modelo, do tamanho do atraso nomi-
+nal e tambe?m de um acu?mulo de varia?veis utilizadas para corrigir as
+predic?o?es, fornecidas pelo modelo de perturbac?a?o do PNMPC, pos-
+suindo enta?o baixa robustez ao erro de estimac?a?o do atraso.
+
+Apresentou-se tambe?m que para o caso do PNMPC modificado
+a robustez e? incrementada. Foi comprovado analiticamente que a in-
+certeza predita para o caso no qual o PNMPC utiliza um compensador
+de atraso do tipo preditor de Smith filtrado: na?o sofre influe?ncia da
+dina?mica do modelo; na?o sofre influe?ncia do atraso nominal; e tambe?m
+na?o sofre influe?ncia do acu?mulo das varia?veis de correc?a?o. Possuindo
+assim maior robustez do que os esquemas anteriores. E ainda ficou
+n??tida a importa?ncia do filtro do preditor de Smith filtrado no sentido
+de poder ajustar a robustez do esquema de controle, ja? que ele atua
+diretamente no erro de predic?a?o.
+
+
+
+107
+
+6 CONSIDERAC?O?ES FINAIS
+
+Apresentou-se nesse trabalho uma alternativa para o controle
+preditivo robusto de processos na?o lineares com atraso de transporte.
+Como comentado inicialmente, estrate?gias nessa linha sa?o interessantes
+quando: e? necessa?rio utilizar as vantagens dos controladores preditivos
+(como a possibilidade de levar em considerac?a?o restric?o?es); e? necessario
+representar de forma mais acurada os processos sob controle (utilizando
+para isto modelos na?o lineares); e quando e? necessa?rio tambe?m tratar
+o atraso na malha de controle.
+
+Foi realizado um levantamento do histo?rico de pesquisas relacio-
+nadas ao impacto do atraso nos controladores preditivos e a? robustez.
+Ale?m disso, foram estudadas tambe?m soluc?o?es para o controle predi-
+tivo na?o linear e soluc?o?es para o tratamento do atraso na malha de
+controle, os compensadores de atraso. Como resultado desses esforc?os,
+determinou-se a estrate?gia PNMPC como uma boa opc?a?o para o con-
+trole preditivo na?o linear, por possuir uma boa relac?a?o desempenho, ve-
+locidade e simplicidade. Ale?m disso, para tratar o atraso encontrou-se
+nos compensadores FSP uma opc?a?o adequada para garantir a robustez
+nesses casos.
+
+Assim, foram introduzidos os conceitos de controladores predi-
+tivos com um enfoque dedicado nos controladores PNMPC. Tambe?m
+apresentou-se a teoria acerca dos compensadores de atraso preditor de
+Smith e preditor de Smith filtrado, para em seguida apresentar uma
+introduc?a?o da compensac?a?o de atraso em controladores preditivos.
+
+Para alcanc?ar o primeiro objetivo do trabalho foram propostas
+duas principais estrate?gias. A primeira delas e? o pro?prio PNMPC com
+uma compensac?a?o de atraso expl??cita e uma modificac?a?o no modelo
+de perturbac?a?o, que aumentou a sua robustez eliminando um acu?mulo
+de valores de correc?o?es na incerteza predita. E a segunda estrate?gia
+consistiu na unificac?a?o do PNMPC com o FSP, utilizando tambe?m a
+compensac?a?o de atraso expl??cita.
+
+Vale ressaltar ainda a generalidade da modificac?a?o proposta, ja?
+que ela situa-se no esquema de compensac?a?o de atraso. Isso permite que
+ela tambe?m seja aplicada em outras estrate?gias de controle preditivo
+utilizando compensac?a?o de atraso expl??cita, como e? o caso do GPC.
+Ainda, por proporcionar maior robustez no controle de processos na?o
+lineares com pontos de equil??brio esta?veis e com atraso e por poder ser
+utilizada em processos na?o lineares com pontos de equil??brio insta?veis
+apresenta grande vantagem perante outras estrate?gias de compensac?a?o
+
+
+
+108
+
+de atraso, como o preditor de Smith.
+Em seguida, foi realizada uma ana?lise para demonstrar a me-
+
+lhoria no comportamento robusto das estrate?gias propostas, principal-
+mente no caso do PNMPC com compensac?a?o de atraso via preditor de
+Smith filtrado. Nesse caso, observa-se que a incerteza predita na?o e?
+influenciada pela dina?mica do modelo, nem pelo atraso de transporte
+e muito menos por acu?mulo das varia?veis de correc?a?o do modelo de
+perturbac?a?o. Ressaltou-se ainda a importa?ncia do filtro do preditor
+de Smith filtrado por permitir ajustes na robustez e na dina?mica da
+resposta a perturbac?a?o.
+
+A releva?ncia desse trabalho esta? em apresentar uma ana?lise teo?ri-
+ca da robustez, comprovando analiticamente os ganhos ao se utilizar
+a estrate?gia de compensac?a?o de atraso preditor de Smith filtrado em
+conjunto com o PNMPC. Dessa forma, e? poss??vel resolver um problema
+complexo de controle, o controle preditivo na?o linear de processos com
+atraso de transporte, de forma robusta. Pode-se concluir enta?o que a
+utilizac?a?o do PSF em unia?o com o PNMPC e? extremamente vantajosa
+e que e? poss??vel garantir maior robustez ao utiliza?-la quando comparada
+com a compensac?a?o impl??cita do atraso realizada apenas pelo pro?prio
+PNMPC.
+
+Ainda como resultado do trabalho foi aprovado e publicado um
+artigo, no SBAI (Simpo?sio Brasileiro de Automac?a?o Inteligente) intitu-
+lado: “Compensador de atraso modificado para Sistemas na?o-lineares
+com tempo morto” [27].
+
+Um ponto importante a se destacar sobre as estrate?gias de com-
+pensac?a?o de atraso desenvolvidas nesse trabalho e? o carater gene?rico
+de sua formulac?a?o. Por estar associada a um esquema de controle
+o qual utiliza predic?o?es futuras fornecidas a um controlador prima?rio
+para controlar um processo com atraso, e? poss??vel utilizar os mesmos
+conceitos em outras te?cnicas que utilizam abordagens semelhantes para
+a correc?a?o do erro de regime.
+
+Como perspectivas futuras desse trabalho e? interessante a rea-
+lizac?a?o de estudos a fim de se obter uma estrate?gia capaz de garantir
+a satisfac?a?o robusta de restric?o?es. Esse caminho de pesquisa e? impor-
+tante, pois a possibilidade de aplicar restric?o?es e? uma das principais
+vantagens de controladores preditivos e assim a garantia da satisfac?a?o
+robusta e? uma grande contribuic?a?o.
+
+Um caminho interessante tambe?m e? o de estudo de casos pra?ticos,
+abordando o desempenho da estrate?gia desenvolvida em aplicac?o?es re-
+ais. E ainda, como trabalhos futuros pode-se destacar o estudo de
+robustez na presenc?a de observadores de estados.
+
+
+
+109
+
+REFERE?NCIAS
+
+1 PLUCENIO, A. Desenvolvimento de Te?cnicas de Controle Na?o
+Linear para Elevac?a?o de Fluidos Multifa?sicos. 341 p. Tese (Tese de
+Doutorado) — Universidade Federal de Santa Catarina, 2010.
+
+2 SANTOS, T. L. M. Contribuic?o?es para o Controle Preditivo com
+Compensac?a?o de Atraso Robusta. 200 p. Tese (Tese de Doutorado) —
+Universidade Federal de Santa Catarina, 2011.
+
+3 CAMACHO, E.; BORDONS, C. Model Predictive Control. [S.l.]:
+Springer-Verlag, 2004.
+
+4 NORMEY-RICO, J. E.; CAMACHO, E. F. Robustness effects of a
+prefilter in a Smith predictor-based generalised predictive controller.
+IEE Proceedings: Control Theory and Applications, v. 146, n. 2, p.
+179–185, 1999. Dispon??vel em:&amp;lt;www.scopus.com&gt;.
+
+5 FINDEISEN, R.; ALLGo?WER, F. An introduction to nonlinear
+model predictive. Control, 21st Benelux Meeting on Systems and
+Control, Veidhoven.
+
+6 NORMEY-RICO, J.; CAMACHO, E. Control of Dead-time
+Processes. London: Springer, 2007.
+
+7 SMITH, O. J. Closer control of loops with dead-time. Chem. Eng.
+Progress, 1957.
+
+8 QIN, S. J.; BADGWELL, T. A. A survey of industrial model
+predictive control technology. Control Engineering Practice, v. 11,
+n. 7, p. 733–764, 2003. Cited By (since 1996): 962. Dispon??vel em:
+&lt;www.scopus.com&gt;.
+
+9 CANNON, M. Efficient nonlinear model predictive control
+algorithms. Annual Reviews in Control, v. 28, n. 2, p. 229–237, 2004.
+
+10 GENCELI, H.; NIKOLAU, M. Design of robust constrained model
+predictive controllers with volterra series. AIChE Jourbal, v. 41, n. 9,
+p. 2098–2107, 1995.
+
+11 BALAKRISHNAN, V.; KOTHARE, M. V.; MORARI, M. Robust
+constrained model predictive control using linear matrix inequalities.
+Automatica, v. 32, n. 10, p. 1361–1379, 1996. ISSN 0005-1098.
+
+
+
+110
+
+12 CHOI, J. Y.; SON, W. K.; KWON, O. Robust predictive control
+of uncertain nonlinear system with constrained input. Transaction on
+Control, Automation and System Engineering, v. 4, p. 289–295, 2002.
+
+13 SAKIZLIS, V.; MANTHANWAR, A.; PISTIKOPOULOS,
+E. Robust parametric predictive control design for polytopically
+uncertain systems. American Control Conference, 2005.
+
+14 LU, Y.; ARKUNL, Y. A scheduling quasi-minmax MPC for LPV
+systems. American Control Conference, p. 2272–2276.
+
+15 DOUGHERTY, D.; COOPER, D. A practical multiple model
+adaptive strategy for single-loop MPC. Control Engineering Practice,
+v. 11, n. 2, p. 141–159, 2003. ISSN 0967-0661.
+
+16 SHI, Y.; CHAI, T.; YUE, H. Robust one-step model predictive
+control for discrete time-delay systems. In: IFAC Proceedings
+Volumes (IFAC-PapersOnline). [s.n.], 2008. v. 17. Dispon??vel em:
+&lt;www.scopus.com&gt;.
+
+17 RAO, C. V.; WRIGHT, S. J.; RAWLINGS, J. B. Application
+of interior-point methods to model predictive control. Journal of
+Optimization theory and applications, v. 99, n. 3, p. 723–757, 1998.
+
+18 OLARU, S.; NICULESCU, S.-I. Predictive control for linear
+systems with delayed input subject to constraints. In: Proceedings of
+the XVII IFAC Triennial Congress. [S.l.]: IFAC, 2008.
+
+19 GONZALEZ, A. H.; ODLOAK, D. Robust model predictive
+controle for time delayed systems with optimizing targets and zone
+control. In: . Robust Contro, Theory and Applications, Andrzej
+Bartoszewicz (Ed.). [S.l.: s.n.], 2011.
+
+20 GALVEZ-CARRILLO, M.; De Keyser, R.; IONESCU, C.
+Nonlinear predictive control with dead-time compensator: Application
+to a solar power plant. Solar Energy, 2009.
+
+21 BLOEMEN, H.; BOOM, T. Van de; VERBRUGGEN, H.
+Model-based predictive control for Hammerstein systems. In:
+Proceedings of the 39th IEEE Conference on Decision and Control.
+Sidney, Australia: IEEE.
+
+22 SANTOS, J. E. S. Controle Preditivo Na?o Linear para Sistemas
+de Hammerstein. Tese (Tese de Doutorado) — Universidade Federal
+de Santa Catarina, 2005.
+
+
+
+111
+
+23 RAMIRES, D. et al. Min-max MPC based on a computationally
+efficient upper bound worst case cost. Journal of Process Control,
+2006.
+
+24 LU, Y.; ARKUNL, Y. A praticle multiple model adaptative
+strategy for single-loop MPC. Control Engineering Pratice, 2003.
+
+25 LAZAR, M. Nonlinear controler based on the EPSAC aproach.
+Dissertac?a?o (Mestrado) — University of Ghent, 2001.
+
+26 NORMEY-RICO, J. E.; CAMACHO, E. F. Unified
+approach for robust dead-time compensator design. Journal of Pro-
+cess Control, v. 19, n. 1, p. 38–47, 2009. ISSN 0959-1524. Dispon??vel em:
+&lt;http://www.sciencedirect.com/science/article/pii/S0959152408000279&gt;.
+
+27 THOME, F.; SANTOS, T.; NORMEY, J. Compensador de atraso
+modificado para sistemas na?o-lineares com tempo morto. Simpo?sio
+Brasileiro de Automac?a?o Inteligente, 2013.
+
+28 LIMON, D. et al. Robust design of dead time compensator
+controllers for constrained non-linear systems. European Control
+Conference, 2011.
+
+
+</field>
+	</doc>
+</add>

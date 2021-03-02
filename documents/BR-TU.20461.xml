@@ -1,0 +1,2600 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.20461</field>
+		<field name="filename">4018_001074436.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+ 
+
+UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL 
+
+ESCOLA DE ENGENHARIA 
+
+DEPARTAMENTO DE ENGENHARIA QUÍMICA 
+
+ENG07053 - TRABALHO DE DIPLOMAÇÃO EM ENGENHARIA 
+QUÍMICA  
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+P r e d i ç ã o  d e  p r e s s ã o  d e  f u n d o  
+e m  p o ç o s  d e  p e t r ó l e o  v i a  
+
+r e d e s  n e u r a i s  
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Autor: Mateus Berno Motke 
+
+Orientador: Marcelo Farenzena 
+
+ 
+
+ 
+
+ 
+
+Porto Alegre, julho de 18 
+
+  
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais ii 
+
+Sumári o  
+
+Sumário ii 
+
+Resumo iii 
+
+Lista de Figuras iv 
+
+Lista de Tabelas v 
+
+Lista de Símbolos vii 
+
+Lista de Abreviaturas e Siglas viii 
+
+1 Introdução 1 
+
+2 Revisão Bibliográfica 3 
+
+2.1 Sistemas de extração e elevação de petróleo offshore  3 
+
+2.2 Golfadas nos sistemas de elevação de petróleo  4 
+
+2.3 Importância da medição de pressão do fundo do poço  5 
+
+2.4 Métodos computacionais aplicados  6 
+
+2.4.1 Computação em Reservatório 6 
+2.4.2 Analisadores Virtuais 8 
+2.4.3 Desenvolvimento de Analisadores Virtuais 8 
+2.4.4 Primeira inspeção de dados 9 
+2.4.5 Seleção de dados históricos 9 
+2.4.6 Pré-tratamento dos dados 10 
+2.4.7 Seleção, treinamento e validação do modelo 10 
+2.4.8 Manutenção do Analisador Virtual 11 
+2.4.9 Rede Neural 11 
+
+3 Metodologia 13 
+
+3.1 Desenvolvimento do Analisador Virtual 14 
+
+3.1.1 Primeira inspeção de dados seleção de dados históricos14 
+3.1.2 Pré-tratamento dos dados 17 
+3.1.3 Seleção, treinamento e validação do modelo 18 
+
+4 Resultados 19 
+
+4.1 Rede Neural – Estática 19 
+
+4.1.1 Teste 1: Abertura da válvula choke e vazão do gás lift 19 
+4.1.2 Teste 2: Pressão de topo 20 
+4.1.3 Teste 3: Pressão de topo, abertura da válvula choke e vazão do gás lift 21 
+
+4.2 Rede Neural – Dinâmica 23 
+
+4.2.1 Teste 1: Abertura da válvula choke e vazão do gás lift 23 
+4.2.2 Teste 2: Pressão de topo 25 
+4.2.3 Teste 3: Pressão de topo, abertura da válvula choke e vazão do gás lift  27 
+
+5 Conclusões e Trabalhos Futuros  30 
+
+Referências 31 
+
+ 
+
+ 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke iii 
+
+Re s umo 
+
+O presente trabalho apresenta a importância da medição da pressão encontrada em 
+poços de petróleo offshore, o seu impacto na produção e na segurança, e como este valor 
+
+pode ser predito por métodos computacionais ao preterir-se medidores físicos. A pressão 
+em um poço de petróleo é a principal fonte de informação para indicar a produção da 
+
+planta e, assim, consequentemente indica como as válvulas devem trabalhar para extrair 
+o máximo de petróleo com segurança. Utilizaram-se dados de um modelo matemático 
+
+que representa a pressão de um poço de petróleo da Petrobrás, a partir da medida física 
+de um medidor de pressão chamado de Downhole Pressure Gauge (PDG). Este medidor 
+
+carece de confiança por parte de muitos autores, pois como ele é instalado em uma zona 
+de inconstância física, com variações de pressão e temperatura, o medidor pode 
+
+apresentar ruídos e tende a estragar facilmente, tornando sua medida pouco confiável. 
+Para solucionar este problema foi utilizado um método computacional chamado de rede 
+
+neural, que se baseou em dados obtidos de um modelo real para predizer qual é a 
+pressão no fundo de poço de petróleo offshore, baseando-se apenas na pressão de topo, 
+da qual se tem a confiança de sua medida e nas variáveis manipuladas . O modelo obtido 
+foi testado para diferentes variáveis do processo, por meio de rede neural estática e 
+dinâmica e com diferentes parâmetros. Para o modelo de rede neural estática, obteve-se 
+
+um coeficiente de determinação (R2) igual a 0,98 e para o modelo de rede neural 
+dinâmica, obteve-se um coeficiente de determinação (R2) igual a 0,96. 
+
+ 
+
+ 
+
+  
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais iv 
+
+Li s t a de  Fi guras  
+
+Figura 2.1: Desenho esquemático de uma plataforma de petróleo offshore. Adaptado de 
+Di Meglio et al. (2012a). ........................................................................................................ 3 
+
+Figura 2.2:  Exemplos de oleodutos e poços envolvidos no fenômeno de golfadas. 
+Adaptado de Di Meglio et al. (2012a).................................................................................... 5 
+
+Figura 2.3: Rede de Computação em Reservatório. (adaptado de Antonelo, 2017).  ........... 7 
+
+Figura 2.4:  Algoritmo básico de um analisador virtual (FACCHIN, 2005)............................. 8 
+
+Figura 2.5: Metodologia para o desenvolvimento de um analisador virtual (adaptado de 
+KADLEC et al., 2009)............................................................................................................... 9 
+
+Figura 2.6:  Representação de uma rede neural feedforward (adaptado de WILLIS et al. 
+1992) .................................................................................................................................... 12 
+
+Figura 3.1:  Variação da pressão do topo pela abertura da válvula choke. ........................ 15 
+
+Figura 3.2:  Matriz de correlação das variáveis para elaboração da rede neural estática, 
+onde P_topo é a pressão de topo, P_PDG é pressão de poço medida pelo sensor PDG, 
+
+vazão_gas_lift é a vazão do gás -lift e x_choke é a abertura da válvula choke.................... 16 
+
+Figura 3.3: Matriz de correlação das variáveis para elaboração da rede neural dinâmica, 
+
+onde P_topo é a pressão de topo, P_PDG é pressão de poço medida pelo sensor PDG, 
+vazão_gas_lift é a vazão do gás -lift e x_choke é a abertura da válvula choke.................... 16 
+
+Figura 3.4: Variação da pressão do topo pela abertura da válvula choke. ......................... 17 
+
+Figura 3.5: Variação da pressão do topo pela abertura da válvula choke, na avaliação 
+
+estática das pressões para cada abertura.  .......................................................................... 18 
+
+Tabela 4.7:   Valores de R2 encontrados para diferentes tamanhos de lote, referentes ao 
+
+Teste 2 da rede neural estática. .......................................................................................... 21 
+
+Figura 4.1: Pressão medida pelo sensor PDG comparados com o valor de pressão predita 
+obtido pelo modelo de rede neural estática, referentes ao Teste 2................................... 23 
+
+Figura 4.2: Pressão medida pelo sensor PDG comparados com o valor de pressão predita 
+obtido pelo modelo de rede neural dinâmica, referentes ao Teste 3. ............................... 29 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+  
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke v 
+
+Li s t a de  Tabe l as  
+
+Tabela 3.1: Representação das variações de abertura da válvula choke (%) e vazão de gás 
+lift (m3/ dia).......................................................................................................................... 14 
+
+Tabela 4.1: Valores de R2 encontrados para diferentes funções de ativação, referentes ao 
+Teste 1 da rede neural estática. .......................................................................................... 19 
+
+Tabela 4.2: Valores de R2 encontrados para diferentes configurações dos parâmetros, 
+referentes ao Teste 1 da rede neural estática..................................................................... 19 
+
+Tabela 4.3: Valores de R2 encontrados para diferentes funções de ativação, referentes ao 
+Teste 2 da rede neural estática. .......................................................................................... 20 
+
+Tabela 4.4: Valores de R2 encontrados para diferentes tamanhos do teste da rede neural, 
+referentes ao Teste 2 da rede neural estática..................................................................... 20 
+
+Tabela 4.5: Valores de R2 encontrados para diferentes neurônios das camadas ocultas, 
+referentes ao Teste 2 da rede neural estática..................................................................... 20 
+
+Tabela 4.6: Valores de R2 encontrados para diferentes épocas, referentes ao Teste 2 ..... 20 
+
+Tabela 4.8: Valores de R2 encontrados para diferentes funções de ativação, referentes ao 
+Teste 3 da rede neural estática. .......................................................................................... 21 
+
+Tabela 4.9: Valores de R2 encontrados para diferentes tamanhos do teste, referentes ao 
+Teste 3 da rede neural estática. .......................................................................................... 21 
+
+Tabela 4.10: Valores de R2 encontrados para diferentes configurações de camadas e 
+neurônios, referentes ao Teste 3 da rede neural estática. ................................................. 22 
+
+Para a avaliação do número do número de época, a melhor coeficiente de determinação 
+obtido apresentou 3 épocas, conforme Tabela 4.11........................................................... 22 
+
+Tabela 4.11:  Valores de R2 encontrados para diferentes épocas, referentes ao Teste 3 da 
+rede neural estática. ............................................................................................................ 22 
+
+Por fim, a variação do tamanho do lote para 1.000 melhorou o modelo, obtendo um 
+coeficiente de determinação igual a 0,96, conforme Tabela 4.12. ..................................... 22 
+
+Tabela 4.12: Valores de R2 encontrados para diferentes tamanhos de lote, referentes ao 
+Teste 3 da rede neural estática. .......................................................................................... 22 
+
+Tabela 4.14: Valores de R2 encontrados para diferentes tamanhos do teste, referentes ao 
+
+Teste 1 da rede neural dinâmica. ........................................................................................ 24 
+
+Tabela 4.15: Valores de R2 encontrados para diferentes números de neurônios, referentes 
+
+ao Teste 1  da rede neural dinâmica. .................................................................................. 24 
+
+Tabela 4.16: Valores de R2 encontrados para diferentes tamanhos de lote, referentes ao 
+
+Teste 1 da rede neural dinâmica. ........................................................................................ 25 
+
+Tabela 4.17: Valores de R2 encontrados para diferentes números de épocas, referentes ao 
+Teste 1 da rede neural dinâmica. ........................................................................................ 25 
+
+Tabela 4.19: Valores de R2 encontrados para diferentes tamanhos do teste, referentes ao 
+Teste 2 da rede neural dinâmica. ........................................................................................ 26 
+
+Tabela 4.20: Valores de R2 encontrados para diferentes números de neurônios, referentes 
+
+ao Teste 2 da rede neural dinâmica. ................................................................................... 26 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais vi 
+
+Tabela 4.21: Valores de R2 encontrados para diferentes tamanhos de lote, referentes ao 
+Teste 2 da rede neural dinâmica. ........................................................................................ 26 
+
+Tabela 4.22: Valores de R2 encontrados para diferentes números de épocas, referentes ao 
+Teste 2 da rede neural dinâmica. ........................................................................................ 26 
+
+Tabela 4.24: Valores de R2 encontrados para diferentes tamanhos do teste, referentes ao 
+
+Teste 3 da rede neural dinâmica. ........................................................................................ 27 
+
+Tabela 4.25: Valores de R2 encontrados para diferentes números de neurônios, referentes 
+ao Teste 3 da rede neural dinâmica. ................................................................................... 27 
+
+Tabela 4.26: Valores de R2 encontrados para diferentes tamanhos de lote, referentes ao 
+Teste 3 da rede neural dinâmica. ........................................................................................ 28 
+
+Tabela 4.27: Valores de R2 encontrados para diferentes números de épocas, referentes ao 
+
+Teste 3 da rede neural dinâmica. ........................................................................................ 28 
+
+ 
+
+ 
+
+  
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke vii 
+
+Li s t a de  Sí mbol os  
+
+ 
+
+?? – Vetor de saída da camada ? de uma Rede Neural 
+
+?? – Transformação funcional da camada ? de uma Rede Neural 
+
+Psep - Pressão no separador 
+
+S – Função Sigmoidal 
+
+W – Soma ponderada das entradas da camada ? de uma Rede Neural 
+
+Relu - Unidade linear retificada 
+
+?2 – Coeficiente de Determinação 
+
+??? – Média do conjunto de dados  
+
+ 
+
+  
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais viii 
+
+Li s t a de  A bre vi at uras  e  Si gl as  
+
+ 
+
+FOWM - Fast Offshore Wells Model 
+
+PDG - Permanent Downhole Gauge 
+
+SSE – Soma Quadrática do Erro 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 1 
+
+1 Int rodução 
+
+O setor de petróleo e gás tem importância ímpar na economia mundial, suprindo a 
+demanda energética global em proporções substancialmente grandes quando 
+
+comparadas aos demais energéticos. De acordo com a Agência Internacional de Energia 
+(IEA, 2013), o petróleo representa 31,5% do total da oferta de energia primária, seguido 
+
+pelo carvão representando 28,8% e o gás natural com 21,3%. Importante notar que a 
+predominância do petróleo já foi ainda mais pronunciada no passado, atingindo uma 
+
+participação de mais da metade da oferta primária de energia. A produção média de 
+petróleo do Brasil em 2017 cresceu 4% ante o ano anterior, para 2,622 milhões de barris 
+
+por dia (bpd), de acordo com dados da Agência Nacional do Petróleo, Gás Natural e 
+Biocombustíveis (ANP). Ainda, as exportações são crescentes, tendo sua produção 
+ampliada especialmente a partir da descoberta das reservas do pré-sal. 
+
+Como a quantidade de petróleo é limitada em um poço e todas as etapas que o 
+
+envolvem tem alto impacto financeiro, deve-se procurar por desenvolver melhorias para 
+atingir a máxima eficiência na extração. Segundo Diehl (2017), a principal atividade a ser 
+explorada nesse ramo é a de upstream, pois é onde se contribui mais significativamente 
+para o lucro de todo o negócio de petróleo e gás. Uma maneira de alcançar essa meta é 
+melhorar o desempenho operacional do sistema de produção, intensifica ndo as 
+aplicações em tempo real das ferramentas de monitoramento, controle e otimização, que 
+exigem modelos para prever algumas variáveis -chave ou estimar variáveis não 
+disponíveis. 
+
+Usualmente, o sensor utilizado que indica a pressão do poço de petróleo em unidades 
+
+offshore é o Permanent Downhole Gauge (PDG). Esses sensores são geralmente 
+instalados na parte inferior do poço, proporcionando medições de temperatura e 
+
+pressão. A pressão de fundo de poço medida é uma das variáveis mais importantes para 
+monitoramento, otimização e controle da produção de poços de petróleo, sendo 
+
+essencial na avaliação da dinâmica do poço de petróleo e, por ela, temos como estimar a 
+vazão do poço, variável não medida. O problema é que, como os sensores PDG são 
+
+instalados em ambientes perigosos, têm um elevado custo para manutenção ou 
+
+substituição e também sua falha prematura não é incomum. Além disso, perturbações e 
+ruídos podem afetar as medições do sensor PDG, tornando-se uma fonte de informações 
+não confiável. Logo, a variável não disponível, ou melhor, a variável não confiável que se 
+deseja prever é a pressão do poço de petróleo em unidades offshore. 
+
+Uma das maneiras de preterir o sensor PDG é substituí -lo por um método 
+computacional, ao desenvolver um modelo dinâmico que faça a predição da pressão de 
+
+fundo do poço, utilizando como referência a pressão do topo, a abertura da válvula choke 
+e a vazão do gás lift; como estas não sofrem influência do meio externo, tornam-se 
+
+medidas seguras. Portanto, este trabalho objetiva predizer a pressão do fundo do poço 
+por outras variáveis do processo, utilizando o método de redes neurais, pois é um 
+
+método dinâmico e não linear. 
+
+Este trabalho foi estruturado em 5 capítulos: o capítulo 1 é a introdução, que mostra 
+os motivos do desenvolvimento deste trabalho; o capítulo 2 é a revisão bibliográfica, que 
+traz informações relevantes sobre s istemas de extração e elevação de petróleo offshore, 
+
+golfadas nos sistemas de elevação de petróleo, importância da medição de pressão do 
+fundo do poço, métodos computacionais aplicados , analisadores virtuais e redes neurais ; 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 2 
+
+o capítulo 3 é a metodologia, que mostra com maior detalhamento o desenvolvimento da 
+rede neural; o capítulo 4 são os resultados, mostrando os parâmetros usados no melhor 
+
+resultado obtido na rede neural estática e dinâmica ; e o capítulo 5 são as conclusões. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 3 
+
+2 Re vi s ão B i bl i ográfi ca 
+
+Este capítulo mostrará conceitos importantes para o entendimento do trabalho. 
+
+2.1 S ist ema s d e ext ra ção  e elev a ção  d e p etró leo  offshore 
+
+No processo de extração de petróleo, uma mistura multifásica, composta do próprio 
+petróleo mais gás e água, flui simultaneamente através dos tubos de transporte dos 
+reservatórios até as instalações da superfície. Uma plataforma offshore é representado na 
+Figura 2.1. Esta mistura multifásica flui do reservatório através dos poços para as 
+instalações do fundo do mar. O comprimento de um poço va ria de algumas centenas de 
+metros a vários milhares. Na maioria das vezes, os poços têm uma seção horizontal em 
+
+transição lenta para uma vertical. No topo do poço, uma válvula choke, utilizada para 
+controlar o fluxo dos oleodutos, é acionada remotamente permite que o fluxo seja 
+
+controlado. Então, a linha de fluxo reúne a produção de vários poços e os transporta, no 
+fundo do mar, por vários quilômetros. Eventualmente, a linha de fluxo sobe para as 
+
+instalações de superfície, onde as fases de gás, petróleo e água são separadas. 
+Novamente, uma válvula choke ativada pode ser usada para controlar o fluxo no topo do 
+riser, antes do processo de separação ocorrer. A altura do riser varia entre 100 m a 1 km. 
+A mistura de hidrocarbonetos e água pode ser bifásica ou tri fásica dependendo das 
+condições de temperatura e pressão. (Di Meglio et al., 2012 a). 
+
+ 
+
+ 
+
+Figura 2.1: Desenho esquemático de uma plataforma de petróleo offshore. Adaptado de 
+Di Meglio et al. (2012a). 
+
+Os oleodutos transportam a mistura multifásica, extraída do reservatório, pelo solo 
+
+marinho, com o objetivo de reunir as produções dos diversos poços, estendendo-se por 
+todo o campo de extração e pode atingir quilômetros de comprimento (Di Meglio et al., 
+
+2012 a). 
+
+A partir de certo ponto, os oleodutos ascendem até a estação de superfície, onde as 
+fases são separadas e posteriormente tratadas. Novamente, uma válvula choke faz-se 
+
+presente para o controle da produção. A seção de tubulação responsável pela eleva ção 
+da mistura do solo marinho até a superfície é chamada de riser. Estes possuem alturas 
+
+que variam entre 100 metros e um quilômetro, de acordo com a profundidade do oceano 
+naquela região (Di Meglio et al., 2012 a). 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 4 
+
+Conforme Aamo (2004), oleodutos e poços de petróleo com fluxo altamente 
+oscilatório constituem um problema significativo na indústria do petróleo, e os esforços 
+
+para encontrar soluções baratas baseadas no controle automático aumentaram tanto na 
+academia quanto na indústria. Existem vários fenômenos de instabilidade diferentes 
+
+relacionados a oleodutos, gasodutos e poços. Mesmo com a estabilização com sucesso de 
+regimes instáveis, que ocorrem para fluxo multifásico em risers verticais, usando técnicas 
+convencionais de controle linear, ainda, esses sistemas de controle contam com medições 
+de fundo de poço que, na melhor das hipóteses, não são confiáveis, se disponíveis.  
+
+Uma característica comum na produção de petróleo, de acordo com Diehl et al. 
+
+(2017) são as irregularidades de fluxo durante o transporte de fluido do reservatório para 
+as instalações de superfície. Quando a produção ocorre em um ambiente offshore, os 
+
+problemas de fluxo se tornam ainda mais críticos. Na produção em águas profundas e 
+ultraprofundas, o poço de fluxo fixo é composto por tubos longos distribuídos em vários 
+
+ângulos. Essa distribuição pode criar instabilidades no fluxo multifásico, denominado 
+golfada de terreno ou golfada de riser, resultando em riscos operacionais e reduções na  
+produção (Schmidt et al., 1979, 1980; Fabre et al., 1990; Meglio, 2011). Os principais 
+problemas causados por irregularidades de fluxo estão ligados ao aumento do risco 
+operacional, redução da disponibilidade do sistema de produção e dificuldades em 
+conduzir os poços a condições operacionais ideais. 
+
+Por fim, segundo Diehl (2017), melhorar a operação pode ser um ponto chave para 
+otimizar o lucro do sistema de produção. Para atingir este objetivo, os esforços devem ser 
+
+concentrados em proporcionar uma melhor operação do sistema de produção, 
+aumentando o monitoramento, controle e otimização em tempo real, a fim de apoiar 
+decisões rápidas sobre a operação. 
+
+2.2 Go lfa d a s n os sist emas d e elev a ção  d e p etró leo  
+
+O fenômeno de golfadas  é definido por Di Meglio et al. (2012) como um regime 
+
+intermitente de fluxo bifásico ou trifásico caracterizado por uma distribuição não 
+homogênea das fases líquida e gasosa. Dessa maneira, bolhas de gás fluem através do 
+tubo, separadas por “golfadas” de líquido. Na saída, isso se traduz em longos períodos de 
+produção muito baixa de líquido, alternando periodicamente com altos picos de 
+produção, o que é problemático para o processo de separação. Além disso, a produção 
+total é reduzida em comparação com os regimes de fluxo constante, em que o petróleo e 
+o gás são produzidos a taxas constantes. Ainda, a compressibilidade das bolhas de gás e a 
+variação do peso da coluna de líquido causam oscilações periódicas da pressão, em todos 
+os lugares no tubo. Essas oscilações, que podem danificar a instalaç ão, estão, na verdade, 
+intimamente relacionadas à diminuição da produção de petróleo. 
+
+As golfadas podem ocorrer nos poços e nos risers. A Figura 2.2 representa 
+esquematicamente os principais oleodutos  e poços presentes em unidades de extração 
+de petróleo offshore. 
+
+ 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 5 
+
+ 
+
+ 
+
+Figura 2.2:  Exemplos de oleodutos e poços envolvidos  no fenômeno de golfadas. 
+
+Adaptado de Di Meglio et al. (2012a). 
+
+Nos risers, a golfada surge principalmente quando a linha de fluxo tem um âng ulo de 
+
+ponto baixo imediatamente antes da seção vertical. Em particular, nesses sistemas, a fase 
+
+líquida atua como uma válvula no ponto mais baixo, alternadamente bloqueando e 
+deixando passar o gás. Durante a fase de bloqueio, a pressão se acumula em um ponto 
+
+crítico, onde ocorre uma “explosão”. Depois de um tempo, o líquido se acumula 
+novamente e o ciclo se repete. As golfadas de líquido podem ser tão longas quanto o 
+
+próprio riser, e normalmente não há mais do que uma golfada por vez. 
+
+Nos poços por gás lift, gás injetado em poços que apresentam baixa pressão a fim de 
+
+facilitar a elevação do petróleo, um invólucro é desenvolvido em volta do poço por 
+preenchimento de gás. O gás é então injetado através de uma válvula unidirecional no 
+fundo do poço, baixando a densidade da coluna de líquido. 
+
+Em alguns sistemas  de poços, os mecanismos do fenômeno de golfadas são mal 
+
+compreendidos. Assim, na ausência de um ponto baixo ou de elevação de gás , um mesmo 
+modelo de simulação preciso pode não prever o comportamento da golfada. Neste caso, 
+
+várias golfadas podem estar presentes no riser ao mesmo tempo. 
+
+Segundo Codas (2016), o fenômeno de golfadas pode ser reduzido ou eliminado pelo 
+aumento da contrapressão do oleoduto, ou seja, reduzindo a abertura da válvula choke 
+ou aumentando a taxa de injeção do gás lift. No entanto, essas soluções não são 
+
+necessariamente ideais do ponto de vista econômico. 
+
+2.3 Imp o r t ânc ia  d a  med ição  d e p r essã o d o  fu n do d o  p o ço 
+
+A pressão de fundo do poço medida é uma das variáveis mais importantes para 
+
+monitoramento, otimização e controle da produção de poços de petróleo, sendo 
+essencial na avaliação da dinâmica do poço de petróleo (Antonello, 2017). 
+
+A pressão do fundo do poço usualmente é medida por um sensor denominado PDG e, 
+a fim de entender a importância que esse sensor de pressão tem no processo de 
+extração, segue explicação de Diehl et al. (2017): “existe um fenômeno importante 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 6 
+
+observado em oleodutos e poços de petróleo correspondente ao alto fluxo oscilatório ou 
+fluxo de slugging. Este é geralmente o caso dos poços de petróleo que empregam a 
+
+técnica de gás lift para extrair o óleo de poços de águas profundas ou de baixa pressão. O 
+gás artificialmente injetado diminui a densidade do fluido do poço, o que, por sua vez, 
+
+possibilita sua extração com a diferença de pressão criada. Técnicas de estabilização que 
+abordam esses comportamentos oscilatórios em fluxos multifásicos são necessários e 
+foram projetados por especialistas do meio acadêmico e da indústria. Estes métodos são 
+geralmente baseados na estabilização da pressão do poço através de atuadores de 
+estrangulamento na vazão de gás lift e na produção do poço. Infelizmente, os sensores 
+PDG são instalados em ambientes agressivos e têm um custo proibitivo para manutenção 
+ou substituição (Eck et al., 1999), e também sua falha prematura não é incomum. Além 
+
+disso, perturbações e ruídos podem afetar as medições do sensor PDG, tornando-os uma 
+fonte de informações não confiável.” 
+
+Dada a importância de medir ou estimar a pressão do poço e a falta de confiabilidade 
+do sensor PDG, vários trabalhos que buscam criar modelos que possam estimar a pressão 
+do poço com base em outras medições na superfície. Esses modelos preditivos, 
+geralmente chamados de analisadores virtuais , são importantes para o controle de 
+qualidade e segurança da produção e foram extensivamente desenvolvidos na s últimas 
+décadas. Alguns destes analisadores usam o conhecimento da física do poço de petróleo 
+para projetar um observador não linear para os estados do fluxo multifásico, a fim de 
+estimar a pressão do poço, enquanto outros são baseados em abordagens de 
+identificação do sistema de caixa preta. Enquanto a primeira abordagem pode tirar 
+
+proveito do conhecimento a priori para uma análise refinada e esquemas de controle 
+mais avançados, a última abordagem é mais rápida, não requer modelagem extensiva, 
+
+sendo bem adequada para identificar modelos desconhecidos  (Antonelo, 2017). 
+
+Grande parte da literatura na identificação de sistemas depende do uso de modelos 
+NARMAX (Billings, 2013) ou de redes neurais artificiais (RNAs) para explicar 
+comportamentos dinâmicos ou temporais em processamento. Embora seja possível 
+introduzir dinâmicas no modelo usando uma janela de tempo de entradas anteriores, 
+uma maneira geral mais interessante é usar Redes Neurais Recorrentes (RNNs) como 
+
+aproximadores universais para sistemas dinâmicos (Funahashi &amp;amp;Nakamura, 1993). 
+
+Por fim, Antonelo (2017) defende estes modelos preditivos, pois modelos de 
+
+analisadores virtuais apresentam vantagens baseadas em abordagens de identificação de 
+sistemas de caixa preta, e esta abordagem é mais rápida e não re quer modelagem 
+
+extensiva, sendo bem adequada para identificar modelos desconhecidos.  
+
+2.4 Mét o d os c o mputa ciona is a p lica dos  
+
+2.4.1 Computação em Reservatório 
+
+Computação em Reservatório (Verstraeten, Schrauwen, D'Haene, &amp;amp; Stroobandt, 2007) 
+é um termo recentemente cunhado para designar o paradigma de computação baseado 
+
+em transientes de um sistema dinâmico fixo. Na Computação de Reservatório, a rede (ver 
+Figura 2.3) deve ser composta de duas partes principais, um pool de neurônios de alta 
+
+densidade recorrente, com pesos sinápticos fixos e gerados aleatoriamente, chamado 
+reservatório e uma camada de saída de leitura adaptativa linear que projeta os estados 
+
+do reservatório para a saída real do sistema. Como apenas a camada de saída precisa ser 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 7 
+
+treinada, geralmente via métodos de regressão linear, o treinamento é simplificado e a 
+convergência global garantida. 
+
+ 
+O reservatório pode ser visto como um núcleo dinâmico não linear, projetando a 
+
+entrada para um espaço dinâmico de alta dimensão, no qual a regressão linear ou 
+classificação pode ser mais facilmente executada . 
+
+ 
+ 
+
+Figura 2.3: Rede de Computação em Reservatório. (adaptado de Antonelo, 2017). 
+
+O reservatório é um sistema dinâmico não linear usualmente composto por unida des 
+sigmóides recorrentes. Linhas sólidas representam conexões fixas, geradas 
+aleatoriamente, enquanto linhas tracejadas representam pesos adaptáveis ou treináveis  
+ 
+As motivações de Antonelo (2017) para usar a Computação em Reservatório na 
+construção de sensores baseados em softwares de pressão de fundo são: 
+ 
+
+1. Pode ser aplicado a problemas quando o modelo é desconhecido (a maioria dos 
+processos do mundo real não pode ser completamente modelada ou é 
+
+necessário um esforço de modelagem considerável), quando comparado com 
+uma abordagem de projeto de observador; 
+
+ 
+2. Computação em Reservatório permite a adição de novas unidades de saída na 
+
+camada de saída (usando o mesmo reservatório) que podem ser treinadas 
+
+separadamente, sem corromper unidades previamente treinadas, sendo útil se 
+unidades adicionais de estimativa de saída forem necessárias com o tempo; 
+
+ 
+
+3. Modelos inversos podem ser facilmente construídos para que até mesmo um 
+subconjunto das medições de entrada possa ser previsto no caso de alguns 
+sensores se tornarem defeituosos, melhorando o desempenho geral; 
+ 
+
+4. Por fim, a Computação em Reservatório fornece um treinamento rápido e 
+eficiente para as Redes Neurais Recorrentes, quando comparado aos métodos 
+
+baseados em gradiente descendente. 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 8 
+
+2.4.2 Analisadores Virtuais 
+
+Analisadores virtuais são sistemas que utilizam algoritmos matemáticos para a 
+obtenção de estimativas em tempo real de variáveis que não são medidas por sensores, 
+utilizando para isso as suas correlações com dados disponíveis por medições em processo 
+(FORTUNA et al. 2005). 
+
+Dentre as vantagens dos analisadores virtuai s, segundo FORTUNA et al. (2005), 
+destacam-se as seguintes: 
+
+? Oferecem uma alternativa de baixo custo, comparados a sensores físicos caros ; 
+
+? Podem trabalhar em paralelo com sensores físicos, fornecendo informação útil na 
+identificação de falhas; 
+
+? Podem ser facilmente implementados em hardware existente, como micro- 
+controladores, e calibrados de acordo com as mudanças nos parâmetros do 
+sistema; 
+
+? Permitem a estimação de dados em tempo real, superando em desempenho 
+
+análises lentas, como as de cromatografia gasosa. 
+
+Segundo Facchin (2005), os analisadores virtuais consistem em algoritmos compostos 
+basicamente por três blocos  (Figura 2.4): o bloco processo contém as variáveis do 
+processo que serão utilizadas no modelo; o bloco predição representa o modelo 
+matemático usado para relacionar as variáveis do processo que buscam atingir a variável 
+estimada; e o bloco correção contém uma estratégia de adaptação do modelo de 
+predição. 
+
+ 
+
+ 
+
+Figura 2.4:  Algoritmo básico de um analisador virtual (FACCHIN, 2005). 
+
+2.4.3 Desenvolvimento de Analisadores Virtuais 
+
+Segundo Facchin (2005), para desenvolver um analisador virtual é necessário, 
+usualmente, seguir uma sequência de procedimentos  que envolvem, por exemplo, desde 
+a seleção da técnica de modelagem até a estratégia de correção a ser aplicada no modelo 
+desenvolvido. 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 9 
+
+KADLEC et al. (2009), portanto, sintetizam a estrutura básica da metodologia de 
+desenvolvimento de analisadores virtuais, proposto por autores, por meio da figura 2.5. 
+
+ 
+
+ 
+
+Figura 2.5: Metodologia para o desenvolvimento de um analisador virtual (adaptado de 
+
+KADLEC et al., 2009). 
+
+2.4.4 Primeira inspeção de dados 
+
+O objetivo dessa etapa é obter uma visão geral da estrutura dos dados e identificar 
+
+quaisquer problemas óbvios que possam ser tratados neste estágio inicial (por exemplo, 
+variáveis bloqueadas com valor constante, etc.), e avaliar os requisitos para a 
+
+complexidade do modelo. Ainda, deve ser verificado se há variação suficiente na variável 
+de saída, a fim de avaliar se é possível fazer um modelo (KADLEC et al. 2009). 
+
+2.4.5 Seleção de dados históricos 
+
+Nessa etapa, os dados são selecionados para serem usados no treinamento e na 
+
+avaliação do modelo. Em seguida, as partes estacionárias dos dados devem ser 
+identificadas e selecionadas. Na maior parte dos casos, a modelagem adicional tratará 
+
+apenas dos estados estacionários do processo. No caso de processos dinâmicos, 
+geralmente não há estados  estacionários e, portanto, o modelo se concentra na seleção 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 10 
+
+de lotes representativos e não na identificação de estados estacionários  (KADLEC et al. 
+2009). 
+
+2.4.6 Pré-tratamento dos dados 
+
+O objetivo desta etapa é transformar os dados , a fim de que possam ser processados 
+
+de forma mais efetiva pelo modelo real. Um exemplo de uma etapa típica de pré -
+processamento é a normalização dos dados para a média zero e a variância unitária. 
+
+Ainda, deve-se procurar por dados perdidos, detecção e substituição de outliers, 
+
+seleção de variáveis relevantes  para a construção do modelo, manipulação de dados de 
+derivação e detecção de atrasos entre as variáveis  específicas.  
+
+ Essa é a etapa que requer uma grande quantidade de trabalho manual e 
+conhecimento especializado sobre o processo. (KADLEC et al. 2009). 
+
+2.4.7 Seleção, treinamento e validação do modelo 
+
+Segundo KADLEC et al. (2009), esta fase é crítica para o desempenho final do 
+
+Analisador Virtual. Como o modelo é o “motor” do Analisador Virtual, a seleção do tipo 
+ideal é crucial para o seu desempenho. Não existe uma abordagem teórica unificada para 
+
+esta tarefa e, portanto, o tipo de modelo e seus parâmetros são frequentemente 
+selecionados de maneira específica para cada Analisador Virtual. 
+
+Depois de encontrar a estrutura do modelo ideal e treinar o modelo, o Analisador 
+Virtual treinado deve ser avaliado em dados independentes novamente. Existem várias 
+
+ferramentas para a avaliação do desempenho do modelo. No caso da avaliação numérica 
+de desempenho, o mais popular é o erro médio quadrático (Mean Squared Error - MSE), 
+
+que mede a distância quadrada média entre o valor previsto e o valor correto.  
+
+Além da escolha do modelo em si, a rede neural exige conhecimento da aplicação dos 
+seus parâmetros e a influência que eles representam no resultado final. Em vista disso, 
+
+segue uma breve explicação destes parâmetros: 
+
+? Função de ativação: é um elemento extremamente importante das redes neurais. 
+Elas basicamente decidem se um neurônio deve ser ativado ou não. Ou seja, se a 
+informação que o neurônio está recebendo é relevante ou deve ser ignorada . 
+
+? Camada oculta: é a camada que recebe os dados da camada de entrada, gera o 
+conjunto de treinamento e gera os dados para a camada de saída. Foram testadas 
+
+1 e 2 camadas ocultas para cada caso. 
+
+? Nós da camada oculta: Eles executam cálculos e transferem informações dos nós 
+de entrada para os nós de saída. Não há uma regra para seu valor e, por isso, 
+
+variou-se conforme cada situação. 
+
+? Tamanho do teste: uma parte dos dados deve ser usada para calcular os pesos 
+mais adequados que serão utilizados no restante dos dados, para que se possa 
+predizer a propriedade desejada. Normalmente, recomenda -se utilizar 20% dos 
+dados para teste, quando o conjunto de dados é extenso, e 50% para a situação 
+contrária. 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 11 
+
+? Otimizador: é o algoritmo que gera as mudanças dos pesos e do bias, durante o 
+treinamento. A variação deste algoritmo não trouxe variações significativas.  
+
+? Função de erro e perda: é o objetivo que o modelo tenta minimizar. O erro é 
+calculado como a diferença quadrática entre a saída real e a saída prevista. A 
+função que é usada para calcular esse erro é conhecida como Função de Perda. 
+Diferentes funções de perda darão erros diferentes para a mesma previsão e, 
+portanto, terão um efeito considerável no desempenho do modelo. Uma das 
+funções de perda mais utilizadas é o erro quadrático médio, que calcula o 
+quadrado da diferença entre o valor real e o valor previsto. Diferentes funções de  
+perda são usadas para lidar com diferentes tipos de tarefas, ou seja, regressão e 
+classificação. Como este trabalho se trata de uma regressão, a função de perda 
+necessária para o modelo Sequencial é a do erro quadrático médio. 
+
+? Tamanho do lote: define o número de amostras que serão propagadas pela rede. 
+Em geral, um tamanho de lote maior resulta em treinamento mais rápido, mas 
+
+nem sempre converge rapidamente. Um tamanho de lote menor é mais lento no 
+treinamento, mas pode convergir mais rapidamente. O tamanho do lote 
+definitivamente dependente da situação e foi necessário experimentar alguns 
+valores diferentes para alcançar o melhor ajuste. Este foi o parâmetro que teve 
+maior impacto nos resultados. 
+
+? Época: é uma iteração em todos os dados de treinamento. Foram utilizados 
+valores entre 1 e 5 épocas, valores maiores não trouxeram melhoras no modelo.  
+
+2.4.8 Manutenção do Analisador Virtual 
+
+Depois de implementado, o Analisador Virtual deve ser mantido e ajustado 
+regularmente. A manutenção é uma necessidade devido aos desvios e outras alterações 
+dos dados que causam a deterioração do desempenho do Analisador Virtual e devem ser 
+
+compensados pela adaptação ou desenvolvimento do novo modelo (KADLEC et al., 2009).  
+
+Dessa forma, segundo Facchin (2005), é importante que o modelo matemático passe 
+por um processo constante de adaptação, mantendo-se fiel ao processo, para garantir um 
+alto grau de confiança no Analisador Virtual. 
+
+Portanto, segundo KADLEC et al (2009)., o operador do modelo desempenha um 
+papel importante, pois é s eu julgamento e conhecimento do processo subjacente que 
+
+decide sobre a forma como os parâmetros dos métodos de adaptação individuais são 
+selecionados. 
+
+2.4.9 Rede Neural 
+
+Analisadores Virtuais  podem ser projetados com base em um modelo analítico ou 
+
+introduzindo abordagens de identificação de caixa preta ou cinza. Devido à complexidade 
+dos fenômenos envolvidos, a modelagem física pode ser muito demorada e os 
+
+parâmetros significativos são geralmente desconhecidos. Pelo contrário, a grande 
+quantidade de dados históricos, geralmente necessários para fins de monitoramento, 
+
+permite a identificação não linear de modelos de processos em caixa preta ou cinza. As 
+Redes Neurais podem ser usadas para implementar os modelos não lineares requeridos  
+(L. Fortuna, 2004). 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 12 
+
+Segundo D. Verstraeten (2007), redes neurais oferecem um método atraente para 
+resolver tarefas complicadas de engenharia. As vantagens das redes neurais feedforward 
+
+incluem robustez, aprendizado pelo exemplo e a capacidade de modelar sistemas 
+altamente não lineares e, adicionado a isso, uma capacidade de processamento temporal 
+
+inerente. As possíveis - e reais - aplicações são múltiplas, incluindo o aprendizado de 
+linguagens livres de contexto e sensíveis ao contexto, controle e modelagem de sistemas 
+dinâmicos complexos e reconhecimento de fala. 
+
+As redes neurais podem fornecer um tipo de computação dependente do estado 
+muito semelhante ao funcionamento cortical no cérebro (Buonomano &amp;amp; Maass, 2009), 
+
+onde a trajetória de um sistema dinâmico de alta dimensão reflete ta nto a entrada atual 
+quanto os estímulos de entrada recebidos anteriormente. 
+
+Especificamente, segundo WILLIS et al. (1992), a rede neural feedforward é o tipo de 
+rede mais amplamente aplicada, ainda que várias arquiteturas de redes neurais tenham 
+sido propostas. Cybenko (1989) afirmou que qualquer função contínua pode ser 
+aproximada arbitrariamente bem em um conjunto compacto por uma rede neural 
+feedforward, compreendendo duas camadas ocultas e uma não linearidade contínua fixa. 
+Esse resultado essencialmente afirma que uma rede neural feedforward poderia ser 
+
+usada para modelar uma ampla gama de relacionamentos não lineares. 
+
+Uma rede neural feedforward é constituída de elementos semelhantes a neurônios, 
+
+chamados nós. Esses nós são organizados em camadas, conforme Figura 2.6. 
+
+ 
+
+Figura 2.6:  Representação de uma rede neural feedforward (adaptado de WILLIS et al. 
+
+1992) 
+
+Geralmente, a rede neural feedforward é usada para aproximar um mapeamento não 
+linear entre entradas e saídas do sistema. Assim, a rede é composta de dados de entrada,  
+u (t), e saída, y (t). Por definição, a transformação funcional de cada camada de uma rede, 
+definida por J, pode ser representada pela composição de uma transformação afim, como 
+
+uma soma ponderada das entradas para a camada posterior (Wi), com um mapeamento 
+não linear, geralmente utilizando uma função sigmoidal (S). Os vetores de saída da 
+primeira e segunda classes internas da Rede Neural  são ?1 e ?2, respectivamente, y o 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 13 
+
+vetor de saídas da rede e “.” o operador de montagem, a equação do problema é dado a 
+seguir: 
+
+?1 = ?1(?(?), ?(? ? ?)) = ?. ?1(?(?), ?(? ? ?)) (3.8) 
+
+?2 = ?2(?1(?)) = ?. ?2(?1(?)), (3.9) 
+
+?(?) = ?0(?2(?)) = ?. ?0(?2(?)) (3.10) 
+
+Uma aproximação ao mapeamento não linear original por uma rede neural com duas 
+camadas ocultas é, portanto, dada por: 
+
+?(?) = ?0. ?2. ?1(?(?), ?(? ? ?)) (3.11) 
+
+Segundo Facchin (2005), existem índices de ajustes dos dados que são usados para 
+determinar qual modelo é o mais adequado. O principal índice utilizado é o da soma 
+quadrática do erro (SSE), que mede os desvios dos dados entre os dados do modelo pelos 
+dados originais, que combinado ao coeficiente de determinação (Syy), obtém se a 
+expressão final do cálculo do coeficiente de determinação, também referenciado como 
+R2. As equações 2.1, 2.2 e 2.3 demonstram o cálculo destes índices: 
+
+??? =  ?(?? ?  ???? )
+2
+
+?
+
+? =?
+
+ 
+
+??? =  ?(?? ?  ?? )
+2
+
+?
+
+?=?
+
+ 
+
+?2 = 1 ?  
+???
+
+???
+ 
+
+ Onde ?? são os valores gerados pelo modelo, ? ?? os dados originais utilizados para 
+
+elaboração do modelo e ? ? o valor médio do conjunto de dados originais . 
+
+A rede neural deve ser treinada com os dados de treinamento de entrada e saída, 
+com os dados sendo propagados pela rede de modo a ajustar os pesos internos de cada 
+neurônio em cada camada. O procedimento é realizado com o objetivo de minimizar o 
+
+erro quadrático entre a saída obtida pela Rede Neural e o valor da variável de resposta 
+original, sendo possível utilizar diversos algoritmos de otimização para tal tarefa. Com o 
+modelo obtido, a Rede Neural é validada através da utilização dos dados de validação. 
+Sobre o treinamento da rede, os dados são divididos em conjuntos de dados de 
+
+treinamento e teste. Dessa forma, aplica-se um procedimento envolvendo treino, teste e 
+validação. Os conjuntos de dados de treinamento são usados para obter os pesos da rede, 
+enquanto os conjuntos de dados de teste são usados para validar o modelo de rede  
+(WILLIS et al., 1992). 
+
+3 M e t odol ogi a 
+
+Este capítulo mostra as etapas do desenvolvimento do Analisador Virtual, que segue a 
+estratégia de implementação descrita no capítulo anterior e a explicação da Rede Neural 
+Artificial escolhida e de seus parâmetros. 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 14 
+
+3.1 Desen v o lvimento d o  A n alisa do r Vir t ual  
+
+A consolidação das informações e o desenvolvimento do Analisador Virtual foram 
+gerados em linguagem de programação Python. 
+
+Este trabalho usou como referência as informações do poço de petróleo A, extraídas 
+
+de um modelo dinâmico semiempírico simplificado desenvolvido por Diehl (2017), 
+chamado FOWM (Fast Offshore Wells Model). Este modelo foi criado para aplicações de 
+controle e tempo real em sistemas de produção offshore de águas profundas e 
+ultraprofundas. 
+
+3.1.1 Primeira inspeção de dados seleção de dados históricos 
+
+As variáveis de interesse para o desenvolvimento deste trabalho são a pressão de 
+topo, a pressão do separador, a abertura da válvula choke e a vazão do gás lift, todas 
+estas obtidas nas instalações do topo, e a pressão do poço medida pela PDG, obtida na 
+saída do poço.  
+
+Foram coletadas 2.090.000 medidas  do FOWM, com 16 variações de abertura da 
+válvula choke para 13 variações de vazão do gás lift, conforme Tabela 3.1. Todas estas 
+
+combinações foram geradas e extraídas do Matlab, armazenando-as no Microsoft Excel. 
+
+Abertura da válvula 
+choke (%) 
+
+  Vazão de gás 
+lift (m3/ dia)   
+
+1   145.000 
+3   150.000 
+
+5   155.000 
+7   160.000 
+
+9   165.000 
+11   170.000 
+
+13   175.000 
+15   180.000 
+
+17   185.000 
+19   190.000 
+
+21   195.000 
+
+23   200.000 
+25   205.000 
+
+27     
+29     
+
+31     
+
+Tabela 3.1: Representação das variações de abertura da válvula choke (%) e vazão de gás 
+lift (m3/ dia). 
+
+ 
+
+O valor da pressão no separador (Psep) foi mantido constante e igual à 1.013.300 Pa. 
+
+A fim de entender o comportamento do poço conforme abertura da válvula choke, 
+segue a Figura 3.1, que mostra a variação da pressão para diferentes aberturas da válvula. 
+
+Pode-se observar que há uma oscilação de pressão a cada abertura de válvula até a 
+estabilização. Este comportamento se repete até acontecer o fenômeno de golfadas, a 
+partir de 17% de abertura de válvula choke. 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 15 
+
+ 
+
+ 
+
+Figura 3.1:  Variação da pressão do topo pela abertura da válvula choke. 
+
+Como o comportamento da pressão é dinâmico e por vezes oscilatório, é proposta 
+inicialmente a elaboração de uma rede neural estática, ou seja, para cada estabilização da 
+
+pressão, dada uma abertura de válvula choke, foi utilizado um valor médio da pressão 
+como referência desta abertura da válvula choke. 
+
+Para entender melhor como as variáveis do poço estão associadas nessa condição 
+
+estática, foi gerada uma matriz de correlações (Figura 3.2), onde P_topo é a pressão de 
+topo, P_PDG é pressão de poço medida pelo sensor PDG, vazão_gas_lift é a vazão do gás -
+
+lift e x_choke é a abertura da válvula choke. Esta matriz tem por objetivo mostrar como 
+estão correlacionadas as variáveis para, então, escolhê-las na maneira mais adequada 
+
+para a predição da pressão de fundo do poço. 
+
+Importante notar que as os  pares das variáveis na figura 3.2 tem como resultado valor 
+
+igual a 1 (P_topo – P_topo = 1), ou seja, significa que tem correlação direta. Assim, 
+quanto mais próximo de 1, maior é a correlação entre variáveis. Dessa maneira, pode -se 
+ver que o único par de variáveis diferentes que se correlacionam fortemente é a pressão 
+de topo (P_topo) e a pressão do poço medida pelo sensor PDG (P_PDG) com valor igual a 
+
+0,98, já as demais são praticamente nulas. 
+
+Em seguida, modelou-se uma rede neural dinâmica, considerando todos os dados do 
+
+poço, a fim de aproximá-lo o máximo possível da realidade. Com o mesmo objetivo 
+explicado acima, também foi gerada uma matriz de correlações para compreensão da 
+
+associação das variáveis (Figura 3.3). O resultado foi o mesmo para a matriz de 
+
+correlações dos dados estáticos. 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 16 
+
+ 
+
+ 
+
+Figura 3.2:  Matriz de correlação das variáveis para elaboração da rede neural estática, 
+onde P_topo é a pressão de topo, P_PDG é pressão de poço medida pelo sensor PDG, 
+
+vazão_gas_lift é a vazão do gás -lift e x_choke é a abertura da válvula choke. 
+
+ 
+
+ 
+
+Figura 3.3: Matriz de correlação das variáveis para elaboração da rede neural dinâmica, 
+onde P_topo é a pressão de topo, P_PDG é pressão de poço medida pelo sensor PDG, 
+
+vazão_gas_lift é a vazão do gás -lift e x_choke é a abertura da válvula choke. 
+
+Apesar das matrizes de correlações mostrarem que apenas a pressão de topo está 
+relacionada com a pressão do poço, o uso conjunto das variáveis pode ser positivo para a 
+
+predição da pressão do poço, diferentemente das variáveis serem analisadas 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 17 
+
+separadamente. Portanto, a fim de encontrar o melhor resultado, foram testados três 
+conjuntos diferentes de variáveis para predizer a pressão do poço, tanto para a rede 
+
+neural estática quanto para a dinâmica: 
+
+- Teste 1: Abertura da válvula choke e vazão do gás lift; 
+
+- Teste 2: Pressão de topo; 
+
+- Teste 3: Pressão de topo, abertura da válvula choke e vazão do gás lift. 
+
+3.1.2 Pré-tratamento dos dados 
+
+O pré-tratamento dos dados foi realizado todo via Python, com conexão ao Microsoft 
+Excel. 
+
+As primeiras informações da base de dados tiveram de ser desconsideradas para a 
+resolução do modelo, pois trata-se da resposta transiente inicial que ocorre logo ao abrir 
+
+a válvula choke, abertura igual a 1%, visto que a condição inicial não é a referente ao 
+estado estacionário do modelo, para esta condição de planta . Neste período, onde ocorre 
+uma grande oscilação inicial de pressão até a sua estabilização.  Assim, a Figura 3.4 
+apresenta apenas o comportamento dos dados relevantes para o desenvolvimento deste 
+
+trabalho. 
+
+ 
+
+ 
+
+Figura 3.4: Variação da pressão do topo pela abertura da válvula choke. 
+
+ Os dados utilizados para a rede neural estática tiveram que ser gerados a partir da 
+base total de dados. Assim, para cada abertura de válvula, pegou-se o valor médio de 
+
+pressão de topo e pressão medida pelo sensor PDG, obtidas pelas diferentes vazões de 
+gás lift. 
+
+Não foi observada nenhuma alteração do comportamento da pressão, ao comparar a 
+Figura 3.5, referente à base de dados gerada para a rede neural estática, com a Figura 3.4, 
+referente à base de dados total. 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 18 
+
+ 
+
+ 
+
+Figura 3.5: Variação da pressão do topo pela abertura da válvula choke, na avaliação 
+estática das pressões para cada abertura. 
+
+3.1.3 Seleção, treinamento e validação do modelo 
+
+A rede neural feedforward foi escolhida e desenvolvida com auxílio da biblioteca 
+Keras, que é uma biblioteca usada para o desenvolvimento de redes neurais de código 
+aberto escrita em Python. Para este trabalho, utilizaram-se camadas densas, funções de 
+ativação, métricas e otimizadores dessa biblioteca. 
+
+Após seleção dos dados e antes de treinar a rede, fez-se a padronização dos dados, de 
+
+modo que a média dos valores observados seja 0 e o desvio padrão seja 1. Essa 
+padronização é necessária em algoritmos de aprendizado de máquina quando seus dados 
+
+possuem valores de entrada com escalas diferentes  e garante resultados mais confiáveis . 
+A padronização assume que os dados se ajustem a uma distribuição gaussiana com uma 
+
+média e desvio padrão adequados. 
+
+Uma análise preliminar foi realizada a fim de identificar a melhor configuração para o 
+presente trabalho. Assim, inicialmente escolheu-se um dos parâmetros para ajustar, 
+enquanto os demais eram fixados. Essa metodologia foi utilizada para cada teste de cada 
+
+rede neural, mostradas no capítulo seguinte com maior detalhamento. 
+
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 19 
+
+4 Re s ul t ados  
+
+Conforme explicado no capítulo anterior, os resultados serão apresentados seguindo 
+a metodologia de ajuste de cada parâmetro da rede neural, buscando pelo melhor 
+
+coeficiente de determinação do teste da rede neural . Ainda, os resultados de coeficeintes 
+de determinação apresentados são sobre o a base de treino. 
+
+4.1 Red e N eu r al – E st á tica  
+
+Vale ressaltar que a base de dados gerada para esta situação contempla 208 linhas, 
+pois contém apenas valores médios de pressão para situações de estabilidade já 
+mencionadas. 
+
+4.1.1 Teste 1: Abertura da válvula choke e vazão do gás lift 
+
+Para a determinação da função de ativação, o melhor coeficiente de determinação foi 
+igual a 0,08 para a função Relu (Unidade linear retificada), conforme Tabela 4.1. 
+
+Para a determinação da melhor configuração dos demais parâmetros, foi necessário 
+
+fazer combinações sistemáticas, pois a análise individual não trouxe variações 
+significativas de desempenho. Assim, todos os parâmetros tiveram que ser elevados a 
+grandes números para conseguir chegar a resultados mais expressivos. Por fim, obteve-se 
+um valor de coeficiente de determinação igual a 0,26, muito insatisfatório, conforme 
+Tabela 4.2. 
+
+Tabela 4.1: Valores de R2 encontrados para diferentes funções de ativação, referentes ao 
+Teste 1 da rede neural estática. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Tangente 
+hiperbólica 
+
+40 200 200 3 1.000 0 
+
+Linear 40 200 200 3 1.000 -0,01 
+
+Sigmoide 40 200 200 3 1.000 -0,06 
+
+Relu 40 200 200 3 1.000 0,08 
+
+Softmax 40 200 200 3 1.000 -1,05 
+
+ 
+
+Tabela 4.2: Valores de R2 encontrados para diferentes configurações dos parâmetros , 
+referentes ao Teste 1 da rede neural estática. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Relu 80 200 200 3 1.000 0,09 
+
+Relu 80 400 400 3 10.000 0,11 
+
+Relu 80 400 400 5 50.000 0,18 
+
+Relu 80 500 500 5 50.000 0,2 
+
+Relu 80 1000 1000 5 50.000 0,26 
+
+Relu 80 5000 5000 5 50.000 0,23 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 20 
+
+ 
+
+4.1.2 Teste 2: Pressão de topo 
+
+Inicialmente, verificou-se que função de ativação linear apresenta o melhor 
+coeficiente de determinação, conforme Tabela 4.3. 
+
+Tabela 4.3: Valores de R2 encontrados para diferentes funções de ativação, referentes ao 
+
+Teste 2 da rede neural estática. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Tangente 
+hiperbólica 
+
+40 200 200 3 1.000 0,73 
+
+Linear 40 200 200 3 1.000 0,97 
+
+Sigmoide 40 200 200 3 1.000 -0,06 
+
+Relu 40 200 200 3 1.000 0,14 
+
+Softmax 40 200 200 3 1.000 -1,05 
+
+ 
+
+Para a avaliação do tamanho do conjunto de dados de teste, a sua variação não 
+
+alterou o coeficiente de determinação, conforme Tabela 4.4.  
+
+Tabela 4.4: Valores de R2 encontrados para diferentes tamanhos do teste da rede neural , 
+referentes ao Teste 2 da rede neural estática. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Linear 20 200 200 3 1.000 0,97 
+
+Linear 30 200 200 3 1.000 0,97 
+
+Linear 40 200 200 3 1.000 0,97 
+
+Linear 50 200 200 3 1.000 0,97 
+
+ 
+
+Para a avaliação do número de neurônios e camadas, a melhor configuração foi a de 2 
+camadas com 200 neurônios cada, conforme Tabela 4.5.  
+
+Tabela 4.5: Valores de R2 encontrados para diferentes neurônios das camadas ocultas, 
+referentes ao Teste 2 da rede neural estática. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Linear 20 100 100 3 1.000 0,76 
+
+Linear 20 200 0 3 1.000 0,16 
+
+Linear 20 200 200 3 1.000 0,97 
+
+Linear 20 400 400 3 1.000 0,88 
+
+ 
+
+Para a avaliação do número de épocas, o melhor coeficiente de determinação foi 
+obtido com 3 épocas, conforme Tabela 4.6. 
+
+Tabela 4.6: Valores de R2 encontrados para diferentes épocas , referentes ao Teste 2 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 21 
+
+Linear 20 200 200 1 1.000 0,46 
+
+Linear 20 200 200 3 1.000 0,76 
+
+Linear 20 200 200 5 1.000 0,83 
+
+ 
+
+Para a avaliação do número de lote, o melhor coeficiente de determinação obtido foi 
+
+com 10.000 lotes, conforme Tabela 4.7. 
+
+Tabela 4.7:   Valores de R2 encontrados para diferentes  tamanhos de lote, referentes ao 
+Teste 2 da rede neural estática. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Linear 20 200 200 5 1.000 0,97 
+
+Linear 20 200 200 5 5.000 0,97 
+
+Linear 20 200 200 5 10.000 0,98 
+
+Linear 20 200 200 5 50.000 0,98 
+
+ 
+
+4.1.3 Teste 3: Pressão de topo, abertura da válvula choke e vazão do gás lift 
+
+Inicialmente, verificou-se que a função de ativação linear apresenta o melhor 
+
+coeficiente de determinação, conforme Tabela 4.8. 
+
+Tabela 4.8: Valores de R2 encontrados para diferentes funções de ativação, referentes ao 
+Teste 3 da rede neural estática. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios -  
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Tangente 
+hiperbólica 
+
+40 200 200 3 1.000 0,75 
+
+Linear 40 200 200 3 1.000 0,94 
+
+Sigmoid 40 200 200 3 1.000 -0,06 
+
+Relu 40 200 200 3 1.000 0,27 
+
+Softmax 40 200 200 3 1.000 -1,05 
+
+ 
+
+Para a avaliação do tamanho de teste, o melhor coeficiente de determinação obtido 
+foi de 30%, conforme Tabela 4.9. 
+
+Tabela 4.9: Valores de R2 encontrados para diferentes tamanhos do teste, referentes ao 
+Teste 3 da rede neural estática. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Linear 20 200 200 3 1.000 0,92 
+
+Linear 30 200 200 3 1.000 0,96 
+
+Linear 35 200 200 3 1.000 0,95 
+
+Linear 40 200 200 3 1.000 0,944 
+
+Linear 50 200 200 3 1.000 0,92 
+
+ 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 22 
+
+ Para a avaliação do número de neurônios e camadas, a melhor configuração obtida 
+apresentou de 2 camadas com 200 neurônios cada foi escolhida, conforme Tabela 4.10. 
+
+Tabela 4.10: Valores de R2 encontrados para diferentes configurações de camadas e 
+neurônios, referentes ao Teste 3 da rede neural estática. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios -   
+2º camada 
+
+Época Lote R2 
+
+Linear 30 100 0 3 1.000 0,17 
+
+Linear 30 100 100 3 1.000 0,53 
+
+Linear 30 200 0 3 1.000 0,14 
+
+Linear 30 200 100 3 1.000 0,83 
+
+Linear 30 200 200 3 1.000 0,96 
+
+Linear 30 200 400 3 1.000 0,95 
+
+Linear 30 400 400 3 1.000 0,84 
+
+ 
+
+Para a avaliação do número do número de época, a melhor coeficiente de 
+determinação obtido apresentou 3 épocas, conforme Tabela 4.11. 
+
+ 
+
+Tabela 4.11:  Valores de R2 encontrados para diferentes épocas , referentes ao Teste 3 da 
+rede neural estática. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios -  
+2º camada 
+
+Época Lote R2 
+
+Linear 30 200 200 1 1.000 0,51 
+
+Linear 30 200 200 3 1.000 0,96 
+
+Linear 30 200 200 5 1.000 0,93 
+
+ 
+
+Por fim, a variação do tamanho do lote para 1.000 melhorou o modelo, obtendo um 
+
+coeficiente de determinação igual a 0,96, conforme Tabela 4.12. 
+
+ 
+
+Tabela 4.12: Valores de R2 encontrados para diferentes  tamanhos de lote, referentes ao 
+Teste 3 da rede neural estática. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios -   
+2º camada 
+
+Época Lote R2 
+
+Linear 30 200 200 3 500 0,92 
+
+Linear 30 200 200 3 1.000 0,96 
+
+Linear 30 200 200 3 5.000 0,92 
+
+ 
+
+ Por fim, A Figura 4.1 apresenta alguns resultados da pressão predita pelo melhor 
+coeficiente de determinação (R2 = 0,98) obtida pelo modelo de rede neural estática, 
+
+referentes ao Teste 2, comparados com as medidas de pressão correspondentes medidas 
+pelo sensor PDG. 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 23 
+
+ 
+
+ 
+
+Figura 4.1: Pressão medida pelo sensor PDG comparados com o valor de pressão predita 
+
+obtido pelo modelo de rede neural estática, referentes ao Teste 2. 
+
+4.2 Red e N eu r al – Din â mic a 
+
+Para a implementação do modelo dinâmico, pode-se usar todos os dados possíveis, 
+
+tornando-se um modelo preditivo adequado para uma situação real. 
+
+4.2.1 Teste 1: Abertura da válvula choke e vazão do gás lift 
+
+Para este teste obteve-se um coeficiente de determinação de 0,23. Dado a 
+quantidade de dados e a baixa correlação entre as variáveis, esse resultado ruim já era 
+
+esperado de antemão.  
+
+Inicialmente, verificou-se que função de ativação tangente hiperbólica apresenta o 
+
+melhor coeficiente de determinação, conforme Tabela 4.13. 
+
+ Tabela 4.13:  Valores de R2 encontrados para diferentes funções de ativação, 
+
+referentes ao Teste 1 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho do 
+teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Tangente 
+hiperbólica 
+
+40 200 200 3 1.000 0,22 
+
+Linear 40 200 200 3 1.000 0,01 
+
+Sigmoide 40 200 200 3 1.000 0,11 
+
+Relu 40 200 200 3 1.000 0,12 
+
+Softmax 40 200 200 3 1.000 -0,99 
+
+ 
+
+18.000.000
+
+18.500.000
+
+19.000.000
+
+19.500.000
+
+20.000.000
+
+20.500.000
+
+21.000.000
+
+21.500.000
+
+1 4 7 10 13 16 19 22 25 28 31 34 37 40 43 46 49 52 55 58
+
+P
+re
+
+ss
+ã
+
+o
+ (
+
+P
+a
+
+)
+
+Observações 
+
+Pressão vs. Observações
+
+Press ão_PDG
+
+Press ão_predição
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 24 
+
+Para a avaliação do tamanho do teste, escolheu-se o valor de 15%, pois foi o valor 
+intermediário encontrado para resultados semelhantes de coeficiente de determinação 
+
+iguais a 0,22, conforme Tabela 4.14. 
+
+Tabela 4.14: Valores de R2 encontrados para diferentes tamanhos do teste, referentes ao 
+Teste 1 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho do 
+teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Tangente 
+hiperbólica 
+
+10 200 200 3 10.000 0,22 
+
+Tangente 
+hiperbólica 
+
+15 200 200 3 10.000 0,22 
+
+Tangente 
+hiperbólica 
+
+20 200 200 3 10.000 0,22 
+
+Tangente 
+hiperbólica 
+
+30 200 200 3 10.000 0,21 
+
+Tangente 
+hiperbólica 
+
+50 200 200 3 50.000 0,21 
+
+ 
+
+Para a avaliação do número de neurônios e camadas, foram obtidos resultados 
+semelhantes, mas por ser mais rápido que os demais, a configuração de 2 camadas com 
+200 neurônios cada foi escolhida, conforme Tabela 4.15. 
+
+Tabela 4.15: Valores de R2 encontrados para diferentes números de neurônios, referentes 
+
+ao Teste 1  da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho do 
+teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Tangente 
+hiperbólica 
+
+15 100 100 3 10.000 0,21 
+
+Tangente 
+hiperbólica 
+
+15 200 200 3 10.000 0,22 
+
+Tangente 
+hiperbólica 
+
+15 300 300 3 10.000 0,22 
+
+Tangente 
+hiperbólica 
+
+15 400 400 3 10.000 0,22 
+
+ 
+
+Para a avaliação do tamanho de lote, escolheu-se o tamanho de 10.000, pois este 
+apresentou o mesmo resultado que o de 5.000, porém o primeiro foi mais rápido, 
+
+conforme Tabela 4.16. 
+
+ 
+
+ 
+
+ 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 25 
+
+Tabela 4.16: Valores de R2 encontrados para diferentes tamanhos de lote, referentes ao 
+Teste 1 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho do 
+teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Tangente 
+hiperbólica 
+
+15 200 200 3 5.000 0,22 
+
+Tangente 
+hiperbólica 
+
+15 200 200 3 10.000 0,22 
+
+Tangente 
+hiperbólica 
+
+15 200 200 3 50.000 0,16 
+
+ 
+
+Por fim, para a avaliação do número de épocas, a que apresentou melhor 
+
+desempenho por ser mais rápida, foi a de 3 épocas, conforme Tabela 4.17 . 
+
+Tabela 4.17: Valores de R2 encontrados para diferentes números de épocas, referentes ao 
+Teste 1 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho do 
+teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Tangente 
+hiperbólica 
+
+15 200 200 1 10.000 0,19 
+
+Tangente 
+hiperbólica 
+
+15 200 200 3 10.000 0,22 
+
+Tangente 
+hiperbólica 
+
+15 200 200 5 10.000 0,22 
+
+Tangente 
+hiperbólica 
+
+15 200 200 10 10.000 0,22 
+
+ 
+
+4.2.2 Teste 2: Pressão de topo 
+
+Para este teste, obteve-se um coeficiente de determinação de 0,96. Inicialmente, para 
+
+determinação da melhor função de ativação foram utilizadas 2 camadas de neurônios, 
+porém nenhuma função convergiu. Portanto, com 1 camada de neurônios a função de 
+
+ativação linear obteve o melhor coeficiente de determinação, conforme Tabela 4.18. 
+
+ Tabela 4.18:  Valores de R2 encontrados para diferentes funções de ativação, 
+referentes ao Teste 2 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho do 
+teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Tangente 
+hiperbólica 
+
+20 200 0 3 1.000 0,8 
+
+Linear 20 200 0 3 1.000 0,96 
+
+Sigmoide 20 200 0 3 1.000 0,34 
+
+Relu 20 200 0 3 1.000 0,28 
+
+Softmax 20 200 0 3 1.000 -1 
+
+ 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 26 
+
+Tabela 4.19: Valores de R2 encontrados para diferentes tamanhos do teste, referentes ao 
+Teste 2 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 2º 
+camada 
+
+Época Lote R2 
+
+Linear 10 200 0 3 1.000 0,96 
+
+Linear 20 200 0 3 1.000 0,96 
+
+Linear 40 200 0 3 1.000 0,96 
+
+ 
+
+Para a avaliação do número de neurônios e camadas, o coeficiente de determinação 
+obtido foi o mesmo para todas as configurações , conforme Tabela 4.20. Escolheu-se, 
+portanto, a configuração com 1 camada de 100 neurônios, pois é a mais simples . 
+
+Tabela 4.20: Valores de R2 encontrados para diferentes números de neurônios , referentes 
+ao Teste 2 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 2º 
+camada 
+
+Época Lote R2 
+
+Linear 20 100 0 3 1.000 0,96 
+
+Linear 20 100 100 3 1.000 0,96 
+
+Linear 20 200 0 3 1.000 0,96 
+
+Linear 20 300 0 3 1.000 0,96 
+
+ 
+
+Para a avaliação do tamanho de lote, escolheu-se o tamanho de 10.000, pois 
+apresentou o mesmo resultado que os demais, porém foi mais rápido, conforme Tabela 
+4.21. 
+
+Tabela 4.21: Valores de R2 encontrados para diferentes tamanhos de lote, referentes ao 
+Teste 2 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 2º 
+camada 
+
+Época Lote R2 
+
+Linear 20 100 0 3 1.000 0,96 
+
+Linear 20 100 0 3 5.000 0,96 
+
+Linear 20 100 0 3 10.000 0,96 
+
+ 
+
+Por fim, para a avaliação do número de épocas, escolheu-se a de 1 época, pois é a 
+mais simples e teve o mesmo coeficiente de determinação que as demais,  conforme 
+
+Tabela 4.22. 
+
+Tabela 4.22: Valores de R2 encontrados para diferentes números de épocas , referentes ao 
+Teste 2 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 2º 
+camada 
+
+Época Lote R2 
+
+Linear 20 100 0 1 10.000 0,96 
+
+Linear 20 100 0 3 10.000 0,96 
+
+Linear 20 100 0 5 10.000 0,96  
+
+ 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 27 
+
+4.2.3 Teste 3: Pressão de topo, abertura da válvula choke e vazão do gás lift 
+
+Para este teste, o coeficiente de determinação obtido foi igual a 0,96. A configuração 
+inicial para o ajuste deste teste se baseou no último teste, já que a diferença entre eles 
+são os dados que não estão fortemente correlacionados com a pressão do fundo do poço, 
+que são a vazão do gás lift e a abertura da válvula choke. Dessa maneira, novamente a 
+
+função de ativação que melhor se ajustou foi a linear, conforme Tabela 4.23. 
+
+ Tabela 4.23:  Valores de R2 encontrados para diferentes funções de ativação, 
+referentes ao Teste 3 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Tangente 
+hiperbólica 
+
+20 200 0 3 1.000 0,81 
+
+Linear 20 200 0 3 1.000 0,96 
+
+Sigmoide 20 200 0 3 1.000 0,34 
+
+Relu 20 200 0 3 1.000 0,35 
+
+Softmax 20 200 0 3 1.000 -1 
+
+ 
+
+Para a avaliação do tamanho do teste, escolheu-se o valor de 20%, pois foi o valor 
+
+intermediário encontrado para resultados de coeficiente de determinação iguais a 0, 96, 
+conforme Tabela 4.24. 
+
+Tabela 4.24: Valores de R2 encontrados para diferentes tamanhos do teste, referentes ao 
+Teste 3 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Linear 10 200 0 3 1.000 0,96 
+
+Linear 20 200 0 3 1.000 0,96 
+
+Linear 40 200 0 3 1.000 0,96 
+
+ 
+
+Para a avaliação do número de neurônios e camadas, testaram-se as configurações 
+presentes na Tabela 4.24, mas como todas apresentaram o mesmo resultado, escolheu-se 
+a configuração de 1 camada com 100 neurônios, pois é a mais simples , conforme Tabela 
+4.25. 
+
+Tabela 4.25: Valores de R2 encontrados para diferentes números de neurônios , referentes 
+
+ao Teste 3 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Linear 20 100 0 3 1.000 0,96 
+
+Linear 20 100 100 3 1.000 0,96 
+
+Linear 20 200 0 3 1.000 0,96 
+
+Linear 20 200 200 3 1.000 0,96 
+
+Linear 20 300 0 3 1000 0,96 
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 28 
+
+ 
+
+Para a avaliação do tamanho de lote, escolheu-se o tamanho de 10.000, pois 
+apresentou o mesmo resultado que os demais, conforme Tabela 4.26. 
+
+Tabela 4.26: Valores de R2 encontrados para diferentes tamanhos de lote, referentes ao 
+
+Teste 3 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R^2 
+
+Linear 20 100 0 3 1.000 0,96 
+
+Linear 20 100 0 3 5.000 0,96 
+
+Linear 20 100 0 3 10.000 0,96 
+
+Linear 20 100 0 3 50.000 0,96 
+
+ 
+
+Por fim, para a avaliação do número de épocas, como as épocas testadas obtiveram o 
+mesmo coeficiente de determinação, escolheu-se por 1 época, por ser a mais simples , 
+conforme Tabela 4.27. 
+
+Tabela 4.27: Valores de R2 encontrados para diferentes números de épocas , referentes ao 
+
+Teste 3 da rede neural dinâmica. 
+
+Função de 
+ativação 
+
+Tamanho 
+do teste (%) 
+
+Neurônios - 
+1º camada 
+
+Neurônios - 
+2º camada 
+
+Época Lote R2 
+
+Linear 20 100 0 1 10.000 0,96 
+
+Linear 20 100 0 3 10.000 0,96 
+
+Linear 20 100 0 5 10.000 0,96 
+
+ 
+
+Por fim, A Figura 4.2 apresenta alguns resultados da pressão predita pelo melhor 
+coeficiente de determinação (R2 = 0,96) obtida pelo modelo de rede neural dinâmica, 
+referentes ao Teste 3, comparados com as medidas de pressão correspondentes medidas 
+pelo sensor PDG. 
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 29 
+
+ 
+
+Figura 4.2: Pressão medida pelo sensor PDG comparados com o valor de pressão predita 
+obtido pelo modelo de rede neural dinâmica, referentes ao Teste 3. 
+
+A fim de comparar os resultados obtidos, a Figura 4.3 mostra os resultados obtidos por M. 
+Awadalla, et al. (2016), que utilizou também um rede neural feedforward para predizer a 
+pressão de fundo de um poço de petróleo, obtendo um coeficiente de determinação igual 
+
+a 0,99. 
+ 
+
+ 
+Figura 4.3: Medições de pressão e estimativas do modelo obtido pela Rede Neural 
+Feedforward, adaptado de M. Awadalla, et al. (2016). 
+ 
+ 
+
+16500000
+
+17000000
+
+17500000
+
+18000000
+
+18500000
+
+19000000
+
+19500000
+
+20000000
+
+20500000
+
+21000000
+
+21500000
+
+1 4 7 10 13 16 19 22 25 28 31 34 37 40 43 46 49 52 55 58
+
+P
+re
+
+ss
+ã
+
+o
+ (
+
+b
+a
+
+r)
+
+Observações 
+
+Pressão vs. Observações
+
+Press ão_PDG
+
+Press ão_predição
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 30 
+
+5 Concl us õe s  e  Trabal hos  Fut uros  
+
+No presente trabalho, o modelo de rede neural feedforward desenvolvido foi capaz 
+de predizer a pressão do fundo de um poço de petróleo, a partir de variáveis medidas 
+
+usualmente. Os melhores resultados das redes neurais dinâmica e estática foram obtidos 
+pelos testes que fizeram uso da pressão de topo unicamente (Teste 2), ou pela pressão de 
+
+topo combinada com a vazão do gás lift e a abertura da válvula choke (Teste 3).  
+
+O modelo de rede neural estática que utilizou como referência a pressão de topo para 
+a predição, apresentou um coeficiente de determinação (R 2) igual a 0,98, já para o 
+modelo de rede neural dinâmica que utilizou como referência a combinação de  pressão 
+de topo, vazão de gás lift e abertura da válvula choke, apresentou um coeficiente de 
+determinação (R2) igual a 0,96, provando que é possível a utilização de um analisador 
+virtual do tipo rede neural feedforward para a predição de pressão de fundo de poços de 
+petróleo. 
+
+Sugere-se para trabalhos futuros a modelagem e teste de outros tipos de redes 
+neurais, como a echo state utilizada por Antonelo (2009), outros tipos de polinômios e 
+predição de outras variáveis do processo. 
+
+ 
+
+ 
+
+  
+
+
+
+DEQUI / UFRGS – Mateus Berno Motke 31 
+
+Re fe rê nci as  
+
+AAMO, O.M. et al. Observer design for multiphase flow in vertical pipes with gas -lift- 
+theory and experiments. Journal of Process Control, v.15, n.3, p. 247-257, 2005. 
+
+A. Coates H. Lee and A. Y. Ng "An analysis of single-layer networks in unsupervised 
+feature learning " in AISTATS 14 2011. 
+
+Andres Codas, Esmaeil Jahanshahi, Bjarne Foss. A two-layer structure for stabilization 
+and optimization of an oil gathering network. Department of Engineering Cybernetics, 
+
+Norwegian University of Technology, 7491 Trondheim, Norway. 2016. 
+
+Antonelo, E. A., Camponogara, E. and Foss, B. (2017). Echo State Networks for data-
+driven downhole pressure estimation in gas -lift oil wells. Neural Networks 85, 106-117. 
+
+Billings, S. A. (2013). Nonlinear system identification: NARMAX methods in the time, 
+
+frequency, and spatio-temporal domains. Wiley. 
+
+D.Verstraeten, B.Schrauwen, M.D’Haene, D.Stroobandt - An experimental unification 
+
+of reservoir computing methods. Neural Networks, Volume 20, Issue 3, April 2007, Pages 
+
+391 - 403 
+
+DI MEGLIO, F. et al. Stabilization of slugging in oil production facilities with or without 
+upstream pressure sensors. Journal of Process Control 22. p 809-822. 2012 a 
+
+DI MEGLIO, F. et al. Model-based control of slugging: Advances and challenges. 2012 
+
+b, PART 1.p109-115. 
+
+Diehl, Fabio &amp;amp; K. Anzai, Thiago &amp;amp; S. Almeida, Cristina &amp;amp; F. Von Meien, Oscar &amp;amp; S. Neto, 
+
+Saul &amp;amp; R. Rosa, Vinicius &amp;amp; C.M.M. Campos, Mario &amp;amp; Reolon, Filipe &amp;amp; Gerevini, Giovani &amp;amp; 
+Ranzan, Cassiano &amp;amp; Farenzena, Marcelo &amp;amp; Trierweiler, Jorge. (2017). Fast Offshore Wells 
+Model (FOWM): A practical dynamic model for multiphase oil production systems in 
+deepwater and ultra-deepwater scenarios. Computers &amp;amp; Chemical Engineering. 99. 
+10.1016/j.compchemeng.2017.01.036. 
+
+FACCHIN, S. Universidade federal do rio grande do sul técnicas de análise 
+
+multivariável aplicadas ao desenvolvimento de analisadores virtuais técnicas de análise 
+multivariável aplicadas ao desenvolvimento de analisadores virtuais. 2005. 
+
+FORTUNA, L.; GRAZIANI, S.; XIBILIA, M. G. Soft sensors for product quality monitoring 
+
+in debutanizer distillation columns. Control engineering practi ce, 2005. v. 13, n. 4, p. 499–
+508. 
+
+KADLEC, P.; GABRYS, B.; STRANDT, S. Data-driven soft sensors in the process industry. 
+2009. v. 33, p. 795–814. 
+
+Teixeira, B. O., Castro, W. S., Teixeira, A. F., &amp;amp; Aguirre, L. A. (2014). Data-driven soft 
+sensor of downhole pressure for a gas-lift oil well. Control Engineering Practice,22, 34–43. 
+
+Tham, M. T., Montague, C. A., Morris, A. J., &amp;amp; Lant, P. A. (1991). Soft sensors for 
+process estimation and inferential control. J. Process Control., 1, 3.  
+
+
+
+Predição de pressão de fundo em poços de petróleo via redes neurais 32 
+
+WILLIS, M. J. et al. Artificial neural networks in process estimation and control *. 1992. 
+v. 28, n. 6, p. 1181–1187. 
+
+ 
+
+
+</field>
+	</doc>
+</add>

@@ -1,0 +1,931 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.20423</field>
+		<field name="filename">3985_Choi_KwonIl_M.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">C452m
+29109/BC
+S&gt;t
+________________________________e aprovada pela comissão julgadora em cL/p-Si 19 rlú
+UNIVERSIDADE ESTADUAL DE CAMPINAS FACULDADE DE ENGENHARIA MECÂNICA DEPARTAMENTO DE ENGENHARIA DE PETRÓLEO
+Dissertação Apresentada à
+ORJENTapcãÃ
+Faculdade de Engenharia Mecânica Como Requisito Parcial à Obtenção do Título de Mestre em Engenharia de Petróleo
+MODELO COMPUTACIONAL DINÂMICO LAGRANGEANO-EULERIANO PARA ESCOAMENTO BIFÁSICO EM POÇOS DE PETRÓLEO
+Autor: Kwon II Choi
+Orientadora: Prof. Dra. Maria Cristina de Castro Cunha
+Co-Orientador: Prof. Dr. Sérgio Nascimento Bordalo
+Março de 1996
+t I
+
+J
+FICHA CATALOGRÁFICA ELABORADA PELA BIBLIOTECA DA ÁREA DE ENGENHARIA - BAE - UNICAMP
+Choi, Kwon II
+C452m	Modelo computacional dinâmico lagrangeano-eulenano
+para escoamento bifásico em poços de petróleo / Kwon II Choi.--Campinas, SP: [s.n], 1996.
+Orientadores: Maria Cristina de Castro Cunha ; Sergio Nascimento Bordalo.
+Dissertação (mestrado) - Universidade Estadual de Campinas, Faculdade de Engenharia Mecânica.
+1.	Escoamento bifásico. 2. Lagrange, Equações de.
+3. Petróleo. I. Cunha, Maria Cristina de Castro.
+II. Bordalo, Sergio Nascimento III. Universidade Estadual de Campinas. Faculdade de Engenharia Mecânica. IV. Título.
+UNIVERSIDADE ESTADUAL DE CAMPINAS FACULDADE DE ENGENHARIA MECÂNICA DEPARTAMENTO DE ENGENHARIA DE PETRÓLEO
+Campinas, 01 de março de 1996
+Banca Examinadora:
+Maria Cristina de Castro Cunha, Ph.D.
+Resumo
+Um novo modelo computacional foi introduzido para a simulação de escoamento bifásico vertical em regime transiente lento, visando apenas o fenômeno convectivo. Utilizam-se os conceitos do modelo de deslizamento juntamente com as relações constitutivas específicas dos regimes de escoamento em bolhas, pistonado e anular. O movimento da fase gasosa é tratado de forma Lagrangeana, ao passo que a conservação da massa de líquido e a conservação da quantidade de movimento da mistura são realizadas numa malha Euleriana.
+O modelo foi adaptado para simular vários fenômenos transientes convectivos de poços de petróleo equipados para a elevação pneumática (gas-lift). Os resultados indicam versatilidade e robustez do método para as condições de contorno que variam de maneira drástica, tais como: variação de vazões de fluidos, variações bruscas de restrição ao fluxo e até mesmo um fechamento completo do poço que, num instante anterior, estava aberto para fluxo pleno. O modelo é especialmente adequado para as simulações de fluxo descontrolado (kick) de gás e indução de surgência por meio de tubo flexível (jet-lift) pela sua capacidade de acompanhar as sucessivas posições de gás de forma contínua.
+Abstract
+A new computational model is introduced for describing long-term transient aspects of two-phase vertical flow, focusing the convection phenomenon only. The model uses the concepts of the drift-flux model along with specific constitutive relations for bubble, slug and annular flow. The motion of gas is treated with Lagrangean cells, whereas mass and momentum conservation is done upon an Eulerian grid.
+The model has been adapted to simulate a number of convective transient phenomena occuring in gas-lift wells. The results indicate high versatility and robustness of the model to face severely changing boundary conditions like: varying production rate, sharp changes in the choke diameter and instantaneous shutdown of the flowing well at the surface. The model is specially suited to simulate gas kick and jet-lift operations due to its ability to follow the successive positions of the gas.
+Intuição.
+F
+Indice
+3.1	Definição das variáveis	5
+3.2	Relações constitutivas	7
+3.3	Descrição do modelo de escoamento bifásico híbrido	10
+3.3.1	Massa de gás contida na célula	12
+3.3.2	Fluxo volumétrico da mistura na fronteira superior da célula, j2	13
+3.3.3	Velocidade de deslizamento de gás na fronteira superior da célula, Vgj2 16
+3.3.4	Velocidade in situ de gás na fronteira superior, vg2	16
+3.3.5	Posição e temperatura da fronteira superior x2 e T2	17
+3.3.6	Balanço de massa de líquido	18
+3.3.7	Fração de vazio, a	20
+3.3.8	Balanço da quantidade de movimento, y	21
+3.3.9	Transição entre os regimes de escoamento	31
+3.3.10	Condições de contorno inferior	32
+3.3.11	Condições de contorno superior	36
+Capítulo 4. Algoritmo de simulação	41
+Capítulo 5. Simulações de poços de gas-lift contínuo	44
+Capítulo 6. Conclusões	63
+Nomenclatura	65
+Referências bibliográficas	69
+Capítulo 1 : Introdução
+O componente principal dos simuladores para operação de poços de petróleo é a modelagem computacional do fluxo bifásico transiente. Em muitas situações, o fluxo transiente de duas fases (gás e líquido) pode ocorrer por um período longo na tubulação vertical dos poços de petróleo. Além dos fenômenos que acontecem na descarga dos poços de gas-lift, o estudo de fluxo bifásico transiente também é importante na ocorrência de kicks de gás durante a perfuração, na indução de surgência por meio de jet-lift, nos períodos de fluxo dos testes de formação, nas mudanças de condiçoes de superfície ou, até mesmo, quando do fechamento completo do poço em fluxo.
+A maioria dos simuladores de fluxo bifásico transiente utilizados na indústria de petróleo empregam o modelo de deslizamento por ser este relativamente simples de implementar dentro de razoável precisão. O modelo de deslizamento baseia-se nas equações diferenciais de conservação juntamente com equações constitutivas específicas, sendo a mais importante a de velocidade de escorregamento da fase gasosa em relação à fase líquida. Essas equações diferenciais, devidamente discretizadas numa malha Euleriana, permitem obter soluções tanto para fenômenos dominados por efeitos convectivos como para os efeitos de propagação de som. No caso da convecção, o tempo característico é o tempo para uma fase se deslocar em qualquer sentido uma distância igual ao espaçamento da malha de discretização. Para a propagação sônica, o tempo característico é o tempo para uma pequena perturbação de pressão viajar um passo da malha.
+Métodos numéricos eficientes são aqueles em que o esforço computacional se concentra nos aspectos da solução que tenham relevância prática. Por exemplo, um método numérico elaborado para seguir a propagação sônica, cujo tempo característico é da ordem de 10'' segundos, não seria eficiente para estudar o fenômeno convectivo das fases numa tubulação de poços de petróleo. Portanto, uma questão importante aqui é a escolha correta do modelo e o método numérico adequado para cada problema prático.
+Em trabalho recente, Capucci [3] baseou-se no método utilizado por Santos [19] para a simulação do fenômeno transiente durante a operação de descarga dos poços de gas-lift. Santos, por sua vez, baseou-se no método proposto por Nickens [14] para o simulador de kick de gás. Nesses métodos, a coluna de tubos é discretizada numa malha Euleriana, e as variáveis de cada célula são resolvidas por iterações que avançam a partir do contorno inferior, isto é, fundo do poço, até o contorno superior. Então, a pressão diponível e a pressão requerida nesse ponto são comparadas e, se forem diferentes além de uma determinada tolerância, o processo é repetido com novos valores do contorno inferior. Observou-se que o método sofre com a instabilidade numérica quando as médias centradas são utilizadas nas equações discretizadas. O modelo de Capucci emprega uma correlação de fração volumétrica de líquido (hold-up) para calcular a velocidade superficial do gás.
+O trabalho de Santos [19], que aborda a simulação de operação de diverter nos eventos que seguem uma erupção descontrolada (blowouf) de gás, introduziu um conceito de fator de ajuste para corrigir os valores de fração de vazio na frente de avanço de gás de acordo com as evidências experimentais. Deste modo, conseguiu-se ajustar as curvas de pressão da simulação de modo que os picos de pressão, que ocorrem com a chegada da frente de gás na superfície, fiquem mais parecidos com os observados nos experimentos. O autor comenta que o acompanhamento preciso do estado da frente de gás é muito difícil com o modelo adotado, malha Euleriana fixa, daí a necessidade do uso de tais fatores de ajuste. Isto mostra que o modelo de malha Euleriana fixa não é adequado para os estudos em que se exige acompanhamento das posições de gás e do seu estado de forma contínua.
+Um método semi-implícito para o modelo de deslizamento foi proposto por Liles et alii [ 12] para estudar o fluxo bifásico transiente nos reatores nucleares. Nesse modelo, os termos que impõem restrições à discretização temporal são tratados implicitamente de modo a obter a estabilidade numérica e convergência da solução com passo no tempo relativamente grande. A malha defasada, resultante da discretização das equações diferenciais de conservação, gera uma matriz de banda de coeficientes, e a solução a cada tempo pode ser obtida por métodos iterativos como Newton Gauss Seidel. Este método também foi utilizado por Gokdemir [6] para o estudo do fluxo bifásico transiente dos poços de petróleo. O autor conclui que a estabilidade do método depende da velocidade da massa e não da velocidade de propagação do som. O autor recomenda
+que o modelo seja ampliado para enfrentar diferentes condições de contorno, tais como o fechamento completo do poço na superfície.
+Neste trabalho introduzimos um novo método destinado à análise de comportamento de transientes no escoamento unidimensional bifásico vertical, adequado às aplicações práticas nas quais a componente convectiva predomina. Logo, a cada instante procura-se determinar o estado quasi-permanente do sistema. Uma outra característica do método é que a fase gasosa é tratada de maneira Lagrangeana e, assim, é possível monitorar a posição da frente de gás de modo preciso, o que seria bastante útil nos estudos de kick de gás.
+Outro aspecto importante que este trabalho pretende mostrar é que, concentrando mais esforços na busca de técnicas criativas de programação, para apoiar a confecção de simuladores de fluxo bifásico, é possível obter funcionalidades inéditas que a modelagem matemática formal sozinha não pode oferecer.
+Capítulo 2 : Objetivos
+O objetivo desta tese é desenvolver um modelo de escoamento vertical de duas fases que possibilite a análise do comportamento transiente lento, isto é, transiente no qual a componente convectiva domina. A partir desta hipótese, é elaborado um simulador de poços de petróleo que seja suficientemente robusto para trabalhar com as condições de contorno mais variadas possíveis tais como fechamento e abertura bruscos do poço na superfície, retomo de líquido para o reservatório, variações drásticas de vazão de injeção de gás e injeção simultânea de líquido ou gás em vários pontos arbitrários da coluna.
+O simulador apresenta as seguintes características:
+•	usa conceitos do modelo de deslizamento para fluxo de duas fases;
+•	propagação sônica não é considerada;
+•	fase líquida é considerada incompressível;
+•	usa um modelo estático para o gás no espaço anular;
+•	transferência de massa entre as fases líquida e gasosa não é considerada;
+•	o reservatório é representado por índice de produtividade (IP);
+•	o contorno superior é representado por um modelo de restrição (choke) bifásico;
+•	pontos de injeção de gás entre o espaço anular e a coluna é representado por um dos modelos de válvula de gas-lift calibrada ou de simples orifício;
+•	tubulação vertical;
+•	temperatura no poço representado por gradiente geotérmico;
+•	fase gasosa tratada de maneira Lagrangeana;
+•	malha Euleriana é criada dinamicamente em cada instante considerado.
+O simulador assim elaborado será usado para o estudo de fenómenos convectivos dos poços de gas-lift para testar a sua viabilidade prática. Apesar de não ser o objetivo principal deste trabalho, será dada atenção especial para o estudo de instabilidade dos poços de gas-lift contínuo como exemplo de aplicação do simulador elaborado de acordo com o modelo proposto.
+Capítulo 3 : Modelagem do escoamento bifásico vertical
+O escoamento bifásico na tubulação vertical é derivado do modelo de deslizamento proposto por Zuber et alii [26], no qual o movimento da mistura é tratado pela equação de conservação da quantidade de movimento da mistura e o movimento relativo entre as fases é tratado por meio de uma equação constitutiva cinemática. As interações dinâmicas entre as fases do modelo de dois fluidos são substituidas por uma relação cinemática entre os dois campos de velocidade. O ampio uso prático desse modelo é devido à sua simplicidade e à aplicabilidade para muitos fenômenos de escoamento bifásico. As principais características do modelo são:
+•	é um modelo de fases separadas, isto é, considera-se que as fases têm velocidades diferentes;
+•	dá ênfase no movimento relativo entre as fases;
+•	considera as forças de interação mútua;
+•	usa fator de fricção bifásico;
+•	aplica-se a escoamento vertical em bolhas, escoamento pistonado e escoamento anular em névoa;
+3.1	Definição das variáveis
+As variáveis básicas do modelo adotado neste trabalho são brevemente descritas a seguir.
+• Fluxo volumétrico da mistura na seção, ou velocidade superficial, é a vazão volumétrica dividida pela área total da seção, e representa a velocidade do centro de volume da mistura:
+Q^Q6+Ql
+A Ag+AL
+Qg
+j = —-	para a tase gasosa,
+jL =	para a fase líquida.
+(2)
+(3)
+• Fração de vazio local é calculada por
+(4)
+onde,vg representa a velocidade média in situ da fase gasosa. Usando esta variável, j pode ser reescrita da seguinte forma
+j = avg + (l-a)vL
+(5)
+• Velocidade relativa entre as fases é
+(6)
+• Velocidade de deslizamento da fase gasosa é a sua velocidade em relação ao centro de volume da mistura:
+vg&gt; = vg “ j ’
+ou ainda.
+Massa específica da mistura pode ser calculada a partir da massa específica dos componentes
+por
+Pm =apg+(l-a)pL.
+(9)
+• Velocidade do centro de massa da mistura é obtida da ponderação das velocidades de centro de massa dos componentes:
+v
+m
+avgp8+(l-a) vLPL
+Pm
+(10)
+3.2	Relações constitutivas
+No modelo de deslizamento de Zuber et alii [26], as velocidades são expressas em termos da velocidade do centro de massa da mistura e da velocidade de deslizamento da fase gasosa, que é a velocidade do gás em relação ao centro de volume da mistura. Para o fechamento do sistema de equações, é necessário especificar esta velocidade de deslizamento da fase gasosa através de uma equação constitutiva, pois no modelo de deslizamento o movimento do fluido é expresso pela equação da quantidade de movimento da mistura apenas.
+Para os regimes de fluxo de fases dispersas, a velocidade de deslizamento Vgj, ou a velocidade relativa vr, é relacionada com a velocidade de ascensão das bolhas num meio líquido estagnado vs. Para o regime de bolhas, Harmathy [8] apresentou a expressão de vs como
+goL(PL
+(11)
+vg=Cj + vs.	(13)
+O coeficiente de distribuição C pode variar de 1,0 a 1,2 conforme o perfil de velocidade ao longo da seção do tubo. Pode se considerar que Vgj seja igual a vs para os casos em que o coeficiente C seja dado como 1,0.
+Para o escoamento anular Ishii et alii [10] apresentou a equação constitutiva da velocidade de deslizamento Vgj, considerando a geometria interfacial, efeitos de gravidade e a transferência interfacial da quantidade de movimento. Para o filme de líquido em regime laminar a expressão de v&amp;amp; em função de ct e vm é dada como
+8gLa2	-1 +	\ ! f.DpmO-a)^	Apg D2 (1-a)2	1 2
+PJDf.Ç			48pL	
+				
+Aqui Ç é igual a va para fluxo anular num tubo e f é fator de fricção interfacial. A Eq. (14) é válida para o filme de líquido em escoamento laminar em situações de regime anular concorrente ou contracorrente, desde que a Vgj satisfaça a seguinte condição:
+(l-a)pmVm ~~PnJl.tr&amp;lt;y &amp;lt;Q-&lt;x)PmVn. + PnJl.tr apg	£,“	«Pg
+(15)
+a =
+3200 pL
+PlD
+Pg
+0,005 a pL(l - a)2
+(17)
+aPe
+Pm (l~a)
+(18)
+(19)
+Assim, para o caso de escoamento vertical ascendente turbulento da fase líquida, dado por
+(20)
+temos
+-bvm+[ av2m+( a-b2 )c ]2 (a-b2 )
+Vm + C
+2bvm
+se a - b2 * 0
+se a - b2 = 0
+(21)
+Entretanto, se vm ficar dentro do intervalo
+|ApgD(l-ãy~
+\	0,015 pL
+(22)
+temos
+-avj+( a + b2 )c p a + b2
+(23)
+Na condição dada pela Eq. (22) o limite inferior para vm corresponde à tensão de cisalhamento interfacial nula, ao passo que o limite superior é o ponto de reversão de sentido de fluxo. Para valores de vm &amp;lt;-Vc , temos
+(24)
+que se aplica ao fluxo concorrente descendente. O autor comparou o modelo com os dados experimentais para um espectro amplo de parâmetros de fluxo e concluiu que há uma concordância satisfatória.
+3.3	Descrição do modelo de escoamento bifásico híbrido
+Numa simulação de escoamento bifásico transiente, as variáveis independentes do sistema são o tempo e a posição , isto é, t e x . As variáveis dependentes são a fração de vazio a, pressão p e as velocidades das fases vg e vL. Para a solução dessas variáveis são necessárias duas equações de conservação de massa, uma equação de conservação da quantidade de movimento e uma equação constitutiva da velocidade de deslizamento.
+Os trabalhos desenvolvidos nesta área, em geral, utilizam o procedimento tradicional de formulação por meio do sistema de equações diferenciais parciais associado às equações de conservação. O método de diferenças finitas é, então, aplicado numa malha de discretização Euleriana, isto é, as posições de células de discretização são fixas com o tempo.
+Neste ponto destacamos a diferença do método proposto neste trabalho em relação aos tradicionais. Em primeiro lugar, não usaremos o sistema de equações diferenciais; em vez disso, cada variável é tratada localmente, isto é, o modelo ocupa-se em solucionar uma variável de cada vez. Por outro lado, as células de discretização movimentam-se junto com as partículas da fase gasosa de tal modo que a massa de gás de cada célula permanece conservada. Uma massa de gás injetada para dentro da coluna durante um intervalo de tempo dá origem a uma nova célula de discretização, que, por sua vez, se movimenta em relação à fase líquida e à parede do tubo. Logo, essas células são criadas e eliminadas dinamicamente conforme as taxas de entrada e saída da massa de gás no sistema. Como conseqüência, o número de células de discretização é variável no tempo. Assim, podemos classificar a metodologia proposta neste trabalho como um modelo híbrido no qual a fase gasosa é acompanhada ao longo da coluna seguindo uma formulação Lagrangeana, ao passo que a conservação de massa de líquido e da quantidade de movimento da mistura é realizada de maneira Euleriana.
+A posição e a velocidade da fronteira de cada célula é igual à da partícula de marcação. Esta partícula representa um elemento do fluido, no caso gás, que se movimenta através da coluna. É importante notar que a célula Lagrangeana contém somente uma massa finita da fase gasosa, permitindo, entretanto, a passagem livre da massa da fase líquida. Outro ponto importante é que a dimensão desta célula é variável durante a sua evolução ao longo da coluna do poço . O esquema de uma destas células está mostrada na Fig. 1.
+Figura 1 - Esquema de uma célula
+A fronteira superior da célula é marcada pela primeira partícula do gás que entrou no sistema num dado tempo e a fronteira inferior é marcada pela primeira partícula do gás que entrou no tempo seguinte. A célula contém, então, a quantidade de massa do gás que entrou nesse intervalo de tempo. Uma vez formada, a célula movimenta-se e deforma-se conforme as variações cinéticas das partículas de marcação e as variações termodinâmicas que a massa do gás sofre ao longo da sua jornada.
+A seguir descrevemos as componentes funcionais básicas necessárias para montar o modelo proposto. O subscrito 1 refere-se à fronteira inferior e o subscrito 2 refere-se à fronteira superior.
+3.3.1	Massa de gás contida na célula
+pela média temporal linear das vazões mássicas do gás do instante anterior e do instante atual, multiplicada pelo tempo decorrido, ou seja,
+(25)
+onde K é apenas uma constante para a conversão do volume de gás nas condições padrão em massa. Esse valor de massa de gás contida numa célula mudará somente em caso de uma nova incorporação da massa de gás quando a célula atravessa por um outro ponto de injeção de gás ou quando uma parte da célula for eliminada do sistema.
+3.3.2	Fluxo volumétrico da mistura na fronteira superior da célula, jj
+O volume total de uma célula num dado instante é a soma dos volumes ocupados por líquido e gás, isto é,
+(26)
+Assim, a variação instantânea do volume da célula com o tempo é calculada por
+dV	dVL dV
+—L = —L + —-.	(27)
+dt	dt dt
+Lembrando que as velocidades das fronteiras inferior e superior da célula coincidem com as velocidades das partículas do gás que marcam as respectivas fronteiras, uma outra forma de determinar a variação do volume da célula com o tempo é multiplicar a área de seção do tubo pela diferença instantânea das velocidades in situ de gás das duas fronteiras, tomando uma convenção apropriada para o sinal. Assim,
+= At[(l-a,)(vL1 -vgl)-(l-a2)(vL2 -vg2)] ,
+(29)
+pois a massa de gás não entra nem sai através das fronteiras da célula e o líquido é admtido incompressível.
+Usando as Eqs. (28) e (29) na Eq. (27) temos:
+Vg2 - vgl = (1 - a,) (vLI - vgl) - (1 - a2) (vL2 - vg2) +	,	(30)
+que pode ser reescrita na forma mais conveniente.
+1 dV
+a2vg2 +(l-a2) vL2 = a,vgl +(l-a,) vL1 + —	.	(31)
+E, finalmente, usando a Eq. (5), podemos concluir que a Eq. (31) relaciona as velocidades da mistura nas fronteiras superior e inferior da célula:
+h = ji +
+At dt
+(32)
+A Eq. (32) significa que a velocidade do centro de volume da mistura na fronteira superior da célula, num dado instante, é igual à velocidade do centro de volume da mistura na fronteira inferior da célula acrescida da taxa instantânea da variação do volume da massa de gás contida na célula.
+dvg = £^dp +avLdT dt dp dt ôT dt
+Isto quer dizer que a variação do volume do gás com o tempo está relacionada com os efeitos termodinâmicos que a massa do gás da célula sofre no seu movimento através dos
+1	dl
+gradientes de pressão e temperatura. As derivadas totais — e — na Eq. (33) podem ser dt	dt
+prontamente aproximadas numericamente pelo fato de o método proposto guardar os valores das variáveis das fronteiras das células ao longo do tempo, de maneira contínua. Conforme a ilustração dada pela Fig. 2, essas derivadas são aproximadas pelos valores médios entre as fronteiras superior e a inferior:
+^ss¿[(P1+p2)’’(P1+pd“1]’	(34)
+dT
+dt
+(35)
+Resta apenas, na Eq. (33), determinar as derivadas parciais do volume do gás em relação à pressão e à temperatura. Utilizando a equação de estado de gás real, temos
+dp
+= nRT
+r 1&amp;lt;?z
+VP dp
+(36)
+e
+£Yl=^(2+tM
+ÔT p l ÔTJ
+(37)
+t-1
+vt-l
+g2
+g2
+À P* Tj
+Ji
+t
+Figura 2 - Movimento e deformação da célula Lagrangeana que contém n moles de gás.
+3.3.3	Velocidade de deslizamento de gás na fronteira superior da célula, Vgj2
+Para o escoamento em bolhas e escoamento pistonado, va2 é calculada pelas equações consitutivas (11) e (12), considerando que vs é equivalente a va. Como pode ser observado nessas equações constitutivas, va2 é função apenas da pressão p2 e temperatura T2 que determinam a densidade do gás.
+Para o regime de fluxo anular, o cálculo de va2 por meio das Eqs. (14),(21),(23) e (24), propostas por Ishii et alii [9], requer, além de P2 e T2, a fração de vazio a2 e a velocidade do centro de massa da mistura v^ , sendo que esta última depende de j2 e Vg2 .
+3.3.4	Velocidade in situ de gás na fronteira superior, vg2
+Usando Eq. (13), a velocidade in situ do gás num dado instante é dada por
+Conforme constatações empíricas, o coeficiente C pode variar de 1,0 a 1,2 para os regimes de fluxo em bolhas e em golfadas. Neste trabalho foi adotado o valor de 1,2. Para o regime de fluxo anular, o coeficiente C perde o significado e toma-se 1,0.
+3.3.5	Posição e temperatura da fronteira superior x2 eT2
+A distância percorrida pela fronteira superior da célula durante um intervalo de tempo At é calculada usando a sua velocidade média temporal multiplicada pelo tempo decorrido. Assim a nova posição da fronteira no tempo atual t, a partir da posição no tempo anterior t-1, é dada como
+X2 =X2_I +|(Vg2‘ + Vg2)At-	(39)
+O movimento da célula Lagrangeana é realizado desta maneira e a sua nova dimensão, isto é, a nova altura é simplesmente a diferença de cota em relação à célula imediatamente inferior. Este novo valor de x2 também permite determinar a nova temperatura T2 que é calculada por meio de um gradiente geotérmico.
+É importante notar que as malhas de discretização resultantes desse movimento das fronteiras das células, solidário com as partículas de gás, confere ao método proposto características parecidas com a malha adaptativa conforme a convecção de fase gasosa. Quanto maior a velocidade in situ da fase gasosa, maior será o espaçamento das células de discretização e menor será, conseqüentemente, o número das células. Os efeitos positivos e negativos desta característica ainda não foram avaliados, exceto a eficiência computacional obtida pelo menor número das células, quando as velocidades de convecção de gás aumentam.
+O passo de tempo At utilizado nas simulações apresentadas neste trabalho varia entre 5 e 10 segundos, dependendo do compromisso entre a precisão e a eficiência computacional. A grandeza de At influi diretamente nas dimensões das células de discretização.
+3.3.6	Balanço de massa de líquido
+O balanço de massa de líquido é realizado sobre uma malha que resulta do congelamento da malha Lagrangeana em um dado instante. Desse modo, as posições das fronteiras das células nesse instante fornecem uma malha Euleriana para o balanço.
+A forma diferencial da equação da continuidade para a fase líquida é
+¿[PlO-«)] + ^(PlJl) = 0»	(40)
+e a sua formulação de diferenças finitas, atrasada no tempo e centrada no espaço, toma-se
+[(l-a2) + (l-a,)p-[(l-a2.) + (l-q,.)p~' * j[2-j'L, =
+2 At	Ax
+Nesta expressão foi eliminado, porque o líquido foi considerado incompressível. E, também, como as posições das células variam com o tempo, foram empregados os subscritos com linha, 1' e 2' para indicar os valores interpolados para que haja correspondência espacial com a malha Euleriana do tempo anterior, conforme a ilustração na Fig. 3.
+Espaço
+X ” Posições das fronteiras no tempo anterior.
+□	- Posições no tempo atual.
+O “ Posições no tempo anterior interpoladas.
+Figura 3 - Posições das células para o método das diferenças finitas.
+Como não há uma malha de discretização permanente (fixa) no modelo, em cada instante é criada uma malha Euleriana do tempo anterior que seja a imagem da malha atual que resultou do congelamento das células Lagrangeanas. Deste modo, é possível aplicar o método das diferenças finitas à equação de conservação de massa de líquido. Na Fig. 3 os círculos escuros representam as mesmas posições das células do tempo atual projetadas para o tempo anterior. A Fig. 4 ilustra o mecanismo para criar a malha Euleriana interpolada no tempo anterior.
+t-1
+▼
+Ax
+1
+Figura 4 - Criação de uma célula interpolada no tempo anterior.
+A partir da Eq. (41), calcula-se o fluxo volumétrico de líquido na fronteira superior no tempo atual, como segue:
+Ay
+JL = Jli + ^[ (a, +a2),-(a1. +a2.)t'1 ].	(42)
+É oportuno notar que Ax varia de célula para célula num dado instante e, mesmo para uma determinada célula, Ax varia com o tempo.
+3.3.7	Fração de vazio, a
+É possível calcular o valor de a aproximado baseando-se nas informações de quantidade de massa de gás contida numa célula, pressão, temperatura e, finalmente, a dimensão da célula. Isto
+O valor de 0.2 que procuramos para a fronteira superior de uma célula é um que satisfaça simultaneamente as Eqs. (32) e (42). Isto é realizado da seguinte forma. Como Vg¡2 é uma função de 012, entre outros, pelo menos para 0 regime de fluxo anular, estima-se um valor de ct2 e calcula-se j2 e Vg2 pelas Eqs. (32) e (38), respectivamente. Em seguida, calcula-se ju pela Eq. (42). Então, finalmente obtém-se 012 pela Eq. (4), isto é,
+Este valor é tomado como a nova estimativa e 0 processo é repetido até alcançar a condição de convergência.
+3.3.8	Balanço da quantidade de movimento, \p
+O balanço de quantidade de movimento é realizado sobre a malha Euleriana de maneira similar ao balanço de massa de líquido. Para uma célula, a taxa de acúmulo de quantidade de movimento é igual a taxa de entrada menos a taxa de saída de quantidade de movimento mais a soma das forças agindo na célula. Assim, usando o símbolo vp para designar a quantidade de movimento, temos
+(44)
+A taxa de acúmulo da quantidade de movimento na forma diferencial é
+dt
+onde, M é massa total da mistura contida na célula e vm é a média das velocidades do centro de massa das fronteiras superior e a inferior. A taxa de variação da massa da célula, na forma Euleriana. é
+^ = At[a1Pglvgl +(l-a1)pLvL1]-At[a2pg2vg2 +(1 -a2) pLvL2]
+e a taxa de variação da velocidade do centro de massa é aproximada como
+(46)
+dt	At
+(47)
+A quantidade de movimento que entra por convecção para dentro da célula, por unidade de tempo é
+T
+entra
+(48)
+e a quantidade de movimento que sai é
+= At[a2pg2vg2 +(l-a2)pLv*2] .
+(49)
+A força de gravidade é calculada sobre pm ,
+gravidade
+= Pmg
+(50)
+Escoamento em bolhas vertical:
+_ /Pm Vm
+2D
+(51)
+atrito
+A perda de carga por atrito neste regime de fluxo é calculada considerando que a massa dentro da célula está numa mistura homogênea. Assim,
+&lt;dp vdx
+onde o fator de fricção,/, é obtido a partir do diagrama de Moody para o número de Reynolds definido por
+N _	.	(52)
+Hn&gt;
+Na Eq. (52) a viscosidade da mistura pm é calculada a partir das viscosidades das componentes e a fração de vazio
+Hm =ct Hg+(!-«) Hl ■	(53)
+Escoamento pistonado vertical:
+O primeiro modelo físico do escoamento pistonado vertical foi desenvolvido por Fernandes et alii [5], e Sylvester [21] apresentou uma versão simplificada desse modelo. A principal simplificação foi o uso de uma correlação para a fração de vazio do pistão de líquido. O modelo mecanicista apresentado por Ansari et alii [1] faz uso dos conceitos dados por aqueles autores e trata o escoamento pistonado em dois modos distintos: escoamento pistonado totalmente desenvolvido e outro em desenvolvimento . Neste trabalho, apenas o modo totalmente desenvolvido foi contemplado. A descrição sobre esse regime de fluxo será feito com a ajuda da Fig. 5. Por uma questão de conveniência, usaremos a mesma simbologia adotada nos artigos originais desses autores.
+D -------►)
+Figura 5 - Esquema de uma unidade característica de escoamento pistonado
+Por simplicidade apresentamos a seguir os significados das variáveis identificadas peia Fig. 5 :
+L = comprimento da bolha de Taylor,
+TB
+L = comprimento do pistão de líquido, Lo
+Lsu = comprimento da unidade de escoamento pistonado, aTR = fração de vazio da bolha de Taylor,
+a = fração de vazio do pistão de líquido,
+v	= velocidade de gás na bolha de Taylor,
+v	= velocidade de líquido no filme ao redor da bolha de Taylor,
+L 1 B
+= velocidade de líquido no pistão de líquido,
+V
+LLS
+= velocidade de deslocamento da bolha de Taylor e
+= espessura do filme de líquido ao redor da bolha de Taylor.
+Para uma unidade de escoamento pistonado, composta de uma bolha de Taylor e um pistão de líquido com pequenas bolhas dispersas de gás, o balanço geral de massa de gás e de líquido pode ser escrito da seguinte forma:
+jg — P aTBVgTB +0 P)aLS VgLS	(54)
+e
+jL = 0 — P) 0 ” aLs) VLLS — P 0 “ ^Tb) VLTE ’	(55)
+respectivamente, onde
+P - Ltb ' Lsu .
+(56)
+A bolha de Taylor se desloca através da mistura bifásica de pistão de líquido na velocidade, vjb, que é maior que a da fase líquida ou gasosa que compõem o pistão. Portanto relações de continuidade independentes podem ser escritas considerando o escoamento relativo ao nariz da bolha de Taylor. Assim, para a fase líquida temos
+(VTB — VLLs) 0 - aLs) ~ (VTB + VLTb) 0 - aTB) ’	(5?)
+A Eq. (57) significa que num sistema de coordenadas que se desloca numa velocidade ascendente, vjb , a vazão de líquido que se aproxima do nariz da bolha de Taylor a partir do pistão de líquido é igual à vazão de líquido em queda pelo filme. Aplicando o mesmo procedimento para a fase gasosa, temos:
+('TB VgLs) ttLS ~ (VTB VgTs)aTB ’	(58)
+A velocidade de ascensão da bolha de Taylor é calculado, como já foi visto anteriormente,
+por
+1,2 j + 0,35
+gp(pL -Pg)
+Pl
+(59)
+De maneira similar, a velocidade das bolhas dispersas no pistão de líquido é dada por
+= 1,2 j + 1,53
+(60)
+onde, o segundo termo no lado direito representa a velocidade de ascensão das bolhas num meio estagnado, definida na Eq. (11).
+A velocidade do filme de líquido em queda pode ser correlacionado com a espessura do filme pela expressão dada por Brotz [2],
+VLTB = V196’7êôL	(61)
+onde, Ôl , a espessura do filme da bolha de Taylor totalmente desenvolvida, pode ser expressa em termos de fração de vazio da bolha de Taylor e assim
+jg
+ttLS 0,425 + 2,65 j '
+(63)
+onde
+J aLS‘	1,53	CTLg(pL-Pg)	0.25	&gt;
+		Pl		
+Com vtb e ocls dados pelas Eqs. (59) e (63), respectivamente, Ã pode ser determinado pela
+Eq. (65). A Eq. (64) é usada para achar&amp;lt;xtb- Definindo o lado esquerdo da Eq. (64) como
+F(cxtb) e derivando a expressão temos,
+(66)
+Aplicando o método de Nevvton, a raiz da Eq. (64) , aTB, pode ser determinada iterativamente por
+	
+F'	aTB v j7
+(67)
+0 procedimento passo a passo é como segue:
+1.	Calcula-se vTb e oils pelas Eqsi (59) e (63).
+2.	Determina-se (Xtb pelo método de Newton usando Eqs. (64) - (67).
+3.	Resolve a Eq. (62) para vltb •
+4.	Resolve a Eq. (57) para vLls •
+5.	Resolve a Eq. (60) para vgLS .
+6.	Resolve a Eq. (58) para vgTB •
+7.	Resolve a Eq. (54) ou (55) para p .
+O modelo admite que a perda por atrito ocorre apenas no pistão de líquido; logo,
+onde
+dp"|
+f] Y /
+atrito
+(68)
+(69)
+e /ls é obtido a partir do diagrama de Moody com o número de Reynolds calculado por
+(70)
+O modelo mecanicista de escoamento pistonado, descrito até aqui, foi implementado integralmente neste trabalho para fins de cálculo de perda por atrito. Porém, nos cálculos realizados concluímos que um modelo simplificado, com um custo computacional bem menor, fornece resultados bastante próximos dos do modelo acima descrito. No modelo simplificado, tanto a espessura do filme de líquido como a fração de vazio do tampão de líquido foram considerados desprezíveis. Assim,
+2D
+atrito
+(71)
+onde, o fator de fricção f é obtido do diagrama de Moody com o número de Reynolds dado por
+PLVLP
+(72)
+Escoamento anular:
+Para o regime de escoamento anular, o núcleo é considerado como uma mistura homogênea de gás e de gotas de líquido fluindo na mesma velocidade. Assim a massa específica do núcleo é dada por
+(73)
+onde
+(74)
+Na Eq. (74), Fe é a fração de líquido disperso no núcleo em relação ao volume total do líquido e pode ser obtida por uma correlação. Este trabalho utiliza a correlação proposta por Ishii e Mishima [11] para Fe . Segundo os autores, a dispersão no escoamento anular pode ser obtida de uma relação entre os números de Weber modificado de gás e Reynolds de líquido. Assim,
+onde,
+e
+1/3
+(76)
+(77)
+Tendo obtido a fração de vazio num dado ponto, onde ocorra o escoamento anular, calcula-se a espessura média da interface, ô, da seguinte forma:
+8 = | [l-,/l-(l-a)(l-FE)]
+(78)
+E o fator de fricção interfacial, / como proposto por Wallis [24], válido para o escoamento anular rugoso. é dado por
+f. =0,005{1+300.
+(79)
+Então, calcula-se a tensão interfacial, t, , a partir da equação
+)■
+(80)
+Admitindo-se que a pressão seja uniforme na seção da tubulação, o gradiente total de pressão é calculado por
+onde o perímetro de interface S, é calculado por
+S, D^l-(1-a)(l-FE) .
+(82)
+É oportuno notar, neste ponto, que para calcular a queda de pressão através das células com dimensões finitas, o método acima descrito utiliza os valores médios entre as fronteiras superior e inferior das células para as variáveis velocidade, v, fração de vazio, a, peso específico, p, etc.
+3.3.9	Transição entre os regimes de escoamento
+Para podermos utilizar as diferentes equações constitutivas para diferentes regimes de escoamento e, consequentemente, diferentes métodos de calcular as perdas de carga por atrito, conforme apresentado previamente, precisamos de um mecanismo para determinar o regime de escoamento a partir de alguns parâmetros disponíveis. Para esse fim, o presente trabalho valeu-se de um mapa de regime de fluxo bastante simples conforme descrito a seguir.
+•	escoamento em bolhas:	0.0	&amp;lt;a&amp;lt;	0,15	,
+•	escoamento pistonado:	0,25	&amp;lt;a&amp;lt;	0,65	,
+•	escoamento anular :	0,85	&amp;lt;a&amp;lt;	1,0	.
+Para a existência do escoamento anular, além de fração de vazio, Taitel et alii [22] propôs a seguinte condição:
+(83)
+3.3.10	Condições de contorno inferior
+No presente trabalho, o contorno inferior é o ponto de entrada de fluidos, líquido e gás. Neste ponto, localiza-se a face do reservatório produtor de um poço de petróleo e, caso seja um poço equipado para gas-lift, uma válvula de injeção de gás estará instalada neste ponto. Este também é o ponto de criação dinâmica das células de discretização, porém, não possui a dimensão vertical. Assim, se a Fig. 1 representasse uma célula recém formada, então a fronteira 1 corresponderia ao contorno inferior.
+A simulação do escoamento transiente é realizado a partir do contorno inferior e propagase para o contorno superior, onde as pressões disponível e requerida são comparadas para verificar a condição de convergência. Este processo está descrito detalhadamente no próximo capítulo. Então, para cada novo tempo, a determinação das variáveis no contorno inferior representa a ‘partida' de cada ciclo de cálculos.
+Pelo fato de o modelo proposto preocupar-se apenas com o componente convectivo do fenômeno transiente, admite-se que em qualquer instante, t, o sistema está num estado quasi-permanente. Isto aplica-se aos contornos do sistema também. Com esta hipótese estabelecida, estima-se uma pressão, p, para este contomo inferior e calculam-se todas as variávies dependentes. A pressão estimada neste contorno, a ser confirmada quando atingir a condição de convergência, representa a pressão de fluxo, pWf, e possibilita obter as vazões de fluidos que vêm do reservatório e do espaço anular.
+O comportamento de fluxo do reservatório é modelado por uma constante que é o índice de produtividade, IP, de modo que a vazão volumétrica de líquido do reservátório é dado por
+(84)
+onde pe é a pressão estática do reservatório. A vazão volumétrica de gás do reservatório, nas condições de contorno inferior, é calculado por
+onde RGL é a razão gás-líquido medida nas condições padrão e Bg é o fator volume de formação para transformar o valor de volume do gás nas condições padrão em um valor nas condições de fundo, isto é, contorno inferior.
+O acoplamento entre o espaço anular e a tubulação de produção é feito através do modelo de válvula de gas-lift proposto por Winkler et alii [25] . Este modelo permite obter a vazão de gás que flui do espaço anular para dentro do tubo quando as pressões a montante (anular) e a jusante (tubo) da válvula são fornecidas. O modelo é válido tanto para as válvulas do tipo orifício como para as válvulas de domo pressurizado. O desenho esquemático de válvula de domo pressurizado está mostrado na Fig. 6.
+Figura 6 - Válvula de gas-lift de domo pressurizado.
+A seqüência de cálculos para obter a vazão de gás através de válvula de gas-lift é mostrada a seguir. Por questão de conveniência, a simbologia e o sistema de unidades usados são os mesmos do artigo original dos autores.
+1 .Cálculo de movimento da haste da válvula de gas-lifr. (P|oD ~ PbvD ) A b “ (P,oD ~ PpfD ) Ap
+5
+Mvs
+Bsr
+(86)
+onde
+_Py0(Ab Ap)
+rbvD “
+A-b^r
+2. Cálculo da área de porta aberta para o fluxo de gás:
+(r.r + r,) s ,
+Ape=*
+onde
+Ci - Je &gt;
+C2 = 1/r;+(C,+M„)i ,
+rtf=rprb /C2	,
+e
+s=C2 - rb .
+Se Ape&gt;Ap , então Apc=Ap (fluxo pelo orifício fixo).
+3. Cálculo da vazão de gás através Ape:
+2946 P^VR^-RL™
+q,“	+460
+onde
+(P,P +14.7)
+“ (P,.o+14.7) '
+Se Rdu&amp;lt;0,553 , então Rdu =0,553 (fluxo crítico).
+(87)
+(88)
+(89)
+(90)
+(91)
+(92)
+(93)
+(94)
+A nomenclatura e as unidades adotados no procedimento acima estão mostrados a seguir:
+Ab = área efetiva do fole, in.2
+Ap = área da porta da válvula, in.2
+Ape = área da porta da válvula aberta para fluxo de gás, in.
+Bsr = constante da mola do fole, lbf/in.
+Pvo = pressão de abertura da válvula na bancada a 60 °F, psig qgsc = vazão de gás, Mscf/d
+H, = raio da esfera na haste da válvula, in.
+rp = raio da porta da válvula, in.
+rtf = raio superior do tronco de cone de ângulo reto, in.
+Rdu = relação entre as pressões a jusante/montante s = altura do tronco de cone de ângulo reto, in.
+A vazão de gás injetado pela válvula nas condições de profundidade da válvula é, então,
+(95)
+O modelo adotado para descrever o espaço anular preenchido de gás é o mesmo proposto por Cullender e Smith [4] . Este modelo parte de um presuposto mais realista de considerar o fator de compressibilidade, z, uma função tanto da temperatura como da pressão. Por este método obtém-se a pressão estática de gás a qualquer profundidade desde que se conheça a pressão de superfície e o perfil de temperatura. A maior precisão oferecida por este método fica aparente para poços profundos. O método é descrito de maneira didática por Ikoku [9] .
+No presente trabalho este método foi adaptado para calcular, além da pressão a montante da válvula de gas-lift, a massa de gás contida no espaço anular. Isto possibilita calcular o balanço de massa de gás no espaço anular conforme a vazão de entrada de gás no topo do anular e a vazão de saída pela válvula de gas-lifi. A adaptação do método permite obter, de maneira iterativa, as pressões de superfície e de fundo do espaço anular, conhecendo-se a quantidade de massa de gás presente num dado instante.
+Finalmente, com os componentes do contorno inferior descritos nesta seção, podemos determinar as variáveis que definem o estado instantâneo neste ponto. Assim, o fluxo volumétrico da mistura é dado por
+A
+(96)
+onde Qlr e QgR são vazões de líquido e de gás que vêm do reservatório, nas condições de fundo, e Qgv é a vazão de gás através da válvula de gas-lift, também nas condições da profundidade da válvula no tubo. As demais variáveis, a, vgl , vg e, conseqüentemente, vL são obtidos por um processo similar ao descrito no Item 3.3.7 .
+Referindo-se à Fig. 1, podemos ver que temos definidas todas as variáveis da fronteira inferior, que coincide com o contorno inferior. Assim pode-se prosseguir o cálculo das variáveis para a fronteira superior e, assim por diante, até chegarmos ao contorno superior do sistema onde se localizam os equipamentos de superfície do poço de petróleo.
+3.3.11	Condições de contorno superior
+Este contorno do sistema corresponde ao local onde está instalada uma restrição, normalmente um choke variável, a montante de um sistema de separação líquido-gás. No modelo proposto considera-se que a pressão de separação permanece constante como é desejado normalmente na prática. Isto significa que a pressão a jusante do choke é constante. Resta, agora, descrever o modelo de choke para escoamento bifásico.
+Schiozer [20] justifica a sua escolha pelo modelo de choke bifásico de Sachdeva et alii [18] citando as vantagens deste:
+•	boa qualidade de resultados para fluxo crítico e subcrítico,
+•	boa previsão do ponto de transição entre o fluxo crítico e subcrítico e
+•	transição suave entre esses dois tipos de lluxo.
+No presente trabalho o modelo de Sachdeva et alii [17],[ 18] foi implementado com sucesso tanto para o fluxo monofásico, líquido ou gasoso, como para bifásico. O diâmetro da abertura de
+choke pode variar de 2 polegadas a até 0,001 polegadas. Com esta última condição, é possível simular o fechamento do poço usando o mesmo modelo de choke ‘em fluxo’. Algumas simplificações assumidas pelo modelo são:
+•	fluxo unidimensional,
+•	velocidades das duas fases iguais na restrição,
+•	predominância do termo de aceleração,
+•	o título do gás é constante,
+•	a fase líquida é incompressível.
+O uso do modelo é feito em duas etapas. Em primeiro lugar o ponto de transição crítico-subcrítico é obtido resolvendo iterativamente a seguinte equação na variável y:
+(97)
+onde os subscritos 1 e 2 significam posições a montante e a jusante da restrição, respectivamente, e w representa a fração de massa de gás. Além disso, as outras variáveis desta equação são:
+*=- , p	(98)
+y=—&gt;	(99)
+Pi	
+cD	
+k=-^,	(100)
+V
+e, finalmente, n é o expoente politrópico de gás, dado como
+w.(Cp-Cv)
+n — 1 H---------r-
+w,Cv+(l-w,)CL
+(101)
+Uma vez que as condições de montante do choke são conhecidas, a Eq. (97) pode ser resolvida , encontrando-se y. O valor de y após a convergência é a relação crítica de pressões, yc, na qual ocorre a transição entre o fluxo crítico e subcrítico. Se o valor real de P2^Pi for maior que yc, o fluxo é subcrítico. Se for menor ou igual a yc, então o fluxo é crítico e o valor de p2 = yc pi deve ser usado como a pressão a jusante do choke.
+Usando as unidades consistentes, a expressão para calcular o fluxo mássico através do choke é
+G;=Cd- 2g.144P.pL	,	(102)
+onde
+&lt;l&gt;g2=&lt;l&gt;giy’r ,	(103)
+e
+—=w,(|)gly k+(l-w1)|L .	(104)
+P m2
+É importante notar que a Eq. (102) é usada para calcular o fluxo mássico da mistura tanto para o fluxo crítico como subcrítico. As variáveis utilizadas nas expressões acima, bem como as suas unidades, são resumidas a seguir:
+Cj = coeficiente de descarga, adimensional ( o autor recomenda 0.75 quando há joelhos na linha , que é caso mais comum na prática, e 0.85 quando não há tal configuração),
+Cl - calor específico de líquido, qualquer sistema de unidades são convenientes, pois essas unidades se simplificam nas expressões anteriores,
+Cp = calor específico de gás à pressão constante, idem ,
+Cv = calor específico de gás à volume constante, idem,
+gc = constante de gravidade, (= 32.17 ) lbm-ft/lbf/s ,
+G = fluxo mássico, lbm /ft2 /s ,
+k = razão de calores específicos de gás, Cp / Cv,
+n = expoente politrópico de gás, adimensional,
+p = pressão absoluta, psia,
+w = título do gás livre, adimensional,
+y = razão entre as pressões a jusante e a montante do choke ,
+= volume específico, ft3 / Ibm e
+p = peso específico, lbm / ft3.
+Neste trabalho esse modelo de choke funciona em dois modos:
+1.	dado o fluxo mássico no montante do choke, obtém-se a pressão,
+2.	dada a pressão a montante do choke, obtém-se o fluxo mássico.
+O segundo modo é utilizado especificamente para as situações de abertura de choke menor que 0,5 polegadas, pois o primeiro modo mostrou-se instável nessas condições. Os fluxos mássicos a montante do choke é calculado da seguinte forma:
+Gl=(1-«)vlPl At/Ach ,
+Gg=Ct VgPgA&lt;/Acb »
+e o fluxo mássico total é
+G, =Gl +Gg .
+(105)
+(106)
+(107)
+Assim como o contorno inferior é o ponto de criação dinâmica de células de discretização, o contorno superior é, de maneira inversa, o ponto de eliminação dessas células. Isso ocorre quando a fronteira de uma célula, que se desloca de forma solidária com as partículas de gás, ultrapassa a posição de choke. Enquanto a criação de células de discretização no contorno inferior é sincronizado com o tempo, isto é, em cada tempo novo uma célula nova é criada, a eliminação das células é feita de forma assíncrona, de acordo com a distribuição das células no instante considerado. Em outras palavras, num determinado instante, apenas a parte da célula que ultrapassou o contorno superior é descartada. Como o modelo trabalha com os valores das variáveis nas fronteiras das células apenas, surge a necessidade de criar uma nova fronteira no exato ponto onde ocorreu o truncamento da célula. Os valores das variáveis dessa nova fronteira vêm da interpolação polinomial. Este fato está ilustrado na Fig. 7.
+Células Eliminadas
+tempo t-1
+tempo t
+Figura 7 - Esquema de eliminação das células
+Capítulo 4 : Algoritmo de simulação
+Como mencionado anteriormente, todas as variáveis do sistema são tratadas de maneira localizada; logo, o método proposto faz uso intensivo de iterações subordinadas, uma em relação à outra. Portando, cada variável desconhecida é determinada por meio de um loop (iteração) no algoritmo. A grosso modo, um loop neste algoritmo equivale a uma linha de matriz dos métodos tradicionais que fazem uso de sistemas de equações de conservação. Uma vantagem do tratamento localizado é que alguns importantes controles computacionais são facilmente implementados. Esses controles são necessários para contornar os erros matemáticos que freqüentemente surgem durante a execução do programa, por causa de condições peculiares em que algumas variáveis são válidas, por exemplo, a fração de vazio não pode ser negativa nem maior que 1,0 e a pressão absoluta não pode ser negativa ou excessivamente alta. Outra vantagem do método é a facilidade de implementar as transições suaves entre os diferentes regimes de fluxo, que requerem diferentes relações constitutivas.
+Um outro ponto importante a ser observado é a necessidade de um bom método de alocação e recuperação da memória do computador para de guardar os valores das variáveis das fronteiras das células que são criadas e eliminadas dinamicamente. No presente trabalho, foi empregado um vetor infinito virtual para esse fim. A numeração das células cresce continuamente com o tempo, porém o vetor infinito virtual consegue abrigar todas as células num dado instante apesar da limitação de memória do computador, pois o espaço de memória é disposta de forma circular.
+Na Fig. 8 descrevemos esquematicamente o algoritmo que foi implementado no simulador elaborado em linguagem ‘C’, que pode ser executado num microcomputdor do tipo PC. O algoritmo da Fig. 8 deve ser acompanhado no sentido de baixo para cima. Nesse algoritmo as estimativas das variáveis logo antes da entrada de iteração DO-WHILE são realizadas por mecanismos específicos, pois a eficiência do método depende consideravelmente de quão próximas são essas estimativas iniciais do valor real.
+*
+
+Contorno Superior ( choke )
+Calcula fluxo mássico : Eqs. (105), (106) e (107)
+Calcula a pressão a montante de choke : pch
+Se I Pch - Pdisponívei I &amp;lt;tol, passa para o tempo seguinte.
+Se não, volta para o contorno inferior com uma nova estimativa de p^.
+Interpolam-se p, vg, vL e a para o contorno superior.
+Estima-se P
+DO
+P=P Estima-se a
+DO
+Estima-se vg
+DO vg=vg
+Calcula x e T: Seção 3.3.5 Calcula j : Eq. (32) Calcula v : Seção 3.3.3 vg=1.2j+va jg = 0tV8
+ÍL=J-Jg____________
+g
+WHILE |vg’ - Vg I &gt; tol.
+Calcula jL' : Eq. (42)
+Estima-se nova a, se nào convergiu .
+while |jL-jL|&gt;tol.
+Calcula Ap- ^Painto^^Pgravidade +,^Paceleração -
+Seção 3.3.8 P Pfronteira anterior “ ^P
+while I p - p I &gt; tolerância
+Contorno Inferior: Calcula Qlr e QgR : Eqs. (84) e (85) Calcula QgV : Eq. (95) j = (Qlr + QgR + Qgv)! At jg = (QgR+Qgv)/At Jl ~ Ql ! At Estima-se a		
+	DO a’’a Calcula vgJ : Seção 3.3.3 vg=1,2j + vgJ a=jg/vg	
+	WHILE 1 a’-a | &gt; tolerância	
+Pressão de Fluxo pwf é estimada.
+Figura 8 - Esquema de algoritmo de simulação de escoamento bifásico vertical.
+Um componente do simulador, que não está mostrado no esquema do algoritmo, mas que merece uma atenção especial, é o método numérico para conduzir todos os cálculos iterativos. Pelo modo progressivo com que o método proposto determina a solução ao longo da tubulação, uma pequena variação de pressão de fundo acarreta uma variação muito grande nos valores das variáveis do contorno superior. O processo de convergência em todos os níveis de iteração, então, não são controláveis pelos métodos convencionais como o método de secante, método de regula falsi, etc. Mesmo usando o método de bisecção, o processo toma-se ineficiente.
+Um procedimento que se revelou perfeito para o simulador proposto neste trabalho foi o método de Van Wijngaarden-Dekker-Brent, cujo algoritmo, traduzido na forma de uma função em linguagem ‘C’, foi apresentado por Press et alii [16]. O método oferece a garantia do método de bisecção com a rapidez superlinear do método de secante. A única exigência do método é que se estabeleça previamente um intervalo no qual a raiz se localiza . Isto é feito, no simulador do presente trabalho, por meio do método de ponto fixo e de secante, isto é, utilizam-se estes métodos até obter duas estimativas de raiz que concatenam a raiz verdadeira. Por causa do comportamento bastante complexo das iterações, o uso do método de secante tradicional foi ineficiente em todos os testes realizados.
+Capítulo 5: Simulações de poços de gas-lift contínuo
+Neste capítulo serão apresentados alguns exemplos de aplicação do simulador para poços de gas-lift contínuo. Os dados relevantes do poço que são comuns para todos os casos simulados estão no quadro abaixo.
+Profundidade de topo dos canhoneados
+Pressão estática ...................
+Pressão de separação ..............
+índice de produtividade (IP) .......
+RGL ................................
+Grau API ...........................
+6000	ft ........... 1818,8	m
+2000	psi ........... 13.789	kPa
+100 psi ............... 689	kPa
+1,0	bbl/(psi-D).. 0,023059	m3/(kPa	d)
+400	scf/bbl ........ 72,05	m3/m3	‘std’
+35
+Profundidade da válvula de orifício ....... 6000	ft
+Diâmetro de orifício ..................... 20/64	in
+......	1818,8 m
+.......	0.79 cm
+Pressão de compressor para descarga ........ 2200	psi
+Pressão de compressor para operação ........ 1300	psi
+Diâmetro da abertura de choke de produção..	2,0	in
+Nível estático de líquido antes da descarga. 565,7	ft
+15.168 kPa
+8.963 kPa
+5,08 cm
+172,4 m
+Os outros dados do poço que podem mudar conforme os casos estudados serão mostrados junto com os respectivos gráficos. As simulações, a seguir, mostram a aplicabilidade do modelo para os estudos do problema de instabilidade dos poços de gas-lift contínuo. Nesses exemplos, as simulações sempre iniciam com o fluido (líquido) na tubulação parado. Considera-se que o poço estava amortecido pelo fluido, com nível estático equivalente à pressão estática do reservatório. Além disso, no instante zero a pressão de gás no espaço anular na profundidade da válvula estava em equilíbrio com a pressão na tubulação. Assim tenta-se reproduzir a partida de poços de gas-lift equipado com uma válvula apenas.
+A Fig. 9 compara o comportamento intermitente de produção de líquido do poço com a abertura de choke de injeção de gás de 0,1 pol. e de 0,15 pol. A diferença de comportamentos instáveis fica aparente em termos do período de oscilação.
+12000
+- Diam, choke inj. gás = 0.1
+Diam, choke inj. gás = 0.15
+Revestimento: 7" OD
+Tubos: 3 1/2M OD
+Até 4000 segundos: pressão de compressor = 2200 psi Após 4000 segundos: pressão de compressor = 1300 psi
+n H	1	1 •	1 :	í •	2 •	2 1	: !■	&lt;!	i 1 «
+ii !! 11	r	 c-¡ —	
+10000
+20000
+Tempo (segundos)
+30000
+40000
+Figura 9 - Instabilidade de vazão de líquido com diferentes diâmetros de choke de inj. gás.
+Observa-se que a freqüência de intermitência é mais alta para o diâmetro mario de choke de injeção de gás. Consequentemente, a produção também é maior nesse caso. No começo do gráfico a vazão de líquido é nula, porque o nível estático do tubo estava a 565,7 pés a partir de superfície, quando iniciou-se o processo de descarga. Nesse intervalo, houve apenas uma pequena produção de gás que estava acumulado acima do nível de líquido. Este fato está mostrado na Fig.10 que trata do mesmo caso, porém em termos de produção de gás.
+Produção de gás (Mscf/d)
+8000
+Tempo (segundos)
+Figura 10 - Instabilidade de gas-lift com diferentes diâmetros de choke de injeção de gás.
+O fenômeno de instabilidade de gas-lift está relacionado à variação cíclica da vazão de gás pela válvula de gas-lift e também, em menor escala, à oscilação da vazão de gás do reservatório conforme está mostrado na Fig. 11.
+Vazão de gás (Mscf/d)
+Figura 11 - Variação cíclica da vazão de gás pela válvula de gas-lift e do reservatório.
+O fenômeno mostrado na Fig. 11 , por sua vez, está diretamente relacionado com as variações de pressão de tubo e de revestimento na profundidade da válvula. Isto está mostrado na Fig. 12.
+Pressão (psi)
+2400 —	-------------------------------------------------------------------
+-------- Pressão de rev. a montante da válvula de orifício
+.......... Pressão	de fluxo no tubo a jusante da válvula de orifício
+0
+10000
+20000
+Tempo (segundos)
+30000
+40000
+Figura 12 - Variação de pressões de tubo e do anular na profundidade da válvula de gas-lift.
+Esta instabilidade pode ser eliminada através de uma abertura maior de choke de injeção de gás de superfície. Este fato está confirmado pela Fig. 13, que simula descarga e operação continuada do mesmo poço, porém com a abertura de choke de injeção igual a 0,20 pol. Nessa figura, estão mostradas as curvas de vazão de líquido e de gás ao mesmo tempo.
+12000
+Tempo (segundos)
+12000
+Figura 13 - Produção estabilizada com choke de injeção de gás de 0,20’\
+Uma outra alteração na configuração do poço que pode evitar a instabilidade de gas-lift é o uso de válvulas de orifício com diâmetros menores. Esta teoria está confirmada pela simulação mostrada na Fig. 14 e na Fig. 15, onde a válvula de 20/64”, que estava sendo usada nas simulações anteriores, foi substituída por uma de 10/64”.
+20000 —
+16000 —
+Produção de líquido (bpd)
+12000 —
+Revestimento: 7" OD
+Diam, choke inj. de gás: 0,15"
+Válvula de orifício: 10/64"
+0
+4000
+8000 Tempo (segundos)
+12000
+16000
+Figura 14 - Produção de líquido estabilizada com válvula de orifício de 10/64”.
+Produção de gás (Msc/d)
+0
+4000
+8000 Tempo (segundos)
+12000
+16000
+Figura 15 - Produção de gás estabilizada com válvula de orifício de 10/64”.
+Finalmente, um método de estabilização, que não é muito recomendado, porque diminui a produção do poço, é restringir o choke de produção para criar uma contra-pressão. Nas Figs. 16. 17 e 18 está mostrada a simulação de um poço com a mesma configuração instável já comprovada nos exemplos anteriores, porém com a única diferença de que o choke de produção foi restringida de 2” para 0,5” a partir do instante de 4000 segundos .
+12000
+is e u tzi o
+-a .«£,
+cr -ra
+Produção de líquido.
+Produção de gás
+Choke de inj. de gás: 0,15"
+Válvula de orifício: 0,20"
+Choke de produção: 2,0" até 4000 s
+Choke de produção: 0,5" a partir de 4000 s
+
+
+10000
+20000
+Tempo (segundos)
+30000
+40000
+0
+Figura 16 - Produção estabilizada com restrição na cabeça do poço.
+Pressão (psi)
+Pressão de tubo na prof. válvula
+|
+500 —
+0	!------T------|T------------|-----i------r~
+0	10000	20000	30000
+Tempo (segundos)
+40000
+Figura 17 - Comportamento das pressões do poço restringido na cabeça.
+Vazão de gás (Mscf/d)
+0
+10000
+20000
+Tempo (segundos)
+30000
+40000
+Figura 18 - Comportamento das vazões de gás com restrição na cabeça.
+Como uma curiosidade, foi experimentada a simulação de descarga do poço com a configuração instável, porém com uma válvula de gas-lift calibrada em vez de orifício. O resultado é que a operação de gas-lift estabilizou-se como está mostrado nas Figs. 19 e 20.
+Produção de líquido (bpd)
+0
+10000
+20000
+Tempo (segundos)
+30000
+40000
+Figura 19 - Poço estabilizado com uso da válvula de gas-lift calibrada.
+Válvula calibrada 20/64 " (1400 psi)
+Válvula de orificio 20/64"
+Vazão de gás pela válvula de gas lift (Mscf/d)
+3000 —
+Comparação entre válvula calibrada 20/64" e válvula de orificio 20/64".
+Choke de inj. de gás: 0,10"
+0
+10000
+30000
+20000
+Tempo (segundos)
+40000
+Figura 20 - Poço estabilizado com uso da válvula de gas-lift calibrada.
+A Fig. 21 mostra uma simulação feita com o objetivo de analisar os efeitos de aumento de volume de estocagem do espaço anular. Observa-se que com o revestimento de 9 5/8”OD o período de oscilação de produção aumentou consideravelmente.
+Produção de liquido (bpd)
+0	10000	20000	30000	40000
+Tempo (segundos)
+Figura 21 - Efeito de aumento de volume de espaço anular sobre instabilidade de gas-lift.
+Para mostrar a versatilidade do modelo proposto neste trabalho, foi experimentada uma simulação de fechamento completo do poço em fluxo que resulta no crescimento de pressão do poço e segregação das fases. A Fig. 22 apresenta um exemplo dessa simulação para um poço de 3000 pés de profundidade. A validação dessas simulações de fechamento (build-up) à luz dos métodos análiticos existentes na literatura ainda não foi feita.
+5000
+6000
+7000
+8000
+Tempo ( segundos)
+9000
+10000
+11000
+Figura 22 - Simulação de fechamento do poço na superfície (build-up).
+A Fig. 23 mostra a simulação de um caso especial em que o IP foi tomado como nulo, isto é, não há produção de fluidos do reservatório. Pode-se verificar, neste exemplo, a conservação de massa de gás, pois na parte final das curvas está clara a coincidência das curvas de vazão de injeção de gás na superfície, de vazão de gás pela válvula e de vazão de produção de gás.
+Vazão de gás (Mscf/d)
+Figura 23 - Simulação de descarga de poço com IP = 0,0 bpd/psi.
+É oportuno salientar que o estudo de instabilidade dos poços de gas-lift requer que as simulações sejam realizadas sistematicamente seguindo um roteiro criteriosamente planejado. Os exemplos de simulações apresentados neste capítulo, no entanto, servem apenas para ilustrar a capacidade do simulador, e não para obter alguma evidência sobre os mecanismos que levam um poço de gas-lift para o regime instável.
+Para finalizar, apresentamos nas Figs. 24 e 25 uma simulação do poço-exemplo efetuando bruscos fechamento e abertura no choke de produção e também um corte completo de injeção de gás na superfície na segunda metade da simulação. Esta exemplo confirma a robustez do modelo frente às variações das condições de contorno.
+Pressão de tubo na prof. válvula.
+Pressão na cabeça.
+Componente - elevação
+Componente - atrito
+Condições de partida: pressão de compressor = 2200 psi diam, choke inj. gás =0,125" diam, choke produção = 2,0" pressão de compressor^ 1300 psi diam, choke inj. gás = 0,2" poço fechado na cabeça poço aberto com choke produção = 1,0" i"
+Pressão (psi)
+Aos 2200 segundos:
+Aos 5000 segundos:
+Aos 8000 segundos:
+Aos 11000 segundos: choke de produção = 2,0'
+Aos 15000 segundos: choke de injeção de gás fechado
+0
+5000
+10000	15000
+Tempo (segundos)
+20000
+25000
+Figura 24 - Comportamento das pressões com as variações de abertura dos chokes.
+40000
+Produção de líquido.
+Produção de gás.
+30000 —
+Produção de líquido (bpd)
+Produção de gás (Mscf/d)
+20000 —
+10000 —
+0
+5000
+Condições de partida: pressão de compressor = 2200 psi diam, choke inj. gás = 0,125" diam, choke produção=2,0”
+Aos 2200 segundos: pressão de compressor = 1300 psi diam, choke inj. gás = 0,2"
+Aos 5000 segundos: poço fechado na cabeça
+Aos 8000 segundos: poço aberto com choke produção = 1,0"
+Aos 11000 segundos: choke de produção = 2,0"
+Aos 15000 segundos: choke de injeção de gás fechado
+i I
+I
+I
+1
+1
+1 I
+I »
+I
+*
+20000
+10000	15000
+Tempo (segundos)
+25000
+Figura 25 - Comportamento das produções com as variações de abertura dos chokes.
+Verifica-se, na parte final das curvas da Fig. 25, que este poço é surgente, pois mesmo com a vazão nula de injeção de gás, a produção do poço persiste apenas com o gás do resevatório.
+Capítulo 6: Conclusões
+O simulador de escoamento bifásico transiente, proposto neste trabalho, oferece as seguintes vantagens em relação aos outros simuladores tradicionais:
+1.	Detecção e correção das condições favoráveis a erros matemáticos, durante a execução do simulador, é facilitada, porque cada variável é submetida a uma iteração específica para a sua convergência.
+2.	Fornece boas respostas para as condições de contorno que mudam drasticamente.
+3.	Prevê o retomo de líquido para o reservatório, quando a pressão de fundo for maior que a pressão estática.
+4.	O intervalo de tempo pode ser mudado (ou adaptado) livremente, durante a execução do simulador, através de entrada de seu novo valor pelo usuário.
+5.	O tratamento Lagrangeano da fase gasosa permite acompanhamento preciso das posições das porções de gás. Isto será especialmente benéfico nos estudos de kick de gás.
+6.	O uso de células Lagrangeanas pode facilitar a simulação de escoamento bifásico transiente onde o ponto de entrada de gás possui uma velocidade não uniforme em relação à parede do tubo. Esta é uma situação típica das operações de jet-lift, na qual o duto de gás ‘passeia’ dentro da coluna de tubos.
+7.	O estudo de instabilidade de gas-lift pode ser auxiliado por este simulador, pois é possível variar as condições de superfície, durante a sua execução, e observar seus efeitos no poço.
+As desvantagens do método, observadas durante o desenvolvimento do simulador, são:
+1.	Surgem grandes dificuldades para a depuração do programa por causa de profundo aninhamento de iterações.
+2.	Só consegue simular o regime permanente depois de passar pelo período de transiência. Não há atalhos.
+Recomenda-se a complementação do código autal para possibilitar a simulação de injeção multiponto de gás na coluna de gas-lift. A confecção dos componentes para tal fim já foi iniciada, porém não pôde ser terminada até a conclusão deste trabalho. Também recomenda-se migrar o código computacional para as plataformas com maior capacidade de processamento, pois as simulações feitas com o processador Pentium 90 Mhz mostraram-se ineficientes.
+Recomenda-se, também, adaptar o simulador para estudos de fenômenos transientes nas operações de jet-lift com movimento não uniforme de flexitubo. Apenas pequenas adaptações serão necessárias como, por exemplo, as relações constitutivas para o espaço anular entre o tubo flexível e a tubulação.
+Nomenclatura
+A - área, ft2 (m2)
+At - área transversal da seção de tubo, ft.2 (m2)
+Ach - area de choke aberto ao fluxo, in.2 (m2)
+Ab - área efetiva do fole, in.2 (m2)
+Ap - área da porta da válvula, in. (m )
+Ape - área da porta da válvula aberta para o fluxo de gás, in.2 (m2)
+Bg	- fator volume de formação de gás, ft3/scf (m3/m3)
+Bsr	- constante da mola do fole, lbf/in. (N/m)
+C - coeficiente de distribuição, adimensional
+Cd - coeficiente de descarga, adimensional
+Cl - calor específico de líquido, Btu/(lbm-°R) (J/(kg K))
+Cp	- calor específico de gás à pressão constante, Btu/(lbm-°R) (J/(kg-K))
+Cv	- calor específico de gás a volume constante, Btu/(lbm-°R) (J/(kg K))
+D - diâmetro interno do tubo, ft. (m)
+Ft - fator de correção de temperatura para nitrogênio, adimensional
+Fe - fração de líquido disperso no núcleo de gás, adimensional
+f - fator de fricção, adimensional
+f - fator de fricção interfacial, adimensional
+G - fluxo mássico, lbm/(ft2-s) (kg/(m2.s))
+g - aceleração de gravidade, ft/s (m/s )
+gc - constante de gravidade, (=32.17) lbm-ft/(lbf-s2)
+h - altura da célula, ft (m)
+IP - índice de produtividade, bpd/psi (m3/(Pa s))
+j - fluxo volumétrico ou velocidade superficial da mistura, ft/s (m/s)
+jg - fluxo volumétrico de gás, ft/s (m/s)
+jt - fluxo volumétrico de líquido, ft/s (m/s)
+jur - fluxo volumétrico de líquido na transição laminar - turbulento, ft/s (m/s)
+K	constante de conversão de volume de gás padrão em massa
+k	razão de calores específicos de gás, Cp / Cv, adimensional
+L	comprimento, ft (m)
+M	massa total contida numa célula de discretização, lbm (kg)
+MVs	movimento da haste da válvula, in. (m)
+mg Nre	massa de gás contida numa célula de discretização, lbm (kg) número de Reynolds, adimensional
+n	número de moles de gás ou expoente politrópico de gás, adimensional
+P	pressão, psi (Pa)
+Pe PbvD	pressão estática do reservatório, psi (Pa) pressão de fole carregado com nitrogênio na temperatura de fundo, psi (Pa)
+PioD	pressão de injeção de gás na profundidade da válvula, psi (Pa)
+PpfD Pvo	presão de fluxo no tubo na profundidade da válvula, psi (Pa) pressão de abertura da válvula na bancada a 60 °F, psi (Pa)
+Pwf Q Qgi Qgv QgR Qlr	pressão de fluxo no fundo do poço, psi (Pa) vazão volumétrica, ft3/s (m3/s) vazão de gás injetado nas condições padrão, MscfTD (m3/s) vazão de gás da válvula de gas-lift nas condições de fundo, ft3/s (m3/s) vazão de gás de reservatório nas condições de fundo, ft3/s (m3/s) -7	-í vazão de líquido de reservatório, ft /s (m /s)
+Qgsc R	o vazão de gás pela válvula de gas-lift nas condições padrão, Mscf/D (m /s) constante universal dos gases, 10,73 psi-ft3/lbm-mol-°R
+RGL - razão gás-líquido, scf/stb (m3/m3)
+Rdu	relação entre as pressões a jusante/montante do orifício, adimensional
+n&gt;	raio da esfera na haste da válvula de gas lift, in. (m)
+rP	raio da porta da válvula, in. (m)
+rtf Si	raio superior do tronco de cone de ângulo reto, in. (m) perímetro de interface, ft (m)
+s	altura do tronco de cone de ângulo reto, in. (m)
+T	temperatura, °R (°K)
+t	tempo, s
+V	volume, ft3 (m3)
+v - velocidade, ft/s (m/s)
+Vg - velocidade de deslizamento, ft/s (m/s)
+vm - velocidade do centro de massa da mistura, ft/s (m/s)
+vm - média de velocidades de centro de massa da mistura, ft/s (m/s)
+vr	- velocidade relativa entre as fases,	ft/s	(m/s)
+vs	- velocidade de ascensão das bolhas de	gás	num meio líquido estagnado, ft/s (m/s)
+w - título do gás livre, adimensional
+We	- número de Weber, adimensional
+x	- posição, ft (m)
+y - razão entre as pressões a jusante e a montante do choke, adimensional
+z - fator de compressibilidade dos gases reais, adimensional
+Letras Gregas
+a - fração de vazio, adimensional
+P - razão de comprimentos, adimensional
+ÔL	- espessura de filme de líquido ao redor da bolha de Taylor, ft (m)
+(j)	- volume específico, ft /lbm (kg/m )
+^Lc - fração de líquido disperso no núcleo de gás sem escorregamento, adimensional
+p - viscosidade dinâmica, cp (Pa s)
+p - peso específico, lbm/ft (kg/m )
+o - tensão superficial, N/m
+Ti - tensão de cisalhamento interfacial, psi (Pa)
+4	- razão de perímetros molhados, adimensional
+- quantidade de movimento, lbm-ft/s (kg-m/s)
+Subscritos
+1	- montante ou fronteira inferior de uma célula de discretização
+2	- jusante ou fronteira superior de uma célula de discretização
+c - núcleo
+ch - choke
+g	- fase gasosa
+i	- interface ou injetado
+j	- velocidade superficial da mistura
+L	- fase líquida
+LS	- pistão de líquido
+m	- mistura
+R	- reservatório
+SU	- unidade característica de escoamento pistonado
+t	- total
+TB	- bolha de Taylor
+tr	- transição laminar - turbulento
+V	- válvula de gas-lift
+Sobrescritos
+t	- tempo atual
+t-1	- tempo anterior
+Referências Bibliográficas
+[1]	Ansari, A. M., Sylvester, N. D., Sarica, C., Shoham, e O., Brill, J. P.: “A Comprehensive Mechanistic Model for Upward Two Phase Flow in Wellbores,” SPE Production &amp;amp; Facilities, maio 1994, pp. 143-152.
+[2]	Brotz, W.: “Uber die Vorausberechnung der Absorptionsgesch-windigkeit von Gasen in Stromenden Flussigkeitsschichten,” Chem. Ing. Tech., Vol. 26, 1954, pp. 470
+[3]	Capucci, E. C.: “Simulação de Descarga de Poços Através de Válvulas de Gas Lift,” dissertação de mestrado, Universidade Estadual de Campinas, 1990.
+[4]	Cullender, M. H. e Smith, R. V.: “Practical Solution of Gas-Flow Equations for Wells and Pipelines with Large Temperature Gradients,” Petroleum Transactions, AIME, Vol. 207, 1956, pp. 281 -287.
+[5]	Fernandes, R. C., Semiat, R. e Dukler, A. E.: “Hydrodynamic Model for Gas-Liquid Slug Flow in Vertical Tubes,” AIChE Journal, Vol. 29, no. 6, novembro 1983, pp. 981 - 989.
+[6]	Gokdemir, O. M.: “Transient Drift Flux Model for Wellbores,” dissertação de mestrado, University' of Tulsa, Tulsa, Oklahoma, 1992.
+[7]	Hall, J. W. e Decker, K. L.: “Gas-Lift Unloading and Operating Simulation as Applied to Mandrel Spacing and Valve Design,” SPE 29450 apresentado em Production Operations Symposium, Oklahoma City, 2-4 abril 1995.
+[8]	Harmathy, T. Z.: “Velocity of Large Drops and Bubbles in Media of Infinite or Restricted Extent,” AIChE Journal, Vol. 6, 1960, pp. 281
+[9]	Ikoku, C. U.: “Natural Gas Production Engineering,” John Wiley &amp;amp; Sons, 1984, pp. 317 -346.
+[10]	Ishii, N., Chawla, T. C. e Zuber, F.: “Constitutive Equation for Vapor Drift Velocity in Two-Phase Annular Flow,” AIChE Journal, Vol. 22, no. 2, março 1976, pp. 283 - 289.
+[11]	Ishii, N., e Mishima, K.: “Liquid Transfer and Entrainment Correlation for Droplet Annular Flow,” Proc. Seventh Int. Heat Transfer Conference, Munich, Vol. 5, 1981, pp. 305-312.
+[12]	Liles, D. R. e Reed, H. W.: “A Semi-Implicit Method for Two-Phase Fluid Dynamics,” Journal of Computaional Physics, Vol. 26, 1978, pp. 390 - 407.
+[13]	Martins, S. V.: “Efeitos Transientes no Projeto e Análise de Gas-Lift Contínuo,” dissertação de mestrado, Universidade Estadual de Campinas, 1991.
+[14]	Nickens, H. V.: “A Dynamic Computer Model of a Kicking Well,” SPE Drilling Engineering, junho 1987, pp. 159 - 173.
+[15]	Nicklin, D. J., Wilkes, J. 0. e Davidson, M. A.: “Two-Phase Flow in Vertical Tubes,” Trans. Instn. Chem. Engrs, Vol. 40, 1962, pp. 61 - 68.
+[16]	Press, W. H., Teukolsky, S. A., Vetterling, W. T. e Flannery, B. P.: “Numerical Recipes in C,” Cambridge University Press, 1992, capítulo 9.
+[17]	Sachdeva, R.: “Two-Phase Flow Through Chokes,” dissertação de mestrado, University of Tulsa, 1984.
+[18]	Sachdeva, R., Schmidt, Z., Brill, J. P. e Blais, R. M.: “Two-Phase Flow Through Chokes,” SPE 15657 apresentado em 61st Annual Technical Conference and Exhibition of SPE, New Orleans, 5 - 8 out. 1986.
+[19]	Santos, O. L. A.: “A Dynamic Model of Diverter Operations for Handling Shallow Gas Hazards in Oil and Gas Exploratory Drilling,” tese de doutorado, Lousiana State University7, 1989.
+[20]	Schiozer, D. J.: “Simultaneous Simulation of Reservoir and Surface Facilities,” tese de doutorado, Stanford University, março 1994.
+[21]	Sylvester, N. D.: “A Mechanistic Model for Two-Phase Vertical Slug Flow in Pipes,” Transactions of the ASME, Vol. 109, dezembro 1987. pp. 206 - 213.
+[22]	Taitel, Y., Bamea, D. e Dukler, A. E.: “Modelling Flow Pattern Transitions for Steady Upward Gas-Liquid Flow in Vertical Tubes,” AIChE Journal, Vol. 26, no. 3, maio 1980, pp. 345 - 354.
+[23]	Vo, D. T. e Shoham, O.: “A Note on the Existence of a Solution for Tw'o-Phase Slug Flow' in Vertical Pipes,” Transactions of the ASME, Vol. Ill, junho 1989, pp. 64-65.
+[24]	Winkler, H. W. e Eads, P. T.: “Applying the Basic Performance Concepts of SingleElement, Unbalanced Gas-Lift Valves for Installation Design,” SPE Production and Facilities, agosto 1993, pp. 211 - 216.
+[25]	Wallis, G. B.: “One-Dimensional Two-Phase Flow,” McGraw-Hill Book Co. Inc., New York City, 1969.
+[26]	Zuber, N., Staub, F. W., Bijwaard, G. e Kroeger, P. G.: “Steady State and Transient Void
+Fraction in Two-Phase Flow Systems,’’General Electric Co., Report GEAP-5417, Vol. 1, 1967.</field>
+	</doc>
+</add>

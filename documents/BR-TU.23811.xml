@@ -1,0 +1,3750 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-TU.23811</field>
+		<field name="filename">8060_Dissertacao_Rafael_Cabral_de_Moura.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">
+Universidade Federal de Pernambuco
+
+Centro de Tecnologia e Geocie?ncias
+
+Po?s-graduac?a?o em Engenharia Meca?nica
+
+Dissertac?a?o de Mestrado
+
+Simulac?a?o de Reservato?rios de Petro?leo
+no Ambiente OpenFOAM
+
+Rafael Cabral de Moura
+
+Orientador: Ramiro Brito Willmersdorf, Ph. D.
+Co-Orientador: Paulo Roberto Maciel Lyra, Ph. D.
+
+Recife
+Fevereiro de 2012
+
+
+
+Universidade Federal de Pernambuco
+
+Centro de Tecnologia e Geocie?ncias
+
+Po?s-graduac?a?o em Engenharia Meca?nica
+
+Dissertac?a?o de Mestrado
+
+Simulac?a?o de Reservato?rios de Petro?leo
+no Ambiente OpenFOAM
+
+Rafael Cabral de Moura
+
+Trabalho apresentado ao Programa de Po?s-Graduac?a?o
+em Meca?nica Computacional do Departamento de En-
+genharia Meca?nica da Universidade Federal de Pernam-
+buco como requisito parcial para obtenc?a?o do grau de
+Mestre em Engenharia Meca?nica.
+
+Orientador: Ramiro Brito Willmersdorf, Ph. D.
+Co-Orientador: Paulo Roberto Maciel Lyra, Ph. D.
+
+Recife
+Fevereiro de 2012
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+Catalogação na fonte 
+Bibliotecária Margareth Malta, CRB-4 / 1198 
+
+ 
+
+M929s Moura, Rafael Cabral de. 
+Simulação de reservatórios de petróleo no ambiente OpenFOAM / 
+
+Rafael Cabral de Moura. - Recife: O Autor, 2012. 
+vii, 71 folhas, il., gráfs., tabs. 
+ 
+Orientador: Prof. Dr. Ramiro Brito Willmersdorf. 
+Co-Orientador: Prof. Dr. Paulo Roberto Maciel Lyra. 
+Dissertação (Mestrado) – Universidade Federal de Pernambuco. CTG. 
+
+Programa de Pós-Graduação em Engenharia Mecânica, 2012. 
+Inclui Referências Bibliográficas. 
+ 
+1. Engenharia Mecânica. 2. Meios porosos. 3. Escoamento multifásico. 
+
+4. IMPES. 5. OpenFOAM. 6. Volumes finitos. 7. Programação paralela.  I. 
+Willmersdorf, Ramiro Brito. (Orientador).  II. Lyra, Paulo Roberto Maciel. 
+(Co-Orientador). III. Título. 
+
+      
+                        UFPE 
+ 
+621 CDD (22. ed.)          BCTG/2012-169 
+
+ 
+
+
+
+Simulac?a?o de Reservato?rios de Petro?leo no Ambiente
+OpenFOAM
+
+Rafael Cabral de Moura
+
+Trabalho apresentado ao Programa de Po?s-Graduac?a?o em Meca?nica Com-
+putacional do Departamento de Engenharia Meca?nica da Universidade Fede-
+ral de Pernambuco como requisito parcial para obtenc?a?o do grau de Mestre
+em Engenharia Meca?nica.
+
+Aprovada por:
+
+————————————————————
+Ramiro Brito Willmersdorf Ph. D.
+
+(Orientador)
+
+————————————————————
+Paulo Roberto Maciel Lyra Ph. D.
+
+(Co-Orientador)
+
+————————————————————
+Darlan K. E. de Carvalho Dr.
+
+(Examinador Interno)
+
+————————————————————
+Roge?rio Soares da Silva Dr.
+
+(Examinador Externo: CAA-UFPE)
+
+————————————————————
+Bernardo Horowitz Ph. D.
+
+(Examinador Externo: DECIV-UFPE)
+
+Recife
+Fevereiro de 2012
+
+
+
+A? Andelson Cabral de Moura.
+
+
+
+“A simplicidade e? o u?ltimo degrau da sabedoria.”
+
+Khalil Gibran
+
+
+
+ii
+
+Agradecimentos
+
+Agradec?o primeiramente a Deus, que me deu a oportunidade de estar en-
+tre grandes pessoas e realizar muitos de meus sonhos. Agradec?o ao professor
+Ramiro, por ter pacie?ncia comigo e sempre me mostrar, com muita calma, o
+caminho certo a seguir. A minha esposa por me ajudar muito e me dar apoio
+nos momentos mais decisivos de minha vida. Aos amigos do LabCom, que
+sempre juntos discutem e resolvem a maioria dos problemas impostos, contri-
+buindo tambe?m com cr??ticas ao trabalho. Agradec?o ao meu amigo Bruno de
+Jesus que muito me ajudou durante os meus trabalhos. Por u?ltimo, agradec?o
+a? minha fam??lia que acreditou em mim e sempre me encorajou a continuar
+com meus estudos.
+
+
+
+iii
+
+Resumo
+
+Neste trabalho foi implementado um programa para simulac?a?o compu-
+tacional de reservato?rios de petro?leo, baseado no ambiente OpenFOAM R©,
+que e? um sistema de desenvolvimento para programac?a?o cient??fica orientado
+a objetos, paralelo, de alto n??vel e com alto desempenho. Esse ambiente
+de desenvolvimento oferece grande flexibilidade quanto a? escolha dos me?-
+todos de dicretizac?a?o, interpolac?a?o e soluc?a?o dos sistemas resultantes. O
+OpenFOAM R© e? uma biblioteca da linguagem C++ que, atrave?s de suas
+va?rias ferramentas, pode ser usada para a soluc?a?o de problemas envolvendo
+equac?o?es diferenciais parciais. Para a soluc?a?o o ambiente emprega o me?todo
+dos volumes finitos, usando malhas estruturadas ou na?o estruturadas. Neste
+trabalho foram usadas apenas malhas estruturadas. O simulador desenvol-
+vido trata problemas descritos pelo modelo de escoamento bifa?sico imisc??vel
+a?gua-o?leo que e? descrito por um sistema de equac?o?es diferenciais parciais
+altamente na?o-lineares, obtidas atrave?s da conservac?a?o da massa para cada
+fase, e do uso da Lei de Darcy para relacionar fluxos de massa com gradientes
+de potencial fluido. Para a integrac?a?o temporal das equac?o?es e? empregado o
+me?todo IMPES, no qual o sistema composto pela equac?a?o de conservac?a?o de
+massa e pela Lei de Darcy e? reescrito em termos de uma equac?a?o para a pres-
+sa?o de o?leo, que e? resolvida implicitamente, e uma equac?a?o para a saturac?a?o
+de a?gua, que e? resolvida explicitamente.
+
+Palavras-chave: Meios Porosos, Escoamento Multifa?sico, IMPES, Open-
+FOAM, Volumes Finitos, Programac?a?o Paralela.
+
+
+
+iv
+
+Abstract
+
+In this work a program for computer simulation of oil reservoirs was im-
+plemented. The program was based on OpenFOAM R© framework, which
+is a development system for scientific object-oriented programming, paral-
+lel, high-level and high performance computation. This development fra-
+mework provides great flexibility in the choice of dicretization and interpo-
+lation methods and for solving the resulting systems. The OpenFOAM R© is
+a library of C++ language which, through its various tools, can be used to
+solve problems involving partial differential equations. The OpenFOAM R©
+framework employs the finite volume method, using structured or unstructu-
+red meshes. In this work only structured meshes were used. The simulator
+was developed for problems described by the model of imiscible two-phase
+flow of water and oil is which described by a system of highly nonlinear partial
+differential equations, obtained by considering conservation of mass of each
+phase, and the use of Darcy’s Law to relate mass flows with gradients of fluid
+potential. For the temporal integration of the equations the IMPES method
+is employed. The system composed of the mass conservation equation and
+Darcy’s Law is rewritten in terms of an equation for the oil pressure, which
+is solved implicitly, and an equation for water saturation, which is solved
+explicitly.
+
+Keywords: Porous Medium, Multiphasic Flow, IMPES, OpenFOAM, Fi-
+nite Volume, Parallel Programing.
+
+
+
+Suma?rio
+
+1 Introduc?a?o 3
+1.1 Motivac?a?o . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+1.2 Objetivos . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+1.3 Organizac?a?o da dissertac?a?o . . . . . . . . . . . . . . . . . . . . 6
+
+2 OpenFOAM 7
+2.1 Programac?a?o no OpenFOAM . . . . . . . . . . . . . . . . . . 8
+2.2 Estrutura do OpenFOAM . . . . . . . . . . . . . . . . . . . . 9
+2.3 Aplicac?o?es . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+
+2.3.1 Difusa?o de calor . . . . . . . . . . . . . . . . . . . . . . 12
+2.3.2 Advecc?a?o linear . . . . . . . . . . . . . . . . . . . . . . 13
+
+2.4 Casos . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+
+3 Equac?o?es Governantes 20
+3.1 Propriedades da rocha e dos fluidos . . . . . . . . . . . . . . . 21
+3.2 Lei de Darcy . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+3.3 Lei da conservac?a?o de massa . . . . . . . . . . . . . . . . . . . 25
+3.4 Escoamento monofa?sico . . . . . . . . . . . . . . . . . . . . . . 27
+3.5 Escoamento bifa?sico . . . . . . . . . . . . . . . . . . . . . . . . 28
+
+4 Modelagem Computacional 36
+4.1 Discretizac?a?o do dom??nio . . . . . . . . . . . . . . . . . . . . . 36
+4.2 Discretizac?a?o das equac?o?es . . . . . . . . . . . . . . . . . . . . 37
+
+4.2.1 Discretizac?a?o dos operadores de difusa?o . . . . . . . . . 38
+4.2.2 Discretizac?a?o dos operadores de advecc?a?o . . . . . . . . 39
+4.2.3 Discretizac?a?o temporal . . . . . . . . . . . . . . . . . . 41
+
+4.3 Me?todo IMPES . . . . . . . . . . . . . . . . . . . . . . . . . . 42
+4.3.1 Tratamento das na?o linearidades . . . . . . . . . . . . 43
+
+5 Aplicac?a?o IMPES 45
+5.1 Criac?a?o da aplicac?a?o . . . . . . . . . . . . . . . . . . . . . . . 46
+
+v
+
+
+
+SUMA?RIO vi
+
+5.2 Criac?a?o do caso . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+
+6 Resultados 53
+6.1 Resultados da aplicac?a?o de escoamento monofa?sico . . . . . . 53
+6.2 Verificac?a?o da aplicac?a?o IMPES . . . . . . . . . . . . . . . . . 54
+
+6.2.1 Escoamento unidimensional . . . . . . . . . . . . . . . 55
+6.2.2 Escoamento bidimensional . . . . . . . . . . . . . . . . 57
+6.2.3 Escoamento tridimensional . . . . . . . . . . . . . . . . 60
+6.2.4 Caso heteroge?neo bidimensional . . . . . . . . . . . . . 63
+6.2.5 Caso heteroge?neo tridimensional . . . . . . . . . . . . . 65
+
+7 Concluso?es e Trabalhos Futuros 66
+7.1 Concluso?es . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 66
+7.2 Trabalhos futuros . . . . . . . . . . . . . . . . . . . . . . . . . 66
+
+Bibliografia 68
+
+
+
+Lista de Figuras
+
+2.1 Estrutura do ambiente OpenFOAM [4]. . . . . . . . . . . . . . 9
+2.2 Esquema do caso de difusa?o. . . . . . . . . . . . . . . . . . . . 15
+2.3 Estrutura do direto?rio de um caso. . . . . . . . . . . . . . . . 16
+2.4 Malha da discretizac?a?o do problema de calor. . . . . . . . . . 19
+2.5 Soluc?a?o do caso com o problema de calor. . . . . . . . . . . . 19
+
+3.1 Aplicac?a?o dos modelos de fluxo. Modificado de [20] apud [29]. 21
+3.2 Comportamento do fator volume de formac?a?o. . . . . . . . . . 23
+3.3 Comportamento da viscosidade. . . . . . . . . . . . . . . . . . 24
+3.4 Esquema de fluxo. . . . . . . . . . . . . . . . . . . . . . . . . . 26
+3.5 Curvas de permeabilidade relativa. . . . . . . . . . . . . . . . 30
+3.6 Curvas de pressa?o capilar [29]. . . . . . . . . . . . . . . . . . . 31
+3.7 Saturac?a?o na zona de transic?a?o [29]. . . . . . . . . . . . . . . . 32
+
+4.1 Volume de controle. . . . . . . . . . . . . . . . . . . . . . . . . 37
+4.2 Tipos de volume de controle do OpenFOAM. . . . . . . . . . . 38
+4.3 Vetores ~S e ~d para uma malha na?o ortogonal [25]. . . . . . . . 39
+4.4 Interpolac?a?o linear [25]. . . . . . . . . . . . . . . . . . . . . . . 40
+4.5 Representac?a?o de duas ce?lulas vizinhas. . . . . . . . . . . . . . 44
+
+5.1 Caso que utiliza a aplicac?a?o IMPES. . . . . . . . . . . . . . . 50
+5.2 Esquema five-spot. . . . . . . . . . . . . . . . . . . . . . . . . 51
+5.3 Ajuste da traje?toria de um poc?o direcional. . . . . . . . . . . . 52
+
+6.1 Soluc?a?o de pressa?o do caso monofa?sico. . . . . . . . . . . . . . 54
+6.2 Malha usada no problema unidimensional. . . . . . . . . . . . 56
+6.3 Comparac?a?o do perfil de pressa?o 1D. . . . . . . . . . . . . . . 56
+6.4 Comparac?a?o do perfil de saturac?a?o 1D. . . . . . . . . . . . . . 57
+6.5 Malha usada no problema bidimensional. . . . . . . . . . . . . 58
+6.6 Soluc?a?o da pressa?o no problema bidimensional. . . . . . . . . . 58
+6.7 Comparac?a?o das soluc?o?es de pressa?o 2D na direc?a?o diagonal. . 59
+6.8 Soluc?a?o da saturac?a?o do problema bidimensional. . . . . . . . 59
+
+vii
+
+
+
+LISTA DE FIGURAS 1
+
+6.9 Comparac?a?o das soluc?o?es de saturac?a?o 2D na direc?a?o diagonal. 60
+6.10 Malha usada no problema tridimensional. . . . . . . . . . . . . 60
+6.11 Soluc?a?o da saturac?a?o do problema tridimensional. . . . . . . . 61
+6.12 Comparac?a?o das soluc?o?es de saturac?a?o 3D na direc?a?o diagonal. 61
+6.13 Soluc?a?o da pressa?o do problema tridimensional no IMEX. . . . 62
+6.14 Soluc?a?o da pressa?o do problema tridimensional no OpenFOAM. 62
+6.15 Comparac?a?o das soluc?o?es de pressa?o 3D na direc?a?o diagonal. . 63
+6.16 Mapa de permeabilidades do caso bidimensional. . . . . . . . . 63
+6.17 Soluc?a?o do caso heteroge?neo bidimensional. . . . . . . . . . . . 64
+6.18 Permeabilidades do caso tridimensional. . . . . . . . . . . . . 65
+6.19 Permeabilidades do caso tridimensional. . . . . . . . . . . . . 65
+
+
+
+Lista de Tabelas
+
+2.1 Padra?o de unidades no OpenFOAM. . . . . . . . . . . . . . . 13
+
+3.1 Fatores de conversa?o de unidades. . . . . . . . . . . . . . . . . 25
+
+5.1 Listagem dos campos criados na aplicac?a?o. . . . . . . . . . . . 47
+
+6.1 Propriedades do fluido (Caso monofa?sico). . . . . . . . . . . . 53
+6.2 Propriedades da rocha (Caso monofa?sico). . . . . . . . . . . . 54
+6.3 Propriedades da rocha (Caso bifa?sico). . . . . . . . . . . . . . 55
+6.4 Propriedades dos fluidos (Caso bifa?sico). . . . . . . . . . . . . 55
+6.5 Curvas de permeabilidade relativa e pressa?o capilar. . . . . . . 55
+
+2
+
+
+
+Cap??tulo 1
+
+Introduc?a?o
+
+A modelagem computacional do escoamento multifa?sico em meios poro-
+sos e? uma das principais ferramentas no gerenciamento de reservato?rios de
+petro?leo. Atrave?s do modelo de fluxo de um reservato?rio o engenheiro que
+o gerencia e? capaz de prever o comportamento das presso?es e fazer uma es-
+timativa da produc?a?o futura de o?leo. Com a previsa?o do comportamento
+da vaza?o de o?leo ao longo do tempo e com uma estimativa do prec?o futuro
+do barril de o?leo e? feita uma ana?lise econo?mica que determina por quanto
+tempo o reservato?rio continuara? a produzir e a viabilidade, ou na?o, da im-
+plantac?a?o de projetos no campo. Assim como a modelagem computacional,
+tambe?m podem ser empregados outros me?todos, como o balanc?o de materiais
+abordado em [17], [16], [24] e a ana?lise por curvas de decl??nio de produc?a?o
+proposta inicialmente em [8] e posteriormente abordada por [31], [22] e [21].
+Atrave?s das estimativas de produc?a?o feitas pelos engenheiros de reservato?rios
+e das datas de abandono de cada campo tem-se o valor das reservas de uma
+empresa de petro?leo. Atrave?s de simuladores de fluxo pode-se estimar o ga-
+nho que obte?m-se com me?todos de recuperac?a?o secunda?ria de petro?leo, como
+injec?a?o de a?gua [18] [15], vapor [23], pol??meros [11] [32], bacte?rias [10], sur-
+factantes [37] e me?todos de combusta?o in-situ. O posicionamento dos poc?os
+e os volumes de a?gua e vapor a serem injetados sa?o alguns dos para?metros
+operacionais buscados ao se fazer uma simulac?a?o de um reservato?rio de pe-
+tro?leo. Para cada me?todo de recuperac?a?o te?m-se uma modelagem associada
+e atrave?s de simuladores desenvolvidos para cada me?todo e? poss??vel construir
+uma previsa?o do comportamento dos reservato?rios.
+
+Neste trabalho foi desenvolvido um simulador de escoamento bifa?sico em
+meios porosos no ambiente OpenFOAM. O simulador usa como base o am-
+biente OpenFOAM (Open Field Operator and Manipulator) que e? uma bi-
+blioteca escrita em C++ com ferramentas para a soluc?a?o de problemas de
+volumes finitos e elementos finitos. O desenvolvimento de um programa para
+
+3
+
+
+
+CAPI?TULO 1. INTRODUC?A?O 4
+
+a simulac?a?o de um determinado feno?meno f??sico nesse sistema se da? por meio
+de aplicac?o?es que usam as classes existentes no ambiente. O ambiente possui
+aplicac?o?es prontas para a maioria dos feno?menos de dina?mica dos fluidos, in-
+clusive para alguns casos envolvendo meios porosos. Antes da implementac?a?o
+do simulador foram feitas aplicac?o?es no sistema para a soluc?a?o de problemas
+mais simples com o objetivo de facilitar o aprendizado. Uma das dificuldades
+no uso desse ambiente e? a pouca documentac?a?o dispon??vel para estudo, desta
+forma, a reconstruc?a?o de programas para a soluc?a?o de problemas simples
+facilitou o aprendizado.
+
+Inicialmente, foram feitas aplicac?o?es para a soluc?a?o de problemas envol-
+vendo equac?o?es parabo?licas, hiperbo?licas e el??pticas. A partir destes progra-
+mas que envolvem os tipos ba?sicos de equac?o?es, pode-se desenvolver progra-
+mas para solucionar casos que envolvam uma combinac?a?o desses feno?menos.
+Nesse ambiente OpenFOAM, uma vez desenvolvida uma aplicac?a?o tem-se um
+solver gene?rico, cujos esquemas de discretizac?a?o, interpolac?a?o e me?todos para
+a soluc?a?o do sistema de equac?o?es resultante sera?o especificados em um dire-
+to?rio com as caracter??sticas do caso a ser simulado. Os direto?rios contendo
+os casos que usam as aplicac?o?es devem ser organizados segundo o padra?o do
+sistema. As aplicac?o?es desenvolvidas usando as classes do OpenFOAM mo-
+delam problemas tridimensionais mas podem ser usadas para resolver casos
+unidimensionais e bidimensionais. Desta forma, uma aplicac?a?o e? escrita de
+uma forma gene?rica, podendo-se mudar o nu?mero de dimenso?es de acordo
+com o caso estudado. Em cada caso que use uma aplicac?a?o, pode-se mudar
+o nu?mero de dimenso?es do problema, a geometria, as condic?o?es de contorno
+e os me?todos de discretizac?a?o. Assim cada aplicac?a?o pode ser utilizada de
+diferentes modos o que facilita a verificac?a?o de qual combinac?a?o de esquemas
+resolve melhor um determinado problema. As primeiras apliac?o?es que foram
+resolvidas tratam de problemas de conduc?a?o de calor em regime permanente,
+em regime transiente e problemas de advecc?a?o. Como etapa inicial no de-
+senvolvimento do simulador de reservato?rios foi feita uma aplicac?a?o para a
+soluc?a?o do caso de escoamento monofa?sico em meios porosos. Neste problema
+e? resolvida apenas a equac?a?o de difusa?o que e? similar a equac?a?o de pressa?o
+que e? resolvida no simulador bifa?sico. A soluc?a?o deste tipo de problema foi
+importante na verificac?a?o das te?cnicas empregadas no simulador bifa?sico.
+
+1.1 Motivac?a?o
+
+O OpenFOAM e? uma biblioteca escrita na linguagem C++ que conte?m
+ferramentas para a soluc?a?o de problemas da meca?nica do cont??nuo, para mo-
+delagem de reac?o?es qu??micas, matema?tica financeira e qualquer problema que
+
+
+
+CAPI?TULO 1. INTRODUC?A?O 5
+
+possa ser descrito atrave?s de equac?o?es diferenciais parciais e ordina?rias. Com
+alguma experie?ncia no sistema pode-se desenvolver aplicac?o?es com rapidez e
+flexibilidade. O OpenFOAM e? um sistema naturalmente paralelo e a imple-
+mentac?a?o de suas aplicac?o?es e? feita atrave?s de me?todos e objetos de alto n??vel
+criados com classes que sa?o escritas em paralelo, o que e? mais uma grande
+vantagem no uso desse sistema, visto que, a implementac?a?o de programas
+paralelos e? complexa e requer muito tempo dependendo do problema a ser
+resolvido. O modelo bifa?sico e? bastante utilizado na modelagem problemas
+de injec?a?o a fim de se determinar a eficie?ncia de diferentes configurac?o?es de
+disposic?a?o dos poc?os injetores e produtores. A implementac?a?o de um simula-
+dor de reservato?rios nesse ambiente possibilita a investigac?a?o da aplicac?a?o das
+diversas ferramentas nume?ricas do sistema na soluc?a?o deste tipo de problema.
+
+1.2 Objetivos
+
+Este trabalho teve como objetivo geral a implementac?a?o de um programa
+para a simulac?a?o computacional de reservato?rios de petro?leo, baseado em
+um ambiente de desenvolvimento para programac?a?o cient??fica orientado a
+objetos, paralelo, de alto n??vel e com alto desempenho. O simulador trata
+de problemas descritos pelo modelo de escoamento bifa?sico e imisc??vel o?leo-
+a?gua. Para alcanc?ar o objetivo geral, as seguintes metas instermedia?rias
+foram definidas:
+
+• Estudo da formulac?a?o matema?tica envolvida;
+
+• Investigac?a?o e escolha do me?todo nume?rico e das linearizac?o?es a serem
+usadas no problema;
+
+• Estudo do funcionamento do ambiente OpenFOAM;
+
+• Desenvolvimento de aplicac?o?es no ambiente para a soluc?a?o de proble-
+mas modelo de advecc?a?o e difusa?o;
+
+• Desenvolvimento de uma aplicac?a?o para soluc?a?o do problema de esco-
+amento monofa?sico em meios porosos;
+
+• Desenvolvimento da aplicac?a?o para a soluc?a?o do problema de escoa-
+mento bifa?sico em meios porosos.
+
+
+
+CAPI?TULO 1. INTRODUC?A?O 6
+
+1.3 Organizac?a?o da dissertac?a?o
+
+Este trabalho esta? dividido em sete cap??tulos e uma bibliografia incluindo-
+se a introduc?a?o. Os cap??tulos esta?o dispostos segundo a seque?ncia de trabalho
+realizada para atingir o objetivo geral do trabalho. Os cap??tulos abordam os
+seguintes temas:
+
+• Cap??tulo 1: Introduc?a?o. No presente cap??tulo e? feita uma breve in-
+troduc?a?o ao objetivo de se usar um simulador de reservato?rios seguida
+de um resumo da metodologia empregada na construc?a?o do simulador
+feito neste trabalho. Sa?o apresendadas as caracter??sticas do sistema
+que motivaram a sua escolha e os objetivos que se esperavam atingir
+ao te?rmino do trabalho.
+
+• Cap??tulo 2: OpenFOAM. Sa?o apresentadas algumas das caracter??sticas
+do ambiente de desenvolvimento utilizado bem como alguns exemplos
+de programas desenvolvidos no sistema e algumas soluc?o?es encontradas.
+
+• Cap??tulo 3: Equac?o?es Governantes. No terceiro cap??tulo se encontram
+as equac?o?es matema?ticas dos modelos que regem o escoamento multi-
+fa?sico em reservato?rios de petro?leo e uma breve descric?a?o das proprie-
+dades da rocha e dos fluidos presentes.
+
+• Cap??tulo 4: Modelagem Computacional. Mostra a forma como o Open-
+FOAM faz a discretizac?a?o dos principais operadores diferenciais abor-
+dando, de maneira simplificada, como o sistema faz a interpolac?a?o das
+propriedades atrave?s dos elementos da malha gerada.
+
+• Cap??tulo 5: Aplicac?a?o IMPES. Apresenta a aplicac?a?o desenvolvida no
+sistema, com trechos do co?digo explicando o seu funcionamento.
+
+• Cap??tulo 6: Resultados. Sa?o descritos alguns resultados e e? feita uma
+comparac?a?o entre o simulador desenvolvido e um programa comercial.
+
+• Cap??tulo 7: Concluso?es e Trabalhos Futuros. Traz uma breve conclusa?o
+do trabalho e algumas propostas para poss??veis trabalhos futuros.
+
+
+
+Cap??tulo 2
+
+OpenFOAM
+
+O OpenFOAM [26] [5] e? uma uma biblioteca de co?digo aberto escrita em
+C++ desenvolvida para utilizac?a?o no sistema Linux mas que pode ser uti-
+lizada em outros sistemas operacionais. Essa biblioteca conte?m namespaces
+com classes que possuem me?todos para a manipulac?a?o de campos escala-
+res, vetoriais e tensoriais e para a discretizac?a?o de operadores diferenciais
+como gradiente, divergente e laplaciano. Estas classes definem objetos como
+matrizes, malhas, arquivos de controle de simulac?a?o, campos dimensionais
+e adimensionais associados a malha ou na?o e muitos outros objetos relacio-
+nados com as operac?o?es envolvidas na programac?a?o cient??fica. A criac?a?o de
+programas usando essa biblioteca e? de alto n??vel visto que a maioria dos ope-
+radores aritme?ticos esta?o sobrecarregados para operac?o?es com os objetos que
+representam os campos, pode-se enta?o cria?-los com pouco uso da linguagem
+C++ devido ao uso das sobrecargas. Os objetos que representam os campos
+e operadores sobrecarregados esta?o todos escritos de forma paralela, desse
+modo, e? poss??vel criar programas paralelos programando-se serialmente.
+
+Na implementac?a?o de programas para a soluc?a?o nume?rica de equac?o?es
+diferenciais parciais e? comum que se adote, antes, uma se?rie de esquemas
+e te?cnicas para a soluc?a?o do problema proposto. No final da implementa-
+c?a?o tem-se uma aplicac?a?o que resulta da combinac?a?o formada pelos me?todos
+e te?cnicas nume?ricas escolhidas, qualquer variac?a?o dessa combinac?a?o de es-
+quemas requer uma reprogramac?a?o no co?digo fonte. A orientac?a?o a objetos
+tem como objetivo o encapsulamento dos dados, a modularizac?a?o e o rea-
+proveitamento do co?digo. Os programas trabalham com a criac?a?o de objetos
+que pertencem a classes com caracter??sticas distintas. Pode-se pensar em
+um programa de soluc?a?o nume?rica de equac?o?es diferenciais parciais (EDP’s)
+como uma classe, na qual seus objetos derivados sa?o combinac?o?es dos me?-
+todos nume?ricos escolhidos e com essas formas gene?ricas pode-se construir
+o aplicativo. Um programa de soluc?a?o nume?rica de EDP’s, que usa dife-
+
+7
+
+
+
+CAPI?TULO 2. OPENFOAM 8
+
+renc?as finitas, por exemplo, necessita de um me?todo de discretizac?a?o, uma
+formulac?a?o a ser usada e um esquema de discretizac?a?o. Como me?todo de
+discretizac?a?o pode-se ter diferenc?as finitas, volumes finitos ou elementos fini-
+tos e a formulac?a?o pode ser impl??cita ou expl??cita ou ainda uma combinac?a?o
+entre ambas. O esquema de discretizac?a?o pode ser, no caso das diferenc?as
+finitas uma combinac?a?o de derivadas para frente, para tra?s e centradas. A
+soluc?a?o nume?rica do sistema de equac?o?es resultante, pode ser feita atrave?s
+de diferentes me?todos como: gradientes conjugados, gradiente bi-conjugado
+precondicionado (Bi-CGStab) ou uma soluc?a?o usando multigrid [3].
+
+O OpenFOAM, oferece a possibilidade de criar, atrave?s de classes espec??fi-
+cas, programas que possuem uma forma gene?rica nos quais pode-se facilmente
+mudar a combinac?a?o de me?todos nume?ricos desejada, isso da? ao sistema uma
+grande flexibilidade para a implementac?a?o de programas de soluc?a?o nume?rica
+de EDP’s. Arquivos de entrada controlam quais me?todos sera?o usados em
+cada parte da aplicac?a?o, sem a necessidade de reescrever o co?digo fonte. O
+acoplamento de diferentes mo?dulos aos programas, de forma independente do
+co?digo ja? implementado, pode ser feito de maneira simples e ra?pida. O pro?-
+prio ambiente oferece muitas ferramentas para serem incorporadas a aplicac?a?o
+desenvolvida. Ferramentas de gerac?a?o adaptativa de malhas, movimentac?a?o
+de malhas e mo?dulos de soluc?a?o dos sistemas resultantes com o uso de GPU’s
+[6] encontram-se dispon??veis para o ambiente atualmente e alguns trabalhos
+ja? foram publicados com o uso dessa ferramenta [30]. A biblioteca possui
+muitos outros simuladores implementados que esta?o dispon??veis para uso.
+
+2.1 Programac?a?o no OpenFOAM
+
+Existem tre?s n??veis de utilizac?a?o do OpenFOAM [2]. A biblioteca conte?m
+programas com diferentes aplicac?o?es dos me?todos, que implementam pro-
+gramas para a soluc?a?o de problemas de dina?mica dos fluidos computacional,
+qu??mica, deformac?a?o dos so?lidos e economia. Pode-se utilizar esses programas
+prontos ou desenvolver programas aplicando os objetos e classes da biblioteca
+e ainda pode-se escrever outras classes. Os programas que acompanham o
+sistema sa?o chamados de aplicac?o?es do OpenFOAM, OpenFOAM applicati-
+ons [4], ou solvers, e os programas desenvolvidos pelo usua?rio sa?o chamados
+de aplicac?o?es do usua?rio.
+
+As aplicac?o?es sa?o utilizadas para resolver problemas f??sicos que, segundo a
+nomenclatura do sistema, sa?o chamados de casos. Por exemplo, na biblioteca
+temos um simulador de fluxo de calor, o qual e? chamado de aplicac?a?o para
+problemas de calor, um problema de fluxo de calor ao longo de uma barra
+retangular constitui um caso que sera? resolvido com essa aplicac?a?o. Neste tra-
+
+
+
+CAPI?TULO 2. OPENFOAM 9
+
+balho foi desenvolvida uma aplicac?a?o para problemas de escoamento bifa?sico
+imisc??vel o?leo-a?gua em meios porosos, os casos simulados sa?o reservato?rios
+sujeitos a? injec?a?o de a?gua. Nas aplicac?o?es sa?o resolvidas as equac?o?es que
+modelam o feno?meno f??sico relacionado, nos casos sa?o descritas as condic?o?es
+iniciais e de contorno e e? definida a geometria do problema estudado. Ainda
+nos casos esta?o contidos os arquivos que controlara?o o comportamento das
+classes das aplicac?o?es modificando o funcionamento das mesmas. Esse fluxo
+de trabalho do sistema permite que com uma mesma aplicac?a?o seja poss??vel
+resolver va?rios problemas com diferentes geometrias, para?metros de simula-
+c?a?o e esquemas nume?ricos atrave?s da mesma aplicac?a?o sem ser necessa?ria a
+implementac?a?o de um programa diferente para cada caso.
+
+2.2 Estrutura do OpenFOAM
+
+O ambiente OpenFOAM esta? estruturado segundo o esquema apresen-
+tado na Figura 2.1, na qual as aplicac?o?es padra?o representam os simuladores
+escritos no ambiente OpenFOAM e que acompanham o sistema. Cada apli-
+cac?a?o pode fazer uso das utilidades do sistema que sa?o rotinas escritas para
+a manipulac?a?o de dados, como por exemplo, leitura e escrita de arquivos,
+criac?a?o de gra?ficos e estat??sticas de execuc?a?o do programa.
+
+Figura 2.1: Estrutura do ambiente OpenFOAM [4].
+
+No sistema existe um gerador de malhas chamado blockmesh restrito ape-
+nas a gerac?a?o de malhas por blocos, no entanto, a gerac?a?o de malhas pode
+ser feita em outro sistema, como o GMESH, e importada para o formato
+nativo atrave?s de utilidades desenvolvidas para a conversa?o entre os diver-
+sos formatos existentes. As utilidades em conjunto com as ferramentas de
+manipulac?a?o de malha compo?em o mo?dulo de pre?-processamanto do sistema.
+
+
+
+CAPI?TULO 2. OPENFOAM 10
+
+Atrave?s das classes podem ser implementadas novas aplicac?o?es, as quais
+enquadram-se como aplicac?o?es do usua?rio, que podem fazer uso das utilidades
+do sistema assim como as aplicac?o?es padra?o. No sistema existem aplicac?o?es
+padra?o para a soluc?a?o de problemas de difusa?o de calor, escoamento mul-
+tifa?sicos, escoamento sujeito a? reac?o?es qu??micas e escoamento superso?nico,
+dentre outros. Os programas implementados pelo usua?rio e as aplicac?o?es
+padra?o formam o mo?dulo de soluc?a?o do ambiente.
+
+A visualizac?a?o dos dados de simulac?a?o no sistema e? obtida atrave?s do
+pacote de po?s processamento, que basicamente e? composto pelo programa
+ParaView que e? distribuido junto a? biblioteca. Outros visualizadores podem
+ser utilizados ja? que o OpenFOAM oferece ferramentas para exportar do
+formato nativo para a maioria dos formatos atualmente utilizados. Por ter
+co?digo aberto, facilmente pode ser implementada uma rotina para converter
+os dados de simulac?a?o para um formato que o sistema na?o reconhec?a. Uma
+das maiores vantagens e? a possibilidade de criar utilidades e aplicac?o?es no
+ambiente.
+
+2.3 Aplicac?o?es
+
+Aplicac?o?es sa?o programas escritos em C++ que utilizam as classes de-
+finidas no OpenFOAM. Nelas sa?o representadas as equac?o?es que modelam
+o feno?meno f??sico estudado. Essas equac?o?es geram uma matriz de volumes
+finitos que resulta da discretizac?a?o de cada termo representado. Um ope-
+rador diferencial no OpenFOAM e? descrito por meio de um me?todo, por
+exemplo para representar o operador de diverge?ncia usamos o me?todo div().
+Cada uma das equac?o?es tem seus operadores diferenciais discretizados de
+acordo com um esquema. Desta forma, na aplicac?a?o na?o se descreve como
+cada operador sera? discretizado. No OpenFOAM os volumes de controle sa?o
+centrados nas ce?lulas e alguns dos operadores de discretizac?a?o realizam ope-
+rac?o?es com os valores dos campos definidos nas faces dos elementos, desta
+forma e? necessa?rio interpolar os valores do centro das ce?lulas para as faces.
+Essa interpolac?a?o e? feita na aplicac?a?o sem especificar o me?todo de interpola-
+c?a?o usado, apenas pela chamada de um me?todo que converte um campo dos
+centros para as faces. Uma vez desenvolvida uma aplicac?a?o tem-se um solver
+gene?rico, cujos esquemas de discretizac?a?o, interpolac?a?o e me?todos para a so-
+luc?a?o do sistema de equac?o?es resultante sera?o especificados em um direto?rio
+com as caracter??sticas do caso a ser simulado. Apo?s a especificac?a?o dos es-
+quemas de discretizac?a?o te?m-se enta?o a formulac?a?o desejada para a soluc?a?o
+da equac?a?o. Adiante, sera?o mostradas as representac?o?es de equac?o?es e como
+funciona a escolha dos me?todos de discretizac?a?o e interpolac?a?o.
+
+
+
+CAPI?TULO 2. OPENFOAM 11
+
+O OpenFOAM e? um ambiente de programac?a?o de alto n??vel orientado a?
+obejtos, os operadores matema?ticos esta?o todos sobrecarregados no sistema,
+de modo que se pode realizar operac?o?es sobre estruturas de dados paralelas
+como se estivesse fazendo uma simples operac?a?o aritme?tica. As classes imple-
+mentadas no sistema permitem que, em suas aplicac?o?es, sejam representadas
+de forma tensorial, as equac?o?es do feno?meno fisico que se deseja modelar,
+como na Equac?a?o (2.1).
+
+? (?)
+
+?t
++ ?· (U?) ??· (????) = S? (2.1)
+
+A equac?a?o (2.1) e? t??pica de um problema de convecc?a?o-difusa?o que pode
+ser representada em uma aplicac?a?o do OpenFOAM da seguinte maneira:
+
+1 fvScalarMatrix PhiEqn
+2 (
+3 fvm::ddt(phi)
+4 + fvc::div(U,phi)
+5 - fvc:: laplacian(Gamma ,phi)
+6 ==
+7 S
+8 )
+
+A representac?a?o da?-se atrave?s da chamada das classes como fvScalarMa-
+trix que ira? criar o objeto phiEqn que representa a equac?a?o. Ao definir cada
+termo da equac?a?o, atrave?s dos operadores diferenciais representados pelas
+classes, o sistema cria uma matriz de coeficientes da discretizac?a?o resultante
+da ac?a?o de cada operador. Cada operador ira? agir segundo o especificado
+pelo caso, ou seja, o me?todo de discretizac?a?o e interpolac?a?o das propriedades
+de cada um dos operadores pode mudar de acordo com o que for escolhido
+no caso. No caso dos operadores no namespace fvm sera?o feitas discretiza-
+c?o?es impl??citas, caso sejam usados os operadores diferenciais do namespace
+fvc a discretizac?a?o sera? feita de forma expl??cita. A possibilidade de mu-
+dar o esquema de discretizac?a?o sem ser necessa?ria a implementac?a?o de uma
+nova rotina, da? aos programas implementados nesse ambiente uma enorme
+flexibilidade, dessa forma e? poss??vel variar o me?todo nume?rico facilmente e a
+investigac?a?o de diferentes alternativas torna-se uma tarefa simples. A soluc?a?o
+do sistema de equac?o?es resultante e? feita atrave?s da chamada de uma rotina
+de soluc?a?o, que assim como os operadores diferenciais mudam o esquema de
+soluc?a?o de acordo com o especificado no caso. A combinac?a?o de esquemas
+nume?ricos a serem utilizados sera? escolhida no caso a ser estudado, sendo a
+aplicac?a?o apenas uma matriz de alto n??vel, que forma o programa implemen-
+tado ao ser utilizada pelo caso. A aplicac?a?o gene?rica sendo chamada pelo
+caso, segundo os me?todos escolhidos, ira? dar forma ao simulador desejado.
+
+
+
+CAPI?TULO 2. OPENFOAM 12
+
+Para o aprendizado do sistema, foram implementadas aplicac?o?es com o
+OpenFOAM para problemas envolvendo separadamente as tre?s equac?o?es di-
+ferenciais parciais ba?sicas que esta?o presentes na maioria dos feno?menos es-
+tudados. A soluc?a?o dessas equac?o?es separadamente ajuda a resolver os pro-
+blemas de implementac?a?o do simulador a ser desenvolvido, que usa duas das
+equac?o?es presentes nesses modelos ba?sicos. Os problemas estudados foram os
+feno?menos de difusa?o de calor em regime permanente, transiente e o problema
+de transporte advectivo. Como parte inicial do simulador foi desenvolvida
+uma aplicac?a?o para a soluc?a?o do escoamento monofa?sico em meios porosos,
+que consiste na soluc?a?o de uma equac?a?o el??ptica, equac?a?o de pressa?o, mode-
+lando o feno?meno em regime permanente. Posteriormente foi implementado
+o modelo bifa?sico, que usa a equac?a?o de advecc?a?o para a saturac?a?o e uma
+equac?a?o el??ptica para a soluc?a?o da equac?a?o de pressa?o.
+
+2.3.1 Difusa?o de calor
+
+Para a soluc?a?o da equac?a?o parabo?lica, que foi empregada na soluc?a?o da
+equac?a?o de pressa?o do simulador monofa?sico, foram feitas duas aplicac?o?es
+no OpenFOAM para a soluc?a?o do problema de difusa?o de calor em regime
+permanente e transiente. O feno?meno de difusa?o transiente e? descrito pela
+equac?a?o (2.2),
+
+?2T + q =
+1
+
+?
+
+?T
+
+?t
+, (2.2)
+
+onde T representa a temperatura, q representa um termo de gerac?a?o pontual
+de calor e ? a difusividade te?rmica do material. No OpenFoam o co?digo em
+C++ referente a discretizac?a?o e? escrito da seguinte forma:
+
+1 fvScalarMatrix Teqn
+2 (
+3 fvc:: laplacian(T)
+4 + q
+5 ==
+6 (1/ alpha )*fvm::ddt(T)
+7 )
+
+Para a soluc?a?o dos problemas em regime permanente e? usada a equac?a?o
+2.2 eliminando-se a derivada temporal. Pode-se facilmente mudar o me?todo
+de discretizac?a?o de uma formulac?a?o expl??cita para uma formulac?a?o impl??cita
+apenas mudando o termo fvc::laplacian(T) para fvm::laplacian(T).
+
+Deve-se tomar cuidado ao implementar uma aplicac?a?o que utiliza equa-
+c?o?es adimensionalizadas nesse sistema, ja? que as varia?veis, quando criadas,
+recebem uma unidade associada. A Tabela 2.1 mostra o padra?o para repre-
+sentar as unidades no sistema.
+
+
+
+CAPI?TULO 2. OPENFOAM 13
+
+Tabela 2.1: Padra?o de unidades no OpenFOAM.
+
+Posic?a?o Propriedade Unidade
+1 Massa Kilograma (kg)
+2 Comprimento metro (m)
+3 Tempo segundo (s)
+4 Temperatura Kelvin (K)
+5 Quantidade kilograma-mol (kg-mol)
+6 Corrente Ampere (A)
+7 Intesidade luminosa candela (cd)
+
+A associac?a?o de cada campo a uma unidade no sistema e? feita para evitar
+que sejam feitas operac?o?es que na?o estejam dimensionalmente corretas. Cada
+operador diferencial carrega consigo uma operac?a?o dimensional, por exemplo
+o resultado do operador fvc::div resulta em uma divisa?o pela unidade de
+comprimento.
+
+Por convenie?ncia o sistema de unidades adotado na aplicac?a?o desenvolvida
+e? o sistema internacional de unidades, SI, e na mudanc?a de unidades e? feito
+o uso de constantes em alguns termos das equac?o?es. Conforme mostrado
+na Tabela 2.1 ao criar-se um campo de presso?es em Pa = (kg m?1 s?2)
+as unidades da varia?vel devem ser informadas ao me?todo que cria o campo
+atrave?s de um vetor contendo nu?meros que representam as pote?ncias as quais
+sera?o elevadas cada unidade. Seguindo a ordem apresentada anteriomente na
+tabela 2.1 o vetor [1 -1 -2 0 0 0 0] representara? a unidade da varia?vel de pressa?o
+no sistema.
+
+2.3.2 Advecc?a?o linear
+
+Para a soluc?a?o da equac?a?o hiperbo?lica, que sera? empregada na soluc?a?o da
+equac?a?o de saturac?a?o do simulador, foi feita uma aplicac?a?o no OpenFOAM
+para a soluc?a?o do problema de advecc?a?o. O feno?meno e? descrito pela equac?a?o
+(2.3).
+
+?f
+
+?t
++ ?· (~uf) = 0 (2.3)
+
+onde f representa a grandeza que se esta? sendo transportada e ~u o campo ve-
+torial de velocidades responsa?vel pelo transporte advectivo de f. A aplicac?a?o
+usada para a soluc?a?o dessa equac?a?o faz parte das aplicac?o?es que vem com a
+biblioteca, no entanto se optou por implementar uma aplicac?a?o similar para
+melhor aprendizado do funcionamento do sistema. No OpenFOAM o co?digo
+
+
+
+CAPI?TULO 2. OPENFOAM 14
+
+em C++ referente a aplicac?a?o e? escrito da seguinte forma:
+
+1 #include "fvCFD.H"
+2
+3 int main(int argc , char *argv [])
+4 {
+5 # include "setRootCase.H"
+6 # include "createTime.H"
+7 # include "createMesh.H"
+8 # include "createFields.H"
+9
+
+10 surfaceScalarField phi=(fvc:: interpolate(U) &amp;amp; mesh.Sf());
+11
+12 for (runTime ++; !runTime.end(); runTime ++)
+13 {
+14 f.storePrevIter ();
+15
+16 solve(fvm::ddt(f) == - fvm::div(phi , f));
+17 phi = (fvc:: interpolate(U) &amp;amp; mesh.Sf());
+18
+19 runTime.write ();
+20 }
+21 return 0;
+22 }
+
+A primeira inclusa?o descrita no co?digo anterior torna acess??vel o names-
+pace FOAM, que e? o escopo onde esta?o os namespaces como fvc e fvm que
+por sua vez abrigam os templates para as classes como div, grad e laplacian.
+A inclusa?o setRootCase.H ira? verificar uma lista de argumentos de entrada
+necessa?rios a? execuc?a?o do programa. Em createTime.H sa?o criados os para?-
+metros de controle da simulac?a?o, como instante inicial, final e incremento de
+tempo. A inclusa?o createMesh.H ira? gerar os dados de malha necessa?rios
+na discretizac?a?o. A u?ltima inclusa?o createFields.H tem conteu?do definido
+pelo usua?rio que cria a aplicac?a?o. Neste arquivo sa?o criados os campos que
+sera?o usados na aplicac?a?o, seus valores e condic?o?es de contorno que sera?o
+lidos do direto?rio do caso. Na representac?a?o descrita no co?digo anterior o
+termo de diverge?ncia usa o campo vetorial das velocidades interpolado dos
+ve?rtices para as faces. Para realizar a interpolac?a?o usa-se a seguinte linha de
+co?digo em C++:
+
+1 u_f = fvc:: interpolate(u);
+
+Com os valores do campo de velocidades interpolado para as faces e? cal-
+culado o fluxo atrave?s de cada face, representado pelo campo escalar phi. A
+escolha do me?todo de interpolac?a?o a ser usado e? feita no direto?rio contendo
+o caso, desta forma pode-se usar diferentes me?todos de interpolac?a?o sem fa-
+zer mudanc?as na implementac?a?o da aplicac?a?o desenvolvida. Assim como nos
+
+
+
+CAPI?TULO 2. OPENFOAM 15
+
+problemas de calor descritos anteriormente pode-se mudar a formulac?a?o de
+expl??cita para impl??cita, desta forma para se implementar a te?cnica upwind
+impl??cita escolhemos o me?todo de interpolac?a?o linear no caso a ser simulado
+e usamos o seguinte co?digo na aplicac?a?o:
+
+1 fvScalarMatrix Feqn(
+2 fvm::div(phi ,f)
+3 + fvm::ddt(f)
+4 == 0
+5 )
+6 Feqn.solve ();
+
+Para usar uma formulac?a?o expl??cita basta apenas usar o template de dis-
+cretizac?a?o de divergentes do namespace fvc, fvc::div.
+
+2.4 Casos
+
+Caso, ou case, e? o nome dado ao direto?rio contendo os arquivos que ser-
+vira?o de entrada para a aplicac?a?o utilizada. Esses direto?rios sa?o organizados
+segundo o padra?o do OpenFOAM. As aplicac?o?es desenvolvidas usando as
+classes desse sistema modelam problemas tridimensionais podendo ser usa-
+das para resolver problemas unidimensionais e bidimensionais.
+
+Como exemplo de um caso com geometria tridimensional, e? mostrada a
+Figura 2.2 com o modelo de uma barra com difusividade te?rmica constante
+e uniforme ao longo de toda geometria da barra, submetida a um gradiente
+de temperatura imposto, aplicado a?s duas extremidades da barra.
+
+Figura 2.2: Esquema do caso de difusa?o.
+
+E? imposto um fluxo de calor nulo nas faces que circundam a barra. Essas
+condic?o?es de contorno com temperatura prescrita em duas extremidades e
+fluxo nulo em redor da barra fornecem uma soluc?a?o conhecida, que representa
+uma distribuic?a?o linear de temperatura, possibilitando assim a verificac?a?o dos
+resultados. A Figura 2.3 mostra um exemplo da organizac?a?o padra?o de um
+
+
+
+CAPI?TULO 2. OPENFOAM 16
+
+direto?rio com a estrutura de arquivos que forma um caso que usa a aplicac?a?o
+desenvolvida para o problema de difusa?o descrito anteriormente.
+
+Figura 2.3: Estrutura do direto?rio de um caso.
+
+Olhando-se para os arquivos no direto?rio do caso temos um direto?rio cha-
+mado de 0, que conte?m os arquivos que definem as condic?o?es iniciais dos
+campos e os valores das varia?veis que dependem do tempo. No OpenFOAM
+existem campos escalares, vetoriais e tensoriais que, por definic?a?o, ja? sa?o em
+tre?s dimenso?es, para resolver um problema unidimensional deve-se criar uma
+fila de blocos e para um problema bidimensional um plano de blocos. No caso
+do problema de difusa?o aqui descrito o campo sera? tridimensional, escalar e
+uniforme com os valores iniciais de temperatura contidos no arquivo nome-
+ado como T. Nesse arquivo, tambe?m encontra-se a definic?a?o das condic?o?es
+de contorno que sa?o impostas segundo palavras chave e que sa?o associadas
+a partes da geometria com nomes definidos no arquivo com a geometria do
+problema. No OpenFOAM sa?o poss??veis diferentes tipos de condic?o?es de
+contorno que podem ser impostas, como exemplo, pode-se citar as condic?o?es
+fixedV alue, cyclic, zeroGradient e symmetryPlane.
+
+O arquivo com a geometria do problema com o qual sera? gerada a malha
+encontra-se no direto?rio polyMesh, que neste caso esta? no direto?rio constant,
+se aqui estivesse sendo usada a ferramenta de gerac?a?o adaptativa de malhas
+como a malha mudaria com o tempo este direto?rio deveria estar dentro da
+pasta 0 como o arquivo de temperatura. O trecho de co?digo a seguir mostra
+a criac?a?o da geometria e a discretizac?a?o deste problema com o blockMesh.
+
+1 FoamFile
+2 {
+3 version 2.0;
+4 format ascii;
+5 class dictionary;
+
+
+
+CAPI?TULO 2. OPENFOAM 17
+
+6 object blockMeshDict;
+7 }
+8
+9 convertToMeters 1;
+
+10
+11 vertices
+12 (
+13 (0 0 0) (1 0 0)
+14 (1 5 0) (0 5 0)
+15 (0 0 1) (1 0 1)
+16 (1 5 1) (0 5 1)
+17 );
+18
+19 blocks
+20 (
+21 hex (0 1 2 3 4 5 6 7) (5 25 5) simpleGrading (1 1 1)
+22 );
+23
+24 edges ();
+25
+26 patches
+27 (
+28 patch down ( (1 5 4 0) )
+29 patch up ( (3 7 6 2) )
+30 patch left ( (0 4 7 3) )
+31 patch right( (2 6 5 1) )
+32 patch front( (4 5 6 7) )
+33 patch back ( (0 3 2 1) )
+34 );
+35
+36 mergePatchPairs ();
+
+No arquivo com a geometria sa?o definidos os patches que, neste caso, sa?o
+os planos que formam o contorno da barra. Atrave?s do nome associado a
+cada patch sa?o definidas as condic?o?es de contorno de cada varia?vel criada no
+problema. O trecho de co?digo a seguir mostra o arquivo nomeado como T
+que cria o campo de temperaturas do problema descrito.
+
+1 FoamFile
+2 {
+3 version 2.0;
+4 format ascii;
+5 class volScalarField;
+6 location "constant";
+7 object T;
+8 }
+9
+
+10 dimensions [1 -1 -2 0 0 0 0];
+11
+
+
+
+CAPI?TULO 2. OPENFOAM 18
+
+12 internalField uniform 0;
+13
+14 boundaryField
+15 {
+16 down { type fixedValue; value uniform 0; }
+17 up { type fixedValue; value uniform 10;}
+18 left { type zeroGradient; }
+19 right { type zeroGradient; }
+20 front { type zeroGradient; }
+21 back { type zeroGradient; }
+22 }
+
+Ainda no direto?rio constant encontram-se os campos K, tensorial, e
+alpha, escalar. Outro arquivo pode ser adicionado a esse direto?rio a fim
+de definir varia?veis com valor constante no problema. No direto?rio system
+encontram-se os arquivos com os para?metros que ira?o controlar a aplica-
+c?a?o. No arquivo controlDict esta?o para?metros como tempo inicial e final
+de simulac?a?o, incremento de tempo e outras varia?veis de controle como o
+nu?mero de Courant para problemas com advecc?a?o, podendo ainda o usua?-
+rio utilizar como passo de tempo inicial o u?ltimo passo de tempo simulado.
+No arquivo fvSchemes e? especificado o me?todo de discretizac?a?o aplicado a
+cada operador diferencial e os esquemas de interpolac?a?o utilizados para cada
+varia?vel. No arquivo fvSolution sa?o definidos os solvers utilizados para a
+soluc?a?o do sistema de equac?o?es resultante da discretizac?a?o de cada equac?a?o.
+Outros arquivos de controle da simulac?a?o podem ser adicionados como mos-
+trado na Figura 2.3 no arquivo ?Dict como por exemplo quando resolvemos
+o problema usando a aplicac?a?o em paralelo que e? necessa?rio criar o arquivo
+decomposeParDict que especifica em quantos subdom??nios sera? dividido o
+dom??nio do problema, qual o me?todo de divisa?o utilizado e quantos subdo-
+m??nios ira?o ficar com cada processador.
+
+Apo?s a implementac?a?o da aplicac?a?o, a mesma e? compilada usando pa-
+ra?metros de compilac?a?o definidos no arquivo de configurac?a?o da biblioteca
+OpenFOAM. Para compilar a aplicac?a?o basta digitar o comando wmake no
+direto?rio da aplicac?a?o. Apo?s a compilac?a?o da aplicac?a?o no direto?rio do caso,
+sa?o escolhidos os esquemas e as condic?o?es iniciais e de contorno do problema.
+
+Para gerar a malha e? executado o comando blockMesh no direto?rio do
+caso. Caso seja usado um gerador de malhas externo basta converter a malha
+para o formato nativo e copiar o arquivo para o direto?rio polyMesh dentro do
+direto?rio constant. A seguir e? apresentado o resultado da gerac?a?o da malha
+para o problema de difusa?o de calor mostrado anteriormente. A geometria do
+problema e? uma barra com dimenso?es 1x5x1 discretizada atrave?s da malha
+mostrada na Figura 2.4, onde as dimenso?es em x, y e z foram discretizadas
+com 5, 25 e 5 blocos em cada direc?a?o respectivamente exposta a um diferencial
+
+
+
+CAPI?TULO 2. OPENFOAM 19
+
+de temperatura de 10K para 0K.
+
+Figura 2.4: Malha da discretizac?a?o do problema de calor.
+
+Apo?s a gerac?a?o da malha com o blockMesh e? executada a aplicac?a?o no
+direto?rio do caso digitando-se o comando com o nome referente a aplicac?a?o.
+A Figura 2.5 mostra a soluc?a?o do problema descrito anteriormente no caso
+de difusa?o de calor.
+
+Figura 2.5: Soluc?a?o do caso com o problema de calor.
+
+A soluc?a?o apresentada mostra o resultado quando o fluxo de calor na
+barra encontra-se em regime permanente.
+
+
+
+Cap??tulo 3
+
+Equac?o?es Governantes
+
+A modelagem de reservato?rios de petro?leo consiste na simulac?a?o do esco-
+amento dos fluidos tipicamente encontrados na rocha reservato?rio atrave?s de
+uma matriz permoporosa. O comportamento dos hidrocarbonetos nas condi-
+c?o?es de reservato?rio pode ser retratado atrave?s de modelos como o black-oil,
+API-tracking, composicional [14] [13] e pseudo composicional [28]. As diferen-
+c?as ba?sicas entre cada um desses modelos sa?o o tratamento dado a? interac?a?o
+entre os fluidos, o nu?mero de componentes e seu comportamento devido a?s
+variac?o?es de pressa?o, temperatura e composic?a?o. Cada modelo aplica-se me-
+lhor a um tipo de sistema petrol??fero, onde para cada condic?a?o de pressa?o
+e temperatura do reservato?rio estudado tem-se um comportamento diferente
+dos fluidos contidos na rocha reservato?rio. As propriedades reolo?gicas e ter-
+modina?micas comportam-se de maneira diferente favorecendo, em cada caso,
+um modelo de fluxo em particular.
+
+Atrave?s do diagrama de fases de uma determinada mistura de hidrocar-
+bonetos pode-se, dependendo das condic?o?es de pressa?o e temperatura do
+reservato?rio, determinar as caracter??sticas dos fluidos que sera?o encontrados
+em seu interior. A Figura 3.1 mostra a aplicac?a?o comumente utilizada dos
+tipos de modelos mais usados na indu?stria do pretro?leo. O modelo utilizado
+neste trabalho considera que os fluidos que deslocam-se no reservato?rio sa?o
+imisc??veis e incompress??veis, este modelo bifa?sico o?leo a?gua representa uma
+simplificac?a?o do modelo black oil. O modelo aqui apresentado considera que
+o escoamento desenvolve-se numa rocha com compressibilidade nula. A tem-
+peratura do escoamento e? assumida constante e as propriedades dos fluidos
+na?o variam com o tempo.
+
+20
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 21
+
+Figura 3.1: Aplicac?a?o dos modelos de fluxo. Modificado de [20] apud [29].
+
+3.1 Propriedades da rocha e dos fluidos
+
+A definic?a?o das propriedades da rocha reservato?rio e dos fluidos que nela
+escoam sa?o o ponto de partida para a caracterizac?a?o do problema abordado
+neste tipo de simulador. O simulador monofa?sico desenvolvido como etapa
+inicial considera fluido e rocha compress??veis. Desta forma, para a formulac?a?o
+do modelo monofa?sico, sera?o apresentadas as equac?o?es para as propriedades
+de fluido e rocha compress??veis. As equac?o?es do modelo bifa?sico sera?o apre-
+sentadas com os termos compress??veis e posteriormente sera?o simplificadas
+para o modelo bifa?sico incompress??vel. As propriedades da rocha usadas nos
+problemas de fluxo em reservato?rios de petro?leo sa?o a porosidade, ? , e a
+permeabilidade absoluta, K, que, para o caso de um reservato?rio heteroge?-
+neo, possuem diferentes valores em cada ce?lula do dom??nio. A porosidade, ou
+porosidade efetiva, em uma determinada porc?a?o da rocha, e? definida como a
+raza?o entre o volume de vazios interconectados existentes e o volume total,
+podendo variar de acordo com a pressa?o do fluido confinado nos poros. A
+porosidade numa ce?lula informa o quanto da ce?lula esta? ocupada pelo fluido
+e sua variac?a?o com a pressa?o pode ser obtida pela seguinte expressa?o linea-
+rizada [20]:
+
+?(p) = ?ref [1 + cr(p?pref )] , (3.1)
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 22
+
+onde ?ref e? a porosidade obtida em relac?a?o a uma pressa?o de refere?ncia pref
+e cr e? a compressibilidade da rocha.
+
+A permeabilidade absoluta e? uma medida que representa a facilidade que
+o fluido tem de escoar pelos poros interconectados da rocha, essa varia?vel
+aparece nos modelos matema?ticos representada pelo tensor de segunda ordem
+de permeabilidades absolutas segundo as direc?o?es x , y e z , como mostrado
+na Equac?a?o (3.2):
+
+K =
+
+?
+?? kxx kxy kxzkyx kyy kyz
+kzx kzy kzz
+
+?
+?? . (3.2)
+
+No equacionamento usado na simulac?a?o de reservato?rios o tensor e? fre-
+quentemente representado na forma diagonal, obtido quando as direc?o?es pre-
+ferenciais de fluxo coincidem com as direc?o?es principais do tensor de permea-
+bilidades absolutas. O tensor na forma diagonalizada e? mostrado na Equac?a?o
+(3.3):
+
+K =
+
+?
+?? kxx 0 00 kyy 0
+
+0 0 kzz
+
+?
+?? . (3.3)
+
+Algumas propriedades dos fluidos sa?o importantes para a modelagem
+computacional do fluxo em meios porosos nas condic?o?es espec??ficas dos reser-
+vato?rios. Dentre elas temos: compressibilidade, fator volume de formac?a?o,
+masssa espec??fica e viscosidade.
+
+A compressibilidade de um fluido, cl, pode ser entendida como uma me-
+dida da variac?a?o do volume do fluido quando o mesmo sofre uma variac?a?o
+de pressa?o. Admitindo-se que a temperatura ao longo de todo reservato?rio
+permanece constante podemos escrever as seguintes relac?o?es:
+
+cl = ?
+1
+
+V
+
+?V
+
+?p
+, (3.4)
+
+ou ainda:
+
+cl =
+1
+
+?
+
+??
+
+?p
+. (3.5)
+
+onde V e ? sa?o o volume e a massa espec??fica do fluido respectivamente, e sa?o
+medidos segundo as condic?o?es de reservato?rio. Uma outra propriedade bas-
+tante usada na simulac?a?o de reservato?rios e? o fator volume de formac?a?o, que
+representa uma relac?a?o entre o volume do fluido nas condic?o?es de reservato?-
+rio, V , e em condic?o?es padra?o Vsc. As condic?o?es padra?o, standard conditions,
+adotadas sa?o referentes a uma temperatura de 60?F e a uma pressa?o de 14,7
+psi. A Equac?a?o (3.6) mostra a relac?a?o:
+
+B =
+V
+
+Vsc
+, (3.6)
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 23
+
+ou:
+B =
+
+?sc
+?
+. (3.7)
+
+Em escoamentos com fluidos levemente compress??veis podemos escre-
+ver uma relac?a?o entre a variac?a?o do fator volume de formac?a?o e a pres-
+sa?o. Integrando-se a Equac?a?o (3.4) admitindo-se temperaturas constantes ao
+longo do reservato?rio pode-se escrever:
+
+B(p) =
+Bref
+
+[1 + cl (p?pref )]
+, (3.8)
+
+onde Bref e? o fator volume de formac?a?o em relac?a?o a pressa?o de refere?ncia que
+normalmente e? a pressa?o de bolha, Pb, mas como a relac?a?o e? linear pode-se
+utilizar qualquer valor maior que Pb. A Figura 3.2 mostra o comportamento
+do fator volume de formac?a?o para o o?leo.
+
+Figura 3.2: Comportamento do fator volume de formac?a?o.
+
+Sabe-se que um o?leo com uma maior quantidade de frac?o?es leves tem um
+Bo maior que um o?leo pesado a uma dada pressa?o. Com a diminuic?a?o da
+pressa?o o valor de Bo aumenta ate? chegar no valor de pressa?o em que a frac?a?o
+mais leve do o?leo sai de soluc?a?o, a partir deste ponto o valor de Bo comec?a
+a cair novamente. A Equac?a?o (3.8) pode ser utilizada considerando-se que
+o reservato?rio encontra-se a uma profudidade tal que a pressa?o esta?tica seja
+maior que a pressa?o de bolha, valendo assim a linearizac?a?o feita segundo uma
+pressa?o de refere?ncia de modo que tenha-se pref ? Pb.
+
+Sob as condic?o?es de reservato?rio mencionadas, pode-se, a partir das Equa-
+c?o?es (3.7) e (3.8), escrever uma relac?a?o para a variac?a?o da massa espec??fica
+em func?a?o da pressa?o para valores de pressa?o acima da pressa?o de bolha:
+
+?(p) = ?ref [1 + cl (p?pref )] , (3.9)
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 24
+
+A u?ltima propriedade a ser definida e? a viscosidade do fluido, que varia
+em func?a?o da pressa?o assim como a porosidade e o fator volume de formac?a?o.
+A relac?a?o pode ser escrita como:
+
+µ(p) =
+µref
+
+[1 ? cµ (p?pref )]
+, (3.10)
+
+onde µref e? o valor da viscosidade em relac?a?o a? pressa?o de refere?ncia igual
+a pref . A constante cµ e? a mudanc?a fracional da viscosidade por unidade
+de variac?a?o de pressa?o. Em sistemas trifa?sicos essa mudanc?a fracional e? em
+grande parte uma func?a?o da frac?a?o de ga?s dissolvido no o?leo. A Figura 3.3
+mostra a variac?a?o da viscosidade em func?a?o da pressa?o que assim como o
+fator volume da formac?a?o tem um comportamento linear para valores de
+pressa?o maiores que a presa?o de bolha.
+
+Figura 3.3: Comportamento da viscosidade.
+
+Abaixo da pressa?o de bolha a medida que as frac?o?es mais leves saem de
+soluc?a?o do o?leo, com a queda de pressa?o, a viscosidade aumenta. Acima da
+pressa?o de bolha um aumento na pressa?o resulta em um respectivo aumento
+da viscosidade. Sob as mesmas condic?o?es de reservato?rio com pressa?o esta?tica
+maior que a pressa?o de bolha e? razoa?vel a linearizac?a?o.
+
+3.2 Lei de Darcy
+
+A lei de Darcy [20] e? uma lei emp??rica que relaciona a vaza?o de um fluido
+que escoa em um meio poroso com o gradiente potencial aplicado ao mesmo.
+O potencial e? definido pela Equac?a?o (3.11):
+
+? = p + ?Z, (3.11)
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 25
+
+onde p e? a pressa?o do l??quido a uma profundidade Z, calculada em relac?a?o a
+um referencial orientado para baixo, e ? e? o peso espec??fico do fluido definido
+como ? = ?c?g, onde ? e g sa?o a masssa espec??fica do fluido e a gravidade
+local respectivamente.
+
+Os termos ?c, ?c e ?c que aparecem ao longo do texto sa?o constantes
+usadas para compatibilizar as unidades usadas do sistema usual adotado
+na simulac?a?o de escoamento de petro?leo [20] e o sistema internacional de
+unidades. A tabela 3.2 mostra o valor dos fatores para o sistema internacional
+de unidades (SI) e para o sistema de unidades usual utilizado na indu?stria do
+petro?leo. Esses termos sa?o introduzidos para facilitar a mudanc?a de sistema
+de unidades, que no OpenFOAM e? feita durante a criac?a?o das varia?veis como
+foi discutido no Cap??tulo 2.
+
+Tabela 3.1: Fatores de conversa?o de unidades.
+Fator SI Usual
+?c 1.0 5.614583
+?c 8.64 10
+
+?5 1.127
+?c 1.0 10
+
+?3 2.1584 10?4
+
+Assumindo-se um fluxo monofa?sico unidimensional, a velocidade superfi-
+cial, ou velocidade de Darcy pode ser escrita segundo a expressa?o:
+
+ux = ??c
+kxx
+µ
+
+??
+
+?x
+(3.12)
+
+Na Equac?a?o (3.12) o termo kxx representa a permeabilidade absoluta do
+meio poroso na direc?a?o x e µ a viscosidade do fluido. Pode-se ainda escrever
+a lei de Darcy para o caso multidimensional cuja equac?a?o de velocidades pode
+ser escrita da seguinte forma:
+
+~u = ??c
+K
+
+µ
+??, (3.13)
+
+onde ~u e? o vetor de velocidades de Darcy e K e? um tensor de permeabilidades
+absolutas do meio poroso.
+
+3.3 Lei da conservac?a?o de massa
+
+A lei da conservac?a?o de massa, tambe?m chamada de equac?a?o da continui-
+dade, e? uma expressa?o matema?tica que representa um balanc?o entre fluxos
+de massa. Pode-se obter a lei de conservac?a?o de massa considerando-se o
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 26
+
+fluxo atrave?s de um volume de controle como mostrado na FIgura 3.4. A
+variac?a?o temporal da massa que passa atrave?s de um volume de controle V
+pode ser expressa pela relac?a?o [20]:
+
+(me ?ms) + mg = mac, (3.14)
+
+onde me e? a massa que entra no volume de controle, ms a massa que sai do
+volume de controle, mg a massa gerada no volume de controle durante um
+intervalo de tempo ?t, devido a termos de fonte, e mac e? a massa acumulada
+no volume de controle durante o mesmo intervalo de tempo.
+
+Figura 3.4: Esquema de fluxo.
+
+Se considerarmos um volume de controle hexae?drico como o mostrado na
+Figura 3.1, podemos escrever:
+
+me =
+[
+(m?xAx)x?4x/2 + (m?yAy)y?4y/2 + (m?zAz)z?4z/2
+
+]
+4t (3.15)
+
+e
+ms =
+
+[
+(m?xAx)x+4x/2 + (m?yAy)y+4y/2 + (m?zAz)z+4z/2
+
+]
+4t, (3.16)
+
+onde x, y e z sa?o as coordenadas do centro do volume de controle, Ax, Ay e
+Az sa?o as a?reas das faces segundo as direc?o?es x, y e z respectivamente e m?
+e? o fluxo de massa por unidade de a?rea que passa pelas faces do volume de
+controle, que, para a direc?a?o x, pode ser definido como:
+
+m?x = ?c?ux. (3.17)
+
+Definindo mg como a massa gerada no interior do volume de controle
+durante um intervalo de tempo 4t devido a uma vaza?o q podemos escrever:
+
+mg = qm4t = ?q4t. (3.18)
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 27
+
+O termo de acumulac?a?o representa a quantidade de massa acumulada
+durante um intervalo de tempo e pode ser escrito como:
+
+mac = m
+t+4t
+V ?m
+
+t
+V , (3.19)
+
+onde mtV e? quantidade total de massa contida no volume de controle no ins-
+tante de tempo t. Como trabalharemos com malhas estruturadas hexae?dricas
+essa quantidade pode ser escrita em func?a?o do volume do bloco, Vb, e da po-
+rosidade do me?dia no bloco, ?. Dessa forma podemos reescrever a Equac?a?o
+(3.19) como:
+
+mac = (??4x4y4z)
+t+4t ? (??4x4y4z)t , (3.20)
+
+substituindo as equac?o?es (3.15), (3.16), (3.18) e (3.20) na Equac?a?o (3.14) e
+dividindo-se a equac?a?o resultante pelo volume do bloco hexae?drico e por ?t
+temos: [
+
+m?x+?x/2 ? m?x??x/2
+?x
+
+]
+?
+[
+m?y+?y/2 ? m?y??y/2
+
+?y
+
+]
+
+?
+[
+m?z+?z/2 ? m?z??z/2
+
+?z
+
+]
++
+
+qm
+?cVb
+
+=
+??t+?t ???t
+
+?t
+. (3.21)
+
+Escrevendo-se a Equac?a?o (3.17) para demais direc?o?es cartesianas, pode-se
+avaliar a mesma no limite em que os valores de ?x, ?y, ?z e ?t tendem a
+zero, encontrando:
+
+?
+?
+
+?x
+(?ux) ?
+
+?
+
+?y
+(?uy) ?
+
+?
+
+?z
+(?uz) +
+
+qm
+?cVb
+
+=
+1
+
+?c
+
+?
+
+?t
+(??) , (3.22)
+
+ou ainda:
+?
+
+?t
+(??) + ?c?· (?~u) =
+
+qm
+Vb
+. (3.23)
+
+A Equac?a?o (3.23) representa a forma final da equac?a?o da lei de conserva-
+c?a?o de massa, ou equac?a?o da continuidade.
+
+3.4 Escoamento monofa?sico
+
+No modelo monofa?sico em que admite-se que a temperatura e? constante
+resta apenas a equac?a?o de pressa?o a ser resolvida e com os valores de pres-
+sa?o todas as outras propriedades do fluido sa?o determinadas. A equac?a?o de
+pressa?o e? obtida atrave?s das duas leis expostas anteriormente, da equac?a?o de
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 28
+
+conservac?a?o de massa e da lei de Darcy. Substituindo a equac?a?o (3.12) na
+equac?a?o (3.23) encontramos:
+
+?
+
+?t
+(??) ??c?c?·
+
+(
+?
+K
+
+µ
+??
+
+)
+=
+qm
+Vb
+. (3.24)
+
+introduzindo-se (3.11):
+
+?·
+[
+?c?
+
+K
+
+µ
+(?p + ??Z)
+
+]
++
+
+qm
+?cVb
+
+=
+1
+
+?c
+
+? (??)
+
+?t
+(3.25)
+
+dividindo por ?sc, usando-se (3.7) e sabendo que qm = ?cqsc?sc obte?m-se:
+
+?·
+[
+?c
+K
+
+Bµ
+(?p + ??Z)
+
+]
++
+qsc
+Vb
+
+=
+1
+
+?c
+
+?
+
+?t
+
+(
+?
+
+B
+
+)
+(3.26)
+
+O modelo implementado na aplicac?a?o para o escoamento monofa?sico as-
+sume que o fluido e? levemente compress??vel, como a?gua e o?leo pesado, e que
+a porosidade da rocha varia segundo a Equac?a?o (3.1). As equac?o?es para
+a modelagem de um fluido levemente compress??vel sa?o as Equac?o?es (3.8)
+e (3.10), substituindo essas equac?o?es na Equac?a?o (3.26) atrave?s de alguma
+manipulac?a?o pode-se obter:
+
+?·
+[
+?c
+K
+
+Bµ
+(?p + ??Z)
+
+]
++
+qsc
+
+Vb
+=
+
+1
+
+?c
+
+(
+?
+cl
+Bref
+
++ ?ref
+cr
+B
+
+)
+?p
+
+?t
+(3.27)
+
+A Equac?a?o (3.27), que descreve o escoamento monofa?sico em meios poro-
+sos para fluidos levemente compress??veis. Como os valores das propriedades
+dos fluidos e da rocha dependem da pressa?o, a Equac?a?o (3.27) e? na?o linear.
+Para lineariza?-la e? usada uma formulac?a?o iterativa direta na qual os valores
+das propriedades do fluido e da rocha sa?o calculados e a equac?a?o e? resolvida
+implicitamente para a pressa?o, os valores das propriedades sa?o recalculados
+e a equac?a?o e? resolvida novamente, o processo continua ate? que os valores da
+pressa?o convirjam para a soluc?a?o a cada passo de tempo.
+
+3.5 Escoamento bifa?sico
+
+O modelo aplicado para a modelagem do escoamento em reservato?rios no
+simulador desenvolvido foi o de escoamento bifa?sico imisc??vel e incompress??-
+vel em meios porosos. O modelo e? baseado nos mesmos conceitos aplicados a?
+obtenc?a?o das equac?o?es do escoamento monofa?sico. A partir da lei de conser-
+vac?a?o de massa para cada componente do escoamento e? encontrada a equac?a?o
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 29
+
+de saturac?a?o. Uma combinac?a?o das equac?o?es de saturac?a?o e? feita para a ob-
+tenc?a?o da equac?a?o que calculara? a distribuic?a?o de presso?es no reservato?rio.
+A deduc?a?o das equac?o?es de pressa?o e saturac?a?o separadamente e? necessa?ria
+devido ao me?todo empregado para a soluc?a?o do problema. O me?todo IMPES
+que sera? descrito no pro?ximo cap??tulo calcula primeiro o campo de presso?es
+e posteriormente e? encontrada a distribuic?a?o de saturac?o?es no reservato?rio.
+
+Equac?a?o de Saturac?a?o
+
+A saturac?a?o de uma fase, em uma determinada porc?a?o de rocha, repre-
+senta o quociente entre o volume da fase presente nos poros e o volume poroso,
+expressando uma medida percentual de cada fase presente. Para o modelo
+de escoamento bifa?sico totalmente saturado aqui estudado pode-se escrever:
+
+sw + so = 1 (3.28)
+
+onde so e sw sa?o as medidas em valores que variam entre 0 e 1 das saturac?o?es
+de o?leo e a?gua, respectivamente. No modelo de reservato?rios de petro?leo exis-
+tem ainda duas varia?veis, sro e srw , que representam as saturac?o?es residuais
+de o?leo e a?gua. As saturac?o?es residuais esta?o presentes no meio poroso e re-
+presentam quantidades de fluido que na?o podem ser retiradas, permanecendo
+na matriz porosa durante o escoamento. A equac?a?o de saturac?a?o para cada
+fase e? obtida atrave?s da Equac?a?o (3.23), escrita para cada uma das fases,
+donde encontramos:
+
+1
+
+?c
+
+? (?so?o)
+
+?t
++ ?· (?o ~uo) =
+
+?oscqosc
+Vb
+
+(3.29)
+
+para a fase o?leo e:
+
+1
+
+?c
+
+? (?sw?w)
+
+?t
++ ?· (?w ~uw) =
+
+?wscqwsc
+Vb
+
+(3.30)
+
+para a fase a?gua. Os termos qo e qw correspondem a?s vazo?es de o?leo e a?gua
+respectivamente, os vetores ~uo e ~uw representam as velocidades das fases e
+sa?o calculados de acordo com a lei de Darcy e ponderada entre as fases de
+acordo com a permeabilidade relativa da mesma. A permeabilidade repre-
+senta a medida da facilidade que o fluido tem de escoar no meio poroso. Um
+fluido confinado em um meio poroso possui como valor ma?ximo de permeabi-
+lidade a permeabilidade absoluta. Em presenc?a de outros fluidos a facilidade
+de escoamento no meio e? reduzida a um valor menor que a permeabilidade
+absoluta. A permeabilidade de uma fase em um meio poroso na direc?a?o x
+pode ser descrita como:
+
+kl = kx
+
+(
+kl
+kx
+
+)
+= kxkrl (3.31)
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 30
+
+A permeabilidade da fase l, com l = o ou l = w, e? dada pelo produto
+entre a permeabilidade absoluta na direc?a?o x e a permeabilidade relativa. A
+permeabilidade relativa e? uma grandeza que varia de acordo com a quanti-
+dade de fluido no poro, ou seja, em func?a?o da saturac?a?o do fluido. Existem
+modelos, obtidos atrave?s de experimentos, que relacionam os valores das per-
+meabilidades relativas com as saturac?o?es [36]. Dependendo do meio poroso
+estudado, esses modelos podem mudar. Experimentalmente pode ser ob-
+tidas duas curvas de permeabilidade relativa, uma relativa ao processo de
+drenagem e outra ao processo de embebic?a?o. Nos simuladores de escoamento
+em meios porosos e? comumente utilizada a curva de permeabilidade relativa
+referente ao processo que esta? ocorrendo. Em simulac?a?o de reservato?rios o
+perfil das curvas de permeabilidade relativa e? um dos para?metros que sa?o
+controlados para melhor representar o histo?rico de produc?a?o do reservato?rio
+variando-se o perfil das curvas de permeabilidade relativa e? poss??vel ajustar a
+resposta fornecida pelo simulador ao histo?rico de presso?es do reservato?rio. A
+Figura 3.5 mostra um exemplo com curvas de permeabilidade relativa para
+um sistema bifa?sico. onde swi representa a saturac?a?o de a?gua irredut??vel e
+
+Figura 3.5: Curvas de permeabilidade relativa.
+
+sor a saturac?a?o de o?leo residual. A saturac?a?o de a?gua irredut??vel representa
+a frac?a?o de a?gua que fica aprisionada nos poros devido ao efeito Jamim [36]
+enquanto a saturac?a?o de o?leo residual representa a frac?a?o de o?leo que na?o
+pode ser extra??da do reservato?rio.
+
+A lei de Darcy descrita pela Equac?a?o (3.13) foi originalmente obtida para
+um escoamento monofa?sico, podendo ser modificada introduzindo-se o con-
+ceito de permeabilidade relativa. Desta forma podemos reescrever a equac?a?o
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 31
+
+para a fase l como:
+
+~ul = ??c
+Kkrl
+µl
+
+(?pl + ?l?Z) , (3.32)
+
+substituindo as velocidades na equac?a?o de conservac?a?o de massa para cada
+fase obtemos:
+
+1
+
+?c
+
+? (?sl?l)
+
+?t
++ ?·
+
+{
+?l
+
+[
+??c
+
+Kkrl
+µl
+
+(?pl + ?l?Z)
+]}
+
+=
+?lscqlsc
+Vb
+
+. (3.33)
+
+Dividindo-se as equac?o?es resultantes pelas masssas espec??ficas de cada
+fase nas condic?o?es padra?o obtemos:
+
+1
+
+?c
+
+?
+
+?t
+
+(
+?sl
+Bl
+
+)
+??·
+
+{[
+?c
+Kkrl
+Blµl
+
+(?pl + ?l?Z)
+]}
+
+=
+qlsc
+Vb
+
+(3.34)
+
+O modelo de escoamento aqui estudado supo?e que os fluidos sa?o incom-
+press??veis e que o meio poroso e? r??gido. Essas duas condic?o?es implicam em um
+campo escalar de porosidades que na?o varia em func?a?o do tempo, um fator
+volume de formac?a?o igual a? unidade para cada fase e valores de viscosidades
+constantes para cada fase.
+
+Em cada poro, devido a diferenc?a de molhabilidade preferencial da rocha,
+a um dos fluidos, tem-se um encurvamento da superf??cie de contato entre o
+o?leo e a a?gua, a esse feno?meno da?-se o nome de capilaridade. A Figura 3.6
+mostra um exemplo dos diferentes tipos de curvas de pressa?o capilar.
+
+Figura 3.6: Curvas de pressa?o capilar [29].
+
+A obtenc?a?o em laborato?rio das curvas de capilaridade e? feita segundo
+os processos de drenagem e embebic?a?o [33], assim como na permeabilidade
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 32
+
+relativa. Dependendo da molhabilidade da rocha tem-se diferentes tipos de
+curvas de pressa?o capilar para o processo de embebic?a?o.
+
+Para a soluc?a?o das equac?o?es a curva que deve ser usada e? a curva referente
+ao processo de embebic?a?o enquanto que para se calcular as condic?o?es iniciais
+de saturac?a?o de a?gua utiliza-se a curva de drenagem. A capilaridade afeta
+diretamente os valores das presso?es de cada fase no contato e pode ser escrita
+como uma relac?a?o entre as presso?es de cada fase como mostra a Equac?a?o
+(3.35):
+
+pc(sw) = po ?pw (3.35)
+
+Com os campos de pressa?o dos componentes o?leo e a?gua sa?o obtidos os
+valores de pressa?o capilar de cada ponto, e com a curva de pressa?o capilar
+referente ao processo de embebic?a?o sa?o calculados os valores de saturac?a?o
+atrave?s da func?a?o inversa da curva de pressa?o capilar. Esses valores de sa-
+turac?a?o calculados sa?o importantes para definir os valores de saturac?a?o na
+regia?o de transic?a?o do componente o?leo para o componente a?gua como mos-
+trado na Figura 3.7.
+
+Figura 3.7: Saturac?a?o na zona de transic?a?o [29].
+
+Uma aproximac?a?o va?lida que e? comumente empregada e? a de assumir que
+a formac?a?o rochosa possui poros largos e distribuic?a?o de porosidade uniforme,
+neste caso a regia?o de transic?a?o seria muito pequena e pode ser desprezada
+devido a?s dimenso?es do problema.
+
+Usando a Equac?a?o (3.35) pode-se reescrever as equac?o?es de saturac?a?o de
+cada fase em func?a?o apenas da pressa?o da fase o?leo. Essa operac?a?o faz-se
+necessa?ria para a obtenc?a?o posterior da equac?a?o de pressa?o que, de acordo
+com o me?todo IMPES, deve ficar em func?a?o da pressa?o de apenas uma das
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 33
+
+fases como mostrado nas Equac?o?es 3.36 e 3.37:
+
+?
+
+?c
+
+?so
+?t
+
+= ?·
+{[
+?c
+Kkro
+µo
+
+(?po + ?o?Z)
+]}
+
++
+qosc
+Vb
+
+(3.36)
+
+para a fase o?leo e:
+
+?
+
+?c
+
+?sw
+?t
+
+= ?·
+{[
+?c
+Kkrw(sw)
+
+µw
+(?po ??pc(sw) + ?w?Z)
+
+]}
++
+qwsc
+Vb
+
+(3.37)
+
+para a fase a?gua.
+
+Equac?a?o de Pressa?o
+
+A equac?a?o de pressa?o pode ser obtida somando-se as Equac?o?es 3.36 e
+3.37. De acordo com a Equac?a?o (3.28) o termo da derivada temporal anula-
+se, dessa forma obte?m-se:
+
+?·
+{
+?cK
+
+[(
+kro
+µo
+
++
+krw
+µw
+
+)
+?po ?
+
+krw
+µw
+?pc +
+
+(
+kro
+µo
+?o +
+
+krw
+µw
+
+?w
+
+)
+?Z
+
+]}
+= ?Q
+
+(3.38)
+ou:
+
+?· (Tpo?po) = ?· (Tpc?pc) ??· (Tz?Z) ?Q (3.39)
+onde:
+
+Q =
+qwsc
+Vb
+
++
+qosc
+Vb
+
+(3.40)
+
+Tpo = ?cK
+
+(
+kro
+µo
+
++
+krw
+µw
+
+)
+(3.41)
+
+Tpc = ?cK
+
+(
+krw
+µw
+
+)
+(3.42)
+
+Tz = ?cK
+
+(
+kro
+µo
+?o +
+
+krw
+µw
+
+?w
+
+)
+(3.43)
+
+essa representac?a?o atrave?s da separac?a?o de cada operador diferencial aplicado
+aos campos e? feita para ilustrar a forma como sa?o escritas as equac?o?es no
+OpenFOAM que sera?o mostradas no cap??tulo 5.
+
+As equac?o?es do modelo de escoamento multifa?sico em meios porosos po-
+dem ser expressas atrave?s da formulac?a?o parabo?lica ou hiperbo?ica [9] [12].
+As equac?o?es apresentadas neste cap??tulo sa?o referentes a? formulac?a?o para-
+bo?lica. Nesta formulac?a?o o termo de difusa?o da saturac?a?o e? representado
+pela derivada segunda da pressa?o capilar que e? func?a?o da saturac?a?o. A for-
+mulac?a?o dita parabo?lica apresenta cara?ter parabo?lico e hiperbo?lico quando
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 34
+
+consideram-se os efeitos da pressa?o capilar e hiperbo?lico quando e? desprezado
+o termo de pressa?o capilar. Na formulac?a?o hiperbo?lica o equacionamento e?
+feito atrave?s da velocidade das fases e de uma varia?vel de velocidade total,
+tornando a equac?a?o de saturac?a?o uma equac?a?o hiperbo?lica.
+
+Termos de fonte
+
+Para o ca?lculo dos termos de fonte do problema faz-se necessa?rio o uso
+de uma relac?a?o para o acoplamento das presso?es no fundo do poc?o com as
+presso?es do reservato?rio, o modelo adotado foi o modelo de Peaceman mos-
+trado em [34] e [35]. Para poc?os produtores e injetores o tratamento faz-se
+de maneira distinta. Em poc?os injetores os valores de vaza?o ou pressa?o de
+fundo sa?o espec??ficados, em poc?os produtores, devido ao modelo incompres-
+s??vel aqui adotado, a vaza?o volume?trica total dos fluidos deve ser a mesma
+vaza?o volume?trica injetada sendo a pressa?o de fundo calculada a partir dos
+outros para?metros. Para o acoplamento e? utilizada a relac?a?o descrita pela
+Equac?a?o (3.44).
+
+ql = IPl (pe ?pwf ) (3.44)
+
+onde IP representa o ??ndice de produtividade, pwf a pressa?o no fundo do poc?o
+na profundidade em que o poc?o encontra-se aberto para fluxo e pe representa
+a pressa?o esta?tica do reservato?rio na mesma profundidade. Para o caso aqui
+estudado sera? desprezada a capilaridade, sendo neste caso, a pressa?o esta?tica
+igual a? pressa?o das fases. No caso de um poc?o injetor a varia?vel IP e? chamada
+de II (?Indice de Injetividade). Para o caso de um poc?o vertical o IP para a
+fase l e? calculado segundo a Equac?a?o (3.45):
+
+IPl =
+?2??ckr lkhh
+
+µlBl[ln(re/rw) + s]
+(3.45)
+
+onde h e? a espessura do intervalo aberto para fluxo no poc?o de raio rw e
+kh representa a permeabilidade areal calculada como uma me?dia geome?trica
+das permeabilidades nas direc?o?es x e y. O escalar s representa um valor
+que e? ajustado para representar um dano causado a parte porosa aberta do
+intervalo em produc?a?o. O valor de re, raio de drenagem, e? calculado em
+func?a?o da discretizac?a?o atrave?s da seguinte expressa?o:
+
+re = 0.28
+
+{[
+(ky/kx)
+
+1/2?x2
+]
+
++
+[
+(kx/ky)
+
+1/2?y2
+]}1/2
+
+((ky/kx)1/4 + (kx/ky)1/4
+(3.46)
+
+A vaza?o de cada fase no poc?o produtor e? calculada a partir da func?a?o
+de fluxo fracional fl [9], calculada em func?a?o da velocidade das fases [36],
+
+
+
+CAPI?TULO 3. EQUAC?O?ES GOVERNANTES 35
+
+que desprezando-se a capilaridade e os efeitos gravitacionais pode ser escrito
+segundo a Equac?a?o (3.47):
+
+fl =
+?l
+
+?o + ?w
+(3.47)
+
+ou
+
+fl =
+IPl
+
+IPw + IPo
+=
+IPl
+IP
+
+(3.48)
+
+onde ?l representa a mobilidade da fase l e e? calculado segundo a Equac?a?o
+(3.49) e IP representa o ??ndice de produtividade total do poc?o.
+
+?l =
+kkrl
+µlBl
+
+(3.49)
+
+Para mostrar como e? feito o acoplamento pode-se, como exemplo, con-
+siderar a situac?a?o com apenas um poc?o produtor e um injetor, escrevendo
+para o poc?o injetor a seguinte relac?a?o:
+
+qinj = II (pe ?pwf ) (3.50)
+
+essa relac?a?o considera que toda a mobilidade da fase a?gua e? igual a mobilidade
+total dos fluidos na a?rea injetada. Assumindo que a permeabilidade areal do
+poc?o injetor e? igual a do poc?o produtor, ambos com fator de skin nulo. Pode-
+se reescrever a Equac?a?o 3.50 como:
+
+qinj = IP (pe ?pwf ) (3.51)
+
+Para um poc?o produtor pode-se escrever a vaza?o volume?trica da seguinte
+forma:
+
+qp = qw + qo = IPw (pe ?pwf ) + IPo (pe ?pwf ) (3.52)
+
+multiplicando e dividindo a Equac?a?o (3.52) pelo IP total do poc?o e substi-
+tuindo 3.51 na expressa?o resultante temos:
+
+qp = IPw
+IP
+
+IP
+(pe ?pwf ) + IPo
+
+IP
+
+IP
+(pe ?pwf ) = fwqinj + foqinj (3.53)
+
+Assim pode-se calcular a vaza?o de cada fase no poc?o produtor como uma
+frac?a?o da vaza?o de injec?a?o. Dado o valor da pressa?o de fundo do poc?o pro-
+dutor, com o valor da vaza?o da fase o?leo pode-se, atrave?s da Equac?a?o 3.44,
+encontrar a pressa?o esta?tica pe. Esta pressa?o sera? usada como pressa?o de
+refere?ncia para a soluc?a?o da equac?a?o de pressa?o 3.39. A restric?a?o no valor da
+pressa?o de fundo do poc?o produtor deve-se a condic?a?o pressa?o de separac?a?o
+ideal dos fluidos nas instalac?o?es de superf??cie.
+
+
+
+Cap??tulo 4
+
+Modelagem Computacional
+
+O OpenFOAM usa o me?todo dos volumes finitos para discretizar os o-
+peradores diferenciais. O me?todo dos volumes finitos e? um me?todo para
+representar e avaliar equac?o?es diferenciais parcias na forma de equac?o?es al-
+ge?bricas [27] [38]. Sa?o feitas integrais de volume nos termos de diverge?ncia
+e, atrave?s do teorema da diverge?ncia, esses termos sa?o convertidos para in-
+tegrais de superf??cie. Neste me?todo o valor da diferenc?a entre vaza?o ma?ssica
+que entra em um volume de controle e a vaza?o ma?ssica que deixa o mesmo e?
+ide?ntico ao valor acumulado no volume, garantindo assim a conservac?a?o nu-
+me?rica do me?todo. Esta propriedade e? importante em um me?todo nume?rico
+pois garante que nenhuma quantidade de fluxo integral surja ou desparec?a
+do dom??nio devido ao me?todo. Para a soluc?a?o das equac?o?es estudadas foi
+empregado o me?todo dos volumes finitos usando malhas estruturadas, que e?
+equivalente ao me?todo das diferenc?as finitas baseadas em volumes de controle
+que foi o me?todo proposto para este trabalho. Para uma melhor compreensa?o
+dos me?todos utilizados neste ambiente sa?o abordadas resumidamente a seguir
+a forma como sa?o discretizados o dom??nio e as equac?o?es resolvidas usando o
+OpenFOAM. Para uma descric?a?o mais detalhada e? recomendado a leitura do
+trabalho feito por Hrvoje Jasak [25] que foi o criador do sistema.
+
+4.1 Discretizac?a?o do dom??nio
+
+No OpenFOAM os volumes de controle podem assumir diferentes geome-
+trias, de modo que ao escrever uma aplicac?a?o no OpenFOAM pode-se usar
+diferentes geometrias para a discretizac?a?o do dom??nio sem que seja neces-
+sa?rio mudar a aplicac?a?o. Uma mesma aplicac?a?o pode simular um caso que
+usa uma malha estruturada ou uma malha na?o estruturada. O processo de
+discretizac?a?o pode ser dividido em dois passos: a discretizac?a?o do dom??nio
+
+36
+
+
+
+CAPI?TULO 4. MODELAGEM COMPUTACIONAL 37
+
+da soluc?a?o e a discretizac?a?o da equac?a?o. A discretizac?a?o do dom??nio produz
+uma relac?a?o entre a geometria do cont??nuo que se quer estudar e os pontos
+onde a equac?a?o discretizada sera? resolvida. No OpenFOAM para cada face
+sa?o armazenadas as coordenadas dos ve?rtices e do centroide, o volume e os
+vetores que orientam a direc?a?o normal de cada face. A Figura 4.1 mostra um
+exemplo de volume de controle.
+
+Figura 4.1: Volume de controle.
+
+O ponto P encontra-se no centroide do volume de controle de modo que:?
+V
+
+(x?xp) dV = 0 (4.1)
+
+O vetor ~S, normal a face destacada, encontra-se no centroide da mesma
+e e? constru??do em cada face do volume de controle de modo que sua norma
+euclidiana equivale a a?rea da face que o conte?m. O ponto N representa o
+centroide de um volume de controle de uma ce?lula vizinha. A discretizac?a?o
+do dom??nio no OpenFOAM pode ser feita usando-se diferentes tipos de ce?-
+lulas, sem que precise tratar explicitamente os tipos ce?lulas nas aplicac?o?es
+desenvolvidas. Ha? ainda a possibilidade da definic?a?o de um novo tipo de
+ce?lula que pode ser especificada pelo usua?rio, fornecendo-se a sua geometria.
+A Figura 4.2 mostra a geometria dos diferentes tipos de ce?lulas que podem
+ser usados para discretizar o dom??nio no OpenFOAM. Ale?m dos tipos de
+elementos mostrados e? poss??vel ainda que o usua?rio crie um elemento dife-
+rente e informe as coordenadas dos ve?rtices em um arquivo de configurac?a?o
+do sistema.
+
+4.2 Discretizac?a?o das equac?o?es
+
+No OpenFOAM a discretizac?a?o dos termos de uma dada equac?a?o e? feita
+separadamente, podendo-se escolher que tipo de esquema sera? aplicado a cada
+
+
+
+CAPI?TULO 4. MODELAGEM COMPUTACIONAL 38
+
+Figura 4.2: Tipos de volume de controle do OpenFOAM.
+
+operador [2]. Uma das vantagens de utilizar este ambiente e? a praticidade
+obtida ao tratar isoladamente a discretizac?a?o de cada termo de uma dada
+equac?a?o. Por exemplo, para a discretizac?a?o da Equac?a?o (4.2):
+
+??
+
+?t
++ ?· (U?) ??· (????) = S?(?) (4.2)
+
+podemos usar a seguinte representac?a?o escrita em C++ usando o Open-
+FOAM:
+
+1 fvScalarMatrix PhiEqn
+2 (
+3 fvm::ddt(phi)
+4 + fvc::div(U,phi)
+5 - fvc:: laplacian(Gamma ,phi)
+6 ==
+7 S
+8 )
+
+No trecho de co?digo acima cada operador diferencial e? discretizado sepa-
+radamente e a ac?a?o conjunta destes operadores discretos, compo?em a matriz
+de discretizac?a?o da equac?a?o a ser solucionada. Em cada um dos operadores
+pode-se usar uma formulac?a?o expl??cita ou impl??cita, usando-se os me?todos
+das classes fvc (finite volume calculus) e fvm (finite volume method) res-
+pectivamente.
+
+4.2.1 Discretizac?a?o dos operadores de difusa?o
+
+Os operadores de difusa?o sa?o relacionados aos termos de derivada segunda
+no espac?o, como o operador mostrado na Equac?a?o (4.3) que atua sobre a
+
+
+
+CAPI?TULO 4. MODELAGEM COMPUTACIONAL 39
+
+grandeza primitiva ? ,
+?· (????) (4.3)
+
+onde ?? e? um campo tensorial com tensores de segunda ordem, associados
+aos centros dos volumes de controle cujo efeito de sua interpolac?a?o para as
+faces sera? discutida adiante. A discretizac?a?o usando o me?todo dos volumes
+finitos e? feita integrando-se a Equac?a?o (4.3) e assumindo-se um volume de
+controle com geometria polie?drica, desta forma temos que a integral sobre o
+volume de controle pode ser escrita, fazendo uso do teorema da diverge?ncia,
+como: ?
+
+V
+?· (????) dV =
+
+?
+f
+
+~S · (????)f =
+?
+f
+
+(??)f
+~S · (??)f (4.4)
+
+A malha utilizada no simulador desenvolvido e? estruturada composta de
+volumes de controle com geometria hexae?drica, neste caso, se a malha for
+ortogonal, os vetores ~S e ~d mostrados na Figura 4.3 sa?o paralelos, enta?o
+podemos escrever:
+
+~S · (??)f = |~S|
+?N ??P
+|~d|
+
+(4.5)
+
+Figura 4.3: Vetores ~S e ~d para uma malha na?o ortogonal [25].
+
+No caso de malhas na?o ortogonais, o OpenFOAM dispo?e de func?o?es para
+a correc?a?o dos gradientes. A aplicac?a?o implementada atualmente funciona
+com malhas estruturadas mas, com a inclusa?o dos corretores na?o ortogonais
+do sistema, podem ser usados diferentes tipos de ce?lulas.
+
+4.2.2 Discretizac?a?o dos operadores de advecc?a?o
+
+Os operadores de advecc?a?o sa?o relacionados aos termos de derivada pri-
+meira no espac?o, como o operador mostrado na Equac?a?o (4.6) que atua sobre
+a grandeza primitiva ? ,
+
+?· (U?) , (4.6)
+onde ? e? um campo escalar definido no centro dos volumes de controle e U e?
+um campo vetorial. A discretizac?a?o e? feita integrando-se a Equac?a?o (4.6) e
+
+
+
+CAPI?TULO 4. MODELAGEM COMPUTACIONAL 40
+
+assumindo-se um volume de controle com geometria polie?drica, assim atrave?s
+do teorema da diverge?ncia podemos escrever:?
+
+V
+?· (U?) dV =
+
+?
+f
+
+~S · (U?)f =
+?
+f
+
+(
+~S · (U)f
+
+)
+?f =
+
+?
+f
+
+F?f (4.7)
+
+onde F na Equac?a?o (4.7) representa o fluxo atrave?s de cada face do volume
+de controle e seus valores sa?o interpolados para cada face. O modo como
+interpola-se os valores de ?f em cada face ira? definir o esquema de convecc?a?o
+usado. A Figura 4.4 mostra um exemplo de interpolac?a?o linear, que pode ser
+descrita como:
+
+(?f )DC = ??P + (1 ??)?N (4.8)
+Usando-se a interpolac?a?o linear temos que o fator de interpolac?a?o ? e?
+
+dador por:
+
+? =
+fN
+
+|~d|
+(4.9)
+
+que representa o esquema de diferenc?as centradas de segunda ordem, o valor
+
+Figura 4.4: Interpolac?a?o linear [25].
+
+de ?f pode tambe?m ser avaliado nas faces de acordo com a direc?a?o do fluxo
+que passa pela face, F , segundo a relac?a?o:
+
+(?f )UP =
+
+{
+?P , F ? 0
+?N, F &amp;lt;0.
+
+(4.10)
+
+que representa o esquema de diferenc?as Upwind de primeira ordem. Ha? ainda
+um terceiro caso onde podemos combinar os dois esquemas anteriores e obter
+um novo esquema chamado de Blended Diferencing, que pode ser obtido pela
+relac?a?o:
+
+?f = ? (?f )UP + (1 ??) (?f )DC (4.11)
+O fator ?, 0 ? ? ? 1, na Equac?a?o (4.11) determina a quantidade de
+
+difusa?o nume?rica que sera? introduzida no me?todo. Ale?m dos esquemas de
+interpolac?a?o mostrados o OpenFOAM disponibiliza 70 esquemas de interpo-
+lac?a?o na versa?o 2.0.0 que podem ser usados pela aplicac?a?o desenvolvida.
+
+
+
+CAPI?TULO 4. MODELAGEM COMPUTACIONAL 41
+
+4.2.3 Discretizac?a?o temporal
+
+Os operadores de derivada temporal, em problemas transientes, sa?o dis-
+cretizados no OpenFOAM segundo diferentes te?cnicas, que, incorporadas a
+formulac?a?o escolhida na discretizac?a?o dos termos de derivadas espaciais, for-
+mara?o o me?todo de discretizac?a?o da equac?a?o. Dependendo do me?todo de
+discretizac?a?o do operador de derivada temporal escolhido sera?o armazenados
+os valores dos campos em diferentes instantes de tempo. A discretizac?a?o
+pode ser feita de duas formas:
+
+Me?todo Euler Implicito, que armazena os valores dos campos no novo
+passo de tempo, n+ 1 , e no passo anterior n . A discretizac?a?o e? feita segundo
+a Equac?a?o (4.12):
+
+?
+
+?t
+
+?
+V
+??dV =
+
+(?P?P )
+n+1 ? (?P?P )
+
+n
+
+?t
+(4.12)
+
+Me?todo de Diferenciac?a?o para Tra?s, que armazena os valores do novo
+passo de tempo, n+ 1, e nos dois passos anteriores n e n?1 . A discretizac?a?o
+e? feita segundo a Equac?a?o (4.13):
+
+?
+
+?t
+
+?
+V
+??dV =
+
+3 (?P?P )
+n+1 ? 4 (?P?P )
+
+n
++ (?P?P )
+
+n?1
+
+2?t
+(4.13)
+
+Seja A a matriz que representa a ac?a?o conjunta dos operadores diferenciais
+como difusa?o e advecc?a?o. Aplicando o me?todo dos volumes finitos tem-se:
+
+? t+?t
+t
+
+[
+?
+
+?t
+
+?
+V
+
+(??) dV +
+?
+V
+
+(A?) dV
+
+]
+dt = 0 (4.14)
+
+Usando-se o me?todo Euler implicito, Equac?a?o (4.12), para discretizar o
+termo da derivada temporal tem-se:
+
+? t+?t
+t
+
+[
+?
+
+?t
+
+?
+V
+
+(??) dV
+
+]
+dt =
+
+? t+?t
+t
+
+(?P?P )
+n+1 ? (?P?P )
+
+n
+
+?t
+dt
+
+? t+?t
+t
+
+[
+?
+
+?t
+
+?
+V
+
+(??) dV
+
+]
+dt = (?P?P )
+
+n+1 ? (?P?P )
+n
+
+(4.15)
+
+O segundo termo da Equac?a?o (4.14) pode ser escrito como:? t+?t
+t
+
+[?
+V
+
+(A?) dV
+]
+dt =
+
+? t+?t
+t
+
+Ad?dt (4.16)
+
+onde Ad representa o operador diferencial discreto resultante da discretizac?a?o
+do operador A feita usando o me?todo dos volumes finitos. As diferentes for-
+mas de avaliar a integral na Equac?a?o (4.16) em combinac?a?o com os me?todos
+
+
+
+CAPI?TULO 4. MODELAGEM COMPUTACIONAL 42
+
+de discretizac?a?o da derivada temporal forma as diferentes formulac?o?es para
+a discretizac?a?o da equac?a?o diferencial. Na formulac?a?o expl??cita o operador
+discreto e? aplicado aos valores da func?a?o no passo de tempo atual, este me?-
+todo de discretizac?a?o e? feito usando-se a classe fvc e e? descrito pela Equac?a?o
+(4.17). ? t+?t
+
+t
+
+[?
+V
+
+(A?) dV
+]
+dt = Ad?n?t (4.17)
+
+Na formulac?a?o impl??cita o operador discreto e? aplicado aos valores da
+func?a?o no passo de tempo posterior, este me?todo de discretizac?a?o e? feito
+usando-se a classe fvm e e? descrito pela Equac?a?o (4.18).
+
+? t+?t
+t
+
+[?
+V
+
+(A?) dV
+]
+dt = Ad?n+1?t (4.18)
+
+Ha? ainda uma terceira formulac?a?o, Crank Nicholson, que pode ser obtida
+usando-se os dois esquemas anteriores descrito pela Equac?a?o 4.19.
+
+? t+?t
+t
+
+[?
+V
+
+(A?) dV
+]
+dt = Ad
+
+(
+?n+1 + ?n
+
+2
+
+)
+?t (4.19)
+
+Na seque?ncia temos a representac?a?o em C++ para a soluc?a?o da equac?a?o
+de difusa?o de calor 2.2 usando-se o me?todo Crank Nicholson com o Open-
+FOAM.
+
+1 fvScalarMatrix Teqn
+2 (
+3 0.5* fvc:: laplacian(T)
+4 + 0.5* fvm:: laplacian(T)
+5 + q
+6 ==
+7 (1/ alpha)*fvm::ddt(T)
+8 )
+
+O me?todo de discretizac?a?o do termo da derivada temporal e? escolhido no
+caso a ser simulado. Pode-se ainda obter diferentes te?cnicas combinando os
+operadores descritos anteriormente.
+
+4.3 Me?todo IMPES
+
+O me?todo IMPES (Implicit Pressure Explicit Saturation) e? uma te?cnica
+empregada na soluc?a?o nume?rica do problema de escoamento multifa?sico. No
+esquema IMPES e? feito um desacoplamento na equac?a?o de conservac?a?o de
+massa entre a pressa?o e a saturac?a?o, obtendo-se uma equac?a?o para cada
+varia?vel. E? obtida uma equac?a?o de pressa?o que pode ser em func?a?o da pressa?o
+
+
+
+CAPI?TULO 4. MODELAGEM COMPUTACIONAL 43
+
+de uma das fases ou em func?a?o da pressa?o me?dia entre as fases. A equac?a?o de
+pressa?o e? resolvida impl??citamente seguida da soluc?a?o expl??cita da equac?a?o
+de saturac?a?o. Para obter a equac?a?o de pressa?o sa?o somadas as equac?o?es de
+conservac?a?o de massa para cada fase e atrave?s da pressa?o capilar a equac?a?o
+e? escrita em func?a?o de apenas da pressa?o de uma das fases. Para a soluc?a?o
+da equac?a?o de pressa?o obtida sa?o necessa?rios os valores das varia?veis da
+equac?a?o no passo de tempo n+1, como esses valores ainda na?o sa?o conhecidos
+eles sa?o calculados no passo de tempo n e a equac?a?o de pressa?o e? resolvida
+impl??citamente. Apo?s a soluc?a?o da equac?a?o de pressa?o, e? resolvida a equac?a?o
+de saturac?a?o para uma das fases usando o campo de presso?es obtido.
+
+4.3.1 Tratamento das na?o linearidades
+
+A equac?a?o de pressa?o possui termos de permeabilidade relativa e pressa?o
+capilar que dependem do valor da saturac?a?o no novo passo de tempo e termos
+que variam com a pressa?o. Para um escoamento incompress??vel os termos
+que variam com a pressa?o permanecem constantes ao longo do tempo, mas
+os valores que dependem da saturac?a?o precisam ser obtidos para o ca?lculo da
+distribuic?a?o de presso?es. No me?todo IMPES a equac?a?o de pressa?o (3.39) e?
+linearizada explicitamente como mostra a Equac?a?o (4.20):
+
+?·
+(
+Tnpo?p
+
+n+1
+o
+
+)
+= ?·
+
+(
+Tnpc?p
+
+n
+c
+
+)
+??· (TnZ?Z) ?Q
+
+n (4.20)
+
+Apo?s a soluc?a?o da equac?a?o de pressa?o obtemos a saturac?a?o, Equac?a?o
+(3.37), a partir da Equac?a?o (4.21):
+
+?
+
+?c
+
+?sw
+?t
+
+= ?·
+{[
+?c
+Kkrw(s
+
+n
+w)
+
+µw
+
+(
+?pn+1o ??pc(s
+
+n
+w) + ?w?Z
+
+)]}
++
+qnwsc
+Vb
+
+(4.21)
+
+que e? resolvida explicitamente e pode ser reescrita como:
+
+?
+
+?c
+
+?sw
+?t
+
+= ?·
+(
+Tnpc?p
+
+n+1
+o
+
+)
+??·
+
+(
+Tnpc?p
+
+n
+c
+
+)
++ ?· (Tnzw?Z) +
+
+qnwsc
+Vb
+
+(4.22)
+
+onde Tpc e? dado pela Equac?a?o (3.42).
+Para a soluc?a?o das equac?o?es e? utilizado o me?todo dos volumes finitos, que
+
+para discretizar os operadores necessita dos valores das transmissibilidades
+nas faces dos volumes de controle como mostrado na Equac?a?o (4.23). O
+campo de permeabilidades absolutas e? interpolado para as faces usando-se
+uma me?dia harmo?nica entre os valores dos centros das ce?lulas vizinhas como
+mostrado na malha estruturada composta por hexaedros da a Figura 4.5.
+
+Na Figura 4.5 kf representa a permeabilidade me?dia na face entre os
+pontos N e P . Essa me?dia pode ser: aritme?tica, geome?trica ou harmo?nica.
+
+
+
+CAPI?TULO 4. MODELAGEM COMPUTACIONAL 44
+
+Figura 4.5: Representac?a?o de duas ce?lulas vizinhas.
+
+A interpolac?a?o mais utilizada e? a me?dia harmo?nica que pode ser calculada
+segundo a expressa?o:
+
+1
+
+kf
+=
+
+1
+
+2
+
+(
+1
+
+kP
++
+
+1
+
+kN
+
+)
+(4.23)
+
+O OpenFOAM dispo?e de muitas te?cnicas de interpolac?a?o, para decidir
+qual a melhor te?cnica a ser empregada posteriormente sera?o avaliadas as di-
+ferentes propostas de interpolac?a?o, e o efeito de cada uma delas na soluc?a?o
+dos feno?menos de escoamento em meios porosos. No cap??tulo 5 sera? discu-
+tido como foi feita a interpolac?a?o do campo de permeabilidades absolutas ja?
+que na versa?o atual do OpenFOAM na?o existe um esquema de interpolac?a?o
+harmo?nica implementado. No caso do campo de permeabilidades relativas a
+interpolac?a?o e? feita de acordo com o esquema escolhido no direto?rio do caso.
+Para todos os problemas resolvidos na verificac?a?o do simulador foi uitlizado
+o esquema upwind. A verificac?a?o e a comparac?a?o entre diferentes esquemas
+de interpolac?a?o para a permeabilidade relativa na?o sera?o feitas neste texto
+mas estara?o presentes em trabalhos futuros.
+
+
+
+Cap??tulo 5
+
+Aplicac?a?o IMPES
+
+Conforme mencionado anteriormente, para a implementac?a?o da aplica-
+c?a?o foi escolhido o me?todo IMPES, que e? um me?todo nume?rico de soluc?a?o
+aplicado ao modelo Black-oil. Na modelagem do escoamento em meios po-
+rosos existem dois modelos de fluxo que sa?o mais usados, o modelo Beta e o
+Composicional. No modelo Beta adimite-se que o fluido e? composto de dois
+pseudocomponentes, l??quido e vapor, o balanc?o de massa e? aplicado para
+cada pseudocomponente e assume-se que as propriedades das fases sa?o fun-
+c?o?es da pressa?o e da temperatura. O modelo chamado Beta e? comumente
+chamado de modelo Black-oil em que o ga?s pode estar presente em ambas as
+fases enquanto o componente o?leo fica restrito a? fase liquida, neste modelo
+sa?o assumidos tre?s componentes: a?gua, o?leo e ga?s [9]. Os componentes a?gua
+e o?leo sa?o assumidos ser imisc??veis e o ga?s e? considerado ser solu?vel no o?leo.
+O comportamento PVT do sistema formado pelos componentes a?gua, o?leo
+e ga?s e? definido pelas varia?veis Bo, Bw e Bg sendo a transfere?ncia de massa
+entre o?leo e ga?s descrita pela raza?o de solubilidade Rs. O programa imple-
+mentado neste trabalho utiliza o me?todo IMPES para resolver um problema
+que representa uma simplificac?a?o do modelo Black-oil onde apenas a fase
+liquida esta? presente. A escolha de um modelo simplificado na?o restringe a
+expansa?o do simulador a um modelo mais complexo, ja? que a incorporac?a?o
+de outras f??sicas no programa e? facilitada devido a orientac?a?o a objetos que
+e? caracter??stica do ambiente.
+
+Apo?s a implementac?a?o do modelo monofa?sico, mencionado no Cap??tulo
+2, foi desenvolvida a aplicac?a?o que simula o escoamento bifa?sico em meios
+porosos. Basicamente o modelo monofa?sico consiste na soluc?a?o de uma equa-
+c?a?o el??ptica, a equac?a?o de pressa?o, equivalente a resolvida nos problemas de
+difusa?o de calor. A implementac?a?o do simulador bifa?sico usa como base o
+modelo monofa?sico, pois a equac?a?o de pressa?o resolvida no modelo bifa?sico e?
+similar a do modelo monofa?sico. De maneira simplificada, neste modelo sera?
+
+45
+
+
+
+CAPI?TULO 5. APLICAC?A?O IMPES 46
+
+resolvida apenas uma equac?a?o adicional com relac?a?o ao modelo monofa?sico,
+a equac?a?o de saturac?a?o, que e? uma equac?a?o de advecc?a?o-difusa?o.
+
+Neste cap??tulo sera? apresentada a aplicac?a?o desenvolvida no OpenFOAM.
+Cada trecho de co?digo apresentado no cap??tulo foi retirado da aplicac?a?o com
+o objetivo de explicar o funcionamento do sistema de forma pra?tica. A apre-
+sentac?a?o da aplicac?a?o e? feita segundo a ordem de execuc?a?o do programa,
+para um melhor entendimento de como e? feito um programa no ambiente.
+A fim de se ressaltar melhores pra?ticas de programac?a?o com o ambiente sa?o
+apresentadas algumas caracter??sticas do sistema que geraram dificuldades na
+implementac?a?o e o modo como essas dificuldades foram contornadas.
+
+5.1 Criac?a?o da aplicac?a?o
+
+A implementac?a?o de aplicac?o?es no OpenFoam, como ja? foi exposto an-
+teriormente, se da? atrave?s do uso da representac?a?o tensorial das equac?o?es
+atrave?s das classes que representam os operadores diferenciais. O IMPES foi
+a te?cnica escolhida para a soluc?a?o das equac?o?es resultantes do problema de
+escoamento bifa?sico. A discretizac?a?o e os me?todos de interpolac?a?o escolhidos
+seguem o esquema apresentado no principal livro que orientou este trabalho
+[20]. Como a maioria dos artif??cios nume?ricos utilizados para a linearizac?a?o
+das equac?o?es e os esquemas de interpolac?a?o usados e? feita na forma discre-
+tizada das equac?o?es, e? necessa?ria uma construc?a?o de equac?o?es diferenciais
+na forma tensorial com esquemas de interpolac?a?o para cada termo, de cada
+operador diferencial, que seja equivalente a apresentada apo?s a aplicac?a?o dos
+me?todos de linearizac?a?o aplicados nas equac?o?es discretizadas.
+
+A criac?a?o dos campos de varia?veis envolvidas nas equac?o?es presentes no
+modelo implementado e? feita atrave?s de classes espec??ficas do ambiente. As
+varia?veis sa?o definidas na aplicac?a?o e arquivos contendo suas condic?o?es de
+contorno, seus valores iniciais e as unidades sa?o criadas no direto?rio do caso.
+
+O trecho de co?digo a seguir mostra a definic?a?o de um campo tensorial na
+aplicac?a?o. A classe volTensorField cria um campo tensorial tridimensional
+que associa um tensor a cada volume de controle da malha criada. A criac?a?o e?
+feita com a estrutura IOobject na qual sa?o especificados o nome da varia?vel,
+em qual direto?rio sera? armazenado ou lido o campo, a malha que estara?
+associada ao campo de tensores e dois para?metros de leitura e escrita.
+
+1 volTensorField K
+2 (
+3 IOobject
+4 (
+5 "K",
+6 runTime.constant(),
+
+
+
+CAPI?TULO 5. APLICAC?A?O IMPES 47
+
+7 mesh ,
+8 IOobject ::MUST_READ ,
+9 IOobject :: NO_WRITE
+
+10 ),
+11 mesh
+12 );
+
+Para a criac?a?o de uma varia?vel dependente do tempo deve ser especifi-
+cado o direto?rio como runTime.timeName(), que representa o direto?rio com
+o nome do passo de tempo atual no caso e os para?metros de escrita devem
+ser mudados a fim de que sejam gravados os valores a cada iterac?a?o. Na
+biblioteca existem ainda outras varia?veis pre?-definidas como constantes ma-
+tema?ticas e f??sicas. A tabela 5.1 mostra os campos criados na aplicac?a?o.
+
+Tabela 5.1: Listagem dos campos criados na aplicac?a?o.
+
+Varia?vel Tipo de campo
+K volTensorField
+
+ac, so, sw, kro, krw, po, pw e pc volScalarField
+Kf, Tpc, Tpo, Tz e Tzw surfaceTensorField
+
+krof, krwf surfaceScalarField
+
+No OpenFOAM um campo do tipo volField e? um campo definido no cen-
+tro das ce?lulas resultantes da discretizac?a?o do dom??nio e um do tipo surface-
+Field e? um campo definido nas faces das ce?lulas. Devido a? grande quantidade
+de dados gerados pela criac?a?o de cada campo e? importante que seja criado o
+menor nu?mero de campos poss??vel, a fim de reduzir a memo?ria necessa?ria a?
+execuc?a?o do programa.
+
+A criac?a?o dos para?metros escalares constantes da aplicac?a?o e? feita atrave?s
+da classe IOdictionary. A classe utiliza a mesma estrututra para varia?veis
+de entrada e sa??da do sistema e assim como no exemplo anterior, o direto?rio
+do arquivo contendo os para?metros e? especificado na estrutura. No co?digo a
+seguir encontra-se a criac?a?o do objeto que conte?m os para?metros.
+
+1 IOdictionary params
+2 (
+3 IOobject
+4 (
+5 "params",
+6 runTime.constant(),
+7 mesh ,
+8 IOobject ::MUST_READ ,
+
+
+
+CAPI?TULO 5. APLICAC?A?O IMPES 48
+
+9 IOobject :: NO_WRITE
+10 )
+11 );
+
+Quando a aplicac?a?o e? executada no direto?rio do caso o programa ira?
+reconhecer a estrutura de arquivos caracter??stica do mesmo e ira? atribuir a
+estrutura runTime, os caminhos de cada direto?rio no caso. Apo?s a definic?a?o
+da varia?vel que aponta para o arquivo com os para?metros, a criac?a?o de um
+escalar e? feita como mostrado a seguir:
+
+1 dimensionedScalar ALPHA_C (params.lookup("ALPHA_C"));
+
+para que a varia?vel possa ser criada e? necessa?rio que ela esteja no arquivo
+params criado no direto?rio do caso.
+
+Para a obtenc?a?o dos valores das permeabilidades relativas no programa
+desenvolvido e? usada uma interpolac?a?o feita a partir de valores fornecidos
+em uma tabela de pontos com os valores experimentais de permeabilidade
+relativa para cada saturac?a?o dada. Atrave?s desses pontos e? obtida uma curva
+interpolada com splines, a qual e? usada para o ca?lculo do campo de permeabi-
+lidades. Assim como a permeabilidade relativa, a capilaridade e? uma func?a?o
+da saturac?a?o e na implementac?a?o do simulador foi obtida tambe?m atrave?s de
+uma interpolac?a?o com uso de splines entre valores experimentais fornecidos
+ao programa.
+
+Apo?s a definic?a?o das varia?veis sa?o lidos dois arquivos no direto?rio do caso,
+o arquivo de permeabilidades relativas e o arquivo de presso?es capilares. Estes
+arquivos conte?m os pontos que sera?o interpolados usando splines que ira?o
+gerar as curvas utilizadas pela aplicac?a?o. Como foi comentado no cap??tulo
+3, a curva fornecida para a permeabilidade relativa deve ser a referente ao
+processo de embebic?a?o. Para o ca?lculo das condic?o?es iniciais sera? assumido
+que os poros da formac?a?o sa?o largos e que o campo de porosidades e? uniforme,
+podendo-se, assim, desprezar a zona de transic?a?o de saturac?o?es. A curva de
+pressa?o capilar utilizada para a soluc?a?o das equac?o?es sera? a referente ao
+processo de embebic?a?o.
+
+Para o ca?lculo dos termos de fluxo, os valores de permeabilidade absoluta
+devem ser calculados nas faces, ja? que o campo primeiramente criado esta?
+associado apenas ao centro dos volumes de controle. Como foi mostrado no
+cap??tulo 4 o ca?lculo dos valores nas faces deve ser feito atrave?s de uma me?dia
+harmo?nica dos valores das ce?lulas que compartilham a face. O OpenFOAM
+oferece 41 diferentes esquemas de interpolac?a?o para os valores das faces na
+versa?o 2.0.0, incluido um esquema para me?dia harmo?nica. Entretanto esse
+esquema na?o se aplica a campos tensoriais. Dessa forma, foi necessa?ria a
+implementac?a?o do esquema de interpolac?a?o na aplicac?a?o. Para na?o se perder
+o paralelismo caracter??stico do sistema existe uma sintaxe pro?pria do Open-
+
+
+
+CAPI?TULO 5. APLICAC?A?O IMPES 49
+
+FOAM para lac?os que sejam executados em paralelo utilizando as estruturas
+e varia?veis do sistema. O trecho de co?digo a seguir mostra um lac?o feito para
+calcular o valor das permeabilidades absolutas nas faces.
+
+1 const unallocLabelList&amp;amp; own = mesh.owner ();
+2 const unallocLabelList&amp;amp; nei = mesh.neighbour ();
+3
+4 forAll(Kf,i)
+5 {
+6 Kf[i].xx() = 2*K[own[i]].xx()*K[nei[i]].xx()/
+7 (K[own[i]].xx()+K[nei[i]].xx());
+8 Kf[i].yy() = 2*K[own[i]].yy()*K[nei[i]].yy()/
+9 (K[own[i]].yy()+K[nei[i]].yy());
+
+10 Kf[i].zz() = 2*K[own[i]].zz()*K[nei[i]].zz()/
+11 (K[own[i]].zz()+K[nei[i]].zz());
+12 }
+
+Atrave?s dos me?todos do objeto mesh, mesh.owner() e mesh.neighbour(),
+sa?o obtidos os labels das ce?lulas que compartilham cada face, com esses va-
+lores sa?o calculadas as me?dias das permeabilidades nas faces. Para utilizar
+a sintaxe forAll e? necessa?rio que seja especificado o campo no qual sera? re-
+alizado o loop, como o desejado e? calcular os valores nas faces como me?dia
+harmo?nica dos centros, foi feito um lac?o para cada campo. O melhor modo
+seria utilizar fvc::interpolate(K,“harmonic”), que na?o esta? dispon??vel para
+um campo volTensorField. Os campos resultantes descritos pelas equac?o?es
+(3.40), (3.41), (3.42) e (3.43) sa?o calculados e em seguida e? feita a soluc?a?o das
+equac?o?es de fluxo. A representac?a?o das equac?o?es de fluxo do me?todo IMPES
+descrito no cap??tulo 4, 4.20 e 4.22, em C++ e? feita da seguite forma:
+
+1 fvScalarMatrix poEqn
+2 (
+3 fvm:: laplacian(Tpo ,po)
+4 ==
+5 fvc:: laplacian(Tz,Z)
+6 + fvc:: laplacian(Tpc ,pc)
+7 - Q
+8 );
+9 poEqn.solve ();
+
+1 fvScalarMatrix swEqn
+2 (
+3 ac*fvm::ddt(sw) ==
+4 fvc:: laplacian(Tpc ,po)
+5 - fvc:: laplacian(Tpc ,pc)
+6 - fvc:: laplacian(Tzw ,Z)
+7 + Qw
+8 );
+9 swEqn.solve ();
+
+
+
+CAPI?TULO 5. APLICAC?A?O IMPES 50
+
+apo?s a soluc?a?o dessas equac?o?es todas as propriedades que variam com o tempo
+sa?o recalculadas e um novo passo de tempo se inicia. Deve-se destacar que
+o sinal do termo referente ao efeito gravitacional esta? com o sinal diferente
+das Equac?o?es 4.20 e 4.22. Essa mudanc?a de sinal se deve a? orientac?a?o de
+eixos adotada na deduc?a?o das equac?o?es, com o eixo z apontando para baixo.
+Como o operador do OpenFOAM utiliza o eixo para cima e? necessa?rio trocar
+o sinal na equac?a?o.
+
+5.2 Criac?a?o do caso
+
+Como em qualquer caso que usa uma aplicac?a?o desenvolvida no Open-
+FOAM, deve-se seguir a estrutura de um direto?rio padra?o de caso do sistema.
+A Figura 5.1 mostra a estrutura de arquivos criada. No direto?rio 0 sa?o ar-
+mazenadas as varia?veis que tem seu valor alterado a cada passo de tempo,
+propriedades como porosidade e permeabilidade absoluta neste problema na?o
+variam com o tempo sendo necessa?ria a sua definic?a?o no direto?rio constant.
+Ainda no direto?rio constant fica armazenado o arquivo params.
+
+Figura 5.1: Caso que utiliza a aplicac?a?o IMPES.
+
+O direto?rio 0.org foi criado pois cada vez que executa-se o programa, os
+arquivos no direto?rio 0 sa?o alterados e para executar novamente o programa
+e? necessa?rio que os arquivos estejam com as mesmas condic?o?es dos arquivos
+0.org, deste modo para facilitar a execuc?a?o, os arquivos sa?o copiados do
+direto?rio 0.org para o direto?rio 0. Na?o e? necessa?ria a criac?a?o do campo so
+no direto?rio 0 pois o mesmo pode ser calculado como 1 ? sw, o campo foi
+colocado no direto?rio de varia?veis de tempo por convenie?ncia.
+
+
+
+CAPI?TULO 5. APLICAC?A?O IMPES 51
+
+A geometria do problema de benchmark mais usado neste tipo de simu-
+lador e? a do modelo de malha de injec?a?o five-spot. Devido a simetria do
+problema e? apenas resolvido um quarto de um elemento da malha de inje-
+c?a?o. A Figura 5.2 ilustra o modelo. Para a criac?a?o da geometria e gerac?a?o
+da malha foi utilizado o gerador de malhas de blocos, o blockMesh, nativo
+do sistema. Devido ao fato do OpenFOAM na?o possuir me?dias harmo?nicas,
+para campos tensoriais, a alternativa implementada apenas poder ser usada
+para malhas estruturadas e com espac?amento constante.
+
+Figura 5.2: Esquema five-spot.
+
+Para possibilitar a soluc?a?o de problemas em que poc?os direcionais sa?o
+usados foi implementada uma rotina para calcular a trajeto?ria dos poc?os.
+Esse modelo apesar de ainda na?o estar sendo usado de fato na aplicac?a?o foi
+implementado com o intuito de poder calcular o perfil de presso?es ao longo da
+coluna de um poc?o direcional. O ca?lculo das perdas de carga nos poc?os ainda
+na?o foi implementado, mas podera? ser feito em trabalhos futuros. Apartir
+de pontos definidos em um arquivo no caso sa?o interpoladas duas curvas,
+utilizando splines, uma com a projec?a?o xz da curva e outra com a projec?a?o
+yz. Com as curvas pode-se determinar quais blocos da malha sa?o cortados
+pela trajeto?ria do poc?o e varia?veis booleanas determinam em que intervalos o
+poc?o estara? aberto para o fluxo. Dependendo do modelo geolo?gico e? possivel
+a utilizac?a?o desse modelo de trajeto?rias para colocar termos de fonte que
+representam um poc?o com completac?a?o dupla, ou seja, que injeta em um
+intervalo e produz de outro. Muitas configurac?o?es sa?o poss??veis com este
+tipo de modelo e a ocorre?ncia de poc?os de petro?leo com essa configurac?a?o e?
+bastante comum em campos de terra. A Figura 5.3 mostra um esquema do
+ajuste feito na trajeto?ria de um poc?o injetor aberto ao fluxo em duas zonas.
+
+Na construc?a?o do modelo de poc?o inclinado e? necessa?rio o acoplamento
+
+
+
+CAPI?TULO 5. APLICAC?A?O IMPES 52
+
+Figura 5.3: Ajuste da traje?toria de um poc?o direcional.
+
+das presso?es especificadas no fundo do poc?o, com as presso?es do reservato?rio.
+Para o acoplamento e? utilizado o modelo de Peaceman [35] no qual a Equac?a?o
+(3.44) e? reescrita para o bloco (i,j,k) que conte?m o poc?o como:
+
+qi,j,k l = IPl (pi,j,k ?pwf ) (5.1)
+
+Para poc?os verticais IP pode ser calculado pela Equac?a?o (3.45), no entanto,
+para poc?os inclinados essa equac?a?o so? e? va?lida no caso em que o campo de
+permeabilidades absolutas e? isotro?pico. Existem modelos na literatura que
+descrevem me?todos diferentes para o ca?lculo do IP para o caso de poc?os in-
+clinados [7] [39] [19]. A implementac?a?o desse tipo de modelo de acoplamento
+sera? abordada em trabalhos futuros.
+
+
+
+Cap??tulo 6
+
+Resultados
+
+Para a verificac?a?o do simulador implementado foram resolvidos problemas
+no simulador comercial IMEX [1]. Para a comparac?a?o foi usado o modelo
+oilwater do IMEX com modelo similar ao implementado na aplicac?a?o. Foram
+especificados valores nulos de compressibilidades dos fluidos e da rocha com
+ponto de bolha fixo e as mesmas condic?o?es iniciais e de contorno. Foram
+resolvidos exemplos de escoamento unidimensional, com geometria plana e
+com geometria tridimensional. Para demonstrac?a?o foi resolvido um exemplo
+que usa a aplicac?a?o feita com o modelo monofa?sico levemente compress??vel.
+
+6.1 Resultados da aplicac?a?o de escoamento
+
+monofa?sico
+
+As Tabelas 6.1 e 6.2 mostram as propriedades da rocha e do fluido utilizas
+na soluc?a?o do caso monofa?sico. A aplicac?a?o na?o foi verificada com o IMEX
+como a aplicac?a?o bifa?sica. Os resultados aqui apresentados apenas ilustram
+um exemplo de um caso resolvido com esta aplicac?a?o.
+
+Tabela 6.1: Propriedades do fluido (Caso monofa?sico).
+
+Propriedade Simbolo Valor
+Fator volume de formac?a?o a? Pref Bref 1
+Massa espec??fica a? Pref ?ref 30 kg/m
+
+3
+
+Viscosidade a? Pref µref 8 cp
+Compressibilidade do fluido cf 1.0 × 10?5 psi?1
+
+53
+
+
+
+CAPI?TULO 6. RESULTADOS 54
+
+Tabela 6.2: Propriedades da rocha (Caso monofa?sico).
+
+Propriedade Simbolo Valor
+Porosidade ? 0.2
+Compressibilidade da rocha cr 1.0 × 10?5 psi?1
+Permeabilidade absoluta k 200 mD
+
+Para a soluc?a?o foi utilizada uma geometria hexae?drica medindo 1000 ft
+nas direc?o?es x e y com 100ft na direc?a?o z. A geometria foi discretizada com
+blocos cu?bicos com aresta medindo 20ft e foi colocado um sumidouro nas
+ce?lulas de um dos ve?rtices da geometria com vaza?o total das ce?lulas de 16
+bbl/d. Foi usado um passo de tempo de 1 dia, a Figura 6.1 mostra a soluc?a?o
+de pressa?o apo?s 100 dias.
+
+Figura 6.1: Soluc?a?o de pressa?o do caso monofa?sico.
+
+6.2 Verificac?a?o da aplicac?a?o IMPES
+
+As propriedades da rocha utilizada em todos os exemplos a seguir esta?o
+listadas na Tabela 6.3. Os valores de compressibilidade foram atribuidos
+nulos apenas no IMEX ja? que a aplicac?a?o feita no OpenFOAM ja? utiliza
+as equac?o?es do modelo incompress??vel. O campo de permeabilidades relati-
+vas utilizado e? homoge?neo e isotro?pico com o valor dado na tabela 6.3. As
+propriedades dos fluidos esta?o descritas na Tabela 6.4, assim como a com-
+pressibilidade da rocha a compressibilidade do fluido foi atribu??da apenas no
+IMEX. As curvas de permeabilidade relativa e pressa?o capilar utlizadas nos
+exemplos esta?o descritas na tabela 6.5. Foram resolvidos problemas com e
+sem pressa?o capilar. Os valores na tabela de permeabilidades e presso?es ca-
+pilares foram utilizados pela aplicac?a?o do OpenFOAM para a contruc?a?o de
+
+
+
+CAPI?TULO 6. RESULTADOS 55
+
+Tabela 6.3: Propriedades da rocha (Caso bifa?sico).
+
+Propriedade Simbolo Valor
+Porosidade ? 0.2
+Compressibilidade cr 0.0 psi
+
+?1
+
+Permeabilidade absoluta k 200 mD
+
+Tabela 6.4: Propriedades dos fluidos (Caso bifa?sico).
+
+Propriedade Simbolo Valor
+Densidade do o?leo ?osc 46.2 kg/m
+
+3
+
+Densidade da a?gua ?wsc 62.2 kg/m
+3
+
+Viscosidade do o?leo µo 0.90 cp
+Viscosidade da a?gua µw 0.30 cp
+Compressibilidade do o?leo co 0.00
+Compressibilidade da a?gua cw 0.00
+
+Tabela 6.5: Curvas de permeabilidade relativa e pressa?o capilar.
+
+sw kro krw pc
+0.0 1.0000 0.0000 10.00
+0.2 0.5625 0.0000 1.949
+0.4 0.2500 0.0625 0.280
+0.6 0.0625 0.2500 0.059
+0.8 0.0000 0.5625 0.026
+1.0 0.0000 1.0000 0.000
+
+splines, sendo os valores calculados durante a simulac?a?o obtidos da interpo-
+lac?a?o desses dados. Como na?o houve diferenc?a significativa entre as soluc?o?es
+com e sem pressa?o capilar, os exemplos a seguir mostrara?o apenas as soluc?o?es
+sem pressa?o capilar.
+
+6.2.1 Escoamento unidimensional
+
+Para a comparac?a?o dos resultados obtidos no caso unidimensional foi uti-
+lizada a geometria mostrada na Figura 6.2 na qual foram usados 40 elementos
+
+
+
+CAPI?TULO 6. RESULTADOS 56
+
+cu?bicos com aresta de 500 m cada, totalizando um comprimento de 20000
+m. Foram colocados dois poc?os, um injetor no centro do primeiro bloco e um
+produtor no centro do u?ltimo bloco. A pressa?o no poc?o produtor foi fixada
+em 1000 psi e a vaza?o em ambos os poc?os em 2000 bbl/d. Tanto no IMEX
+como na aplicac?a?o foi usado um incremento de tempo de 10 dias. A Figura
+6.3 mostra o perfil do campo de presso?es para o instante de tempo 28105d
+que equivale a 77 anos.
+
+Figura 6.2: Malha usada no problema unidimensional.
+
+Pode-se observar na Figura 6.3 que o perfil da curva obtida com o Open-
+FOAM e? similar ao obtido no IMEX a na?o ser pela pressa?o no poc?o injetor
+que na?o foi honrada, com uma diferenc?a de pouco menos de 0.99%.
+
+Figura 6.3: Comparac?a?o do perfil de pressa?o 1D.
+
+O modelo de acoplamento de poc?o utilizado fixa a pressa?o apenas no
+poc?o produtor deixando a ce?lula do poc?o injetor apenas com o termo de
+fonte correspondete a? vaza?o local. Esse problema esta? sendo analisado e
+
+
+
+CAPI?TULO 6. RESULTADOS 57
+
+algumas alternativas esta?o sendo estudadas afim de melhor representar as
+condic?o?es de injec?a?o. A Figura 6.4 mostra o perfil do campo de saturac?o?es
+para o instante de tempo de 77 anos. Apesar da soluc?a?o da equac?a?o de
+
+Figura 6.4: Comparac?a?o do perfil de saturac?a?o 1D.
+
+saturac?a?o no OpenFOAM representar de maneira similar a soluc?a?o obtida
+com o IMEX observa-se a grande difusa?o nume?rica. Esta grande difusa?o se
+deve ao esquema upwind, adotado na aplicac?a?o do OpenFOAM. Alternativas
+ao esquema de interpolac?a?o que e? usado na advecc?a?o da saturac?a?o esta?o
+sendo investigadas e a implementac?a?o de outra formulac?a?o para a equac?a?o
+de saturac?a?o sera? tratada em trabalhos futuros.
+
+6.2.2 Escoamento bidimensional
+
+Para a comparac?a?o dos resultados em duas dimenso?es foi resolvido um
+problema equivalente ao unidimensional, com o mesmo passo de tempo,
+mudando-se apenas a geometria do problema para uma caso bidimensional
+e aumentando-se a vaza?o de cada poc?o para 20000 bbl/d. Nos problemas de
+duas ou mais dimenso?es usados para a comparac?a?o com o IMEX foi utilizada
+a condic?a?o de contorno de simetria do OpenFOAM, symetryPlane, devido
+a caracteristica sime?trica dos problemas resolvidos. O sistema de equac?o?es
+resultante da discretizac?a?o da equac?a?o de pressa?o resulta em um problema
+mal posto. Neste tipo de problema e? necessa?rio que se especifique um valor
+de pressa?o de refere?ncia para se resolver o sistema de equac?o?es. A pressa?o
+de refere?ncia que foi utilizada e? a pressa?o obtida atrave?s do modelo de Pe-
+aceman, que foi apresentado no Cap??tulo 3. A Figura 6.5 mostra a malha
+
+
+
+CAPI?TULO 6. RESULTADOS 58
+
+Figura 6.5: Malha usada no problema bidimensional.
+
+utilizada na soluc?a?o do problema e o posicionamento dos poc?os. A figura 6.6
+mostra a soluc?a?o da pressa?o no instante de tempo igual a 91250d que equivale
+a? 250 anos.
+
+Figura 6.6: Soluc?a?o da pressa?o no problema bidimensional.
+
+Para uma melhor visualizac?a?o da diferenc?a entre os dois simuladores foi
+feita uma secc?a?o na diagonal que liga os poc?os. A figura 6.7 mostra as
+curvas de pressa?o na diagonal mensionada. Novamente pode-se observar que
+a soluc?a?o com a aplicac?a?o desenvolvida e? similar a? obtida no IMEX.
+
+A figura 6.8 mostra a soluc?a?o da saturac?a?o para o mesmo instante de
+tempo. Assim como na soluc?a?o de pressa?o uma comparac?a?o entre as duas
+
+
+
+CAPI?TULO 6. RESULTADOS 59
+
+Figura 6.7: Comparac?a?o das soluc?o?es de pressa?o 2D na direc?a?o diagonal.
+
+soluc?o?es foi feita ao longo da diagonal que liga os poc?os. A figura 6.9 mostra
+a comparac?a?o entre as soluc?o?es de saturac?a?o na diagonal. A soluc?a?o das
+equac?o?es para o caso bidimensional retrata bem a soluc?a?o obitida com o
+IMEX.
+
+Figura 6.8: Soluc?a?o da saturac?a?o do problema bidimensional.
+
+
+
+CAPI?TULO 6. RESULTADOS 60
+
+Figura 6.9: Comparac?a?o das soluc?o?es de saturac?a?o 2D na direc?a?o diagonal.
+
+6.2.3 Escoamento tridimensional
+
+Para a comparac?a?o no caso tridimensional foi criada uma geometria he-
+xae?drica com 40 blocos na direc?a?o x, 40 na direc?a?o y e 5 blocos na direc?a?o z.
+O mesmo incremento de tempo dos casos anteirores foi utilizado em ambos os
+simuladores. A vaza?o dos poc?os foi fixada em 200000 bbl/d. Os poc?os injetor
+e produtor se encontram na primeira e na u?ltima ce?lula do plano superior,
+como mostrado na figura 6.10.
+
+Figura 6.10: Malha usada no problema tridimensional.
+
+A figura 6.11 mostra a soluc?a?o da equac?a?o de saturac?a?o, nos dois simula-
+dores, no instante de tempo igual a 28105d que equivale a? 77 anos.
+
+
+
+CAPI?TULO 6. RESULTADOS 61
+
+Figura 6.11: Soluc?a?o da saturac?a?o do problema tridimensional.
+
+Uma secc?a?o foi feita na diagonal do plano superior para uma melhor
+visualizac?a?o dos resultados. A comparac?a?o entre as soluc?o?es na diagonal e?
+mostrada na figura 6.13
+
+Figura 6.12: Comparac?a?o das soluc?o?es de saturac?a?o 3D na direc?a?o diagonal.
+
+A comparac?a?o entre as soluc?o?es na diagonal mostra claramente uma
+grande difusa?o presente na aplicac?a?o implementada. Ainda que a soluc?a?o
+do esquema upwind seja bastante difusiva a quantidade de difusa?o apresen-
+
+
+
+CAPI?TULO 6. RESULTADOS 62
+
+tada mostra que ha? um problema na soluc?a?o para o caso 3D. A figura 6.14
+mostra a soluc?a?o da equac?a?o de pressa?o no IMEX para o mesmo problema
+no mesmo instante de tempo.
+
+Figura 6.13: Soluc?a?o da pressa?o do problema tridimensional no IMEX.
+
+A figura 6.14 mostra a soluc?a?o encontrada com a aplicac?a?o desenvolvida
+no OpenFOAM.
+
+Figura 6.14: Soluc?a?o da pressa?o do problema tridimensional no OpenFOAM.
+
+Uma mesma comparac?a?o foi feita para as soluc?o?es de pressa?o na direc?a?o
+da diagonal do plano superior. A figura 6.15 mostra a comparac?a?o. Assim
+como na soluc?a?o de saturac?a?o uma grande diferenc?a foi encontrada entre as
+soluc?o?es de pressa?o. O maior n??vel de pressa?o e? apresentado na soluc?a?o da
+
+
+
+CAPI?TULO 6. RESULTADOS 63
+
+aplicac?a?o desenvolvida. O motivo da do erro na soluc?a?o da aplicac?a?o no caso
+tridimensional ainda esta? sendo investigado.
+
+Figura 6.15: Comparac?a?o das soluc?o?es de pressa?o 3D na direc?a?o diagonal.
+
+6.2.4 Caso heteroge?neo bidimensional
+
+Como exemplo de soluc?a?o de um problema heteroge?neo foi montado um
+mapa de permeabilidades atrave?s da intesidade de cor do logotipo da univer-
+sidade. A figura 6.16 mostra o mapa de permeabilidades montado.
+
+Figura 6.16: Mapa de permeabilidades do caso bidimensional.
+
+
+
+CAPI?TULO 6. RESULTADOS 64
+
+A intensidade de cor foi normalizada e transformada em um fator que foi
+multiplicado por 200 mD, deste modo a menor permeabilidade do mapa e?
+de 2 mD. Como mostrado na figura 6.16 foram colocados um poc?o injetor
+no primeiro bloco e um poc?o produtor no u?ltimo bloco. O mapa de perme-
+abilidades foi usado em uma geometria plana com 150 blocos na direc?a?o x e
+100 blocos na direc?a?o y. Cada bloco cu?bico possui 100 m de aresta e as mes-
+mas propriedades utilizadas nos problemas de comparac?a?o foram utilizadas.
+A figura 6.17 mostra as soluc?o?es da equac?a?o de saturac?a?o com isolinhas de
+pressa?o para os instantes de tempo 33, 77, 110 e 176 anos.
+
+Figura 6.17: Soluc?a?o do caso heteroge?neo bidimensional.
+
+
+
+CAPI?TULO 6. RESULTADOS 65
+
+6.2.5 Caso heteroge?neo tridimensional
+
+O segundo exemplo de problema heteroge?neo apresentado utiliza a mesma
+configurac?a?o do problema tridimensional five-spot. Uma barreira de perme-
+abilidades com o valor de 0.002 mD foi criada como mostra a figura 6.18.
+
+Figura 6.18: Permeabilidades do caso tridimensional.
+
+A figura 6.19 mostra a soluc?a?o com isosuperf??cies de pressa?o e saturac?a?o
+para os instantes de tempo 22, 55, 66 e 88 anos.
+
+Figura 6.19: Permeabilidades do caso tridimensional.
+
+
+
+Cap??tulo 7
+
+Concluso?es e Trabalhos Futuros
+
+7.1 Concluso?es
+
+No OpenFOAM e? poss??vel se desenvolver aplicac?o?es para a soluc?a?o de
+problemas complexos em um curto intervalo de tempo. O sistema dispo?e de
+muitas ferramentas que possibilitam o reuso de co?digo. Apo?s a instalac?a?o do
+sistema em um cluster a execuc?a?o das aplicac?o?es em paralelo e? aparentemente
+simples e nenhuma modificac?a?o e? necessa?ria na aplicac?a?o, apenas alguns ar-
+quivos de controle adicionais sa?o criados no caso. E? poss??vel a criac?a?o de
+classes template nos namespaces fvm e fvc, podendo o usua?rio escrever seu
+pro?prio esquema de gradiente ou divergente, isso tambe?m e? poss??vel para
+os esquemas de interpolac?a?o e qualquer ferramenta adicional que se queira
+implementar.
+
+A pouca documentac?a?o dispon??vel do sistema foi a maior dificuldade en-
+contrada. Para se aprender como sa?o feitas as aplicac?o?es e? necessa?rio que se
+estudar com o co?digo fonte das aplicac?o?es nativas do sistema. Ler o co?digo
+fonte das aplicac?o?es nativas serve como orientac?a?o para adotar as melhores
+pra?ticas de programac?a?o no sistema.
+
+7.2 Trabalhos futuros
+
+As soluc?o?es dos problemas expostos para a verificac?a?o do simulador im-
+plementado mostraram-se razoa?veis quando comparadas com o simulador
+IMEX. O simulador desenvolvido neste trabalho e? de escopo acade?mico, que
+adota uma modelagem bastante simplificada quando comparado com simula-
+dores comercias como o IMEX. Como propostas de ferramentas que podera?o
+ser incorporadas a? aplicac?a?o implentada em trabalhos futuros tem-se:
+
+66
+
+
+
+CAPI?TULO 7. CONCLUSO?ES E TRABALHOS FUTUROS 67
+
+• Ca?culo do ??ndice de produtividade para poc?os inclinados com malhas
+na?o estruturadas;
+
+• Implementac?a?o de um modelo de escoamento nos poc?os;
+
+• Investigac?a?o de alternativas a? soluc?a?o da equac?a?o de saturac?a?o na forma
+hiperbo?lica;
+
+• Incorporac?a?o da ferramenta de gerac?a?o adaptativa de malhas presente
+no sistema;
+
+• Implementac?a?o do modelo black-oil.
+
+• Implementac?a?o do me?todo sequencial impl??cito e totalmente impl??cito.
+
+• Implementac?a?o do me?todo IMPES adaptativo.
+
+• Verifcac?a?o de desempenho na soluc?a?o de problemas em paralelo.
+
+
+
+Refere?ncias Bibliogra?ficas
+
+[1] Cmg web site, http://www.cmgl.ca/software/imex.htm.
+
+[2] Openfoam programers guide, http://foam.sourceforge.net/docs/
+Guides-a4/ProgrammersGuide.pdf.
+
+[3] Openfoam solvers, http://www.tfd.chalmers.se/~hani/kurser/OS_
+CFD_2008/TimBehrens/tibeh-report-fin.pdf.
+
+[4] Openfoam user’s guide, http://foam.sourceforge.net/docs/
+Guides-a4/UserGuide.pdf.
+
+[5] Openfoam web site, http://www.openfoam.com/.
+
+[6] Speedit web site, http://speedit.vratis.com/.
+
+[7] I. Aavatsmark and RA Klausen, Well index in reservoir simulation for
+slanted and slightly curved wells in 3d grids, SPE Journal 8 (2003), no. 1,
+41–48.
+
+[8] JJ Arps, Analysis of decline curves, Transactions of the American Ins-
+titute of Mining, Metallurgical and Petroleum Engineers 160 (1945),
+228.
+
+[9] K. Aziz and A. Settari, Petroleum reservoir simulation, vol. 476, Applied
+Science Publishers London, 1979.
+
+[10] L.R. Brown, Microbial enhanced oil recovery (meor), Current Opinion
+in Microbiology 13 (2010), no. 3, 316–320.
+
+[11] H. L. Chang, Polymer flooding technology - yesterday, today, and tomor-
+row, Journal of Petroleum Technology (1978), 1113–1128.
+
+[12] Z. Chen, G. Huan, and Y. Ma, Computational methods for multiphase
+flows in porous media, vol. 2, Society for Industrial Mathematics, 2006.
+
+68
+
+
+
+REFERE?NCIAS BIBLIOGRA?FICAS 69
+
+[13] Z. Chen, G. Huan, and H. Wang, Simulation of a compositional model
+for multiphase flow in porous media, Numerical Methods for Partial
+Differential Equations 21 (2005), no. 4, 726–741.
+
+[14] Z. Chen, G. Qin, and R.E. Ewing, Analysis of a compositional model
+for fluid flow in porous media, SIAM Journal on Applied Mathematics
+(2000), 747–777.
+
+[15] R.S. da Silva, Simulac?a?o de escoamento bifa?sico ole?o-a?gua em reservato?-
+rios de petro?leo usando computadores paralelos de memo?ria distribu??da,
+2008.
+
+[16] L.P. Dake, Fundamentals of reservoir engineering, vol. 8, Elsevier Sci-
+ence, 1978.
+
+[17] , The practice of reservoir engineering, vol. 36, Elsevier Science,
+2001.
+
+[18] D.K.E. de Carvalho, Uma formulac?a?o do me?todo dos volumes finitos
+com estrutura de dados por aresta para a simulac?a?o de escoamentos em
+meios porosos, 2005.
+
+[19] Y. Ding, A generalized 3d well model for reservoir simulation, SPE Jour-
+nal 1 (1996), no. 4, 437–450.
+
+[20] T. Ertekin, J.H. Abou-Kassem, and G.R. King, Basic applied reservoir
+simulation, Society of Petroleum Engineers, 2001.
+
+[21] J.R. Fanchi, Principles of applied reservoir simulation, Gulf Professional
+Publishing, 2005.
+
+[22] MJ Fetkovich, Decline curve analysis using type curves, Journal of Pe-
+troleum Technology 32 (1980), no. 6, 1065–1077.
+
+[23] B. Hascakir and A. Kovscek, Reservoir simulation of cyclic steam injec-
+tion including the effects of temperature induced wettability alteration,
+SPE Western Regional Meeting, 2010.
+
+[24] D. Havlena and AS Odeh, The material balance as an equation of a
+straight line, Journal of Petroleum Technology 15 (1963), no. 8, 896–
+900.
+
+[25] H. Jasak, Error analysis and estimation for the finite volume method
+with applications to fluid flows, Direct 1000 (1996), no. June.
+
+
+
+REFERE?NCIAS BIBLIOGRA?FICAS 70
+
+[26] H. Jasak, A. Jemcov, and Z. Tukovic, Openfoam: A c++ library for com-
+plex physics simulations, International Workshop on Coupled Methods
+in Numerical Dynamics, IUC, Dubrovnik, Croatia, 2007.
+
+[27] R.J. LeVeque, Finite volume methods for hyperbolic problems, vol. 31,
+Cambridge Univ Pr, 2002.
+
+[28] Y.K. Li, L. Nghiem, and A. Siu, Phase behaviour computations for re-
+servoir fluids: Effect of pseudo-components on phase diagrams and si-
+mulation results, Journal of Canadian Petroleum Technology 24 (1985),
+no. 6.
+
+[29] M.V.B. Machado, Modelagem e simulac?a?o nume?rica de reservato?rios
+de petro?leo: principais aspectos envolvidos., Petrobras: Salvador, 2010.
+Livro em preparac?a?o.
+
+[30] Z. Malecha,  L. Miros law, T. Tomczak, Z. Koza, M. Matyka, W. Tar-
+nawski, and D. Szczerba, Gpu-based simulation of 3d blood flow in ab-
+dominal aorta using openfoam, Archives of Mechanics 63 (2011), no. 2,
+137–161.
+
+[31] R. Mannon, Oil production forecasting by decline curve analysis, Fall
+Meeting of the Society of Petroleum Engineers of AIME, 1965.
+
+[32] P. Morelato, L. Rodrigues, and O. Romero, Effect of polymer injection
+on the mobility ratio and oil recovery, SPE Heavy Oil Conference and
+Exhibition, 2011.
+
+[33] N. Morrow, Capillary pressure correlations for uniformly wetted porous
+media, Journal of Canadian Petroleum Technology 15 (1976), no. 4.
+
+[34] D.W. Peaceman, Fundamentals of numerical reservoir simulation, vol. 6,
+Elsevier, 1977.
+
+[35] , Interpretation of well-block pressures in numerical reservoir si-
+mulation (includes associated paper 6988), Old SPE Journal 18 (1978),
+no. 3, 183–194.
+
+[36] A.J. Rosa, R. de Souza Carvalho, and J.A.D. Xavier, Engenharia de
+reservato?rios de petro?leo, Intercie?ncia, 2006.
+
+[37] VC Santanna, FDS Curbelo, TN Castro Dantas, AA Dantas Neto,
+HS Albuquerque, and AIC Garnica, Microemulsion flooding for enhanced
+oil recovery, Journal of Petroleum Science and Engineering 66 (2009),
+no. 3-4, 117–120.
+
+
+
+REFERE?NCIAS BIBLIOGRA?FICAS 71
+
+[38] E.F. Toro, Riemann solvers and numerical methods for fluid dynamics.
+1999, Springer, Berlin.
+
+[39] C. Wolfsteiner, L.J. Durlofsky, and K. Aziz, Calculation of well index for
+nonconventional wells on arbitrary grids, Computational Geosciences 7
+(2003), no. 1, 61–82.
+
+
+</field>
+	</doc>
+</add>

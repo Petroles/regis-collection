@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<add>
+	<doc>
+		<field name="docid">BR-BP.03761</field>
+		<field name="filename">15-Romulo_Albuquerque_Pereira.pdf</field>
+		<field name="filetype">PDF</field>
+		<field name="text">| Romulo Albuquerque Pereira | Arnaldo Vieira Moura | Cid Carvalho de Souza
+Estratégia GRASP para escalonar atividades de desenvolvimento de poços de petróleo /grasp strategy for the scheduling of oil well development activities
+resumo
+PALAVRA-CHAVE:
+□	produção de petróleo offshore
+□	desenvolvimento de poços de petróleo
+□	GRASP
+□	programação por restrições
+□	escalonamento
+□	otimização combinatória
+□	heurísticas.
+KEYWORDS:
+□	offshore oil production
+□	development of oil wells
+□	GRASP
+□	constraint program
+□	scheduling
+□	combinatorial optimization
+□	heuristics.
+Antes que locais promissores de bacias petrolíferas sejam efetivamente desenvolvidos em poços de petróleo produtivos, é necessário realizar diversas atividades de perfuração, completação e interligação nesses locais. O escalonamento dessas atividades deve satisfazer várias restrições conflitantes e buscar a maximização da produção de petróleo em um dado horizonte de tempo. Este artigo descreve um Greedy Randomized Adaptive Search Procedure (GRASP) para o escalonamento das atividades de desenvolvimento de poços de petróleo offshore. Os resultados são comparados com uma ferramenta de Programação por Restrições (PR), desenvolvida pela
+I abstract
+Before promising oil basins are effectively developed into productive oil wells, it is necessary to conduct several drilling, completion and interconnection activities at such sites. The scheduling of these activities must satisfy several conflicting restrictions and also try to maximize the oil production within a given time frame. The present study describes a Greedy Randomized Adaptive Search Procedure (GRASP) to schedule the development of offshore oil wells. The results are compared to a Constraint Program (CP) tool developed by Petrobras, used and well accepted. Comparative results conducted in real instances indicate that the implementation of GRASP exceeds the RP tool, and produces significant production increase solutions.
+(Expanded abstract available at the end of the paper).
+Petrobras, em uso e bem aceita. Resultados comparativos realizados em instâncias reais indicam que a implementação GRASP supera a ferramenta de PR, produzindo soluções com expressivos aumentos de produção.
+introdução
+Petróleo e gás são combustíveis fósseis de larga utilização na sociedade atual, sendo aproveitados na fabricação de plásticos, tintas, querosene, combustível veicular e de aviação, gás de cozinha e em muitas outras aplicações. Boa parte desses combustíveis fósseis é hoje extraída de bacias oceânicas, como a de Marlim, no Estado do Rio de Janeiro. A Petrobras é umas das empresas pioneiras e líderes na exploração de petróleo em águas profundas, sendo também uma das 20 maiores empresas petrolíferas do planeta. A Companhia explora diversas bacias petrolíferas, cada uma com centenas de locais promissores onde poços de petróleo podem ser colocados em produção. Entretanto, esses locais precisam ser desenvolvidos antes de se tornarem produtivos. Para realizar as atividades envolvidas no desenvolvimento de um poço de petróleo, a Petrobras utiliza sondas e navios; alguns alugados, outros de sua propriedade. Esses recursos são limitados e de alto custo, seja em sua aquisição, seja no preço de aluguel. Dessa forma, os recursos devem ser utilizados eficientemente.
+O problema do Escalonamento no Desenvolvimento de Poços de Petróleo (EDP) pode ser definido como: dados um conjunto de poços e as atividades a serem executadas em cada poço e os recursos disponíveis para a execução dessas atividades, determinar um se-qüenciamento das atividades em um dado horizonte de tempo, indicando seus instantes de início e fim e o recurso que a realizará, de forma a otimizar uma função objetivo. Ou seja: maximizar a produção de petróleo. Este seqüenciamento leva em conta o deslocamento dos recursos e as diversas restrições operacionais. Nesse trabalho, o EDP é estudado levando-se em conta as especificidades encontradas pela Petrobras na exploração de petróleo em águas profundas. As restrições operacionais e de engenharia serão apresentadas em
+detalhes, bem como uma metaheurística para a resolução do problema.
+Propostas de solução já foram desenvolvidas para problemas similares (Nascimento, 2002). Entretanto, o EDP inclui restrições de grande relevância prática que não são tratadas em outros trabalhos. Por exemplo, no EDP considera-se que o deslocamento dos recursos entre os poços consome tempo e que, nesse período, o recurso fica indisponível.
+Nossas implementações GRASP para resolver o EDP foram construídas e testadas em diversas instâncias reais fornecidas pela Petrobras. A melhor implementação GRASP para o EDP levaria a Companhia a um ganho de cerca de 16 milhões de barris de petróleo ou, aproximadamente, US$ 830 milhões, na soma das soluções médias para todas as instâncias, quando comparado às soluções geradas pelo resolvedor ILOG em uso na empresa. A vantagem do método proposto fica ainda mais evidente quando se nota que o algoritmo foi integralmente desenvolvido com ferramentas gratuitas.
+O restante deste artigo está organizado como segue. A próxima seção descreve o EDP em detalhes. O algoritmo GRASP, proposto para o EDP, é descrito em "Uma Implementação GRASP". Em "Resultados Computacionais" são relatados os experimentos realizados com este algoritmo, incluindo análises comparativas à ferramenta desenvolvida na Petrobras com o auxílio de um resolvedor comercial de PR. Finalmente, conclusões são feitas na última seção.
+o escalonamento no desenvolvimento de poços de petróleo
+Quando um ponto é considerado um promissor poço de petróleo, sondas são enviadas ao local para realizar as devidas operações de perfuração. O desenvolvimento de um poço, desde a determinação da sua localização até ser colocado em produção, envolve várias etapas.
+Após perfurado, inicia-se o processo de preparação do poço para a extração de petróleo (completação). Em
+primeiro lugar é instalada a árvore de natal molhada (ANM) sobre a cabeça do poço para que a matéria-prima não extravase para o mar. Posteriormente, um navio LSV (logistic support vessel) leva uma tubulação da qual uma extremidade é conectada à ANM e a outra extremidade é encaixada num manifold. Ou então, sobe direto para a superfície, sendo conectada a uma plataforma. Esse estágio é conhecido como interligação. O manifold é instalado por uma sonda ou por uma BGL (balsa guindaste de lançamento), e seu uso evita que cada poço necessite de tubulações exclusivas que o conecte desde o fundo do mar até a superfície. Assim, as mangueiras de vários poços relativamente próximos podem se interligar ao manifold e, deste, uma única tubulação sobe até a superfície. Na ausência de manifolds, e com o metro de tubulação tendo alto valor, o processo todo teria um valor excessivamente elevado.
+Completado o processo de interligação, parte-se para a extração do petróleo. Para isso, são colocadas bases de captura de petróleo na superfície do mar, conhecidas como UEP (Unidade Estacionária de Produção), onde se armazenará o produto até que os navios venham recolhê-lo e levá-lo para a terra. Se a vazão de petróleo for muito elevada, pode-se optar pela instalação local de uma plataforma petrolífera.
+As principais restrições envolvidas no processo de escalonamento das atividades de desenvolvimento dos poços de petróleo são:
+•	Cl-Precedência tecnológica: estabelece uma ordem entre as atividades. Há quatro categorias de precedência tecnológica:
+-	FS(A,B): Atividade A deve terminar depois do início da atividade B;
+-	SS(A,B): Atividade A deve iniciar depois do início da atividade B;
+-	SF(A,B): Atividade A deve iniciar depois do fim da atividade B;
+-	FF(A,B): Atividade A deve terminar depois do fim da atividade B.
+•	C2-Marco-atividade: uma atividade deve terminar antes ou iniciar depois de uma determinada data, ou marco, com ou sem lag. Essa data
+está geralmente relacionada com algum evento externo, e.g., a instalação de uma plataforma petrolífera.
+•	C3-Baseline: estabelece uma data de início para uma determinada atividade.
+•	C4-Restrições no uso dos recursos: para executar uma atividade, dependendo da sua natureza, é necessário um recurso que atenda às suas características operacionais. Para uma atividade que requer um barco, deve ser verificado se os equipamentos dele podem operar na profundidade especificada. Para uma atividade que requer uma sonda, deve ser verificado:
+-	seu tipo: ancorada, semi-submersível com posicionamento dinâmico (SSDP), navio sonda de posicionamento dinâmico (NSDP) ou navio-sonda;
+-	suas características: capacidades de carga, disponibilidade de top drive, operação de condições de alta pressão e alta temperatura (HPHT), características do blowout preventer (BOP);
+-	sua máxima e mínima profundidade de operação;
+-	sua máxima profundidade de perfuração.
+•	C5-Concorrência: duas atividades do mesmo poço não podem ser executadas simultaneamente. Similarmente, duas atividades não podem ser executadas por um mesmo recurso simultaneamente.
+•	C6-Indisponibilidade: os recursos podem estar indisponíveis por um período de tempo por estar em manutenção ou devido ao término do contrato.
+•	C7-Seqüências de poços definidas pelo usuário: o usuário pode especificar uma seqüência desejada para as atividades de perfuração ou para as atividades de início de produção de diferentes poços. A seqüência é uma lista ordenada de dois ou mais poços, de tal forma que se o poço A precede o poço B na lista, então a atividade Fa do poço A deve terminar antes do início da atividade SB do poço B. As atividades FA e SB
+são: atividades de perfuração ou atividades de início de produção de seus respectivos poços, dependendo do tipo da seqüência. Essas seqüên-cias são especificadas por engenheiros de modo a evitar perda de pressão no campo petrolífero.
+•	C8-Restrição de superfície: também conhecida como "bolha assassina", essa restrição representa uma área de segurança definida pelo usuário ao redor de cada poço para que as sondas usadas em atividades desses poços não colidam. A área restrita é especificada por um polígono fechado definido por coordenadas ao redor do poço. Quando o centro do primeiro poço está dentro da área restrita do segundo, as atividades executadas por sondas nesses poços não podem ser simultâneas. Essas restrições devem ser verificadas entre cada par de sondas móveis e entre cada par de sondas móveis e ancoradas.
+•	C9-Cluster: uma atividade pode ser parte de um cluster, que é um conjunto de atividades que devem usar o mesmo recurso.
+•	C10-Deslocamento de sonda: quando uma sonda se deslocar de um poço para outro, um tempo de set-up será considerado. Dessa forma, deslocamentos desnecessários devem ser evitados, por exemplo, fazendo com que uma sonda execute o máximo de atividades em um mesmo poço.
+A produção de petróleo de um poço é calculada da seguinte forma: cada poço tem uma vazão associada e uma atividade cujo propósito é indicar o início da produção. Quando esta última atividade é concluída, o poço é considerado em produção. A produção é calculada multiplicando-se a vazão de petróleo do poço pelo tempo restante desde o início da produção até o horizonte de produção estabelecido. Se o início da produção ocorrer após o horizonte de produção, o montante de produção correspondente ao poço não será considerado.
+O objetivo é obter um escalonamento para todas as atividades de desenvolvimento, satisfazendo todas as restrições e maximizando a produção de petróleo. Outros objetivos a serem atingidos são (já obtidos pela ferramenta desenvolvida pela Petrobras):
+•	gerar soluções mais rapidamente. Soluções criadas por engenheiros levam muitas horas, até dias, para serem construídas. Um método mais rápido permitiria a análise de diferentes cenários para o mesmo problema, por exemplo, acrescentando ou removendo recursos. Além disso, alterações nos planos não resultariam em novas horas ou dias em replanejamento;
+•	com a automação do escalonamento, engenheiros especializados que antes eram responsáveis por planejar o escalonamento podem ser realo-cados para outras áreas da empresa.
+Pela descrição do problema e de suas restrições, pode ser observado que, além de lidarmos com uma aplicação real e de grande importância, trata-se de um problema com várias particularidades, que o diferencia em relação a problemas descritos na literatura (Nascimento, 2002). Para tratar desse mesmo problema, uma equipe da Petrobras desenvolveu um modelo de Programação por Restrições (Marriot e Stuckey, 1998) - usando as bibliotecas ILOG Solver e ILOG Scheduler (ILOG, 1999). Depois de quatro anos de planejamento, desenvolvimento e testes, a ferramenta, de nome ORCA (Otimização de Recursos Críticos na Atividade de Produção) tornou-se operacional e bem-sucedida. Atualmente, o resolvedor ORCA é utilizado por engenheiros tanto para definir um bom escalonamento para as atividades de desenvolvimento de poços, quanto para analisar a necessidade de adquirir ou alugar novos recursos. Os engenheiros confirmaram que o ORCA gera soluções tão boas ou melhores que as feitas por humanos, além de levar poucos minutos de execução. Como exemplo podemos citar que para uma instância real, o ORCA mostrou que comprar uma terceira sonda era desnecessária e que era melhor acrescentar um novo barco LSV.
+Como resultado, a Petrobras evitou o gasto de US$ 15 milhões, além de antecipar o início de produção dos poços em 26 dias.
+Apesar do bom desempenho do ORCA, buscar soluções ainda melhores é importante para a Companhia, pois uma melhora, mesmo que percentualmente pequena, pode representar ganhos de milhões de dólares para a Petrobras.
+relação entre o edp e o job shop scheduling
+Em várias decisões e escolhas de parâmetros em nosso resolvedor, tomamos como base alguns estudos e técnicas utilizadas para o problema clássico do Job Shop Scheduling (JSP). Isso foi feito porque o EDP e o JSP podem ser facilmente relacionados, apesar de o EDP ser um problema bem mais complexo.
+uma implementação GRASP
+Como mencionado anteriormente, o resolvedor ILOG produziu bons resultados. Entretanto, para testar se outras abordagens gerariam soluções melhores - e também para efeito comparativo - outras técnicas foram consideradas para resolver o EDP. Entre elas, a Busca Tabu (Glover e Laguna, 1997 e 2000), a Ant Colony (Dorigo et al. 1996 e 1999) e a GRASP (Resende e Ribeiro, 2002; Binato et al. 2002). Busca Tabu é uma metaheurística muito estudada na literatura e que foi utilizada em uma versão mais simples deste problema (Nascimento, 2002). Porém, algumas questões se mostraram difíceis de tratar, especialmente a definição de uma vizinhança adequada e modos de explorá-la eficientemente. Ant Colony foi aplicado com sucesso num JSP (Colorni et al. 1994), mas sem resultados excepcionais (Dorigo et al. 1999). GRASP foi a abordagem que nos pareceu mais apropriada para
+o EDP, pois se trata de uma metaheurística bem-sucedida no tratamento de problemas de escalonamento (Aiex et al. 2003; Bard e Feo, 1989; Feo et al. 1995; Binato et al. 2002). Além disso, ao contrário do que ocorre com outras metaheurísticas, como a Busca Tabu e algoritmos genéticos, a versão básica do GRASP requer o ajuste de poucos parâmetros.
+A próxima subseção descreve o GRASP, paradigma utilizado aqui para a construção de um resolvedor denominado GRASPS. Posteriormente, são apresentadas técnicas avançadas do GRASP, as quais são utilizadas para aprimorar o resolvedor. Em seguida, descrevemos o modelo e o algoritmo, i.e., o resolvedor propriamente dito.
+greedy randomized adaptive search procedure (GRASP)
+A metodologia GRASP é um processo iterativo onde cada iteração consiste de duas fases: Construção e Busca Local (Resende e Ribeiro, 2002). A fase Construção usa uma estratégia gulosa, acrescida de aleatoriedade para construir uma solução factível, cuja vizinhança é explorada posteriormente na fase Busca Local. Este processo é repetido por diversas iterações, e a melhor solução dentre as geradas em todas iterações do GRASP é selecionada como resultado final.
+A Figura 1 ilustra uma implementação genérica do bloco principal do GRASP em um pseudo-código. As entradas para o algoritmo incluem parâmetros para o ajuste do tamanho da lista de candidatos (TamLista), o número máximo de iterações do GRASP (MaxIter), além
+	1: 2:	procedure GRASP (TamLista, MaxIter, Semente) for k = 1 a MaxIter do
+Figura 1 - Pseudo-código da	3:	Solucao&amp;lt;— Construção Solucao(TamLista, Semente);
+metaheurística da GRASP.	4:	Solucao&amp;lt;— Busca Local (Solucao);
+Figure 1 - GRASP metaheuristic pseudo-code.	5:	Atualiza_Solucao(Solucao, Melhor_Solucao_Encontrada);
+	6:	end for
+	7:	retorna Melhor_Solucao_Encontrada;
+	8:	fim GRASP
+da Semente para o uso inicial na geração de valores aleatórios. As iterações do GRASP são mostradas nas linhas na seqüência de 2 a 6. Cada iteração do GRASP, como dito anteriormente, consiste de uma fase Construção (Construcao_Solucao), linha 3, uma fase Busca Local (Busca_Local), linha 4 e, se necessário, uma atualização da solução encontrada (linha 5). O algoritmo Construcao_Solucao gera uma solução factível para o problema, atualizando a variável Solucao. De posse da solução factível gerada, o algoritmo Busca_Local procura por uma solução melhor que miniminiza ou maximiza uma função objetivo e atualiza a variável Solucao. O algoritmo Atualiza_Solucao compara Solucao com Melhor_Solucao_Encontrada. Se a primeira for melhor, substitui a última. Este processo de construção, busca e atualização é repetido MaxIter vezes.
+Na fase Construção é preparada uma solução factível; um elemento de cada vez. Em cada iteração da Construção, o próximo elemento a ser adicionado é determinado ordenando-se todos os possíveis elementos em uma lista de candidatos com respeito a uma função gulosa (greedy) que mede o benefício de selecionar cada elemento nesse momento. Esta lista é chamada de RCL (Restricted Candidate List). A componente adaptável da heurística vem do fato de que os benefícios associados com cada elemento são atualizados a cada iteração da
+fase Construção a fim de refletir as alterações incorporadas pela seleção dos elementos anteriores. A componente probabilística do GRASP é caracterizada pela escolha aleatória de um dos melhores candidatos da RCL, mas não necessariamente o melhor deles. Esta maneira de realizar a escolha permite a obtenção de diferentes soluções factíveis em cada iteração do GRASP As soluções geradas pela fase Construção do GRASP não são garantidamente ótimas com respeito às definições da vizinhança usadas na fase Busca Local. Portanto, é quase sempre benéfico aplicar uma Busca Local para tentar melhorar cada solução construída.
+A Figura 2 ilustra uma implementação genérica do bloco Construcao_Solucao do GRASP, em pseudo-có-digo. As entradas para o algoritmo incluem parâmetros para o ajuste do tamanho da lista de candidatos (TamLista), além da Semente para uso inicial na geração de valores aleatórios. As iterações do bloco Constru-cao_Solucao são mostradas nas linhas de 2 a 8.
+Um algoritmo de busca local funciona de modo ite-rativo, trocando, sucessivamente, a solução atual por uma solução melhor de sua vizinhança. O algoritmo termina quando não é encontrada solução melhor para a função objetivo.
+A Figura 3 ilustra uma implementação genérica do bloco Busca_Local do GRASP em pseudo-código. A en-
+1: procedure Construcao_Solucao(TamLista, Semente)
+2: Solucao&amp;lt;— 0;
+3: Avaliar o custo incrementai dos candidatos;
+4: while A Solucao nao eh a solucao completa do
+5:	Construir a lista RCL(TamLista);
+6:	Selecionar um elemento s da lista RCL aleatoriamente;
+7:	Solucao&amp;lt;r- Solucao U {s};
+8:	Reavaliar os incrementos nos custos;
+9: end while
+10: retorna Solucao;
+11: fim Construcao_Solucao
+Figura 2 - Pseudo-código da fase construção.
+Figure 2 - Construction phase pseudo-code.
+1: procedure Busca_Local(Solucao)
+2: while A Solucao nao eh otima localmente do
+3:	Encontrar s’c Vizinhanca(Solucao) com f(s’) &amp;lt;f(Solucao);
+4:	Solucao&amp;lt;— s’;
+5: end while
+6: retorna Solucao;
+7: fim Busca_Local
+Figura 3 - Pseudo-código da fase busca local.
+Figure 3 - Local search phase pseudo-code.
+trada para o algoritmo inclui como parâmetro a Solução encontrada na fase Construção (Solução). As iterações do bloco Busca_Local são mostradas nas linhas de 2 a 4.
+Este algoritmo procura otimizar a solução encontrada na fase Construção através da busca de um vizinho melhor s'. Isto é, um elemento de menor (minimização) ou maior (maximização) valor, segundo a função objetivo (f ()). No caso de algoritmos de melhoria iterativa, a regra sobre qual vizinho será selecionado é chamada de pivoting rule (Yannakakis, 1997). Os exemplos dela são: first improvement rule (FIR) e best improvement rule (BIR). Na primeira, o algoritmo se move para a solução vizinha tão logo se encontre uma solução melhor, enquanto na última todos os vizinhos são verificados e o melhor é escolhido.
+A metaheurística GRASP tem sido aplicada com sucesso em diversos tipos de problemas de otimização combinatória, tais como: set covering, quadratic assigment, roteamento de veículos, problemas de localização, conjunto máximo independente, feedback vertex set, planejamento de redes de transmissão, pla-narização de grafos, entre outros (Resende e Ribeiro, 2002). Para uma bibliografia detalhada vide (Binato et al. (2002) e Resende e Festa (2003).
+técnicas avançadas do GRASP
+Nesta seção consideraremos as melhorias e as técnicas alternativas para aprimorar o GRASP padrão.
+• Funções tendenciosas: Na fase Construção do GRASP padrão, o próximo elemento a ser introduzido na solução é escolhido aleatoriamente
+dentre os candidatos da RCL. Aos elementos da RCL são atribuídas as mesmas probabilidades de serem escolhidos. Entretanto, qualquer distribuição de probabilidades pode ser utilizada. Bresina (1996) propôs um mecanismo de construção baseado no ranking r(a) atribuído a cada elemento candidato a, dependendo do valor da função gulosa v(a). Todavia, como a ordenação para a obtenção do ranking é O(nlog(n)), onde n é o número de elementos da RCL - e deve ser repetido a cada escolha de elemento e para cada solução
+-	esse processo poderia prejudicar o desempenho do algoritmo. Assim, decidimos não adotá-lo. Utilizamos apenas o valor v (a) dos candidatos para criarmos as seguintes funções tendenciosas:
+-	uniforme: bias(a)=1
+-	linear: bias(a)=v(a)
+-	logarítmica: bias(a)=ln(v(a))
+-	exponencial: bias(a)=e&lt;v(aí)
+-	quadrática: bias(a)=v(a)2
+-	baseada em raiz quadrada: bias(a)=lv(a)
+Tendo sido calculado o valor da função tendenciosa escolhida, a probabilidade do candidato a ser escolhido é (equação 1):
+(1) ^bias (a1)
+aeRCL
+• Proximate optimality principle (POP): Esta técnica se baseia na idéia de que se temos uma boa solução em um nível da árvore de decisões,
+então é muito provável que no próximo nível teremos uma solução pelo menos quase tão boa (Glover e Manuel Laguna, 1997). Fleurent e Glover (1999) deram uma interpretação GRASP para esse princípio. Eles sugeriram que imperfeições introduzidas durante os passos da fase Construção do GRASP poderiam ser minimizadas ao se aplicar uma busca local ao longo (e não apenas no fim) dessa fase. Por razões de eficiência, uma implementação prática do POP para GRASP seria aplicar a busca local em alguns pontos da fase de Construção, e não após a escolha de cada elemento. Binato et al. (2002) propuseram para um problema JSP que a busca local fosse aplicada quando 40% e 80% dos elementos tivessem sido escolhidos, assim como ao final da fase Construção. Devido à relativa semelhança entre o JSP e o EDP (vide item "Relação entre o EDP e o Job Shop Scheduling"), e com testes bem-sucedidos realizados, os mesmos valores foram adotados para o resolvedor GRASP
+Uma possível deficiência no GRASP padrão é a independência de suas iterações, i.e., o fato de não aprender com as soluções encontradas em iterações anteriores. Isso acontece porque o algoritmo padrão descarta informações a respeito das soluções encontradas, armazenando somente a melhor solução até então. Informações obtidas de boas soluções podem ser utilizadas para implementar estratégias baseadas em memória. Mostramos algumas dessas estratégias a seguir:
+• Intensificação: Fleurent e Glover (1999) observaram que o GRASP padrão não usava uma memória de longo prazo (informação obtida de iterações anteriores), e propuseram um esquema para uso dessa memória em heurísticas. Memória de longo prazo é um dos fundamentos da Busca Tabu. O esquema criado mantém um conjunto de soluções elites, sendo que para pertencer a esse conjunto, uma solução deve ser a melhor dentre as soluções elites em relação a uma função objetivo ou ser melhor que a pior entre as soluções elites e, suficientemente, diferente das outras soluções do conjunto. Em nosso proble
+ma, uma solução é suficientemente diferente da outra se o número de atividades que têm início, ou recurso diferente, entre as soluções for maior que o número de atividades dividido pelo número de recursos. Como o número de recursos é usualmente menor que cinco, duas soluções serão suficientemente diferentes se pelo menos 20% de suas atividades diferirem no tempo de início ou no recurso. Para o problema sendo tratado, mostramos agora como as soluções elites influenciarão a escolha dos candidatos na fase Construção do GRASP Para cada candidato a calculamos a função intensidade Int(a) da seguinte forma (equação 2):
+ZProd(e)
+Int (a) = ——-----------
+Maxe.e£ Prod(ey)
+(2)
+Para essa função, S é o conjunto formado pelas soluções elites em que o elemento a tem a mesma data de início e recurso que na solução sendo construída, Prod() retorna o valor da produção de petróleo total da solução, E é o conjunto de soluções elites e Max retorna o máximo dentre os valores. Sendo qtasIter a quantidade de iterações realizadas pelo GRASP até o momento, e k um fator a ser fixado, determinamos então a função tendenciosa usando também a de intensidade (equação 3):
+biaSlnt(a)=biaS(«) + lnt(a)x,&gt;taslter k
+(3)
+A fração qtasIter/k tem o propósito de dar mais peso à intensidade à medida que aumenta o número de iterações e a qualidade das soluções elites nas quais a função se baseia.
+• Path-relinking (P-R): essa técnica foi proposta originalmente por Glover (1996) como uma estratégia de intensificação que explora trajetórias entre soluções elites obtidas pela Busca Tabu ou na técnica scatter search (Glover, 2000; Glover e Laguna, 1997; Glover et al. 2000). Iniciando com uma ou mais soluções elite, os caminhos no espa-
+ço de busca de uma solução indo em direção as soluções elite são gerados e usados para se obter melhores resultados. Isso é feito através da seleção de movimentos que introduzam bons atributos da solução guia. O uso do path-relinking num procedimento GRASP foi proposto inicialmente por Glover et al. (2000). Posteriormente, diversas extensões, melhorias e aplicações bem-sucedidas foram desenvolvidas (Aiex et al. 2001; Canuto et al. 2001; Resende e Ribeiro, 2001). Duas estratégias básicas consideradas são:
+-	terminada toda a busca, aplicar o P-R entre os pares de soluções elites;
+-	aplicar o P-R após a busca local de cada iteração, entre a solução obtida e algumas das soluções elites.
+De acordo com Resende e Ribeiro (2002), a segunda alternativa é a mais promissora. Outra consideração, também citada em Resende e Ribeiro (2002), é que ir e voltar no P-R, i.e., ir da solução X para a Y, e da Y para a X, resulta em poucos ganhos e demanda o dobro do tempo. Assim, é recomendável explorar um único caminho e sempre o da melhor solução para a pior, já que as soluções de qualidade superior tendem a ser encontradas numa vizinhança próxima a melhor (Resende e Ribeiro, 2002).
+•	Busca local seletiva: outra alternativa a ser aplicada no GRASP padrão é a aplicação da busca local apenas nas soluções razoavelmente diferentes das soluções elites, ou que tenham uma qualidade boa, e.g., melhor que a pior dentre as elites. Com isso, tenta-se aplicar a busca local apenas onde há mais chances de se obter soluções melhores, aumentando a eficiência do algoritmo.
+o resolvedor GRASPS
+O Resolvedor GRASPS foi desenvolvido usando a linguagem de programação C/C++, através da definição das classes apropriadas para o problema. Nesse modelo há dois tipos de variáveis de valor inteiro:
+•	um tipo representa o início da execução de uma
+atividade de um poço. Ele é caracterizado por um mínimo e um máximo tempo de início. Para uma atividade ser escalonada, esse mínimo e máximo devem possuir o mesmo valor;
+•	outro tipo representa o recurso que executará uma atividade de um poço. Ele é caracterizado por um conjunto de possíveis recursos, que precisa ser unitário para a atividade estar escalonada.
+Todas as restrições descritas em "O Escalonamento no Desenvolvimento de Poços de Petróleo" foram impostas ao modelo. Três restrições, a saber, C2, C3 e C4, foram forçadas já na leitura dos dados do problema, antes do início da busca. Note que, nesses casos, todos os valores necessários para se impor as restrições já estão definidos. As outras sete restrições foram tratadas durante a busca por solução, ao serem disponibilizados valores únicos às variáveis.
+O bloco principal do GRASP, ilustrado na Figura 1, foi mantido quase intacto. As seguintes modificações foram introduzidas:
+•	o procedimento será interrompido por tempo, e não pelo número de iterações;
+•	o parâmetro TamLista é atualizado iterativamente durante a busca. O valor de TamLista é monoto-nicamente decrementado ou monotonicamente incrementado por um determinado valor quando uma certa quantidade de tempo é alcançada sem se encontrar solução melhor. Isso, respectivamente, nos permite focar numa heurística mais gulosa, ou então passar a explorar regiões mais vastas do espaço de busca. Com esse esquema, obtemos uma RCL de tamanho dinâmico em oposição a original RCL de tamanho estático.
+A função objetivo é a maximização da produção de petróleo.
+Na fase Construção, ilustrada na Figura 2, várias modificações foram introduzidas. Descritas abaixo:
+•	na primeira vez que a fase Construção é iniciada, usamos o valor do parâmetro TamLista igual a um, o que faz o algoritmo se comportar como uma heurística gulosa pura. Note que, se há
+poucas restrições obstruindo a heurística gulosa, a tendência é gerar soluções boas ou até muito boas. Por exemplo: em seis instâncias entre as 17 testadas, a melhor solução é gerada pela estratégia puramente gulosa;
+•	os candidatos são definidos como sendo os poços produtores disponíveis - ou seja, que ainda não foram escalonados e cujos poços que devem precedê-los já foram escalonados - e os poços injetores que devem preceder poços produtores. Poços injetores que não precisam necessariamente preceder poços produtores são deixados para serem escalonados por último, já que não interferem na produção de petróleo. Escalonamos os poços e não as atividades individuais porque, nesse último caso, a solução apresentaria inúmeros deslocamentos de recursos entre poços, havendo perda de tempo efetivamente produtivo;
+•	a avaliação do custo incremental (linha 3 da Figura 2) representa o quanto de petróleo o poço pode produzir até o fim do horizonte de produção. A RCL é construída com aqueles poços com a maior oferta de petróleo. Consideramos também a oferta de petróleo de poços que precisam aguardar necessariamente o escalonamento do poço em questão para passarem a serem considerados;
+•	na fase Construção do GRASP padrão, o próximo elemento a ser introduzido na solução é escolhido aleatoriamente dentre os candidatos da RCL (linha 5 da Figura 2). Todos os elementos da RCL, então, têm as mesmas probabilidades de serem escolhidos. Entretanto, qualquer distribuição de probabilidades poderia ser atribuída (vide "Técnicas Avançadas do GRASP''). Algumas funções tendenciosas foram experimentadas para a seleção dos candidatos;
+•	para escalonar o poço candidato (linha 7 da Figura 2), o seguinte algoritmo foi utilizado: Enquanto existir atividades não escalonadas no poço:
+- escolha qualquer atividade disponível no poço, i.e., uma atividade não escalonada e cujas atividades que devem precedê-la estejam escalonadas;
+-	escolha o recurso para executar a atividade que atenda a todos os requisitos e que possa terminar a atividade o quanto antes;
+-	atribua como tempo de início da atividade o instante mais cedo possível, i.e., o máximo entre o menor tempo a partir do qual o recurso está disponível e o mínimo tempo de início da atividade;
+-	atualize os mínimos tempos de início de todas as atividades em que há a restrição de suceder à atividade sendo tratada;
+-	O escalonamento do poço é feito tentando satisfazer a todas as restrições, especialmente àquelas sete restrições ainda não impostas. Se alguma restrição é violada, o que é verificado após o escalonamento de cada atividade, a construção da solução é interrompida e uma nova construção é iniciada. Uma outra opção seria retornar um ou mais passos (backtrack) na tarefa de construção. Contudo, isso poderia levar a um uso excessivo de tempo se houver a necessidade de vários backtracks, especialmente se o erro fosse causado por decisões tomadas nas primeiras escolhas.
+• após um poço ser escalonado, todas as atividades que devem obrigatoriamente sucedê-lo têm seus tempos mínimos de início atualizados de acordo com as restrições impostas. Se alguma inconsistência surgir, a construção da solução é interrompida e uma nova é iniciada.
+Já que não há garantias de que a solução encontrada na fase Construção é localmente ótima, uma busca local é usada na tentativa de melhorar a solução.
+O bloco principal da fase Busca Local, ilustrada na Figura 3, foi mantido. Um algoritmo de busca local foi escolhido e uma vizinhança apropriada foi definida a fim de permitir rápidas explorações e soluções melhores. O algoritmo de busca local usado nesse resolvedor GRASP é conhecido como two exchange, sendo baseado no modelo de grafos disjuntivos de Roy e Sussmann (1964). Esse mesmo algoritmo foi usado em Binato et al. (2002) para resolver um JSP, e devido a semelhança do JSP com
+o EDP, utilizamos esse mesmo algoritmo aqui (vide "Relação entre o EDP e o Job Shop Scheduling").
+Para aplicar a busca local two exchange ao EDP, dois elementos no escalonamento devem ser trocados. Por exemplo: se podemos trocar os elementos A e B e o escalonamento no recurso X fosse ... w X1 w A w X2 ... e no recurso Y fosse ... w Y1 B Y2 ..., o resultado da troca seria um escalonamento ... w X1 B	X2	... e ... w Y1 w A	Y2	..., respec-
+tivamente, nos recursos X e Y Note também que os tempos de execução dos elementos A e B podem ser diferentes. Portanto, todas as atividades após eles precisam ter seus tempos de início atualizados.
+Precisamos, agora, definir o que é um elemento. Algumas opções são:
+•	Atividade: Usada em Nascimento (2002) numa versão mais simples deste problema. Apresenta uma granularidade muito pequena, o que leva a formar de vizinhanças extensas. Além disso, na maioria das vezes, mover uma atividade para outra posição nos forçaria a mover também seus predecessores e sucessores no poço para evitar deslocamentos dos recursos, como previsto na restrição C10 (vide "O Escalonamento no Desenvolvimento de Poços de Petróleo'');
+•	Poço: Alta granularidade. O problema é que as seqüências de atividades de um mesmo poço podem estar separadas no escalonamento, (e.g.: ... w A
+... A ...) devido a restrições de Precedência Tecnológica (vide "O Escalonamento no Desenvolvimento de Poços de Petróleo'') entre poços. Então, mover todas as partes demandaria um significativo tempo de execução para verificar muitas restrições. Além disso, trocar um poço inteiro pode não ser possível, e parte dele poderia ser;
+•	Parte de um poço: Define-se parte de um poço como um conjunto máximo de atividades no poço, escalonadas, consecutivamente, em um mesmo recurso. Possui granularidade média e leva a poucos deslocamentos de sonda.
+Na nossa implementação, escolhemos a última opção. Dessa forma, o algoritmo de busca local tenta trocar todos os pares de partes de poços, formando uma vizi
+nhança de ordem O(n2), onde n é o número de partes de poços. Em média, instâncias reais consistem de cerca de 26 poços e cerca de 116 atividades. O número de partes de poços é, em média, 7/6 do número de poços, ou 30 partes de poços no total. O número de trocas seria então da ordem de (30 x 29)/2, ou 435. Se tomássemos atividades como nossos elementos, a vizinhança seria da ordem de (117 x 116)/2, ou 6 786, i.e., 15 vezes maior.
+Para terminar a especificação do algoritmo de busca local, precisamos definir como a vizinhança será explorada e qual solução vizinha substituirá a solução corrente. Conforme pode ser visto em "Greedy Randomized Adaptive Search Procedure (GRASP)", pode-se optar pela estratégia FIR ou pela estratégia BIR. Em qualquer um dos casos, para a busca local two exchange, o tempo de execução no pior caso é de O(n2), onde n é o número de elementos da vizinhança. Ambas foram testadas.
+Além das modificações ao GRASP padrão assinaladas acima, todas as técnicas avançadas apontadas em "Técnicas Avançadas do GRASP" foram implementadas e testadas.
+resultados computacionais
+Nessa seção, resultados computacionais da implementação GRASPS são apresentados e comparados aos obtidos com o resolvedor ILOG da Petrobras sobre as mesmas instâncias reais. Todos os testes foram executados em uma plataforma equipada com uma Sun SPARC Ultra 60 sob sistema operacional Solaris 9, processador de 450MHz e memória RAM de 1 024 Mb. Tanto o GRASPS, quanto o resolvedor ILOG foram executados durante 1 800 segundos para cada instância.
+instâncias típicas
+Vinte e duas instâncias fornecidas pela Petrobras foram usadas em nossos testes. A Tabela 1 apresenta o conjunto de instâncias. Colunas com os mesmos dados referem-se a instâncias distintas, que diferem no número de restrições não assinaladas na Tabela, como a C9.
+Instância		1	2		3	4		5		6	7	8	9		10		11	12	
+# poços		29	22		29	29		17		22	22	29	29		22		29	22	
+# atividades		98	107		98	98		111		107	128	98	98		107		98	107	
+# barcos		1	1		2	1		1		2	1	1	1		2		1	2	
+# sondas		3	2		3	3		2		2	1	3	3		2		3	2	
+# C7		0	0		0	0		0		0	0	0	0		0		0	0	
+																			
+	Instância			13	14		15		16	17	18	19		20		21	22		
+	# poços			22	22		22		22	22	22	22		22		29	65		
+	# atividades			107	107		107		107	107	107	107		107		98	338		
+	# barcos			2	2		2		1	2	2	2		2		1	1		
+	# sondas			2	2		2		2	2	2	2		2		3	2		
+	# C7			1	1		1		1	1	1	1		1		2	2		
+Tabela 1 - Instâncias testadas.
+Table 1 - Tested instances.
+A primeira parte da Tabela mostra as instâncias onde não havia restrições C7. Para reduzir a quantidade de tempo usado em testes, em alguns experimentos utilizamos apenas as sete instâncias mais representativas, eliminando as outras que diferiam por uma ou outra restrição apenas. A segunda parte da Tabela mostra as dez instâncias onde há restrições C7. Vale lembrar que, como o GRASP faz uso de aleatoriedade, cada instância foi testada cinco vezes, sendo reportada sempre uma média dos resultados.
+O horizonte de produção varia entre mil e três mil dias. Note que, quando todos os poços estão escalonados, a produção é igual entre todas as soluções até o horizonte de produção. Assim sendo, os ganhos entre uma solução e outra se dá antes de todos os poços estarem escalonados. Dessa forma, se consideramos todo o horizonte de produção, diluem-se esses ganhos percentualmente ao total, diminuindo também a signifi-cância dos resultados. Dessa forma, para cada instância utilizamos como horizonte de produção o fim da última atividade do poço escalonado mais tarde entre todas as soluções dos resolvedores.
+definindo os parâmetros do GRASPS
+Em "O Resolvedor GRASPS" apresentamos a idéia de uma RCL de tamanho dinâmico, na qual o número de candidatos varia com o tempo. Há duas formas de explorar uma RCL de tamanho dinâmico: uma na qual o número de candidatos decresce monotonicamente com o tempo sem melhorias para que, após uma busca ampla, o algoritmo passe a focar em uma heurística mais gulosa; e outra na qual cresce monotonicamente o número de candidatos com o tempo sem melhorias para que, ampliando o espaço de busca, consiga-se ir além de ótimos locais. No primeiro caso, a RCL inicial tem tamanho max(13,w), sendo w o número de poços, onde é decrescido de 1 a cada 300 s sem geração de soluções melhores. No segundo caso, iniciamos com max(5,w) para o tamanho da RCL inicial, sendo esse valor acrescido de 1 a cada 300s sem geração de melhores soluções. A primeira abordagem não gerou resultados satisfatórios quando aplicada ao EDP, gerando as mesmas ou piores soluções comparadas àquelas geradas pelo GRASPS com RCL de tamanho estático. Já a segunda estratégia se mostrou promissora. Na Figura 4, mostramos o comportamento do algoritmo em duas instâncias reais do EDP. Na Figura 4a, o algoritmo com
+Boletim técnico da Produção de Petróleo, Rio de Janeiro - volume 2, n° 1, p. 2 1 7 -23 9 □
+5	'	'	' r	oe JHJMOLDGIA
+RCL de tamanho dinâmico gera soluções melhores após 150 mil iterações, quando a RCL é aumentada. O mesmo acontece na Figura 4b, após 50 mil iterações. Entre as doze instâncias testadas, quatro tiveram soluções melhores com a RCL de tamanho dinâmico, totalizando um aumento na produção de petróleo de cerca de 261 mil barris. Nas outras oito instâncias, as mesmas soluções foram geradas.
+Foram consideradas duas opções para a busca na vizinhança e selecão de um novo vizinho: a first
+improvement rule (FIR) e a best improvement rule (BIR) (vide "Greedy Randomized Adaptive Search Procedure (GRASP)"). Testes realizados com resolvedores utilizando essas técnicas mostraram uma superioridade da estratégia FIR. Em geral, um resolvedor usando a estratégia BIR encontra sua melhor solução em menos iterações que um resolvedor usando a estratégia FIR, conforme pode ser visto na Figura 5a. Como as iterações FIR são mais rápidas, na maioria dos casos o resolvedor equipado com a estratégia FIR encontra sua
+- -A- - BIR	—♦— FIR
+109.545- 2 109.540		A
+	A'	
+® 109.530	z	
+	A	
+o 109.520 7 109.515&amp;lt;1&gt; ” inQ Rin .	1	
+		
+	1 "Ca i T	
+õ 109.505 109.500	&gt; 1	
+	■ Y	
+0	500	1.000	1.500	2.000	2.500
+Tempo (s)
+-A--BIR	—♦— FIR
+Tempo (s)
+(a)
+(b)
+I
+Figura 5 - BIR x FIR: exemplo 1.
+Figure 5 - BIR vs. FIR: example 1.
+melhor solução em um tempo de execução menor; vide Figura 5b. Vale lembrar que, para o usuário, o tempo de execução é mais importante que o número de iterações. Outro fator importante é o valor da produção das soluções encontradas. O resolvedor com a estratégia FIR se mostrou levemente superior, como pode ser visto nas Figuras 5 e 6. No total de todas as instâncias, o ganho foi de quase 80 mil barris de petróleo, embora seja um ganho pequeno percentualmente. Dessa forma, o resolvedor que usa a estratégia FIR se mostrou o melhor para tratar o problema.
+Outra técnica considerada era a de distribuições de probabilidades tendenciosas a alguns candida
+tos com a maior oferta ou vazão de petróleo. Cinco distribuições de probabilidades, além da totalmente uniforme, foram consideradas, conforme pode ser visto em "Técnicas Avançadas do GRASP". Testes comparativos foram realizados para avaliar qual das funções tendenciosas seria mais adequada ao EDP. As funções exponenciais e quadráticas geraram soluções bem piores, com produção na soma de todas as instâncias de mais de dois milhões de barris de petróleo inferior às outras alternativas. Entre as outras funções, nota-se uma leve superioridade da estratégia denominada Raiz Quadrada, conforme pode ser visto na Figura 7.
+(a)	(b)
+Figura 7 - Funções tendenciosas.	Figure 7 - Tendentious functions.
+as várias implementações do GRASPS
+Como existem várias técnicas avançadas que podem ser acrescidas ao GRASP (vide "Técnicas Avançadas do GRASP"), foram realizados testes com várias combinações, mas não com todas. Como são seis técnicas, todas as combinações possíveis totalizam 64, o que inviabiliza testes expressivos com cada uma delas. Dessa forma, são escolhidas as melhores combinações baseadas em experimentos rápidos, formando 27 resolvedores. Para simplificar a visualização e a análise dos dados, são apresentados apenas 14 destes resolvedores, além do resolvedor ILOG, conforme pode ser visto na Tabela 2. Como se tratam de vários resolvedores, e em vários tipos de testes havia empates entre eles, foram elabo
+rados cinco quesitos para escolher o melhor resolvedor, listados a seguir:
+•	soma total das melhores soluções;
+•	soma total das soluções médias;
+•	média das posições obtidas, ordenando, decrescentemente, os resolvedores para cada teste, usando Rankingl (R1), tendo em vista as médias de produção e tempo. Na classificação são utilizados todos os resolvedores;
+•	média das posições obtidas, ordenando, decrescentemente, os resolvedores para cada teste, usando Ranking2 (R2), tendo em vista as médias de produção e tempo. Na classificação são utilizados todos os resolvedores;
+•	número de instâncias em que o resolvedor obteve a melhor solução conhecida para a mesma.
+Rankingl seria uma classificação onde, se r resolvedores estão empatados na posição p, então o próximo resolvedor, que é inferior, viria na posição p+1. Já em Ranking2, nas mesmas circunstâncias, o próximo resolvedor viria na posição p+r. A Tabela 3 mostra os valores dos quesitos dos 15 resolvedores para todas as instâncias reais do problema. De acordo com esses
+valores, elabora-se a Tabela 4, onde é mostrada a classificação dos resolvedores para cada quesito. Pode-se notar por essa Tabela uma grande variação nos melhores resolvedores entre quesitos diferentes.
+Para decidir qual seria o melhor resolvedor, faz-se novamente uma classificação baseada na média das colocações para cada quesito. Faz-se essa classificação
+	Quesito	1	2	3	4	5
+	ILOG	338.990.507	331.043.827	9,588235	23,47059	2
+	G1	354.428.768	346.325.637	7,682353	10,47059	7
+Tabela 3 - Valores	G2	354.421.217	346.255.908	8,035294	11,11765	6
+	G3	354.528.275	346.318.220	7,470588	10,23529	6
+dos resolvedores nos quesitos comparativos.	G4	354.379.849	346.255.508	8	11,41176	6
+	G5	354.428.768	346.342.803	6,8235529	9,176471	7
+Table 3 - Solver values	G6	354.432.875	346.377.716	4,623529	8,235294	7
+in comparative issues.	G7	354.838.320	346.807.529	2,941176	4,352941	8
+	G8	354.838.320	346.744.587	4,352941	5,764706	8
+	G9	354.838.320	346.801.864	3,470588	5,294118	8
+	G10	354.929.689	346.782.341	4,411765	6,588235	7
+	G11	354.929.689	346.762.940	4,294118	6,411765	9
+	G12	354.929.689	346.762.060	4,588235	6,941176	7
+	G13	354.932.391	346.765.955	4,058824	6	7
+	G14	354.888.020	346.814.967	2,941176	4,764706	9
+Quesito	1	2	3	4	5
+1°	G13	G14	G7-G14	G7	G11-G14
+2°	G10-G11-G12	G7	G9	G14	G7-G8-G9
+3°	G14	G9	G13	G9	G1-G5-G6-G10-G12-G13
+4°	G7-G8-G9	G10	G11	G8	G2-G3-G4
+5°	G3	G13	G8	G13	ILOG
+6°	G6	G11	G10	G11	
+7°	G1-G5	G12	G12	G10	
+8°	G2	G8	G6	G12	
+9°	G4	G6	G5	G6	
+10°	ILOG	G5	G3	G5	
+11°		G1	G1	G3	
+12°		G3	G4	G1	
+13°		G2	G2	G2	
+14°		G4	ILOG	G4	
+15°		ILOG		ILOG	
+Tabela 4 - Ranking entre os resolvedores.
+Table 4 - Ranking of solvers.
+Boletim técnico da Produção de Petróleo, Rio de Janeiro - volume 2, n° 1, p. 2 1 7 -23 9 □
+5	'	'	' r	oe THJVOLDGIA
+Análise dos quesitos	R1	R2	Média R2-R2
+ILOG	11,8	15	13,4
+G1	8,8	10,4	9,6
+G2	10,2	13	11,6
+G3	8,4	11	9,7
+G4	10,6	13,4	12
+G5	7,8	9,4	8,6
+G6	7	8,6	7,8
+G7	7	2,6	2,3
+G8	4,6	5,4	5
+G9	2,8	3,6	3,2
+G10	4,4	5,2	4,8
+G11	3,8	4	3,9
+G12	5,4	6,2	5,8
+G13	3,4	4,2	3,8
+G14	1,6	2	1,8
+Tabela 5 - Análise do ranking entre os resolvedores.
+Table 5 - Solver ranking analysis.
+Classificação	Resolvedor
+1o	G14
+2°	G7
+3o	G9
+4°	G13
+5o	G11
+6o	G10
+7°	G8
+8o	G12
+9o	G6
+10°	G5
+11°	G1
+12°	G3
+13°	G2
+14°	G4
+15°	ILOG
+Tabela 6 - Ordem dos melhores resolvedores.
+Table 6 - Ranking of best solvers.
+com R1 e R2, como pode ser visto na Tabela 5. A partir dessa Tabela, obtém-se a ordem dos melhores resolvedores construídos, o que é mostrado na Tabela 6.
+resultados comparativos entre o resolvedor ILOG e o GRASPS
+Como pode ser visto em "As Várias Implementações do GRASPS", o resolvedor G14 foi considerado o melhor entre as implementações do GRASPS. Esse resolvedor engloba várias técnicas avançadas do GRASP, como o POP, função tendenciosa baseada em raiz quadrada, intensificação, Path-Relinking e BLS (vide "Técnicas Avançadas do GRASP"). Pode-se notar também que o resolvedor de Programação por Restrições (o resolvedor ILOG), foi muito inferior a todos os resolvedores GRASP, até mesmo ao GRASP padrão.
+Já o G14 superou o resolvedor ILOG em mais de 16 milhões de barris de petróleo na soma das soluções médias de todas as instâncias. Isso representa um total de produção 4,5% superior. Note que, com o petróleo estando em torno dos US$ 52, o uso do G14, ao invés do resolvedor ILOG nessas instâncias, levaria a Petrobras a um ganho de quase US$ 832 milhões. Além disso, mesmo gerando soluções melhores, o G14, para chegar à sua melhor solução, precisa de somente 95% do tempo usado pelo resolvedor ILOG. E, para superar a melhor solução do resolver ILOG, utiliza apenas 45% do tempo do mesmo. Entre as 17 instâncias analisadas, o G14 supera a melhor solução do ILOG no primeiro segundo de execução em 14 instâncias. Dois exemplos disso podem ser vistos na Figura 8. Na Figura 9, mostramos duas instâncias em que o G14 não supera a melhor solução do resolvedor ILOG no primeiro segundo de execução. Dessa forma, concluímos que nosso resolvedor GRASPS é mais eficiente e gera melhores soluções que o ILOG.
+--Ar-ILOG —G14
+Tempo (s)
+(a)
+õ
+Q.
+- -A- - ILOG
+G14
+0
+100
+200	300	400
+Tempo (s)
+500
+(b)
+Figura 8 - ILOG x G14.
+Figure 8 - ILOG vs. G14.
+--A--ILOG ♦	G14
+Tempo (s)
+(a)
+-■Ar-ILOG ♦	G14
+Tempo (s)
+(b)
+Figure 9 - ILOG vs. G14.
+Figura 9 - ILOG x G14.
+conclusões
+Resolver problemas de escalonamento eficientemente é um problema de grande importância para a indústria em geral. A Petrobras, uma das companhias líderes na exploração de petróleo em águas profundas, apresenta o problema de escalonamento no desenvolvimento de poços de petróleo (EDP). Neste artigo são contrastadas duas abordagens para resolver o EDP: a primeira baseada em Programação por Restrições (resol-vedor ILOG), e a segunda uma implementação GRASP, de nome GRASPS.
+Experimentos computacionais foram conduzidos em instâncias reais do problema. Conclui-se que o GRASPS gera soluções com maior produção petrolífera
+que aquelas geradas pelo resolvedor ILOG. Os resultados também provam que o GRASPS supera o ILOG na geração de soluções de mesma produção em menor tempo de execução.
+É válido mencionar que o resolvedor ILOG foi construído com a suíte de Programação por Restrições da ILOG, que consiste de sofisticadas bibliotecas com mais de uma década de desenvolvimento. Além disso, essa suíte é de preço elevado, tanto no valor de aquisição, quanto no valor de manutenção da licença. Dessa forma, usando GRASPS, a Petrobras pode evitar esses custos. Note, entretanto, que a suíte da ILOG favorece a facilidade de desenvolvimento, de manutenção e de entendimento do código fonte. Repare também que os resultados gerados pelo resolvedor ILOG superam os resultados manuais, i.e., soluções desenvolvidas por engenheiros.
+referências bibliográficas
+| AIEX, R. M.; BINATO, S.; RESENDE, M. G. C. Parallel GRASP with pathrelinking for job shop scheduling. PARALLEL COMPUTING, v. 29, n. 4, p. 393-430, Apr. 2003.
+| AIEX, R. M.; RESENDE, M. G. C.; PARDALOS, P. M.; TORALDO, G. Grasp with path relinking for the three-index assignment problem. AT&amp;amp;T Labs Research Technical Report, Florham Park, NJ, 2001.43 p.
+| BARD, J. F.; FEO, T. A. Operations sequencing in discrete parts manufacturing. Management Science, Hannover, v. 35, n. 2, p. 249-255, Feb. 1989.
+| BINATO, S.; HERY, W. J.; LOEWENSTERN, D.; RESENDE, E M. G. C. A greedy randomized adaptive search procedure for job shop scheduling. In: Essays and Surveys on Metaheuristics. Dordrecht: Kluwer Academic, 2002. p. 59-79.
+| BRESINA J. L. Heuristic-biased stochastic sampling. In: NATIONAL CONFERENCE ON ARTIFICIAL INTELLIGENCE, 13., 1996, Portland. Proceedings of the... [S.l.: s.n.], 1996. p. 271-278.
+| CANUTO, S. A.; RESENDE, M. G. C.; RIBEIRO, E C. C. Local search with perturbations for the prize-collecting steiner tree problem in graphs. Networks, [S.l.], v. 38, p. 50-58, 2001.
+| COLORNI, A.; DORIGO, M.; MANIEZZO, V Ant system for job-shop scheduling. Belgian Journal of Operations Research, Statistics, and Computer Science, [S.l.], v. 1, n. 34, p. 39-53, 1994.
+| DORIGO, M.; DI CARO, G.; GAMBARDELLA, L. M. Ant algorithms for discrete otimization. Bruxelles: Universite Libre de Bruxelles, 1998. 36 p. (Technical Report IRIDIA/98-10). To appear in Artificial Life, MIT Press, 1999.
+| FEO, T. A.; BARD, J.F.; HOLLAND, E S. Facility-wide planning and scheduling of printed wiring board assembly. Operations Research, New York, v. 43, p. 219-230, 1995.
+| FLEURENT, C.; GLOVER, F.. Improved constructive multistart strategies for the quadratic assignment problem using adaptive memory. Informs Journal on Computing, Cincinnati, v. 11, n. 2, p.198-204, 1999.
+| GLOVER, F. Tabu search and adaptive memory programming: advances, applications and challenges. In: BARR, R.S.; HELGASON, R.V.; KENNINGTON, J.L. (Ed.). Interfaces in computer science and operations research. [Dordrecht]: Kluwer Academic, 1996. 75 p.
+| GLOVER, F. Multi-start and strategic oscillation methods: principles to exploit adaptive memory. In: BARR, R.S.; HELGASON, R.V.; KENNINGTON, J.L. (Ed.). Interfaces in computer science and operations research. [Dordrecht]: Kluwer Academic, 2000. 24 p.
+| GLOVER, F.; LAGUNA, M. Tabu Search. Boston: Kluwer Academic, 1997. 382 p.
+| GLOVER, F.; LAGUNA, M.; MARTÍ, E. R. Fundamentals of scatter search and path relinking. Control and Cybernetics, Warszawa, v. 39, n. 3, p. 653-684, 2000.
+| ILOG. ILOG Solver 4.4 Reference Manual. [S.l.]: ILOG, 1999.
+| NASCIMENTO J.M. Hybrid computational tools for the optimization of the production of petroleum in deep waters. Dissertação (Mestrado) - Universidade de Campinas, 2002.
+| MARRIOTT, K.; STUCKEY, P. J. Programming with constraints: an introduction. Cambridge: Massachusetts Institute of Technology Press, 1998. 467 p.
+| RESENDE, M. G. C.; FESTA, P. An updated bibliography of GRASP. AT&amp;amp;T Labs Research Technical Report TD-5SB7BK, Florham Park, NJ, October 14, 2003. 10 p.
+| RESENDE, M. G. C.; RIBEIRO, C. C. A GRASP with path-relinking for private virtual circuit routing. AT&amp;amp;T Labs Research Technical Report, Florham Park, NJ, June 15, 2001. 19 p.
+bibliografia
+| RESENDE, M. G. C.; RIBEIRO, C. C. Greedy randomized adaptive search procedure. AT&amp;amp;T Labs Research Technical Report, Florham Park, NJ, Sept. 2001. 29 p. Revision 2, Aug. 29, 2002. To appear in “State of the Art Handbook in Metaheuristics", F. Glover and G. Kochenberger, eds., Kluwer, 2002.
+| RODRIGO, M.; MANIEZZO, V; COLORNI, A. The Ant System: Optimization by a colony of cooperating agents. IEE Transactions on Systems, Man and Cybernetics, v. 26, n. 1, p. 1-13, 1996.
+| ROY, B.; SUSSMANN, B. Les problèmes d'ordonnancement avec con-traintes disjonctive. In: NOTE DS No. 9 bis. Paris: SEMA, 1964.
+| YANNAKAKIS, M. Computational complexity. In: AARTS, E.; LENSTRA, J.K. (Ed.). Local search in combinatorial optimization. Chichester: J. Wiley, 1997. p. 19-55
+webgrafia
+| GLOVER, F.; LAGUNA, M. Tabu Search. [S.l.: s.n., 1997?]. Disponível em:&lt;www-bus.colorado.Edu/faculty/laguna/Papers/ts.pdf&gt;. Acesso em: ago., 2000.
+autores
+Romulo Albuquerque Pereira
+| Banco Central do Brasil
+| Departamento de Informática romulo_a_pereira@yahoo.com.br
+Arnaldo Vieira Moura
+| Universidade Estadual de Campinas (Unicamp)
+| Instituto de Computação
+arnaldo@ic.unicamp.br
+Romulo Albuquerque Pereira é Cientista da Computação, com graduação e Mestrado pela Universidade Estadual de Campinas (Unicamp). Recebeu o 3° lugar na categoria Tecnologia de Produção da 1a edição do Prêmio Petrobras e Tecnologia em 2005, categoria Produção. Trabalhou quatro anos entre Uniway, Accenture, Stefanini e Magna prestando serviços especializados para desenvolvimento de sistemas de Inteligência Artificial para a Petrobras. Hoje é Analista de Sistemas concursado do Banco Central do Brasil.
+Arnaldo Vieira Moura é Engenheiro Eletrônico formado pelo Instituto Tecnológico de Aeronáutica (ITA), Mestre em Ciências, com ênfase em Matemática Aplicada pelo mesmo Instituto, e Ph.D. em Ciências da Computação pela Universidade da Califórnia, Berkeley. Atuou como Pesquisador do Centro Científico e do Instituto de Sofware da IBM Brasil. É professor livre-docente do Instituto de Computação da Universidade Estadual de Campinas (UNICAMP), onde ministra disciplinas nas áreas de fundamentos da computação, verificação de sistemas e engenharia de software. Atua em pesquisas nas áreas de Algoritmos, Otimização Combinatória e Verificação e Validação de sistemas, utilizando modelos e métodos formais.
+fase em Sistemas, pela Pontifícia Universidade Católica do Rio de Janeiro (1985), Mestrado em Engenharia Elétrica pela Pontifícia Universidade Católica do Rio de Janeiro (1989), Doutorado em Ciências Aplicadas pela Université Catholique de Louvain (1993), Pós-Doutorado pela Uni-versité Catholique de Louvain (1994) e pela Carnegie Mellon University (2003). Atualmente é professor titular da Universidade Estadual de Campinas. Tem experiência na área de Ciência da Computação, com ênfase em Teoria da Computação. Atua principalmente com temas relacionados a Análise de Algoritmos, Otimização Combinatória, Programação Matemática, Combinatória Poliédrica e Pesquisa Operacional.
+I expanded abstract
+Petrobras is one of the forerunners and leaders in deepwater petroleum exploration, and also one of the 20 oil majors in the world. It explores various oil-bearing basins, each with hundreds of promising sites where oil wells can start producing. However, these sites need to be developed before they become productive. To undertake the activities involved in developing an oil well, Petrobras used some chartered and some of its own rigs and vessels. These resources are restricted and costly whether in procurement or leasing and, therefore, must be used efficiently.
+The problem of Oil Well Development Schedule (OWD) can be defined as follows: data of a group of wells, activities to be performed in each well and the resources available for performing them, determining a sequence of activities in a given time frame, indicating their start and finish and the resource to perform them, in order to optimize an objective function, namely, maximize oil production. This sequence must consider the displacement of resources and different operational restraints. This paper studies the OWD, considering the specificities found by Petrobras in deepwater oil exploration.
+The operational restraints discussed in the paper are the following: technological precedence, activity benchmark, baseline, restricted use of resources, competition, non-availability, well sequences defined by users, surface constraints, clustering and drilling rig displacement.
+To address this same problem a Petrobras team designed a constraint programming model using the ILOG Solver and ILOG Scheduler li braries. After four years of planning, development and testing, the tools called ORCA (Optimization of Resources Crucial to the production Activity) started operating with success. Today the ORCA solver is used by engineers to define a good schedule for well-development activities and to analyze the need to procure or lease new resources.
+When addressing OWD, the GRASP (Greedy Randomized Search Procedure) heuristic was the approach that seemed most appropriate, since it is a success
+ful metaheuristic in dealing with schedule problems. GRASP methodology is an interactive process, where each interaction consists of two phases, Construction and Local Search. The Construction phase uses a greedy randomized strategy to build a feasible solution, whose neighborhood is explored later in the Local Search phase. This process is repeated using various interactions and their best solution in all GRASP interactions is selected as the end result.
+To create even better solutions for Petrobras, a number of advanced techniques were studied for GRASP, such as: bias functions, Proximate Optimality Principle (POP), Intensification, Path-Relinking and Selective Local Search.
+The GRASP solver was designed using the C/C++ programming language. In this model two types of variables were considered as follows: one type representing the start of performing a well activity, and the other is the resource to perform a well activity.
+In GRASP, the Restricted Candidate List (RCL) is made using those wells that retain the largest supply of petroleum. The next element to be introduced into the solution is chosen randomly from among the RCL candidates, using bias functions.
+To schedule the candidate well, the following algorithm was used: while there are unscheduled activities in the well:
+•	choose any available activity in the well, namely, an unscheduled activity and whose activities preceding it are scheduled;
+•	in perform this activity, choose the resource that meets all requirements and that can finish the activity as soon as possible;
+•	start the activity as soon as possible, i.e., the maximum between the shortest time after which the resource is available and the shortest time to start the activity;
+•	update the shortest times to start all activities on which there is a restraint on the next activity to be performed.
+expanded abstract
+The local search algorithm used in this GRASP solver is known as "two exchange", based on Roy and Suss-mann's disjunctive graph model. It consists of changing a position of two elements in the schedule. "Well parts" are exchanged: a maximum set of activities in the same well scheduled consecutively in the same resource. Therefore, the local search algorithm tries to change all pairs of well parts, forming an order neighborhood O(n2), where n is the number of well parts.
+Petrobras provided real instances of the problem to be used in the tests. Since there are a number of advanced techniques that can be added to GRASP, some mentioned earlier, tests were made using various combinations of these techniques.
+One of these combinations, called G14 solver, was considered the best of all other GRASP implementations tested. This solver includes various advanced techniques of GRASP, such as POP, bias function based on a square root, intensification, Path-Relinking and Selective Local Search. The ORCA solver, based on constraint programming, can also be found to be inferior to every GRASP solver, even the standard GRASP. G14, on the other hand, surpassed the ILOG solver by more than 16 million barrels of petroleum when adding the average solutions of all instances. This is a 4.5% higher total production. Note that, with one barrel of petroleum around US$ 52, by using G14 instead of the ORCA solver, when applied to these instances, Petrobras would gain almost US$ 832 million. Moreover, even when creating better solutions, the G14, to reach its best solution, only needs 95% of the time spent by the ORCA solver. And to surpass the best solution of the ORCA solver, G14 uses only 45% of the time of the ORCA solver. Of the 17 instances studied, the G14 surpasses the best ORCA solution in the first second of performing 14 of the test instances.
+Accordingly, the conclusion is that the GRASPS solver is more efficient and creates better solutions than the ORCA solver. The benefit of the proposed method is also more evident when it is found that the algorithm was fully developed with no-cost tools.
+</field>
+	</doc>
+</add>
