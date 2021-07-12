@@ -5,7 +5,9 @@
 Public repository for the paper **REGIS: A Test Collection for Geoscientific Documents in Portuguese**
 
 Lucas Lima de Oliveira, Regis Kruel Romeu, Viviane Pereira Moreira. "REGIS: A Test Collection for Geoscientific Documents in Portuguese".
-Resource paper accepted in SIGIR 2021.
+ACM SIGIR Forum, Association for Computing Machinery, 2021. DOI: 10.1145/3404835.3463256
+
+Paper link: https://doi.org/10.1145/3404835.3463256
 
 ## About
 
